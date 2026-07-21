@@ -28,6 +28,8 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("tutorialChoiceFeedback(currentNode, option, nodesById)");
     expect(source).toContain("playUiUnavailableSound(audioSettings)");
     expect(source).toContain("playEffectSound(HIDDEN_HAND_REVEAL_SOUND, audioSettings)");
+    expect(source).toContain("tutorialChoiceRetryFeedbackNode(currentNode, option, nodesById)");
+    expect(source).toContain("scheduleNpcTextCompletion(bubble, retryFeedbackNode, () => setChoicesVisible(true))");
   });
 
   it("pauses background music while exit loading is shown", () => {
@@ -113,6 +115,16 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("previewControlsEnabled");
     expect(source).toContain("setChoicesVisible(false)");
     expect(source).toContain("schedulePendingWait");
+    expect(source).toContain("unguidedWrongMoveFeedbackAdvance");
+    expect(source).toContain("wrongMoveFeedbackAdvance.delayMs");
+    expect(source).toContain("wrongMoveFeedbackAdvance.controls");
+  });
+
+  it("uses the teaching-specific label in the battle exit confirmation", () => {
+    const source = readSource();
+
+    expect(source).toContain('confirmText="结束教学"');
+    expect(source).not.toContain('confirmText="结束脚本"');
   });
 
   it("does not reinitialize the same node after a pending progression wait resolves", () => {
@@ -134,15 +146,15 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(loadingCss).toContain("min-height: 100dvh");
     expect(overlayCss).toContain("z-index: 4");
     expect(actionCss).toContain("justify-content: stretch");
-    expect(actionCss).toContain("background: #e4f8dc");
+    expect(actionCss).toContain("background: var(--tutorial-choice-background, #e4f8dc)");
     expect(actionCss).toContain("flex: 1 1 0");
     expect(actionCss).toContain(".tutorial-action-bar button::after");
     expect(actionCss).toContain(".tutorial-battle-choice button:active");
-    expect(actionCss).toContain("background: #ffd6e7");
+    expect(actionCss).toContain("background: var(--tutorial-choice-active-background, #ffd6e7)");
     expect(targetRingCss).toContain(".board .point.tutorial-target-point .tutorial-target-ring");
     expect(targetRingCss).toContain("animation: tutorial-target-pulse 1.2s ease-in-out infinite");
     expect(brightChoiceCss).toContain(".tutorial-battle-choice button:active:not(:disabled)");
-    expect(brightChoiceCss).toContain("background: #ffd6e7 !important");
+    expect(brightChoiceCss).toContain("background: var(--tutorial-choice-active-background, #ffd6e7) !important");
     expect(brightChoiceCss).toContain(".tutorial-battle-choice button:hover:not(:disabled)");
     expect(brightChoiceCss).toContain("box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important");
     expect(brightChoiceCss).toContain("filter: saturate(1.04) brightness(1.01) !important");
@@ -173,6 +185,32 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(css).toContain("color-mix(in srgb, var(--tutorial-npc-color");
   });
 
+  it("uses a translucent mobile dialogue surface without fading its text or blurring the board", () => {
+    const css = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
+    const mobileCss = css.split("@media (max-width: 900px)")[1] ?? "";
+    const mobileDialogueBlock = cssBlock(mobileCss, ".tutorial-battle-dialogue");
+
+    expect(mobileDialogueBlock).toContain("rgb(255 255 255/.68)");
+    expect(mobileDialogueBlock).toContain("rgb(15 23 42/.1)");
+    expect(mobileDialogueBlock).not.toContain("opacity:");
+    expect(mobileDialogueBlock).not.toContain("backdrop-filter");
+  });
+
+  it("keeps mobile reply text opaque while using translucent choice surfaces", () => {
+    const baseCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
+    const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
+    const themeCss = readFileSync(new URL("../styles/themes/bright-school/room/tutorial-choice-interactions.css", import.meta.url), "utf8");
+    const mobileCss = overlayCss.split("@media (max-width: 900px)")[1] ?? "";
+    const mobileChoiceBlock = cssBlock(mobileCss, ".tutorial-battle-choice");
+
+    expect(mobileChoiceBlock).toContain("--tutorial-choice-background: rgb(228 248 220/.72)");
+    expect(mobileChoiceBlock).toContain("--tutorial-choice-hover-background: rgb(215 245 202/.8)");
+    expect(mobileChoiceBlock).not.toContain("opacity:");
+    expect(mobileChoiceBlock).not.toContain("backdrop-filter");
+    expect(baseCss).toContain("var(--tutorial-choice-background, #e4f8dc)");
+    expect(themeCss).toContain("var(--tutorial-choice-active-background, #ffd6e7)");
+  });
+
   it("replaces NPC bubble identity and portrait immediately when the speaker changes", () => {
     const source = readSource();
 
@@ -187,23 +225,27 @@ describe("TutorialBattleScreen runtime integration", () => {
     const source = readSource();
 
     expect(source).toContain("<strong>{npcBubble.speakerName}</strong>");
-    expect(source).toContain("<TypewriterText key={npcBubble.id} text={npcBubble.text} />");
-    expect(source).toContain("function TypewriterText");
+    expect(source).toContain("revealAll={revealedNpcBubbleId === npcBubble.id}");
+    expect(source).toContain("export function TypewriterText");
     expect(source).toContain("prefersReducedMotion()");
+    expect(source).toContain("onRevealText={revealNpcBubbleText}");
   });
 
   it("warns when a player move node receives a board-surface click outside the target point", () => {
     const source = readSource();
+    const guidanceSource = readFileSync(new URL("./tutorialPointGuidance.js", import.meta.url), "utf8");
 
     expect(source).toContain("function handleBoardSurface()");
     expect(source).toContain("currentNode?.type === TUTORIAL_NODE_TYPES.playerMove");
-    expect(source).toContain("warn(currentNode.wrongClickMessage || \"请在提示区域落子\")");
+    expect(source).toContain("warn(tutorialWrongPointWarning(currentNode, skillPhase))");
+    expect(guidanceSource).toContain('GUIDED_POINT_WARNING = "请落子或选择黄圈位置"');
   });
 
   it("supports hidden targets, scripted wrong-move branches, and silent board resets", () => {
     const source = readSource();
+    const guidanceSource = readFileSync(new URL("./tutorialPointGuidance.js", import.meta.url), "utf8");
 
-    expect(source).toContain("node.targetHighlightEnabled !== false");
+    expect(guidanceSource).toContain("node.targetHighlightEnabled !== false");
     expect(source).toContain("if (result.wrongMove)");
     expect(source).toContain("goToNode(result.nextNodeId)");
     expect(source).toContain("targetNode.boardSetupLoadingEnabled !== false");

@@ -1112,6 +1112,7 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 - Option timing field: `transitionDelaySeconds` on both ordinary story options and in-battle reply options. In admin copy this is "选择后等待"; blank means 0 seconds after selection.
 - Player move branch fields are `targetHighlightEnabled` (default `true`), `wrongMovePointId`, `wrongMoveNextNodeId`, and `applyWrongMove` (default `false`). Blank `wrongMovePointId` matches any non-correct point when a wrong branch exists.
 - Board setup fields include `boardSetupLoadingEnabled` (default `true`) and display-only `boardSetup.lastMovePointId`.
+- Point-guidance runtime helpers live in `src/tutorial/tutorialPointGuidance.js`: `GUIDED_POINT_WARNING` is `请落子或选择黄圈位置`, and `UNGUIDED_WRONG_MOVE_FEEDBACK_DELAY_MS` is `1500`.
 - `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `showTutorialLog`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
 - `RoomHeader` accepts `exitLabel` and `showUtilityControls` so tutorial battles can keep only the exit/skip affordance without rendering room utility buttons.
 - `AssetPreloadScreen` accepts `showTips` for fixed-copy loading transitions that still need the shared preload template.
@@ -1122,19 +1123,21 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 - Tutorial battles must restore normal room audio by using `useRoomAudioEffects` for move/effect sounds and `BackgroundMusic`/`resolveBackgroundMusic` for battle and skill BGM.
 - NPC move and skill nodes execute automatically after their configured delays. Do not require a player-facing "let NPC act" button.
 - Battle nodes with options must still run through the selected advance mode before options appear. This includes `player-choice`; do not special-case it to reveal options immediately when manual continuation is selected.
-- Option clicks must hide the option panel immediately, show a quiet pending state, and enter the target only after `transitionDelaySeconds`.
+- Option clicks must hide the option panel immediately and honor `transitionDelaySeconds`. Advancing answers then enter their target. A wrong quiz answer whose target is a feedback node returning to the same question must keep the question node active, type the feedback in the current NPC bubble, and re-show the same options when that text is fully visible; do not navigate back through the original question dialogue or require a manual continue.
 - Pending waits must block repeated point/game/continue/choice actions, clear timers on node changes, close/skip, and unmount, and keep the global exit/skip affordance available.
 - The node initialization effect must be keyed by the current node id. Resolving a pending progression wait changes `pendingWait`, but must not reinitialize the same node, because reinitialization clears `choicesVisible` and can make just-revealed reply options flash and disappear.
 - Admin preview should use the real configured waits by default and may expose a preview-only "立即继续" control for timer-only waits. Player-facing playback must not expose per-wait skipping, but node-level manual continuation is a script-controlled player action.
-- NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown. When the next NPC node begins, replace the bubble's speaker identity, portrait, palette, and text atomically before rendering that node; never leave the previous speaker visible during the new line's typewriter run. Exit/hide transitions may still animate when no replacement node is starting.
+- NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. When a line is authored to occur after a move, model it as an empty action node followed by an `npc-dialogue` node so the stone is committed before the line appears. The NPC bubble remains visible while player reply options are shown. When the next NPC node begins, replace the bubble's speaker identity, portrait, palette, and text atomically before rendering that node; never leave the previous speaker visible during the new line's typewriter run. Exit/hide transitions may still animate when no replacement node is starting.
 - `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the readonly `剧情记录` history.
-- Tutorial quiz choices are inferred from graph behavior: an option that targets the same question directly, or targets a feedback node whose `nextNodeId` returns to that question, is a wrong answer. Wrong answers reuse the UI-unavailable SFX; non-retrying siblings in the same quiz reuse the hidden-hand-reveal SFX. Ordinary multi-branch dialogue and single fixed replies do not play answer feedback. Authored wrong-answer NPC feedback uses manual progression before returning to the question.
+- Tutorial quiz choices are inferred from graph behavior: an option that targets the same question directly, or targets a feedback node whose `nextNodeId` returns to that question, is a wrong answer. Wrong answers reuse the UI-unavailable SFX; non-retrying siblings in the same quiz reuse the hidden-hand-reveal SFX. Ordinary multi-branch dialogue and single fixed replies do not play answer feedback. A separate wrong-answer feedback node is display content only during playback: its text replaces the bubble, completes automatically, remains visible, and then the current question's options return without replaying the question line.
 - `story` nodes reached from battle show the shared `AssetPreloadScreen` exit loading page for at least three seconds with "正在收拾棋盘..." before returning to the normal story modal.
 - Entering a board setup shows the shared `AssetPreloadScreen` entry loading page for at least three seconds with "正在激烈对局中..." and the participating NPC portraits.
 - Story-to-battle, battle-to-story, and in-battle board-setup handoffs must put the shared loading screen in place before the browser can paint the next route/node. Use initial state, navigation-handler state, or layout effects for the handoff boundary; do not rely only on a post-paint effect that briefly renders the battle room, home screen, or setup placeholder.
 - The teaching action panel replaces ordinary free-battle actions. Continue and reply controls belong under the board, not in a separate free-battle button group.
-- Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow. Clicking another point or the board surface shows "请在提示区域落子".
+- Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow.
+- When a concrete yellow target ring is visible for a player move or player skill, clicking another point or the board surface must override generic/authored copy with `请落子或选择黄圈位置`. Hidden-target moves keep their authored `wrongClickMessage` because finding the point is the exercise.
 - `targetHighlightEnabled: false` suppresses only the player-move target ring; the correct point remains hard-gated. A matching wrong-move branch may leave the board unchanged or apply the actual wrong move before navigating, according to `applyWrongMove`; other wrong points keep the node active with `wrongClickMessage`.
+- If a `targetHighlightEnabled: false` player move enters `wrongMoveNextNodeId`, retain that runtime context through any intermediate NPC action. The first following `npc-dialogue` feedback must finish typing, remain fully visible for exactly 1.5 seconds, then advance automatically. This runtime override intentionally wins over legacy feedback-node values such as `autoContinueDelaySeconds: 0` or manual continuation, so already-published database scripts receive the corrected pacing without reseeding.
 - `boardSetupLoadingEnabled: false` is reserved for silent in-battle restoration after an authored retry demonstration. It applies the setup immediately without the preload page. `boardSetup.lastMovePointId` renders the ordinary last-move marker without creating history, changing the move number, or affecting rules, and clears on the first real move or skill.
 - Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
 - Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
@@ -1143,11 +1146,13 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 - Reply options should render as the buttons themselves, without a visible choice-panel title, extra close affordance, or framed card background. The scrim and NPC bubble provide the spatial context.
 - Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
 - NPC dialogue bubbles should derive their low-saturation background, border, or glow accent from the active NPC character palette while preserving readable text contrast.
+- On mobile, reduce board obstruction by making only the NPC bubble and reply-button surfaces translucent. Keep text and portrait layers fully opaque, do not apply opacity to their containers, and do not use `backdrop-filter` because blurring the board defeats the purpose of the translucent treatment.
 - NPC dialogue bubble body text should type in progressively while the speaker name is shown immediately, and the animation must respect `prefers-reduced-motion`.
+- Clicking anywhere in the tutorial action/function area while NPC body text is typing must reveal the complete current line immediately. This click only completes the current typewriter phase; it must not bypass an authored move, skill, board reset, or route transition.
 - Preload every portrait referenced by tutorial story and battle node character fields before it is needed, and store the resolved portrait URL on the active bubble so speaker text and portrait cannot resolve from different nodes.
 - A player with no selected role keeps the same panel footprint as a character player, but the portrait and skill list are empty, placeholder slots preserve the side panel symmetry, and the rank is hidden.
 - Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips; mobile strips must keep compact art-font overrides so the timer track is not squeezed out of the player strip.
-- `showTutorialLog` is the only production room-stage opt-in for `ChatBox`. It renders as `剧情记录`, is always readonly, never receives a send callback, and uses compact messages without hand number, timestamp, or `[使用角色]` suffixes. Ordinary live, spectator, and replay rooms must not opt in.
+- `showTutorialLog` is the only production room-stage opt-in for `ChatBox`. It renders as a self-controlled `剧情记录` popup, is always readonly, never receives a send callback, and uses compact messages without hand number, timestamp, or `[使用角色]` suffixes. On mobile, keep the entry button in the existing dock tab row, but portal the opened record outside the clipped dock and position it upward from that trigger. Clamp its width, top, and sides to the viewport and give the log the flexible middle row; never embed the record content inside the short dock panel. Ordinary live, spectator, and replay rooms must not opt in.
 - Exit/skip uses the room header exit affordance, asks for confirmation, and ends the script like the normal story close/skip path.
 - Bubble slide-in/out motion should respect `prefers-reduced-motion`; keep the static visible state when motion is reduced.
 
@@ -1158,10 +1163,14 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 - Node with options and `manual` advance mode -> keep the current battle surface visible and show only "继续" before revealing the options.
 - `npc-dialogue` created with current admin defaults -> after typewriter completion, auto-advance or reveal options 1.5 seconds later without showing a player continue button.
 - Reply option with `transitionDelaySeconds: 1` -> hide choices immediately, show the pending state, then route to `nextNodeId` or finish.
+- Wrong quiz option targeting a feedback node that returns to the question -> keep the question active, show and fully type the feedback bubble, then restore its options while retaining the feedback text and without showing `继续`.
+- Tutorial action/function area clicked during typewriter playback -> reveal the full current bubble text and resolve only its text-completion wait.
 - Pending node progression wait resolves into reply options -> options remain visible until the user chooses one, and the same node is not initialized again.
 - Closing/skipping during a pending wait -> clear the timer and do not route to the old node afterwards.
 - Player move click on the wrong point -> reject the action and keep the node active.
+- Visible yellow target + wrong point/board surface -> show exactly `请落子或选择黄圈位置`.
 - Player move click matching `wrongMovePointId` (or any wrong point when blank) with `wrongMoveNextNodeId` -> enter the branch; apply the move first only when `applyWrongMove` is true.
+- Hidden-target wrong-move branch + intermediate NPC move + feedback dialogue -> keep the wrong-branch context through the move, complete the feedback typewriter, wait 1.5 seconds, clear the context, and advance automatically.
 - Silent board setup -> replace the local board immediately; normal board setup -> keep the three-second shared preload.
 - Initial last-move marker -> display until the first real action without changing history or scoring.
 - Player no-target skill -> second-phase board click anywhere confirms the scripted skill action.
@@ -1175,7 +1184,7 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 #### 5. Tests Required
 - `src/tutorial/tutorialBattleRoom.test.js` should cover room construction invariants needed by `TutorialBattleScreen`.
 - `src/room/Board.test.js` should cover tutorial point and any-board targeting hooks.
-- `src/room/RoomScreen.test.js` should cover action-panel override, ordinary-room chat-entry removal, readonly `showTutorialLog` wiring, and room header exit label behavior.
+- `src/room/RoomScreen.test.js` should cover action-panel override, ordinary-room chat-entry removal, readonly popup-style `showTutorialLog` wiring on desktop/mobile, and room header exit label behavior.
 - `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
 - Story/runtime/workbook tests should cover wrong-move branch reachability, optional move application, target-ring suppression, silent reset, last-move clearing, and legacy v1 workbook defaults.
@@ -1183,6 +1192,7 @@ const portraitKey = `${characterId}:${portraitUrl}`;
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert battle-node progression waits, option transition waits, pending feedback, preview-only skip-current-wait controls, and timer cleanup.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert same-node initialization is guarded so pending-wait resolution cannot hide newly visible reply options.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert a new NPC node replaces the previous bubble immediately and that the active bubble owns its resolved portrait URL.
+- `src/tutorial/tutorialPointGuidance.test.js` should cover visible-ring warning precedence, hidden-target authored feedback, and the 1.5-second automatic feedback override for legacy manual/immediate nodes.
 - `src/modals/StoryPlayerModal.test.jsx` should assert ordinary story option `transitionDelaySeconds` scheduling and the pending feedback path.
 
 #### 6. Wrong vs Correct
@@ -1193,6 +1203,14 @@ schedule(() => setNpcBubble(nextBubble), BUBBLE_EXIT_MS);
 
 // Correct: the active node and its rendered identity change together.
 setNpcBubble({ ...nextBubble, portrait: resolvedPortraitUrl });
+```
+
+```jsx
+// Wrong: a visible yellow target still leaks a generic or authored warning.
+warn(result.message || node.wrongClickMessage);
+
+// Correct: the visible target owns one stable instruction; hidden targets retain authored copy.
+warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 ```
 
 ---

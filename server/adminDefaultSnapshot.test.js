@@ -9,8 +9,8 @@ import {
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { validateStoryContent } from "./storyScripts.js";
 
-const EXPECTED_BEGINNER_HASH = "a56162ce952045db59800134f369772e0588f87a4c3f934f5d970933248e3ddb";
-const EXPECTED_EXPERIENCED_HASH = "47bcf6c16625552e2fa9d1aa8297cf1cf28f33c716c19e2f86147d9ed143af27";
+const EXPECTED_BEGINNER_HASH = "a251baf39ef57ba69440cedd948e8a9948f32a120dcc600590b966032758df24";
+const EXPECTED_EXPERIENCED_HASH = "b8f86443e3aa16c878b9450bff6810f1089b9c97bc79393c608d3aacec8d2230";
 
 const BOARD_EXPECTATIONS = Object.freeze({
   "doc-setup-1": expectedBoard(
@@ -111,6 +111,16 @@ describe("admin default onboarding story snapshot", () => {
       nodes: draftNodes
     }, { publishing: true }).nodes).toHaveLength(draftNodes.length);
 
+    expect(nodesById.get("node-1")).toMatchObject({
+      text: "哇，是新同学！你就是{username}吧？",
+      options: [expect.objectContaining({ label: "你怎么知道的？", nextNodeId: "node-2" })]
+    });
+    expect(nodesById.get("node-2")).toMatchObject({
+      text: "嘿嘿，你腰上挂着的学生证都告诉我啦。这里是星炬学院围棋部——你是准备来加入我们的吗？",
+      options: [expect.objectContaining({ label: "是的。", nextNodeId: "node-3" })]
+    });
+    expect(nodesById.get("node-3")?.text).toBe("太好啦，欢迎加入围棋部！对了，{username}以前接触过围棋吗？");
+
     expect(nodesById.get("node-4-4-2")?.nextNodeId).toBe("node-4-4-3");
     expect(nodesById.get("node-4-4-3")).toMatchObject({
       type: "story",
@@ -145,10 +155,12 @@ describe("admin default onboarding story snapshot", () => {
     });
     expect([...nodesById.keys()].some((id) => id.startsWith("beginner-"))).toBe(false);
     expect(nodesById.get("node-3")?.options).toEqual([
-      expect.objectContaining({ label: "其实我完全不会下围棋...", nextNodeId: "node-4" }),
-      expect.objectContaining({ label: "略懂一些", nextNodeId: "story-46" }),
-      expect.objectContaining({ label: "我超强的哦!", nextNodeId: "story-15" })
+      expect.objectContaining({ label: "其实我完全不会下围棋……", nextNodeId: "node-4" }),
+      expect.objectContaining({ label: "略懂一点", nextNodeId: "story-46" }),
+      expect.objectContaining({ label: "我超强的哦！", nextNodeId: "story-15" })
     ]);
+    expect(nodesById.get("story-62")?.nextNodeId).toBe("doc-story-182");
+    expect(nodesById.get("doc-story-194")?.nextNodeId).toBe("");
     expect(hashNodes(draftNodes.filter((node) => node.id.startsWith("doc-")))).toBe(EXPECTED_BEGINNER_HASH);
     expect(hashNodes(experiencedNodes(draftNodes))).toBe(EXPECTED_EXPERIENCED_HASH);
   });
@@ -187,7 +199,7 @@ describe("admin default onboarding story snapshot", () => {
     expect(getPoint(state, visiblePoint("L3"))?.stone).toBe("white");
   });
 
-  it("applies the A1 wrong move, scripted A4 reply, and silent reset", () => {
+  it("applies an A1 wrong move, places the NPC reply after it, and silently resets", () => {
     const nodes = onboardingNodesById();
     const initial = createTutorialGameState({ initialBoard: nodes.get("doc-setup-2").boardSetup });
     const wrong = applyTutorialNodeAction(initial, nodes.get("doc-a1-move"), { pointId: visiblePoint("H13") });
@@ -197,10 +209,29 @@ describe("admin default onboarding story snapshot", () => {
     const reply = applyTutorialNodeAction(wrong.state, nodes.get("doc-a1-wrong-npc"), { pointId: visiblePoint("A4") });
     expect(reply.ok).toBe(true);
     expect(getPoint(reply.state, visiblePoint("A4"))?.stone).toBe("white");
+    expect(nodes.get("doc-a1-wrong-npc")).toMatchObject({
+      text: "",
+      nextNodeId: "doc-a1-wrong-reply",
+      manualContinueEnabled: false,
+      autoContinueEnabled: true
+    });
+    expect(nodes.get("doc-a1-wrong-reply")).toMatchObject({
+      type: "npc-dialogue",
+      speakerName: "西格莉卡",
+      text: "那我就吃掉你啦~再重新试试？",
+      nextNodeId: "doc-a1-reset"
+    });
     const reset = applyTutorialNodeAction(reply.state, nodes.get("doc-a1-reset"));
     expect(reset.ok).toBe(true);
     expect(boardStones(reset.state)).toEqual(boardStones(initial));
     expect(nodes.get("doc-a1-reset")).toMatchObject({ boardSetupLoadingEnabled: false, autoContinueDelaySeconds: 0 });
+
+    const a4Wrong = applyTutorialNodeAction(initial, nodes.get("doc-a1-move"), { pointId: visiblePoint("A4") });
+    expect(getPoint(a4Wrong.state, visiblePoint("A4"))?.stone).toBe("black");
+    const a5Reply = applyTutorialNodeAction(a4Wrong.state, nodes.get("doc-a1-wrong-npc"));
+    expect(a5Reply.ok).toBe(true);
+    expect(getPoint(a5Reply.state, visiblePoint("A4"))?.stone).toBe(null);
+    expect(getPoint(a5Reply.state, visiblePoint("A5"))?.stone).toBe("white");
   });
 
   it("branches only D11 for the B11 counterattack and solves B11, M13, and A4", () => {
@@ -254,22 +285,26 @@ describe("admin default onboarding story snapshot", () => {
     expect(nodes.get("doc-forbidden-move")?.targetHighlightEnabled).toBe(true);
     expect(nodes.get("doc-a1-move")).toMatchObject({ wrongMovePointId: "", applyWrongMove: true, wrongMoveNextNodeId: "doc-a1-wrong-npc" });
     expect(nodes.get("doc-b11-move")).toMatchObject({ wrongMovePointId: visiblePoint("D11"), applyWrongMove: true, wrongMoveNextNodeId: "doc-b11-counter" });
-    const wrongAnswerNodeIds = [
+    const retryFeedbackNodeIds = [
       "doc-liberty-wrong-1",
       "doc-liberty-wrong-2",
       "doc-capture-wrong",
       "doc-forbidden-wrong",
-      "doc-a1-wrong-npc",
       "doc-false-eye-wrong",
-      "doc-b11-wrong",
       "doc-territory-wrong-1",
       "doc-territory-wrong-2",
       "doc-territory-wrong-3",
       "doc-final-count-wrong",
-      "doc-opening-wrong",
-      "doc-go-name"
+      "doc-opening-wrong"
     ];
-    for (const nodeId of wrongAnswerNodeIds) {
+    for (const nodeId of retryFeedbackNodeIds) {
+      expect(nodes.get(nodeId)).toMatchObject({
+        manualContinueEnabled: false,
+        autoContinueEnabled: true,
+        autoContinueDelaySeconds: 0
+      });
+    }
+    for (const nodeId of ["doc-a1-wrong-reply", "doc-b11-wrong", "doc-go-name"]) {
       expect(nodes.get(nodeId)).toMatchObject({
         manualContinueEnabled: true,
         autoContinueEnabled: false
@@ -277,11 +312,12 @@ describe("admin default onboarding story snapshot", () => {
     }
     expect([...nodes.values()]
       .filter((node) => node.id.startsWith("doc-") && node.text && node.autoContinueEnabled === true)
-      .map((node) => node.id)).toEqual([
+      .map((node) => node.id)).toEqual(expect.arrayContaining([
+      ...retryFeedbackNodeIds,
       "doc-false-eye-correct",
       "doc-skill-162",
       "doc-skill-175"
-    ]);
+    ]));
     expect(nodes.get("doc-false-eye-question")?.options).toEqual([
       expect.objectContaining({ label: "左上那个", nextNodeId: "doc-false-eye-correct" }),
       expect.objectContaining({ label: "右下那个", nextNodeId: "doc-false-eye-wrong" }),

@@ -139,7 +139,17 @@ function playTutorialMove(state, node) {
   const prepared = cloneState(state);
   prepared.tutorialLastMovePointId = "";
   prepared.turn = color;
-  return playMove(prepared, color, node.pointId);
+  return playMove(prepared, color, tutorialMovePointId(prepared, node));
+}
+
+export function tutorialMovePointId(state, node) {
+  const pointId = String(node?.pointId ?? "").trim();
+  if (node?.type !== TUTORIAL_NODE_TYPES.npcMove || !getPoint(state, pointId)?.stone) return pointId;
+  const [x, y] = pointId.split(",").map(Number);
+  const fallbackPointId = Number.isInteger(x) && Number.isInteger(y) ? `${x},${y - 1}` : "";
+  return getPoint(state, fallbackPointId)?.valid && !getPoint(state, fallbackPointId)?.stone
+    ? fallbackPointId
+    : pointId;
 }
 
 function applyTutorialBoardSetup(state, node) {

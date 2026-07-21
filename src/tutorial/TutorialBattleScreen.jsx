@@ -42,8 +42,14 @@ import {
 } from "./tutorialBattleRoom.js";
 import {
   TUTORIAL_CHOICE_FEEDBACK,
-  tutorialChoiceFeedback
+  tutorialChoiceFeedback,
+  tutorialChoiceRetryFeedbackNode
 } from "./tutorialChoiceFeedback.js";
+import {
+  unguidedWrongMoveFeedbackAdvance,
+  tutorialTargetPointForNode,
+  tutorialWrongPointWarning
+} from "./tutorialPointGuidance.js";
 
 const ENTRY_LOADING_TEXT = "正在激烈对局中...";
 const EXIT_LOADING_TEXT = "正在收拾棋盘...";
@@ -104,6 +110,7 @@ export default function TutorialBattleScreen({
   const [skillPhase, setSkillPhase] = useState("");
   const [choicesVisible, setChoicesVisible] = useState(false);
   const [npcBubble, setNpcBubble] = useState(null);
+  const [revealedNpcBubbleId, setRevealedNpcBubbleId] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [resolvedSkillState, setResolvedSkillState] = useState(null);
   const [loading, setLoading] = useState(() => initialBattleLoadingForNode(startNode));
@@ -115,7 +122,10 @@ export default function TutorialBattleScreen({
   const nodeRunRef = useRef(0);
   const timersRef = useRef([]);
   const pendingWaitRef = useRef(null);
+  const npcTextCompletionRef = useRef(null);
+  const bubbleSequenceRef = useRef(0);
   const initializedNodeKeyRef = useRef("");
+  const unguidedWrongMoveFeedbackRef = useRef(false);
 
   useEffect(() => {
     if (tutorialPortraitUrls.length === 0) return;
@@ -132,6 +142,7 @@ export default function TutorialBattleScreen({
     for (const timerId of timersRef.current) window.clearTimeout(timerId);
     timersRef.current = [];
     pendingWaitRef.current = null;
+    npcTextCompletionRef.current = null;
     setPendingWait(null);
   }, []);
 
@@ -182,6 +193,7 @@ export default function TutorialBattleScreen({
 
   const startExitLoading = useCallback((payload = {}) => {
     clearTimers();
+    unguidedWrongMoveFeedbackRef.current = false;
     setChoicesVisible(false);
     setPendingSkill(false);
     setSkillPhase("");
@@ -266,8 +278,9 @@ export default function TutorialBattleScreen({
       return;
     }
     const character = findCharacter(characters, node.characterId || playerByUserId(players, NPC_ID)?.characterId);
+    bubbleSequenceRef.current += 1;
     const nextBubble = {
-      id: `${node.id}-${nodeRunRef.current}`,
+      id: `${node.id}-${bubbleSequenceRef.current}`,
       nodeId: node.id,
       characterId: character.id,
       portrait: character.portrait,
@@ -276,13 +289,50 @@ export default function TutorialBattleScreen({
       text,
       closing: false
     };
+    setRevealedNpcBubbleId("");
     setNpcBubble(nextBubble);
     appendChat({
       userId: NPC_ID,
       username: node.speakerName || node.npcName || character.name || "NPC",
       text
     });
+    return nextBubble;
   }, [appendChat, characters, hideNpcBubble, players]);
+
+  const scheduleNpcTextCompletion = useCallback((bubble, node, callback) => {
+    if (!bubble) {
+      callback();
+      return;
+    }
+    const durationMs = npcDialogueTypewriterDurationMs(node);
+    if (durationMs <= 0) {
+      setRevealedNpcBubbleId(bubble.id);
+      callback();
+      return;
+    }
+    const completion = {
+      bubbleId: bubble.id,
+      callback,
+      timerId: null
+    };
+    completion.timerId = schedule(() => {
+      if (npcTextCompletionRef.current !== completion) return;
+      npcTextCompletionRef.current = null;
+      setRevealedNpcBubbleId(bubble.id);
+      callback();
+    }, durationMs);
+    npcTextCompletionRef.current = completion;
+  }, [schedule]);
+
+  const revealNpcBubbleText = useCallback(() => {
+    if (!npcBubble) return;
+    setRevealedNpcBubbleId(npcBubble.id);
+    const completion = npcTextCompletionRef.current;
+    if (!completion || completion.bubbleId !== npcBubble.id) return;
+    if (completion.timerId != null) window.clearTimeout(completion.timerId);
+    npcTextCompletionRef.current = null;
+    completion.callback();
+  }, [npcBubble]);
 
   const completeNodeFlow = useCallback((node) => {
     const options = Array.isArray(node?.options) ? node.options : [];
@@ -290,13 +340,28 @@ export default function TutorialBattleScreen({
       ? () => setChoicesVisible(true)
       : () => goToNode(node?.nextNodeId);
     const isNpcDialogue = node?.type === TUTORIAL_NODE_TYPES.npcDialogue;
-    schedulePendingWait(
-      advance,
-      nodeAutoContinueDelayMs(node, isNpcDialogue ? DEFAULT_NPC_DIALOGUE_AUTO_CONTINUE_SECONDS : 0),
-      {
-        ...nodeAdvanceControls(node),
-        revealsChoices: options.length > 0
+    const wrongMoveFeedbackAdvance = unguidedWrongMoveFeedbackAdvance(
+      node,
+      unguidedWrongMoveFeedbackRef.current
+    );
+    const completesUnguidedWrongMoveFeedback = Boolean(wrongMoveFeedbackAdvance);
+    const runAdvance = () => {
+      if (completesUnguidedWrongMoveFeedback) {
+        unguidedWrongMoveFeedbackRef.current = false;
       }
+      advance();
+    };
+    schedulePendingWait(
+      runAdvance,
+      completesUnguidedWrongMoveFeedback
+        ? wrongMoveFeedbackAdvance.delayMs
+        : nodeAutoContinueDelayMs(node, isNpcDialogue ? DEFAULT_NPC_DIALOGUE_AUTO_CONTINUE_SECONDS : 0),
+      completesUnguidedWrongMoveFeedback
+        ? wrongMoveFeedbackAdvance.controls
+        : {
+          ...nodeAdvanceControls(node),
+          revealsChoices: options.length > 0
+        }
     );
   }, [goToNode, schedulePendingWait]);
 
@@ -362,7 +427,9 @@ export default function TutorialBattleScreen({
     });
     clearTimers();
     nodeRunRef.current = 0;
+    bubbleSequenceRef.current = 0;
     initializedNodeKeyRef.current = "";
+    unguidedWrongMoveFeedbackRef.current = false;
     setPlayers(nextPlayers);
     setGame(nextGame);
     gameRef.current = nextGame;
@@ -371,6 +438,7 @@ export default function TutorialBattleScreen({
     setSkillPhase("");
     setChoicesVisible(false);
     setNpcBubble(null);
+    setRevealedNpcBubbleId("");
     setChatMessages([]);
     setResolvedSkillState(null);
     setLoading(initialBattleLoadingForNode(nextStartNode));
@@ -445,9 +513,9 @@ export default function TutorialBattleScreen({
     }
 
     if (isTutorialNpcNodeType(currentNode.type)) {
-      showNpcBubble(currentNode);
+      const bubble = showNpcBubble(currentNode);
       if (currentNode.type === TUTORIAL_NODE_TYPES.npcDialogue) {
-        schedule(() => completeNodeFlow(currentNode), npcDialogueTypewriterDurationMs(currentNode));
+        scheduleNpcTextCompletion(bubble, currentNode, () => completeNodeFlow(currentNode));
         return;
       }
       schedule(() => {
@@ -492,6 +560,7 @@ export default function TutorialBattleScreen({
     pendingWait,
     runSkillAction,
     schedule,
+    scheduleNpcTextCompletion,
     showNpcBubble,
     startExitLoading
   ]);
@@ -514,7 +583,7 @@ export default function TutorialBattleScreen({
   );
   const hasAnyStones = displayRoom.game.points.some((point) => Boolean(point.stone));
   const skillPreview = displayRoom.game.pendingSkill;
-  const tutorialTargetPointId = targetPointForNode(currentNode, skillPhase);
+  const tutorialTargetPointId = tutorialTargetPointForNode(currentNode, skillPhase);
   const tutorialAnyBoardTarget = currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill
     && skillPhase === "skill-board"
     && !currentNode.pointId;
@@ -547,15 +616,17 @@ export default function TutorialBattleScreen({
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
       const result = applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode, { pointId: point.id });
       if (!result.ok) {
-        warn(result.message || currentNode.wrongClickMessage || "请在提示区域落子");
+        warn(tutorialWrongPointWarning(currentNode, skillPhase, result.message));
         return;
       }
       if (result.wrongMove) {
+        unguidedWrongMoveFeedbackRef.current = currentNode.targetHighlightEnabled === false;
         setGame(result.state);
         gameRef.current = result.state;
         goToNode(result.nextNodeId);
         return;
       }
+      unguidedWrongMoveFeedbackRef.current = false;
       completeAction(currentNode, result);
       return;
     }
@@ -565,7 +636,7 @@ export default function TutorialBattleScreen({
         return;
       }
       if (currentNode.pointId && point.id !== currentNode.pointId) {
-        warn(currentNode.wrongClickMessage || "请在提示区域落子");
+        warn(tutorialWrongPointWarning(currentNode, skillPhase));
         return;
       }
       runSkillAction(currentNode, currentNode.pointId ? point.id : "");
@@ -579,20 +650,26 @@ export default function TutorialBattleScreen({
       completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode));
       return;
     }
-    warn(currentNode?.type === TUTORIAL_NODE_TYPES.playerMove ? "请在提示区域落子" : "请点击提示按钮");
+    warn(currentNode?.type === TUTORIAL_NODE_TYPES.playerMove
+      ? tutorialWrongPointWarning(currentNode, skillPhase)
+      : "请点击提示按钮");
   }
 
   function handleBoardSurface() {
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
-      warn(currentNode.wrongClickMessage || "请在提示区域落子");
+      warn(tutorialWrongPointWarning(currentNode, skillPhase));
       return;
     }
-    if (currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill && skillPhase === "skill-board" && !currentNode.pointId) {
-      runSkillAction(currentNode, "");
-      return;
-    }
-    if (currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill && skillPhase !== "skill-board") {
-      warn("请点击提示按钮");
+    if (currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill) {
+      if (skillPhase !== "skill-board") {
+        warn("请点击提示按钮");
+        return;
+      }
+      if (!currentNode.pointId) {
+        runSkillAction(currentNode, "");
+        return;
+      }
+      warn(tutorialWrongPointWarning(currentNode, skillPhase));
     }
   }
 
@@ -611,6 +688,7 @@ export default function TutorialBattleScreen({
   function handleChoice(option) {
     if (pendingWait) return;
     const feedback = tutorialChoiceFeedback(currentNode, option, nodesById);
+    const retryFeedbackNode = tutorialChoiceRetryFeedbackNode(currentNode, option, nodesById);
     if (feedback === TUTORIAL_CHOICE_FEEDBACK.wrong) {
       playUiUnavailableSound(audioSettings);
     } else if (feedback === TUTORIAL_CHOICE_FEEDBACK.correct) {
@@ -622,6 +700,13 @@ export default function TutorialBattleScreen({
       text: option?.label
     });
     setChoicesVisible(false);
+    if (feedback === TUTORIAL_CHOICE_FEEDBACK.wrong && retryFeedbackNode) {
+      schedulePendingWait(() => {
+        const bubble = showNpcBubble(retryFeedbackNode);
+        scheduleNpcTextCompletion(bubble, retryFeedbackNode, () => setChoicesVisible(true));
+      }, optionTransitionDelayMs(option));
+      return;
+    }
     schedulePendingWait(() => goToNode(option?.nextNodeId), optionTransitionDelayMs(option));
   }
 
@@ -657,6 +742,7 @@ export default function TutorialBattleScreen({
               onContinue={handleContinue}
               onSkillButton={handleSkillButton}
               onPlayerButton={() => completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode))}
+              onRevealText={revealNpcBubbleText}
               onSkipPendingWait={skipPendingWait}
             />
           )}
@@ -714,6 +800,7 @@ export default function TutorialBattleScreen({
           node={currentNode}
           npcBubble={npcBubble}
           onChoice={handleChoice}
+          revealedNpcBubbleId={revealedNpcBubbleId}
         />
         {loading && <TutorialBattleLoading loading={loading} characters={characters} players={players} />}
       </div>
@@ -723,7 +810,7 @@ export default function TutorialBattleScreen({
         <ConfirmModal
           title="结束剧情教学？"
           message="退出/跳过会结束整个剧情教学。"
-          confirmText="结束脚本"
+          confirmText="结束教学"
           onCancel={() => setConfirmExit(null)}
           onConfirm={() => {
             setConfirmExit(null);
@@ -740,7 +827,8 @@ function TutorialBattleDirector({
   choicesVisible,
   node,
   npcBubble,
-  onChoice
+  onChoice,
+  revealedNpcBubbleId
 }) {
   const options = Array.isArray(node?.options) ? node.options : [];
   return (
@@ -754,7 +842,7 @@ function TutorialBattleDirector({
           {npcBubble.portrait && <img src={npcBubble.portrait} alt="" aria-hidden="true" fetchPriority="high" />}
           <div>
             <strong>{npcBubble.speakerName}</strong>
-            <p><TypewriterText key={npcBubble.id} text={npcBubble.text} /></p>
+            <p><TypewriterText key={npcBubble.id} revealAll={revealedNpcBubbleId === npcBubble.id} text={npcBubble.text} /></p>
           </div>
         </section>
       )}
@@ -771,14 +859,14 @@ function TutorialBattleDirector({
   );
 }
 
-function TypewriterText({ text }) {
+export function TypewriterText({ text, revealAll = false }) {
   const fullText = String(text ?? "");
   const [visibleText, setVisibleText] = useState(() => (
-    canAnimateTypewriter() && !prefersReducedMotion() ? "" : fullText
+    canAnimateTypewriter() && !prefersReducedMotion() && !revealAll ? "" : fullText
   ));
 
   useEffect(() => {
-    if (!fullText || !canAnimateTypewriter() || prefersReducedMotion()) {
+    if (!fullText || !canAnimateTypewriter() || prefersReducedMotion() || revealAll) {
       setVisibleText(fullText);
       return undefined;
     }
@@ -801,7 +889,7 @@ function TypewriterText({ text }) {
         window.clearTimeout(timeoutId);
       }
     };
-  }, [fullText]);
+  }, [fullText, revealAll]);
 
   return visibleText;
 }
@@ -830,17 +918,18 @@ function TutorialActionPanel({
   onContinue,
   onSkillButton,
   onPlayerButton,
+  onRevealText,
   onSkipPendingWait
 }) {
-  if (!node) return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+  if (!node) return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   const hasOptions = Array.isArray(node.options) && node.options.length > 0;
   if (choicesVisible && hasOptions) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   }
   if (pendingWait) {
     const buttonText = pendingWait.manualContinue ? "继续" : "立即继续";
     return (
-      <nav className="action-bar tutorial-action-bar">
+      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         {(pendingWait.manualContinue || previewControlsEnabled) && (
           <button className="tutorial-highlight-action" type="button" onClick={onSkipPendingWait}>
             <Play size={18} />
@@ -852,7 +941,7 @@ function TutorialActionPanel({
   }
   if (phase === "continue") {
     return (
-      <nav className="action-bar tutorial-action-bar">
+      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         <button className="tutorial-highlight-action" type="button" onClick={onContinue}>
           <Play size={18} />
           <span>继续</span>
@@ -862,7 +951,7 @@ function TutorialActionPanel({
   }
   if (phase === "skill-button") {
     return (
-      <nav className="action-bar tutorial-action-bar">
+      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         <button className="skill-action tutorial-highlight-action" type="button" onClick={onSkillButton}>
           <Sparkles size={20} />
           <span>{skillName}</span>
@@ -871,11 +960,11 @@ function TutorialActionPanel({
     );
   }
   if (phase === "skill-board") {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   }
   if (phase === "button") {
     return (
-      <nav className="action-bar tutorial-action-bar">
+      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         <button className="tutorial-highlight-action" type="button" onClick={onPlayerButton}>
           {node.type === TUTORIAL_NODE_TYPES.resign ? <Flag size={18} /> : <Calculator size={18} />}
           <span>{playerButtonText(node)}</span>
@@ -884,12 +973,12 @@ function TutorialActionPanel({
     );
   }
   if (node.type === TUTORIAL_NODE_TYPES.playerMove) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   }
   if (isTutorialNpcNodeType(node.type) || autoSettlementNode(node)) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   }
-  return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+  return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
 }
 
 function TutorialBattleLoading({ loading, characters, players }) {
@@ -959,12 +1048,6 @@ function gameForAction(node, game) {
     next.pendingSkill = null;
   }
   return next;
-}
-
-function targetPointForNode(node, phase) {
-  if (node?.type === TUTORIAL_NODE_TYPES.playerMove && node.targetHighlightEnabled !== false) return node.pointId || "";
-  if (node?.type === TUTORIAL_NODE_TYPES.playerSkill && phase === "skill-board") return node.pointId || "";
-  return "";
 }
 
 function skillLabel(node, characters) {

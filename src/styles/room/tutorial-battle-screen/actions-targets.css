@@ -10,7 +10,7 @@
   padding: 9px 14px;
   border: 1px solid rgba(22, 163, 74, 0.34);
   border-radius: 8px;
-  background: #e4f8dc;
+  background: var(--tutorial-choice-background, #e4f8dc);
   color: #14532d;
   font-weight: 800;
   text-align: left;
@@ -61,7 +61,7 @@
 .tutorial-action-bar button:hover,
 .tutorial-action-bar button:focus-visible {
   border-color: rgba(79, 111, 223, 0.58);
-  background: #d7f5ca;
+  background: var(--tutorial-choice-hover-background, #d7f5ca);
   color: #0f3f24;
   outline: none;
 }
@@ -71,7 +71,7 @@
 .tutorial-battle-action:active,
 .tutorial-action-bar button:active {
   border-color: rgba(219, 39, 119, 0.48);
-  background: #ffd6e7;
+  background: var(--tutorial-choice-active-background, #ffd6e7);
   color: #7a1d3d;
   transform: translateY(1px);
 }

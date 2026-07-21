@@ -92,9 +92,9 @@ describe("ChatBox", () => {
     expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
-  it("rerenders when switching between floating and embedded presentation", () => {
-    const previous = chatProps({ presentation: "floating" });
-    const next = chatProps({ presentation: "embedded" });
+  it("rerenders when the mobile dock popup trigger mode changes", () => {
+    const previous = chatProps({ mobileDockPopup: false });
+    const next = chatProps({ mobileDockPopup: true });
 
     expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
@@ -106,9 +106,11 @@ describe("ChatBox", () => {
     expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
-  it("renders mobile chat inline without a second toggle or close control", () => {
+  it("keeps tutorial records behind the popup toggle", () => {
     const markup = renderToStaticMarkup(createElement(ChatBox, chatProps({
-      presentation: "embedded",
+      readonly: true,
+      disabledInputMessage: "剧情教学记录仅供查看",
+      label: "剧情记录",
       room: {
         code: "12345",
         players: [{ color: "black", user: { id: "user-1", username: "玩家甲" } }],
@@ -116,24 +118,24 @@ describe("ChatBox", () => {
       }
     })));
 
-    expect(markup).toContain("chat-box chat-embedded");
-    expect(markup).toContain("你好");
-    expect(markup).not.toContain("chat-toggle-button");
-    expect(markup).not.toContain("chat-close-button");
+    expect(markup).toContain("剧情记录");
+    expect(markup).toContain("chat-toggle-button");
+    expect(markup).not.toContain("chat-popover");
+    expect(markup).not.toContain("你好");
+    expect(markup).not.toContain("placeholder=\"输入聊天内容\"");
   });
 
-  it("shows a clear readonly note in an embedded tutorial record", () => {
+  it("renders the mobile tutorial record entry with the existing dock-tab affordance", () => {
     const markup = renderToStaticMarkup(createElement(ChatBox, chatProps({
-      presentation: "embedded",
+      mobileDockPopup: true,
       readonly: true,
-      disabledInputMessage: "剧情教学记录仅供查看",
       label: "剧情记录"
     })));
 
-    expect(markup).toContain("chat-readonly-note");
-    expect(markup).toContain("剧情记录");
-    expect(markup).toContain("剧情教学记录仅供查看");
-    expect(markup).not.toContain("placeholder=\"输入聊天内容\"");
+    expect(markup).toContain("tutorial-mobile-story-log");
+    expect(markup).toContain("chat-toggle-button mobile-tab-button");
+    expect(markup).toContain("role=\"tab\"");
+    expect(markup).toContain("aria-selected=\"false\"");
   });
 
   it("allows chat messages and names to wrap inside the battle chat log", () => {
@@ -154,7 +156,7 @@ function chatProps(overrides = {}) {
     room: { code: "12345", chat: [], players: [] },
     onChat: noop,
     readonly: false,
-    presentation: "floating",
+    mobileDockPopup: false,
     trailingAction: null,
     floatingLayerZ: undefined,
     onFloatingLayerRequest: noop,

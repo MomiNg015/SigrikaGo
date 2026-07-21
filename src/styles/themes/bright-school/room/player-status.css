@@ -71,7 +71,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
   flex: 1 1 0 !important;
   width: 100% !important;
-  background: #e4f8dc !important;
+  background: var(--tutorial-choice-background, #e4f8dc) !important;
   color: #14532d !important;
   border-color: rgba(74, 55, 54, 0.92) !important;
 }
@@ -80,7 +80,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:focus-visible,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:focus-visible {
-  background: #d7f5ca !important;
+  background: var(--tutorial-choice-hover-background, #d7f5ca) !important;
   color: #0f3f24 !important;
   border-color: var(--bright-border) !important;
 }

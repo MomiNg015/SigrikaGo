@@ -4,7 +4,8 @@ import {
   applyTutorialSkillAction,
   applyTutorialNodeAction,
   createTutorialGameState,
-  isAllowedTutorialPoint
+  isAllowedTutorialPoint,
+  tutorialMovePointId
 } from "./tutorialGameState.js";
 
 describe("tutorialGameState", () => {
@@ -66,6 +67,22 @@ describe("tutorialGameState", () => {
     }, { pointId: "4,4" });
     expect(ordinaryWrong).toMatchObject({ ok: false, message: "try again" });
     expect(getPoint(ordinaryWrong.state, "4,4").stone).toBe(null);
+  });
+
+  it("moves an NPC reply one row upward when the scripted point contains the player's wrong move", () => {
+    const game = createTutorialGameState({
+      initialBoard: {
+        mode: "spark",
+        stones: [{ pointId: "0,9", color: "black" }]
+      }
+    });
+    const node = { type: "npc-move", color: "white", pointId: "0,9" };
+
+    expect(tutorialMovePointId(game, node)).toBe("0,8");
+    const result = applyTutorialNodeAction(game, node);
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, "0,9").stone).toBe("black");
+    expect(getPoint(result.state, "0,8").stone).toBe("white");
   });
 
   it("applies npc move and resign nodes through shared game rules", () => {

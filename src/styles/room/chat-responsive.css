@@ -83,15 +83,6 @@
   flex: 1;
 }
 
-.chat-readonly-note {
-  margin: 0;
-  padding: 6px;
-  color: #756779;
-  font-size: 11px;
-  font-weight: 800;
-  text-align: center;
-}
-
 .chat-box header {
   display: flex;
   align-items: center;
@@ -195,43 +186,5 @@
 
   .room-floating-modal.confirm-inline-modal {
     width: calc(100vw - 24px);
-  }
-}
-
-@media (max-width: 900px), (pointer: coarse) {
-  .mobile-room-screen .mobile-tab-panel .chat-widget.embedded {
-    display: block;
-    width: 100%;
-    height: auto;
-    min-width: 0;
-  }
-
-  .mobile-room-screen .mobile-tab-panel .chat-embedded {
-    display: grid;
-    grid-template-rows: auto auto;
-    gap: 4px;
-    height: auto;
-    margin: 0;
-    padding: 4px;
-    overflow: hidden;
-    box-shadow: none;
-  }
-
-  .mobile-room-screen .mobile-tab-panel .chat-embedded > header {
-    display: none;
-  }
-
-  .mobile-room-screen .mobile-tab-panel .chat-embedded form {
-    margin-top: 0;
-  }
-
-  .mobile-room-screen .mobile-tab-panel .chat-embedded input {
-    min-height: 30px;
-    padding: 5px 8px;
-  }
-
-  .mobile-room-screen .mobile-tab-panel .chat-embedded form button {
-    min-height: 30px;
-    padding: 5px;
   }
 }

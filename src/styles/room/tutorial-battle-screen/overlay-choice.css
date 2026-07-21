@@ -146,12 +146,52 @@
 }
 
 @media (max-width: 900px) {
+  .tutorial-mobile-story-log .chat-toggle-button.mobile-tab-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .tutorial-mobile-story-log .chat-toggle-button.mobile-tab-button > svg {
+    display: none;
+  }
+
+  .tutorial-mobile-story-log .chat-toggle-button.mobile-tab-button > strong {
+    min-width: 18px;
+    height: auto;
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  .chat-popover.tutorial-story-log-popover {
+    z-index: var(--room-floating-z, 141);
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    transform-origin: var(--chat-popup-origin-x, 50%) bottom;
+    animation: tutorial-story-log-popover-open 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tutorial-story-log-popover .chat-log {
+    height: auto;
+    min-height: 0;
+  }
+
   .tutorial-battle-dialogue {
     top: calc(env(safe-area-inset-top) + 58px);
     left: max(10px, env(safe-area-inset-left));
     width: min(360px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
     min-height: 82px;
     padding: 12px;
+    border-color: color-mix(in srgb, var(--tutorial-npc-color) 28%, rgb(148 163 184/.26));
+    background: color-mix(in srgb, var(--tutorial-npc-color) 9%, rgb(255 255 255/.68));
+    box-shadow:
+      0 8px 18px rgb(15 23 42/.1),
+      0 0 0 2px color-mix(in srgb, var(--tutorial-npc-color) 14%, transparent);
   }
 
   .tutorial-battle-dialogue img {
@@ -160,6 +200,9 @@
   }
 
   .tutorial-battle-choice {
+    --tutorial-choice-background: rgb(228 248 220/.72);
+    --tutorial-choice-hover-background: rgb(215 245 202/.8);
+    --tutorial-choice-active-background: rgb(255 214 231/.8);
     width: min(360px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
     padding: 0;
   }
@@ -169,5 +212,16 @@
     right: max(10px, env(safe-area-inset-right));
     bottom: calc(env(safe-area-inset-bottom) + 82px);
     max-width: none;
+  }
+}
+
+@keyframes tutorial-story-log-popover-open {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

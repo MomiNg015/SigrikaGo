@@ -15,8 +15,4 @@
     display: none !important;
   }
 
-  .mobile-room-screen .mobile-tab-panel:has(.chat-widget.embedded) {
-    overflow: hidden;
-  }
-
 }

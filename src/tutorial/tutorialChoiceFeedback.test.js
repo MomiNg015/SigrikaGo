@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   TUTORIAL_CHOICE_FEEDBACK,
-  tutorialChoiceFeedback
+  tutorialChoiceFeedback,
+  tutorialChoiceRetryFeedbackNode
 } from "./tutorialChoiceFeedback.js";
 
 describe("tutorialChoiceFeedback", () => {
@@ -20,6 +21,10 @@ describe("tutorialChoiceFeedback", () => {
 
     expect(tutorialChoiceFeedback(node, node.options[0], nodesById)).toBe(TUTORIAL_CHOICE_FEEDBACK.correct);
     expect(tutorialChoiceFeedback(node, node.options[1], nodesById)).toBe(TUTORIAL_CHOICE_FEEDBACK.wrong);
+    expect(tutorialChoiceRetryFeedbackNode(node, node.options[1], nodesById)).toEqual({
+      id: "wrong",
+      nextNodeId: "question"
+    });
   });
 
   it("recognizes a direct retry without requiring a separate feedback node", () => {
@@ -32,6 +37,7 @@ describe("tutorialChoiceFeedback", () => {
     };
 
     expect(tutorialChoiceFeedback(node, node.options[1], new Map())).toBe(TUTORIAL_CHOICE_FEEDBACK.wrong);
+    expect(tutorialChoiceRetryFeedbackNode(node, node.options[1], new Map())).toBeNull();
   });
 
   it("does not treat ordinary multi-branch dialogue or single replies as quiz answers", () => {
@@ -46,5 +52,6 @@ describe("tutorialChoiceFeedback", () => {
 
     expect(tutorialChoiceFeedback(branch, branch.options[0], new Map())).toBe("");
     expect(tutorialChoiceFeedback(reply, reply.options[0], new Map())).toBe("");
+    expect(tutorialChoiceRetryFeedbackNode(branch, branch.options[0], new Map())).toBeNull();
   });
 });

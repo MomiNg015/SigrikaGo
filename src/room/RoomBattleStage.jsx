@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
-import ChatBox, { playerChatCount } from "./ChatBox.jsx";
+import ChatBox from "./ChatBox.jsx";
 import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
@@ -212,7 +212,7 @@ export default function RoomBattleStage({
       disabledInputMessage="剧情教学记录仅供查看"
       compactMessages
       label="剧情记录"
-      presentation={isMobileBattleLayout ? "embedded" : "floating"}
+      mobileDockPopup={isMobileBattleLayout}
       floatingLayerZ={floatingLayers["story-log"]}
       onFloatingLayerRequest={handleStoryLogFloatingLayer}
     />
@@ -221,8 +221,7 @@ export default function RoomBattleStage({
   if (isMobileBattleLayout) {
     const panels = [
       { id: "actions", label: "操作", content: <div className="mobile-action-panel">{hintPanel}{actionPanel}</div> },
-      membersPanel && { id: "members", label: "成员", content: membersPanel },
-      storyLogPanel && { id: "story-log", label: "剧情记录", badge: playerChatCount(displayRoom.chat), content: storyLogPanel }
+      membersPanel && { id: "members", label: "成员", content: membersPanel }
     ].filter(Boolean);
     const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
 
@@ -236,7 +235,7 @@ export default function RoomBattleStage({
             <div
               className="mobile-tab-list"
               role="tablist"
-              style={{ "--mobile-room-tab-count": panels.length }}
+              style={{ "--mobile-room-tab-count": panels.length + (storyLogPanel ? 1 : 0) }}
             >
               {panels.map((panel) => (
                 <button
@@ -254,6 +253,7 @@ export default function RoomBattleStage({
                   {panel.badge != null && <strong className="mobile-tab-badge">{panel.badge}</strong>}
                 </button>
               ))}
+              {storyLogPanel}
             </div>
             {panels.map((panel) => (
               <div

@@ -50,8 +50,4 @@
     box-shadow: none;
   }
 
-  .mobile-room-screen .mobile-tab-panel .chat-log {
-    height: min(96px, calc(var(--mobile-room-dock-panel-height) - 54px));
-    min-height: 64px;
-  }
 }

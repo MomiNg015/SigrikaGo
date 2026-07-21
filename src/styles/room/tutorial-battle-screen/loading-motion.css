@@ -77,6 +77,7 @@
   .tutorial-battle-dialogue,
   .tutorial-battle-dialogue.closing,
   .tutorial-battle-choice-scrim,
+  .chat-popover.tutorial-story-log-popover,
   .board .point.tutorial-target-point .tutorial-target-ring,
   .tutorial-action-bar .tutorial-highlight-action {
     animation: none;

@@ -81,7 +81,7 @@
     grid-area: skill;
   }
 
-  .chat-box,
+  .chat-box:not(.tutorial-story-log-popover),
   .room-people-card {
     display: none;
   }

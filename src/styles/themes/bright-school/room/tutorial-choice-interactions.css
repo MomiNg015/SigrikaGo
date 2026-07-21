@@ -19,7 +19,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action:active:not(:disabled) {
-  background: #ffd6e7 !important;
+  background: var(--tutorial-choice-active-background, #ffd6e7) !important;
   color: #7a1d3d !important;
   border-color: var(--bright-border) !important;
   transform: translateY(1px) !important;
