@@ -6,6 +6,7 @@ import StoryPlayerModal, {
   nextStoryNodeId,
   optionTransitionDelayMs,
   resolveStoryRenderNodeId,
+  storyPortraitUrls,
   storyTypewriterIntervalMs,
   visibleStoryOptions
 } from "./StoryPlayerModal.jsx";
@@ -89,7 +90,7 @@ describe("StoryPlayerModal", () => {
     expect(resolveStoryRenderNodeId("next", "start", nodesById)).toBe("next");
   });
 
-  it("keys story portraits to the active node so swapped tutorial windows do not reuse stale images", () => {
+  it("keeps portrait identity stable across same-character nodes and preloads the script portrait set", () => {
     const source = readFileSync(new URL("./StoryPlayerModal.jsx", import.meta.url), "utf8");
     const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
       script: {
@@ -105,12 +106,32 @@ describe("StoryPlayerModal", () => {
       onClose: () => {}
     }));
 
-    expect(source).toContain("const portraitKey = `${activeNodeId}:");
+    expect(source).toContain("const portraitKey = `${node?.characterId || \"\"}:${character.portraitUrl || \"\"}`");
+    expect(source).not.toContain("const portraitKey = `${activeNodeId}:");
     expect(source).toContain("key={portraitKey}");
+    expect(source).toContain("preloadImageAssets(portraitUrls, { concurrency: 4 })");
     expect(html).toContain('data-story-node-id="next"');
     expect(html).toContain('data-story-character-id="sigrika"');
     expect(html).toContain('loading="eager"');
     expect(html).toContain('decoding="sync"');
+    expect(html).toContain('fetchPriority="high"');
+    expect(storyPortraitUrls([
+      { characterId: "sigrika" },
+      { characterId: "sigrika" },
+      { characterId: "denia" }
+    ], {
+      sigrika: { portraitUrl: "/sigrika.webp" },
+      denia: { portrait: "/denia.webp" }
+    })).toEqual(["/sigrika.webp", "/denia.webp"]);
+  });
+
+  it("finishes typewriter text from a click anywhere inside the story panel", () => {
+    const source = readFileSync(new URL("./StoryPlayerModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("function handleModalClick(event)");
+    expect(source).toContain("event.stopPropagation();");
+    expect(source).toContain("handleTextClick();");
+    expect(source).toContain("onClick={handleModalClick}");
   });
 
   it("marks long-text portrait compression nodes for effect styling", () => {

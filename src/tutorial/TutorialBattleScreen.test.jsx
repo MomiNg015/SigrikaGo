@@ -22,6 +22,14 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("musicTracks");
   });
 
+  it("plays unavailable feedback for wrong quiz choices and the hidden-hand reveal for correct answers", () => {
+    const source = readSource();
+
+    expect(source).toContain("tutorialChoiceFeedback(currentNode, option, nodesById)");
+    expect(source).toContain("playUiUnavailableSound(audioSettings)");
+    expect(source).toContain("playEffectSound(HIDDEN_HAND_REVEAL_SOUND, audioSettings)");
+  });
+
   it("pauses background music while exit loading is shown", () => {
     const source = readSource();
 
@@ -165,12 +173,14 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(css).toContain("color-mix(in srgb, var(--tutorial-npc-color");
   });
 
-  it("keeps NPC bubbles spatially animated when one NPC node replaces another", () => {
+  it("replaces NPC bubble identity and portrait immediately when the speaker changes", () => {
     const source = readSource();
 
-    expect(source).toContain("schedule(() => {");
-    expect(source).toContain("setNpcBubble((latest) => latest?.id === current.id ? nextBubble : latest)");
-    expect(source).toContain("return { ...current, closing: true };");
+    expect(source).toContain("setNpcBubble(nextBubble)");
+    expect(source).toContain("portrait: character.portrait");
+    expect(source).toContain("npcBubble.portrait && <img src={npcBubble.portrait}");
+    expect(source).not.toContain("setNpcBubble((latest) => latest?.id === current.id ? nextBubble : latest)");
+    expect(source).toContain("preloadImageAssets(tutorialPortraitUrls, { concurrency: 4 })");
   });
 
   it("types NPC bubble text while leaving the speaker name immediate", () => {

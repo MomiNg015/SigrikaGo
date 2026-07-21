@@ -3,6 +3,7 @@ import { FastForward, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
+import { preloadImageAssets } from "../shared/preloadAssets.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -29,6 +30,7 @@ export default function StoryPlayerModal({
   labels = {},
   onClose,
   onNavigate,
+  portraitNodes,
   typewriterDisabled = false,
   previewControlsEnabled = false
 }) {
@@ -53,7 +55,12 @@ export default function StoryPlayerModal({
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
-  const portraitKey = `${activeNodeId}:${node?.characterId || ""}:${character.portraitUrl || ""}`;
+  const portraitKey = `${node?.characterId || ""}:${character.portraitUrl || ""}`;
+  const availablePortraitNodes = portraitNodes ?? script?.nodes ?? [];
+  const portraitUrls = useMemo(
+    () => storyPortraitUrls(availablePortraitNodes, characters),
+    [availablePortraitNodes, characters]
+  );
 
   useStoryLayoutEffect(() => {
     setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
@@ -68,6 +75,11 @@ export default function StoryPlayerModal({
   }, [activeNodeId, text.length, typewriterDisabled]);
 
   useEffect(() => () => clearPendingWait(), []);
+
+  useEffect(() => {
+    if (portraitUrls.length === 0) return;
+    void preloadImageAssets(portraitUrls, { concurrency: 4 });
+  }, [portraitUrls]);
 
   useEffect(() => {
     if (typewriterDisabled || !node || visibleCount >= text.length) return undefined;
@@ -133,6 +145,11 @@ export default function StoryPlayerModal({
     if (!typingComplete) setVisibleCount(text.length);
   }
 
+  function handleModalClick(event) {
+    event.stopPropagation();
+    handleTextClick();
+  }
+
   function handleTextKeyDown(event) {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
@@ -173,7 +190,7 @@ export default function StoryPlayerModal({
 
   return (
     <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
-      <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={(event) => event.stopPropagation()} aria-label={textLabels.title}>
+      <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
         <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
           <FastForward size={22} />
         </button>
@@ -192,6 +209,7 @@ export default function StoryPlayerModal({
               aria-hidden="true"
               loading="eager"
               decoding="sync"
+              fetchPriority="high"
             />
           )}
           <div>
@@ -310,4 +328,12 @@ function resolveCharacter(characterId, characters) {
     ...character,
     portraitUrl
   };
+}
+
+export function storyPortraitUrls(nodes = [], characters = {}) {
+  return [...new Set(
+    (Array.isArray(nodes) ? nodes : [])
+      .map((entry) => resolveCharacter(entry?.characterId, characters).portraitUrl)
+      .filter(Boolean)
+  )];
 }

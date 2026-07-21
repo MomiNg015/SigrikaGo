@@ -157,6 +157,7 @@ export default function TutorialSessionModal({
         labels={labels}
         onClose={onClose}
         onNavigate={goToNode}
+        portraitNodes={script?.nodes}
         typewriterDisabled={typewriterDisabled}
         previewControlsEnabled={previewControlsEnabled}
       />

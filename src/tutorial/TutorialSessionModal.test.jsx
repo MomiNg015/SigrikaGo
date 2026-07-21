@@ -19,7 +19,13 @@ describe("TutorialSessionModal", () => {
       script: {
         startNodeId: "intro",
         nodes: [
-          { id: "intro", type: "story", text: "Welcome.", nextNodeId: "move-1" },
+          {
+            id: "intro",
+            type: "story",
+            text: "Welcome.",
+            nextNodeId: "move-1",
+            options: [{ label: "Player reply", nextNodeId: "move-1" }]
+          },
           { id: "move-1", type: "player-move", pointId: "5,5", color: "black", nextNodeId: "" }
         ]
       },
@@ -29,6 +35,7 @@ describe("TutorialSessionModal", () => {
 
     expect(html).toContain("onboarding-story-modal");
     expect(html).toContain("Welcome.");
+    expect(html).toContain("Player reply");
     expect(html).not.toContain("tutorial-battle-session");
   });
 

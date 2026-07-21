@@ -1079,9 +1079,22 @@ Correct:
 - Keep the story modal backdrop and shell mounted across `nextNodeId` transitions.
 - Reset typewriter counters before the browser paints the next node, so the user never sees a frame of old text, full new text, or blank text before typing restarts.
 - When a parent component swaps the temporary script window to `{ startNodeId: nextStoryNodeId, nodes: [nextNode] }`, render `startNodeId` immediately if the previous internal node id no longer exists; do not show the "no script" empty state for one frame.
+- While the current line is still typing, a click anywhere inside the story panel completes that line immediately. Backdrop clicks remain reserved for the existing skip/close confirmation and must not leak into this behavior.
+- Preload the portraits referenced by the available script nodes. Keep the rendered portrait identity stable for the same `characterId` and portrait URL across adjacent nodes; do not include the node id in the image key, because that forces unnecessary remounts and visible blank frames.
 
 #### 3. Tests Required
 - `src/modals/StoryPlayerModal.test.jsx` should cover the render-node fallback used when the parent script window changes between story nodes.
+- A jsdom interaction test should click a non-text area inside the story panel and verify that the current typewriter line becomes fully visible without closing the story.
+
+#### 4. Wrong vs Correct
+
+```jsx
+// Wrong: remounts the same portrait on every dialogue node.
+const portraitKey = `${activeNodeId}:${characterId}:${portraitUrl}`;
+
+// Correct: preserves the image when the character asset has not changed.
+const portraitKey = `${characterId}:${portraitUrl}`;
+```
 
 ### Scenario: Story Tutorial Battle Runtime
 
@@ -1113,8 +1126,9 @@ Correct:
 - Pending waits must block repeated point/game/continue/choice actions, clear timers on node changes, close/skip, and unmount, and keep the global exit/skip affordance available.
 - The node initialization effect must be keyed by the current node id. Resolving a pending progression wait changes `pendingWait`, but must not reinitialize the same node, because reinitialization clears `choicesVisible` and can make just-revealed reply options flash and disappear.
 - Admin preview should use the real configured waits by default and may expose a preview-only "立即继续" control for timer-only waits. Player-facing playback must not expose per-wait skipping, but node-level manual continuation is a script-controlled player action.
-- NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown and is replaced only when the next NPC node begins.
+- NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown. When the next NPC node begins, replace the bubble's speaker identity, portrait, palette, and text atomically before rendering that node; never leave the previous speaker visible during the new line's typewriter run. Exit/hide transitions may still animate when no replacement node is starting.
 - `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the readonly `剧情记录` history.
+- Tutorial quiz choices are inferred from graph behavior: an option that targets the same question directly, or targets a feedback node whose `nextNodeId` returns to that question, is a wrong answer. Wrong answers reuse the UI-unavailable SFX; non-retrying siblings in the same quiz reuse the hidden-hand-reveal SFX. Ordinary multi-branch dialogue and single fixed replies do not play answer feedback. Authored wrong-answer NPC feedback uses manual progression before returning to the question.
 - `story` nodes reached from battle show the shared `AssetPreloadScreen` exit loading page for at least three seconds with "正在收拾棋盘..." before returning to the normal story modal.
 - Entering a board setup shows the shared `AssetPreloadScreen` entry loading page for at least three seconds with "正在激烈对局中..." and the participating NPC portraits.
 - Story-to-battle, battle-to-story, and in-battle board-setup handoffs must put the shared loading screen in place before the browser can paint the next route/node. Use initial state, navigation-handler state, or layout effects for the handoff boundary; do not rely only on a post-paint effect that briefly renders the battle room, home screen, or setup placeholder.
@@ -1130,6 +1144,7 @@ Correct:
 - Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
 - NPC dialogue bubbles should derive their low-saturation background, border, or glow accent from the active NPC character palette while preserving readable text contrast.
 - NPC dialogue bubble body text should type in progressively while the speaker name is shown immediately, and the animation must respect `prefers-reduced-motion`.
+- Preload every portrait referenced by tutorial story and battle node character fields before it is needed, and store the resolved portrait URL on the active bubble so speaker text and portrait cannot resolve from different nodes.
 - A player with no selected role keeps the same panel footprint as a character player, but the portrait and skill list are empty, placeholder slots preserve the side panel symmetry, and the rank is hidden.
 - Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips; mobile strips must keep compact art-font overrides so the timer track is not squeezed out of the player strip.
 - `showTutorialLog` is the only production room-stage opt-in for `ChatBox`. It renders as `剧情记录`, is always readonly, never receives a send callback, and uses compact messages without hand number, timestamp, or `[使用角色]` suffixes. Ordinary live, spectator, and replay rooms must not opt in.
@@ -1167,7 +1182,18 @@ Correct:
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert Bright School reply-choice hover imports and utility-card-equivalent hover motion.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert battle-node progression waits, option transition waits, pending feedback, preview-only skip-current-wait controls, and timer cleanup.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert same-node initialization is guarded so pending-wait resolution cannot hide newly visible reply options.
+- `src/tutorial/TutorialBattleScreen.test.jsx` should assert a new NPC node replaces the previous bubble immediately and that the active bubble owns its resolved portrait URL.
 - `src/modals/StoryPlayerModal.test.jsx` should assert ordinary story option `transitionDelaySeconds` scheduling and the pending feedback path.
+
+#### 6. Wrong vs Correct
+
+```jsx
+// Wrong: the node has advanced, but the previous speaker remains visible during its exit delay.
+schedule(() => setNpcBubble(nextBubble), BUBBLE_EXIT_MS);
+
+// Correct: the active node and its rendered identity change together.
+setNpcBubble({ ...nextBubble, portrait: resolvedPortraitUrl });
+```
 
 ---
 

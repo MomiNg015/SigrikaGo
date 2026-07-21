@@ -9,7 +9,7 @@ import {
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { validateStoryContent } from "./storyScripts.js";
 
-const EXPECTED_BEGINNER_HASH = "bf14f3de536415e715aeee62ecf39832dc6b0746d1786a3764e85db306813f1c";
+const EXPECTED_BEGINNER_HASH = "a56162ce952045db59800134f369772e0588f87a4c3f934f5d970933248e3ddb";
 const EXPECTED_EXPERIENCED_HASH = "47bcf6c16625552e2fa9d1aa8297cf1cf28f33c716c19e2f86147d9ed143af27";
 
 const BOARD_EXPECTATIONS = Object.freeze({
@@ -111,7 +111,38 @@ describe("admin default onboarding story snapshot", () => {
       nodes: draftNodes
     }, { publishing: true }).nodes).toHaveLength(draftNodes.length);
 
-    expect(nodesById.get("node-4-4-2")?.nextNodeId).toBe("doc-setup-1");
+    expect(nodesById.get("node-4-4-2")?.nextNodeId).toBe("node-4-4-3");
+    expect(nodesById.get("node-4-4-3")).toMatchObject({
+      type: "story",
+      characterId: "denia",
+      text: "西西，虽然我知道你喜欢鸟。但是打比方的话，我觉得用拉海洛方块更合适呢。",
+      manualContinueEnabled: true,
+      autoContinueEnabled: false,
+      nextNodeId: "node-4-4-5",
+      options: [{
+        label: "听你们这么说，感觉有点像贪吃蛇。",
+        nextNodeId: "node-4-4-5",
+        revealDelaySeconds: "",
+        transitionDelaySeconds: 0.2
+      }]
+    });
+    expect(nodesById.has("node-4-4-4")).toBe(false);
+    expect(nodesById.get("node-4-4-5")).toMatchObject({
+      type: "story",
+      characterId: "sigrika",
+      text: "不要纠结在这种地方嘛！",
+      manualContinueEnabled: true,
+      autoContinueEnabled: false,
+      nextNodeId: "node-4-4-6"
+    });
+    expect(nodesById.get("node-4-4-6")).toMatchObject({
+      type: "story",
+      characterId: "sigrika",
+      text: "唔......那就不背术语啦！{username}，坐到这边来，我们还是从棋盘上走一遍吧。",
+      manualContinueEnabled: true,
+      autoContinueEnabled: false,
+      nextNodeId: "doc-setup-1"
+    });
     expect([...nodesById.keys()].some((id) => id.startsWith("beginner-"))).toBe(false);
     expect(nodesById.get("node-3")?.options).toEqual([
       expect.objectContaining({ label: "其实我完全不会下围棋...", nextNodeId: "node-4" }),
@@ -223,6 +254,45 @@ describe("admin default onboarding story snapshot", () => {
     expect(nodes.get("doc-forbidden-move")?.targetHighlightEnabled).toBe(true);
     expect(nodes.get("doc-a1-move")).toMatchObject({ wrongMovePointId: "", applyWrongMove: true, wrongMoveNextNodeId: "doc-a1-wrong-npc" });
     expect(nodes.get("doc-b11-move")).toMatchObject({ wrongMovePointId: visiblePoint("D11"), applyWrongMove: true, wrongMoveNextNodeId: "doc-b11-counter" });
+    const wrongAnswerNodeIds = [
+      "doc-liberty-wrong-1",
+      "doc-liberty-wrong-2",
+      "doc-capture-wrong",
+      "doc-forbidden-wrong",
+      "doc-a1-wrong-npc",
+      "doc-false-eye-wrong",
+      "doc-b11-wrong",
+      "doc-territory-wrong-1",
+      "doc-territory-wrong-2",
+      "doc-territory-wrong-3",
+      "doc-final-count-wrong",
+      "doc-opening-wrong",
+      "doc-go-name"
+    ];
+    for (const nodeId of wrongAnswerNodeIds) {
+      expect(nodes.get(nodeId)).toMatchObject({
+        manualContinueEnabled: true,
+        autoContinueEnabled: false
+      });
+    }
+    expect([...nodes.values()]
+      .filter((node) => node.id.startsWith("doc-") && node.text && node.autoContinueEnabled === true)
+      .map((node) => node.id)).toEqual([
+      "doc-false-eye-correct",
+      "doc-skill-162",
+      "doc-skill-175"
+    ]);
+    expect(nodes.get("doc-false-eye-question")?.options).toEqual([
+      expect.objectContaining({ label: "左上那个", nextNodeId: "doc-false-eye-correct" }),
+      expect.objectContaining({ label: "右下那个", nextNodeId: "doc-false-eye-wrong" }),
+      expect.objectContaining({ label: "我觉得都是真眼啊！", nextNodeId: "doc-false-eye-wrong" })
+    ]);
+    expect(nodes.get("doc-false-eye-wrong")).toMatchObject({
+      speakerName: "达妮娅",
+      characterId: "denia",
+      text: "想想前面说的可以落子在禁入点的情况，再看看哪个眼是肯能被白棋率先攻破的？",
+      nextNodeId: "doc-false-eye-question"
+    });
     for (const node of [...nodes.values()].filter((entry) => entry.id.startsWith("doc-"))) {
       for (const entry of node.options ?? []) expect(entry.transitionDelaySeconds).toBe(0.2);
       if (["npc-move", "npc-skill"].includes(node.type)) {
@@ -230,7 +300,17 @@ describe("admin default onboarding story snapshot", () => {
         expect(Number(node.replyDelaySeconds)).toBeGreaterThanOrEqual(0.35);
       }
     }
-    expect(nodes.get("doc-story-152")?.text).toContain("把自己地脸颊拍扁了");
+    expect(nodes.has("doc-story-152")).toBe(false);
+    expect(nodes.get("doc-story-151")).toMatchObject({
+      type: "story",
+      nextNodeId: "doc-story-153",
+      options: [{
+        label: "（目瞪口呆地看着西格莉卡把自己地脸颊拍扁了）",
+        nextNodeId: "doc-story-153",
+        revealDelaySeconds: "",
+        transitionDelaySeconds: 0.2
+      }]
+    });
     expect(nodes.get("doc-skill-172")?.text).toContain("而是还是有代价的");
     expect(nodes.get("doc-story-194")?.text).toBe("哦对了，忘记自我介绍了。我是星炬学院围棋部部长，西格莉卡！{username}，以后还请多多指教呢！");
   });

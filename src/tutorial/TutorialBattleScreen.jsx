@@ -2,7 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calculator, Flag, Play, Sparkles } from "lucide-react";
 import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
-import { BackgroundMusic } from "../audio/playback.jsx";
+import {
+  BackgroundMusic,
+  HIDDEN_HAND_REVEAL_SOUND,
+  playEffectSound,
+  playUiUnavailableSound
+} from "../audio/playback.jsx";
 import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
@@ -14,6 +19,7 @@ import { roomGameInfoForPlayers } from "../room/roomState.js";
 import { COLORS, GAME_PHASES, cloneState, getPoint } from "../shared/game.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { latestSkillPreview, resolveBackgroundMusic } from "../shared/musicLibrary.js";
+import { preloadImageAssets } from "../shared/preloadAssets.js";
 import {
   TUTORIAL_NODE_TYPES,
   isTutorialNpcNodeType
@@ -34,6 +40,10 @@ import {
   createTutorialBattleRoom,
   tutorialPlayersForSetup
 } from "./tutorialBattleRoom.js";
+import {
+  TUTORIAL_CHOICE_FEEDBACK,
+  tutorialChoiceFeedback
+} from "./tutorialChoiceFeedback.js";
 
 const ENTRY_LOADING_TEXT = "正在激烈对局中...";
 const EXIT_LOADING_TEXT = "正在收拾棋盘...";
@@ -76,6 +86,13 @@ export default function TutorialBattleScreen({
 }) {
   const script = session?.script;
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
+  const tutorialPortraitUrls = useMemo(() => [...new Set(
+    (script?.nodes ?? [])
+      .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
+      .filter(Boolean)
+      .map((characterId) => findCharacter(characters, characterId).portrait)
+      .filter(Boolean)
+  )], [characters, script?.nodes]);
   const startNode = nodesById.get(session?.startNodeId) ?? nodesById.get(script?.startNodeId) ?? {};
   const [players, setPlayers] = useState(() => tutorialPlayersForSetup(startNode, user, characters));
   const [game, setGame] = useState(() => createTutorialGameState({
@@ -99,6 +116,11 @@ export default function TutorialBattleScreen({
   const timersRef = useRef([]);
   const pendingWaitRef = useRef(null);
   const initializedNodeKeyRef = useRef("");
+
+  useEffect(() => {
+    if (tutorialPortraitUrls.length === 0) return;
+    void preloadImageAssets(tutorialPortraitUrls, { concurrency: 4 });
+  }, [tutorialPortraitUrls]);
   const currentNode = nodesById.get(nodeId) ?? null;
   const useMobileLayout = useMobileRoomLayout();
 
@@ -248,24 +270,19 @@ export default function TutorialBattleScreen({
       id: `${node.id}-${nodeRunRef.current}`,
       nodeId: node.id,
       characterId: character.id,
+      portrait: character.portrait,
       palette: character.palette || "#5b6ee1",
       speakerName: node.speakerName || node.npcName || character.name || "NPC",
       text,
       closing: false
     };
-    setNpcBubble((current) => {
-      if (!current || current.id === nextBubble.id) return nextBubble;
-      schedule(() => {
-        setNpcBubble((latest) => latest?.id === current.id ? nextBubble : latest);
-      }, BUBBLE_EXIT_MS);
-      return { ...current, closing: true };
-    });
+    setNpcBubble(nextBubble);
     appendChat({
       userId: NPC_ID,
       username: node.speakerName || node.npcName || character.name || "NPC",
       text
     });
-  }, [appendChat, characters, hideNpcBubble, players, schedule]);
+  }, [appendChat, characters, hideNpcBubble, players]);
 
   const completeNodeFlow = useCallback((node) => {
     const options = Array.isArray(node?.options) ? node.options : [];
@@ -593,6 +610,12 @@ export default function TutorialBattleScreen({
 
   function handleChoice(option) {
     if (pendingWait) return;
+    const feedback = tutorialChoiceFeedback(currentNode, option, nodesById);
+    if (feedback === TUTORIAL_CHOICE_FEEDBACK.wrong) {
+      playUiUnavailableSound(audioSettings);
+    } else if (feedback === TUTORIAL_CHOICE_FEEDBACK.correct) {
+      playEffectSound(HIDDEN_HAND_REVEAL_SOUND, audioSettings);
+    }
     appendChat({
       userId: me?.user?.id ?? PLAYER_ID,
       username: me?.user?.username ?? "Player",
@@ -728,7 +751,7 @@ function TutorialBattleDirector({
           className={`tutorial-battle-dialogue ${npcBubble.closing ? "closing" : ""}`}
           style={npcBubble.palette ? { "--tutorial-npc-color": npcBubble.palette } : undefined}
         >
-          {npcBubble.characterId && <img src={findCharacter(characters, npcBubble.characterId).portrait} alt="" aria-hidden="true" />}
+          {npcBubble.portrait && <img src={npcBubble.portrait} alt="" aria-hidden="true" fetchPriority="high" />}
           <div>
             <strong>{npcBubble.speakerName}</strong>
             <p><TypewriterText key={npcBubble.id} text={npcBubble.text} /></p>
