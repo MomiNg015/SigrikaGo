@@ -1958,3 +1958,36 @@ Implemented authoritative Spark practice rooms with beginner/basic Zhunshibao de
 ### Next Steps
 
 - None - task complete
+
+
+## Session 60: Zhunshibao practice baseline verification
+
+**Date**: 2026-07-22
+**Task**: Zhunshibao practice baseline verification
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Corrected the standalone practice-mode CSS debt baseline after excluding unrelated Aemeath worktree changes, then verified 106 practice, persistence, UI contract, CSS inventory, and system-design tests against an isolated commit worktree.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `611d57f8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
