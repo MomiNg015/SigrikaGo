@@ -73,11 +73,14 @@ describe("production deployment templates", () => {
     expect(script.indexOf("umask 077")).toBeLessThan(script.indexOf("npm run backup:sqlite"));
     expect(script.indexOf("npm run backup:sqlite")).toBeLessThan(script.indexOf("umask 022"));
     expect(script.indexOf("umask 022")).toBeLessThan(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"'));
+    expect(script).toContain("npm ci --include=dev");
+    expect(script).not.toMatch(/^npm ci$/m);
     expect(script).toContain('npm run build -- --outDir "${STAGED_DIST}"');
     expect(script).toContain("if ! nginx -t; then");
     expect(script).toContain("npm run admin:sync-onboarding -- --apply");
     expect(script).toContain('curl --fail --silent --show-error "${HEALTH_URL}"');
 
+    expect(script.indexOf("npm ci --include=dev")).toBeLessThan(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"'));
     expect(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf('[[ -d "${PROJECT_DIR}/dist" ]]')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf("if ! nginx -t; then")).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));

@@ -108,7 +108,7 @@ log "Fast-forwarding ${EXPECTED_BRANCH}."
 git pull --ff-only origin "${EXPECTED_BRANCH}"
 
 log "Installing locked dependencies and building the production bundle."
-npm ci
+npm ci --include=dev
 [[ "${BUILD_ROOT}" == "${PROJECT_DIR}/.tmp/production-update-"* ]] || fail "Unsafe build staging path: ${BUILD_ROOT}"
 [[ ! -e "${BUILD_ROOT}" ]] || fail "Build staging path already exists: ${BUILD_ROOT}"
 mkdir -p -- "${BUILD_ROOT}"
