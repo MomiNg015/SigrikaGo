@@ -33,7 +33,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "key": "recruitmentConfig",
-      "value": "{\"durationMs\":300000,\"successRates\":[50,75,100],\"confidenceTexts\":[\"碰碰运气吧，也许能招到新人呢？\",\"今天是休息日，感觉有大概率能抓到新人。\",\"哇，在飞讯上刷到了好多围棋部相关的内容，这次一定会有新人来了！\"],\"noResponseTexts\":{\"campus-recruitment-poster\":[\"招新贴报挂了好久，但没有人关注。只能下次再试试了...\",\"公告栏前人来人往，但这次还没有人把名字写到申请表上。\"],\"radio-recruitment-ticket\":[\"已经通过电台广播出去了，不过这次还没有任何回讯...\",\"广播已经播出去了，不过这次没有收到明确回信。\"]},\"successTexts\":{\"lynae\":\"呀吼，听说这里很热闹！让我也来掺和一下吧！\",\"mornye\":\"我是莫宁教授，作为围棋部的指导教师，希望未来能和大家友好交流相处。\",\"chisa\":\"请问这是围棋部吗？听说参与围棋活动会有额外学分拿......之后还请多多指教。\",\"qiuyuan\":\"我来了。有谁要切磋一番的吗？\",\"changli\":\"听说远洋之外还有下围棋的地方，我就来了。呵呵，今天有谁愿意和我对弈一盘的吗？\"}}"
+      "value": "{\"durationMs\":300000,\"successRates\":[50,75,100],\"confidenceTexts\":[\"碰碰运气吧，也许能招到新人呢？\",\"今天是休息日，感觉有大概率能抓到新人。\",\"哇，在飞讯上刷到了好多围棋部相关的内容，这次一定会有新人来了！\"],\"noResponseTexts\":{\"campus-recruitment-poster\":[\"招新贴报挂了好久，但没有人关注。只能下次再试试了...\",\"公告栏前人来人往，但好像没有人关注这张贴报...\"],\"radio-recruitment-ticket\":[\"已经通过电台广播出去了，不过这次没有任何回讯...\",\"广播已经播出去了，不过这次没有收到明确回信。\"]},\"successTexts\":{\"lynae\":\"呀吼，听说这里很热闹！让我也来掺和一下吧！\",\"mornye\":\"我是莫宁教授，作为围棋部的指导教师，希望未来能和大家友好交流相处。\",\"chisa\":\"请问这是围棋部吗？听说参与围棋活动会有额外学分拿......之后还请多多指教。\",\"qiuyuan\":\"我只是是来找个清静处的.....有谁要切磋一番的吗？\",\"changli\":\"听说远洋之外居然还有下围棋的地方，我就来了。呵呵，今天有谁愿意和我对弈一盘的吗？\"},\"fixedItemTexts\":{\"aemeath-flight-snow-memorial-ticket\":{\"scopeLabel\":\"总觉得，今天会有一场奇迹般的相遇...\",\"resultText\":\"爱弥斯，回应粉丝的期待，闪亮登台！嗯？是想让我加入围棋部吗？哼哼哼，也好，就让你们见识一下我精湛的棋艺吧！\"}}}"
     },
     {
       "key": "skillEffectsEnabled",
@@ -44,13 +44,31 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "id": "skill-trait-sprint",
       "name": "疾走",
-      "definition": "发动该技能不消耗当前回合落子。",
+      "definition": "发动该技能不消耗当前自己回合的落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-2f453c6a-552e-482e-b639-62d26683ab17",
+      "name": "飞刀",
+      "definition": "可以连续两次落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-ee355be9-2ba9-4ab3-97d9-625466cbf2eb",
+      "name": "喷涂棋子",
+      "definition": "一种中立棋子。中立棋子不属于黑白双方，但其在棋盘上符合围棋基本规则。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-c0c803bf-5514-4a39-9e40-71eb26e5bb87",
+      "name": "禁地",
+      "definition": "一种特殊的禁入点。指定方无法指定该禁入点施放技能或落子。",
       "sortOrder": 0
     },
     {
       "id": "skill-trait-no-first",
       "name": "禁先",
-      "definition": "对手尚未在本局成功发动过主动技能时，具有该特性的技能无法发动。",
+      "definition": "对手在本局成功发动过主动技能之前，该技能无法发动。",
       "sortOrder": 1
     },
     {
@@ -63,6 +81,12 @@ export const ADMIN_DEFAULT_CONFIG = {
       "id": "skill-trait-derived",
       "name": "派生",
       "definition": "该技能不是角色初始持有的常驻技能，需要由其他技能或对局状态生成后才能使用。",
+      "sortOrder": 3
+    },
+    {
+      "id": "skill-trait-50497b66-da70-4931-9c6b-8c2123cce3de",
+      "name": "隐藏手",
+      "definition": "该落子不会被对方看见。若该落子参与提子、被提子，或被对方落子选中时，则暴露。",
       "sortOrder": 3
     }
   ],
@@ -83,7 +107,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "erase-point",
         "name": "星辉符文",
-        "description": "【疾走】抹除棋盘上指定交叉点。",
+        "description": "【疾走】指定棋盘上1处交叉点，将其抹除。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "empty-point",
@@ -110,7 +134,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "flip-stone",
         "name": "泡影幻梦",
-        "description": "指定棋盘上的某个棋子，将其反色。",
+        "description": "指定棋盘上的1枚黑/白棋子，将其反色。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "stone",
@@ -127,7 +151,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "description": "“诶？我不会偷偷连katago的啦...”",
       "portraitUrl": "/assets/Aemeath_centered.webp",
       "portraitSource": "url",
-      "acquisitionMethod": "初始获得",
+      "acquisitionMethod": "招募获得",
       "cvName": "璃音",
       "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
@@ -137,11 +161,11 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "hidden-hand",
         "name": "小爱出击",
-        "description": "本轮落子为隐藏手。",
+        "description": "指定棋盘上1处交叉点落子，该落子为【隐藏手】。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "empty-point",
-        "paramsJson": "{\"derivedSkills\":[{\"id\":\"voyage-star\",\"effectType\":\"voyage-star\",\"name\":\"远航星\",\"description\":\"【派生】【疾走】仅限以“小爱出击”产生的隐藏手存在于场上且未暴露的情况下才可以使用。以该隐藏手为中心，抹除包括其在内的上下左右1路的交叉点；同时移除这些交叉点上下左右1路的棋子。\",\"uses\":1,\"freeTurn\":true,\"targetRule\":\"none\",\"costType\":\"numeric\",\"costValue\":\"5\",\"musicTrackId\":\"aemeath-voyage-star-default\"}]}",
+        "paramsJson": "{\"derivedSkills\":[{\"id\":\"voyage-star\",\"effectType\":\"voyage-star\",\"name\":\"远航星\",\"description\":\"【派生】【疾走】仅限以“小爱出击”产生的隐藏手存在于场上且未暴露的情况下才可以使用。以该隐藏手为中心，抹除包括其在内的上下左右各1路的交叉点；同时移除这些交叉点上下左右各1路的棋子。\",\"uses\":1,\"freeTurn\":true,\"targetRule\":\"none\",\"costType\":\"numeric\",\"costValue\":\"5\",\"musicTrackId\":\"aemeath-voyage-star-default\"}]}",
         "costType": "numeric",
         "costValue": "0",
         "systemMessage": "{color}{player}使用了{character}的“{skill}”技能，落下了幽灵般的一手，应该没人发现吧。。。",
@@ -164,13 +188,13 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "spray-stone",
         "name": "流光溢彩",
-        "description": "指定棋盘上一枚棋子，将其变成喷涂棋子（喷涂棋子：一种中立棋子）。同时，随机将棋盘上另一枚可视棋子也变成喷涂棋子。",
+        "description": "指定棋盘上1枚棋子，将其变成【喷涂棋子】。同时，随机将棋盘上另1枚可视棋子也变成喷涂棋子。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "stone",
         "paramsJson": "{}",
         "costType": "numeric",
-        "costValue": "2",
+        "costValue": "1",
         "systemMessage": "{fromColor}{player}使用了{character}的“{skill}”技能，将棋盘上一些棋子撒上了颜料。",
         "enabled": true
       }
@@ -191,7 +215,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "protocol-takeover",
         "name": "协议接管",
-        "description": "【疾走】指定棋盘一处空置交叉点，将其变为对方的禁入点（对方无法指定该交叉点落子或发动技能）。",
+        "description": "【疾走】指定棋盘1处交叉点，将其变为对方的【禁地】。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "empty-point",
@@ -218,13 +242,13 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "liberty-purge",
         "name": "虚湮解弦",
-        "description": "指定一个有效交叉点落子，然后，移除场上所有仅剩1口气的棋块。每移除一颗非己方棋子，超频+1；每移除一颗己方棋子，超频-1。",
+        "description": "指定1处交叉点落子，然后，移除场上所有仅剩1口气的棋块。下一个对方回合，对方无法在这些被移除的棋块所在的交叉点上落子。每移除一颗非己方棋子，超频+1；每移除一颗己方棋子，超频-1。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "legal-move-point",
         "paramsJson": "{}",
         "costType": "numeric",
-        "costValue": "0",
+        "costValue": "1",
         "systemMessage": "{fromColor}{player}使用了{character}的“{skill}”技能，湮灭了棋盘上所有只剩1口气的棋块。",
         "enabled": true
       }
@@ -245,7 +269,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "double-move",
         "name": "谋定后动",
-        "description": "【禁先】【疾走】本回合，获得一把“飞刀”（可以连下2手）。",
+        "description": "【禁先】【疾走】本回合，获得一把【飞刀】。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "none",
@@ -272,7 +296,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "row-slash",
         "name": "一斩足矣",
-        "description": "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+1。",
+        "description": "指定棋盘上1枚棋子或1处交叉点，移除其所在行的所有棋子。每移除1枚棋子，超频+1。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "any-point",
@@ -326,7 +350,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "random-blast",
         "name": "猪小仙爆炸",
-        "description": "【疾走】随机以某个场上棋子为目标（除一路的棋子外），移除其为中心的3*3区域的棋子。",
+        "description": "【疾走】随机以1枚棋子为目标（除一路的棋子外），移除其为中心的3*3区域的棋子。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "none",
@@ -397,6 +421,23 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 121,
       "description": "可以使用一次先行公约的广播，似乎可以把消息发送到千里之外...",
       "imageUrl": "/assets/items/radio-recruitment-ticket.webp",
+      "illustName": "",
+      "illustUrl": "",
+      "source": "default"
+    },
+    {
+      "name": "飞行雪绒纪念券",
+      "category": "item",
+      "targetId": "aemeath-flight-snow-memorial-ticket",
+      "itemTargetType": "self",
+      "stockQuantity": -1,
+      "priceCoins": 0,
+      "discountPercent": 0,
+      "purchasable": true,
+      "enabled": true,
+      "sortOrder": 121,
+      "description": "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？",
+      "imageUrl": "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
       "illustName": "",
       "illustUrl": "",
       "source": "default"
@@ -619,7 +660,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "name": "点亮语义！",
       "description": "使用西格莉卡在星炬对弈中获得100胜",
       "imageUrl": "/assets/achievements/semantic-nameplate.png",
-      "text": "用户名背景",
+      "text": "点亮语义！",
       "targetType": "",
       "targetId": "",
       "amount": 0,
@@ -630,10 +671,10 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "id": "reward-denia-spark-100-wins-nameplate",
       "type": "nameplate",
-      "name": "百次回响",
+      "name": "梦幻泡影",
       "description": "使用达妮娅在星炬对弈中获得100胜",
       "imageUrl": "/assets/achievements/denia-spark-100-wins-nameplate.png",
-      "text": "用户名背景",
+      "text": "梦幻泡影",
       "targetType": "",
       "targetId": "",
       "amount": 0,
@@ -644,10 +685,10 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "id": "reward-aemeath-spark-100-wins-nameplate",
       "type": "nameplate",
-      "name": "飞行雪绒，出击！",
+      "name": "飞行雪绒",
       "description": "使用爱弥斯在星炬对弈中获得100胜",
       "imageUrl": "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
-      "text": "用户名背景",
+      "text": "飞行雪绒",
       "targetType": "",
       "targetId": "",
       "amount": 0,
@@ -684,7 +725,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "id": "achievement-denia-spark-100-wins",
       "key": "denia-spark-100-wins",
-      "name": "百次回响",
+      "name": "Decensus Ad Nihilum",
       "content": "使用达妮娅在星炬对弈中获得100胜",
       "conditionType": "mode_character_wins",
       "conditionParams": "{\"mode\":\"spark\",\"characterId\":\"denia\",\"value\":100}",

@@ -1615,7 +1615,7 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 
 #### 3. Contracts
 - Production Nginx sends only `/socket.io/`, `/api/`, and `/health/*` to Node. It serves `dist`, `/assets/**`, and `/uploads/**` directly; `/socket.io/` disables buffering and uses 90-second proxy read/write timeouts.
-- Hashed Vite JS/CSS receives `public, max-age=31536000, immutable`; named runtime `/assets/**` receives `public, max-age=3600, stale-while-revalidate=86400`; `index.html` receives `no-cache`; uploads receive a short revalidating cache.
+- Hashed Vite JS/CSS receives `public, max-age=31536000, immutable`; named runtime `/assets/**` receives `no-cache` so stable URLs revalidate after content replacement; `index.html` receives `no-cache`; uploads receive a short revalidating cache.
 - Express fallback uses the same three cache values when Nginx is absent. `express.static` must use `index: false` so the SPA fallback owns the HTML header, and the fallback excludes `/api`, `/socket.io`, and `/uploads`.
 - Nginx gzip covers text formats only. OGG/WebP/PNG and other precompressed media are not recompressed; Nginx static delivery keeps native HTTP Range support for audio.
 - Same-origin CDN rollout keeps browser URLs under `/assets/**`. CDN rules mirror the Nginx cache contract and never cache/proxy Socket.IO, dynamic API, or health traffic.
@@ -1628,7 +1628,7 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 
 #### 4. Validation & Error Matrix
 - Hashed Vite JS/CSS -> one-year immutable cache in both Nginx and Express fallback.
-- Named image/audio/voice asset -> one-hour cache plus stale-while-revalidate; never immutable by filename description alone.
+- Named image/audio/voice asset -> conditional revalidation through `no-cache`; never immutable or stale-while-revalidate by filename description alone.
 - SPA shell or client route -> serve `index.html` with `no-cache`.
 - `/socket.io/` -> WebSocket proxy with buffering/cache disabled; never SPA fallback.
 - `/api/`, `/health/*`, or `/uploads/*` -> retain their dedicated backend/static boundary; never return SPA HTML.
@@ -1981,7 +1981,7 @@ const replayPage = await fetch(`/api/replays?mode=${mode}&cursor=${nextCursor}`)
 - Helmet and the Nginx-served SPA shell must carry equivalent CSP directives, because direct Nginx HTML bypasses Node middleware.
 - Nginx serves built/uploaded files directly; only `/socket.io/`, `/api/`, and `/health/*` reach Node.
 - Compress CSS, JavaScript, HTML, JSON, XML, and SVG; do not recompress WebP, PNG, OGG, or other already-compressed media.
-- Hashed CSS/JS remains one-year immutable, named assets remain short-cache plus stale-while-revalidate, and HTML remains no-cache.
+- Hashed CSS/JS remains one-year immutable, named assets and HTML revalidate with no-cache, and only content-addressed filenames may be immutable.
 
 #### 4. Validation & Error Matrix
 - Animated texture creates `blob:` worker under strict fallback `script-src` -> blocked effect; add the explicit worker directive.
@@ -2034,7 +2034,7 @@ workerSrc: ["'self'", "blob:"]
 - Create and verify a SQLite backup through `npm run backup:sqlite` before pulling or migrating. Use private `umask 077` for the backup, then restore `umask 022` before dependency installation and build so Nginx can traverse and read the activated static bundle. The database and upload data remain outside the Git worktree.
 - Run `npm ci --include=dev`, build to a unique `.tmp/production-update-*/dist` directory, and pass `npm run check:production` before stopping the service. `--include=dev` is mandatory because sourcing the production `.env` sets `NODE_ENV=production`, while Vite and its plugins are devDependencies required to compile the bundle. The production checker must import `dotenv/config` so the command reads the same current-working-directory `.env` that systemd supplies through `EnvironmentFile`; explicit process environment values retain dotenv's normal precedence. Never clear or partially overwrite the live `dist/` during compilation.
 - Back up the active Nginx files, install the repository templates, and pass `nginx -t` before reloading. If validation fails, restore the prior Nginx files and keep the running service untouched.
-- Only after build and proxy validation: stop the service, run `prisma migrate deploy`, preview and apply `admin:sync-onboarding`, atomically replace `dist/`, reload Nginx, start the service, and require readiness within the bounded retry window.
+- Only after build and proxy validation: stop the service, run `prisma migrate deploy`, preview and apply `admin:sync-defaults`, atomically replace `dist/`, reload Nginx, start the service, and require readiness within the bounded retry window. The sync updates/creates committed non-user admin rows but preserves cloud-only and user/history/runtime rows.
 - Failure after service stop must attempt to restore the previous frontend bundle and restart the service. It must not roll back Git or SQLite automatically; retain the verified database backup for explicit recovery.
 
 #### 4. Validation & Error Matrix
@@ -2055,7 +2055,7 @@ workerSrc: ["'self'", "blob:"]
 - Bad: stopping systemd before dependency install and build, because avoidable build time becomes user-visible downtime.
 
 #### 6. Tests Required
-- `scripts/deploymentConfig.test.js` must assert fail-fast shell mode, `.env` export before any environment-dependent subprocess, explicit devDependency inclusion before build, tracked/staged worktree guards, private-backup/readable-build umask ordering, verified backup, fast-forward-only Git update, staged `dist` output, Nginx validation, onboarding apply, readiness polling, and the ordering boundaries around stop/migrate/swap/start.
+- `scripts/deploymentConfig.test.js` must assert fail-fast shell mode, `.env` export before any environment-dependent subprocess, explicit devDependency inclusion before build, tracked/staged worktree guards, private-backup/readable-build umask ordering, verified backup, fast-forward-only Git update, staged `dist` output, Nginx validation, full non-user admin snapshot preview/apply, readiness polling, and the ordering boundaries around stop/migrate/sync/swap/start.
 - Validate the script with `bash -n deploy/update-production.sh`.
 - Exercise the exact staged build form with `npm run build -- --outDir <temporary-dist>` so the Vite CLI override and output location are proven.
 - Run `npm run check`; on the target host, the script itself must pass `nginx -t` and the readiness request before reporting success.

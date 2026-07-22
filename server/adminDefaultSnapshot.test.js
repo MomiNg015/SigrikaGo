@@ -53,13 +53,13 @@ describe("admin default onboarding story snapshot", () => {
 
     expect(reward).toMatchObject({
       type: "nameplate",
-      name: "百次回响",
+      name: "梦幻泡影",
       imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png",
-      text: "用户名背景",
+      text: "梦幻泡影",
       sortOrder: 120
     });
     expect(achievement).toMatchObject({
-      name: "百次回响",
+      name: "Decensus Ad Nihilum",
       content: "使用达妮娅在星炬对弈中获得100胜",
       conditionType: "mode_character_wins",
       rewardAssetId: reward.id,
@@ -78,9 +78,9 @@ describe("admin default onboarding story snapshot", () => {
 
     expect(reward).toMatchObject({
       type: "nameplate",
-      name: "飞行雪绒，出击！",
+      name: "飞行雪绒",
       imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
-      text: "用户名背景",
+      text: "飞行雪绒",
       sortOrder: 130
     });
     expect(achievement).toMatchObject({

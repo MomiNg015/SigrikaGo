@@ -202,7 +202,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 | `/api/`、`/health/*` | Node/Express | 普通 HTTP 代理，允许响应 buffering |
 | `/uploads/` | Nginx alias | 直接读取持久化上传目录，5 分钟可重新验证缓存 |
 | Vite hash 资源 | Nginx/CDN | 一年 `immutable` |
-| `/assets/**` 命名资源 | Nginx/CDN | 1 小时新鲜期、24 小时 `stale-while-revalidate` |
+| `/assets/**` 命名资源 | Nginx/CDN | `no-cache` 条件请求；同名图片/音频替换后立即重新验证 |
 | `index.html`、SPA 路由 | Nginx | `no-cache`，每次发布可及时发现新入口 |
 
 已有 HTTPS 证书的服务器更新配置前，先确认模板引用的证书文件存在并备份当前站点配置：
@@ -322,7 +322,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## 更新流程
 
-仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会先用 `set -a` 加载并导出项目 `.env`，保证生产检查、Prisma 和其他子命令拿到与 systemd 相同的配置，然后依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、通过 `npm ci --include=dev` 安装锁定依赖（即使 `NODE_ENV=production` 也保留 Vite 等构建工具）、暂存目录构建与生产配置检查、Nginx 备份和语法验证、停服、迁移、默认新手引导定向同步、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
+仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会先用 `set -a` 加载并导出项目 `.env`，保证生产检查、Prisma 和其他子命令拿到与 systemd 相同的配置，然后依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、通过 `npm ci --include=dev` 安装锁定依赖（即使 `NODE_ENV=production` 也保留 Vite 等构建工具）、暂存目录构建与生产配置检查、Nginx 备份和语法验证、停服、迁移、完整非用户后台快照预览与应用、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
 
 第一次使用时，服务器上的旧版本还没有该脚本，先手动拉取一次，然后运行：
 
@@ -342,9 +342,9 @@ sudo ./deploy/update-production.sh
 
 默认路径适配当前服务器：项目 `/opt/sigrikago`、数据库 `/var/lib/sigrikago/prod.db`、备份 `/var/backups/sigrikago`、服务 `sigrikago`。只有迁移到不同目录时才通过 `SIGRIKAGO_PROJECT_DIR`、`SIGRIKAGO_DATABASE_PATH`、`SIGRIKAGO_BACKUP_DIR` 或 `SIGRIKAGO_SERVICE_NAME` 临时覆盖；不要把这些变量写进前端配置。
 
-### 本次默认新手引导同步
+### 非用户后台配置同步
 
-`server/adminDefaultSnapshot.js` 的普通启动补种只创建缺失记录，不会覆盖云端已有的后台内容。因此，本次更新需要在数据库备份后执行一次定向同步；该命令只读取提交中的 `onboarding.default` 并只写这一条 `StoryScript`，不会改用户、对局或其他后台配置。
+本地后台管理保存到忽略提交的 `prisma/dev.db`，所以正式发布前必须先在本地运行 `npm run admin:snapshot` 并提交生成的 `server/adminDefaultSnapshot.js`；`npm run check:admin-snapshot` 会阻止遗漏。服务器普通启动仍只补缺，不覆盖已有值；正式更新脚本会在数据库备份和迁移后显式同步已提交快照，覆盖同名的系统设置、招募配置、角色/技能、商店/抽卡/成就、音乐名称、公告和故事等非用户后台内容，并保留用户、用户资产、购买/抽卡历史、反馈/举报、审计、邮箱、对局和房间数据。云端额外存在但本地快照没有的行也不会被自动删除。
 
 ```bash
 cd /opt/sigrikago
@@ -354,14 +354,14 @@ npm run backup:sqlite -- \
   --source /var/lib/sigrikago/prod.db \
   --output "/var/backups/sigrikago/pre-onboarding-sync-$(date +%F-%H%M%S).db"
 
-npm run admin:sync-onboarding
-npm run admin:sync-onboarding -- --apply
+npm run admin:sync-defaults
+npm run admin:sync-defaults -- --apply
 
 sudo systemctl start sigrikago
 curl --fail http://127.0.0.1:3001/health/ready
 ```
 
-第一条同步命令只是预览，第二条才会应用。如果它提示云端脚本比提交快照更新，立即停止，不要追加 `--force`；先从后台或数据库核对云端改动，避免覆盖更新内容。应用成功后不需要重复运行。
+第一条同步命令只显示各类数据的 create/update/unchanged/cloud-only 数量，第二条才会应用。正式部署以已提交快照为准，因此会覆盖云端同名后台配置；运行前的 SQLite 备份是回退边界。应用成功后不需要重复运行。
 
 ### 手工更新（脚本不可用时）
 

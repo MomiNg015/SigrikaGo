@@ -41,35 +41,43 @@ Questions to answer:
 #### 2. Signatures
 - `ADMIN_DEFAULT_CONFIG` in `server/adminDefaultSnapshot.js`.
 - `seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` in `server/adminDefaultSeed.js`.
+- `syncAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` is the explicit overwrite-capable deployment path; it is never called by ordinary startup.
 - `npm run admin:snapshot` runs `scripts/export-admin-default-snapshot.mjs` to regenerate `server/adminDefaultSnapshot.js` from the local `prisma/dev.db` non-user admin rows.
+- `npm run check:admin-snapshot` compares the local allowed collections with the committed snapshot; `npm run admin:sync-defaults [-- --apply]` previews/applies the committed snapshot to the current database.
 - `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
 
 #### 3. Contracts
 - The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
-- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, game records, and live-room state.
+- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, game records, live-room state, and internal `SiteSetting` keys prefixed with `migration.`.
 - When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
+- `npm run check` must run `check:admin-snapshot` so unexported local admin edits fail before commit/build handoff.
 - Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
 - `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
+- Formal deployment is a separate boundary: after the verified backup and migrations, preview then apply `admin:sync-defaults`. It updates matching snapshot rows and creates missing rows, but does not delete cloud-only rows or touch excluded user/history/runtime tables.
 - When a built-in catalog resource has a code-owned current asset, API payload helpers should normalize that built-in row from the shared/static source of truth across every player-visible projection, including shop, inventory, and gacha reward/prize payloads. If an old default path must be cleaned up at startup, use a narrowly keyed `updateMany` for empty values or exact stale default paths only; do not overwrite arbitrary admin-managed custom image URLs.
 - Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
 - Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
 
 #### 4. Validation & Error Matrix
-- Existing row found by stable key/slug/id -> skip without changing admin-managed fields.
+- Existing row found during startup by stable key/slug/id -> skip without changing admin-managed fields.
+- Existing row found during explicit deployment sync -> update from the committed snapshot.
+- Cloud-only row absent from the committed snapshot -> report as preserved and do not delete it.
 - Existing built-in catalog row with an empty or exact stale default image path -> may be backfilled to the current code-owned asset path.
 - Missing row -> create from the committed snapshot.
 - Delegate missing in a narrowed test double -> seeder returns without throwing.
 - User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
 - Date-like optional fields from snapshots -> pass as nullable values accepted by Prisma for the target model.
 - Snapshot export run after admin edits -> rewrites only `server/adminDefaultSnapshot.js` from allowed non-user admin tables.
+- Local allowed collections differ from the committed snapshot -> `check:admin-snapshot` exits non-zero and lists mismatched domains.
 
 #### 5. Good/Base/Bad Cases
 - Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, shop item illust credits, published/draft story scripts, admin announcement/changelog entries, and the legacy onboarding singleton from `server/adminDefaultSnapshot.js`.
 - Good: replacing a code-owned built-in shop item image updates the shared/static config, normalizes shop and inventory API payloads, and only backfills empty or exact stale default image paths during startup.
-- Good: after editing admin settings locally, running `npm run admin:snapshot` updates the committed bootstrap source instead of relying on ignored `prisma/dev.db`.
-- Base: an existing cloud database with runtime admin edits keeps those values on restart/deploy; only missing snapshot rows are added.
+- Good: after editing admin settings locally, run `npm run admin:snapshot`, pass `check:admin-snapshot`, commit, and let the production update script preview/apply the full non-user sync.
+- Base: an existing cloud database keeps its admin values on ordinary restart; a formal deployment intentionally replaces matching values from the committed snapshot while preserving cloud-only and user/history rows.
 - Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
-- Bad: changing only `server/adminDefaultSnapshot.js` or a static config and assuming existing SQLite rows will update automatically.
+- Bad: changing only `prisma/dev.db` and assuming Git/deployment can see ignored local data.
+- Bad: changing `server/adminDefaultSnapshot.js` but omitting the explicit deployment sync, because create-only startup still preserves existing cloud values.
 - Bad: importing `prisma/dev.db` at runtime on the server.
 - Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, or audit rows to the snapshot.
 
@@ -77,6 +85,8 @@ Questions to answer:
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
 - Unit tests assert existing rows are not updated by startup seeding.
 - Unit tests assert `SiteSetting` and `MusicTrackSetting` seed upserts use empty `update` payloads.
+- Unit tests for `syncAdminDefaultConfig()` assert every included domain updates matching rows, creates missing rows, and does not call delete operations.
+- Sync-plan tests assert create/update/unchanged/cloud-only counts, and freshness tests assert mismatched local domains fail the check.
 - Unit tests for built-in catalog resource replacements assert stale default rows are normalized in all player-visible API payloads, including shop, inventory, and gacha reward/prize payloads, and any startup backfill is limited to empty or exact stale default image paths.
 - Unit tests for `scripts/export-admin-default-snapshot.mjs` assert exported settings and catalog credit fields are present and dates serialize deterministically.
 - Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
@@ -94,7 +104,7 @@ await prisma.siteSetting.upsert({
 });
 ```
 
-Correct:
+Correct startup bootstrap:
 
 ```js
 await prisma.siteSetting.upsert({
@@ -105,6 +115,15 @@ await prisma.siteSetting.upsert({
 ```
 
 The correct form creates missing bootstrap defaults without overwriting a value saved later from the admin console.
+
+Correct formal deployment:
+
+```bash
+npm run admin:sync-defaults
+npm run admin:sync-defaults -- --apply
+```
+
+The explicit apply path runs only after a verified backup and migrations, so deployment can make committed local admin configuration authoritative without turning every restart into an overwrite.
 
 ### Scenario: Site Setting Public Configuration
 

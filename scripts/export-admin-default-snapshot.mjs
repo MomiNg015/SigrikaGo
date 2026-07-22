@@ -68,7 +68,7 @@ export async function buildAdminDefaultConfig(prisma) {
   ]);
 
   return {
-    siteSettings: siteSettings.map(siteSettingSnapshot),
+    siteSettings: siteSettings.filter(isAdminDefaultSiteSetting).map(siteSettingSnapshot),
     skillTraits: skillTraits.map(skillTraitSnapshot),
     characters: characters.map(characterSnapshot),
     decorations: decorations.map(decorationSnapshot),
@@ -96,6 +96,10 @@ export function renderAdminDefaultSnapshot(config, { generatedAt = new Date() } 
 
 function siteSettingSnapshot(row) {
   return pick(row, ["key", "value"]);
+}
+
+function isAdminDefaultSiteSetting(row) {
+  return !String(row?.key ?? "").startsWith("migration.");
 }
 
 export function mergeSelectedStoryScripts(baseConfig, sourceConfig, storyKeys) {

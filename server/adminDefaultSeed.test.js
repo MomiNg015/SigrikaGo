@@ -1,14 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
-import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
+import { seedAdminDefaultConfig, syncAdminDefaultConfig } from "./adminDefaultSeed.js";
 
 describe("admin default config seed", () => {
   it("ships the confirmed glossary and structured builtin skill copy", () => {
     expect(ADMIN_DEFAULT_CONFIG.skillTraits.map((trait) => trait.name)).toEqual([
       "疾走",
+      "飞刀",
+      "喷涂棋子",
+      "禁地",
       "禁先",
       "被动",
-      "派生"
+      "派生",
+      "隐藏手"
     ]);
     const changli = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "changli");
     const nabomo = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "nabomo");
@@ -174,6 +178,60 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({
       update: {}
     })]);
+  });
+
+  it("overwrites matching non-user admin rows only during explicit deployment sync", async () => {
+    const calls = [];
+    const existing = {
+      skillTraits: new Set(["trait-snapshot"]),
+      characters: new Set(["snapshot-character"]),
+      decorations: new Set(["snapshot-decoration"]),
+      shopTargets: new Set(["decoration:snapshot-decoration"]),
+      gachaPools: new Set(["pool-snapshot"]),
+      rewardAssets: new Set(["reward-snapshot"]),
+      achievements: new Set(["achievement-snapshot"]),
+      storyScripts: new Set(["story.snapshot"]),
+      announcements: new Set(["announcement-snapshot"]),
+      onboardingStoryScripts: new Set(["singleton"])
+    };
+    const prisma = adminDefaultSeedPrisma({ calls, existing });
+
+    await syncAdminDefaultConfig(prisma, sampleSnapshot);
+
+    expect(calls).toContainEqual(["siteSetting.upsert", expect.objectContaining({
+      update: { value: "Snapshot Home" }
+    })]);
+    expect(calls).toContainEqual(["skillTrait.upsert", expect.objectContaining({
+      update: expect.objectContaining({ definition: "不消耗落子。" })
+    })]);
+    expect(calls).toContainEqual(["character.update", expect.objectContaining({
+      where: { slug: "snapshot-character" },
+      data: expect.objectContaining({
+        name: "Snapshot Character",
+        skill: { upsert: expect.any(Object) }
+      })
+    })]);
+    expect(calls).toContainEqual(["decoration.update", expect.objectContaining({
+      where: { slug: "snapshot-decoration" }
+    })]);
+    expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
+      where: { id: "shop-existing" }
+    })]);
+    expect(calls).toContainEqual(["gachaPool.update", expect.objectContaining({
+      where: { id: "pool-snapshot" }
+    })]);
+    expect(calls).toContainEqual(["gachaPrize.upsert", expect.objectContaining({
+      where: { id: "prize-snapshot" },
+      update: expect.objectContaining({ poolId: "pool-snapshot" })
+    })]);
+    expect(calls).toContainEqual(["achievementRewardAsset.upsert", expect.any(Object)]);
+    expect(calls).toContainEqual(["achievement.upsert", expect.any(Object)]);
+    expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({
+      update: { displayName: "Snapshot Track" }
+    })]);
+    expect(calls).toContainEqual(["storyScript.upsert", expect.any(Object)]);
+    expect(calls).toContainEqual(["announcementEntry.upsert", expect.any(Object)]);
+    expect(calls).toContainEqual(["onboardingStoryScript.upsert", expect.any(Object)]);
   });
 
   it("preserves saved character CV metadata when older deployment snapshots omit CV fields", async () => {
@@ -434,6 +492,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     decoration: delegate("decoration"),
     shopItem: delegate("shopItem"),
     gachaPool: delegate("gachaPool"),
+    gachaPrize: delegate("gachaPrize"),
     achievementRewardAsset: delegate("achievementRewardAsset"),
     achievement: delegate("achievement"),
     musicTrackSetting: delegate("musicTrackSetting"),

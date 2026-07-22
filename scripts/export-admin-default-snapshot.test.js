@@ -117,7 +117,10 @@ describe("admin default snapshot export", () => {
 function snapshotPrisma() {
   return {
     siteSetting: {
-      findMany: async () => [{ key: "homeSubtitle", value: "SIGRIKAGO" }]
+      findMany: async () => [
+        { key: "homeSubtitle", value: "SIGRIKAGO" },
+        { key: "migration.internal-marker", value: "done" }
+      ]
     },
     skillTrait: {
       findMany: async () => [{

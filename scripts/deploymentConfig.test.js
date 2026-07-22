@@ -27,7 +27,7 @@ describe("production deployment templates", () => {
     const config = read("deploy/nginx/sigrikago-routes.conf");
 
     expect(config).toContain("max-age=31536000, immutable");
-    expect(config).toContain("max-age=3600, stale-while-revalidate=86400");
+    expect(config).not.toContain("stale-while-revalidate");
     expect(config).toContain('Cache-Control "no-cache"');
     expect(config).toContain("gzip on;");
     expect(config).toContain("application/javascript");
@@ -77,7 +77,9 @@ describe("production deployment templates", () => {
     expect(script).not.toMatch(/^npm ci$/m);
     expect(script).toContain('npm run build -- --outDir "${STAGED_DIST}"');
     expect(script).toContain("if ! nginx -t; then");
-    expect(script).toContain("npm run admin:sync-onboarding -- --apply");
+    expect(script).toContain("npm run admin:sync-defaults");
+    expect(script).toContain("npm run admin:sync-defaults -- --apply");
+    expect(script).not.toContain("npm run admin:sync-onboarding");
     expect(script).toContain('curl --fail --silent --show-error "${HEALTH_URL}"');
 
     expect(script.indexOf("npm ci --include=dev")).toBeLessThan(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"'));
@@ -86,6 +88,8 @@ describe("production deployment templates", () => {
     expect(script.indexOf("if ! nginx -t; then")).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf('systemctl stop "${SERVICE_NAME}"')).toBeLessThan(script.indexOf("npx prisma migrate deploy"));
     expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf('mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"'));
+    expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf("npm run admin:sync-defaults -- --apply"));
+    expect(script.indexOf("npm run admin:sync-defaults -- --apply")).toBeLessThan(script.indexOf('mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"'));
     expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.lastIndexOf('systemctl start "${SERVICE_NAME}"'));
   });
 });

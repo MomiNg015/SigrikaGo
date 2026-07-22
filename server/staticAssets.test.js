@@ -123,7 +123,7 @@ describe("production static assets", () => {
     expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", IMMUTABLE_ASSET_CACHE_CONTROL);
   });
 
-  it("serves mutable runtime assets with a short stale-while-revalidate cache", () => {
+  it("revalidates mutable runtime assets so replacements do not stay visually stale", () => {
     const app = createApp();
     let setHeaders;
     const staticMiddleware = vi.fn((_distDir, options) => {

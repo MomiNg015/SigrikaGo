@@ -143,8 +143,8 @@ systemctl stop "${SERVICE_NAME}"
 SERVICE_STOPPED=1
 
 npx prisma migrate deploy
-npm run admin:sync-onboarding
-npm run admin:sync-onboarding -- --apply
+npm run admin:sync-defaults
+npm run admin:sync-defaults -- --apply
 
 log "Activating the staged frontend bundle."
 mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"

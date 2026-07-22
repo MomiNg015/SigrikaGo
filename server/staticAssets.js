@@ -8,7 +8,7 @@ const RUNTIME_ASSET_PATTERN = /[\\/]assets[\\/]/;
 const TRUTHY_ENV_PATTERN = /^(1|true|yes|on)$/i;
 
 export const IMMUTABLE_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
-export const RUNTIME_ASSET_CACHE_CONTROL = "public, max-age=3600, stale-while-revalidate=86400";
+export const RUNTIME_ASSET_CACHE_CONTROL = "no-cache";
 export const HTML_CACHE_CONTROL = "no-cache";
 
 export function installProductionStaticAssets(app, {
