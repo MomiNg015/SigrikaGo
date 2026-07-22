@@ -33,6 +33,7 @@ import { initializeServerData } from "./serverStartup.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { installProductionStaticAssets } from "./staticAssets.js";
+import { HELMET_OPTIONS } from "./securityHeaders.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
 import { registerSocketEvents } from "./socketEvents.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
@@ -136,21 +137,7 @@ const corsOptions = {
 };
 
 app.set("trust proxy", 1);
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      mediaSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", "https:", "wss:", "ws:"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      frameAncestors: ["'none'"]
-    }
-  }
-}));
+app.use(helmet(HELMET_OPTIONS));
 app.use(cors(corsOptions));
 app.use(createJsonBodyParser());
 app.use(requestBodyErrorHandler);

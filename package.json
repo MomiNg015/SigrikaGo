@@ -31,6 +31,8 @@
     "check:production": "node scripts/check-production-config.mjs",
     "admin:promote": "node scripts/promote-admin.mjs",
     "admin:snapshot": "node scripts/export-admin-default-snapshot.mjs",
+    "admin:snapshot:onboarding": "node scripts/export-admin-default-snapshot.mjs --story-key onboarding.default",
+    "admin:sync-onboarding": "node scripts/sync-admin-default-story.mjs --key onboarding.default",
     "backfill:user-assets": "node scripts/backfill-structured-user-assets.mjs",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push"

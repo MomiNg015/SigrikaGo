@@ -9,8 +9,8 @@ import {
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { validateStoryContent } from "./storyScripts.js";
 
-const EXPECTED_BEGINNER_HASH = "a251baf39ef57ba69440cedd948e8a9948f32a120dcc600590b966032758df24";
-const EXPECTED_EXPERIENCED_HASH = "b8f86443e3aa16c878b9450bff6810f1089b9c97bc79393c608d3aacec8d2230";
+const EXPECTED_BEGINNER_HASH = "826cd411edd5ef10b9f9d04f173ab5599a7e412f4131d4e8a38a04c13dbca15f";
+const EXPECTED_EXPERIENCED_HASH = "546bcf5f79b9137c16fbd213809e4ef0da7c0fa4859fe584fd51fc8a5b073c25";
 
 const BOARD_EXPECTATIONS = Object.freeze({
   "doc-setup-1": expectedBoard(
@@ -140,7 +140,7 @@ describe("admin default onboarding story snapshot", () => {
     expect(nodesById.get("node-4-4-5")).toMatchObject({
       type: "story",
       characterId: "sigrika",
-      text: "不要纠结在这种地方嘛！",
+      text: "不要纠结这种地方嘛！",
       manualContinueEnabled: true,
       autoContinueEnabled: false,
       nextNodeId: "node-4-4-6"
@@ -148,7 +148,7 @@ describe("admin default onboarding story snapshot", () => {
     expect(nodesById.get("node-4-4-6")).toMatchObject({
       type: "story",
       characterId: "sigrika",
-      text: "唔......那就不背术语啦！{username}，坐到这边来，我们还是从棋盘上走一遍吧。",
+      text: "唔......那就不纸上谈兵啦！{username}，坐到这边来，我们还是从棋盘上走一遍吧。",
       manualContinueEnabled: true,
       autoContinueEnabled: false,
       nextNodeId: "doc-setup-1"
@@ -341,7 +341,7 @@ describe("admin default onboarding story snapshot", () => {
       type: "story",
       nextNodeId: "doc-story-153",
       options: [{
-        label: "（目瞪口呆地看着西格莉卡把自己地脸颊拍扁了）",
+        label: "（看着西格莉卡把自己的脸颊拍扁了）",
         nextNodeId: "doc-story-153",
         revealDelaySeconds: "",
         transitionDelaySeconds: 0.2

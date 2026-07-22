@@ -84,6 +84,34 @@ describe("admin default snapshot export", () => {
     expect(rendered).toContain("mailbox batches/history");
     expect(rendered.endsWith("\n")).toBe(true);
   });
+
+  it("can replace one story script without exporting unrelated local admin changes", async () => {
+    const { mergeSelectedStoryScripts } = await import("./export-admin-default-snapshot.mjs");
+    const base = {
+      siteSettings: [{ key: "homeTitle", value: "committed" }],
+      storyScripts: [
+        { key: "onboarding.default", title: "old onboarding" },
+        { key: "item.candy", title: "committed candy" }
+      ]
+    };
+    const local = {
+      siteSettings: [{ key: "homeTitle", value: "unrelated local edit" }],
+      storyScripts: [
+        { key: "onboarding.default", title: "new onboarding" },
+        { key: "item.candy", title: "unrelated local story edit" }
+      ]
+    };
+
+    expect(mergeSelectedStoryScripts(base, local, ["onboarding.default"])).toEqual({
+      siteSettings: base.siteSettings,
+      storyScripts: [
+        { key: "onboarding.default", title: "new onboarding" },
+        { key: "item.candy", title: "committed candy" }
+      ]
+    });
+    expect(() => mergeSelectedStoryScripts(base, local, ["missing.story"]))
+      .toThrow("Story script not found in local database: missing.story");
+  });
 });
 
 function snapshotPrisma() {

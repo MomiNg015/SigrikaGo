@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 
 const DEFAULT_OUTPUT = "server/adminDefaultSnapshot.js";
@@ -96,6 +96,29 @@ export function renderAdminDefaultSnapshot(config, { generatedAt = new Date() } 
 
 function siteSettingSnapshot(row) {
   return pick(row, ["key", "value"]);
+}
+
+export function mergeSelectedStoryScripts(baseConfig, sourceConfig, storyKeys) {
+  const keys = [...new Set((storyKeys ?? []).map((key) => String(key).trim()).filter(Boolean))];
+  if (!keys.length) return sourceConfig;
+
+  const sourceByKey = new Map((sourceConfig.storyScripts ?? []).map((row) => [row.key, row]));
+  const missingKeys = keys.filter((key) => !sourceByKey.has(key));
+  if (missingKeys.length) throw new Error(`Story script not found in local database: ${missingKeys.join(", ")}`);
+
+  const selectedKeys = new Set(keys);
+  const mergedRows = (baseConfig.storyScripts ?? []).map((row) => (
+    selectedKeys.has(row.key) ? sourceByKey.get(row.key) : row
+  ));
+  const existingKeys = new Set(mergedRows.map((row) => row.key));
+  for (const key of keys) {
+    if (!existingKeys.has(key)) mergedRows.push(sourceByKey.get(key));
+  }
+
+  return {
+    ...baseConfig,
+    storyScripts: mergedRows
+  };
 }
 
 function skillTraitSnapshot(row) {
@@ -304,16 +327,40 @@ async function main() {
   const outputArgIndex = process.argv.indexOf("--output");
   const output = outputArgIndex >= 0 ? process.argv[outputArgIndex + 1] : DEFAULT_OUTPUT;
   if (!output) throw new Error("--output requires a file path");
+  const storyKeys = valuesAfter("--story-key");
+  const outputPath = path.resolve(process.cwd(), output);
 
   const prisma = new PrismaClient();
   try {
-    const config = await buildAdminDefaultConfig(prisma);
+    const sourceConfig = await buildAdminDefaultConfig(prisma);
+    const config = storyKeys.length
+      ? mergeSelectedStoryScripts(await loadExistingSnapshot(outputPath), sourceConfig, storyKeys)
+      : sourceConfig;
     const rendered = renderAdminDefaultSnapshot(config);
-    const outputPath = path.resolve(process.cwd(), output);
     await writeFile(outputPath, rendered, "utf8");
-    console.log(`Wrote ${path.relative(process.cwd(), outputPath)}`);
+    const scope = storyKeys.length ? ` (story scripts: ${storyKeys.join(", ")})` : "";
+    console.log(`Wrote ${path.relative(process.cwd(), outputPath)}${scope}`);
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+function valuesAfter(name) {
+  const values = [];
+  for (let index = 0; index < process.argv.length; index += 1) {
+    if (process.argv[index] === name && process.argv[index + 1]) values.push(process.argv[index + 1]);
+  }
+  return values;
+}
+
+async function loadExistingSnapshot(outputPath) {
+  try {
+    const moduleUrl = `${pathToFileURL(outputPath).href}?snapshot=${Date.now()}`;
+    const module = await import(moduleUrl);
+    if (!module.ADMIN_DEFAULT_CONFIG) throw new Error("ADMIN_DEFAULT_CONFIG export is missing");
+    return module.ADMIN_DEFAULT_CONFIG;
+  } catch (error) {
+    throw new Error(`Cannot load the existing snapshot for a scoped export: ${error.message}`);
   }
 }
 
