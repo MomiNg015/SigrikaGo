@@ -73,6 +73,18 @@ function webpDimensions(path) {
   throw new Error(`${path} does not include a VP8X size chunk`);
 }
 
+function webpHasAlpha(path) {
+  const bytes = readFileSync(new URL(path, import.meta.url));
+  let offset = 12;
+  while (offset + 8 <= bytes.length) {
+    const chunkType = bytes.toString("ascii", offset, offset + 4);
+    const chunkLength = bytes.readUInt32LE(offset + 4);
+    if (chunkType === "VP8X") return Boolean(bytes[offset + 8] & 0x10);
+    offset += 8 + chunkLength + (chunkLength % 2);
+  }
+  return false;
+}
+
 function readCssFixture(path) {
   return readCssWithImports(new URL(path, import.meta.url));
 }
@@ -323,7 +335,7 @@ describe("HomeScreen", () => {
     expect(html).toContain('src="/assets/match-modes/mode-spark.png"');
     expect(html).toContain('src="/assets/match-modes/mode-standard.png"');
     expect(html).toContain('src="/assets/match-modes/mode-gomoku.png"');
-    const plaqueModeIcons = html.match(/<img class="plaque-mode-icon"[^>]+>/g) ?? [];
+    const plaqueModeIcons = html.match(/\x3cimg class="plaque-mode-icon"[^>]+>/g) ?? [];
     expect(plaqueModeIcons).toHaveLength(3);
     plaqueModeIcons.forEach((icon) => expect(icon).toContain('decoding="sync"'));
     expect(html).toContain("plaque-mode-rank");
@@ -975,6 +987,23 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("font-size: clamp(1rem, 6.8vw, 1.45rem) !important;");
   });
 
+  it("left-aligns every match mode description line on mobile", () => {
+    const mobileCss = readFileSync(
+      new URL("../styles/mobile-adaptive/phone-core/match-mode.css", import.meta.url),
+      "utf8",
+    );
+    const copyBlock = mobileCss.match(/\.match-mode-copy\s*\{[^}]+\}/)?.[0] ?? "";
+    const descriptionBlock =
+      mobileCss.match(
+        /\.match-mode-copy > strong,[\s\S]+?\.match-mode-rule-line\s*\{[^}]+\}/,
+      )?.[0] ?? "";
+
+    expect(copyBlock).toContain("justify-self: stretch !important");
+    expect(copyBlock).toContain("justify-items: start !important");
+    expect(copyBlock).toContain("text-align: left !important");
+    expect(descriptionBlock).toContain("text-align: left !important");
+  });
+
   it("splits match mode rules into stable mobile lines without a trailing time separator", () => {
     const split = splitMatchModeRules("13路 · 5分钟30秒3次 · 黑贴2又3/4子");
     const html = renderToStaticMarkup(createElement(MatchModeRuleText, {
@@ -1043,9 +1072,42 @@ describe("HomeScreen", () => {
 
   it("renders a sibling practice entry without nesting it inside the Spark match button", () => {
     const html = renderHome({ matchModePickerOpen: true });
-    expect(html).toContain("准时宝对弈");
+    const modalCss = readCssFixture("../styles/modals.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
+    const practiceButtonBlock = modalCss.match(/\.practice-entry-button\s*\{[^}]+\}/)?.[0] ?? "";
+    const practiceWrapBlock = modalCss.match(/\.match-mode-option-wrap\.has-practice-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const practiceImageBlock = modalCss.match(/\.practice-entry-button img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeBlock = brightSchoolCss.match(/button\.practice-entry-button,[\s\S]+?button\.practice-entry-button:active\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobilePracticeBlock = mobileCss.match(/\.practice-entry-button\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(html).toContain('aria-label="准时宝陪练"');
+    expect(html).not.toContain("人机练习设置");
+    expect(html).not.toContain("practice-difficulty");
+    expect(html).not.toContain("practice-color");
+    expect(html).not.toContain("开始练习");
     expect(html).toContain("match-mode-option-wrap has-practice-entry");
-    expect(html).toMatch(/<\/button><button class="practice-entry-button"/);
+    expect(html).toMatch(/<\/button><button aria-label="准时宝陪练" class="practice-entry-button"/);
+    expect(html).toContain('<img src="/assets/home/home-practice-zhunshibao.webp" alt="" aria-hidden="true" decoding="async"/>');
+    expect(isWebp("../../public/assets/home/home-practice-zhunshibao.webp")).toBe(true);
+    expect(webpDimensions("../../public/assets/home/home-practice-zhunshibao.webp")).toEqual({ width: 1500, height: 600 });
+    expect(webpHasAlpha("../../public/assets/home/home-practice-zhunshibao.webp")).toBe(true);
+    expect(practiceButtonBlock).toContain("aspect-ratio: 5 / 2");
+    expect(practiceButtonBlock).toContain("top: 0");
+    expect(practiceButtonBlock).toContain("left: 168px");
+    expect(practiceButtonBlock).toContain("width: 132px");
+    expect(practiceButtonBlock).toContain("transform: translateX(-50%)");
+    expect(practiceButtonBlock).toContain("background: transparent");
+    expect(practiceWrapBlock).toContain("padding-top: 32px");
+    expect(practiceImageBlock).toContain("object-fit: contain");
+    expect(practiceImageBlock).toContain("drop-shadow(0 4px 3px");
+    expect(modalCss).toContain(".practice-entry-button:hover img");
+    expect(modalCss).toContain("rotate(3deg)");
+    expect(modalCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(brightPracticeBlock).toContain("background: transparent !important");
+    expect(brightPracticeBlock).toContain("box-shadow: none !important");
+    expect(mobilePracticeBlock).toContain("width: 126px");
+    expect(mobilePracticeBlock).toContain("left: min(154px, calc(100% - 64px))");
   });
 
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {

@@ -12,25 +12,35 @@
     padding: 12px !important;
   }
 
+  .match-mode-copy {
+    width: 100% !important;
+    justify-self: stretch !important;
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .match-mode-copy > strong,
+  .match-mode-copy small,
+  .match-mode-rule-line {
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .match-mode-option-wrap.has-practice-entry {
+    padding-top: 24px;
+  }
+
   .match-mode-option-wrap.has-practice-entry .match-mode-option {
-    min-height: 112px !important;
-    padding-bottom: 48px !important;
+    min-height: 72px !important;
+    padding: 12px !important;
   }
 
   .practice-entry-button {
-    right: 10px;
-    bottom: 8px;
-    min-height: 40px;
-  }
-
-  .practice-setup fieldset {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .practice-setup label {
-    justify-content: center;
-    padding-inline: 8px;
+    top: 0;
+    left: min(154px, calc(100% - 64px));
+    width: 126px;
+    min-height: 0;
+    transform: translateX(-50%);
   }
 
   .match-mode-watermark {

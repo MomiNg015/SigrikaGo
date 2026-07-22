@@ -2,6 +2,11 @@ export const PRACTICE_MATCH_SOURCE = "practice";
 export const PRACTICE_RECORD_POLICY = "none";
 export const PRACTICE_BOT_ID = "zhunshibao";
 export const PRACTICE_BOT_NAME = "准时宝";
+export const PRACTICE_BOT_PORTRAIT_URL = "/assets/characters/zhunshibao.png";
+export const PRACTICE_QUICK_START_OPTIONS = Object.freeze({
+  difficulty: "basic",
+  playerColor: "random"
+});
 
 export const PRACTICE_DIFFICULTIES = Object.freeze({
   beginner: {

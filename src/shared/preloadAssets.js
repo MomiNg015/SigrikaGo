@@ -154,6 +154,7 @@ export function battlePreloadAssets({
 
   const criticalImages = compactUnique([
     ...roomCharacters.map((character) => character?.portrait),
+    ...players.map((player) => player.botProfile?.portraitUrl),
     ...(skillEnabled ? RUNTIME_IMAGE_ASSETS.effects : [])
   ]);
   const criticalAudio = compactUnique([

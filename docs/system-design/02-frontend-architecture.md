@@ -35,7 +35,7 @@
 - `ChatBox`: 对局聊天浮动按钮与弹出面板。
 - `SkillBanner`: 技能演出浮层。
 - `ResultModal`: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。
-- 星炬模式选择项使用 `.match-mode-option-wrap` 保持正式匹配按钮与右下角“准时宝对弈”按钮为并列交互元素，禁止嵌套按钮并保留键盘焦点。人机设置在同一模式选择层内逐步展开，提供入门/基础与黑/白/随机原生 radio，并明示“不计成长、不保存棋谱”；`useMatchActions.startPractice` 预热 Spark 对局资源后发送 `practice:start`，后续继续复用 `match:found` 过渡。练习结果页不渲染积分/金币卡片，只显示“人机练习 · 不计成长 · 不保存棋谱”。准时宝在玩家条使用无图片的中性“准”占位，房间成员行禁用资料、好友和黑名单入口。
+- 星炬模式选择项使用 `.match-mode-option-wrap` 保持正式匹配按钮与准时宝陪练入口为并列交互元素，禁止嵌套按钮并保留键盘焦点。入口按钮以 `/assets/home/home-practice-zhunshibao.webp` 透明图作为完整视觉内容，按钮本身保留“准时宝陪练”可访问名称；桌面 132px、竖屏 126px 的紧凑标签绝对定位在“星炬对弈”标题右上方，其水平中心线与卡片上边框平齐且不覆盖标题。透明图使用 `drop-shadow` 保留轮廓层次，悬停时顺时针旋转 3 度，`prefers-reduced-motion` 下取消变换。点击入口直接使用共享 `PRACTICE_QUICK_START_OPTIONS` 发送基础难度、随机黑白的 `practice:start`，不再渲染二次设置层；`useMatchActions.startPractice` 预热 Spark 对局资源，后续继续复用 `match:found` 过渡。共享 `OpeningModal` 在练习房执色标题下增加红色提子胜利规则，阈值从 `room.practice.difficulty` 对应配置读取，当前基础快速开局显示 22，普通房间不渲染。`battlePreloadAssets` 把安全投影的 `botProfile.portraitUrl` 纳入关键图片，`PlayerInfo` 使用 `/assets/characters/zhunshibao.png` 透明机器人立绘并保留文字回退与可访问替代文本。有立绘时，准时宝不使用教学 `.no-character` 头像框或专属缩放，桌面继承普通角色 `width: 100% / height: var(--side-portrait)`，竖屏继承统一 `46px` 规则；仅资源缺失时使用无角色回退。准时宝没有评分和技能时复用已有不可见占位，保留普通角色信息区的评分与技能网格轨道，使双方卡片等高而不展示虚假数据。练习结果页不渲染积分/金币卡片，只显示“人机练习 · 不计成长 · 不保存棋谱”；房间成员行禁用资料、好友和黑名单入口。
 - `TestTools`: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。
 
 ### 前端通用函数

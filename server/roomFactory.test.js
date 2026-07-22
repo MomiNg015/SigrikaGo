@@ -132,6 +132,7 @@ describe("roomFactory", () => {
     });
     const bot = room.players.find((player) => player.isBot);
     expect(bot).toMatchObject({ color: COLORS.black, characterId: null, user: { username: "准时宝", rating: null } });
+    expect(bot.botProfile.portraitUrl).toBe("/assets/characters/zhunshibao.png");
     expect(room.preload.readyUserIds).toEqual([bot.user.id]);
     expect(room.game.skillUses[COLORS.black]).toBe(0);
     expect(room.players.find((player) => !player.isBot).color).toBe(COLORS.white);

@@ -8,6 +8,7 @@ import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/r
 import {
   PRACTICE_BOT_ID,
   PRACTICE_BOT_NAME,
+  PRACTICE_BOT_PORTRAIT_URL,
   PRACTICE_MATCH_SOURCE,
   PRACTICE_RECORD_POLICY,
   practiceDifficulty
@@ -103,7 +104,7 @@ export function createPracticeRoom(player, {
     botProfile: {
       id: PRACTICE_BOT_ID,
       name: PRACTICE_BOT_NAME,
-      portraitUrl: ""
+      portraitUrl: PRACTICE_BOT_PORTRAIT_URL
     },
     time: createPlayerClock()
   };

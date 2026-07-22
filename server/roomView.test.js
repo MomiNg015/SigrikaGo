@@ -99,7 +99,7 @@ describe("room view serialization", () => {
       socketId: null,
       isBot: true,
       user: { ...room.players[1].user, isBot: true },
-      botProfile: { id: "zhunshibao", name: "准时宝", portraitUrl: "" }
+      botProfile: { id: "zhunshibao", name: "准时宝", portraitUrl: "/assets/characters/zhunshibao.png" }
     };
 
     const view = buildRoomView(room, "black-user");
@@ -111,7 +111,11 @@ describe("room view serialization", () => {
       botColor: COLORS.white
     });
     expect(view.practice).not.toHaveProperty("botActorId");
-    expect(view.players[1]).toMatchObject({ isBot: true, connected: true, botProfile: { id: "zhunshibao" } });
+    expect(view.players[1]).toMatchObject({
+      isBot: true,
+      connected: true,
+      botProfile: { id: "zhunshibao", portraitUrl: "/assets/characters/zhunshibao.png" }
+    });
   });
 
   it("treats finished room players as spectator viewers", () => {

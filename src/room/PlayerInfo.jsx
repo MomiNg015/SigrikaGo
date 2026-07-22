@@ -53,6 +53,9 @@ function PlayerInfo({
   const hasCharacter = !(player.character === null && !player.characterId);
   const isNoCharacter = !hasCharacter;
   const isBot = Boolean(player.isBot || player.user?.isBot);
+  const isPracticeBot = isBot && isNoCharacter;
+  const botPortraitUrl = isBot ? player.botProfile?.portraitUrl : "";
+  const useNoCharacterPortraitLayout = isNoCharacter && !botPortraitUrl;
   const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
@@ -62,8 +65,11 @@ function PlayerInfo({
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
-  const showNoCharacterSkillPlaceholder = skillEnabled && player.isTutorialPlayer && isNoCharacter;
-  const showNoCharacterRolePlaceholder = player.isTutorialPlayer && isNoCharacter;
+  const keepNoCharacterCardSlots = isNoCharacter && (player.isTutorialPlayer || isPracticeBot);
+  const showNoCharacterSkillPlaceholder = skillEnabled && keepNoCharacterCardSlots;
+  const showNoCharacterRankPlaceholder = keepNoCharacterCardSlots && !player.user.rank;
+  const showNoCharacterRatingPlaceholder = keepNoCharacterCardSlots
+    && (player.user.rating === "" || player.user.rating == null);
   const isGomoku = gameModeFamily(game.mode) === "gomoku";
   const showGoStats = !isGomoku;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
@@ -74,7 +80,9 @@ function PlayerInfo({
   const portraitContent = (
     <>
       {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
-      {isBot && isNoCharacter && <span className="practice-bot-portrait" aria-label="准时宝">准</span>}
+      {isBot && isNoCharacter && (botPortraitUrl
+        ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
+        : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
       {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
       {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       {canSwitchView && (
@@ -86,13 +94,13 @@ function PlayerInfo({
   );
   return (
     <aside
-      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
+      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${isPracticeBot ? "practice-bot-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
       style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
     >
       {canSwitchView ? (
         <button
           type="button"
-          className={`portrait-wrap portrait-viewpoint-button ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}
+          className={`portrait-wrap portrait-viewpoint-button ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${useNoCharacterPortraitLayout ? "no-character" : ""} ${isPracticeBot ? "practice-bot-portrait-wrap" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}
           aria-label={isSelectedView ? `当前为${viewpointLabel}视角` : `切换至${viewpointLabel}视角`}
           aria-pressed={isSelectedView}
           onClick={() => onViewColor?.(player.color)}
@@ -100,7 +108,7 @@ function PlayerInfo({
           {portraitContent}
         </button>
       ) : (
-        <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
+        <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${useNoCharacterPortraitLayout ? "no-character" : ""} ${isPracticeBot ? "practice-bot-portrait-wrap" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
           {portraitContent}
         </div>
       )}
@@ -109,9 +117,10 @@ function PlayerInfo({
           <UserIdentity user={player.user} compact />
         </div>
         {(hasCharacter || isBot) && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
-        {showNoCharacterRolePlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
+        {showNoCharacterRankPlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
         {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
+        {showNoCharacterRatingPlaceholder && <span className="meta-tag rating-tag meta-placeholder" aria-hidden="true" />}
       </div>
       <TimeBar time={player.time} />
       {showGoStats && <div className="captures">
@@ -247,6 +256,7 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
     && previousPlayer?.character === nextPlayer?.character
     && previousPlayer?.isTutorialPlayer === nextPlayer?.isTutorialPlayer
     && previousPlayer?.isBot === nextPlayer?.isBot
+    && previousPlayer?.botProfile?.portraitUrl === nextPlayer?.botProfile?.portraitUrl
     && previousPlayer?.user === nextPlayer?.user
     && previousPlayer?.captures === nextPlayer?.captures
     && previousPlayer?.skillRemovals === nextPlayer?.skillRemovals

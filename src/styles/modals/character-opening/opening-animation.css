@@ -22,3 +22,10 @@
   color: #67586d;
   font-weight: 700;
 }
+
+.opening-modal .practice-opening-rule {
+  color: #c62828;
+  font-weight: 900;
+  line-height: 1.4;
+  text-align: center;
+}

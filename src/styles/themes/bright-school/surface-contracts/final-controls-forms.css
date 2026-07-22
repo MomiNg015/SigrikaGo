@@ -58,6 +58,19 @@
   transform: translateY(-1px) !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:active {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  transform: translateX(-50%) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school select {

@@ -3,12 +3,12 @@ export const CSS_DEBT_BASELINE = {
   scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight nameplate shells plus their reduced-motion owners, Aemeath exact-ID username treatment and radial snowfluff core, the point-local Aemeath rainbow-move pixel ring and reduced-motion static fallback, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox item attachment art/name row, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared orange preload fill-flow, borderless warm-glow, upright endpoint-glide, and disabled password-toggle centering owners, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
     totalFiles: 612,
-    totalBytes: 1222295,
-    importantCount: 7387,
-    importantFiles: 294,
+    totalBytes: 1223326,
+    importantCount: 7390,
+    importantFiles: 293,
     hardcodedHexCount: 2334,
     mediaFiles: 230,
-    reducedMotionFiles: 32,
+    reducedMotionFiles: 33,
     highZIndexFiles: 7
   },
   guidance:
