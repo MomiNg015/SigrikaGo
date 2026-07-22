@@ -94,7 +94,7 @@ describe("modal dismissal", () => {
     expect(appSource).toContain('if (view === "room" && room)');
     expect(appSource).toContain("setRoomBackRequestId((current) => current + 1)");
     expect(appSource).toContain("onRequestExit: requestRootBack");
-    expect(appSource).toContain("roomBackRequestId={roomBackRequestId}");
+    expect(appSource).toMatch(/routeState:\s*\{[\s\S]*?roomBackRequestId,/);
     expect(routesSource).toContain("mobileBackRequestId={roomBackRequestId}");
     expect(roomSource).toContain("handledMobileBackRequestIdRef");
     expect(roomSource).toContain("requestExitConfirm();");

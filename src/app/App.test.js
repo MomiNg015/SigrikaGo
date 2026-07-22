@@ -148,6 +148,8 @@ describe("App startup preload wiring", () => {
 
     expect(source).toContain("const [recruitmentInteractionLocked, setRecruitmentInteractionLocked]");
     expect(source).toContain("if (recruitmentInteractionLocked) return;");
-    expect(source).toContain("onRecruitmentInteractionLockChange={setRecruitmentInteractionLocked}");
+    expect(source).toMatch(
+      /overlayActions:\s*\{[\s\S]*?onRecruitmentInteractionLockChange: setRecruitmentInteractionLocked/
+    );
   });
 });

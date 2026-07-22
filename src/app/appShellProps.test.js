@@ -18,6 +18,7 @@ describe("app shell prop adapters", () => {
       },
       routeState: {
         room: { code: "12345" },
+        roomBackRequestId: 3,
         socket,
         view: "room",
         user: { id: "user-1" }
@@ -29,6 +30,7 @@ describe("app shell prop adapters", () => {
 
     expect(props.view).toBe("room");
     expect(props.user).toEqual({ id: "user-1" });
+    expect(props.roomBackRequestId).toBe(3);
     expect(props.showHouse).toBe(true);
     expect(props.setShowHouse).toBe(overlayProps.setShowHouse);
     expect(emit).toHaveBeenCalledWith("counting:request", { roomCode: "12345" });
@@ -37,11 +39,13 @@ describe("app shell prop adapters", () => {
 
   it("builds overlay props from grouped state, actions, and registered overlays", () => {
     const showToast = vi.fn();
+    const onRecruitmentInteractionLockChange = vi.fn();
     const overlayProps = overlayPropsFixture();
     const activeStoryPlayer = { script: { key: "story" }, labels: { next: "继续" }, onComplete: vi.fn() };
     const props = buildAppOverlayProps({
       overlayActions: {
         clearStoryPlayer: vi.fn(),
+        onRecruitmentInteractionLockChange,
         openStoryPlayer: vi.fn(),
         showToast
       },
@@ -57,6 +61,7 @@ describe("app shell prop adapters", () => {
 
     expect(props.showHouse).toBe(true);
     expect(props.setShowHouse).toBe(overlayProps.setShowHouse);
+    expect(props.onRecruitmentInteractionLockChange).toBe(onRecruitmentInteractionLockChange);
     expect(props.storyPlayerScript).toMatchObject({
       ...activeStoryPlayer,
       open: props.openStoryPlayer,
