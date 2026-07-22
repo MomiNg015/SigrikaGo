@@ -327,5 +327,6 @@ export default function AppOverlays({
 }
 
 function isUnifiedTutorialScript(script) {
+  if (script?.triggerType === "item-character-use") return false;
   return (script?.nodes ?? []).some((node) => !isStoryNodeType(node?.type));
 }

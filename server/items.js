@@ -18,6 +18,11 @@ import {
 import { isRecruitmentInventoryItem } from "./recruitment.js";
 import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
 import { shopCatalogImageUrl } from "./itemImages.js";
+import {
+  RAINBOW_BEAN_CANDY_OUTCOMES,
+  rollRainbowBeanCandyOutcome,
+  selectRainbowBeanCandyStoryBranch
+} from "./rainbowBeanCandyStory.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -37,7 +42,7 @@ export async function listItemInventory({ prisma, userId }) {
   return { items: await inventoryPayload(prisma, user) };
 }
 
-export async function useInventoryItem({ prisma, userId, itemId, characterId = "" }) {
+export async function useInventoryItem({ prisma, userId, itemId, characterId = "", random = Math.random }) {
   return prisma.$transaction(async (tx) => {
     const [user, item] = await Promise.all([
       tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } }),
@@ -63,16 +68,6 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     }
 
     const effect = resolveItemEffect({ item, user, characterId: targetCharacter });
-    ownedItems[item.targetId] -= 1;
-    if (ownedItems[item.targetId] <= 0) delete ownedItems[item.targetId];
-    const updated = await tx.user.update({
-      where: { id: user.id },
-      data: {
-        ownedItems: serializeOwnedItems(ownedItems),
-        ...effect.data
-      }
-    });
-    await syncStructuredUserAssets(tx, updated);
     const publicItem = toItemPayload(item);
     const target = targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType };
     const storyScript = targetType === "character" ? await getPublishedStoryScriptForTrigger({
@@ -88,14 +83,43 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
         itemName: item.name
       }
     }) : null;
+    const itemUseOutcome = item.targetId === RAINBOW_BEAN_CANDY_ID
+      ? rollRainbowBeanCandyOutcome(targetCharacter, random)
+      : RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
+    const selectedStoryScript = item.targetId === RAINBOW_BEAN_CANDY_ID
+      ? selectRainbowBeanCandyStoryBranch(storyScript, itemUseOutcome)
+      : storyScript;
 
+    if (itemUseOutcome === RAINBOW_BEAN_CANDY_OUTCOMES.rejected) {
+      return {
+        user: publicUser(user),
+        items: await inventoryPayload(tx, user),
+        item: publicItem,
+        effectText: "",
+        storyScript: selectedStoryScript,
+        target,
+        itemUseOutcome
+      };
+    }
+
+    ownedItems[item.targetId] -= 1;
+    if (ownedItems[item.targetId] <= 0) delete ownedItems[item.targetId];
+    const updated = await tx.user.update({
+      where: { id: user.id },
+      data: {
+        ownedItems: serializeOwnedItems(ownedItems),
+        ...effect.data
+      }
+    });
+    await syncStructuredUserAssets(tx, updated);
     return {
       user: publicUser(updated),
       items: await inventoryPayload(tx, updated),
       item: publicItem,
       effectText: effect.effectText,
-      storyScript,
-      target
+      storyScript: selectedStoryScript,
+      target,
+      itemUseOutcome
     };
   });
 }
@@ -153,8 +177,7 @@ function resolveItemEffect({ item, user, characterId }) {
     if (itemEffects.sigrikaCandyDisabled) throw routeError(400, "西格莉卡已经处于糖果效果中");
     const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
     const data = {
-      itemEffects: serializeItemEffects({ ...itemEffects, sigrikaCandyDisabled: true }),
-      coins: { increment: 30 }
+      itemEffects: serializeItemEffects({ ...itemEffects, sigrikaCandyDisabled: true })
     };
     if (selectedCharacter === "sigrika") {
       data.selectedCharacter = fallbackSelectedCharacter(user);

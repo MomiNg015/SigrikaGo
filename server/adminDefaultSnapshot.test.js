@@ -8,6 +8,7 @@ import {
 } from "../src/tutorial/tutorialGameState.js";
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { validateStoryContent } from "./storyScripts.js";
+import { defaultRainbowBeanCandyStoryDraft } from "./rainbowBeanCandyStory.js";
 
 const EXPECTED_BEGINNER_HASH = "826cd411edd5ef10b9f9d04f173ab5599a7e412f4131d4e8a38a04c13dbca15f";
 const EXPECTED_EXPERIENCED_HASH = "546bcf5f79b9137c16fbd213809e4ef0da7c0fa4859fe584fd51fc8a5b073c25";
@@ -47,6 +48,28 @@ const BOARD_EXPECTATIONS = Object.freeze({
 });
 
 describe("admin default onboarding story snapshot", () => {
+  it("publishes both Word-authored candy outcomes with blank narration identity", () => {
+    for (const characterId of ["sigrika", "denia"]) {
+      const script = ADMIN_DEFAULT_CONFIG.storyScripts.find((entry) => entry.key === `item.rainbow-bean-candy.${characterId}`);
+      const expected = defaultRainbowBeanCandyStoryDraft(characterId);
+      const draftNodes = JSON.parse(script.draftNodesJson);
+      const publishedNodes = JSON.parse(script.publishedNodesJson);
+
+      expect(script.draftStartNodeId).toBe("accepted-start");
+      expect(script.publishedStartNodeId).toBe("accepted-start");
+      expect(draftNodes).toEqual(expected.nodes);
+      expect(publishedNodes).toEqual(expected.nodes);
+      expect(validateStoryContent({ startNodeId: script.publishedStartNodeId, nodes: publishedNodes }, { publishing: true }).nodes)
+        .toHaveLength(expected.nodes.length);
+      expect(publishedNodes.some((node) => node.id === "rejected-start")).toBe(true);
+      expect(publishedNodes.filter((node) => node.type === "story" && !node.characterId))
+        .toEqual(expect.arrayContaining([
+          expect.objectContaining({ speakerName: "", characterId: "" })
+        ]));
+      expect(publishedNodes.some((node) => node.speakerName === "旁白")).toBe(false);
+    }
+  });
+
   it("ships the Danya 100 spark wins nameplate reward and achievement", () => {
     const reward = ADMIN_DEFAULT_CONFIG.achievementRewardAssets.find(({ id }) => id === "reward-denia-spark-100-wins-nameplate");
     const achievement = ADMIN_DEFAULT_CONFIG.achievements.find(({ key }) => key === "denia-spark-100-wins");

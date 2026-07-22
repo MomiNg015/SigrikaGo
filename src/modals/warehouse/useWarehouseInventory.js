@@ -44,12 +44,20 @@ export function useWarehouseInventory({
       });
       setItems(data.items ?? []);
       onUserChange(data.user);
+      const rejected = data.itemUseOutcome === "rejected";
       if (data.storyScript && data.target?.characterId) {
         const character = characters[data.target.characterId];
         setTargetItem(null);
         setTargetResult(null);
-        onStoryScript?.(data.storyScript, itemStoryLabels(data.item?.name ?? item.name));
-        onNotice?.(`对${character?.name ?? data.target.characterId}成功使用了${item.name}`, "success");
+        onStoryScript?.(data.storyScript, itemStoryLabels(data.item?.name ?? item.name, data.itemUseOutcome));
+        const notice = characterItemUseNotice(character?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
+        onNotice?.(notice.message, notice.type);
+      } else if (rejected && data.target?.characterId) {
+        const character = characters[data.target.characterId];
+        const notice = characterItemUseNotice(character?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
+        setTargetItem(null);
+        setTargetResult(null);
+        onNotice?.(notice.message, notice.type);
       } else if (data.effectText && data.target?.characterId) {
         const character = characters[data.target.characterId];
         setTargetResult({
@@ -99,14 +107,22 @@ function notifyAchievementUnlocks(unlocks = [], onNotice) {
   }
 }
 
-function itemStoryLabels(itemName) {
+export function itemStoryLabels(itemName, itemUseOutcome = "accepted") {
   return {
     title: itemName || "道具互动",
     fastForward: "快进并跳过剧情",
     skipTitle: "确认跳过剧情？",
-    skipMessage: "跳过只会关闭这段演出，道具效果已经生效。",
+    skipMessage: itemUseOutcome === "rejected"
+      ? "跳过只会关闭这段演出，道具没有消耗，效果也没有生效。"
+      : "跳过只会关闭这段演出，道具效果已经生效。",
     noScript: "暂无可播放的剧情内容",
     close: "关闭剧情",
     textLabel: "道具互动剧情文本"
   };
+}
+
+export function characterItemUseNotice(characterName, itemName, itemUseOutcome = "accepted") {
+  return itemUseOutcome === "rejected"
+    ? { message: `${characterName}拒绝了${itemName}，道具未消耗`, type: "danger" }
+    : { message: `对${characterName}成功使用了${itemName}`, type: "success" };
 }

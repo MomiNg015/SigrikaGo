@@ -111,6 +111,7 @@ describe("commerce route handlers", () => {
       prisma: {},
       useInventoryItemFn: async () => ({
         ok: true,
+        itemUseOutcome: "accepted",
         item: { targetId: "rainbow-bean-candy" },
         target: { characterId: "denia" }
       }),
@@ -133,6 +134,33 @@ describe("commerce route handlers", () => {
       triggerEvent: ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy
     });
     expect(res.body.achievementUnlocks).toEqual([{ id: "achievement-denia-rainbow-bean-candy" }]);
+  });
+
+  it("does not trigger the Denia candy achievement when she rejects the item", async () => {
+    let achievementArgs = null;
+    const handlers = createCommerceRouteHandlers({
+      prisma: {},
+      useInventoryItemFn: async () => ({
+        ok: true,
+        itemUseOutcome: "rejected",
+        item: { targetId: "rainbow-bean-candy" },
+        target: { characterId: "denia" }
+      }),
+      evaluateAchievementsForUserFn: async (args) => {
+        achievementArgs = args;
+        return [];
+      }
+    });
+    const res = createResponse();
+
+    await handlers.useItem({
+      user: { id: "user-1" },
+      params: { itemId: "rainbow-bean-candy" },
+      body: { characterId: "denia" }
+    }, res);
+
+    expect(achievementArgs).toEqual({ prisma: {}, userId: "user-1", triggerEvent: "" });
+    expect(res.body.achievementUnlocks).toBeUndefined();
   });
 
   it("mounts all commerce routes behind the index-level auth middleware", () => {

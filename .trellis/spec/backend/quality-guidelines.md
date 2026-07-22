@@ -220,6 +220,67 @@ Correct:
 { id: item.targetId, sourceId: item.id, name: item.name || item.targetId || item.id }
 ```
 
+### Scenario: Rainbow Bean Candy Rejection Settlement And Story Branching
+
+#### 1. Scope / Trigger
+- Trigger: changing rainbow bean candy probability, `useInventoryItem()`, candy story nodes, the Denia candy achievement event, or warehouse item-use feedback.
+- This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, and achievement evaluation.
+
+#### 2. Signatures
+- `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `itemUseOutcome: "accepted" | "rejected"`.
+- `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`.
+- Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
+
+#### 3. Contracts
+- Resolve ownership, target validity, an already-active effect, and Sigrika fallback-character availability before rolling. Invalid use remains an HTTP error and never turns into a narrative rejection.
+- For supported candy characters, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
+- Rejection performs no user/structured-asset write, does not decrement inventory, does not switch Sigrika, does not trigger the Denia candy achievement, and selects `rejected-start` in the returned published script.
+- Acceptance consumes one candy, applies the existing temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins.
+- Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
+
+#### 4. Validation & Error Matrix
+- Unsupported candy character -> existing HTTP 400 no-effect error, no random narrative branch.
+- Candy effect already active -> existing HTTP 400 active-effect error, no consumption or random narrative branch.
+- Sigrika is selected and no alternate owned character exists -> existing HTTP 400 fallback error before the roll.
+- Rejected response with a published branch -> HTTP 200, unchanged user/items, blank `effectText`, `itemUseOutcome: "rejected"`, story `startNodeId: "rejected-start"`.
+- Accepted response without a published script -> preserve the legacy `effectText` fallback.
+
+#### 5. Good/Base/Bad Cases
+- Good: an injected `0.349999` rejects Denia, keeps the candy, leaves `deniaRainbowGlow` unset, and suppresses `denia-rainbow-bean-candy`.
+- Base: an injected `0.35` accepts, proving the exact 35% boundary without an off-by-one gap.
+- Bad: decrementing inventory before the roll and trying to restore it on rejection, because structured sync and achievement side effects can already have escaped.
+- Bad: setting narrator `speakerName: "旁白"`, because the player window must leave the character region blank.
+
+#### 6. Tests Required
+- `server/rainbowBeanCandyStory.test.js` locks the probability boundary, stable start ids, Word-authored lines, and blank narrator identity.
+- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for both characters.
+- `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
+- `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
+- `src/modals/WarehouseModal.test.js` asserts rejection toast and skip copy do not claim success or consumption.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+ownedItems[itemId] -= 1;
+const rejected = Math.random() < 0.35;
+```
+
+Correct:
+
+```js
+const outcome = rollRainbowBeanCandyOutcome(characterId, random);
+if (outcome === "rejected") {
+  return {
+    user: publicUser(user),
+    items: await inventoryPayload(tx, user),
+    itemUseOutcome: outcome
+  };
+}
+ownedItems[itemId] -= 1;
+```
+
 Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
 
 Tests touching this boundary should cover room creation, ready count broadcasts, both-ready opening transition, timeout abort, and socket event registration.

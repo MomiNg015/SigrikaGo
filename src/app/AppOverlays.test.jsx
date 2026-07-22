@@ -49,6 +49,34 @@ describe("AppOverlays", () => {
     expect(markup).toContain("道具互动");
     expect(markup).toContain("剧情对话文本");
   });
+
+  it("keeps item-character choice nodes in the generic story player", () => {
+    const tree = AppOverlays(overlayProps({
+      showStoryPlayer: true,
+      storyPlayerScript: {
+        script: {
+          triggerType: "item-character-use",
+          startNodeId: "accepted-start",
+          nodes: [{
+            id: "accepted-start",
+            type: "player-choice",
+            speakerName: "",
+            characterId: "",
+            text: "",
+            nextNodeId: "",
+            options: [{ label: "把彩虹豆豆跳跳糖递给西格莉卡", nextNodeId: "accepted-admire" }]
+          }]
+        },
+        labels: { title: "彩虹豆豆跳跳糖" },
+        clear: vi.fn(),
+        open: vi.fn()
+      }
+    }));
+
+    expect(findElementByType(tree, StoryPlayerModal)).not.toBeNull();
+    expect(findElementByType(tree, TutorialSessionModal)).toBeNull();
+  });
+
   it("renders unified tutorial scripts through the tutorial session surface", () => {
     const onComplete = vi.fn();
     const onExit = vi.fn();
