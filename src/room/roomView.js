@@ -66,9 +66,10 @@ export function roomPeople(room) {
     username: player.user.username,
     rank: player.user.rank,
     rating: player.user.rating,
+    ...(player.isBot || player.user?.isBot ? { isBot: true } : {}),
     achievementEquipment: player.user.achievementEquipment ?? null,
     achievementEquipmentAssets: player.user.achievementEquipmentAssets ?? null,
-    connected: player.connected
+    ...(player.connected === undefined ? {} : { connected: player.connected })
   }));
   const spectators = (room.spectators ?? []).map((spectator) => ({
     id: `spectator-${spectator.user.id}`,

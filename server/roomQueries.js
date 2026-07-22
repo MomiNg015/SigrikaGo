@@ -1,4 +1,5 @@
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
+import { PRACTICE_MATCH_SOURCE } from "../src/shared/practiceMode.js";
 import {
   onlineParticipantCount as defaultOnlineParticipantCount,
   watchPlayerSummary as defaultWatchPlayerSummary
@@ -17,8 +18,10 @@ export function createRoomQueries({
   }
 
   function listWatchRooms() {
-    if (roomReadModel?.listWatchRooms) return roomReadModel.listWatchRooms();
-    return [...rooms.values()].map((room) => ({
+    if (roomReadModel?.listWatchRooms) {
+      return roomReadModel.listWatchRooms().filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE);
+    }
+    return [...rooms.values()].filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE).map((room) => ({
       code: room.code,
       mode: room.mode ?? room.game.mode ?? "spark",
       onlineCount: onlineParticipantCount(room),

@@ -79,6 +79,9 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
+<li>星炬模式提供服务端权威的“准时宝”人机练习：客户端通过 <code>practice:start</code> 选择入门/基础和黑/白/随机执色，练习房固定 <code>rated=false</code>、<code>matchSource=practice</code>、<code>recordPolicy=none</code>，复用正式预加载、开局、5 分钟与 30 秒 3 次读秒、技能、数子、断线恢复和运行快照。虚拟玩家 <code>zhunshibao</code> 无角色与技能并自动 ready；练习房计入活跃房间容量，但不进入匹配人数、队列或公开观战列表，也不生成 <code>GameRecord</code>、奖励、成长和任务进度。准时宝只从自身 <code>gameViewForColor</code> 评价至多 48 个候选点；入门/基础分别在玩家普通提子达到 11/22 子后于下一次行动前认输，<code>skillRemovals</code> 不计入阈值。</li>
+</ul>
+<ul>
 <li>Prisma Migrate 的生产历史以完整 SQLite <code>0_init</code> 为唯一基线：新库直接 <code>migrate deploy</code>，已有预上线库必须停服备份并通过 schema diff 后再显式 <code>migrate resolve --applied 0_init</code>；<code>npm run verify:migrations</code> 在隔离临时库验证空库部署、旧库无损接管、重复 deploy 和 schema 一致性，应用启动不会自动修改迁移历史。</li>
 </ul>
 <ul>
@@ -2313,6 +2316,9 @@
 <li><code>ResultModal</code>: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。</li>
 </ul>
 <ul>
+<li>星炬模式选择项使用 <code>.match-mode-option-wrap</code> 保持正式匹配按钮与右下角“准时宝对弈”按钮为并列交互元素，禁止嵌套按钮并保留键盘焦点。人机设置在同一模式选择层内逐步展开，提供入门/基础与黑/白/随机原生 radio，并明示“不计成长、不保存棋谱”；<code>useMatchActions.startPractice</code> 预热 Spark 对局资源后发送 <code>practice:start</code>，后续继续复用 <code>match:found</code> 过渡。练习结果页不渲染积分/金币卡片，只显示“人机练习 · 不计成长 · 不保存棋谱”。准时宝在玩家条使用无图片的中性“准”占位，房间成员行禁用资料、好友和黑名单入口。</li>
+</ul>
+<ul>
 <li><code>TestTools</code>: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。</li>
 </ul>
 <h3>前端通用函数</h3>
@@ -2943,6 +2949,9 @@
 <li><code>server/index.js</code> 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 <code>server/serverStartup.js</code>，具体 HTTP 领域逻辑已逐步拆到 <code>*Routes.js</code> 和领域模块，Socket 连接事件套件已由 <code>server/socketEvents.js</code> 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 <code>server/socket*Events.js</code> 分组模块维护。</li>
 </ul>
 <ul>
+<li><code>server/socketPracticeEvents.js</code> owns <code>practice:start</code> with request <code>{ difficulty: &quot;beginner&quot; | &quot;basic&quot;, playerColor: &quot;black&quot; | &quot;white&quot; | &quot;random&quot; }</code> and ack <code>{ ok, roomCode?, error?, code? }</code>. It refreshes the authenticated user, applies the ordinary new-match capacity gate, rejects users already in an active room, leaves matchmaking, then creates a Spark practice room through the normal room lifecycle. Practice rooms use <code>rated=false</code>, <code>matchSource=&quot;practice&quot;</code>, and <code>recordPolicy=&quot;none&quot;</code>; the virtual <code>zhunshibao</code> participant is preloaded, has no character/skill, never owns a socket or social identity, and is projected as virtually connected only in the viewer room payload.</li>
+</ul>
+<ul>
 <li>Realtime room behavior is composed in <code>server/rooms.js</code>; <code>server/roomMembershipIndex.js</code> maintains userId/socketId to roomCode indexes for active-room checks, <code>room:resume</code>, and <code>disconnect</code> cleanup so growing room counts do not force full scans.</li>
 </ul>
 <ul>
@@ -3369,6 +3378,8 @@
 <p>单房首次观战接入受 <code>MAX_SPECTATORS_PER_ROOM</code> 控制，默认 20。<code>server/socketRoomEvents.js</code> 在产生加入副作用前返回明确“观战席已满”提示，<code>server/roomConnectionLifecycle.js</code> 在权威连接边界再次执行同一共享规则；已有观战者更换 Socket 重连不会占用新名额，也不会被全局软上限挡住。</p>
 <p><code>server/lobbyStatsBroadcaster.js</code> 把连接、断开、匹配加入/退出和约战完成触发的全局 <code>lobby:stats</code> 合并为 100ms trailing broadcast，并在 payload 与上次完全相同时跳过发送。新连接仍立即收到自己的初始统计；同一重连突发只产生有限的全局扇出。运行指标分别记录请求次数和实际发送次数，便于后台观察合并率。</p>
 <p>房间创建先写入创建/模式系统通知，再完成一次初始强制持久化，最后只向两名玩家分别发送 <code>match:found</code>。后续资源 ready、opening/playing 转换继续通过已有权威房间更新传播；不再为刚创建且没有观战者的房间立刻发送第二份等价 <code>room:update</code>。</p>
+<p>练习房继续使用同一 <code>match:found</code>、资源 ready、opening、权威 action ack、技能演出、棋钟、数子和 <code>room:resume</code> 通路。<code>server/practiceRoomAutomation.js</code> 在每次完整房间/在线状态广播后做幂等调度：只在真人连接且轮到准时宝时，从 <code>gameViewForColor(botColor)</code> 生成最多 48 个候选并调用正式 <code>handleGameAction</code>；技能演出期间不调度，重连或进程恢复后会重新挂起待行动。入门档 25% 从合法候选随机，否则从评分前 8 随机，等待 1.2-1.8 秒；基础档从前 3 随机，等待 0.6-1.0 秒。评分只做单层吃子、逃叫吃、制造叫吃、连接、气、自紧气、位置与填眼权衡。玩家普通提子达到 11/22 子时，准时宝在下一次行动前认输并显式清除早期无效标记；技能除子不读取。玩家申请数子后，准时宝保守标记自己的明显死子并确认，真人在练习房可修正双方标记，后续准时宝只重新确认而不覆盖；求和与结果复核由准时宝延迟接受。</p>
+<p>练习配置随 <code>PersistedRoom</code> JSON 快照保存，不新增数据库 schema。<code>roomResultPersistence</code> 对 <code>recordPolicy=&quot;none&quot;</code> 直接把 <code>recordSaved</code> 置真且不创建 <code>GameRecord</code>、奖励或成长事务；<code>listWatchRooms()</code> 同时在内存和可选 read-model 路径过滤 <code>matchSource=&quot;practice&quot;</code>。练习房仍计入 <code>listActiveRooms()</code>，因此受 <code>MAX_ACTIVE_ROOMS</code> 容量上限约束。</p>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>

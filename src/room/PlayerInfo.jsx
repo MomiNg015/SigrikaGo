@@ -52,6 +52,7 @@ function PlayerInfo({
   if (!player) return <aside className="player-info empty" />;
   const hasCharacter = !(player.character === null && !player.characterId);
   const isNoCharacter = !hasCharacter;
+  const isBot = Boolean(player.isBot || player.user?.isBot);
   const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
@@ -73,6 +74,7 @@ function PlayerInfo({
   const portraitContent = (
     <>
       {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
+      {isBot && isNoCharacter && <span className="practice-bot-portrait" aria-label="准时宝">准</span>}
       {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
       {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       {canSwitchView && (
@@ -106,7 +108,7 @@ function PlayerInfo({
         <div className="name-button player-name">
           <UserIdentity user={player.user} compact />
         </div>
-        {hasCharacter && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
+        {(hasCharacter || isBot) && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
         {showNoCharacterRolePlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
         {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
@@ -244,6 +246,7 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
     && previousPlayer?.characterId === nextPlayer?.characterId
     && previousPlayer?.character === nextPlayer?.character
     && previousPlayer?.isTutorialPlayer === nextPlayer?.isTutorialPlayer
+    && previousPlayer?.isBot === nextPlayer?.isBot
     && previousPlayer?.user === nextPlayer?.user
     && previousPlayer?.captures === nextPlayer?.captures
     && previousPlayer?.skillRemovals === nextPlayer?.skillRemovals

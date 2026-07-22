@@ -21,6 +21,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Authentication Form And Session Contract](./authentication-contract.md) | Auth form, validation, rate limits, and single-session replacement | Filled |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Structured Skill Descriptions](./skill-description-contract.md) | Persisted trait glossary, reference safety, and overclock display contract | Filled |
+| [Practice Room Contract](./practice-room-contract.md) | Practice socket, bot authority, persistence, visibility, and no-progression boundaries | Filled |
 
 ---
 

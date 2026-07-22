@@ -199,6 +199,30 @@ describe("room state persistence", () => {
     }
   });
 
+  it("retains practice metadata and keeps the virtual bot connected-state neutral", () => {
+    const snapshot = roomPersistenceSnapshot({
+      code: "BOT01",
+      mode: "spark",
+      rated: false,
+      matchSource: "practice",
+      recordPolicy: "none",
+      practice: { botId: "zhunshibao", difficulty: "beginner" },
+      players: [{ user: { id: "bot", isBot: true }, isBot: true, socketId: null }],
+      spectators: [],
+      game: { phase: GAME_PHASES.playing },
+      chat: []
+    });
+    const hydrated = hydratePersistedRoom(snapshot, { now: () => 12345 });
+
+    expect(hydrated).toMatchObject({
+      rated: false,
+      matchSource: "practice",
+      recordPolicy: "none",
+      practice: { botId: "zhunshibao", difficulty: "beginner" }
+    });
+    expect(hydrated.players[0].disconnectedAt).toBeNull();
+  });
+
   it("reports pending persistence rooms for runtime capacity telemetry", async () => {
     const write = deferred();
     persistRoomState({

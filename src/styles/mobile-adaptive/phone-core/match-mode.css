@@ -12,6 +12,27 @@
     padding: 12px !important;
   }
 
+  .match-mode-option-wrap.has-practice-entry .match-mode-option {
+    min-height: 112px !important;
+    padding-bottom: 48px !important;
+  }
+
+  .practice-entry-button {
+    right: 10px;
+    bottom: 8px;
+    min-height: 40px;
+  }
+
+  .practice-setup fieldset {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .practice-setup label {
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
   .match-mode-watermark {
     gap: 7px !important;
     max-width: min(58%, calc(100% - 132px)) !important;

@@ -67,6 +67,10 @@ export function roomPersistenceSnapshot(room) {
     revision: Number(room.revision ?? 0),
     clockSeq: Number(room.clockSeq ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
+    rated: room.rated !== false,
+    matchSource: room.matchSource ?? null,
+    recordPolicy: room.recordPolicy ?? "full",
+    practice: room.practice ?? null,
     players: room.players.map((player) => ({
       ...player,
       socketId: null
@@ -101,7 +105,9 @@ export function hydratePersistedRoom(snapshot, { now = Date.now } = {}) {
     players: (snapshot.players ?? []).map((player) => ({
       ...player,
       socketId: null,
-      disconnectedAt: isFinished ? null : (player.disconnectedAt ?? hydratedAt)
+      disconnectedAt: player.isBot || player.user?.isBot
+        ? null
+        : (isFinished ? null : (player.disconnectedAt ?? hydratedAt))
     })),
     spectators: [],
     chat: snapshot.chat ?? [],

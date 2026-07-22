@@ -78,6 +78,7 @@ describe("socket event registration", () => {
       "draw:request",
       "draw:respond",
       "scoring:action",
+      "practice:start",
       "chat:send",
       "duel:request",
       "duel:respond",

@@ -99,7 +99,7 @@ describe("room queries", () => {
     });
 
     expect(queries.listActiveRooms()).toBe(activeRows);
-    expect(queries.listWatchRooms()).toBe(watchRows);
+    expect(queries.listWatchRooms()).toEqual(watchRows);
     expect(roomReadModel.listActiveRooms).toHaveBeenCalledTimes(1);
     expect(roomReadModel.listWatchRooms).toHaveBeenCalledTimes(1);
     expect(deps.onlineParticipantCount).not.toHaveBeenCalled();

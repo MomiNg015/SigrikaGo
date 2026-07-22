@@ -76,6 +76,7 @@ export default function AppRoutes({
   siteSettings,
   socket,
   startMatch,
+  startPractice,
   token,
   tutorialBattleSession,
   onTutorialBattleClose,
@@ -96,6 +97,7 @@ export default function AppRoutes({
       onLogout={logout}
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
+      onStartPractice={startPractice}
       onPreloadPlayableReady={onPreloadPlayableReady}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={showMatchModePicker}

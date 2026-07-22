@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { matchSuccessCountdownCompletedTransition, startMatchTransition } from "./useMatchActions.js";
+import { matchSuccessCountdownCompletedTransition, startMatchTransition, startPracticeTransition } from "./useMatchActions.js";
 
 describe("match success action helpers", () => {
   it("preloads playable resources for the selected mode before joining matchmaking", () => {
@@ -42,5 +42,26 @@ describe("match success action helpers", () => {
       ...latestTransition,
       countdownComplete: true
     });
+  });
+
+  it("starts practice through its acknowledged socket contract", () => {
+    const setMatchStart = vi.fn();
+    const setMatchSuccess = vi.fn();
+    const socket = { emit: vi.fn() };
+    startPracticeTransition({
+      options: { difficulty: "beginner", playerColor: "random" },
+      now: () => 55,
+      preloadPlayableReady: vi.fn(),
+      setMatchStart,
+      setMatchSuccess,
+      socket
+    });
+
+    expect(setMatchStart).toHaveBeenCalledWith({ startedAt: 55, mode: "spark", practice: true });
+    expect(socket.emit).toHaveBeenCalledWith(
+      "practice:start",
+      { difficulty: "beginner", playerColor: "random" },
+      expect.any(Function)
+    );
   });
 });

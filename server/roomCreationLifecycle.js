@@ -1,5 +1,5 @@
 import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
-import { createRoom } from "./roomFactory.js";
+import { createPracticeRoom as buildPracticeRoom, createRoom } from "./roomFactory.js";
 
 export function createRoomCreationLifecycle({
   rooms,
@@ -45,6 +45,19 @@ export function createRoomCreationLifecycle({
     return room;
   }
 
+  function createPracticeRoom(player, io, options = {}) {
+    matchmakingQueue.removeUser(player.user.id);
+    const room = buildPracticeRoom(player, {
+      ...options,
+      isCodeTaken: isRoomCodeTaken
+    });
+    appendRoomCreatedNotices(room, "人机练习已准备");
+    appendSystem(room, "本局不计成长，也不会保存棋谱。");
+    registerCreatedRoom(room, io);
+    io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
+    return room;
+  }
+
   function registerCreatedRoom(room, io) {
     rooms.set(room.code, room);
     registerRoom(room);
@@ -69,6 +82,7 @@ export function createRoomCreationLifecycle({
 
   return {
     joinMatchmaking,
-    createDirectRoom
+    createDirectRoom,
+    createPracticeRoom
   };
 }

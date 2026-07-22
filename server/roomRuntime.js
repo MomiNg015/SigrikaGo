@@ -7,6 +7,7 @@ export function createRoomRuntime({
   broadcastRoomToast,
   throttleMs,
   metrics = null,
+  afterBroadcast = () => {},
   onPersistError = (error) => {
     console.error("Failed to persist room", error);
   }
@@ -31,6 +32,7 @@ export function createRoomRuntime({
       persistRoom,
       ...(metrics ? { metrics } : {})
     });
+    afterBroadcast(io, room);
   }
 
   function broadcastRoomPatch(io, room, patch, { forcePersist = true } = {}) {
@@ -42,6 +44,7 @@ export function createRoomRuntime({
       persistRoom,
       ...(metrics ? { metrics } : {})
     });
+    afterBroadcast(io, room);
   }
 
   function broadcastToast(io, room, text) {

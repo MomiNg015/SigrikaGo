@@ -83,6 +83,37 @@ describe("room view serialization", () => {
     expect(getPoint(view.gameViews.white, pointId(3, 3)).stone).toBeNull();
   });
 
+  it("projects only safe practice metadata and treats the virtual bot as connected", () => {
+    const room = testRoom();
+    room.matchSource = "practice";
+    room.recordPolicy = "none";
+    room.practice = {
+      botId: "zhunshibao",
+      botActorId: "private-bot-actor",
+      difficulty: "beginner",
+      humanColor: COLORS.black,
+      botColor: COLORS.white
+    };
+    room.players[1] = {
+      ...room.players[1],
+      socketId: null,
+      isBot: true,
+      user: { ...room.players[1].user, isBot: true },
+      botProfile: { id: "zhunshibao", name: "准时宝", portraitUrl: "" }
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.practice).toEqual({
+      botId: "zhunshibao",
+      difficulty: "beginner",
+      humanColor: COLORS.black,
+      botColor: COLORS.white
+    });
+    expect(view.practice).not.toHaveProperty("botActorId");
+    expect(view.players[1]).toMatchObject({ isBot: true, connected: true, botProfile: { id: "zhunshibao" } });
+  });
+
   it("treats finished room players as spectator viewers", () => {
     const room = testRoom();
     room.game.phase = GAME_PHASES.finished;

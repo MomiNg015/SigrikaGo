@@ -6,6 +6,7 @@ import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { COLORS } from "../../shared/game.js";
+import { isPracticeRoom } from "../../shared/practiceMode.js";
 import { resolveResultSound } from "../../shared/musicLibrary.js";
 import {
   formatSignedDelta,
@@ -25,6 +26,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const character = displayPlayer ? findCharacter(characters, displayPlayer?.character ?? displayPlayer?.characterId) : null;
   const voiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
   const reward = resultRewardForRoom(room, user);
+  const isPractice = isPracticeRoom(room);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
   const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
@@ -90,7 +92,9 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         <div className="result-summary">
           <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
           <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
-          {isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
+          {isPractice
+            ? <p className="result-match-note">人机练习 · 不计成长 · 不保存棋谱</p>
+            : isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
           {reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>

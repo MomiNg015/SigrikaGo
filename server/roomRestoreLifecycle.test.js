@@ -150,11 +150,13 @@ describe("room restore lifecycle", () => {
     const schedulePendingRoomDeadlines = vi.fn();
     const scheduleEmptyActiveRoomClose = vi.fn();
     const schedulePendingSkillResolution = vi.fn();
+    const schedulePracticeRoom = vi.fn();
     const lifecycle = createLifecycle({
       startGameClock,
       schedulePendingRoomDeadlines,
       scheduleEmptyActiveRoomClose,
-      schedulePendingSkillResolution
+      schedulePendingSkillResolution,
+      schedulePracticeRoom
     });
     const room = testRoom({
       game: { phase: GAME_PHASES.drawRequested }
@@ -165,6 +167,7 @@ describe("room restore lifecycle", () => {
     expect(startGameClock).toHaveBeenCalledWith(room, "io");
     expect(schedulePendingRoomDeadlines).toHaveBeenCalledWith(room, "io");
     expect(scheduleEmptyActiveRoomClose).toHaveBeenCalledWith(room, "io");
+    expect(schedulePracticeRoom).toHaveBeenCalledWith(room, "io");
   });
 });
 

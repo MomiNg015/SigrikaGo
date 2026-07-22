@@ -52,6 +52,7 @@ function RoomPeopleList({
   }, [activeMenu]);
 
   function openPersonMenu(personId, event) {
+    if (people.find((person) => person.id === personId)?.isBot) return;
     onFloatingLayerRequest?.();
     setActiveMenu((current) => {
       if (current?.id === personId) return null;
@@ -122,6 +123,7 @@ function RoomPeopleList({
           const isSelf = person.userId === user?.id;
           const isFriend = friendIds.has(person.userId);
           const isBlocked = blacklistIds.has(person.userId);
+          const isBot = person.isBot;
           const relationClass = isSelf ? "self" : isBlocked ? "blocked" : isFriend ? "friend" : "";
           const connectionClass = person.role === "player" && person.connected === false ? "disconnected" : "";
           return (
@@ -129,6 +131,8 @@ function RoomPeopleList({
               <button
                 className={`room-person ${person.role} ${relationClass} ${connectionClass}`}
                 type="button"
+                disabled={isBot}
+                aria-label={isBot ? `${person.username}是人机陪练，不支持社交操作` : undefined}
                 aria-expanded={activeMenu?.id === person.id}
                 onClick={(event) => openPersonMenu(person.id, event)}
               >
@@ -137,7 +141,9 @@ function RoomPeopleList({
                   <UserIdentity user={person} compact showNameplate={false} />
                 </span>
                 <span>{person.rank}</span>
-                <span className="text-rating-value">{person.rating}分</span>
+                {person.rating == null
+                  ? <span className="text-rating-value">人机</span>
+                  : <span className="text-rating-value">{person.rating}分</span>}
               </button>
               {activeMenu?.id === person.id && (
                 <RoomPeopleFloatingLayer anchor={panelRef.current}>
@@ -247,6 +253,7 @@ function samePeopleUser(previous, next) {
     && previous?.username === next?.username
     && previous?.rank === next?.rank
     && previous?.rating === next?.rating
+    && previous?.isBot === next?.isBot
     && previous?.achievementEquipment === next?.achievementEquipment
     && previous?.achievementEquipmentAssets === next?.achievementEquipmentAssets;
 }

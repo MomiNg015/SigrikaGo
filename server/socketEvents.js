@@ -5,6 +5,7 @@ import { registerGameSocketEvents } from "./socketGameEvents.js";
 import { installSocketRateGuard } from "./socketGuards.js";
 import { registerMatchSocketEvents } from "./socketMatchEvents.js";
 import { registerRoomSocketEvents } from "./socketRoomEvents.js";
+import { registerPracticeSocketEvents } from "./socketPracticeEvents.js";
 
 export function registerSocketEvents(socket, deps) {
   installSocketRateGuard(socket, {
@@ -54,6 +55,17 @@ export function registerSocketEvents(socket, deps) {
     handleScoringAction: deps.handleScoringAction,
     broadcastRoom: deps.broadcastRoom,
     getRoom: deps.getRoom,
+    metrics: deps.metrics
+  });
+
+  registerPracticeSocketEvents(socket, {
+    io: deps.io,
+    refreshSocketUser: deps.refreshSocketUser,
+    createPracticeRoom: deps.createPracticeRoom,
+    isUserInActiveRoom: deps.isUserInActiveRoom,
+    leaveMatchmaking: deps.leaveMatchmaking,
+    broadcastLobbyStats: deps.broadcastLobbyStats,
+    runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });
 

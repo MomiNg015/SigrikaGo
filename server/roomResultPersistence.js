@@ -1,4 +1,5 @@
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
+import { PRACTICE_MATCH_SOURCE, PRACTICE_RECORD_POLICY } from "../src/shared/practiceMode.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { DEFAULT_RANK, normalizeRank, rankToStep, serializeRecentResults } from "../src/shared/rankProgression.js";
 import {
@@ -23,6 +24,11 @@ import {
 
 export async function saveGameRecord({ prisma, room }) {
   if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return;
+  if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === PRACTICE_MATCH_SOURCE) {
+    room.recordSaved = true;
+    room.game.resultRewards = null;
+    return;
+  }
   if (room.game.winner?.invalid) {
     room.recordSaved = true;
     return;

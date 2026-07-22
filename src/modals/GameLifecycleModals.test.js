@@ -64,6 +64,18 @@ describe("GameLifecycleModals helpers", () => {
     expect(resultRewardForRoom(room, { id: "u1" })).toEqual({ rating: 0, coins: 0 });
   });
 
+  it("does not expose reward tiles for practice results", () => {
+    const room = {
+      rated: false,
+      matchSource: "practice",
+      recordPolicy: "none",
+      players: [{ user: { id: "u1" }, color: COLORS.black }],
+      game: { winner: { winnerColor: COLORS.black } }
+    };
+
+    expect(resultRewardForRoom(room, { id: "u1" })).toBeNull();
+  });
+
   it("prefers settled result rewards from the room snapshot", () => {
     const room = {
       rated: false,

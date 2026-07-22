@@ -1041,6 +1041,13 @@ describe("HomeScreen", () => {
     expect(brightUtilityCss).not.toContain("home-entry-red-dot");
   });
 
+  it("renders a sibling practice entry without nesting it inside the Spark match button", () => {
+    const html = renderHome({ matchModePickerOpen: true });
+    expect(html).toContain("准时宝对弈");
+    expect(html).toContain("match-mode-option-wrap has-practice-entry");
+    expect(html).toMatch(/<\/button><button class="practice-entry-button"/);
+  });
+
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {
     const html = renderHome({ mailboxBadgeCount: 3, announcementUnread: true });
     const homeCss = readCssFixture("../styles/home-terminal.css");

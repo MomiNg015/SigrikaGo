@@ -28,6 +28,80 @@
   text-align: left;
 }
 
+.match-mode-option-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.match-mode-option-wrap.has-practice-entry .match-mode-option {
+  padding-bottom: 48px;
+}
+
+.practice-entry-button {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 2;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.practice-setup {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.practice-setup-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(60, 90, 78, 0.22);
+  border-radius: 8px;
+  background: rgba(226, 244, 235, 0.74);
+  color: var(--muted-text, #55645e);
+  text-align: center;
+}
+
+.practice-setup fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(30, 40, 48, 0.16);
+  border-radius: 10px;
+}
+
+.practice-setup legend {
+  padding: 0 6px;
+  font-weight: 800;
+}
+
+.practice-setup label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  cursor: pointer;
+}
+
+.practice-setup input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.practice-setup-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .match-mode-copy {
   position: relative;
   z-index: 1;
@@ -116,6 +190,10 @@
     white-space: normal !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
+  }
+
+  .practice-setup-actions {
+    grid-template-columns: 1fr;
   }
 
   .match-mode-rule-line {
