@@ -25,6 +25,17 @@ export function useMatchActions({
     });
   }, [setMatchStart, setMatchSuccess, socket]);
 
+  const startPractice = useCallback((options) => {
+    startPracticeTransition({
+      options,
+      preloadPlayableReady: defaultPreloadPlayableReady,
+      setMatchStart,
+      setMatchSuccess,
+      showToast,
+      socket
+    });
+  }, [setMatchStart, setMatchSuccess, showToast, socket]);
+
   const cancelMatch = useCallback(() => {
     socket?.emit("match:leave");
     setMatchStart(null);
@@ -83,8 +94,32 @@ export function useMatchActions({
     joinWatchRoom,
     requestDraw,
     respondDraw,
-    startMatch
+    startMatch,
+    startPractice
   };
+}
+
+export function startPracticeTransition({
+  options,
+  now = Date.now,
+  preloadPlayableReady = defaultPreloadPlayableReady,
+  setMatchStart,
+  setMatchSuccess,
+  showToast = () => {},
+  socket
+}) {
+  try {
+    void preloadPlayableReady({ includePixi: true, mode: "spark", reason: "practice-start" });
+  } catch {
+    // Prewarm is opportunistic; room creation remains authoritative on the server.
+  }
+  setMatchSuccess(null);
+  setMatchStart({ startedAt: now(), mode: "spark", practice: true });
+  socket?.emit("practice:start", options, (ack = {}) => {
+    if (ack.ok) return;
+    setMatchStart(null);
+    showToast(ack.error || "暂时无法开始人机练习", "error");
+  });
 }
 
 export function startMatchTransition({

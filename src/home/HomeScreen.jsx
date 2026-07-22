@@ -1,6 +1,7 @@
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
+import { PRACTICE_QUICK_START_OPTIONS } from "../shared/practiceMode.js";
 import { UsersRound } from "lucide-react";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
@@ -9,7 +10,7 @@ import { HomeActionButton } from "./homeComponents.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 import MatchModeWatermark from "./MatchModeWatermark.jsx";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
   const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
@@ -63,6 +64,10 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
             matchmakingCounts={matchmakingCounts}
             onClose={() => onMatchModePickerOpenChange?.(false)}
             onPreloadPlayableReady={onPreloadPlayableReady}
+            onPracticeStart={(options) => {
+              onMatchModePickerOpenChange?.(false);
+              onStartPractice?.(options);
+            }}
             onSelect={(mode) => {
               onMatchModePickerOpenChange?.(false);
               onStartMatch(mode);
@@ -76,31 +81,47 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
   );
 }
 
-function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onSelect }) {
+function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect }) {
   return (
     <div className="modal-backdrop match-mode-backdrop" onClick={onClose}>
       <section className="small-modal match-mode-modal" onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
         <h2>选择对弈模式</h2>
         <div className="match-mode-options">
           {modeOrderedEntries().map((mode) => (
-            <button
-              className="match-mode-option"
-              type="button"
-              key={mode.id}
-              onFocus={() => onPreloadPlayableReady?.(mode.id)}
-              onPointerEnter={() => onPreloadPlayableReady?.(mode.id)}
-              onClick={() => onSelect(mode.id)}
-            >
-              <MatchModeWatermark mode={mode} />
-              <span className="match-mode-copy">
-                <strong>{mode.title}</strong>
-                <MatchModeRuleText rulesText={mode.rulesText} />
-              </span>
-              <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts[mode.id] ?? 0)} 人`}>
-                <UsersRound size={16} aria-hidden="true" />
-                <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>
-              </span>
-            </button>
+            <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : ""}`} key={mode.id}>
+              <button
+                className="match-mode-option"
+                type="button"
+                onFocus={() => onPreloadPlayableReady?.(mode.id)}
+                onPointerEnter={() => onPreloadPlayableReady?.(mode.id)}
+                onClick={() => onSelect(mode.id)}
+              >
+                <MatchModeWatermark mode={mode} />
+                <span className="match-mode-copy">
+                  <strong>{mode.title}</strong>
+                  <MatchModeRuleText rulesText={mode.rulesText} />
+                </span>
+                <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts[mode.id] ?? 0)} 人`}>
+                  <UsersRound size={16} aria-hidden="true" />
+                  <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>
+                </span>
+              </button>
+              {mode.id === "spark" && (
+                <button
+                  aria-label="准时宝陪练"
+                  className="practice-entry-button"
+                  type="button"
+                  onClick={() => onPracticeStart(PRACTICE_QUICK_START_OPTIONS)}
+                >
+                  <img
+                    src="/assets/home/home-practice-zhunshibao.webp"
+                    alt=""
+                    aria-hidden="true"
+                    decoding="async"
+                  />
+                </button>
+              )}
+            </div>
           ))}
         </div>
         <HomeActionButton variant="secondary" type="button" onClick={onClose}>取消</HomeActionButton>

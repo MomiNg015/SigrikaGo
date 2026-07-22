@@ -49,9 +49,11 @@ import { createRoomPersistenceRestoreLifecycle } from "./roomPersistenceRestoreL
 import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
 import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
+import { createPracticeRoomAutomation } from "./practiceRoomAutomation.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 import { roomSpectatorAdmission, runtimeCapacityLimits } from "./runtimeServiceState.js";
+import { PRACTICE_RECORD_POLICY } from "../src/shared/practiceMode.js";
 
 export { roomView };
 export { clearRoomTimers };
@@ -62,6 +64,7 @@ const matchmakingQueue = createRoomMatchmakingQueue();
 const roomMembershipIndex = createRoomMembershipIndex({ rooms });
 const ROOM_PERSIST_THROTTLE_MS = 5000;
 const runtimeLimits = runtimeCapacityLimits();
+let schedulePracticeRoomUpdate = () => {};
 const roomRuntime = createRoomRuntime({
   prisma,
   persistRoomState,
@@ -70,7 +73,8 @@ const roomRuntime = createRoomRuntime({
   broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   metrics: runtimeStabilityMetrics,
-  throttleMs: ROOM_PERSIST_THROTTLE_MS
+  throttleMs: ROOM_PERSIST_THROTTLE_MS,
+  afterBroadcast: (io, room) => schedulePracticeRoomUpdate(room, io)
 });
 const {
   persistRoom,
@@ -102,7 +106,13 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   appendSystem,
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
   unregisterRoom: roomMembershipIndex.unregisterRoom,
-  prepareCloseState: prepareCandyEffectUpdates,
+  prepareCloseState: (room) => {
+    if (room.recordPolicy === PRACTICE_RECORD_POLICY) {
+      room.candyEffectUpdates ??= [];
+      return room.candyEffectUpdates;
+    }
+    return prepareCandyEffectUpdates(room);
+  },
   metrics: runtimeStabilityMetrics
 });
 const {
@@ -189,7 +199,8 @@ const roomRestoreLifecycle = createRoomRestoreLifecycle({
   schedulePendingSkillResolution,
   completePendingSkillResolution,
   schedulePendingRoomDeadlines,
-  scheduleEmptyActiveRoomClose
+  scheduleEmptyActiveRoomClose,
+  schedulePracticeRoom: (room, io) => schedulePracticeRoomUpdate(room, io)
 });
 const { resumeRoomTimers } = roomRestoreLifecycle;
 const roomConnectionLifecycle = createRoomConnectionLifecycle({
@@ -243,7 +254,8 @@ const roomCreationLifecycle = createRoomCreationLifecycle({
 });
 export const {
   joinMatchmaking,
-  createDirectRoom
+  createDirectRoom,
+  createPracticeRoom
 } = roomCreationLifecycle;
 export { markRoomPreloadReady };
 const roomActionLifecycle = createRoomActionLifecycle({
@@ -259,6 +271,19 @@ const roomActionLifecycle = createRoomActionLifecycle({
   maybeStartPassiveSkill
 });
 export const { handleGameAction } = roomActionLifecycle;
+const practiceRoomAutomation = createPracticeRoomAutomation({
+  rooms,
+  scheduleRoomTimeout,
+  handleGameAction,
+  respondCounting,
+  respondDraw,
+  handleScoringAction,
+  appendSystem,
+  appendNotices,
+  scheduleRoomClose,
+  broadcastRoom
+});
+schedulePracticeRoomUpdate = practiceRoomAutomation.schedule;
 const roomChatLifecycle = createRoomChatLifecycle({
   rooms,
   validateRoomCode,

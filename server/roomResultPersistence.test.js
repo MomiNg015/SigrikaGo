@@ -41,6 +41,24 @@ function fakePrisma() {
 }
 
 describe("roomResultPersistence", () => {
+  test("does not create records or rewards for practice rooms", async () => {
+    const prisma = fakePrisma();
+    const room = {
+      recordSaved: false,
+      recordPolicy: "none",
+      matchSource: "practice",
+      game: { phase: GAME_PHASES.finished, winner: { winnerColor: COLORS.black } },
+      players: [roomPlayer(COLORS.black), roomPlayer(COLORS.white)]
+    };
+
+    await saveGameRecord({ prisma, room });
+
+    expect(room.recordSaved).toBe(true);
+    expect(room.game.resultRewards).toBeNull();
+    expect(prisma.gameRecord.create).not.toHaveBeenCalled();
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
   test("marks invalid finished rooms as saved without database writes", async () => {
     const prisma = fakePrisma();
     const room = {

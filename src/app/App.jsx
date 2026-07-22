@@ -263,7 +263,8 @@ export default function App() {
     respondDraw,
     selectCharacter,
     selectCharacterMusic,
-    startMatch
+    startMatch,
+    startPractice
   } = useAppActions({
     matchSuccess,
     matchSuccessRef,
@@ -398,6 +399,7 @@ export default function App() {
       setRoom,
       setView,
       startMatch,
+      startPractice,
       updateUser
     },
     routeState: {

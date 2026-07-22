@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
 import {
   MATCH_PRELOAD_TIMEOUT_MS,
+  createPracticeRoom,
   createRoom,
   modeStatsForUser,
   randomRoomCode,
@@ -106,6 +107,35 @@ describe("roomFactory", () => {
 
     expect(room.rated).toBe(false);
     expect(room.matchSource).toBe("duel");
+  });
+
+  test("creates a no-skill practice room with requested color and bot preloaded", () => {
+    const room = createPracticeRoom(queuePlayer("human", "socket-human"), {
+      difficulty: "basic",
+      playerColor: "white",
+      now: () => 1000,
+      random: () => 0.5
+    });
+
+    expect(room).toMatchObject({
+      mode: "spark",
+      rated: false,
+      matchSource: "practice",
+      recordPolicy: "none",
+      practice: {
+        botId: "zhunshibao",
+        difficulty: "basic",
+        humanColor: COLORS.white,
+        botColor: COLORS.black
+      },
+      preload: { readyCount: 1, requiredCount: 2 }
+    });
+    const bot = room.players.find((player) => player.isBot);
+    expect(bot).toMatchObject({ color: COLORS.black, characterId: null, user: { username: "准时宝", rating: null } });
+    expect(bot.botProfile.portraitUrl).toBe("/assets/characters/zhunshibao.png");
+    expect(room.preload.readyUserIds).toEqual([bot.user.id]);
+    expect(room.game.skillUses[COLORS.black]).toBe(0);
+    expect(room.players.find((player) => !player.isBot).color).toBe(COLORS.white);
   });
 
   test("projects mode stats onto room users", () => {

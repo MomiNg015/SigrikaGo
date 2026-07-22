@@ -13,6 +13,7 @@ import {
   suspendUnexposedHiddenHands,
   toggleNeutralPoint
 } from "../src/shared/game.js";
+import { isPracticeRoom } from "../src/shared/practiceMode.js";
 
 export function applyCountingRequest({ room, player, userId, now = Date.now(), appendSystem, scheduleCountingTimeout, io }) {
   room.game.phase = GAME_PHASES.countingRequested;
@@ -79,7 +80,12 @@ export function applyDrawResponse({ room, player, userId, accepted, appendSystem
 
 export function applyScoringAction({ room, player, userId, action, appendSystem, appendNotices, broadcastToast, scheduleResultReviewTimeout, scheduleRoomClose, io }) {
   let result = { ok: true, state: room.game };
-  if (action.type === "mark-dead") result = markDeadGroup(room.game, action.pointId, player.color);
+  if (action.type === "mark-dead") {
+    const markerColor = isPracticeRoom(room) && !player.isBot && !player.user?.isBot
+      ? null
+      : player.color;
+    result = markDeadGroup(room.game, action.pointId, markerColor);
+  }
   if (action.type === "mark-neutral") result = toggleNeutralPoint(room.game, action.pointId);
   if (action.type === "reset-dead") result = resetDeadMarks(room.game);
   if (!result.ok) return result;

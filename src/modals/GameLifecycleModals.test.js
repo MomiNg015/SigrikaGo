@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { colorTextForPlayer, formatSignedDelta, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { colorTextForPlayer, formatSignedDelta, OpeningModal, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
 import { COLORS } from "../shared/game.js";
 
 describe("GameLifecycleModals helpers", () => {
@@ -20,6 +22,39 @@ describe("GameLifecycleModals helpers", () => {
     expect(formatSignedDelta(20)).toBe("+20");
     expect(formatSignedDelta(0)).toBe("0");
     expect(formatSignedDelta(-20)).toBe("-20");
+  });
+
+  it("shows the capture victory rule only in the practice opening modal", () => {
+    const practiceMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: {
+        matchSource: "practice",
+        practice: { difficulty: "basic" },
+        openingEndsAt: Date.now() + 3_000
+      },
+      player: { color: COLORS.black }
+    }));
+    const regularMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: { matchSource: "matchmaking", openingEndsAt: Date.now() + 3_000 },
+      player: { color: COLORS.white }
+    }));
+    const restoredBeginnerMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: {
+        matchSource: "practice",
+        practice: { difficulty: "beginner" },
+        openingEndsAt: Date.now() + 3_000
+      },
+      player: { color: COLORS.white }
+    }));
+    const openingCss = readFileSync(new URL("../styles/modals/character-opening/opening-animation.css", import.meta.url), "utf8");
+
+    expect(practiceMarkup).toContain("本局你执黑");
+    expect(practiceMarkup).toContain('class="practice-opening-rule"');
+    expect(practiceMarkup).toContain("吃掉准时宝22颗棋子就算胜利！");
+    expect(regularMarkup).toContain("本局你执白");
+    expect(regularMarkup).not.toContain("practice-opening-rule");
+    expect(restoredBeginnerMarkup).toContain("吃掉准时宝11颗棋子就算胜利！");
+    expect(openingCss).toContain(".opening-modal .practice-opening-rule");
+    expect(openingCss).toContain("color: #c62828");
   });
 
   it("uses semantic rating typography only for rating reward values", () => {
@@ -62,6 +97,18 @@ describe("GameLifecycleModals helpers", () => {
     };
 
     expect(resultRewardForRoom(room, { id: "u1" })).toEqual({ rating: 0, coins: 0 });
+  });
+
+  it("does not expose reward tiles for practice results", () => {
+    const room = {
+      rated: false,
+      matchSource: "practice",
+      recordPolicy: "none",
+      players: [{ user: { id: "u1" }, color: COLORS.black }],
+      game: { winner: { winnerColor: COLORS.black } }
+    };
+
+    expect(resultRewardForRoom(room, { id: "u1" })).toBeNull();
   });
 
   it("prefers settled result rewards from the room snapshot", () => {

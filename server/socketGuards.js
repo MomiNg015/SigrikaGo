@@ -6,6 +6,7 @@ const SOCKET_DRAINING_MESSAGE = "服务器正在维护，暂时不能提交新�
 const RECOVERY_SOCKET_EVENTS = new Set(["room:resume", "room:preload-ready"]);
 const MUTATING_SOCKET_EVENTS = new Set([
   "match:join",
+  "practice:start",
   "duel:request",
   "duel:respond",
   "game:action",

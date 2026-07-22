@@ -6,6 +6,7 @@ import PlayerInfo, { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyP
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import { CHARACTERS } from "../shared/characters.js";
+import { decodeRgbaPng } from "../../scripts/pngTrim.mjs";
 
 const noop = () => {};
 const characters = {};
@@ -99,6 +100,74 @@ describe("PlayerInfo labels", () => {
         user: { itemEffects: { deniaRainbowGlow: true } }
       }
     )).toBe("/assets/sigrika_centered.webp");
+  });
+
+  it("renders the safe practice bot portrait metadata with accessible alt text", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        ...playerInfoProps().player,
+        characterId: null,
+        character: null,
+        isBot: true,
+        botProfile: {
+          id: "zhunshibao",
+          name: "准时宝",
+          portraitUrl: "/assets/characters/zhunshibao.png"
+        },
+        user: {
+          id: "bot:zhunshibao:test",
+          username: "准时宝",
+          rank: "入门陪练",
+          rating: null,
+          isBot: true
+        }
+      }
+    })));
+
+    expect(markup).toContain('class="practice-bot-portrait-image"');
+    expect(markup).toContain("practice-bot-player");
+    expect(markup).toContain("practice-bot-portrait-wrap");
+    expect(markup).toContain('src="/assets/characters/zhunshibao.png"');
+    expect(markup).toContain('alt="准时宝"');
+    expect(markup).not.toContain('aria-label="准时宝">准</span>');
+    expect(markup).toContain('class="meta-tag rating-tag meta-placeholder"');
+    expect(markup).toContain('class="skill-chip-wrap skill-chip-placeholder-wrap"');
+    const practicePortraitClass = markup.match(/class="portrait-wrap[^"]*practice-bot-portrait-wrap[^"]*"/)?.[0] ?? "";
+    expect(practicePortraitClass).not.toContain("no-character");
+
+    const playerCardCss = readCssWithImports(new URL("../styles/room/players-timers-skills/player-card.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive/mobile-room-portrait.css", import.meta.url));
+    const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile/room/viewport-player-strips.css", import.meta.url));
+    const sharedPortraitImageBlock = cssBlock(playerCardCss, ".player-info img");
+    const brightMobilePortraitImageBlock = cssBlock(brightMobileCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info img");
+    expect(sharedPortraitImageBlock).toContain("width: 100%");
+    expect(sharedPortraitImageBlock).toContain("height: var(--side-portrait)");
+    expect(brightMobilePortraitImageBlock).toContain("width: 46px !important");
+    expect(brightMobilePortraitImageBlock).toContain("height: 46px !important");
+    expect(playerCardCss).not.toContain(".practice-bot-portrait-image");
+    expect(mobileCss).not.toContain(".practice-bot-portrait-image");
+    expect(brightMobileCss).not.toContain(".practice-bot-portrait-image");
+
+    const portrait = decodeRgbaPng(readFileSync(new URL("../../public/assets/characters/zhunshibao.png", import.meta.url)));
+    expect({ width: portrait.width, height: portrait.height }).toEqual({ width: 1254, height: 1254 });
+    expect([
+      portrait.pixels[3],
+      portrait.pixels[(portrait.width - 1) * 4 + 3],
+      portrait.pixels[((portrait.height - 1) * portrait.width) * 4 + 3],
+      portrait.pixels[(portrait.width * portrait.height - 1) * 4 + 3]
+    ]).toEqual([0, 0, 0, 0]);
+
+    const fallbackMarkup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        ...playerInfoProps().player,
+        characterId: null,
+        character: null,
+        isBot: true,
+        user: { username: "准时宝", isBot: true }
+      }
+    })));
+    expect(fallbackMarkup).toContain("portrait-wrap black-portrait no-character practice-bot-portrait-wrap");
+    expect(fallbackMarkup).toContain('aria-label="准时宝">准</span>');
   });
 
   it("keeps mobile battle usernames complete and passive, including equipped nameplates", () => {

@@ -4,6 +4,10 @@ import { canonicalCharacterId } from "../../shared/characterAliases.js";
 
 const RAINBOW_BEAN_CANDY_ID = "rainbow-bean-candy";
 const CANDY_TARGET_RULES = {
+  aemeath: {
+    effectKey: "aemeathRainbowMove",
+    activeLabel: "效果中"
+  },
   denia: {
     effectKey: "deniaRainbowGlow",
     activeLabel: "效果中"

@@ -1859,3 +1859,135 @@ Added deterministic stability fixtures, repaired capacity metric authorization, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 57: 完成彩虹豆豆跳跳糖双分支剧情
+
+**Date**: 2026-07-22
+**Task**: 完成彩虹豆豆跳跳糖双分支剧情
+**Branch**: `codex/rainbow-bean-popping-candy-story`
+
+### Summary
+
+实现西格莉卡与达妮娅的接受/拒绝剧情和35%拒绝结算，隐藏旁白身份，修正糖果效果与成就条件，并修复道具剧情被误路由到棋盘教学的问题。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `87f2556e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 58: Add Aemeath rainbow candy story and move effect
+
+**Date**: 2026-07-22
+**Task**: Add Aemeath rainbow candy story and move effect
+**Branch**: `codex/rainbow-bean-popping-candy-story`
+
+### Summary
+
+Added Aemeath's accepted/rejected rainbow bean candy story, 35% rejection settlement, persistent rainbow-move item effect, point-local board animation, valid-game cleanup, default snapshot sync, tests, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f82f7404` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 59: Zhunshibao practice mode
+
+**Date**: 2026-07-22
+**Task**: Zhunshibao practice mode
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Implemented authoritative Spark practice rooms with beginner/basic Zhunshibao decisions, persistence and restore, scoring automation, no-record progression isolation, accessible desktop/mobile entry, result copy, tests, capacity verification, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `122bd087` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 60: Zhunshibao practice baseline verification
+
+**Date**: 2026-07-22
+**Task**: Zhunshibao practice baseline verification
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Corrected the standalone practice-mode CSS debt baseline after excluding unrelated Aemeath worktree changes, then verified 106 practice, persistence, UI contract, CSS inventory, and system-design tests against an isolated commit worktree.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `611d57f8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

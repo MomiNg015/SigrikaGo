@@ -82,6 +82,7 @@ After implementation:
 - [ ] Tested with edge cases (null, empty, invalid)
 - [ ] Verified error handling at each boundary
 - [ ] Checked data survives round-trip
+- [ ] If the backend returns both domain metadata and low-level node/type fields, verified that frontend surface routing honors the domain metadata before using structural heuristics
 
 ---
 

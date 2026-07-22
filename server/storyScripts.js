@@ -11,6 +11,7 @@ import {
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
+import { defaultRainbowBeanCandyStoryDraft } from "./rainbowBeanCandyStory.js";
 
 export const STORY_TRIGGER_TYPES = Object.freeze({
   onboarding: "onboarding",
@@ -366,36 +367,21 @@ export function defaultStoryScriptSeeds() {
       title: "西格莉卡的彩虹豆豆跳跳糖",
       triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
       triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "sigrika" },
-      draft: {
-        startNodeId: "start",
-        nodes: [
-          {
-            id: "start",
-            speakerName: "希格莉卡",
-            characterId: "sigrika",
-            text: "这是什么口味？等一下，我怎么一直在打嗝！",
-            nextNodeId: ""
-          }
-        ]
-      }
+      draft: defaultRainbowBeanCandyStoryDraft("sigrika")
     },
     {
       key: "item.rainbow-bean-candy.denia",
       title: "达妮娅的彩虹豆豆跳跳糖",
       triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
       triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "denia" },
-      draft: {
-        startNodeId: "start",
-        nodes: [
-          {
-            id: "start",
-            speakerName: "达妮娅",
-            characterId: "denia",
-            text: "{username}！你到底给我吃了什么！",
-            nextNodeId: ""
-          }
-        ]
-      }
+      draft: defaultRainbowBeanCandyStoryDraft("denia")
+    },
+    {
+      key: "item.rainbow-bean-candy.aemeath",
+      title: "爱弥斯的彩虹豆豆跳跳糖",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "aemeath" },
+      draft: defaultRainbowBeanCandyStoryDraft("aemeath")
     }
   ];
 }

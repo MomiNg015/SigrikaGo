@@ -16,6 +16,15 @@ export function buildRoomView(room, viewerId, options = {}) {
     mode: room.mode ?? room.game?.mode ?? "spark",
     rated: room.rated !== false,
     matchSource: room.matchSource ?? (room.rated === false ? "private" : "matchmaking"),
+    recordPolicy: room.recordPolicy ?? "full",
+    practice: room.practice
+      ? {
+          botId: room.practice.botId,
+          difficulty: room.practice.difficulty,
+          humanColor: room.practice.humanColor,
+          botColor: room.practice.botColor
+        }
+      : null,
     viewerId,
     role,
     players: room.players.map((player) => ({
@@ -23,10 +32,12 @@ export function buildRoomView(room, viewerId, options = {}) {
       color: player.color,
       characterId: player.characterId,
       character: player.character,
+      isBot: Boolean(player.isBot || player.user?.isBot),
+      botProfile: player.botProfile ?? null,
       captures: room.game.captures[player.color],
       skillRemovals: room.game.skillRemovals?.[player.color] ?? 0,
       time: player.time,
-      connected: Boolean(player.socketId),
+      connected: Boolean(player.socketId || player.isBot || player.user?.isBot),
       disconnectedAt: player.disconnectedAt ?? null
     })),
     spectatorCount: room.spectators.length,

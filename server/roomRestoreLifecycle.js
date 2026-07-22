@@ -11,6 +11,7 @@ export function createRoomRestoreLifecycle({
   completePendingSkillResolution,
   schedulePendingRoomDeadlines,
   scheduleEmptyActiveRoomClose,
+  schedulePracticeRoom = () => {},
   now = Date.now
 }) {
   function resumeRoomTimers(room, io) {
@@ -61,6 +62,7 @@ export function createRoomRestoreLifecycle({
     startGameClock(room, io);
     schedulePendingRoomDeadlines(room, io);
     scheduleEmptyActiveRoomClose(room, io);
+    schedulePracticeRoom(room, io);
     return true;
   }
 

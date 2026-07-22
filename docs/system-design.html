@@ -79,6 +79,9 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
+<li>星炬模式提供服务端权威的“准时宝”人机练习：客户端通过绝对定位在“星炬对弈”标题右上方、水平中心线与卡片上边框平齐的 <code>/assets/home/home-practice-zhunshibao.webp</code> 透明图标签直接开局；标签保留“准时宝陪练”可访问名称，以透明轮廓投影提供层次，悬停时顺时针旋转 3 度，减少动态效果时禁用位移/旋转。入口不再打开二次选择窗，统一发送 <code>practice:start</code> 的基础难度与随机黑白配置；接口仍保留入门/基础和黑/白/随机参数能力。练习房固定 <code>rated=false</code>、<code>matchSource=practice</code>、<code>recordPolicy=none</code>，复用正式预加载、开局、5 分钟与 30 秒 3 次读秒、技能、数子、断线恢复和运行快照；共享执色开局窗在人机房的“本局你执黑/白”下方额外显示红色胜利提示，基础档为“吃掉准时宝22颗棋子就算胜利！”，恢复旧入门房时按配置显示 11，真人局不显示。虚拟玩家 <code>zhunshibao</code> 无角色与技能并自动 ready，使用 <code>/assets/characters/zhunshibao.png</code> 透明立绘；立绘存在时不套用教学无角色框或机器人专属缩放，而是继承普通角色桌面 <code>--side-portrait</code> 与竖屏 <code>46px</code> 头像几何。其 <code>PlayerInfo</code> 同时复用不可见评分和技能占位，保持与普通角色信息区相同的桌面及竖屏结构高度，但不显示虚假评分或技能。练习房计入活跃房间容量，但不进入匹配人数、队列或公开观战列表，也不生成 <code>GameRecord</code>、奖励、成长和任务进度。准时宝只从自身 <code>gameViewForColor</code> 按紧急吃逃、最近局部、开局点和棋形理由生成至多 48 个候选，以正式 <code>playMove</code> 做一层战术安全检查，并过滤自打吃、填眼、空三角和非战斗性的早期直线延伸；前两手普通落子优先占据两个不同角星位，入门随机也只在接近最佳分的合理候选内选择。低价值候选仅在空交叉点不超过有效棋盘的 12%（且阈值至少为 8 点）时允许弃手，不再按手数提前弃手。入门/基础分别在玩家普通提子达到 11/22 子后于下一次行动前认输，<code>skillRemovals</code> 不计入阈值。</li>
+</ul>
+<ul>
 <li>Prisma Migrate 的生产历史以完整 SQLite <code>0_init</code> 为唯一基线：新库直接 <code>migrate deploy</code>，已有预上线库必须停服备份并通过 schema diff 后再显式 <code>migrate resolve --applied 0_init</code>；<code>npm run verify:migrations</code> 在隔离临时库验证空库部署、旧库无损接管、重复 deploy 和 schema 一致性，应用启动不会自动修改迁移历史。</li>
 </ul>
 <ul>
@@ -596,7 +599,10 @@
 <li>爱弥斯名牌的缩略可读性修订仍沿用选定的 B 版叙事，但把运行时会互相粘连的微型波形、密集灯点、碎折线和宽泛白光收束为三组大形：左侧放大的纸飞机／扇形装甲／像素雪绒、中部安静的天青—粉色装甲速度载体、右侧三切面折纸机甲尾与少量粉色信标；生产 PNG 继续保持 <code>1125 x 240</code>、<code>150 x 32</code> 槽位和既有安全区。精确 ID 动效不使用脱离插画的多边形闪面、垂直交叉格纹、重复扫描纹理或循环重置式扫光，而是提供清晰常驻的天青—粉色 Alpha 轮廓辉光，并以 <code>2.2–2.7s</code> 的缓入缓出节奏沿纸飞机局部、载体既有速度面、径向雪绒光核与右侧信标做可辨识的呼吸与往返漂移；流光限制在载体内部，用户名层不位移，减弱动效仍冻结为明亮可读的静态态。该精确 ID 下的用户名使用清晰的 UI 字体栈，配合深青粗字、细浅描边及克制的天青／粉色侧向微光；其他用户名和名牌不继承此样式。拉海洛伊展示字体因运行时把普通用户名变成近似符号字而被明确排除。</li>
 </ul>
 <ul>
-<li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听新增后的 <code>denia-rainbow-bean-candy</code> 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。</li>
+<li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听 <code>denia-rainbow-bean-candy</code> 道具使用事件；只有达妮娅接受并吃下彩虹豆豆跳跳糖后才会触发并获得 100 金币，35% 拒绝分支不会触发，不回溯统计成就上线前发生过的使用记录。</li>
+</ul>
+<ul>
+<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅和爱弥斯三名角色，三者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 620ms 的七彩像素光纹，棋子和围棋规则保持不变，并在她完成一盘有效对局后解除。三份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
 </ul>
 <ul>
 <li>新增内置成就“点亮语义！”使用 <code>mode_character_wins</code> 条件统计玩家使用西格莉卡在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>/assets/achievements/semantic-nameplate.png</code> 用户名背景；<code>seedBuiltinAchievements</code> 会让管理员默认达成所有内置成就并标记奖励已发放。</li>
@@ -713,13 +719,13 @@
 <li>剧情节点的立绘来源可包含角色目录之外的剧情专用候选，统一由 <code>src/shared/storyPortraits.js</code> 合成给后台下拉、后台预览和玩家侧 <code>StoryPlayerModal</code> 解析；这些候选只用于剧情节点 <code>characterId</code>，不改变玩家角色本体、出战角色或道具触发目标。当前内置剧情专用候选包括 <code>denia-rainbow-glow</code>，名称为“发彩虹光的达妮娅”，立绘复用 <code>/assets/characters/denia_color.webp</code>。</li>
 </ul>
 <ul>
-<li>应用级 overlay 新增 <code>storyPlayer</code>，排序高于仓库等业务弹窗；道具互动剧情会浮在仓库上方，玩家故事遮罩拥有高于普通 <code>.modal-backdrop</code> 与最终移动弹窗兜底层的专用层级。打开通用播放器会先清掉旧 <code>onboardingStory</code> 可见状态，跳过/完成/关闭和手机返回会同时关闭 <code>storyPlayer</code>、旧 <code>onboardingStory</code> 并清空当前脚本，关闭后再露出仓库。<code>useOnboardingStory()</code> 仍负责自动新手引导和手动回放，但打开的是同一个通用播放器。</li>
+<li>应用级 overlay 新增 <code>storyPlayer</code>，排序高于仓库等业务弹窗；道具互动剧情会浮在仓库上方，玩家故事遮罩拥有高于普通 <code>.modal-backdrop</code> 与最终移动弹窗兜底层的专用层级。<code>item-character-use</code> 触发的脚本始终进入通用 <code>StoryPlayerModal</code>，即使开场使用 <code>player-choice</code> 节点也不能被非 <code>story</code> 节点探测误判为棋盘教学；只有教学脚本才进入 <code>TutorialSessionModal</code>。打开通用播放器会先清掉旧 <code>onboardingStory</code> 可见状态，跳过/完成/关闭和手机返回会同时关闭 <code>storyPlayer</code>、旧 <code>onboardingStory</code> 并清空当前脚本，关闭后再露出仓库。<code>useOnboardingStory()</code> 仍负责自动新手引导和手动回放，但打开的是同一个通用播放器。</li>
 </ul>
 <ul>
 <li>后端新增 <code>StoryScript</code> 通用模型和 <code>server/storyScripts.js</code> 领域层。脚本包含 <code>key/title/triggerType/triggerParamsJson</code>、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空、节点演出效果枚举、选项出现时间非负数字、选项选择后等待非负数字和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 <code>nextNodeId</code> 为空，表示选择该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。每个选项可配置 <code>revealDelaySeconds</code>，为空时等正文展示完毕后出现，数字则从进入当前节点开始计时后单独出现；也可配置 <code>transitionDelaySeconds</code>，为空时选择后即时进入目标。对弈节点还会规范化节点推进字段 <code>manualContinueEnabled</code>、<code>autoContinueEnabled</code> 和 <code>autoContinueDelaySeconds</code>。</li>
 </ul>
 <ul>
-<li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到西格莉卡或达妮娅后，服务端先完成道具结算、成就触发和资产同步，再按 <code>{ itemId, characterId }</code> 查找剧情脚本并返回；其中 <code>itemId</code> 必须使用稳定的 <code>ShopItem.targetId</code>（例如 <code>rainbow-bean-candy</code>），不能使用后台商城行主键。服务端查询和发布冲突检查会把历史上误存的商城行主键规范化回 <code>targetId</code>，让已发布旧记录仍能被玩家侧命中；没有脚本时前端继续显示旧 <code>effectText</code>。</li>
+<li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到西格莉卡或达妮娅时，服务端在同一事务内先校验使用资格，再以可测试随机源判定结果：每名角色均有 35% 概率返回 <code>itemUseOutcome: rejected</code>，此时不消耗道具、不写入角色效果、不切换出战角色且不触发成功类成就；其余 65% 返回 <code>accepted</code> 并按原有结算链写入。每份糖果剧情在同一已发布脚本内保存 <code>accepted-start</code> 与 <code>rejected-start</code> 两套节点，服务端只覆盖本次响应的 <code>startNodeId</code>；叙述节点的 <code>speakerName</code> 和 <code>characterId</code> 均为空，因此剧情窗口角色区域留空且不会显示“旁白”。剧情仍按 <code>{ itemId, characterId }</code> 查找，其中 <code>itemId</code> 必须使用稳定的 <code>ShopItem.targetId</code>（例如 <code>rainbow-bean-candy</code>），不能使用后台商城行主键；查询和发布冲突检查会把历史商城行主键规范化回 <code>targetId</code>。没有已发布脚本时，接受分支继续回退旧 <code>effectText</code>。</li>
 </ul>
 <ul>
 <li>后台“新手引导”页升级为剧情脚本管理，支持脚本列表、新建、标题、受控触发器参数、节点表单、保存草稿、发布和预览，不暴露原始触发器 JSON。后台编辑器网格必须按头部、脚本元信息、节点滚动区、底部操作分行，只有节点列表吃剩余高度并滚动；节点列表还必须保留稳定滚动条安全边距，避免脚本元信息、节点卡片、输入框和删除按钮被压缩重叠、内部滚动条或右侧预览列遮住。旧 <code>/api/onboarding-story</code> 和 <code>/api/admin/onboarding-story</code> 兼容路径仍可用；启动种子会在缺失时创建默认 onboarding、Sigrika 糖果和 Denia 糖果脚本，并把已发布旧 <code>OnboardingStoryScript</code> 迁移到 <code>onboarding.default</code>。</li>
@@ -2132,7 +2138,7 @@
 <li>Owning the memorial ticket inserts its holographic five-color button with a light, high-contrast inner surface between the two normal recruitment items. Starting it consumes one ticket only after the server verifies that Aemeath is not already owned, creates an 11.25-second fixed-success task, and runs the 7.05-second locked arrival presentation. The displayed 999-minute countdown and gradual dimming both start on the first presentation frame; the current Pink Cyber Angel sprite atlas loops its eight-frame right-flight row during entry, switches to one four-frame wave at the countdown anchor, then changes behind the full-white frame to the server countdown near five seconds. Normal presentation completion records the task as locally presented and waits for the authoritative countdown to reach zero before showing ready; only hidden/offline/page-exit interruption skips directly to a ready task without replay. The player still explicitly claims and opens the ordinary result view, whose decided character is always Aemeath.</li>
 </ul>
 <ul>
-<li>对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 <code>user.itemEffects</code>，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。</li>
+<li>对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；角色拒绝彩虹豆豆跳跳糖时改为显示“[角色名]拒绝了[道具名]，道具未消耗”，并使用非成功提示。使用结果窗口读取接口返回的最新 <code>user.itemEffects</code>，所以达妮娅接受并吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。</li>
 </ul>
 <ul>
 <li>商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。</li>
@@ -2141,13 +2147,19 @@
 <li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 <code>/api/me</code> 刷新的铭牌统计体现最新段位积分。</li>
 </ul>
 <ul>
-<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。服务端会把商品、仓库和玩家侧抽卡奖项/结果中的内置糖果旧 PNG 图路径归一为当前 WebP，默认快照里的糖果商品和卡池奖励也使用同一路径。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
+<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。服务端会把商品、仓库和玩家侧抽卡奖项/结果中的内置糖果旧 PNG 图路径归一为当前 WebP，默认快照里的糖果商品和卡池奖励也使用同一路径。该道具只能对角色使用，目前西格莉卡、达妮娅和爱弥斯有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。</li>
+<li>彩虹豆豆跳跳糖对西格莉卡使用时先判定 35% 拒绝概率；拒绝分支不消耗道具、不改变金币、效果或出战角色。接受分支消耗 1 个道具且不再奖励 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动切换到一名已拥有且可出战的其它角色；没有可替换角色时在随机判定前拒绝使用且不消耗道具。成功剧情明确她去找医生且暂时不能找她下棋；任意角色完成一盘有效对局后清除该状态。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，<code>itemEffects.deniaRainbowGlow</code> 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.webp</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
+<li>彩虹豆豆跳跳糖对达妮娅使用时同样先判定 35% 拒绝概率；拒绝分支不消耗道具、不应用效果且不触发“你给我吃了什么！？”成就。接受分支消耗 1 个道具并将 <code>itemEffects.deniaRainbowGlow</code> 置为 true，剧情和特殊立绘表现为她的双眼与嘴巴发出三道彩虹射线，而不是全身发光；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.webp</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
+</ul>
+<ul>
+<li>彩虹豆豆跳跳糖对爱弥斯使用时同样先判定 35% 拒绝概率；拒绝分支不消耗道具、不应用效果。接受分支消耗 1 个道具并将 <code>itemEffects.aemeathRainbowMove</code> 置为 true，棋舍以“彩虹落子模式”徽标展示；对局展示层只在当前最后一步确实由带有效果的爱弥斯落子时，于对应交叉点播放约 620ms 的七彩像素光纹，棋子仍保持普通黑白外观且不改变规则、技能或数值。光纹标记指针穿透，连续关键帧仅改变 <code>transform</code> 与 <code>opacity</code>，<code>prefers-reduced-motion</code> 下冻结为局部静态彩环；爱弥斯完成一盘有效对局后清除该状态，使用其它角色完成对局不会误清除。</li>
+</ul>
+<ul>
+<li>西格莉卡、达妮娅与爱弥斯的默认糖果脚本都在一份已发布记录内包含 <code>accepted-start</code> / <code>rejected-start</code> 两套节点，服务端按本次 <code>itemUseOutcome</code> 选择响应起点。叙述节点保持 <code>speakerName: &quot;&quot;</code> 与 <code>characterId: &quot;&quot;</code>，剧情窗口角色区域为空，不渲染“旁白”字样。</li>
 </ul>
 <ul>
 <li>登录后的静态资源预加载会无条件加入达妮娅糖果动图 <code>/assets/characters/denia_color.webp</code>，让用户之后在棋舍、排行榜、好友资料或对局中首次看到彩色达妮娅时不再临时下载；对局回放数据仍保持按需加载。</li>
@@ -2302,6 +2314,9 @@
 </ul>
 <ul>
 <li><code>ResultModal</code>: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。</li>
+</ul>
+<ul>
+<li>星炬模式选择项使用 <code>.match-mode-option-wrap</code> 保持正式匹配按钮与准时宝陪练入口为并列交互元素，禁止嵌套按钮并保留键盘焦点。入口按钮以 <code>/assets/home/home-practice-zhunshibao.webp</code> 透明图作为完整视觉内容，按钮本身保留“准时宝陪练”可访问名称；桌面 132px、竖屏 126px 的紧凑标签绝对定位在“星炬对弈”标题右上方，其水平中心线与卡片上边框平齐且不覆盖标题。透明图使用 <code>drop-shadow</code> 保留轮廓层次，悬停时顺时针旋转 3 度，<code>prefers-reduced-motion</code> 下取消变换。点击入口直接使用共享 <code>PRACTICE_QUICK_START_OPTIONS</code> 发送基础难度、随机黑白的 <code>practice:start</code>，不再渲染二次设置层；<code>useMatchActions.startPractice</code> 预热 Spark 对局资源，后续继续复用 <code>match:found</code> 过渡。共享 <code>OpeningModal</code> 在练习房执色标题下增加红色提子胜利规则，阈值从 <code>room.practice.difficulty</code> 对应配置读取，当前基础快速开局显示 22，普通房间不渲染。<code>battlePreloadAssets</code> 把安全投影的 <code>botProfile.portraitUrl</code> 纳入关键图片，<code>PlayerInfo</code> 使用 <code>/assets/characters/zhunshibao.png</code> 透明机器人立绘并保留文字回退与可访问替代文本。有立绘时，准时宝不使用教学 <code>.no-character</code> 头像框或专属缩放，桌面继承普通角色 <code>width: 100% / height: var(--side-portrait)</code>，竖屏继承统一 <code>46px</code> 规则；仅资源缺失时使用无角色回退。准时宝没有评分和技能时复用已有不可见占位，保留普通角色信息区的评分与技能网格轨道，使双方卡片等高而不展示虚假数据。练习结果页不渲染积分/金币卡片，只显示“人机练习 · 不计成长 · 不保存棋谱”；房间成员行禁用资料、好友和黑名单入口。</li>
 </ul>
 <ul>
 <li><code>TestTools</code>: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。</li>
@@ -2880,7 +2895,7 @@
 </ul>
 <h2>Story Player Frontend</h2>
 <ul>
-<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player-side story renderer for onboarding, item-character interactions, and future teaching scenes. <code>OnboardingStoryModal.jsx</code> is now a compatibility wrapper that passes onboarding labels into the same player.</li>
+<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player-side story renderer for onboarding, item-character interactions, and future teaching scenes. <code>AppOverlays</code> routes every <code>item-character-use</code> script directly to this generic renderer, including scripts whose opening interaction is represented by a <code>player-choice</code> node, so item stories cannot be mistaken for board tutorials. <code>OnboardingStoryModal.jsx</code> is now a compatibility wrapper that passes onboarding labels into the same player.</li>
 </ul>
 <ul>
 <li><code>src/app/overlayRegistry.js</code> registers <code>storyPlayer</code> as the generic application-level overlay. It is ordered above warehouse, so Escape and mobile/browser back close the story first and keep the underlying warehouse open. Legacy <code>onboardingStory</code> remains registered for compatibility, but new story playback uses <code>storyPlayer</code>.</li>
@@ -2932,6 +2947,9 @@
 <h2>当前结论</h2>
 <ul>
 <li><code>server/index.js</code> 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 <code>server/serverStartup.js</code>，具体 HTTP 领域逻辑已逐步拆到 <code>*Routes.js</code> 和领域模块，Socket 连接事件套件已由 <code>server/socketEvents.js</code> 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 <code>server/socket*Events.js</code> 分组模块维护。</li>
+</ul>
+<ul>
+<li><code>server/socketPracticeEvents.js</code> owns <code>practice:start</code> with request <code>{ difficulty: &quot;beginner&quot; | &quot;basic&quot;, playerColor: &quot;black&quot; | &quot;white&quot; | &quot;random&quot; }</code> and ack <code>{ ok, roomCode?, error?, code? }</code>. It refreshes the authenticated user, applies the ordinary new-match capacity gate, rejects users already in an active room, leaves matchmaking, then creates a Spark practice room through the normal room lifecycle. Practice rooms use <code>rated=false</code>, <code>matchSource=&quot;practice&quot;</code>, and <code>recordPolicy=&quot;none&quot;</code>; the virtual <code>zhunshibao</code> participant is preloaded, has no character/skill, never owns a socket or social identity, and is projected as virtually connected only in the viewer room payload.</li>
 </ul>
 <ul>
 <li>Realtime room behavior is composed in <code>server/rooms.js</code>; <code>server/roomMembershipIndex.js</code> maintains userId/socketId to roomCode indexes for active-room checks, <code>room:resume</code>, and <code>disconnect</code> cleanup so growing room counts do not force full scans.</li>
@@ -3360,6 +3378,8 @@
 <p>单房首次观战接入受 <code>MAX_SPECTATORS_PER_ROOM</code> 控制，默认 20。<code>server/socketRoomEvents.js</code> 在产生加入副作用前返回明确“观战席已满”提示，<code>server/roomConnectionLifecycle.js</code> 在权威连接边界再次执行同一共享规则；已有观战者更换 Socket 重连不会占用新名额，也不会被全局软上限挡住。</p>
 <p><code>server/lobbyStatsBroadcaster.js</code> 把连接、断开、匹配加入/退出和约战完成触发的全局 <code>lobby:stats</code> 合并为 100ms trailing broadcast，并在 payload 与上次完全相同时跳过发送。新连接仍立即收到自己的初始统计；同一重连突发只产生有限的全局扇出。运行指标分别记录请求次数和实际发送次数，便于后台观察合并率。</p>
 <p>房间创建先写入创建/模式系统通知，再完成一次初始强制持久化，最后只向两名玩家分别发送 <code>match:found</code>。后续资源 ready、opening/playing 转换继续通过已有权威房间更新传播；不再为刚创建且没有观战者的房间立刻发送第二份等价 <code>room:update</code>。</p>
+<p>练习房继续使用同一 <code>match:found</code>、资源 ready、opening、权威 action ack、技能演出、棋钟、数子和 <code>room:resume</code> 通路。<code>server/practiceRoomAutomation.js</code> 在每次完整房间/在线状态广播后做幂等调度：只在真人连接且轮到准时宝时，从 <code>gameViewForColor(botColor)</code> 生成最多 48 个候选并调用正式 <code>handleGameAction</code>；技能演出期间不调度，重连或进程恢复后会重新挂起待行动。<code>practiceBotDecision</code> 先按紧急吃逃、最近两手局部、星位/开局点、普通邻点和随机补点产生候选，再集中评价吃子、防守、攻击、连接、切断、局部应手、开局影响与 3x3 棋形；每个候选经正式 <code>playMove</code> 模拟，并只对模拟后处于一气的己方棋块验证对手下一手提子，避免把深层搜索放进共享事件循环。坏自打吃、填眼、空三角和无战斗理由的早期三连直线受到强惩罚；准时宝前两手普通落子把未占用角星位提升到开局优先级，但立即吃子与逃叫吃仍优先。入门档仍保留 25% 的宽选随机，但只在同优先级、距离最佳分 16 分内的最多 12 个合理候选中选择；通常从前 8 个合理候选选取并等待 1.2-1.8 秒。基础档从同优先级、距离最佳分 10 分内的前 3 个候选选取并等待 0.6-1.0 秒。低价值候选不再按 <code>moveNumber</code> 提前弃手，仅当空有效交叉点不超过 <code>max(8, floor(validPoints * 0.12))</code> 时才允许弃手。玩家普通提子达到 11/22 子时，准时宝在下一次行动前认输并显式清除早期无效标记；技能除子不读取。玩家申请数子后，准时宝保守标记自己的明显死子并确认，真人在练习房可修正双方标记，后续准时宝只重新确认而不覆盖；求和与结果复核由准时宝延迟接受。</p>
+<p>练习配置随 <code>PersistedRoom</code> JSON 快照保存，不新增数据库 schema。<code>roomResultPersistence</code> 对 <code>recordPolicy=&quot;none&quot;</code> 直接把 <code>recordSaved</code> 置真且不创建 <code>GameRecord</code>、奖励或成长事务；<code>listWatchRooms()</code> 同时在内存和可选 read-model 路径过滤 <code>matchSource=&quot;practice&quot;</code>。练习房仍计入 <code>listActiveRooms()</code>，因此受 <code>MAX_ACTIVE_ROOMS</code> 容量上限约束。</p>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -3447,7 +3467,7 @@
 <li><code>itemPurchaseCounts</code>: JSON 数量表字符串，例如 <code>{&quot;rainbow-bean-candy&quot;:3}</code>；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。</li>
 </ul>
 <ul>
-<li><code>itemEffects</code>: JSON 状态字符串，当前支持 <code>sigrikaCandyDisabled</code> 与 <code>deniaRainbowGlow</code> 两个彩虹豆豆跳跳糖临时效果。</li>
+<li><code>itemEffects</code>: JSON 状态字符串，当前支持 <code>sigrikaCandyDisabled</code>、<code>deniaRainbowGlow</code> 与 <code>aemeathRainbowMove</code> 三个彩虹豆豆跳跳糖临时效果。</li>
 </ul>
 <ul>
 <li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>

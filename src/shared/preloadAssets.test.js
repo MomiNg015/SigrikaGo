@@ -172,6 +172,26 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toContain("/assets/voice/nabomo_skill_cast.ogg");
   });
 
+  it("includes a practice bot portrait in battle preload assets", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        mode: "spark",
+        players: [
+          { characterId: "sigrika" },
+          { isBot: true, characterId: null, botProfile: { portraitUrl: "/assets/characters/zhunshibao.png" } }
+        ]
+      },
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" }
+      },
+      tracks: {},
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalImages).toContain("/assets/characters/zhunshibao.png");
+  });
+
   it("preloads only the battle track selected for the current user", () => {
     const tracks = {
       "battle-default": MUSIC_TRACKS["battle-default"],

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 56
-- **Last Active**: 2026-07-20
+- **Total Sessions**: 60
+- **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1861 | Active |
+| `journal-1.md` | ~1993 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,10 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 60 | 2026-07-22 | Zhunshibao practice baseline verification | `611d57f8` | `codex/human-vs-ai` |
+| 59 | 2026-07-22 | Zhunshibao practice mode | `122bd087` | `codex/human-vs-ai` |
+| 58 | 2026-07-22 | Add Aemeath rainbow candy story and move effect | `f82f7404` | `codex/rainbow-bean-popping-candy-story` |
+| 57 | 2026-07-22 | 完成彩虹豆豆跳跳糖双分支剧情 | `87f2556e` | `codex/rainbow-bean-popping-candy-story` |
 | 56 | 2026-07-20 | Phase 3 stability and release rehearsal | `f48fbb29` | `codex/prelaunch-phase3` |
 | 55 | 2026-07-20 | Prelaunch Phase 2 database baseline | `66a80e9a` | `codex/prelaunch-phase2` |
 | 54 | 2026-07-20 | 上线前阶段0与阶段1加固 | `8c0770f3` | `codex/prelaunch-phase0-phase1` |

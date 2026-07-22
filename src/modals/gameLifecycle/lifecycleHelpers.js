@@ -1,6 +1,7 @@
 import { COLORS } from "../../shared/game.js";
 import { resultRewardDelta } from "../../shared/resultRewards.js";
 import { SYSTEM_VOICE_EVENTS } from "../../shared/systemVoices.js";
+import { PRACTICE_RECORD_POLICY, isPracticeRoom } from "../../shared/practiceMode.js";
 
 export function colorTextForPlayer(player) {
   if (player?.color === COLORS.black) return "黑";
@@ -23,6 +24,7 @@ export function formatSignedDelta(value) {
 export function resultRewardForRoom(room, user) {
   const currentPlayer = resultPlayerForRoom(room, user);
   if (!currentPlayer) return null;
+  if (isPracticeRoom(room) || room.recordPolicy === PRACTICE_RECORD_POLICY) return null;
   if (room.game.winner?.invalid) return { rating: 0, coins: 0 };
   const settledReward = room.game.resultRewards?.[user?.id];
   if (settledReward) return settledReward;

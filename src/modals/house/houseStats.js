@@ -9,6 +9,13 @@ export const RAINBOW_BEAN_CANDY_ICON = "/assets/items/rainbow-bean-candy.webp";
 
 const CHARACTER_ITEM_EFFECT_BADGES = [
   {
+    characterId: "aemeath",
+    effectKey: "aemeathRainbowMove",
+    itemId: "rainbow-bean-candy",
+    label: "彩虹落子模式",
+    icon: RAINBOW_BEAN_CANDY_ICON
+  },
+  {
     characterId: "sigrika",
     effectKey: "sigrikaCandyDisabled",
     itemId: "rainbow-bean-candy",

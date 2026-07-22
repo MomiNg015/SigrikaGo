@@ -1403,3 +1403,49 @@ Correct:
 ```js
 playSystemVoice(`countdown-${second}`, { playbackProfile: VOICE_PLAYBACK_PROFILES.countdown });
 ```
+
+### Scenario: Story Trigger and Player-Surface Routing
+
+#### 1. Scope / Trigger
+- Trigger: changing story-script trigger payloads, `AppOverlays` story routing, item-character interaction nodes, or unified tutorial node detection.
+
+#### 2. Signatures
+- Player story payload: `{ triggerType, startNodeId, nodes }` as returned by `toPlayerStoryScriptPayload()`.
+- `isUnifiedTutorialScript(script)` selects `TutorialSessionModal` only after honoring trigger-owned routing boundaries.
+
+#### 3. Contracts
+- `triggerType: "item-character-use"` always renders through `StoryPlayerModal`.
+- Item-character scripts may contain `player-choice` nodes for option-only beats. That node type must not route the whole script into the board tutorial surface.
+- Non-item scripts that contain interactive tutorial nodes continue to render through `TutorialSessionModal`.
+- Node type controls behavior inside a compatible runtime; it is not, by itself, sufficient evidence that an item interaction is a battle tutorial.
+
+#### 4. Validation & Error Matrix
+- Item-character script starts at `player-choice` -> render the generic story modal with no board.
+- Item-character script contains only `story` nodes -> render the generic story modal.
+- Battle tutorial contains `player-move`, `board-setup`, or another non-story tutorial node -> render the tutorial session surface.
+- Missing trigger metadata on a legacy script -> preserve non-story-node detection as the compatibility fallback.
+
+#### 5. Good/Base/Bad Cases
+- Good: use `triggerType` to protect the item-story product boundary, then use node detection for legacy/tutorial scripts.
+- Base: a pure `story` script renders through `StoryPlayerModal` without special routing.
+- Bad: treating every `player-choice` node as proof that the script needs a Go board.
+
+#### 6. Tests Required
+- `src/app/AppOverlays.test.jsx` must pass a realistic `item-character-use` script starting at `player-choice` and assert `StoryPlayerModal` is present while `TutorialSessionModal` is absent.
+- The existing unified-tutorial test must continue asserting that a `player-move` script renders `TutorialSessionModal`.
+- Run the focused overlay, warehouse, story, and item settlement suites before the repository-wide gate.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+return script.nodes.some((node) => !isStoryNodeType(node.type));
+```
+
+Correct:
+
+```js
+if (script.triggerType === "item-character-use") return false;
+return script.nodes.some((node) => !isStoryNodeType(node.type));
+```

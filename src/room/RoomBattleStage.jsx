@@ -5,7 +5,7 @@ import ChatBox from "./ChatBox.jsx";
 import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
-import { stoneDecorationsForRoom } from "./roomView.js";
+import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 
 const SHOW_TEST_TOOLS = import.meta.env.DEV;
@@ -99,6 +99,7 @@ export default function RoomBattleStage({
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
   const isMobileBattleLayout = battleLayoutClassName === "mobile-battle-layout";
+  const aemeathRainbowMoveEffect = aemeathRainbowMoveEffectForRoom(displayRoom);
   const opponentInfo = (
     <PlayerInfo
       player={opponent}
@@ -142,6 +143,7 @@ export default function RoomBattleStage({
         pointConfirmation={pointConfirmation}
         previewPlayer={role === "player" ? me : null}
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
+        aemeathRainbowMoveEffect={aemeathRainbowMoveEffect}
         tutorialTargetPointId={tutorialTargetPointId}
         tutorialAnyBoardTarget={tutorialAnyBoardTarget}
         onPoint={handlePoint}

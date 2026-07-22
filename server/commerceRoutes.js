@@ -46,7 +46,9 @@ export function createCommerceRouteHandlers({
         itemId: req.params.itemId,
         characterId: req.body.characterId
       });
-      const triggerEvent = result.item?.targetId === "rainbow-bean-candy" && result.target?.characterId === "denia"
+      const triggerEvent = result.itemUseOutcome !== "rejected"
+        && result.item?.targetId === "rainbow-bean-candy"
+        && result.target?.characterId === "denia"
         ? ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy
         : "";
       const achievementUnlocks = await evaluateAchievementsForUserFn({ prisma, userId: req.user.id, triggerEvent });

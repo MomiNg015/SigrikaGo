@@ -46,6 +46,18 @@
   place-items: center;
 }
 
+.portrait-wrap.no-character .practice-bot-portrait {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background: linear-gradient(145deg, #f7f1dc, #d9e6df);
+  color: #36554b;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
 .portrait-viewpoint-button {
   appearance: none;
   padding: 0;

@@ -18,6 +18,7 @@ import {
 import { applySkillCost, isLibertyPurgeForbiddenPoint } from "../shared/gameSkillState.js";
 import { canPreviewSkillTarget } from "../shared/boardView.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { canonicalCharacterId } from "../shared/characterAliases.js";
 
 export function canPreviewPoint(game, player, point, pendingSkill, isScoringMode) {
   if (isScoringMode) return false;
@@ -38,6 +39,19 @@ export function stoneDecorationsForRoom(room) {
   );
 }
 
+export function aemeathRainbowMoveEffectForRoom(room = {}) {
+  const history = room.game?.history ?? [];
+  const latestAction = history.at(-1);
+  if (latestAction?.type !== "move" || !latestAction.id || !latestAction.color) return null;
+  const player = (room.players ?? []).find((candidate) => candidate.color === latestAction.color);
+  const characterId = canonicalCharacterId(player?.characterId ?? player?.character?.id);
+  if (characterId !== "aemeath" || player?.user?.itemEffects?.aemeathRainbowMove !== true) return null;
+  return {
+    pointId: latestAction.id,
+    key: `${latestAction.moveNumber ?? room.game?.moveNumber ?? history.length}:${latestAction.color}:${latestAction.id}`
+  };
+}
+
 export function voiceCharacterForPlayer(player, characters) {
   if (!player) return null;
   return findCharacter(characters, player.character ?? player.characterId);
@@ -52,9 +66,10 @@ export function roomPeople(room) {
     username: player.user.username,
     rank: player.user.rank,
     rating: player.user.rating,
+    ...(player.isBot || player.user?.isBot ? { isBot: true } : {}),
     achievementEquipment: player.user.achievementEquipment ?? null,
     achievementEquipmentAssets: player.user.achievementEquipmentAssets ?? null,
-    connected: player.connected
+    ...(player.connected === undefined ? {} : { connected: player.connected })
   }));
   const spectators = (room.spectators ?? []).map((spectator) => ({
     id: `spectator-${spectator.user.id}`,

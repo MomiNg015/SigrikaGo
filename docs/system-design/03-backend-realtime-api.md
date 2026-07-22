@@ -5,6 +5,7 @@
 ## 当前结论
 
 - `server/index.js` 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 `server/serverStartup.js`，具体 HTTP 领域逻辑已逐步拆到 `*Routes.js` 和领域模块，Socket 连接事件套件已由 `server/socketEvents.js` 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 `server/socket*Events.js` 分组模块维护。
+- `server/socketPracticeEvents.js` owns `practice:start` with request `{ difficulty: "beginner" | "basic", playerColor: "black" | "white" | "random" }` and ack `{ ok, roomCode?, error?, code? }`. It refreshes the authenticated user, applies the ordinary new-match capacity gate, rejects users already in an active room, leaves matchmaking, then creates a Spark practice room through the normal room lifecycle. Practice rooms use `rated=false`, `matchSource="practice"`, and `recordPolicy="none"`; the virtual `zhunshibao` participant is preloaded, has no character/skill, never owns a socket or social identity, and is projected as virtually connected only in the viewer room payload.
 - Realtime room behavior is composed in `server/rooms.js`; `server/roomMembershipIndex.js` maintains userId/socketId to roomCode indexes for active-room checks, `room:resume`, and `disconnect` cleanup so growing room counts do not force full scans.
 - 普通对局秒级时钟走轻量 `room:clock`，关键状态变化仍走完整 `room:update`。两者都携带并推进 `clockSeq`，前端只接受新于当前房间快照的时钟 payload，防止网络乱序把读秒次数或剩余时间覆盖回旧值。
 - 匹配或约战创建的房间先进入 `GAME_PHASES.preloading`，`server/roomPreparationLifecycle.js` 管理 60 秒资源准备截止时间、`room:preload-ready` 玩家 ready 上报、`room.update.preload.readyCount/requiredCount` 广播和超时中止；`server/socketRoomEvents.js` 的 `room:preload-ready` 是可重复调用的 ack 协议，服务端在校验房间码后返回 `{ ok, roomCode, phase, readyCount, requiredCount }`，客户端未收到 `{ ok: true }` 前可以安全重发；双方都 ready 后才切到 `opening` 并排原有开局倒计时。
@@ -197,3 +198,7 @@
 `server/lobbyStatsBroadcaster.js` 把连接、断开、匹配加入/退出和约战完成触发的全局 `lobby:stats` 合并为 100ms trailing broadcast，并在 payload 与上次完全相同时跳过发送。新连接仍立即收到自己的初始统计；同一重连突发只产生有限的全局扇出。运行指标分别记录请求次数和实际发送次数，便于后台观察合并率。
 
 房间创建先写入创建/模式系统通知，再完成一次初始强制持久化，最后只向两名玩家分别发送 `match:found`。后续资源 ready、opening/playing 转换继续通过已有权威房间更新传播；不再为刚创建且没有观战者的房间立刻发送第二份等价 `room:update`。
+
+练习房继续使用同一 `match:found`、资源 ready、opening、权威 action ack、技能演出、棋钟、数子和 `room:resume` 通路。`server/practiceRoomAutomation.js` 在每次完整房间/在线状态广播后做幂等调度：只在真人连接且轮到准时宝时，从 `gameViewForColor(botColor)` 生成最多 48 个候选并调用正式 `handleGameAction`；技能演出期间不调度，重连或进程恢复后会重新挂起待行动。`practiceBotDecision` 先按紧急吃逃、最近两手局部、星位/开局点、普通邻点和随机补点产生候选，再集中评价吃子、防守、攻击、连接、切断、局部应手、开局影响与 3x3 棋形；每个候选经正式 `playMove` 模拟，并只对模拟后处于一气的己方棋块验证对手下一手提子，避免把深层搜索放进共享事件循环。坏自打吃、填眼、空三角和无战斗理由的早期三连直线受到强惩罚；准时宝前两手普通落子把未占用角星位提升到开局优先级，但立即吃子与逃叫吃仍优先。入门档仍保留 25% 的宽选随机，但只在同优先级、距离最佳分 16 分内的最多 12 个合理候选中选择；通常从前 8 个合理候选选取并等待 1.2-1.8 秒。基础档从同优先级、距离最佳分 10 分内的前 3 个候选选取并等待 0.6-1.0 秒。低价值候选不再按 `moveNumber` 提前弃手，仅当空有效交叉点不超过 `max(8, floor(validPoints * 0.12))` 时才允许弃手。玩家普通提子达到 11/22 子时，准时宝在下一次行动前认输并显式清除早期无效标记；技能除子不读取。玩家申请数子后，准时宝保守标记自己的明显死子并确认，真人在练习房可修正双方标记，后续准时宝只重新确认而不覆盖；求和与结果复核由准时宝延迟接受。
+
+练习配置随 `PersistedRoom` JSON 快照保存，不新增数据库 schema。`roomResultPersistence` 对 `recordPolicy="none"` 直接把 `recordSaved` 置真且不创建 `GameRecord`、奖励或成长事务；`listWatchRooms()` 同时在内存和可选 read-model 路径过滤 `matchSource="practice"`。练习房仍计入 `listActiveRooms()`，因此受 `MAX_ACTIVE_ROOMS` 容量上限约束。

@@ -144,6 +144,7 @@ describe("items", () => {
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         ownedCharacters: "sigrika",
         userCharacters: [{ characterSlug: "denia", source: "achievement" }],
@@ -156,12 +157,13 @@ describe("items", () => {
     expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
   });
 
-  it("uses rainbow candy on Sigrika by disabling sortie, granting coins, and switching selected character", async () => {
+  it("uses accepted rainbow candy on Sigrika by disabling sortie without granting coins", async () => {
     const updates = [];
     const response = await useInventoryItem({
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "sigrika",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         selectedCharacter: "sigrika",
         ownedCharacters: "sigrika,denia",
@@ -172,15 +174,16 @@ describe("items", () => {
       })
     });
 
-    expect(response.effectText).toContain("西格莉卡吃下了糖果");
-    expect(response.user.coins).toBe(130);
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.effectText).toContain("暂时不能找她下棋了");
+    expect(response.user.coins).toBe(100);
     expect(response.user.selectedCharacter).toBe("denia");
     expect(response.user.itemEffects).toMatchObject({ sigrikaCandyDisabled: true });
     expect(updates[0]).toMatchObject({
-      coins: { increment: 30 },
       selectedCharacter: "denia",
       ownedItems: "{}"
     });
+    expect(updates[0]).not.toHaveProperty("coins");
   });
 
   it("uses rainbow candy on Denia by enabling the rainbow glow effect", async () => {
@@ -189,6 +192,7 @@ describe("items", () => {
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
@@ -198,7 +202,8 @@ describe("items", () => {
       })
     });
 
-    expect(response.effectText).toContain("突然全身发出了彩虹光");
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.effectText).toContain("双眼和嘴巴同时喷出了三道彩虹射线");
     expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
     expect(structuredWrites).toContainEqual(["userItem.deleteMany", expect.objectContaining({
       where: {
@@ -217,6 +222,7 @@ describe("items", () => {
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
@@ -227,9 +233,10 @@ describe("items", () => {
           title: "达妮娅的彩虹糖",
           triggerType: "item-character-use",
           triggerParamsJson: JSON.stringify({ itemId: "rainbow-bean-candy", characterId: "denia" }),
-          publishedStartNodeId: "start",
+          publishedStartNodeId: "accepted-start",
           publishedNodesJson: JSON.stringify([
-            { id: "start", speakerName: "达妮娅", characterId: "denia", text: "{username}！你给{characterName}吃了什么！" }
+            { id: "accepted-start", speakerName: "达妮娅", characterId: "denia", text: "{username}！你给{characterName}吃了什么！" },
+            { id: "rejected-start", speakerName: "达妮娅", characterId: "denia", text: "拒绝了。" }
           ]),
           publishedAt: new Date("2026-06-28T08:00:00.000Z")
         }]
@@ -238,12 +245,13 @@ describe("items", () => {
 
     expect(response.storyScript).toMatchObject({
       key: "item.rainbow-bean-candy.denia",
-      startNodeId: "start",
+      startNodeId: "accepted-start",
       nodes: [
-        expect.objectContaining({ text: "moming！你给达妮娅吃了什么！" })
+        expect.objectContaining({ id: "accepted-start", text: "moming！你给达妮娅吃了什么！" }),
+        expect.objectContaining({ id: "rejected-start", text: "拒绝了。" })
       ]
     });
-    expect(response.effectText).toContain("突然全身发出了彩虹光");
+    expect(response.effectText).toContain("三道彩虹射线");
   });
 
   it("keeps the legacy effect text fallback when no item story is published", async () => {
@@ -251,6 +259,7 @@ describe("items", () => {
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
@@ -261,7 +270,7 @@ describe("items", () => {
     });
 
     expect(response.storyScript).toBeNull();
-    expect(response.effectText).toContain("突然全身发出了彩虹光");
+    expect(response.effectText).toContain("三道彩虹射线");
   });
 
   it("requires canonical Denia ownership when using candy on canonical Denia", async () => {
@@ -269,6 +278,7 @@ describe("items", () => {
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
+      random: () => 0.99,
       prisma: inventoryPrisma({
         ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
@@ -278,6 +288,76 @@ describe("items", () => {
     });
 
     expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
+  });
+
+  it("uses rainbow candy on Aemeath by enabling rainbow move effects", async () => {
+    const structuredWrites = [];
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "aemeath",
+      random: () => 0.99,
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,aemeath",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        structuredWrites
+      })
+    });
+
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.effectText).toContain("彩虹落子模式");
+    expect(response.user.itemEffects).toMatchObject({ aemeathRainbowMove: true });
+    expect(structuredWrites).toContainEqual(["userItemEffect.upsert", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "aemeathRainbowMove" } }
+    })]);
+  });
+
+  it.each([
+    ["sigrika", "sigrikaCandyDisabled"],
+    ["denia", "deniaRainbowGlow"],
+    ["aemeath", "aemeathRainbowMove"]
+  ])("keeps the candy and user state unchanged when %s rejects it", async (characterId, effectKey) => {
+    const updates = [];
+    const structuredWrites = [];
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId,
+      random: () => 0.349999,
+      prisma: inventoryPrisma({
+        selectedCharacter: "sigrika",
+        ownedCharacters: "sigrika,denia,aemeath",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        updates,
+        structuredWrites,
+        storyScripts: [{
+          key: `item.rainbow-bean-candy.${characterId}`,
+          title: "糖果剧情",
+          triggerType: "item-character-use",
+          triggerParamsJson: JSON.stringify({ itemId: "rainbow-bean-candy", characterId }),
+          publishedStartNodeId: "accepted-start",
+          publishedNodesJson: JSON.stringify([
+            { id: "accepted-start", text: "接受。" },
+            { id: "rejected-start", text: "拒绝。" }
+          ]),
+          publishedAt: new Date("2026-07-22T00:00:00.000Z")
+        }]
+      })
+    });
+
+    expect(response.itemUseOutcome).toBe("rejected");
+    expect(response.storyScript?.startNodeId).toBe("rejected-start");
+    expect(response.effectText).toBe("");
+    expect(response.items).toMatchObject([{ itemId: "rainbow-bean-candy", quantity: 1 }]);
+    expect(response.user.coins).toBe(100);
+    expect(response.user.selectedCharacter).toBe("sigrika");
+    expect(response.user.itemEffects?.[effectKey]).not.toBe(true);
+    expect(updates).toEqual([]);
+    expect(structuredWrites).toEqual([]);
   });
 
   it("rejects repeating an active rainbow candy effect without consuming the item", async () => {
@@ -304,9 +384,9 @@ describe("items", () => {
     await expect(useInventoryItem({
       userId: "user-1",
       itemId: "rainbow-bean-candy",
-      characterId: "aemeath",
+      characterId: "mornye",
       prisma: inventoryPrisma({
-        ownedCharacters: "sigrika,aemeath",
+        ownedCharacters: "sigrika,mornye",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character",

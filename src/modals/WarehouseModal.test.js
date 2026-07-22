@@ -4,9 +4,23 @@ import { renderToStaticMarkup } from "react-dom/server";
 import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
+import { characterItemUseNotice, itemStoryLabels } from "./warehouse/useWarehouseInventory.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
+  it("uses rejection-specific toast and skip copy without claiming the item succeeded", () => {
+    expect(characterItemUseNotice("达妮娅", "彩虹豆豆跳跳糖", "rejected")).toEqual({
+      message: "达妮娅拒绝了彩虹豆豆跳跳糖，道具未消耗",
+      type: "danger"
+    });
+    expect(itemStoryLabels("彩虹豆豆跳跳糖", "rejected").skipMessage).toBe(
+      "跳过只会关闭这段演出，道具没有消耗，效果也没有生效。"
+    );
+    expect(itemStoryLabels("彩虹豆豆跳跳糖", "accepted").skipMessage).toBe(
+      "跳过只会关闭这段演出，道具效果已经生效。"
+    );
+  });
+
   it("keeps the used character centered with the effect text after item use", () => {
     const targetState = {
       item: { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" },
@@ -193,6 +207,7 @@ describe("WarehouseModal candy feedback", () => {
     const characters = {
       denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" },
       sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+      aemeath: { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath_centered.webp" },
       momo: { id: "momo", name: "莫名", portrait: "/assets/momo.webp" }
     };
 
@@ -208,6 +223,11 @@ describe("WarehouseModal candy feedback", () => {
     })).toEqual({ disabled: true, reason: "无效果" });
     expect(warehouseCharacterTargetAvailability({
       character: characters.sigrika,
+      item,
+      itemEffects: {}
+    })).toEqual({ disabled: false, reason: "" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.aemeath,
       item,
       itemEffects: {}
     })).toEqual({ disabled: false, reason: "" });
