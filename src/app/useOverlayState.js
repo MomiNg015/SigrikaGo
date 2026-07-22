@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { APP_OVERLAYS, OVERLAY_STATE_KEYS } from "./overlayRegistry.js";
+import { APP_OVERLAYS, overlayPropsFromState, OVERLAY_STATE_KEYS } from "./overlayRegistry.js";
 
 export { OVERLAY_STATE_KEYS };
 
@@ -34,7 +34,6 @@ export function useOverlayState() {
   return useMemo(() => ({
     overlayState: overlays,
     overlaySetters: setters,
-    ...Object.fromEntries(APP_OVERLAYS.map(({ key, showProp }) => [showProp, overlays[key]])),
-    ...setters
+    ...overlayPropsFromState(overlays, setters)
   }), [overlays, setters]);
 }

@@ -661,7 +661,7 @@
 <li>GitHub Actions 的 <code>CI</code> workflow 是远端质量门：pull request 和 <code>master</code> push 会执行 <code>npm ci</code>、<code>npm test</code>、<code>npm run build</code>、示例生产配置检查和 <code>npm run docs:system-design</code>，与本地交付门保持一致。</li>
 </ul>
 <ul>
-<li>App-level overlays are registered in <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive overlay state, close-all behavior, and topmost-modal dismissal from that registry so new overlays do not need separate manual wiring that can break matchmaking or room recovery.</li>
+<li>App-level overlays are registered in <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive overlay state, close-all behavior, and topmost-modal dismissal from that registry so new overlays do not need separate manual wiring that can break matchmaking or room recovery. <code>src/app/appShellProps.js</code> now builds the route and overlay prop contracts consumed by <code>&lt;AppRoutes {...routeProps} /&gt;</code> and <code>&lt;AppOverlays {...appOverlayProps} /&gt;</code>; <code>App.jsx</code> derives <code>show*</code> / <code>setShow*</code> props through <code>overlayPropsFromState(overlayState, overlaySetters)</code> instead of maintaining long JSX prop lists.</li>
 </ul>
 <ul>
 <li>Mailbox summary polling lives in <code>src/app/useMailboxSummary.js</code>, and recruitment ready-state polling/timing lives in <code>src/app/useRecruitmentReadyState.js</code>, keeping the app composition root focused on wiring rather than feature-specific polling loops.</li>
@@ -2384,6 +2384,9 @@
 </ul>
 <ul>
 <li><code>useOverlayState</code> / <code>OVERLAY_STATE_KEYS</code>: 位于 <code>src/app/useOverlayState.js</code>，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置、公告中心、邮箱、留言板和通用剧情播放器等应用级弹窗可见性，避免 <code>App.jsx</code> 继续堆叠成组 <code>useState(false)</code>。</li>
+</ul>
+<ul>
+<li><code>appShellProps</code> / <code>overlayPropsFromState</code>: 位于 <code>src/app/appShellProps.js</code> 和 <code>src/app/overlayRegistry.js</code>，把 <code>App.jsx</code> 到 <code>AppRoutes</code> / <code>AppOverlays</code> 的 route state、route actions、overlay state/actions 和 registry-derived <code>show*</code> / <code>setShow*</code> props 收口成 <code>routeProps</code> 与 <code>appOverlayProps</code>。新增路由或应用级弹窗时，应先扩展 registry/适配层测试，再让 App 根组合展开适配对象，避免重新堆出手写 JSX prop 清单。</li>
 </ul>
 <ul>
 <li><code>modalDismissal</code>: lives in <code>src/app/modalDismissal.js</code> and owns the shared topmost-modal dismissal contract. Desktop Escape and browser/mobile history back close only the current top modal; app overlays, result/match-waiting modals, and the home match-mode picker should use this shared mechanism instead of local keydown/popstate listeners. When no modal is active, the mobile root-back guard intercepts phone/browser back on login, preload, home, and admin screens and shows the shared confirm modal with “确定要退出游戏吗？” before allowing the browser to leave the app. A loaded room instead forwards a monotonic back-request id through <code>AppRoutes</code> to <code>RoomScreen</code>, which invokes the same <code>requestExitConfirm</code> callback as the visible leave-room control: replay and spectator views return directly home, while an unfinished player game asks whether to resign and exit.</li>
@@ -5168,6 +5171,9 @@
 <h2>App Stability Debt Reduction</h2>
 <ul>
 <li>App-level overlay debt is reduced by <code>src/app/overlayRegistry.js</code>. Overlay state keys, React prop names, setter names, close-all behavior, and modal dismissal ordering now share one registry. This protects <code>match:found</code>, room resume, replay entry, desktop Escape, and mobile/browser back handling from future overlay additions that forget one wiring path.</li>
+</ul>
+<ul>
+<li>App-shell composition debt is further reduced by <code>src/app/appShellProps.js</code>: <code>App.jsx</code> now derives registry-backed overlay props once, then builds route and overlay adapter objects for <code>AppRoutes</code> and <code>AppOverlays</code>. Future player-facing features should extend the registry or focused adapter contract plus tests instead of adding another long flat prop list to the composition root.</li>
 </ul>
 <ul>
 <li><code>src/app/useMailboxSummary.js</code> and <code>src/app/useRecruitmentReadyState.js</code> move feature-specific polling and readyAt timing out of <code>src/app/App.jsx</code>, leaving the app composition root to connect feature hooks to routes/overlays. Future app-shell features should follow this pattern instead of adding more inline polling loops to <code>App.jsx</code>.</li>

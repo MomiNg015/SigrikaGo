@@ -494,6 +494,64 @@ Correct:
 const { showShop, setShowShop, showGacha, setShowGacha } = useOverlayState();
 ```
 
+### Scenario: App Shell Route And Overlay Prop Adapters
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing props passed from `src/app/App.jsx` into `AppRoutes` or `AppOverlays`.
+- The app composition root owns many app-shell states, but route and overlay components should receive them through focused adapter contracts rather than long hand-written JSX prop lists.
+
+#### 2. Signatures
+- `overlayPropsFromState(overlayState, overlaySetters)` lives in `src/app/overlayRegistry.js` and returns every registered `show*` boolean and `setShow*` setter prop.
+- `buildAppRouteProps({ overlayProps, routeActions, routeState })` lives in `src/app/appShellProps.js`.
+- `buildAppOverlayProps({ overlayActions, overlayProps, overlayState })` lives in `src/app/appShellProps.js`.
+
+#### 3. Contracts
+- `App.jsx` should derive `const overlayProps = overlayPropsFromState(overlayState, overlaySetters)` once, then render `<AppRoutes {...routeProps} />` and `<AppOverlays {...appOverlayProps} />`.
+- Keep route-only socket action adapters, such as counting request/respond emits, in `buildAppRouteProps()` instead of inline JSX props.
+- Keep overlay-only presentation adapters, such as the message-board submitted toast and story-player `{ open, clear }` script wrapper, in `buildAppOverlayProps()` instead of inline JSX props.
+- Do not move feature behavior into `AppRoutes` or `AppOverlays`; they remain composition/rendering boundaries with existing lazy-loading behavior.
+- Keep existing public prop names at the receiving components until those components are intentionally refactored.
+
+#### 4. Validation & Error Matrix
+- Missing overlay registry key -> `overlayPropsFromState()` cannot provide the expected `show*` / `setShow*` pair, so registry tests should fail before runtime.
+- New route callback added only as an inline JSX prop -> invalid; add it to `buildAppRouteProps()` or the grouped `routeActions` input and update adapter tests.
+- New overlay callback added only as an inline JSX prop -> invalid; add it to `buildAppOverlayProps()` or the grouped `overlayActions` input and update adapter tests.
+- App shell refactor changes visible route/modal behavior -> invalid unless the task explicitly changes that behavior and updates focused component tests.
+
+#### 5. Good/Base/Bad Cases
+- Good: `const routeProps = buildAppRouteProps({ overlayProps, routeActions, routeState });`.
+- Good: `const appOverlayProps = buildAppOverlayProps({ overlayProps, overlayActions, overlayState });`.
+- Base: `AppRoutes` and `AppOverlays` may still destructure individual props internally while the shell boundary is narrowed.
+- Bad: adding `onMessageSubmitted={() => showToast(...)}` directly on `<AppOverlays>`.
+- Bad: adding a new overlay `show*` prop by destructuring it separately in `App.jsx` while bypassing `overlayPropsFromState()`.
+
+#### 6. Tests Required
+- `src/app/appShellProps.test.js` should cover route and overlay adapter-derived callbacks and registry-backed overlay props.
+- `src/app/overlayRegistry.test.js` should cover `overlayPropsFromState()` for visible props and setter props.
+- `src/app/App.test.js` should assert `App.jsx` uses `buildAppRouteProps`, `buildAppOverlayProps`, `overlayPropsFromState(overlayState, overlaySetters)`, and the compact `<AppRoutes {...routeProps} />` / `<AppOverlays {...appOverlayProps} />` render contract.
+- Run `npm test -- src/app/App.test.js src/app/appShellProps.test.js src/app/overlayRegistry.test.js src/app/useOverlayState.test.js src/app/AppOverlays.test.jsx` after changing this boundary.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<AppOverlays
+  showShop={showShop}
+  setShowShop={setShowShop}
+  onMessageSubmitted={() => showToast("感谢您的反馈！", "success")}
+/>
+```
+
+Correct:
+
+```jsx
+const overlayProps = overlayPropsFromState(overlayState, overlaySetters);
+const appOverlayProps = buildAppOverlayProps({ overlayProps, overlayActions, overlayState });
+
+<AppOverlays {...appOverlayProps} />
+```
+
 ### Scenario: Achievement And Personalization Overlay State
 
 #### 1. Scope / Trigger

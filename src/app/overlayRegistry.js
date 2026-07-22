@@ -27,6 +27,13 @@ export function overlayStateFromProps(props) {
   return Object.fromEntries(APP_OVERLAYS.map(({ key, showProp }) => [key, Boolean(props[showProp])]));
 }
 
+export function overlayPropsFromState(overlayState = {}, overlaySetters = {}) {
+  return Object.fromEntries(APP_OVERLAYS.flatMap(({ key, showProp, setterProp }) => [
+    [showProp, Boolean(overlayState[key])],
+    [setterProp, overlaySetters[setterProp]]
+  ]));
+}
+
 export function closeOverlaySetters(overlaySetters) {
   for (const { setterProp } of APP_OVERLAYS) {
     overlaySetters[setterProp]?.(false);

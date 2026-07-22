@@ -23,7 +23,7 @@ describe("App startup preload wiring", () => {
     expect(source).toContain("view,");
     expect(source).toContain("user");
     expect(source).toContain("preloadPlayableIntent");
-    expect(source).toContain("onPreloadPlayableReady={preloadPlayableIntent}");
+    expect(source).toContain("onPreloadPlayableReady: preloadPlayableIntent");
   });
 
   it("keeps startup preload from covering a recovered room", () => {
@@ -111,12 +111,24 @@ describe("App startup preload wiring", () => {
     expect(overlayActionsSource).toContain("closeOverlaySetters(overlaySetters)");
   });
 
+  it("routes app composition props through focused shell adapters", () => {
+    const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(appSource).toContain("buildAppRouteProps");
+    expect(appSource).toContain("buildAppOverlayProps");
+    expect(appSource).toContain("overlayPropsFromState(overlayState, overlaySetters)");
+    expect(appSource).toContain("<AppRoutes {...routeProps} />");
+    expect(appSource).toContain("<AppOverlays {...appOverlayProps} />");
+    expect(appSource).not.toContain("onCountingRequest={() => socket?.emit");
+    expect(appSource).not.toContain("onMessageSubmitted={() => showToast");
+  });
+
   it("delegates mailbox summary polling out of the app composition root", () => {
     const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
     const hookSource = readFileSync(new URL("./useMailboxSummary.js", import.meta.url), "utf8");
 
     expect(appSource).toContain("useMailboxSummary({");
-    expect(appSource).toContain("mailboxOpen: showMailbox");
+    expect(appSource).toContain("mailboxOpen: overlayState.mailbox");
     expect(appSource).not.toContain("setMailboxSummary");
     expect(hookSource).toContain("window.setInterval(refreshMailboxSummary, 30000)");
   });

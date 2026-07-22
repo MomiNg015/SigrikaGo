@@ -13,6 +13,7 @@ import { useAudioRuntimeState } from "./useAudioRuntimeState.js";
 import { useAuthSession } from "./useAuthSession.js";
 import { useBackgroundMusicTrack } from "./useBackgroundMusicTrack.js";
 import { useAppShellTheme } from "./useAppShellTheme.js";
+import { buildAppOverlayProps, buildAppRouteProps } from "./appShellProps.js";
 import { useCurrentUser } from "./useCurrentUser.js";
 import { useGameSocketConnection } from "./useGameSocketConnection.js";
 import { useHomeUserRefresh } from "./useHomeUserRefresh.js";
@@ -24,7 +25,7 @@ import {
   useModalDismissal,
   useRootBackExitGuard
 } from "./modalDismissal.js";
-import { dismissOverlayByKey } from "./overlayRegistry.js";
+import { dismissOverlayByKey, overlayPropsFromState } from "./overlayRegistry.js";
 import { preloadPlayableReady } from "./playableReadyPreload.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
@@ -56,44 +57,7 @@ export default function App() {
     setMatchStart,
     setMatchSuccess
   } = useMatchSessionState();
-  const {
-    showShop,
-    showRecruitment,
-    showMatchModePicker,
-    showHouse,
-    showWarehouse,
-    showResume,
-    showAchievements,
-    showPersonalization,
-    showLeaderboard,
-    showFriends,
-    showWatch,
-    showSettings,
-    showAnnouncements,
-    showMailbox,
-    showMessageBoard,
-    showOnboardingStory,
-    showStoryPlayer,
-    overlayState,
-    overlaySetters,
-    setShowShop,
-    setShowRecruitment,
-    setShowMatchModePicker,
-    setShowHouse,
-    setShowWarehouse,
-    setShowResume,
-    setShowAchievements,
-    setShowPersonalization,
-    setShowLeaderboard,
-    setShowFriends,
-    setShowWatch,
-    setShowSettings,
-    setShowAnnouncements,
-    setShowMailbox,
-    setShowMessageBoard,
-    setShowOnboardingStory,
-    setShowStoryPlayer
-  } = useOverlayState();
+  const { overlayState, overlaySetters } = useOverlayState();
   const {
     audioResumeSignal,
     audioSettings,
@@ -129,34 +93,34 @@ export default function App() {
   });
   const [tutorialBattleSession, setTutorialBattleSession] = useState(null);
   const openStoryPlayer = useCallback((script, labels = null, options = {}) => {
-    setShowOnboardingStory(false);
+    overlaySetters.setShowOnboardingStory(false);
     setActiveStoryPlayer({
       script,
       labels,
       onComplete: options.onComplete ?? null,
       onExit: options.onExit ?? null
     });
-    setShowStoryPlayer(true);
-  }, [setShowOnboardingStory, setShowStoryPlayer]);
+    overlaySetters.setShowStoryPlayer(true);
+  }, [overlaySetters]);
   const clearStoryPlayer = useCallback(() => {
     setActiveStoryPlayer({ script: null, labels: null, onComplete: null, onExit: null });
   }, []);
   const closeStoryPlayerOverlay = useCallback(() => {
     const onExit = activeStoryPlayer.onExit;
-    setShowOnboardingStory(false);
-    setShowStoryPlayer(false);
+    overlaySetters.setShowOnboardingStory(false);
+    overlaySetters.setShowStoryPlayer(false);
     clearStoryPlayer();
     onExit?.();
-  }, [activeStoryPlayer.onExit, clearStoryPlayer, setShowOnboardingStory, setShowStoryPlayer]);
+  }, [activeStoryPlayer.onExit, clearStoryPlayer, overlaySetters]);
   const openTutorialBattleSession = useCallback((session) => {
-    setShowOnboardingStory(false);
-    setShowStoryPlayer(false);
+    overlaySetters.setShowOnboardingStory(false);
+    overlaySetters.setShowStoryPlayer(false);
     setTutorialBattleSession({
       ...session,
       returnView: view === "tutorial-battle" ? "home" : view
     });
     setView("tutorial-battle");
-  }, [setShowOnboardingStory, setShowStoryPlayer, view]);
+  }, [overlaySetters, view]);
   const closeTutorialBattleSession = useCallback(() => {
     const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
       ? tutorialBattleSession.returnView
@@ -188,12 +152,12 @@ export default function App() {
   }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
   const { mailboxSummary, refreshMailboxSummary } = useMailboxSummary({
-    mailboxOpen: showMailbox,
+    mailboxOpen: overlayState.mailbox,
     token,
     user
   });
   const { announcementSummary, refreshAnnouncementSummary } = useAnnouncementSummary({
-    announcementOpen: showAnnouncements,
+    announcementOpen: overlayState.announcements,
     token,
     user,
     view
@@ -256,11 +220,11 @@ export default function App() {
     setMatchSuccess,
     setMusicTracks,
     setRoom,
-    setShowHouse,
-    setShowLeaderboard,
-    setShowShop,
-    setShowWarehouse,
-    setShowWatch,
+    setShowHouse: overlaySetters.setShowHouse,
+    setShowLeaderboard: overlaySetters.setShowLeaderboard,
+    setShowShop: overlaySetters.setShowShop,
+    setShowWarehouse: overlaySetters.setShowWarehouse,
+    setShowWatch: overlaySetters.setShowWatch,
     setToken,
     setUser,
     setView,
@@ -405,6 +369,108 @@ export default function App() {
 
   useRoomMemory(room, matchSuccess?.room);
 
+  const overlayProps = overlayPropsFromState(overlayState, overlaySetters);
+  const routeProps = buildAppRouteProps({
+    overlayProps,
+    routeActions: {
+      emitGame,
+      emitScoring,
+      logout,
+      onAuth: handleAuth,
+      onDrawRequest: requestDraw,
+      onDrawRespond: respondDraw,
+      onOpenAdminReplay: openAdminReplay,
+      onOpenOnboardingStory: openOnboardingStory,
+      onOpenReplay: openReplay,
+      onPreloadPlayableReady: preloadPlayableIntent,
+      onRefreshCharacters: refreshPublicCharacters,
+      onRefreshMusicTracks: refreshMusicTracks,
+      onSiteSettingsChanged: setSiteSettings,
+      onToast: showToast,
+      onTutorialBattleClose: closeTutorialBattleSession,
+      onTutorialBattleComplete: tutorialBattleSession?.onComplete,
+      onTutorialBattleExitToStory: exitTutorialBattleToStory,
+      selectCharacter,
+      setAdminTab,
+      setDismissedResultRoom,
+      setPendingSkill,
+      setReplayStep,
+      setRoom,
+      setView,
+      startMatch,
+      updateUser
+    },
+    routeState: {
+      adminTab,
+      announcementUnread: announcementSummary.hasUnread,
+      assetProgress,
+      audioSettings,
+      characters,
+      lobbyStats,
+      mailboxBadgeCount: mailboxSummary.badgeCount,
+      matchSuccess,
+      musicTracks,
+      pendingSkill,
+      recruitmentReady,
+      replayStep,
+      room,
+      roomBackRequestId,
+      siteSettings,
+      socket,
+      token,
+      tutorialBattleSession,
+      user,
+      view
+    }
+  });
+  const appOverlayProps = buildAppOverlayProps({
+    overlayActions: {
+      applyStoneDecoration,
+      clearStoryPlayer,
+      joinWatchRoom,
+      onAnnouncementSummaryChange: refreshAnnouncementSummary,
+      onEnterTutorialBattle: openTutorialBattleSession,
+      onMailboxSummaryChange: refreshMailboxSummary,
+      onMatchCancel: cancelMatch,
+      onMatchSuccessComplete: completeMatchSuccess,
+      onRecruitmentInteractionLockChange: setRecruitmentInteractionLocked,
+      onRecruitmentStatusChange: handleRecruitmentStatusChange,
+      onRemoveToast: removeToast,
+      onResultClose: closeResultModal,
+      onStoryPlayerClose: closeStoryPlayerOverlay,
+      openReplay,
+      openStoryPlayer,
+      selectCharacter,
+      selectCharacterMusic,
+      setAudioSettings,
+      setIncomingDuel,
+      setVisualTheme,
+      showToast,
+      updateUser
+    },
+    overlayProps,
+    overlayState: {
+      activeStoryPlayer,
+      announcementUnreadByKind: announcementSummary.unreadByKind,
+      audioSettings,
+      characterListView,
+      characters,
+      incomingDuel,
+      matchStart,
+      matchSuccess,
+      musicTracks,
+      onboardingStoryScript: activeStoryPlayer.script,
+      resultModalOpen,
+      room,
+      siteSettings,
+      socket,
+      token,
+      toasts,
+      user,
+      visualTheme
+    }
+  });
+
   return (
     <div className={appShellClassName}>
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
@@ -421,150 +487,8 @@ export default function App() {
           }}
         />
       )}
-      <AppRoutes
-        adminTab={adminTab}
-        assetProgress={assetProgress}
-        audioSettings={audioSettings}
-        characters={characters}
-        emitGame={emitGame}
-        emitScoring={emitScoring}
-        lobbyStats={lobbyStats}
-        logout={logout}
-        matchSuccess={matchSuccess}
-        onAuth={handleAuth}
-        onCountingRequest={() => socket?.emit("counting:request", { roomCode: room.code })}
-        onCountingRespond={(accepted) => socket?.emit("counting:respond", { roomCode: room.code, accepted })}
-        onDrawRequest={requestDraw}
-        onDrawRespond={respondDraw}
-        onOpenAdminReplay={openAdminReplay}
-        onOpenReplay={openReplay}
-        onRefreshCharacters={refreshPublicCharacters}
-        onRefreshMusicTracks={refreshMusicTracks}
-        onSiteSettingsChanged={setSiteSettings}
-        onToast={showToast}
-        onOpenOnboardingStory={openOnboardingStory}
-        onPreloadPlayableReady={preloadPlayableIntent}
-        pendingSkill={pendingSkill}
-        replayStep={replayStep}
-        room={room}
-        roomBackRequestId={roomBackRequestId}
-        selectCharacter={selectCharacter}
-        setAdminTab={setAdminTab}
-        setDismissedResultRoom={setDismissedResultRoom}
-        setPendingSkill={setPendingSkill}
-        setReplayStep={setReplayStep}
-        setRoom={setRoom}
-        setShowFriends={setShowFriends}
-        mailboxBadgeCount={mailboxSummary.badgeCount}
-        announcementUnread={announcementSummary.hasUnread}
-        recruitmentReady={recruitmentReady}
-        showMatchModePicker={showMatchModePicker}
-        setShowMatchModePicker={setShowMatchModePicker}
-        setShowRecruitment={setShowRecruitment}
-        setShowHouse={setShowHouse}
-        setShowLeaderboard={setShowLeaderboard}
-        setShowMailbox={setShowMailbox}
-        setShowAnnouncements={setShowAnnouncements}
-        setShowOnboardingStory={setShowOnboardingStory}
-        setShowStoryPlayer={setShowStoryPlayer}
-        setShowMessageBoard={setShowMessageBoard}
-        setShowResume={setShowResume}
-        setShowAchievements={setShowAchievements}
-        setShowPersonalization={setShowPersonalization}
-        setShowSettings={setShowSettings}
-        setShowShop={setShowShop}
-        setShowWarehouse={setShowWarehouse}
-        setShowWatch={setShowWatch}
-        setView={setView}
-        siteSettings={siteSettings}
-        socket={socket}
-        startMatch={startMatch}
-        token={token}
-        tutorialBattleSession={tutorialBattleSession}
-        onTutorialBattleClose={closeTutorialBattleSession}
-        onTutorialBattleComplete={tutorialBattleSession?.onComplete}
-        onTutorialBattleExitToStory={exitTutorialBattleToStory}
-        updateUser={updateUser}
-        user={user}
-        view={view}
-        musicTracks={musicTracks}
-      />
-      <AppOverlays
-        applyStoneDecoration={applyStoneDecoration}
-        audioSettings={audioSettings}
-        characterListView={characterListView}
-        characters={characters}
-        incomingDuel={incomingDuel}
-        joinWatchRoom={joinWatchRoom}
-        matchStart={matchStart}
-        matchSuccess={matchSuccess}
-        musicTracks={musicTracks}
-        onMatchCancel={cancelMatch}
-        onMatchSuccessComplete={completeMatchSuccess}
-        onMessageSubmitted={() => showToast("感谢您的反馈！", "success")}
-        onAnnouncementSummaryChange={refreshAnnouncementSummary}
-        onStoryPlayerClose={closeStoryPlayerOverlay}
-        onEnterTutorialBattle={openTutorialBattleSession}
-        onRemoveToast={removeToast}
-        onRecruitmentStatusChange={handleRecruitmentStatusChange}
-        onRecruitmentInteractionLockChange={setRecruitmentInteractionLocked}
-        onResultClose={closeResultModal}
-        openReplay={openReplay}
-        resultModalOpen={resultModalOpen}
-        room={room}
-        selectCharacter={selectCharacter}
-        selectCharacterMusic={selectCharacterMusic}
-        setAudioSettings={setAudioSettings}
-        setIncomingDuel={setIncomingDuel}
-        setShowFriends={setShowFriends}
-        setShowRecruitment={setShowRecruitment}
-        setShowHouse={setShowHouse}
-        setShowLeaderboard={setShowLeaderboard}
-        setShowMailbox={setShowMailbox}
-        setShowAnnouncements={setShowAnnouncements}
-        setShowOnboardingStory={setShowOnboardingStory}
-        setShowMessageBoard={setShowMessageBoard}
-        setShowResume={setShowResume}
-        setShowAchievements={setShowAchievements}
-        setShowPersonalization={setShowPersonalization}
-        setShowSettings={setShowSettings}
-        setShowShop={setShowShop}
-        setShowWarehouse={setShowWarehouse}
-        setShowWatch={setShowWatch}
-        setVisualTheme={setVisualTheme}
-        showFriends={showFriends}
-        showRecruitment={showRecruitment}
-        showHouse={showHouse}
-        showLeaderboard={showLeaderboard}
-        showMailbox={showMailbox}
-        showAnnouncements={showAnnouncements}
-        showOnboardingStory={showOnboardingStory}
-        showStoryPlayer={showStoryPlayer}
-        showMessageBoard={showMessageBoard}
-        showResume={showResume}
-        showAchievements={showAchievements}
-        showPersonalization={showPersonalization}
-        showSettings={showSettings}
-        showShop={showShop}
-        showToast={showToast}
-        announcementUnreadByKind={announcementSummary.unreadByKind}
-        onMailboxSummaryChange={refreshMailboxSummary}
-        onboardingStoryScript={activeStoryPlayer.script}
-        storyPlayerScript={{
-          ...activeStoryPlayer,
-          open: openStoryPlayer,
-          clear: clearStoryPlayer
-        }}
-        showWarehouse={showWarehouse}
-        showWatch={showWatch}
-        siteSettings={siteSettings}
-        socket={socket}
-        token={token}
-        toasts={toasts}
-        updateUser={updateUser}
-        user={user}
-        visualTheme={visualTheme}
-      />
+      <AppRoutes {...routeProps} />
+      <AppOverlays {...appOverlayProps} />
     </div>
   );
 }

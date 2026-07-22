@@ -4,6 +4,7 @@ import {
   APP_OVERLAYS,
   closeOverlaySetters,
   dismissOverlayByKey,
+  overlayPropsFromState,
   overlayStateFromProps,
   OVERLAY_STATE_KEYS
 } from "./overlayRegistry.js";
@@ -45,6 +46,20 @@ describe("overlay registry", () => {
       messageBoard: false,
       house: false
     });
+  });
+
+  it("derives visible and setter props from registered overlay state", () => {
+    const overlaySetters = Object.fromEntries(APP_OVERLAYS.map(({ setterProp }) => [setterProp, vi.fn()]));
+    const props = overlayPropsFromState({
+      house: true,
+      mailbox: true
+    }, overlaySetters);
+
+    expect(props.showHouse).toBe(true);
+    expect(props.showMailbox).toBe(true);
+    expect(props.showShop).toBe(false);
+    expect(props.setShowHouse).toBe(overlaySetters.setShowHouse);
+    expect(props.setShowMailbox).toBe(overlaySetters.setShowMailbox);
   });
 
   it("closes every registered overlay setter", () => {
