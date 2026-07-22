@@ -13,6 +13,44 @@ import {
 } from "./roomView.js";
 
 const SIGRIKA_ERASE_IMPACT_PROGRESS = 0.58;
+const AEMEATH_RAINBOW_CHANNELS = [
+  { id: "red", x: "-176%", y: "-12%", color: "var(--aemeath-rainbow-red)", delay: "24ms" },
+  { id: "orange", x: "-108%", y: "14%", color: "var(--aemeath-rainbow-orange)", delay: "38ms" },
+  { id: "yellow", x: "-14%", y: "-170%", color: "var(--aemeath-rainbow-yellow)", delay: "50ms" },
+  { id: "green", x: "12%", y: "-104%", color: "var(--aemeath-rainbow-green)", delay: "64ms" },
+  { id: "cyan", x: "106%", y: "-10%", color: "var(--aemeath-rainbow-cyan)", delay: "78ms" },
+  { id: "blue", x: "174%", y: "12%", color: "var(--aemeath-rainbow-blue)", delay: "92ms" },
+  { id: "violet", x: "8%", y: "154%", color: "var(--aemeath-rainbow-violet)", delay: "106ms" }
+];
+const AEMEATH_RAINBOW_TRACES = [
+  {
+    id: "right", rotation: "0deg", length: "var(--aemeath-trace-right)", delay: "0ms",
+    hot: "rgba(56, 228, 242, 0.92)", mid: "rgba(79, 140, 255, 0.46)", tail: "rgba(198, 92, 255, 0.12)",
+    packetNear: "rgba(255, 232, 93, 0.86)", packetMid: "rgba(56, 228, 242, 0.5)", packetFar: "rgba(198, 92, 255, 0.2)"
+  },
+  {
+    id: "down", rotation: "90deg", length: "var(--aemeath-trace-down)", delay: "18ms",
+    hot: "rgba(94, 227, 138, 0.9)", mid: "rgba(255, 232, 93, 0.42)", tail: "rgba(255, 156, 66, 0.1)",
+    packetNear: "rgba(56, 228, 242, 0.82)", packetMid: "rgba(255, 232, 93, 0.46)", packetFar: "rgba(255, 156, 66, 0.18)"
+  },
+  {
+    id: "left", rotation: "180deg", length: "var(--aemeath-trace-left)", delay: "34ms",
+    hot: "rgba(255, 70, 104, 0.88)", mid: "rgba(255, 156, 66, 0.42)", tail: "rgba(255, 232, 93, 0.1)",
+    packetNear: "rgba(198, 92, 255, 0.84)", packetMid: "rgba(255, 70, 104, 0.46)", packetFar: "rgba(255, 232, 93, 0.18)"
+  },
+  {
+    id: "up", rotation: "270deg", length: "var(--aemeath-trace-up)", delay: "50ms",
+    hot: "rgba(198, 92, 255, 0.9)", mid: "rgba(79, 140, 255, 0.44)", tail: "rgba(56, 228, 242, 0.1)",
+    packetNear: "rgba(255, 70, 104, 0.82)", packetMid: "rgba(79, 140, 255, 0.46)", packetFar: "rgba(56, 228, 242, 0.18)"
+  }
+];
+
+function aemeathTraceCellCount(direction, point, boardSize) {
+  if (direction === "left") return point.x;
+  if (direction === "right") return boardSize - point.x - 1;
+  if (direction === "up") return point.y;
+  return boardSize - point.y - 1;
+}
 
 function Board({
   game,
@@ -532,7 +570,7 @@ function PointButton({
 
   return (
     <button
-      className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${tutorialTargeted ? "tutorial-target-point" : ""} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
+      className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${tutorialTargeted ? "tutorial-target-point" : ""} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""} ${aemeathRainbowMoveEffectKey ? "aemeath-rainbow-point" : ""}`}
       data-point-id={point.id}
       style={{
         "--board-point-center-x": `${((point.x + 0.5) / boardSize) * 100}%`,
@@ -568,7 +606,70 @@ function PointButton({
         </span>
       )}
       {aemeathRainbowMoveEffectKey && (
-        <span key={aemeathRainbowMoveEffectKey} className="aemeath-rainbow-move" aria-hidden="true" />
+        <span
+          key={aemeathRainbowMoveEffectKey}
+          className="aemeath-rainbow-move"
+          style={{
+            "--aemeath-origin-offset-x": `${stoneOffset.x}px`,
+            "--aemeath-origin-offset-y": `${stoneOffset.y}px`,
+            "--aemeath-trace-left": `${point.x * 100}%`,
+            "--aemeath-trace-right": `${(boardSize - point.x - 1) * 100}%`,
+            "--aemeath-trace-up": `${point.y * 100}%`,
+            "--aemeath-trace-down": `${(boardSize - point.y - 1) * 100}%`
+          }}
+          aria-hidden="true"
+        >
+          <span className="aemeath-rainbow-move__core" />
+          {AEMEATH_RAINBOW_TRACES.map((trace) => {
+            const cellCount = aemeathTraceCellCount(trace.id, point, boardSize);
+            return (
+              <span
+                key={trace.id}
+                className={`aemeath-rainbow-move__trace is-${trace.id}`}
+                style={{
+                  "--aemeath-trace-rotation": trace.rotation,
+                  "--aemeath-trace-length": trace.length,
+                  "--aemeath-trace-delay": trace.delay,
+                  "--aemeath-trace-hot": trace.hot,
+                  "--aemeath-trace-mid": trace.mid,
+                  "--aemeath-trace-tail": trace.tail,
+                  "--aemeath-packet-near": trace.packetNear,
+                  "--aemeath-packet-mid": trace.packetMid,
+                  "--aemeath-packet-far": trace.packetFar
+                }}
+              >
+                {Array.from({ length: cellCount }, (_, nodeIndex) => {
+                  const progress = (nodeIndex + 1) / cellCount;
+                  return (
+                    <i
+                      key={nodeIndex}
+                      className="aemeath-rainbow-move__node"
+                      style={{
+                        "--aemeath-node-left": `${progress * 100}%`,
+                        "--aemeath-node-opacity": Math.max(0.16, 0.82 - progress * 0.66),
+                        "--aemeath-node-delay": `${54 + nodeIndex * 22}ms`
+                      }}
+                    />
+                  );
+                })}
+              </span>
+            );
+          })}
+          <span className="aemeath-rainbow-move__echoes">
+            {AEMEATH_RAINBOW_CHANNELS.map((channel) => (
+              <i
+                key={channel.id}
+                className={`aemeath-rainbow-move__echo is-${channel.id}`}
+                style={{
+                  "--aemeath-echo-x": channel.x,
+                  "--aemeath-echo-y": channel.y,
+                  "--aemeath-echo-color": channel.color,
+                  "--aemeath-echo-delay": channel.delay
+                }}
+              />
+            ))}
+          </span>
+        </span>
       )}
       {!point.valid && !isVoyageStarErasedPoint && <span className="void" />}
       {eraseImpactPending && <span className="void erase-impact-pending" aria-hidden="true" />}

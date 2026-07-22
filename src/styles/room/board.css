@@ -10,4 +10,6 @@
 @import "./board/spray-stone-effects.css";
 @import "./board/gomoku-winning-line.css";
 @import "./board/latest-touch-void.css";
+@import "./board/aemeath-rainbow-move.css";
+@import "./board/aemeath-rainbow-move-particles.css";
 @import "./board/grid-scoring.css";
