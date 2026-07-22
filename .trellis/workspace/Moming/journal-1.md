@@ -1892,3 +1892,36 @@ Added deterministic stability fixtures, repaired capacity metric authorization, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 58: Add Aemeath rainbow candy story and move effect
+
+**Date**: 2026-07-22
+**Task**: Add Aemeath rainbow candy story and move effect
+**Branch**: `codex/rainbow-bean-popping-candy-story`
+
+### Summary
+
+Added Aemeath's accepted/rejected rainbow bean candy story, 35% rejection settlement, persistent rainbow-move item effect, point-local board animation, valid-game cleanup, default snapshot sync, tests, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f82f7404` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
