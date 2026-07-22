@@ -4,6 +4,7 @@ import { nextCountdownAnnouncement, nextTimeAnnouncement } from "../../shared/ti
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../../shared/systemVoices.js";
 import { playBoardSound, preloadVoiceSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
+import { VOICE_PLAYBACK_PROFILES } from "../../audio/voicePlaybackProfiles.js";
 import { voiceCharacterForPlayer } from "../roomView.js";
 import { applyRoomAudioBaseline, buildRoomAudioBaseline, shouldSeedRoomAudioBaseline } from "../roomAudioBaseline.js";
 import { shouldPlayGameStartVoice } from "../roomState.js";
@@ -105,7 +106,8 @@ export function useRoomAudioEffects({
             character: voiceCharacterForPlayer(activePlayer, characters),
             params: countdownAnnouncement.params,
             fallbackText: countdownAnnouncement.text,
-            audioSettings
+            audioSettings,
+            playbackProfile: VOICE_PLAYBACK_PROFILES.countdown
           });
         }
       }

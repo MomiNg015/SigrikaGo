@@ -14,27 +14,27 @@
 
 .preload-status { margin-top: -8px; color: rgba(79, 61, 85, 0.7); font-size: 14px; font-weight: 800; line-height: 1.4; }
 
-.preload-progress { --bar-h: 16px; --mascot-h: calc(var(--bar-h) * 3); width: 100%; height: var(--mascot-h); display: grid; place-items: center; }
+.preload-progress { --bar-h: 20px; --mascot-h: calc(var(--bar-h) * 3); width: 100%; height: var(--mascot-h); display: grid; place-items: center; }
 
-.preload-progress-track { position: relative; isolation: isolate; width: calc(100% - var(--mascot-h)); height: var(--mascot-h); display: grid; align-items: center; }
+.preload-progress-track { position: relative; isolation: isolate; width: calc(100% - var(--mascot-h)); height: var(--mascot-h); display: grid; align-items: center; filter: drop-shadow(3px 3px 0 rgba(91, 57, 38, 0.18)); }
 
-.preload-progress-track::before { content: ""; position: absolute; z-index: 0; left: 0; top: 50%; width: 100%; height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(255, 210, 105, 0.76), rgba(242, 138, 36, 0.48)); filter: blur(7px); opacity: 0.52; transform: translateY(-50%) scaleX(var(--preload-progress)); transform-origin: left center; transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1); }
+.preload-progress-track::before { content: ""; position: absolute; z-index: 0; left: 0; top: 50%; width: 100%; height: calc(var(--bar-h) + 8px); border-radius: 10px 13px 9px 12px / 12px 9px 11px 8px; background: linear-gradient(90deg, rgba(255, 211, 103, 0.52), rgba(241, 133, 36, 0.34)); filter: blur(6px); opacity: 0.58; transform: translateY(-50%); -webkit-mask-image: linear-gradient(#000 0 0); mask-image: linear-gradient(#000 0 0); -webkit-mask-position: left center; mask-position: left center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: var(--preload-mask-size) 100%; mask-size: var(--preload-mask-size) 100%; clip-path: inset(0 calc(100% - var(--preload-mask-size)) 0 0); transition: -webkit-mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), clip-path 420ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-.preload-bar { position: relative; z-index: 1; height: var(--bar-h); overflow: hidden; border-radius: 999px; background: rgba(128, 102, 142, 0.14); }
+.preload-bar { position: relative; z-index: 1; height: var(--bar-h); overflow: hidden; border: 2px solid rgb(103 67 48); border-radius: 9px 12px 8px 11px / 8px 10px 9px 7px; background: radial-gradient(circle at 18% 42%, rgba(121, 83, 56, 0.09) 0 0.7px, transparent 0.9px) 0 0 / 17px 13px, linear-gradient(176deg, rgb(255 248 220) 0%, rgb(247 232 189) 100%); box-shadow: inset 0 -2px 0 rgba(125, 82, 47, 0.1); }
 
-.preload-bar > span { --preload-progress-fill: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72) 0 2px, transparent 2.5px) 0 0 / 28px 100% repeat-x, linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 46%), linear-gradient(90deg, #ffd36a 0%, #f5a135 48%, #e96c20 100%); position: relative; display: block; height: 100%; overflow: hidden; background: var(--preload-progress-fill); transform: scaleX(var(--preload-progress)); transform-origin: left center; transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1); }
+.preload-paper-fill { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: inherit; background: radial-gradient(circle at 30% 35%, rgba(255, 249, 214, 0.72) 0 1px, transparent 1.4px) 0 0 / 23px 13px, repeating-linear-gradient(166deg, transparent 0 8px, rgba(125, 66, 31, 0.12) 8px 9px, transparent 9px 15px) 0 0 / 17px 17px, linear-gradient(90deg, rgb(255 214 109) 0%, rgb(247 169 61) 50%, rgb(233 120 39) 100%); -webkit-mask-image: linear-gradient(#000 0 0); mask-image: linear-gradient(#000 0 0); -webkit-mask-position: left center; mask-position: left center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: var(--preload-mask-size) 100%; mask-size: var(--preload-mask-size) 100%; clip-path: inset(0 calc(100% - var(--preload-mask-size)) 0 0); transition: -webkit-mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), clip-path 420ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-.preload-bar > span::before { content: ""; position: absolute; inset: 1px auto 1px -42%; width: 42%; border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.88) 52%, transparent); animation: preload-fill-glide 1.2s ease-in-out infinite; }
+.preload-paper-fill::before { content: ""; position: absolute; inset: 2px 0; background: repeating-linear-gradient(92deg, transparent 0 31px, rgba(255, 248, 214, 0.62) 31px 35px, transparent 35px 54px); opacity: 0.56; }
 
-.preload-mascot-anchor { position: absolute; z-index: 3; left: calc(var(--preload-progress) * 100%); top: 50%; transform: translate(-50%, -50%); transition: left 360ms cubic-bezier(0.16, 1, 0.3, 1); }
+.preload-mascot-anchor { position: absolute; z-index: 3; left: calc(var(--preload-progress) * 100%); top: 50%; transform: translate(-50%, -50%); transition: left 420ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+.preload-mascot-roll { display: block; transform: rotate(var(--preload-mascot-rotation)); transform-origin: 50% 50%; transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1); }
 
 .preload-mascot-motion { display: block; transform-origin: 50% 88%; }
 
 .preload-progress-mascot { display: block; width: auto; height: var(--mascot-h); }
 
-.preload-progress:not(.is-idle) .preload-mascot-motion { animation: preload-mascot-glide 480ms ease-in-out infinite; }
-
-.preload-progress.is-idle .preload-mascot-motion { animation: preload-mascot-idle 1.08s ease-in-out infinite; }
+.preload-progress.is-idle .preload-mascot-motion { animation: preload-mascot-breathe 1.2s ease-in-out infinite; }
 
 .preload-tip { width: 100%; min-height: 3em; color: rgba(79, 61, 85, 0.78); font-size: 14px; font-weight: 700; line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
 
@@ -42,19 +42,17 @@
 
 @keyframes preload-character-hop { 0%, 100% { transform: translateY(0) scaleY(1); } 42% { transform: translateY(-16px) scaleY(1.01); } 58% { transform: translateY(2px) scaleY(0.985); } }
 
-@keyframes preload-fill-glide { from { transform: translateX(0); opacity: 0; } 24%, 76% { opacity: 0.9; } to { transform: translateX(340%); opacity: 0; } }
-
-@keyframes preload-mascot-glide { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-2px) rotate(2deg); } }
-
-@keyframes preload-mascot-idle { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
+@keyframes preload-mascot-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.025); } }
 
 @media (max-width: 640px) {
   .asset-preload-panel { gap: 14px; }
   .preload-character { width: clamp(124px, 42vw, 174px); }
+  .preload-progress { --bar-h: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .preload-character, .preload-mark { animation: none; }
-  .preload-progress-track::before, .preload-bar > span, .preload-mascot-anchor { transition: none; }
-  .preload-bar > span::before, .preload-progress:not(.is-idle) .preload-mascot-motion, .preload-progress.is-idle .preload-mascot-motion { animation: none; }
+  .preload-progress-track::before, .preload-paper-fill, .preload-mascot-anchor, .preload-mascot-roll { transition: none; }
+  .preload-mascot-roll { transform: none; }
+  .preload-progress.is-idle .preload-mascot-motion { animation: none; }
 }

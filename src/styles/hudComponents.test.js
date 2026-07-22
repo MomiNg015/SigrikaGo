@@ -26,6 +26,7 @@ function cssBlockForSelector(css, selector) {
 }
 
 const hudCss = readCssWithImports(new URL("./hud-components.css", import.meta.url));
+const aemeathNameplateCss = normalizeCss(readFileSync(new URL("./hud-components/user-identity/aemeath-digital-flight-nameplate.css", import.meta.url), "utf8"));
 const themeEntryCss = normalizeCss(readFileSync(new URL("./themes.css", import.meta.url), "utf8"));
 const themesCss = [
   readCssWithImports(new URL("./themes.css", import.meta.url)),
@@ -590,12 +591,24 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("--aemeath-nameplate-text-offset-y: calc(-1px * var(--user-nameplate-scale))");
     expect(hudCss).toContain("transform: translateY(var(--aemeath-nameplate-text-offset-y))");
     expect(hudCss).toContain("color: #07516f");
-    expect(hudCss).toContain("animation: aemeath-nameplate-sortie-signal 2.6s ease-in-out");
-    expect(hudCss).toContain("animation: aemeath-nameplate-snowfluff-ping 2.15s steps(2, end)");
-    expect(hudCss).toContain("animation: aemeath-nameplate-speed-lanes 1.85s ease-in-out");
-    expect(hudCss).toContain("animation: aemeath-nameplate-pixel-beacons 2.4s steps(3, end)");
-    expect(hudCss).toContain("rgba(107, 240, 250, 0.82)");
-    expect(hudCss).toContain("rgba(255, 137, 196, 0.42)");
+    expect(hudCss).toContain("font-family: var(--font-ui-default)");
+    expect(hudCss).toContain("font-weight: 900");
+    expect(hudCss).toContain("-webkit-text-stroke: calc(0.32px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("rgba(58, 224, 247, 0.88)");
+    expect(hudCss).toContain("rgba(255, 111, 190, 0.72)");
+    expect(hudCss).not.toContain("clip-path: polygon(0 22%, 74% 0, 100% 42%, 78% 100%, 12% 86%)");
+    expect(hudCss).toContain("animation: aemeath-nameplate-sortie-signal 2.6s cubic-bezier(0.45, 0, 0.55, 1)");
+    expect(hudCss).toContain("animation: aemeath-nameplate-snowfluff-ping 2.2s ease-in-out");
+    expect(hudCss).toContain("animation: aemeath-nameplate-speed-lanes 2.35s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate");
+    expect(hudCss).toContain("animation: aemeath-nameplate-pixel-beacons 2.7s ease-in-out");
+    expect(hudCss).toContain("rgba(86, 236, 252, 0.92)");
+    expect(hudCss).toContain("rgba(255, 124, 194, 0.54)");
+    expect(hudCss).toContain("mix-blend-mode: plus-lighter");
+    expect(hudCss).toContain("background-size: 42% 74%, 58% 100%, 50% 100%");
+    expect(aemeathNameplateCss).not.toContain("repeating-linear-gradient");
+    expect(aemeathNameplateCss).not.toContain("linear-gradient(90deg, transparent 16%");
+    expect(aemeathNameplateCss).not.toContain("linear-gradient(0deg, transparent 17%");
+    expect(aemeathNameplateCss).toContain("background: radial-gradient(circle, rgba(255, 255, 255, 0.96)");
   });
 
   it("keeps the Bright School lobby stage free of solid fills behind the image panel", () => {

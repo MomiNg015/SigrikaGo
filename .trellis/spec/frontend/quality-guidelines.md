@@ -278,7 +278,7 @@ Required assertion points:
 - Deferred work starts only after critical completion and remains concurrency-limited. Moving an asset to deferred must not remove it from the flattened compatibility arrays.
 - Battle preload must derive assets from the current room, players, mode, and current user. It blocks on both player portraits, the one resolved battle track, one resolved track per relevant base/derived skill slot, required voice candidates, and mode-specific effect images; it must not preload every configured battle track or every purchasable alternative for a slot. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
 - Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
-- `AssetPreloadScreen` owns one normalized `--preload-progress` value for the fill, its soft warm glow, and the endpoint mascot. Keep the bar at 16px, the mascot height at exactly three times the bar height with `width: auto`, and reserve half a mascot at both horizontal ends so 0% and 100% remain fully visible on narrow screens. Grow the light-to-deep orange gradient and its borderless blurred glow with `scaleX()`; keep the mascot upright while its anchor follows the same endpoint with an ease-out transition. The fill's clipped dot texture and travelling highlight provide visible internal loading motion without a separate rainbow frame or free-floating confetti. Movement above one percentage point uses a restrained two-degree glide for 600ms; unchanged or one-point progress uses a four-pixel idle float. Reduced-motion keeps the current endpoint and static fill texture while removing interpolation, highlight travel, glide, and idle float. Theme-wide media and meter rules must preserve this owner contract instead of stretching the mascot or replacing the layered gradient.
+- `AssetPreloadScreen` owns normalized `--preload-progress`, `--preload-mask-size`, and `--preload-mascot-rotation` values for one shared paper-strip progress stage. Keep the paper track at 20px on desktop and 18px on phones, the mascot height at exactly three times the track height with `width: auto`, and reserve half a mascot at both horizontal ends so 0% and 100% remain fully visible. The orange-yellow crayon fill, scratches, paper gaps, and warm glow must stay full-width with progress-independent background sizing; reveal them from the left through `mask-size` plus an equivalent `clip-path` fallback, never `scaleX()`. Keep position, clockwise 0–720-degree roll, and post-idle breathing on separate transform owners. Movement above one percentage point enters the 420ms ease-out position/roll transition and returns to breathing after 600ms; unchanged or one-point progress remains idle. Reduced-motion keeps the correct endpoint and revealed range while removing interpolation, roll, and breathing. Theme-wide media and meter rules may provide semantic colors but must not replace the paper texture, mask/clip reveal, or mascot owners.
 - Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
 - The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
 - Room resume is idempotent. Do not remove the immediate queued `room:resume` from `connectGameSocket()` just because the installed `connect` listener also emits one; the immediate emit covers browser/mobile transport cases where the app shell otherwise waits on one event edge.
@@ -318,7 +318,7 @@ Required assertion points:
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
 - Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
-- `AssetPreloadScreen` tests must assert the shared normalized progress value, accessible progressbar state, 16px/3x aspect-preserving size contract, layered orange fill, clipped internal highlight motion, borderless progress-scaled warm glow, upright endpoint glide, meaningful/near-idle movement threshold, 600ms idle-float transition, reduced-motion fallback, and late-theme exclusions that protect the mascot and fill.
+- `AssetPreloadScreen` tests must assert 0/50/100 progress maps to 0/50/100% mask reveal and 0/360/720-degree mascot roll, accessible progressbar state, 20px desktop / 18px phone / 3x aspect-preserving size contract, progress-independent crayon texture sizing, mask plus clip fallback for both fill and warm glow, absence of progress `scaleX()`, separate position/roll/breath owners, meaningful/near-idle movement threshold, 600ms idle transition, reduced-motion fallback, and late-theme exclusions that protect the paper-strip owner.
 - App wiring tests must assert startup preload is not passed a `socket` prop.
 - Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
 - Game socket tests must assert handlers install before `connect()` and that an immediate `room:resume` is queued after connecting.
@@ -625,7 +625,9 @@ Correct:
 #### 3. Contracts
 
 - The Skill supports `new` and `refine` modes. New/major-redesign work must produce four structurally different, character-researched concepts and stop at a mandatory human selection gate before any production asset overwrite or CSS integration. Refine work may skip concepts only when the user explicitly locks the artwork and requests a technical repair.
-- Character research must produce an evidence-based visual-language card with representative motifs, forbidden/misleading motifs, palette/material, motion verbs, canvas/runtime geometry, and username safe area. Do not reuse another character's motif or generic neon/sparkle vocabulary as the default.
+- Character research is text-first. Before the visual-language card or concept generation, inspect the supplied dossier body and relevant tabs, accordions, anchors, pagination, and linked text sections; record personality, biography, goals/values/conflicts, relationships, dialogue/voice, plot development, abilities, meaningful objects/places/hobbies/foods, and achievement relevance as nine separate, unmerged rows marked `found`, `absent`, or `inaccessible` with source locators.
+- Images are secondary corroboration and cannot establish the textual dossier alone. If character-defining text remains inaccessible after browser/DOM navigation, report the missing sections and stop rather than generating concepts from images or guesses.
+- Character research must produce an evidence-based visual-language card with representative motifs, forbidden/misleading motifs, palette/material, motion verbs, canvas/runtime geometry, and username safe area. Every primary anchor, supporting motif, palette/material choice, and motion verb must trace through `textual evidence -> interpretation -> visual decision`. Do not reuse another character's motif or generic neon/sparkle vocabulary as the default.
 - Reward seed/data wiring is opt-in only when the request explicitly includes a new achievement or reward. Visual requests must not silently change earning conditions or asset metadata.
 - Final assets are validated by `.agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs`, which reuses the shared RGBA PNG decoder and reports exact dimensions/ratio, four-corner transparency, non-zero Alpha bounds, four-edge safety margins, visible-height ratio, and declared username-safe-zone geometry as JSON with a non-zero failure exit.
 - Motion keeps continuously visible primary illumination, illustration-bound local narrative motion, and sparse secondary accents. Continuous keyframes change only `transform` and `opacity`; static filters/gradients own paint/light treatment, and reduced motion freezes a readable static state.
@@ -644,18 +646,22 @@ Correct:
 - Preview or output path escapes `.trellis/tasks/` -> reject before copying, deleting, starting Vite, or writing screenshots.
 - Playwright Chromium is absent -> try installed Chrome/Edge; no usable Chromium browser -> fail with a direct diagnostic instead of downloading silently.
 - Existing art is locked in `refine` mode -> diagnose/repair without four concepts; visual direction changes -> return to the four-concept human gate.
+- Any required dossier category is unrecorded -> do not write the visual-language card or generate concepts.
+- Character-defining dossier sections are inaccessible -> report exact missing sections and request text; do not substitute portrait/image analysis.
 
 #### 5. Good / Base / Bad Cases
 
 - Good: a new role gets an evidence-backed visual-language card, four compositionally different concepts, an explicit user selection, measured RGBA delivery, character-owned motion, task-local preview evidence, real-consumer QA, and isolated staging.
+- Good: dossier facts are paraphrased with source locators, missing categories are explicit, and every visual/motion decision can be traced back to text or user direction.
 - Good: a locked existing asset with clipped art is re-canvased after Alpha-bound diagnosis instead of adding more CSS overflow.
 - Base: an image-only nameplate without a bespoke owner continues using the generic static fallback and does not need this motion workflow.
 - Bad: copying Sigrika's citrus/sun vocabulary, changing only colors across four concepts, using blink accents as the only light, or writing a production asset before the user selects a concept.
+- Bad: inspecting only character images, treating captions/search snippets as the full dossier, or inventing personality, story, relationships, dialogue, or meaningful objects from a portrait.
 - Bad: registering the preview page in `AppRoutes`, silently downloading a browser, weakening margin thresholds to pass a clipped raster, or modifying reward seeds from a visual-only request.
 
 #### 6. Tests Required
 
-- `scripts/characterNameplateSkill.test.js` owns Skill metadata, the mandatory human gate, `new`/`refine` and data boundaries, character-neutral templates, validator pass/fail geometry, task-local preview generation, production-route isolation, fixed capture viewports, and reduced-motion evidence.
+- `scripts/characterNameplateSkill.test.js` owns Skill metadata, the mandatory text-first evidence gate and category/status/traceability vocabulary, the mandatory human gate, `new`/`refine` and data boundaries, character-neutral templates, validator pass/fail geometry, task-local preview generation, production-route isolation, fixed capture viewports, and reduced-motion evidence.
 - Run the official `skill-creator` `quick_validate.py` against `.agents/skills/create-character-nameplate/` after changing Skill metadata or structure.
 - Forward-test material workflow changes with a planning-only new-character request that must stop at the four-concept gate without modifying production files.
 - Run the focused Skill test, the nameplate component/CSS/asset tests affected by an actual role asset, and `npm run check` before handoff.
@@ -1345,4 +1351,55 @@ Correct:
   <h2 id="modal-title">Title</h2>
   {children}
 </ModalDialog>
+```
+
+### Scenario: Voice Playback and Scoped Background Music Control
+
+#### 1. Scope / Trigger
+- Trigger: changing voice/TTS playback, countdown voice profiles, `backgroundDucking.js`, audio defaults, or an authored scene that temporarily changes BGM volume.
+
+#### 2. Signatures
+- `requestBackgroundMusicDuck({ ratio, attackMs, releaseMs })` returns an idempotent release callback; overlapping explicit scene requests resolve to the lowest active ratio.
+- `playSystemVoice(event, { character, params, fallbackText, audioSettings, playbackProfile })` resolves character audio or TTS; `playbackProfile` controls the decoded voice effect chain, not BGM gain.
+- `DEFAULT_AUDIO_SETTINGS` is the only new-user default source; persisted `sigrika-audio-settings` values override it.
+
+#### 3. Contracts
+- Voice audio and TTS never create, update, or release BGM duck requests. BGM remains at the user's configured gain throughout voice playback.
+- Ordinary decoded voices use the normalized dry/wet reverb chain. Countdown decoded voices bypass reverb but preserve user voice volume, boost, RMS normalization, single-active-voice behavior, preload/cache reuse, and fallback behavior.
+- `backgroundDucking.js` is reserved for explicit non-voice scene direction such as the recruitment cinematic; a caller that acquires a request owns its idempotent release on completion, interruption, and unmount.
+- New-user defaults are `master: 100`, `bgm: 60`, `sfx: 100`, and `voice: 100`. Do not migrate or overwrite existing saved percentages when changing defaults.
+
+#### 4. Validation & Error Matrix
+- Voice starts, ends, overlaps, or is interrupted -> BGM gain does not change.
+- Web Audio/decode failure -> ordinary `Audio` fallback and TTS still do not touch BGM gain.
+- No persisted settings or invalid persisted JSON -> load the new-user defaults.
+- Valid persisted percentages -> keep them unchanged over the defaults.
+- Another explicit scoped request is active -> the shared duck manager keeps its authored ratio until its owning scene releases it.
+
+#### 5. Good/Base/Bad Cases
+- Good: play skill, story, result, and countdown voices without importing or calling `backgroundDucking.js` from the voice runtime.
+- Base: countdown audio uses `{ reverb: false }`; ordinary decoded voice uses `{ reverb: true }`.
+- Good: an authored cinematic owns a scoped request and releases it on every exit path.
+- Bad: reintroducing a voice-active counter, per-clip gain ramp, or room countdown request to alter BGM.
+
+#### 6. Tests Required
+- `src/audio/audioSettings.test.js` covers the new-user defaults, invalid storage fallback, and persisted-value precedence.
+- `src/audio/voicePlaybackProfiles.test.js` covers standard and countdown reverb option resolution.
+- `src/audio/systemVoicePlayback.test.js` covers decoded audio profile forwarding and TTS playback without BGM options.
+- `src/audio/backgroundDucking.test.js` covers explicit scoped scene requests independently from voice playback.
+- `src/audio/voiceBackgroundIndependence.test.js` guards the voice runtime and room countdown path against reintroducing BGM duck coupling.
+- Run focused audio/time-announcement tests, then `npm run check` before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+beginVoicePlayback(); // voice activity must not control BGM gain
+```
+
+Correct:
+
+```js
+playSystemVoice(`countdown-${second}`, { playbackProfile: VOICE_PLAYBACK_PROFILES.countdown });
 ```

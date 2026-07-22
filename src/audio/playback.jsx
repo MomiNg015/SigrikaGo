@@ -1,7 +1,6 @@
 import { VOICE_EFFECT_SETTINGS, audioBufferStats, boostedVoiceVolume, createAiryReverbImpulse, voiceNormalizationGain } from "../shared/voiceEffects.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
-import { beginVoicePlayback, endVoicePlaybackSoon } from "./backgroundDucking.js";
 
 export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioSettings.js";
 export {
@@ -61,10 +60,10 @@ const voicePromiseCache = new Map();
 let sharedVoiceContext = null;
 let activeVoicePlayback = null;
 
-export function playVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+export function playVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS, playbackOptions = {}) {
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;
-  playVoiceSoundWithEffects(src, boostedVoiceVolume(volume)).catch(() => {
+  playVoiceSoundWithEffects(src, boostedVoiceVolume(volume), playbackOptions).catch(() => {
     playVoiceSoundFallback(src, boostedVoiceVolume(volume));
   });
 }
@@ -97,16 +96,16 @@ export function preloadVoiceSound(src) {
   return promise;
 }
 
-export function playPreloadedVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+export function playPreloadedVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS, playbackOptions = {}) {
   if (!voiceBufferCache.has(src)) {
-    playVoiceSound(src, audioSettings);
+    playVoiceSound(src, audioSettings, playbackOptions);
     return;
   }
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;
   const buffer = voiceBufferCache.get(src);
-  playVoiceBuffer(buffer, boostedVoiceVolume(volume)).catch(() => {
-    playVoiceSound(src, audioSettings);
+  playVoiceBuffer(buffer, boostedVoiceVolume(volume), playbackOptions).catch(() => {
+    playVoiceSound(src, audioSettings, playbackOptions);
   });
 }
 
@@ -123,17 +122,17 @@ function getVoiceAudioContext() {
   return sharedVoiceContext;
 }
 
-async function playVoiceSoundWithEffects(src, volume) {
+async function playVoiceSoundWithEffects(src, volume, playbackOptions) {
   const context = getVoiceAudioContext();
   if (!context) throw new Error("Web Audio is not available");
   if (context.state === "suspended") await context.resume();
   const response = await fetch(src);
   const arrayBuffer = await response.arrayBuffer();
   const buffer = await context.decodeAudioData(arrayBuffer);
-  await playVoiceBuffer(buffer, volume);
+  await playVoiceBuffer(buffer, volume, playbackOptions);
 }
 
-async function playVoiceBuffer(buffer, volume) {
+async function playVoiceBuffer(buffer, volume, playbackOptions = {}) {
   const context = getVoiceAudioContext();
   if (!context) throw new Error("Web Audio is not available");
   if (context.state === "suspended") await context.resume();
@@ -141,7 +140,7 @@ async function playVoiceBuffer(buffer, volume) {
   const source = context.createBufferSource();
   source.buffer = buffer;
 
-  const cleanupNodes = connectVoiceSource(context, source, normalizedVoiceVolume(buffer, volume));
+  const cleanupNodes = connectVoiceSource(context, source, normalizedVoiceVolume(buffer, volume), playbackOptions);
   let released = false;
   const voiceHandle = {
     stop: () => {
@@ -156,12 +155,13 @@ async function playVoiceBuffer(buffer, volume) {
     if (released) return;
     released = true;
     if (activeVoicePlayback === voiceHandle) activeVoicePlayback = null;
-    endVoicePlaybackSoon();
-    setTimeout(cleanupNodes, VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250);
+    const cleanupDelayMs = playbackOptions.reverb === false
+      ? 0
+      : VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250;
+    setTimeout(cleanupNodes, cleanupDelayMs);
   };
   stopActiveVoicePlayback();
   activeVoicePlayback = voiceHandle;
-  beginVoicePlayback();
   source.start();
   source.onended = release;
 }
@@ -170,12 +170,21 @@ function normalizedVoiceVolume(buffer, volume) {
   return volume * voiceNormalizationGain(audioBufferStats(buffer));
 }
 
-function connectVoiceSource(context, source, volume) {
+function connectVoiceSource(context, source, volume, playbackOptions = {}) {
   const voiceGain = context.createGain();
   voiceGain.gain.value = volume;
 
   const dryGain = context.createGain();
-  dryGain.gain.value = VOICE_EFFECT_SETTINGS.dry;
+  const reverb = playbackOptions.reverb !== false;
+  dryGain.gain.value = reverb ? VOICE_EFFECT_SETTINGS.dry : 1;
+
+  source.connect(dryGain);
+  dryGain.connect(voiceGain);
+
+  if (!reverb) {
+    voiceGain.connect(context.destination);
+    return disconnectAudioNodes([source, dryGain, voiceGain]);
+  }
 
   const wetGain = context.createGain();
   wetGain.gain.value = VOICE_EFFECT_SETTINGS.wet;
@@ -186,15 +195,17 @@ function connectVoiceSource(context, source, volume) {
   const convolver = context.createConvolver();
   convolver.buffer = createAiryReverbImpulse(context);
 
-  source.connect(dryGain);
-  dryGain.connect(voiceGain);
   source.connect(preDelay);
   preDelay.connect(convolver);
   convolver.connect(wetGain);
   wetGain.connect(voiceGain);
   voiceGain.connect(context.destination);
+  return disconnectAudioNodes([source, dryGain, preDelay, convolver, wetGain, voiceGain]);
+}
+
+function disconnectAudioNodes(nodes) {
   return () => {
-    for (const node of [source, dryGain, preDelay, convolver, wetGain, voiceGain]) {
+    for (const node of nodes) {
       try {
         node.disconnect();
       } catch {
@@ -218,9 +229,7 @@ function playVoiceSoundFallback(src, volume) {
     if (released) return;
     released = true;
     if (activeVoicePlayback === voiceHandle) activeVoicePlayback = null;
-    endVoicePlaybackSoon();
   };
-  audio.addEventListener("play", beginVoicePlayback, { once: true });
   audio.addEventListener("ended", release, { once: true });
   audio.addEventListener("pause", release, { once: true });
   audio.addEventListener("error", release, { once: true });
@@ -249,8 +258,5 @@ export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   utterance.lang = "zh-CN";
   utterance.rate = 1.05;
   utterance.volume = volume;
-  utterance.onstart = beginVoicePlayback;
-  utterance.onend = endVoicePlaybackSoon;
-  utterance.onerror = endVoicePlaybackSoon;
   window.speechSynthesis.speak(utterance);
 }

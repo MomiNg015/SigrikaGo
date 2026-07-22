@@ -1,6 +1,6 @@
 ---
 name: create-character-nameplate
-description: Create or refine character-specific achievement username nameplates for SigrikaGo, including character research, four hand-painted concept directions, transparent PNG delivery, exact asset-ID CSS motion, local preview capture, integration tests, and safe handoff. Use when Codex is asked to make, redesign, repair, animate, validate, or integrate a character-themed username background/nameplate in this repository.
+description: Create or refine character-specific achievement username nameplates for SigrikaGo, including text-first dossier research, four hand-painted concept directions, transparent PNG delivery, exact asset-ID CSS motion, local preview capture, integration tests, and safe handoff. Use when Codex is asked to research a character archive or make, redesign, repair, animate, validate, or integrate a character-themed username background/nameplate in this repository.
 ---
 
 # Create Character Nameplate
@@ -21,7 +21,15 @@ Read [references/input-and-visual-language.md](references/input-and-visual-langu
 
 ## Phase 1: Build the visual-language card
 
-Resolve repository facts yourself. Browse a supplied character page or source when needed; prefer official/primary material and record the source in the task research folder.
+Resolve repository facts yourself. Read a supplied character page as a textual dossier, not an image gallery: inspect its body copy and relevant tabs, accordions, anchors, and linked dossier sections. Prefer official/primary material and record source locators in the task research folder.
+
+### Mandatory text-first evidence gate
+
+Before writing the visual-language card or generating any concept, complete the coverage matrix in [references/input-and-visual-language.md](references/input-and-visual-language.md). Cover personality, biography, goals/values/conflicts, relationships, dialogue/voice, major plot development, abilities, meaningful objects/places/hobbies/foods, and achievement relevance. Copy every required category into the research artifact; do not merge, rename away, or omit rows. Mark each category `found`, `absent`, or `inaccessible`; never fill gaps from visual guesses.
+
+Images are secondary corroboration for visible design facts. Image-only research is insufficient. If the textual matrix is incomplete because a dynamic or blocked page cannot be read, exhaust available browser/DOM navigation, report the inaccessible sections, and request the missing text. Do not proceed to concepts.
+
+For every selected motif, palette/material choice, and motion verb, record `textual evidence -> interpretation -> visual decision`. Reject any decision that cannot be traced to the dossier, achievement meaning, or an explicit user direction.
 
 Write a compact visual-language card containing:
 

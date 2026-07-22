@@ -23,6 +23,10 @@ describe("AssetPreloadScreen", () => {
     expect(html).toContain("西格莉卡正在戳棋盘");
     expect(html).toContain("资源加载 100%");
     expect(html).toContain("--preload-progress:1");
+    expect(html).toContain("--preload-mask-size:100%");
+    expect(html).toContain("--preload-mascot-rotation:720deg");
+    expect(html).toContain("preload-paper-fill");
+    expect(html).toContain("preload-mascot-roll");
     expect(html).toContain("preload-mascot-motion");
     expect(html).toContain("preload-progress-mascot");
     expect(html).toContain("/assets/preload/orange-mascot.png");
@@ -33,10 +37,10 @@ describe("AssetPreloadScreen", () => {
   });
 
   it.each([
-    [0, "--preload-progress:0", "aria-valuenow=\"0\""],
-    [0.5, "--preload-progress:0.5", "aria-valuenow=\"50\""],
-    [1, "--preload-progress:1", "aria-valuenow=\"100\""]
-  ])("keeps fill and mascot position on the same normalized progress at %s", (progress, progressStyle, ariaValue) => {
+    [0, "--preload-progress:0", "--preload-mask-size:0%", "--preload-mascot-rotation:0deg", "aria-valuenow=\"0\""],
+    [0.5, "--preload-progress:0.5", "--preload-mask-size:50%", "--preload-mascot-rotation:360deg", "aria-valuenow=\"50\""],
+    [1, "--preload-progress:1", "--preload-mask-size:100%", "--preload-mascot-rotation:720deg", "aria-valuenow=\"100\""]
+  ])("keeps the reveal and two-turn mascot roll on real progress at %s", (progress, progressStyle, maskStyle, rotationStyle, ariaValue) => {
     const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
       character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
       progress,
@@ -44,38 +48,53 @@ describe("AssetPreloadScreen", () => {
     }));
 
     expect(html).toContain(progressStyle);
+    expect(html).toContain(maskStyle);
+    expect(html).toContain(rotationStyle);
     expect(html).toContain(ariaValue);
   });
 
-  it("keeps the orange mascot three times the gradient progress bar without stretching it", () => {
+  it("reveals a fixed crayon paper strip without stretching its texture or mascot", () => {
     const css = readFileSync(new URL("../styles/base/asset-preload.css", import.meta.url), "utf8");
     const themeCss = readFileSync(new URL("../styles/themes/shared/player-theme-wiring.css", import.meta.url), "utf8");
+    const brightBaseCss = readFileSync(new URL("../styles/themes/bright-school/base/preload-scrollbars.css", import.meta.url), "utf8");
+    const brightMetersCss = readFileSync(new URL("../styles/themes/bright-school/surface-contracts/meters-friend-scroll.css", import.meta.url), "utf8");
     const brightCss = readFileSync(new URL("../styles/themes/bright-school/surface-contracts/final-semantic-badges.css", import.meta.url), "utf8");
     const brightFoundationCss = readFileSync(new URL("../styles/themes/bright-school/quality-base/audit-foundation.css", import.meta.url), "utf8");
 
-    expect(css).toContain("--bar-h: 16px");
+    expect(css).toContain("--bar-h: 20px");
+    expect(css).toContain("--bar-h: 18px");
     expect(css).toContain("--mascot-h: calc(var(--bar-h) * 3)");
     expect(css).toContain("height: var(--mascot-h)");
     expect(css).toContain("width: auto");
-    expect(css).toContain("linear-gradient(90deg, #ffd36a 0%, #f5a135 48%, #e96c20 100%)");
+    expect(css).toContain("linear-gradient(90deg, rgb(255 214 109) 0%, rgb(247 169 61) 50%, rgb(233 120 39) 100%)");
+    expect(css).toContain("-webkit-mask-size: var(--preload-mask-size) 100%");
+    expect(css).toContain("mask-size: var(--preload-mask-size) 100%");
+    expect(css).toContain("clip-path: inset(0 calc(100% - var(--preload-mask-size)) 0 0)");
+    expect(css).toContain("23px 13px");
+    expect(css).toContain("17px 17px");
+    expect(css).not.toContain("scaleX(var(--preload-progress))");
     expect(css).toContain(".preload-mascot-anchor");
     expect(css).toContain("left: calc(var(--preload-progress) * 100%)");
+    expect(css).toContain(".preload-mascot-roll");
+    expect(css).toContain("transform: rotate(var(--preload-mascot-rotation))");
     expect(css).toContain(".preload-mascot-motion");
-    expect(css).not.toContain("rotate(calc(var(--preload-progress) * 720deg))");
-    expect(css).toContain(".preload-progress:not(.is-idle) .preload-mascot-motion");
-    expect(css).toContain("animation: preload-mascot-glide");
     expect(css).toContain(".preload-progress.is-idle .preload-mascot-motion");
-    expect(css).toContain("animation: preload-mascot-idle");
-    expect(css).toContain("transform: scaleX(var(--preload-progress))");
+    expect(css).toContain("animation: preload-mascot-breathe");
     expect(css).toContain(".preload-progress-track::before");
-    expect(css).toContain("filter: blur(7px)");
-    expect(css).toContain(".preload-bar > span::before");
-    expect(css).toContain("animation: preload-fill-glide");
+    expect(css).toContain("filter: blur(6px)");
+    expect(css).toContain(".preload-paper-fill::before");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
     expect(css).toContain("transform: translate(-50%, -50%);");
-    expect(css).toContain(".preload-bar > span::before, .preload-progress:not(.is-idle) .preload-mascot-motion");
-    expect(themeCss).toContain("var(--preload-progress-fill, var(--timer-track-fill");
-    expect(brightCss).toContain("var(--preload-progress-fill, var(--bright-pink))");
+    expect(css).toContain(".preload-mascot-roll { transform: none; }");
+    expect(css).toContain(".preload-progress.is-idle .preload-mascot-motion { animation: none; }");
+    expect(themeCss).not.toContain(".preload-bar span");
+    expect(themeCss).not.toContain(".preload-bar {");
+    expect(brightBaseCss).not.toContain(".preload-bar");
+    expect(brightMetersCss).not.toContain(".preload-bar");
+    expect(brightCss).not.toContain(".preload-bar span");
+    expect(brightCss).not.toContain(".preload-bar {");
+    expect(themeCss).toContain("var(--timer-track-fill");
+    expect(brightCss).toContain("var(--timer-track-fill, var(--bright-pink))");
     expect(brightFoundationCss).toContain("img:not(.preload-progress-mascot)");
   });
 

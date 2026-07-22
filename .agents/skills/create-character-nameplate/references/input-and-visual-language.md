@@ -20,13 +20,54 @@ Do not infer authorization to create or change achievement conditions from a vis
 ## Research order
 
 1. Inspect repository character metadata, portraits, skill presentation, story copy, audio labels, existing reward semantics, and prior task research.
-2. Open supplied character pages. Prefer official/primary sources and separate sourced facts from visual inference.
-3. Record a short source-backed research note under the current Trellis task.
-4. Distill, rather than copy, official imagery. Do not reproduce brand marks, UI chrome, portraits, or copyrighted composition.
+2. Open supplied character pages and read their text. Inspect the main body plus relevant tabs, accordions, anchors, pagination, and linked profile/story/voice/item sections; do not stop after the first visible screen or image gallery.
+3. Prefer official/primary sources and separate sourced text facts, explicit user direction, and visual inference.
+4. Record a source-backed evidence matrix under the current Trellis task before writing prompts.
+5. Distill, rather than copy, official text and imagery. Paraphrase dossier material, keep concise source locators, and do not reproduce brand marks, UI chrome, portraits, copyrighted composition, or long verbatim passages.
+
+## Mandatory text evidence matrix
+
+Use one row per material fact. A source locator is a page section, tab, anchor, linked entry, repository path, or timestamp that another agent can revisit.
+
+```markdown
+| Category | Status | Paraphrased evidence | Source locator | Design relevance |
+|---|---|---|---|---|
+| Personality and contradictions | found/absent/inaccessible | | | |
+| Biography and formative events | found/absent/inaccessible | | | |
+| Goals, values, fears, and conflicts | found/absent/inaccessible | | | |
+| Relationships and social behavior | found/absent/inaccessible | | | |
+| Representative dialogue and speaking style | found/absent/inaccessible | | | |
+| Major plot beats and character development | found/absent/inaccessible | | | |
+| Powers, abilities, and recurring actions | found/absent/inaccessible | | | |
+| Meaningful objects, places, hobbies, and foods | found/absent/inaccessible | | | |
+| Achievement/reward meaning | found/absent/inaccessible | | | |
+```
+
+Rules:
+
+- Copy all nine required category rows into the task research artifact. Do not combine broad labels such as "story" or "character information" in place of biography, relationships, dialogue, plot development, and other distinct rows.
+- `found`: cite at least one concrete text fact; use multiple rows when evidence conflicts or evolves across the story.
+- `absent`: the relevant accessible sections were inspected and contain no usable evidence.
+- `inaccessible`: the source or a relevant section could not be read after available browser/DOM navigation was exhausted; say what failed.
+- Do not infer personality, biography, relationships, dialogue, plot, or owned objects from an image. Images may corroborate visible palette, silhouette, costume, material, or pose only.
+- Do not treat a search snippet, page title, alt text, or image caption as a substitute for the dossier body when fuller text is available.
+- Do not generate concepts while any required category is unrecorded. `absent` is acceptable; unexplained omission is not. If character-defining categories are `inaccessible`, request the missing text and stop instead of substituting image analysis.
+
+## Evidence-to-design synthesis
+
+After coverage, record the decisions that survive runtime-size filtering:
+
+```markdown
+| Textual evidence | Interpretation | Visual decision | Confidence/source |
+|---|---|---|---|
+| <paraphrased fact> | <what it says about the character> | <motif, composition, palette/material, or motion verb> | <high/medium + locator> |
+```
+
+Every primary anchor, supporting motif family, palette/material choice, and motion verb needs at least one row. Prefer motifs supported by several independent text facts. Separate literal motifs (an owned object or place) from narrative motifs (a visual metaphor for values or growth), and label narrative interpretation explicitly. Remove unsupported decorative guesses even when they match the portrait colors.
 
 ## Visual-language card
 
-Write one card before prompting image generation:
+Write one card only after the text evidence matrix and evidence-to-design synthesis pass the gate:
 
 ```markdown
 # <Character> nameplate visual language

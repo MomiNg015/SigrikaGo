@@ -1,23 +1,22 @@
-/* Illustration-bound sortie signal, pixel mascot ping, speed lanes, and digital beacons for Aemeath. */
+/* Aemeath illustration-bound light and speed motion. */
 @keyframes aemeath-nameplate-sortie-signal {
-  from { opacity: 0.48; transform: translate3d(-2%, 1%, 0) scale(0.98); }
-  to { opacity: 0.74; transform: translate3d(3%, -1%, 0) scale(1.025); }
+  from { opacity: 0.62; transform: translate3d(-3%, 1%, 0) scale(0.97); }
+  to { opacity: 0.9; transform: translate3d(2%, -1%, 0) scale(1.04); }
 }
 
 @keyframes aemeath-nameplate-snowfluff-ping {
-  0%, 100% { opacity: 0.28; transform: scale(0.86); }
-  42% { opacity: 0.76; transform: scale(1.04); }
-  58% { opacity: 0.42; transform: scale(0.94); }
+  0%, 100% { opacity: 0.4; transform: scale(0.92); }
+  50% { opacity: 0.96; transform: scale(1.1); }
 }
 
 @keyframes aemeath-nameplate-speed-lanes {
-  from { opacity: 0.38; transform: translate3d(-5%, 1%, 0); }
-  to { opacity: 0.66; transform: translate3d(7%, -1%, 0); }
+  from { opacity: 0.52; transform: translate3d(-9%, 1%, 0); }
+  to { opacity: 0.9; transform: translate3d(9%, -1%, 0); }
 }
 
 @keyframes aemeath-nameplate-pixel-beacons {
-  from { opacity: 0.18; transform: translate3d(-1%, 1%, 0) scale(0.94); }
-  to { opacity: 0.58; transform: translate3d(2%, -1%, 0) scale(1.04); }
+  from { opacity: 0.22; transform: translate3d(0, 1%, 0) scale(0.9); }
+  to { opacity: 0.78; transform: translate3d(1%, -1%, 0) scale(1.08); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -37,11 +36,11 @@
 
   .user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-glow,
   .user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
-    opacity: 0.52;
+    opacity: 0.72;
   }
 
   .user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-core,
   .user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
-    opacity: 0.3;
+    opacity: 0.46;
   }
 }

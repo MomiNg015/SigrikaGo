@@ -96,13 +96,8 @@
   border-top-color: var(--theme-accent);
 }
 
-.app-shell.player-theme-enabled .preload-bar {
-  background: color-mix(in srgb, var(--theme-border) 42%, transparent);
-}
-
-.app-shell.player-theme-enabled .preload-bar span,
 .app-shell.player-theme-enabled .timer-track span {
-  background: var(--preload-progress-fill, var(--timer-track-fill, linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2))));
+  background: var(--timer-track-fill, linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2)));
   box-shadow: var(--timer-track-glow, 0 0 10px color-mix(in srgb, var(--theme-accent) 45%, transparent));
 }
 

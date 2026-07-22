@@ -1,7 +1,5 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span {
   background-color: #ff9ebb !important;
   background-image: none !important;
   color: #3d2b25 !important;

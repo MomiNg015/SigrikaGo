@@ -179,7 +179,11 @@ export default function AssetPreloadScreen({
         {statusText && <p className="preload-status">{statusText}</p>}
         <div
           className={`preload-progress${isProgressIdle ? " is-idle" : ""}`}
-          style={{ "--preload-progress": percent / 100 }}
+          style={{
+            "--preload-progress": percent / 100,
+            "--preload-mask-size": `${percent}%`,
+            "--preload-mascot-rotation": `${percent * 7.2}deg`
+          }}
           role="progressbar"
           aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}
           aria-valuemin="0"
@@ -188,19 +192,21 @@ export default function AssetPreloadScreen({
         >
           <div className="preload-progress-track">
             <div className="preload-bar" aria-hidden="true">
-              <span />
+              <span className="preload-paper-fill" />
             </div>
             <span className="preload-mascot-anchor" aria-hidden="true">
-              <span className="preload-mascot-motion">
-                <img
-                  className="preload-progress-mascot"
-                  src={PRELOAD_PROGRESS_MASCOT}
-                  alt=""
-                  decoding="sync"
-                  draggable="false"
-                  fetchPriority="high"
-                  loading="eager"
-                />
+              <span className="preload-mascot-roll">
+                <span className="preload-mascot-motion">
+                  <img
+                    className="preload-progress-mascot"
+                    src={PRELOAD_PROGRESS_MASCOT}
+                    alt=""
+                    decoding="sync"
+                    draggable="false"
+                    fetchPriority="high"
+                    loading="eager"
+                  />
+                </span>
               </span>
             </span>
           </div>

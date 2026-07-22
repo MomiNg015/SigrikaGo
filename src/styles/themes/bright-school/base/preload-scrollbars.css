@@ -3,16 +3,10 @@
   border-top-color: #ff9ebb !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school .preload-bar,
 .app-shell.player-theme-enabled.theme-bright-school .timer-track {
   background: #fff9ed !important;
   border: 2px solid #4a3736 !important;
   border-radius: 999px !important;
-  box-shadow: none !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school .preload-bar span {
-  background: #ff9ebb !important;
   box-shadow: none !important;
 }
 

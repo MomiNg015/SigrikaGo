@@ -1,7 +1,4 @@
-import { createDuckedVolume } from "../shared/audioScheduling.js";
-
 const backgroundDuckSubscribers = new Set();
-let activeVoiceCount = 0;
 let nextDuckRequestId = 0;
 const backgroundDuckRequests = new Map();
 
@@ -13,10 +10,9 @@ export function subscribeBackgroundDuck(subscriber) {
 }
 
 export function currentDuckedBackgroundVolume(volume) {
-  const voiceVolume = createDuckedVolume({ volume, activeVoiceCount });
   const requestedRatio = [...backgroundDuckRequests.values()]
     .reduce((ratio, request) => Math.min(ratio, request.ratio), 1);
-  return Math.min(voiceVolume, volume * requestedRatio);
+  return volume * requestedRatio;
 }
 
 export function requestBackgroundMusicDuck({ ratio = 0.15, attackMs = 350, releaseMs = 500 } = {}) {
@@ -34,19 +30,6 @@ export function requestBackgroundMusicDuck({ ratio = 0.15, attackMs = 350, relea
     backgroundDuckRequests.delete(id);
     notifyBackgroundDuckSubscribers(request?.releaseMs ?? positiveDuration(releaseMs, 500));
   };
-}
-
-export function beginVoicePlayback() {
-  activeVoiceCount += 1;
-  notifyBackgroundDuckSubscribers(120);
-}
-
-export function endVoicePlaybackSoon() {
-  const timeout = typeof window !== "undefined" ? window.setTimeout : setTimeout;
-  timeout(() => {
-    activeVoiceCount = Math.max(0, activeVoiceCount - 1);
-    notifyBackgroundDuckSubscribers(120);
-  }, 180);
 }
 
 function notifyBackgroundDuckSubscribers(durationMs) {

@@ -1,8 +1,8 @@
 export const DEFAULT_AUDIO_SETTINGS = {
-  master: 80,
-  bgm: 50,
-  sfx: 80,
-  voice: 80,
+  master: 100,
+  bgm: 60,
+  sfx: 100,
+  voice: 100,
   muted: {}
 };
 
@@ -23,7 +23,7 @@ export function audioVolume(settings, channel) {
   }
 
   const master = safePercent(settings?.master, DEFAULT_AUDIO_SETTINGS.master);
-  const channelValue = safePercent(settings?.[channel], 100);
+  const channelValue = safePercent(settings?.[channel], DEFAULT_AUDIO_SETTINGS[channel] ?? 100);
   return Math.max(
     0,
     Math.min(

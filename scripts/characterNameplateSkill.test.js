@@ -29,6 +29,30 @@ describe("create-character-nameplate Skill", () => {
     expect(metadata).not.toContain("使用 -character-nameplate");
   });
 
+  it("blocks concept generation until a source-backed textual dossier is covered", () => {
+    const skill = fs.readFileSync(path.join(SKILL_ROOT, "SKILL.md"), "utf8");
+    const input = fs.readFileSync(path.join(SKILL_ROOT, "references/input-and-visual-language.md"), "utf8");
+
+    expect(skill).toContain("### Mandatory text-first evidence gate");
+    expect(skill).toContain("Image-only research is insufficient");
+    expect(skill).toContain("Do not proceed to concepts");
+    expect(skill).toContain("do not merge, rename away, or omit rows");
+    expect(skill).toContain("textual evidence -> interpretation -> visual decision");
+    expect(input).toContain("## Mandatory text evidence matrix");
+    expect(input).toContain("Personality and contradictions");
+    expect(input).toContain("Biography and formative events");
+    expect(input).toContain("Representative dialogue and speaking style");
+    expect(input).toContain("Major plot beats and character development");
+    expect(input).toContain("Meaningful objects, places, hobbies, and foods");
+    expect(input).toContain("found/absent/inaccessible");
+    expect(input).toContain("Copy all nine required category rows");
+    expect(input).toContain("tabs, accordions, anchors, pagination");
+    expect(input).toContain("Do not infer personality, biography, relationships, dialogue, plot, or owned objects from an image");
+    expect(input).toContain("If character-defining categories are `inaccessible`, request the missing text and stop");
+    expect(input).toContain("## Evidence-to-design synthesis");
+    expect(input).toContain("| Textual evidence | Interpretation | Visual decision | Confidence/source |");
+  });
+
   it("keeps the reusable references and templates complete but character-neutral", () => {
     const input = fs.readFileSync(path.join(SKILL_ROOT, "references/input-and-visual-language.md"), "utf8");
     const asset = fs.readFileSync(path.join(SKILL_ROOT, "references/asset-and-motion-contract.md"), "utf8");

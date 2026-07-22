@@ -37,8 +37,7 @@
   filter: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track {
   background: #fff9ed !important;
   border: 2px solid var(--bright-border) !important;
   border-radius: 999px !important;
@@ -46,9 +45,8 @@
   overflow: hidden !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar span {
-  background: var(--preload-progress-fill, var(--bright-pink)) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span {
+  background: var(--timer-track-fill, var(--bright-pink)) !important;
   border: 0 !important;
   box-shadow: none !important;
 }

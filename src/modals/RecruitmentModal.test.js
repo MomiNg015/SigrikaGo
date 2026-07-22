@@ -28,6 +28,17 @@ describe("RecruitmentModal", () => {
     expect(asset.subarray(8, 12).toString("ascii")).toBe("WEBP");
   });
 
+  it("uses the converted OGG exactly at the fully white concealed swap", () => {
+    const audioUrl = "/assets/music/aemeath-recruitment-full-white-burst.ogg";
+    const asset = readFileSync(new URL(`../../public${audioUrl}`, import.meta.url));
+    const overlaySource = readFileSync(new URL("./recruitment/RecruitmentCinematicOverlay.jsx", import.meta.url), "utf8");
+
+    expect(AEMEATH_RECRUITMENT_ASSET_SLOTS.flashSoundUrl).toBe(audioUrl);
+    expect(asset.subarray(0, 4).toString("ascii")).toBe("OggS");
+    expect(overlaySource).toContain("}, AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs);");
+    expect(overlaySource).not.toContain("}, AEMEATH_RECRUITMENT_TIMING.glowAtMs);");
+  });
+
   it("renders a clock fast-forward action during pending recruitment", () => {
     const modalSource = readFileSync(new URL("./RecruitmentModal.jsx", import.meta.url), "utf8");
     const hookSource = readFileSync(new URL("./recruitment/useRecruitmentCatalog.js", import.meta.url), "utf8");
@@ -111,7 +122,7 @@ describe("RecruitmentModal", () => {
     expect(source).toContain("onInteractionLockChange?.(true)");
     expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.darkenAtMs");
     expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.flightAtMs");
-    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.glowAtMs");
+    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs");
     expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.unlockAtMs");
     expect(source).toContain('window.addEventListener("pagehide", interrupt)');
     expect(source).toContain('document.addEventListener("visibilitychange", interruptWhenHidden)');
@@ -121,6 +132,7 @@ describe("RecruitmentModal", () => {
     expect(source).toContain("recruitment-cinematic-sprite-wave-frame");
     expect(source).toContain("task.cinematic?.flightSoundUrl");
     expect(source).toContain("task.cinematic?.flashSoundUrl");
+    expect(source).toContain("window.clearTimeout(flashSoundTimer)");
     expect(css).toContain("top: var(--recruitment-cinematic-target-y)");
     expect(css).toContain("left: var(--recruitment-cinematic-target-x)");
   });

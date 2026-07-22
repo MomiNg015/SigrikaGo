@@ -100,7 +100,7 @@
   - Owns default audio settings, localStorage loading, per-channel volume calculation, and finite-number sanitization for persisted percent values.
   - Audio settings also support optional per-channel mute flags under `muted`; `audioVolume()` returns `0` when `muted.master` or the requested channel flag is true, while keeping the stored 0-100 slider percentage unchanged.
 - `src/audio/backgroundDucking.js`
-  - Owns the shared voice-active counter and BGM ducking subscribers so voice playback can reduce and restore background-music volume without embedding that state in `playback.jsx`.
+  - Owns explicit scoped BGM duck requests and subscribers for authored non-voice scenes such as the recruitment cinematic. Voice and TTS playback do not participate in this registry.
 - `src/audio/audioRuntime.js`
   - Owns browser Web Audio constructor detection so playback submodules can no-op safely outside browser audio environments.
 - `src/audio/proceduralSounds.js`
@@ -128,7 +128,7 @@
 - `BackgroundMusic` 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 `AudioContext` 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。
 - 组件级 `BackgroundMusic` 卸载时必须停止 WebAudio source 与 HTMLAudio fallback、清空当前曲目并废弃未完成调度，避免教学对弈、预览层等局部界面退出后残留 BGM。
 - 音量变化只调节 gain，不改变播放 identity；因此主音量或 BGM 音量调到 0 后再恢复，不会导致 BGM 从头播放。
-- 默认音频设置为 `master: 80`、`bgm: 50`、`sfx: 80`、`voice: 80`，保存于 `localStorage` 的 `sigrika-audio-settings`；运行时音量计算会把非法或非有限百分比值回退到默认值，避免损坏的本地设置把 `NaN` 传入 Audio/Web Audio。
+- 新用户默认音频设置为 `master: 100`、`bgm: 60`、`sfx: 100`、`voice: 100`，保存于 `localStorage` 的 `sigrika-audio-settings`；已有持久化百分比继续覆盖这些默认值。运行时音量计算会把非法或非有限百分比值回退到默认值，避免损坏的本地设置把 `NaN` 传入 Audio/Web Audio。
 - `audioRuntime.js` 通过统一 helper 暴露浏览器 `AudioContext` 构造器；倒计时 beep、门铃音和 TTS 在缺少 `window`、`AudioContext` 或 `speechSynthesis` 时静默 no-op，避免测试、预渲染或非浏览器执行路径因音频副作用抛错。
 
 - 匹配成功后先播放原有 3 秒匹配成功倒计时弹窗，倒计时结束后才进入对局资源预加载页并停止 BGM；该页复用登录加载页样式，但不显示转圈动画，只显示本机玩家出战角色跳动立绘、该角色的加载台词，以及 `资源加载中 0/2`、`1/2` 或 `2/2`，客户端完成本地资源预载后发出 `room:preload-ready`。进入对局页需要同时满足匹配成功倒计时完成和双方都 ready：倒计时先结束时进入并继续停在资源加载页，资源先 ready 时继续显示倒计时并在倒计时结束后直接进入对局页；服务端 90 秒未等齐会中止匹配并由前端 toast `一方加载超时，匹配中止`。
@@ -142,7 +142,7 @@
 - 星炬棋盘技能特效的程序化音效由 `src/room/boardSkillEffectSoundScheduler.js` 按 catalog cue 点调度，并由 `src/audio/skillEffectSounds.js` 负责真正发声；这些音效只读 `audioSettings.sfx`，不参与服务端结算，也不会在 reduced-motion 棋盘演出中播放爆炸/飞入类音效。`src/shared/skillPresentation.js` 会先判断该技能演出和音效层是否启用，关闭特效时不进入 SFX 调度；后台 `skillEffectsEnabled` 关闭后，服务端 pending skill preview 也只等待技能横幅时长，随后直接广播技能结算结果。`src/room/pixiPrewarm.js` 在技能可用棋盘空闲时预热 `pixi.js`，真实演出时复用同一个加载 promise，避免首个技能把模块加载成本集中到动画开始时；关闭特效或无技能棋盘不会为技能演出预热 Pixi。
 - `row-slash` 使用 `skillEffectSoundCues` cue 元数据调度程序化技能音效；技能横幅结束后通过 `BoardSkillEffects` 预热并播放不依赖图片资源的 Pixi Graphics 水墨刀光，结算后的持久棋盘刀痕仍走 DOM/CSS overlay，没有独立刀光图片或音频文件依赖。`protocol-takeover` 使用程序化淡紫与冰蓝数据流 Pixi 光束演出，并通过 WebAudio 程序化播放更明显的两段式数据束启动与目标锁定 SFX，结算后的协议禁入标记继续走 DOM/CSS overlay。`double-move` 使用程序化火焰 SFX，并把凤凰与火焰透明 SVG 加入 `RUNTIME_IMAGE_ASSETS.effects` 延迟预加载，技能横幅后的全盘演出通过 Pixi 复用纹理，实际连落点位继续通过 DOM/CSS 显示持续火焰。
 - 娜波摩被动灰白化层由 `BoardAmbientEffects` 根据 `game.passives.*.colorIllusion.active` 派生，使用 pointer-transparent 的 CSS 中心向外扩散波纹表现发动过程，同时 `.board-wrap.color-illusion-board-surface::before` 会把棋盘背景从中心扩散切换到 `/assets/boards/nabomo-color-illusion-board.webp`；该专用 WebP 由 `C:/codex/image/go-board-background-reference-color-vertical-2048.jpg` 转换而来，并作为效果资源延迟预加载。该被动不再使用持续 Pixi 烟雾或每帧 ticker 绘制，也不允许回退为整块矩形半透明贴层，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。
-- 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。
+- 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS；`useRoomAudioEffects` 不再为最后 10 秒申请 BGM duck，单个片段也不会改变 BGM 音量。解码倒计时语音继续使用无混响的 `countdown` playback profile；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。
 
 - 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`，派生技能等效果特定语音通过 `SYSTEM_VOICE_SKILL_EVENTS` 的模式化事件覆盖普通 `skill-cast`。
 - `CHARACTER_SKILL_VOICES` 支持单个路径或候选路径数组；`resolveSystemVoice` 每次解析数组候选时随机选择一个，`loginPreloadAssets()` 与 `battlePreloadAssets()` 会展开候选数组，保证所有可能播放的语音都纳入预加载。
@@ -155,8 +155,8 @@
 - `playVoiceSound` 使用 Web Audio 播放链：source -> RMS normalization gain -> dry/wet reverb mix -> voice gain -> destination。
 - 同一客户端只允许一个角色语音处于活动播放状态；新的角色语音或 TTS 开始前会立即停止上一段角色语音，避免同一用户连续触发角色语音时叠音。
 - 莫宁（`mornye`）已接入 `game-start`、`sortie`、`skill-cast`、`byo-yomi-start`、`byo-yomi-period-2`、`byo-yomi-period-1`、`countdown-10` 到 `countdown-1`、`result-victory`、`result-defeat`、`result-draw` 与 `house-detail` 语音；`house-detail` 使用 `/assets/voice/mornye_detail.ogg`，打开角色详情或点击详情内“描述”文本区域都会播放该语音，关闭角色详情弹窗或关闭整个部员手册会调用 `stopVoicePlayback()` 停止当前角色语音。
-- 语音播放开始时会通知 BGM ducking 状态，背景音乐临时压到基础 BGM 音量的 35%；语音结束后约 180ms 平滑恢复，避免角色语音被角色 BGM 盖住。
-- `voiceEffects.js` 当前预设为轻量空灵混响：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`，并以 `targetRms: 0.12`、`minNormalizationGain: 0.4`、`maxNormalizationGain: 2.4` 做运行时语音响度一致化。
+- 角色音频和 TTS 播放不再通知 BGM ducking 状态，也不改变背景音乐 gain；BGM 保持用户设置音量。`backgroundDucking.js` 只处理招募演出等非语音场景显式申请的 scoped request。
+- `voiceEffects.js` 当前预设为轻量空灵混响：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`，并以 `targetRms: 0.12`、`minNormalizationGain: 0.4`、`maxNormalizationGain: 2.4` 做运行时语音响度一致化。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走归一化后的干声支路，避免一秒一段的混响尾音堆叠；普通 `Audio` fallback 本身无 Web Audio 混响。
 - 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限。
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
