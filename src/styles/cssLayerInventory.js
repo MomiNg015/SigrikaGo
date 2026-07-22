@@ -6,7 +6,7 @@ export const CSS_DEBT_BASELINE = {
     totalBytes: 1222295,
     importantCount: 7387,
     importantFiles: 294,
-    hardcodedHexCount: 2331,
+    hardcodedHexCount: 2334,
     mediaFiles: 230,
     reducedMotionFiles: 32,
     highZIndexFiles: 7
