@@ -1859,3 +1859,36 @@ Added deterministic stability fixtures, repaired capacity metric authorization, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 57: 完成彩虹豆豆跳跳糖双分支剧情
+
+**Date**: 2026-07-22
+**Task**: 完成彩虹豆豆跳跳糖双分支剧情
+**Branch**: `codex/rainbow-bean-popping-candy-story`
+
+### Summary
+
+实现西格莉卡与达妮娅的接受/拒绝剧情和35%拒绝结算，隐藏旁白身份，修正糖果效果与成就条件，并修复道具剧情被误路由到棋盘教学的问题。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `87f2556e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
