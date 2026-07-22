@@ -322,6 +322,26 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## 更新流程
 
+仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、依赖安装、暂存目录构建与生产配置检查、Nginx 备份和语法验证、停服、迁移、默认新手引导定向同步、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
+
+第一次使用时，服务器上的旧版本还没有该脚本，先手动拉取一次，然后运行：
+
+```bash
+cd /opt/sigrikago
+git switch master
+git pull --ff-only origin master
+sudo ./deploy/update-production.sh
+```
+
+以后更新只需：
+
+```bash
+cd /opt/sigrikago
+sudo ./deploy/update-production.sh
+```
+
+默认路径适配当前服务器：项目 `/opt/sigrikago`、数据库 `/var/lib/sigrikago/prod.db`、备份 `/var/backups/sigrikago`、服务 `sigrikago`。只有迁移到不同目录时才通过 `SIGRIKAGO_PROJECT_DIR`、`SIGRIKAGO_DATABASE_PATH`、`SIGRIKAGO_BACKUP_DIR` 或 `SIGRIKAGO_SERVICE_NAME` 临时覆盖；不要把这些变量写进前端配置。
+
 ### 本次默认新手引导同步
 
 `server/adminDefaultSnapshot.js` 的普通启动补种只创建缺失记录，不会覆盖云端已有的后台内容。因此，本次更新需要在数据库备份后执行一次定向同步；该命令只读取提交中的 `onboarding.default` 并只写这一条 `StoryScript`，不会改用户、对局或其他后台配置。
@@ -343,7 +363,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 第一条同步命令只是预览，第二条才会应用。如果它提示云端脚本比提交快照更新，立即停止，不要追加 `--force`；先从后台或数据库核对云端改动，避免覆盖更新内容。应用成功后不需要重复运行。
 
-### 常规更新
+### 手工更新（脚本不可用时）
 
 ```bash
 cd /opt/sigrikago

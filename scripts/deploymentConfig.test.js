@@ -55,4 +55,29 @@ describe("production deployment templates", () => {
     expect(unit).toContain("MemoryHigh=1400M");
     expect(unit).toContain("MemoryMax=1600M");
   });
+
+  it("keeps the production update script fail-fast, backed up, and ordered around downtime", () => {
+    const script = read("deploy/update-production.sh");
+
+    expect(script).toContain("set -Eeuo pipefail");
+    expect(script).toContain("git diff --quiet");
+    expect(script).toContain("git diff --cached --quiet");
+    expect(script).toContain('[[ -d "${PROJECT_DIR}/dist" ]] || fail "Current production bundle is missing: ${PROJECT_DIR}/dist"');
+    expect(script).toContain('git pull --ff-only origin "${EXPECTED_BRANCH}"');
+    expect(script).toContain('npm run backup:sqlite -- --source "${DATABASE_PATH}" --output "${DATABASE_BACKUP}"');
+    expect(script.indexOf("umask 077")).toBeLessThan(script.indexOf("npm run backup:sqlite"));
+    expect(script.indexOf("npm run backup:sqlite")).toBeLessThan(script.indexOf("umask 022"));
+    expect(script.indexOf("umask 022")).toBeLessThan(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"'));
+    expect(script).toContain('npm run build -- --outDir "${STAGED_DIST}"');
+    expect(script).toContain("if ! nginx -t; then");
+    expect(script).toContain("npm run admin:sync-onboarding -- --apply");
+    expect(script).toContain('curl --fail --silent --show-error "${HEALTH_URL}"');
+
+    expect(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
+    expect(script.indexOf('[[ -d "${PROJECT_DIR}/dist" ]]')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
+    expect(script.indexOf("if ! nginx -t; then")).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
+    expect(script.indexOf('systemctl stop "${SERVICE_NAME}"')).toBeLessThan(script.indexOf("npx prisma migrate deploy"));
+    expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf('mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"'));
+    expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.lastIndexOf('systemctl start "${SERVICE_NAME}"'));
+  });
 });

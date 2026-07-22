@@ -21,6 +21,7 @@ Make the cloud deployment reproduce the latest locally published onboarding stor
 * Keep all existing skill presentation timing and visuals unchanged.
 * Keep the Nginx static-delivery contract aligned with the live HTTPS deployment and ensure compressible JS/CSS/SVG responses can be gzip encoded.
 * Document the one-time cloud reconciliation needed because startup seeding preserves existing onboarding rows.
+* Provide one root-operated production update script that preserves untracked files, rejects tracked worktree edits and non-fast-forward Git histories, creates a verified SQLite backup, validates the build and Nginx configuration before downtime, applies migrations plus the targeted onboarding reconciliation while stopped, restarts the service, and waits for readiness.
 * Update system-design documentation and regenerate `docs/system-design.html`.
 
 ## Acceptance Criteria
@@ -30,6 +31,7 @@ Make the cloud deployment reproduce the latest locally published onboarding stor
 * [ ] Texture-backed skill effects are covered by a CSP/asset contract test, including Danea, Changli, Baconbits, and Aemeath `voyage-star`.
 * [ ] Nginx configuration syntax is valid and its HTTPS/static path applies gzip plus the intended cache headers.
 * [ ] Deployment docs provide safe commands to pull/build, reconcile the onboarding row, restart, and verify response headers/health.
+* [ ] `deploy/update-production.sh` provides the documented one-command update path and has regression coverage for its safety gates and operation ordering.
 * [ ] Targeted tests and full `npm run check` pass.
 
 ## Definition of Done
@@ -45,6 +47,7 @@ Make the cloud deployment reproduce the latest locally published onboarding stor
 3. Audit all board skill effect asset types and add a regression contract around texture-backed effects.
 4. Align the deploy Nginx templates and documentation for HTTP/HTTPS static serving, gzip, immutable hashed assets, and no-cache HTML.
 5. Provide a targeted onboarding-row reconciliation step for the already-created cloud DB instead of resetting user data again.
+6. Compose the existing Git, SQLite backup, Prisma, build, Nginx, systemd, story-sync, and readiness commands in a fail-fast deployment script without reimplementing their domain logic.
 
 ## Decision (ADR-lite)
 
