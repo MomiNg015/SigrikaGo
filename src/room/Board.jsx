@@ -25,6 +25,7 @@ function Board({
   pointConfirmation,
   previewPlayer,
   stoneDecorations = {},
+  aemeathRainbowMoveEffect = null,
   tutorialTargetPointId = "",
   tutorialAnyBoardTarget = false,
   onPoint,
@@ -236,6 +237,7 @@ function Board({
               isStar={isStarPoint(point.x, point.y, boardSize)}
               libertyPurgeMarked={libertyPurgeMarkIds.has(point.id)}
               markedActionId={markedActionId}
+              aemeathRainbowMoveEffectKey={aemeathRainbowMoveEffect?.pointId === point.id ? aemeathRainbowMoveEffect.key : ""}
               moveNumber={showMoves ? moveNumbers.get(point.id) ?? null : null}
               neutralMarked={showScoringMarks && Boolean(game.scoring?.neutralPoints?.includes(point.id))}
               point={point}
@@ -489,6 +491,7 @@ function PointButton({
   isStar,
   libertyPurgeMarked,
   markedActionId,
+  aemeathRainbowMoveEffectKey,
   moveNumber,
   neutralMarked,
   point,
@@ -564,6 +567,9 @@ function PointButton({
           {showMoves && moveNumber !== null && <b>{moveNumber}</b>}
         </span>
       )}
+      {aemeathRainbowMoveEffectKey && (
+        <span key={aemeathRainbowMoveEffectKey} className="aemeath-rainbow-move" aria-hidden="true" />
+      )}
       {!point.valid && !isVoyageStarErasedPoint && <span className="void" />}
       {eraseImpactPending && <span className="void erase-impact-pending" aria-hidden="true" />}
       {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
@@ -599,6 +605,7 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.isStar === next.isStar
     && previous.libertyPurgeMarked === next.libertyPurgeMarked
     && previous.markedActionId === next.markedActionId
+    && previous.aemeathRainbowMoveEffectKey === next.aemeathRainbowMoveEffectKey
     && previous.moveNumber === next.moveNumber
     && previous.neutralMarked === next.neutralMarked
     && previous.point === next.point
@@ -615,6 +622,11 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.winningLineMarked === next.winningLineMarked;
 }
 
+function sameAemeathRainbowMoveEffect(previous, next) {
+  if (!previous || !next) return previous === next;
+  return previous.pointId === next.pointId && previous.key === next.key;
+}
+
 export function areBoardPropsEqual(previous, next) {
   return previous.game === next.game
     && previous.showCoords === next.showCoords
@@ -623,6 +635,7 @@ export function areBoardPropsEqual(previous, next) {
     && previous.audioSettings === next.audioSettings
     && previous.skillEffectsEnabled === next.skillEffectsEnabled
     && previous.stoneJitter === next.stoneJitter
+    && sameAemeathRainbowMoveEffect(previous.aemeathRainbowMoveEffect, next.aemeathRainbowMoveEffect)
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && previous.tutorialTargetPointId === next.tutorialTargetPointId

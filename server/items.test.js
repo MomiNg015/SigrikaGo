@@ -290,9 +290,34 @@ describe("items", () => {
     expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
   });
 
+  it("uses rainbow candy on Aemeath by enabling rainbow move effects", async () => {
+    const structuredWrites = [];
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "aemeath",
+      random: () => 0.99,
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,aemeath",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        structuredWrites
+      })
+    });
+
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.effectText).toContain("彩虹落子模式");
+    expect(response.user.itemEffects).toMatchObject({ aemeathRainbowMove: true });
+    expect(structuredWrites).toContainEqual(["userItemEffect.upsert", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "aemeathRainbowMove" } }
+    })]);
+  });
+
   it.each([
     ["sigrika", "sigrikaCandyDisabled"],
-    ["denia", "deniaRainbowGlow"]
+    ["denia", "deniaRainbowGlow"],
+    ["aemeath", "aemeathRainbowMove"]
   ])("keeps the candy and user state unchanged when %s rejects it", async (characterId, effectKey) => {
     const updates = [];
     const structuredWrites = [];
@@ -303,7 +328,7 @@ describe("items", () => {
       random: () => 0.349999,
       prisma: inventoryPrisma({
         selectedCharacter: "sigrika",
-        ownedCharacters: "sigrika,denia",
+        ownedCharacters: "sigrika,denia,aemeath",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character",
@@ -359,9 +384,9 @@ describe("items", () => {
     await expect(useInventoryItem({
       userId: "user-1",
       itemId: "rainbow-bean-candy",
-      characterId: "aemeath",
+      characterId: "mornye",
       prisma: inventoryPrisma({
-        ownedCharacters: "sigrika,aemeath",
+        ownedCharacters: "sigrika,mornye",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character",

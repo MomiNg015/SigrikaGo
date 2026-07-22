@@ -49,7 +49,7 @@ const BOARD_EXPECTATIONS = Object.freeze({
 
 describe("admin default onboarding story snapshot", () => {
   it("publishes both Word-authored candy outcomes with blank narration identity", () => {
-    for (const characterId of ["sigrika", "denia"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath"]) {
       const script = ADMIN_DEFAULT_CONFIG.storyScripts.find((entry) => entry.key === `item.rainbow-bean-candy.${characterId}`);
       const expected = defaultRainbowBeanCandyStoryDraft(characterId);
       const draftNodes = JSON.parse(script.draftNodesJson);
@@ -57,10 +57,11 @@ describe("admin default onboarding story snapshot", () => {
 
       expect(script.draftStartNodeId).toBe("accepted-start");
       expect(script.publishedStartNodeId).toBe("accepted-start");
-      expect(draftNodes).toEqual(expected.nodes);
-      expect(publishedNodes).toEqual(expected.nodes);
+      const expectedNormalizedNodes = validateStoryContent(expected, { publishing: true }).nodes;
+      expect(validateStoryContent({ startNodeId: script.draftStartNodeId, nodes: draftNodes }, { publishing: true }).nodes)
+        .toEqual(expectedNormalizedNodes);
       expect(validateStoryContent({ startNodeId: script.publishedStartNodeId, nodes: publishedNodes }, { publishing: true }).nodes)
-        .toHaveLength(expected.nodes.length);
+        .toEqual(expectedNormalizedNodes);
       expect(publishedNodes.some((node) => node.id === "rejected-start")).toBe(true);
       expect(publishedNodes.filter((node) => node.type === "story" && !node.characterId))
         .toEqual(expect.arrayContaining([

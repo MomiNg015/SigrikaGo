@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
 import {
+  aemeathRainbowMoveEffectForRoom,
   buildBoardLines,
   coordLabel,
   formatClock,
@@ -126,6 +127,35 @@ describe("roomView helpers", () => {
     expect(lines.map((line) => line.key)).toContain("col-6-7-12");
     expect(lines.map((line) => line.key)).not.toContain("row-6-0-12");
     expect(lines.map((line) => line.key)).not.toContain("col-6-0-12");
+  });
+
+  test("selects a rainbow move marker only for the latest move by affected Aemeath", () => {
+    const room = {
+      players: [
+        { color: COLORS.black, characterId: "aemeath", user: { itemEffects: { aemeathRainbowMove: true } } },
+        { color: COLORS.white, characterId: "sigrika", user: { itemEffects: {} } }
+      ],
+      game: {
+        moveNumber: 3,
+        history: [
+          { type: "move", color: COLORS.white, id: "1,1", moveNumber: 2 },
+          { type: "move", color: COLORS.black, id: "3,4", moveNumber: 3 }
+        ]
+      }
+    };
+
+    expect(aemeathRainbowMoveEffectForRoom(room)).toEqual({
+      pointId: "3,4",
+      key: "3:black:3,4"
+    });
+    expect(aemeathRainbowMoveEffectForRoom({
+      ...room,
+      game: { ...room.game, history: [...room.game.history, { type: "pass", color: COLORS.white }] }
+    })).toBeNull();
+    expect(aemeathRainbowMoveEffectForRoom({
+      ...room,
+      players: room.players.map((player) => ({ ...player, user: { itemEffects: {} } }))
+    })).toBeNull();
   });
 
   test("hides Chisa removal-marked points from ordinary move previews for the forbidden color", () => {

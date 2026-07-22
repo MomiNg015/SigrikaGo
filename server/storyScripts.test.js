@@ -676,7 +676,8 @@ describe("story script domain", () => {
 
     expect(created.map((record) => record.key)).toEqual([
       "item.rainbow-bean-candy.sigrika",
-      "item.rainbow-bean-candy.denia"
+      "item.rainbow-bean-candy.denia",
+      "item.rainbow-bean-candy.aemeath"
     ]);
     expect(created.every((record) => record.isPublished)).toBe(true);
   });

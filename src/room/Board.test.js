@@ -121,6 +121,29 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
+  test("renders Aemeath's rainbow move marker without replacing the stone", () => {
+    const points = createPoints(13).map((point) => (
+      point.id === "3,4" ? { ...point, stone: "black" } : point
+    ));
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        mode: "spark",
+        size: 13,
+        points,
+        history: [{ type: "move", color: "black", id: "3,4", moveNumber: 1 }]
+      },
+      aemeathRainbowMoveEffect: { pointId: "3,4", key: "1:black:3,4" }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup.match(/aemeath-rainbow-move/g)).toHaveLength(1);
+    expect(markup).toContain('class="stone');
+    expect(css).toContain("animation: aemeath-rainbow-move-ring 620ms");
+    expect(css).toContain("pointer-events: none");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+  });
+
   test("renders a tutorial setup marker when there is no real move history", () => {
     const points = createPoints(13);
     points.find((point) => point.id === "3,3").stone = "black";
@@ -1080,6 +1103,10 @@ describe("arePointButtonPropsEqual", () => {
       pointButtonProps({ point, eraseImpactPending: true })
     )).toBe(false);
     expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, aemeathRainbowMoveEffectKey: "" }),
+      pointButtonProps({ point, aemeathRainbowMoveEffectKey: "1:black:3,4" })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
       pointButtonProps({ point, pendingLibertyPurgeColor: "" }),
       pointButtonProps({ point, pendingLibertyPurgeColor: "black" })
     )).toBe(false);
@@ -1124,6 +1151,7 @@ function pointButtonProps(overrides = {}) {
     isStar: false,
     libertyPurgeMarked: false,
     markedActionId: "",
+    aemeathRainbowMoveEffectKey: "",
     moveNumber: null,
     neutralMarked: false,
     point: { id: "0,0", x: 0, y: 0, valid: true, stone: null },

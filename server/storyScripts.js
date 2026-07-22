@@ -375,6 +375,13 @@ export function defaultStoryScriptSeeds() {
       triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
       triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "denia" },
       draft: defaultRainbowBeanCandyStoryDraft("denia")
+    },
+    {
+      key: "item.rainbow-bean-candy.aemeath",
+      title: "爱弥斯的彩虹豆豆跳跳糖",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "aemeath" },
+      draft: defaultRainbowBeanCandyStoryDraft("aemeath")
     }
   ];
 }

@@ -7,9 +7,9 @@ import {
 } from "./rainbowBeanCandyStory.js";
 
 describe("rainbow bean candy story", () => {
-  it("uses a strict 35 percent rejection boundary for both supported characters", () => {
+  it("uses a strict 35 percent rejection boundary for every supported character", () => {
     expect(RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY).toBe(0.35);
-    for (const characterId of ["sigrika", "denia"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath"]) {
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.349999)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.35)).toBe("accepted");
@@ -26,7 +26,7 @@ describe("rainbow bean candy story", () => {
   });
 
   it("keeps every narration node free of speaker and character labels", () => {
-    for (const characterId of ["sigrika", "denia"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath"]) {
       const draft = defaultRainbowBeanCandyStoryDraft(characterId);
       const narrationNodes = draft.nodes.filter((node) => node.type === "story" && !node.characterId);
       expect(narrationNodes.length).toBeGreaterThan(0);
@@ -38,6 +38,7 @@ describe("rainbow bean candy story", () => {
   it("ships the Word-authored candy outcomes", () => {
     const sigrika = defaultRainbowBeanCandyStoryDraft("sigrika").nodes;
     const denia = defaultRainbowBeanCandyStoryDraft("denia").nodes;
+    const aemeath = defaultRainbowBeanCandyStoryDraft("aemeath").nodes;
 
     expect(sigrika).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "accepted-unavailable", text: "看来暂时不能找她下棋了。" }),
@@ -47,6 +48,11 @@ describe("rainbow bean candy story", () => {
       expect.objectContaining({ id: "accepted-rays", text: expect.stringContaining("双眼和嘴巴里喷射而出") }),
       expect.objectContaining({ id: "accepted-chase", text: expect.stringContaining("三道乱晃的彩虹射线") }),
       expect.objectContaining({ id: "rejected-sleep", text: expect.stringContaining("糖果被完整地退了回来") })
+    ]));
+    expect(aemeath).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "accepted-ripple", text: "棋子接触交叉点的瞬间，一圈七彩像素光纹“啪”地绽开，沿着棋盘线飞快扩散。" }),
+      expect.objectContaining({ id: "accepted-name", text: "好！这个状态就叫——彩虹落子模式！" }),
+      expect.objectContaining({ id: "rejected-title", text: "诶，别走呀？标题我都想好了——《{username}的整蛊糖果首秀》！真的不考虑一下吗？" })
     ]));
   });
 });

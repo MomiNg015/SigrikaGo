@@ -207,6 +207,7 @@ describe("WarehouseModal candy feedback", () => {
     const characters = {
       denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" },
       sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+      aemeath: { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath_centered.webp" },
       momo: { id: "momo", name: "莫名", portrait: "/assets/momo.webp" }
     };
 
@@ -222,6 +223,11 @@ describe("WarehouseModal candy feedback", () => {
     })).toEqual({ disabled: true, reason: "无效果" });
     expect(warehouseCharacterTargetAvailability({
       character: characters.sigrika,
+      item,
+      itemEffects: {}
+    })).toEqual({ disabled: false, reason: "" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.aemeath,
       item,
       itemEffects: {}
     })).toEqual({ disabled: false, reason: "" });

@@ -39,7 +39,8 @@ describe("deriveCharacterRecordStats", () => {
   it("disables Sigrika sortie and swaps Denia portrait from candy effects", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
-      deniaRainbowGlow: true
+      deniaRainbowGlow: true,
+      aemeathRainbowMove: true
     };
 
     expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
@@ -164,7 +165,8 @@ describe("deriveCharacterRecordStats", () => {
   it("marks house character cards with active item effect icons", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
-      deniaRainbowGlow: true
+      deniaRainbowGlow: true,
+      aemeathRainbowMove: true
     };
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
@@ -173,7 +175,7 @@ describe("deriveCharacterRecordStats", () => {
         rank: "1段",
         rating: 1000,
         coins: 0,
-        ownedCharacters: ["sigrika", "denia"],
+        ownedCharacters: ["sigrika", "denia", "aemeath"],
         ownedDecorations: [],
         selectedCharacter: "denia",
         itemEffects
@@ -181,7 +183,8 @@ describe("deriveCharacterRecordStats", () => {
       records: [],
       characterListView: [
         { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
-        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } }
+        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath.webp", skill: { name: "技能", description: "", cost: 1 } }
       ],
       audioSettings: {},
       onClose: () => {},
@@ -201,11 +204,18 @@ describe("deriveCharacterRecordStats", () => {
         icon: "/assets/items/rainbow-bean-candy.webp"
       })
     ]);
-    expect(activeCharacterItemEffects("aemeath", itemEffects)).toEqual([]);
-    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(2);
+    expect(activeCharacterItemEffects("aemeath", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "aemeathRainbowMove",
+        label: "彩虹落子模式",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(3);
     expect(html).toContain("src=\"/assets/items/rainbow-bean-candy.webp\"");
     expect(html).toContain("alt=\"彩虹豆豆跳跳糖效果中\"");
     expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
+    expect(html).toContain("title=\"彩虹落子模式\"");
   });
 
   it("hides character chain badges in the house manual character grid", () => {

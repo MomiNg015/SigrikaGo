@@ -18,6 +18,7 @@ import {
 import { applySkillCost, isLibertyPurgeForbiddenPoint } from "../shared/gameSkillState.js";
 import { canPreviewSkillTarget } from "../shared/boardView.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { canonicalCharacterId } from "../shared/characterAliases.js";
 
 export function canPreviewPoint(game, player, point, pendingSkill, isScoringMode) {
   if (isScoringMode) return false;
@@ -36,6 +37,19 @@ export function stoneDecorationsForRoom(room) {
       player.user?.selectedStoneDecoration ?? ""
     ])
   );
+}
+
+export function aemeathRainbowMoveEffectForRoom(room = {}) {
+  const history = room.game?.history ?? [];
+  const latestAction = history.at(-1);
+  if (latestAction?.type !== "move" || !latestAction.id || !latestAction.color) return null;
+  const player = (room.players ?? []).find((candidate) => candidate.color === latestAction.color);
+  const characterId = canonicalCharacterId(player?.characterId ?? player?.character?.id);
+  if (characterId !== "aemeath" || player?.user?.itemEffects?.aemeathRainbowMove !== true) return null;
+  return {
+    pointId: latestAction.id,
+    key: `${latestAction.moveNumber ?? room.game?.moveNumber ?? history.length}:${latestAction.color}:${latestAction.id}`
+  };
 }
 
 export function voiceCharacterForPlayer(player, characters) {

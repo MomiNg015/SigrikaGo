@@ -223,19 +223,23 @@ Correct:
 ### Scenario: Rainbow Bean Candy Rejection Settlement And Story Branching
 
 #### 1. Scope / Trigger
-- Trigger: changing rainbow bean candy probability, `useInventoryItem()`, candy story nodes, the Denia candy achievement event, or warehouse item-use feedback.
-- This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, and achievement evaluation.
+- Trigger: changing rainbow bean candy probability, `useInventoryItem()`, candy story nodes, temporary candy effects, Aemeath move feedback, the Denia candy achievement event, or warehouse item-use feedback.
+- This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, achievement evaluation, and Aemeath's room-board feedback.
 
 #### 2. Signatures
 - `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `itemUseOutcome: "accepted" | "rejected"`.
 - `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`.
 - Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
+- Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, and `aemeathRainbowMove`.
+- `aemeathRainbowMoveEffectForRoom(room)` returns `{ pointId, key }` only when the latest history action is a move by an Aemeath player whose public user has `aemeathRainbowMove === true`; otherwise it returns `null`.
 
 #### 3. Contracts
 - Resolve ownership, target validity, an already-active effect, and Sigrika fallback-character availability before rolling. Invalid use remains an HTTP error and never turns into a narrative rejection.
-- For supported candy characters, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
+- For Sigrika, Denia, and Aemeath, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
 - Rejection performs no user/structured-asset write, does not decrement inventory, does not switch Sigrika, does not trigger the Denia candy achievement, and selects `rejected-start` in the returned published script.
-- Acceptance consumes one candy, applies the existing temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins.
+- Acceptance consumes one candy, applies the character's temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules.
+- Aemeath's board marker is presentation-only: it is attached to the exact latest move point, is pointer-transparent, keeps the underlying black/white stone unchanged, and has a `prefers-reduced-motion` fallback. Opponent moves, passes, skills, and inactive Aemeath users must not show it.
+- A valid finished game clears `aemeathRainbowMove` only when that user played Aemeath; playing another character must preserve it for a later Aemeath game.
 - Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
 
 #### 4. Validation & Error Matrix
@@ -244,19 +248,24 @@ Correct:
 - Sigrika is selected and no alternate owned character exists -> existing HTTP 400 fallback error before the roll.
 - Rejected response with a published branch -> HTTP 200, unchanged user/items, blank `effectText`, `itemUseOutcome: "rejected"`, story `startNodeId: "rejected-start"`.
 - Accepted response without a published script -> preserve the legacy `effectText` fallback.
+- Latest action is not an Aemeath move with an active effect -> no rainbow board marker.
 
 #### 5. Good/Base/Bad Cases
 - Good: an injected `0.349999` rejects Denia, keeps the candy, leaves `deniaRainbowGlow` unset, and suppresses `denia-rainbow-bean-candy`.
+- Good: an accepted Aemeath move renders one short rainbow pixel ring at that move's point while the ordinary stone remains present.
 - Base: an injected `0.35` accepts, proving the exact 35% boundary without an off-by-one gap.
 - Bad: decrementing inventory before the roll and trying to restore it on rejection, because structured sync and achievement side effects can already have escaped.
 - Bad: setting narrator `speakerName: "旁白"`, because the player window must leave the character region blank.
+- Bad: tinting or replacing every Aemeath stone, because the agreed effect is a transient move-contact ripple and not a stone decoration or game rule.
 
 #### 6. Tests Required
 - `server/rainbowBeanCandyStory.test.js` locks the probability boundary, stable start ids, Word-authored lines, and blank narrator identity.
-- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for both characters.
+- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for all three characters.
+- `server/roomItemEffects.test.js` asserts Aemeath's effect clears after a valid Aemeath game and survives a valid game played as another character.
 - `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
 - `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
 - `src/modals/WarehouseModal.test.js` asserts rejection toast and skip copy do not claim success or consumption.
+- `src/room/roomView.test.js` asserts the latest-action/player/effect gate, and `src/room/Board.test.js` asserts one pointer-transparent marker, an unchanged stone, memo-comparator coverage, 620ms motion, and reduced-motion fallback.
 
 #### 7. Wrong vs Correct
 
@@ -279,6 +288,25 @@ if (outcome === "rejected") {
   };
 }
 ownedItems[itemId] -= 1;
+```
+
+Wrong:
+
+```js
+const latestMove = [...room.game.history].reverse().find((entry) => entry.type === "move");
+return latestMove ? { pointId: latestMove.id } : null;
+```
+
+Correct:
+
+```js
+const latestAction = room.game.history.at(-1);
+const player = room.players.find((candidate) => candidate.color === latestAction?.color);
+return latestAction?.type === "move"
+  && canonicalCharacterId(player?.characterId) === "aemeath"
+  && player?.user?.itemEffects?.aemeathRainbowMove
+    ? { pointId: latestAction.id, key: `${latestAction.moveNumber}:${latestAction.color}:${latestAction.id}` }
+    : null;
 ```
 
 Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.

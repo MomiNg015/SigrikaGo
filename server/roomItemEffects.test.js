@@ -23,16 +23,43 @@ describe("room item effects", () => {
             id: "denia-user",
             itemEffects: { deniaRainbowGlow: true }
           }
+        },
+        {
+          characterId: "aemeath",
+          user: {
+            id: "aemeath-user",
+            itemEffects: { aemeathRainbowMove: true }
+          }
         }
       ]
     };
 
     const updates = prepareCandyEffectUpdates(room);
 
-    expect(updates).toHaveLength(2);
+    expect(updates).toHaveLength(3);
     expect(room.players[0].user.itemEffects).toEqual({});
     expect(room.players[1].user.itemEffects).toEqual({});
+    expect(room.players[2].user.itemEffects).toEqual({});
     expect(candyEffectData(room.players[0], updates)).toEqual({ itemEffects: "{}" });
+  });
+
+  it("keeps Aemeath's rainbow move effect when another character completes the game", () => {
+    const room = {
+      game: {
+        phase: GAME_PHASES.finished,
+        winner: { winnerColor: "black" }
+      },
+      players: [{
+        characterId: "denia",
+        user: {
+          id: "aemeath-user",
+          itemEffects: { aemeathRainbowMove: true }
+        }
+      }]
+    };
+
+    expect(prepareCandyEffectUpdates(room)).toEqual([]);
+    expect(room.players[0].user.itemEffects).toEqual({ aemeathRainbowMove: true });
   });
 
   it("does not clear candy effects for invalid games", () => {

@@ -2,6 +2,7 @@ import { publicUser } from "./db.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
+  AEMEATH_CANDY_EFFECT_TEXT,
   DENIA_CANDY_EFFECT_TEXT,
   parseItemEffects,
   RAINBOW_BEAN_CANDY_ID,
@@ -191,6 +192,15 @@ function resolveItemEffect({ item, user, characterId }) {
         itemEffects: serializeItemEffects({ ...itemEffects, deniaRainbowGlow: true })
       },
       effectText: DENIA_CANDY_EFFECT_TEXT.replaceAll("{username}", user.username)
+    };
+  }
+  if (targetCharacter === "aemeath") {
+    if (itemEffects.aemeathRainbowMove) throw routeError(400, "爱弥斯已经处于糖果效果中");
+    return {
+      data: {
+        itemEffects: serializeItemEffects({ ...itemEffects, aemeathRainbowMove: true })
+      },
+      effectText: AEMEATH_CANDY_EFFECT_TEXT
     };
   }
   throw routeError(400, "这个角色暂时没有糖果效果");
