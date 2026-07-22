@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   createPreparedRoom,
+  createStabilityBrowserContext,
   expectRecoveredBoard,
   LAST_ROOM_CODE_KEY,
   registerPlayer,
@@ -9,7 +10,7 @@ import {
 
 test("recovers an active room after page reload", async ({ baseURL, browser, page }) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
-  const secondContext = await browser.newContext();
+  const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
   let roomCode = "";
 

@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 export const PASSWORD_MIN_LENGTH = 6;
 export const NEW_PASSWORD_MIN_LENGTH = 8;
@@ -166,6 +166,10 @@ export function canUseDebugTestActions(env = process.env) {
   return env.NODE_ENV !== "production";
 }
 
+export function canUseVerificationFixtures(env = process.env) {
+  return ["stability", "capacity"].includes(env.NODE_ENV) && debugTestActionsEnabled(env);
+}
+
 export function assertProductionDeployment(env = process.env) {
   const result = validateProductionDeployment(env);
   if (!result.ok) {
@@ -183,23 +187,23 @@ export function corsOriginForRequest(origin, callback, env = process.env) {
 }
 
 export function credentialAuthRateLimitOptions(env = process.env) {
-  return {
+  return withStabilityRateLimitNamespace({
     windowMs: 10 * 60 * 1000,
     limit: env.NODE_ENV === "capacity" ? 2000 : env.NODE_ENV === "stability" ? 240 : 20,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "请求过于频繁，请稍后再试" }
-  };
+  }, env);
 }
 
 export function sessionAuthRateLimitOptions(env = process.env) {
-  return {
+  return withStabilityRateLimitNamespace({
     windowMs: 10 * 60 * 1000,
     limit: env.NODE_ENV === "capacity" ? 6000 : env.NODE_ENV === "stability" ? 1200 : 120,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "请求过于频繁，请稍后再试" }
-  };
+  }, env);
 }
 
 export function authRateLimitOptions(env = process.env) {
@@ -219,13 +223,25 @@ export function createAuthRateLimit(env = process.env) {
 }
 
 export function createApiRateLimit(env = process.env) {
-  return rateLimit({
+  return rateLimit(withStabilityRateLimitNamespace({
     windowMs: 60 * 1000,
     limit: env.NODE_ENV === "capacity" ? 5000 : 180,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "请求过于频繁，请稍后再试" }
-  });
+  }, env));
+}
+
+export function stabilityRateLimitKey(req) {
+  const ipKey = ipKeyGenerator(req.ip);
+  const scope = String(req.get?.("x-stability-scope") ?? req.headers?.["x-stability-scope"] ?? "").trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(scope)) return ipKey;
+  return `${ipKey}:${scope}`;
+}
+
+function withStabilityRateLimitNamespace(options, env) {
+  if (env.NODE_ENV !== "stability") return options;
+  return { ...options, keyGenerator: stabilityRateLimitKey };
 }
 
 function stripControlChars(value) {

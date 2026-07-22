@@ -44,6 +44,7 @@ import {
   createSessionAuthRateLimit,
   validateRoomCode
 } from "./security.js";
+import { createVerificationFixtureRouter } from "./verificationFixtureRoutes.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -213,6 +214,8 @@ app.use("/api/auth", createAuthRouter({
   loginSessions,
   onlineSessions
 }));
+
+app.use("/api/test-fixtures", authHttp, createVerificationFixtureRouter({ prisma }));
 
 app.use("/api", authHttp, createCommerceRouter({ prisma }));
 app.use("/api", authHttp, createAnnouncementRouter({ prisma }));

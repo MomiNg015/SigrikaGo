@@ -1760,3 +1760,102 @@ Moved Aemeath acquisition to a welcome-mail memorial ticket, added the fixed-res
 ### Next Steps
 
 - None - task complete
+
+
+## Session 54: 上线前阶段0与阶段1加固
+
+**Date**: 2026-07-20
+**Task**: 上线前阶段0与阶段1加固
+**Branch**: `codex/prelaunch-phase0-phase1`
+
+### Summary
+
+隔离发布分支，移除用户名自动提权并新增本地管理员提升命令；升级依赖使审计降至2项moderate，完成文档、单测、构建、生产配置与E2E验证，并记录既有CSS/爱弥斯稳定性基线问题。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c0770f3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 55: Prelaunch Phase 2 database baseline
+
+**Date**: 2026-07-20
+**Task**: Prelaunch Phase 2 database baseline
+**Branch**: `codex/prelaunch-phase2`
+
+### Summary
+
+Replaced the incomplete Prisma history with a full SQLite 0_init baseline, added disposable fresh/adoption verification and schema regression coverage, and documented safe existing-database adoption. Lint, migration verification, build, production config, docs, and 2024 non-CSS tests pass; npm run check retains the inherited CSS byte-budget failure only.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `66a80e9a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 56: Phase 3 stability and release rehearsal
+
+**Date**: 2026-07-20
+**Task**: Phase 3 stability and release rehearsal
+**Branch**: `codex/prelaunch-phase3`
+
+### Summary
+
+Added deterministic stability fixtures, repaired capacity metric authorization, introduced disposable SQLite backup/restore verification and a fail-fast release-candidate gate, and documented limited-beta monitoring and rollback.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f48fbb29` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

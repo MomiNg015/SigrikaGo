@@ -31,12 +31,13 @@ function createHandlers(overrides = {}) {
   const clearedRefreshTokens = [];
   const forcedLogouts = [];
   const loginResponses = [];
+  const loginUsers = [];
   const prisma = overrides.prisma ?? {
     $transaction: async (callback) => callback(prisma),
     user: {
       create: async ({ data }) => {
         createdUsers.push(data);
-        return { id: "new-user", username: data.username, passwordHash: data.passwordHash };
+        return { id: "new-user", username: data.username, passwordHash: data.passwordHash, role: "player" };
       },
       findUnique: async ({ where }) => users.get(where.username ?? where.id) ?? null
     },
@@ -58,6 +59,7 @@ function createHandlers(overrides = {}) {
   };
   const onlineSessions = overrides.onlineSessions ?? {
     createLoginResponse: async (user) => {
+      loginUsers.push(user);
       const response = {
         token: "access-token",
         refreshToken: "refresh-token",
@@ -80,10 +82,9 @@ function createHandlers(overrides = {}) {
       onlineSessions,
       hashPassword: async (password, rounds) => `hash:${password}:${rounds}`,
       comparePassword: async (password, hash) => hash === `hash:${password}`,
-      syncAdmin: async (user) => ({ ...user, synced: true }),
       signWithToken: (user, _jwtSecret, options) => ({
         token: `token:${user.id}:${options.sessionId}`,
-        user: { id: user.id, username: user.username }
+        user: { id: user.id, username: user.username, role: user.role }
       }),
       ...overrides.deps
     }),
@@ -92,7 +93,8 @@ function createHandlers(overrides = {}) {
     clearedSessions,
     clearedRefreshTokens,
     forcedLogouts,
-    loginResponses
+    loginResponses,
+    loginUsers
   };
 }
 
@@ -126,6 +128,26 @@ describe("auth route handlers", () => {
       token: "access-token",
       user: { id: "new-user", username: "alice" }
     });
+  });
+
+  it("does not elevate a newly registered user by username", async () => {
+    const previousAdminUsernames = process.env.ADMIN_USERNAMES;
+    process.env.ADMIN_USERNAMES = "alice";
+    try {
+      const { handlers, loginUsers } = createHandlers();
+      const res = createResponse();
+
+      await handlers.register({
+        body: { username: "alice", password: "secret12" }
+      }, res);
+
+      expect(res.statusCode).toBe(200);
+      expect(loginUsers).toHaveLength(1);
+      expect(loginUsers[0]).toHaveProperty("role", "player");
+    } finally {
+      if (previousAdminUsernames === undefined) delete process.env.ADMIN_USERNAMES;
+      else process.env.ADMIN_USERNAMES = previousAdminUsernames;
+    }
   });
 
   it("maps only Prisma unique conflicts to the username-exists response", async () => {
@@ -177,7 +199,7 @@ describe("auth route handlers", () => {
   it("returns the active-session conflict response before creating a new login session", async () => {
     const users = new Map([[
       "alice",
-      { id: "user-1", username: "alice", passwordHash: "hash:secret1" }
+      { id: "user-1", username: "alice", passwordHash: "hash:secret1", role: "player" }
     ]]);
     const { handlers, loginResponses } = createHandlers({
       users,
@@ -218,6 +240,26 @@ describe("auth route handlers", () => {
     expect(res.body.user).toMatchObject({ id: "user-1", username: "alice" });
   });
 
+  it("keeps database roles authoritative during login", async () => {
+    const previousAdminUsernames = process.env.ADMIN_USERNAMES;
+    process.env.ADMIN_USERNAMES = "player1";
+    const users = new Map([
+      ["player1", { id: "user-1", username: "player1", passwordHash: "hash:secret1", role: "player" }],
+      ["admin1", { id: "user-2", username: "admin1", passwordHash: "hash:secret1", role: "admin" }]
+    ]);
+    try {
+      const { handlers, loginUsers } = createHandlers({ users });
+
+      await handlers.login({ body: { username: "player1", password: "secret1" } }, createResponse());
+      await handlers.login({ body: { username: "admin1", password: "secret1" } }, createResponse());
+
+      expect(loginUsers.map((user) => user.role)).toEqual(["player", "admin"]);
+    } finally {
+      if (previousAdminUsernames === undefined) delete process.env.ADMIN_USERNAMES;
+      else process.env.ADMIN_USERNAMES = previousAdminUsernames;
+    }
+  });
+
   it("clears the refresh cookie when refresh token lookup fails", async () => {
     const { handlers } = createHandlers();
     const res = createResponse();
@@ -234,7 +276,7 @@ describe("auth route handlers", () => {
   it("refreshes a valid session and rotates the refresh cookie", async () => {
     const users = new Map([[
       "user-1",
-      { id: "user-1", username: "alice", passwordHash: "hash:secret1" }
+      { id: "user-1", username: "alice", passwordHash: "hash:secret1", role: "player" }
     ]]);
     const { handlers } = createHandlers({
       users,
@@ -258,7 +300,7 @@ describe("auth route handlers", () => {
     expect(res.headers["Set-Cookie"]).toContain(`${REFRESH_COOKIE_NAME}=rotated-token`);
     expect(res.body).toEqual({
       token: "token:user-1:session-1",
-      user: { id: "user-1", username: "alice" }
+      user: { id: "user-1", username: "alice", role: "player" }
     });
   });
 

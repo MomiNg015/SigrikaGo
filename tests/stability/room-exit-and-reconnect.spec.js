@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   connectSocket,
   createPreparedRoom,
+  createStabilityBrowserContext,
   emitGameActionAndWait,
   expectRecoveredBoard,
   recoverRoomInPage,
@@ -26,7 +27,7 @@ const VALID_RESULT_OPENING_MOVES = [
 
 test("does not reopen the result modal after leaving a finished room and reloading", async ({ baseURL, browser, page }) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
-  const secondContext = await browser.newContext();
+  const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
   let roomCode = "";
 
@@ -82,7 +83,7 @@ test("does not reopen the result modal after leaving a finished room and reloadi
 
 test("does not show a rate-limit toast when the opponent reconnects", async ({ baseURL, browser, page }) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
-  const secondContext = await browser.newContext();
+  const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
   let roomCode = "";
   let opponentSocket = null;

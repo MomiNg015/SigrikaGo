@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   connectSocket,
   createPreparedRoom,
+  createStabilityBrowserContext,
   emitGameActionAndWait,
   expectRealPixiCanvas,
   recoverRoomInPage,
@@ -12,7 +13,7 @@ import {
 
 test("plays a real Pixi canvas for Sigrika skill effects in spark matches", async ({ baseURL, browser, page }) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
-  const secondContext = await browser.newContext();
+  const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
   const pageErrors = [];
   let roomCode = "";
@@ -56,7 +57,7 @@ test("plays a real Pixi canvas for Sigrika skill effects in spark matches", asyn
 
 test("plays real Pixi skill canvases for Aemeath hidden-hand and voyage-star", async ({ baseURL, browser, page }) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
-  const secondContext = await browser.newContext();
+  const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
   const pageErrors = [];
   let roomCode = "";

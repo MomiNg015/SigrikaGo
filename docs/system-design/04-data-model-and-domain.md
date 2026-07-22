@@ -4,6 +4,7 @@
 
 ## 当前结论
 
+- Prisma Migrate 的生产历史从单条 `0_init` 完整 SQLite 基线开始：空库使用 `prisma migrate deploy` 建库，已有预上线数据库必须停服备份、确认无旧迁移记录并验证 schema 完全一致后，再以 `prisma migrate resolve --applied 0_init` 接管；业务启动流程不自动写 `_prisma_migrations`。
 - 账号资产正在从字符串字段逐步迁移到结构化关系表，旧字段仍承担兼容镜像职责；legacy 字段解析、结构化同步和公开资产合并边界集中在 `server/userAssets.js`。
 - 模式化对局数据以 `mode` 串联房间、记录、排行榜、履历和用户模式统计。
 - `gomoku` 是独立统计桶：既有用户通过迁移和 `ensureGameModeSchema()` 回填 `UserModeStats(mode=gomoku)`，默认 `rating=1000`、`rank=3段`、`recentResults=''`、胜负和棋全为 0；排行榜仍只展示该模式已有完成对局的用户。
@@ -12,6 +13,14 @@
 ## 4. 数据模型与字段说明
 
 数据源定义在 `prisma/schema.prisma`，数据库为 SQLite。
+
+### Prisma migration baseline
+
+`prisma/migrations/0_init/migration.sql` 是当前模型从空 SQLite 数据库生成的完整起点，`migration_lock.toml` 固定 provider 为 `sqlite`。项目在公开上线前合并了此前缺少初始建表步骤的增量迁移；旧 SQL 只保留在 Git 历史中，不再作为活动迁移链执行。未来 schema 变更必须从这条基线继续新增迁移并提交迁移目录，不得修改已经部署的 `0_init`。
+
+`npm run verify:migrations` 是迁移发布门禁。验证器只允许数据库位于仓库 `.tmp/migration-baseline/` 下，并覆盖两条路径：空库连续两次 `migrate deploy`；直接执行基线 SQL 构造无迁移历史的同结构旧库，写入哨兵数据后 `resolve --applied 0_init` 并连续两次 deploy。两条路径最后都运行 schema diff，旧库路径还验证哨兵数据和全部活动迁移记录。验证过程不使用 `db push`，生产部署同样禁止使用。
+
+已有数据的数据库接管是操作员动作：先停止服务和做 SQLite 在线备份，再确认迁移表没有非基线历史，并用 `migrate diff --exit-code` 验证数据库与 `schema.prisma` 无差异，最后才登记 `0_init`。任何迁移记录冲突或 schema drift 都进入人工审查，启动任务和部署脚本都不能猜测性修复或自动标记迁移。
 
 ### Admin Deployment Defaults
 

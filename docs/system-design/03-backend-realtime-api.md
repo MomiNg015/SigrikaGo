@@ -12,6 +12,7 @@
 - `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `initial-connect`、`patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
 - 对局开发测试 action 在所有非生产服务环境默认可用，不依赖 `ENABLE_TEST_ACTIONS`；Vite 开发构建显示对应按钮，生产构建隐藏入口，而 `NODE_ENV=production` 的服务端即使收到伪造 action 或遗留开关也始终拒绝执行。
 - `server/serverStartup.js` exports `SERVER_STARTUP_TASK_ORDER` as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.
+- 管理员权限只以数据库 `User.role` 为准。公开注册、登录、refresh 和启动初始化都不会根据用户名或环境变量改变角色；首个管理员需先正常注册，再由服务器操作员执行 `npm run admin:promote -- <username>` 提升已存在账号。该命令对已有管理员幂等，未知用户名会失败且不会创建账号。
 - `server/roomQueries.js` remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected `roomReadModel`, while the current single-process runtime continues to use in-memory rooms as the default fallback.
 
 ## API 与实时事件
@@ -22,6 +23,7 @@
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
 - `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
 - `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- 2026-07-20 依赖加固后，`npm audit --omit=dev` 已无 high/critical；Multer、Express/`qs`、Socket.IO/`ws` 与 Vite/Vitest/Babel 工具链使用当前主版本内的修复版本。保留的 ExcelJS/`uuid` moderate 传递告警仅位于管理员按需加载的剧情工作簿功能，项目不直接调用 `uuid`；上游 ExcelJS 尚无修复版，禁止用审计建议的降级或未经验证的跨主版本 override 替代回归验证。
 - `.github/workflows/ci.yml` 是仓库级远端质量门：pull request 和 `master` push 会在 Ubuntu 上执行 `npm ci`、`npm test`、`npm run build`、示例生产配置检查和 `npm run docs:system-design`。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。
 - `npm run verify:stability` 是本地准生产稳定性入口。它先构建 `dist/`，再用 `playwright.stability.config.js` 启动 `scripts/start-stability-server.mjs`，该启动脚本强制 `NODE_ENV=stability`、`LOCAL_PROD_STATIC=1`、`ENABLE_TEST_ACTIONS=true` 和默认端口 `4173`（可由 `STABILITY_PORT` 或 `PORT` 覆盖），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。
 - Vite production build uses explicit manual chunks in `vite.config.js`: React runtime code goes to `react-vendor`, Socket.IO client runtime goes to `realtime-vendor`, and the skill-animation Pixi runtime goes to the lazy `pixi-vendor` chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by `scripts/viteBuildConfig.test.js`.
@@ -48,6 +50,7 @@
 - `src/auth/AuthScreen.jsx` detects that conflict, opens the shared accessible `ConfirmModal`, and retries login with `forceLogin: true` only after the player confirms “退出其他会话并继续”.
 - Forced login revokes previous database sessions, emits `account:logged-out` to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login. Every session replacement is serialized per user inside the single Node instance; Prisma-backed revoke + create runs in one transaction, so overlapping replacements leave only the latest session active.
 - Login always performs one bcrypt comparison, using a fixed dummy bcrypt hash when the username does not exist, and exposes the same generic 401 response for missing-user and wrong-password cases. Registration maps only Prisma `P2002` to HTTP 409 “用户名已存在”; unexpected persistence failures continue to the shared API error handler.
+- Authentication responses preserve the role already stored on the user. No authentication route or startup task performs username-based administrator synchronization.
 - Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
 
 - Result rewards:

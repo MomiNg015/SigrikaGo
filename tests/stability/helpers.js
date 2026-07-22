@@ -1,12 +1,24 @@
 import { expect } from "@playwright/test";
+import { randomUUID } from "node:crypto";
 import { io } from "socket.io-client";
 
 export const LAST_ROOM_CODE_KEY = "sigrika-last-room-code";
 export const DISMISSED_RESULT_ROOM_KEY = "sigrika-dismissed-result-room-code";
+export const STABILITY_SCOPE_HEADER = "x-stability-scope";
+
+const contextScopes = new WeakMap();
+
+export async function createStabilityBrowserContext(browser) {
+  return browser.newContext({
+    extraHTTPHeaders: { [STABILITY_SCOPE_HEADER]: newStabilityScope() }
+  });
+}
 
 export async function registerPlayer(context, suffix, { characterId = "" } = {}) {
-  const username = `st${Date.now().toString(36).slice(-4)}${suffix}`;
+  const headers = { [STABILITY_SCOPE_HEADER]: stabilityScopeFor(context) };
+  const username = `st${randomUUID().replaceAll("-", "").slice(0, 4)}${suffix}`;
   const response = await context.request.post("/api/auth/register", {
+    headers,
     data: {
       username,
       password: "pwpass12"
@@ -14,17 +26,41 @@ export async function registerPlayer(context, suffix, { characterId = "" } = {})
   });
   expect(response.status()).toBe(200);
   const auth = await response.json();
-  if (characterId) await selectCharacter(context, auth.token, characterId);
+  if (characterId) {
+    await grantVerificationCharacter(context, auth.token, characterId, headers);
+    await selectCharacter(context, auth.token, characterId, headers);
+  }
   return auth;
 }
 
-export async function selectCharacter(context, token, characterId) {
+export async function selectCharacter(context, token, characterId, scopeHeaders = {}) {
   const response = await context.request.post("/api/me/character", {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { ...scopeHeaders, Authorization: `Bearer ${token}` },
     data: { characterId }
   });
   expect(response.status()).toBe(200);
   return response.json();
+}
+
+async function grantVerificationCharacter(context, token, characterId, scopeHeaders) {
+  const response = await context.request.post("/api/test-fixtures/me/characters", {
+    headers: { ...scopeHeaders, Authorization: `Bearer ${token}` },
+    data: { characterId }
+  });
+  expect(response.status()).toBe(200);
+}
+
+function stabilityScopeFor(context) {
+  let scope = contextScopes.get(context);
+  if (!scope) {
+    scope = newStabilityScope();
+    contextScopes.set(context, scope);
+  }
+  return scope;
+}
+
+function newStabilityScope() {
+  return `st-${randomUUID()}`;
 }
 
 export function connectSocket(serverUrl, token) {

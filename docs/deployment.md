@@ -4,18 +4,30 @@
 
 ## 部署前检查
 
-上线前在目标服务器执行：
+在准备发布的提交上先执行阶段 3 本地发布候选门禁：
 
 ```bash
 npm ci
-npx prisma generate
+npm run verify:release-candidate
+```
+
+该命令按“Prisma Client 生成 → 迁移基线验证 → 生产配置检查 → 构建 → desktop/mobile 稳定性 → SQLite 备份恢复演练 → 容量 smoke”顺序执行，任一步失败即停止。迁移、稳定性、备份恢复与本地容量验证全部使用 `.tmp/` 一次性数据库，不会读取、迁移或重置 `prisma/dev.db`，也不能替代目标机 `target` 容量验收。
+
+发布候选通过后，在目标服务器执行：
+
+```bash
+npm ci
 npx prisma migrate deploy
 npm run build
 npm run check:production
 npm test
 ```
 
+`npm ci` 的 `postinstall` 会生成 Prisma Client，`prestart` 仍会在启动前再次校验生成。仓库的 Prisma 迁移历史从 `0_init` 完整基线开始。可单独执行 `npm run verify:migrations`：该命令只会在 `.tmp/migration-baseline/` 创建并清理一次性 SQLite 数据库，同时验证空库部署和现有库接管。
+
 `npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
+
+依赖安全基线（2026-07-20）：`npm audit --omit=dev` 不再包含 high/critical；Multer、Socket.IO/`ws`、Express/`qs` 已升级到修复版本。仍有 2 条 moderate 记录，实际是 ExcelJS 4.4.0 经 `uuid` 8.3.2 形成的同一条传递依赖告警。项目不直接调用 `uuid`，ExcelJS 只在管理员剧情脚本工作簿导入/导出时按需加载；当前 ExcelJS 最新版尚未升级该依赖，而审计建议的 ExcelJS 3.4.0 是功能倒退，因此暂不使用 `npm audit fix --force` 或强制跨主版本 override。升级 ExcelJS 后应重新执行工作簿测试与审计并移除此例外。
 
 ## 环境变量
 
@@ -27,7 +39,6 @@ PORT=3001
 DATABASE_URL="file:/var/lib/sigrikago/prod.db"
 JWT_SECRET="replace-with-at-least-32-random-characters"
 PUBLIC_ORIGIN="https://go.example.com"
-ADMIN_USERNAMES="moming"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
 ENABLE_TEST_ACTIONS="false"
 MAX_ONLINE_USERS="500"
@@ -40,7 +51,6 @@ MAX_SPECTATORS_PER_ROOM="20"
 - `DATABASE_URL`: SQLite 数据库位置。生产环境建议放在 `/var/lib/sigrikago/prod.db`，不要放在仓库目录或 `dist/` 中。
 - `JWT_SECRET`: 生产环境必须换成至少 32 位的随机字符串。
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
-- `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
 - `ENABLE_TEST_ACTIONS`: 仅保留为旧部署配置的生产安全检查项，本地开发无需设置；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 - `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
@@ -71,11 +81,48 @@ git checkout master
 
 ```bash
 npm ci
-npx prisma generate
 npx prisma migrate deploy
 npm run build
 npm run check:production
 ```
+
+以上命令适用于尚未创建业务表的全新数据库。`npx prisma migrate deploy` 会从 `0_init` 建出 `prisma/schema.prisma` 的完整当前结构，并记录迁移历史；不要用 `prisma db push` 代替生产迁移。
+
+### 一次性接管已有预上线数据库
+
+如果数据库已经由旧版 `prisma db push` 或启动时 schema guard 建表，并且包含需要保留的数据，不能直接执行 `0_init`，也不能运行 `migrate reset`。只在该数据库从未应用过仓库旧迁移、当前结构与 `prisma/schema.prisma` 完全一致时，按以下顺序接管：
+
+```bash
+sudo systemctl stop sigrikago
+mkdir -p /var/backups/sigrikago
+npm run backup:sqlite -- \
+  --source /var/lib/sigrikago/prod.db \
+  --output /var/backups/sigrikago/pre-baseline.db
+
+npx prisma migrate status
+npx prisma migrate diff \
+  --from-schema-datasource prisma/schema.prisma \
+  --to-schema-datamodel prisma/schema.prisma \
+  --exit-code
+
+npx prisma migrate resolve --applied 0_init
+npx prisma migrate deploy
+npx prisma migrate status
+sudo systemctl start sigrikago
+curl --fail http://127.0.0.1:3001/health/ready
+```
+
+接管前的 `migrate status` 应只显示 `0_init` 待应用；schema diff 必须以状态码 0 退出且不报告差异。如果 `_prisma_migrations` 已有其他记录、diff 返回 2、备份失败或数据库路径不明确，应立即停止并人工核对，不能继续 `resolve`。`migrate resolve` 只登记迁移历史，不执行 `0_init` SQL，因此它必须在结构已经匹配的旧库上使用；应用不会在启动时自动改写 `_prisma_migrations`。
+
+### 初始化管理员
+
+公开注册保持启用。先让管理员本人通过正常注册流程创建普通账号，再在服务器项目目录执行：
+
+```bash
+npm run admin:promote -- moming
+```
+
+该命令只提升数据库中已存在的精确用户名，不创建账号；找不到用户时返回非零退出码，已是管理员时成功退出且不重复写入。管理员身份以数据库 `User.role` 为准，注册、登录、刷新和服务启动都不会根据环境变量或用户名自动提权。提升完成后，让该账号重新登录或刷新访问令牌即可获得后台权限。
 
 当前用户资产仍保留旧 CSV/JSON 字段作为运行时读写来源，但 schema 已准备结构化资产表和进度流水表。生产迁移时必须先执行 `npx prisma migrate deploy`，后续切换读写路径前再单独运行数据回填脚本，不要在业务进程启动期间临时迁移用户资产。
 
@@ -190,7 +237,7 @@ sudo certbot --nginx -d go.example.com
 npm run verify:capacity -- --profile smoke
 ```
 
-smoke 默认覆盖 20 个 Socket、5 个活跃房间、观战、20% 周期重连、对局 action ack、冷静态入口和一次 SIGTERM 重启恢复。报告写入 `artifacts/capacity/`，该目录不提交到 Git。
+smoke 默认覆盖 20 个 Socket、5 个活跃房间、观战、20% 周期重连、对局 action ack、冷静态入口和一次 SIGTERM 重启恢复。它使用 event-loop delay p95 `< 150ms` 的本地诊断线验证采样工具链，报告写入 `artifacts/capacity/`，该目录不提交到 Git；smoke 通过不表示线上容量已经获批。
 
 在实际 2核2G 目标机上运行目标建议线：
 
@@ -200,7 +247,7 @@ npm run verify:capacity -- --profile target
 
 target 默认覆盖 500 Socket、100 个活跃房间、每房 2 个观战连接、动作间隔 7.5 秒、20% 周期重连和整机恢复，持续 120 秒。压测使用独立临时 SQLite 数据库和 `NODE_ENV=capacity`，会创建大量临时账号并启用仅限非生产环境的测试 action，禁止对正式生产数据库或公网正式实例执行。
 
-可用 `--sockets`、`--rooms`、`--spectators-per-room`、`--duration`、`--action-interval`、`--reconnect-ratio` 覆盖参数。报告同时输出冷登录、动作 ack、重连/恢复延迟、CPU、RSS、heap、event-loop delay、Socket/房间/观战数量、发送字节采样以及 SQLite/persistence 错误。建议门槛为 ack p95 `< 200ms`、p99 `< 500ms`、event-loop delay p95 `< 50ms`、RSS `< 1.2GB`、恢复成功率 `> 99%` 且无持久化/结果保存错误；只有目标机报告通过后，才能据此调整线上 soft limit。
+可用 `--sockets`、`--rooms`、`--spectators-per-room`、`--duration`、`--action-interval`、`--reconnect-ratio` 覆盖参数。报告同时输出冷登录、动作 ack、重连/恢复延迟、CPU、RSS、heap、event-loop delay、Socket/房间/观战数量、发送字节采样以及 SQLite/persistence 错误。target 建议门槛为 ack p95 `< 200ms`、p99 `< 500ms`、event-loop delay p95 `< 50ms`、RSS `< 1.2GB`、恢复成功率 `> 99%` 且无持久化/结果保存错误；只有实际 2 核 2G 目标机报告通过后，才能据此调整线上 soft limit。
 
 ## 备份
 
@@ -209,13 +256,59 @@ target 默认覆盖 500 Socket、100 个活跃房间、每房 2 个观战连接�
 - `/var/lib/sigrikago/prod.db`
 - `/var/lib/sigrikago/uploads`
 
-示例：
+数据库备份优先使用仓库命令；它要求显式源/目标路径、拒绝覆盖已有目标，并通过 SQLite `VACUUM INTO` 生成一致性副本后执行 `integrity_check`：
 
 ```bash
 mkdir -p /var/backups/sigrikago
-sqlite3 /var/lib/sigrikago/prod.db ".backup '/var/backups/sigrikago/prod-$(date +%F).db'"
+npm run backup:sqlite -- \
+  --source /var/lib/sigrikago/prod.db \
+  --output "/var/backups/sigrikago/prod-$(date +%F-%H%M%S).db"
 tar -czf "/var/backups/sigrikago/uploads-$(date +%F).tar.gz" -C /var/lib/sigrikago uploads
 ```
+
+上线前应另跑一次 `npm run verify:backup-restore`。该演练只操作 `.tmp/backup-restore/` 一次性数据库，会验证迁移、哨兵数据、一致性备份、恢复副本和完整性，不会拿生产库做恢复实验。若确实要手工备份仓库的开发库，必须额外提供 `--allow-dev-database`；自动化演练永远拒绝它。
+
+生产恢复必须先停服，并保留故障现场：
+
+```bash
+sudo systemctl stop sigrikago
+cp /var/lib/sigrikago/prod.db "/var/backups/sigrikago/failed-$(date +%F-%H%M%S).db"
+cp /var/backups/sigrikago/已验证备份.db /var/lib/sigrikago/prod.db
+sqlite3 /var/lib/sigrikago/prod.db "PRAGMA integrity_check;"
+npx prisma migrate deploy
+sudo systemctl start sigrikago
+curl --fail http://127.0.0.1:3001/health/ready
+```
+
+只有 `integrity_check` 输出 `ok` 且迁移成功才能重新启动；恢复会丢弃备份时间点之后的数据，必须记录时间范围并通知内测用户。
+
+## 小范围内测发布与观察
+
+### 发布前
+
+1. 固定待发布 commit，保存 `npm run verify:release-candidate` 结果；在实际 2 核 2G 主机用隔离库完成 `verify:capacity -- --profile target`，未通过时下调软上限或停止发布。
+2. 确认生产 `.env`、单实例 systemd、Nginx、HTTPS、持久化上传目录和磁盘余量；`ENABLE_TEST_ACTIONS` 必须关闭。
+3. 停止服务后完成数据库与上传目录备份。旧库首次接管还必须完成 schema diff，再执行一次性的 `migrate resolve --applied 0_init`；普通升级不得重复接管。
+4. 记录上一版 commit、备份文件、数据库迁移状态和回滚负责人。
+
+### 发布中
+
+1. 执行 `npm ci`、`npx prisma migrate deploy`、`npm run build`、`npm run check:production`。
+2. 重启单个 Node 实例，等待 `/health/live` 与 `/health/ready` 都为 200，再开放内测流量。
+3. 用两个普通账号完成注册/登录、匹配、落子 ack、重连、结算和刷新恢复；用管理员账号检查运行容量面板。
+
+### 发布后观察
+
+- 前 30 分钟持续观察，随后至少观察 24 小时再扩大人数。每 5 分钟记录在线数、活跃房间、RSS、CPU、event-loop delay p95、ack p95/p99、恢复成功/失败、持久化 backlog 和三类数据库错误。
+- 任一时刻 `/health/ready` 非预期 503、持久化/恢复/结果保存错误大于 0、ack p95 连续 5 分钟高于 200ms、event-loop delay p95 连续 5 分钟高于 50ms、RSS 高于 1.2GB 或恢复成功率不高于 99%，立即停止扩大内测并进入回滚判断。
+- 软上限拒绝应记录当前在线/房间数；它是保护机制，不应通过临时提高上限掩盖容量不足。
+
+### 回滚
+
+1. 停止新用户进入并 `systemctl stop`，保留当前数据库与日志快照。
+2. 若数据库迁移与上一版向后兼容，切回上一版 commit，重新 `npm ci && npm run build && npm run check:production` 后启动并检查 ready。
+3. 若迁移不向后兼容，不得擅自执行 down migration；评估停服修复或恢复发布前数据库。选择恢复备份时必须接受并记录发布后的数据损失。
+4. 回滚后重复普通账号冒烟，并继续观察至少 30 分钟。
 
 ## 更新流程
 
@@ -223,7 +316,6 @@ tar -czf "/var/backups/sigrikago/uploads-$(date +%F).tar.gz" -C /var/lib/sigrika
 cd /opt/sigrikago
 git pull
 npm ci
-npx prisma generate
 npx prisma migrate deploy
 npm run build
 npm run check:production
@@ -232,3 +324,5 @@ sudo systemctl status sigrikago
 ```
 
 更新前建议先备份数据库和上传目录。
+
+已经完成 `0_init` 接管的数据库，后续更新只需按正常流程执行新增迁移；不要重复执行基线接管步骤。

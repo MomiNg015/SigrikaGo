@@ -33,7 +33,6 @@ describe("server startup", () => {
     const cleanupLegacyDerivedSkillLeak = task("cleanupLegacyDerivedSkillLeak");
     const cleanupLegacyUsernames = task("cleanupLegacyUsernames");
     const migrateBuiltinSkillDescriptions = task("migrateBuiltinSkillDescriptions");
-    const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
     await initializeServerData({
       prisma,
@@ -60,8 +59,7 @@ describe("server startup", () => {
       cleanupLegacyDeniaCharacterData,
       cleanupLegacyDerivedSkillLeak,
       cleanupLegacyUsernames,
-      migrateBuiltinSkillDescriptions,
-      promoteConfiguredAdmins
+      migrateBuiltinSkillDescriptions
     });
 
     expect(SERVER_STARTUP_TASK_ORDER).toEqual([
@@ -88,8 +86,7 @@ describe("server startup", () => {
       "ensureRoomPersistenceSchema",
       "ensureLoginSessionSchema",
       "ensureGameModeSchema",
-      "ensureMailboxSchema",
-      "promoteConfiguredAdmins"
+      "ensureMailboxSchema"
     ]);
     expect(calls).toEqual(SERVER_STARTUP_TASK_ORDER);
   });

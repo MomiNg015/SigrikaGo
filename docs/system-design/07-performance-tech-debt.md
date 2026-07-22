@@ -103,6 +103,10 @@ Phase 2 已删除观战 payload 内重复的黑方完整视图、把首次房间
 
 上线初期应以 `ack p95 < 200ms`、`event-loop delay p95 < 50ms`、`RSS < 1.2GB`、恢复成功率大于 99%、持久化与结果保存错误为 0 作为压测观察线。只有在实际 2 核 2G 主机完成包含重连和观战的阶梯压测后，才能提高软上限。后续容量工作主要是目标机阶梯压测、静态资源 CDN 分流，以及在有完整 revision/恢复测试后按动作类型继续扩展 delta protocol。
 
-Phase 3 已把上述观察线做成 `npm run verify:capacity`：smoke profile 使用 20 Socket/5 房验证工具链，target profile 使用 500 Socket/100 房、每房 2 名观战、7.5 秒动作间隔、20% 重连并执行一次 SIGTERM 恢复。脚本使用独立临时数据库和 `NODE_ENV=capacity`，报告冷登录/静态入口、ack/reconnect/resume 分位数，以及管理员运行指标快照；`artifacts/capacity/` 仅保存本机报告且不提交。该入口禁止连接正式生产数据库。
+Phase 3 已把上述观察线做成 `npm run verify:capacity`：smoke profile 使用 20 Socket/5 房和 event-loop p95 150ms 本地诊断线验证工具链，target profile 使用 500 Socket/100 房、每房 2 名观战、7.5 秒动作间隔、20% 重连、event-loop p95 50ms 目标机验收线并执行一次 SIGTERM 恢复。脚本使用独立临时数据库和 `NODE_ENV=capacity`，通过仅限 verification 环境的认证夹具把首个容量账号提升为指标读取管理员，报告冷登录/静态入口、ack/reconnect/resume 分位数，以及真实管理员运行指标快照；`artifacts/capacity/` 仅保存本机报告且不提交。该入口禁止连接正式生产数据库，本机 smoke 通过也不是容量承诺。
+
+阶段 3 的完整本地发布候选入口为 `npm run verify:release-candidate`，按 Prisma Client、迁移基线、生产配置、构建、双项目稳定性、SQLite 备份恢复演练和容量 smoke 的顺序失败即停。稳定性环境通过 run/context namespace 隔离认证与 API 限流桶，Aemeath 等非默认角色由仅限 stability/capacity 且显式启用测试 action 的认证夹具准备；生产环境不挂钩用户名、不读取 namespace 绕过限流，也不能使用夹具路由。`npm ci` 的 postinstall 与生产 prestart 都生成 Prisma Client，确保干净安装可直接进入验证。
+
+SQLite 运维入口 `npm run backup:sqlite -- --source <db> --output <backup>` 拒绝源/目标相同、拒绝覆盖现有输出并默认拒绝仓库 `prisma/dev.db`，随后使用 `VACUUM INTO` 和 `integrity_check` 生成一致性备份。`npm run verify:backup-restore` 只在 `.tmp/backup-restore/` 创建迁移后的源库、备份与恢复副本，借助哨兵数据验证恢复点不会被源库后续写入污染；正式恢复仍要求停服、保存故障现场、校验完整性并记录备份时间点后的数据损失。
 
 静态流量的生产边界由 `deploy/nginx/sigrikago.conf` 固化：Nginx 直接发送 `dist`、`/assets/` 和 `/uploads/`，Node 只处理实时 Socket、API 与健康检查。登录资源清单把商店、库存、非当前角色、战斗音轨和语音移到后台队列；战斗加载只阻塞实际选中的 battle/skill 音轨和当前房间资源，从而避免 97MB 音乐目录在冷登录或每次匹配时形成源站突发。
