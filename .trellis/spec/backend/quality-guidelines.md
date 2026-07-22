@@ -2029,10 +2029,10 @@ workerSrc: ["'self'", "blob:"]
 - Supported overrides: `SIGRIKAGO_PROJECT_DIR`, `SIGRIKAGO_SERVICE_NAME`, `SIGRIKAGO_DATABASE_PATH`, `SIGRIKAGO_BACKUP_DIR`, `SIGRIKAGO_NGINX_SITE_PATH`, `SIGRIKAGO_NGINX_SITE_LINK`, `SIGRIKAGO_NGINX_ROUTES_PATH`, and `SIGRIKAGO_HEALTH_URL`. Production updates remain pinned to `master`.
 
 #### 3. Contracts
-- Refuse to update from a non-root process, a non-Git directory, a missing `.env`, a missing live `dist/`, a branch other than `master`, or a worktree with tracked/staged changes. Untracked files are preserved so a legacy root-level `update.sh` does not block the maintained script.
+- Refuse to update from a non-root process, a non-Git directory, a missing `.env`, a missing live `dist/`, a branch other than `master`, or a worktree with tracked/staged changes. After locating `.env`, use `set -a`, source the trusted root-owned project file, and restore `set +a` so every deployment subprocess inherits the same configuration as systemd `EnvironmentFile`. Untracked files are preserved so a legacy root-level `update.sh` does not block the maintained script.
 - Fetch first and require the current local commit to be an ancestor of `origin/<branch>`; update source only through `git pull --ff-only` and never reset or discard local history.
 - Create and verify a SQLite backup through `npm run backup:sqlite` before pulling or migrating. Use private `umask 077` for the backup, then restore `umask 022` before dependency installation and build so Nginx can traverse and read the activated static bundle. The database and upload data remain outside the Git worktree.
-- Run `npm ci`, build to a unique `.tmp/production-update-*/dist` directory, and pass `npm run check:production` before stopping the service. Never clear or partially overwrite the live `dist/` during compilation.
+- Run `npm ci`, build to a unique `.tmp/production-update-*/dist` directory, and pass `npm run check:production` before stopping the service. The production checker must import `dotenv/config` so the command reads the same current-working-directory `.env` that systemd supplies through `EnvironmentFile`; explicit process environment values retain dotenv's normal precedence. Never clear or partially overwrite the live `dist/` during compilation.
 - Back up the active Nginx files, install the repository templates, and pass `nginx -t` before reloading. If validation fails, restore the prior Nginx files and keep the running service untouched.
 - Only after build and proxy validation: stop the service, run `prisma migrate deploy`, preview and apply `admin:sync-onboarding`, atomically replace `dist/`, reload Nginx, start the service, and require readiness within the bounded retry window.
 - Failure after service stop must attempt to restore the previous frontend bundle and restart the service. It must not roll back Git or SQLite automatically; retain the verified database backup for explicit recovery.
@@ -2042,6 +2042,7 @@ workerSrc: ["'self'", "blob:"]
 - Tracked or staged worktree changes -> abort without modifying Git, database, Nginx, or the service.
 - Backup creation or verification fails -> abort before source update and migration.
 - Dependency install, staged build, production check, or `nginx -t` fails -> abort while the existing service and live frontend remain active.
+- `.env` contains valid `JWT_SECRET` and production origin but the invoking shell did not export them -> `npm run check:production` loads them from `.env` and continues.
 - Migration, onboarding sync, bundle activation, Nginx reload, service start, or readiness fails -> run the best-effort frontend/service recovery trap, keep the database backup, and exit non-zero.
 - Readiness does not return success within 60 seconds -> fail the deployment even if systemd reports the process as started.
 
@@ -2053,7 +2054,7 @@ workerSrc: ["'self'", "blob:"]
 - Bad: stopping systemd before dependency install and build, because avoidable build time becomes user-visible downtime.
 
 #### 6. Tests Required
-- `scripts/deploymentConfig.test.js` must assert fail-fast shell mode, tracked/staged worktree guards, private-backup/readable-build umask ordering, verified backup, fast-forward-only Git update, staged `dist` output, Nginx validation, onboarding apply, readiness polling, and the ordering boundaries around stop/migrate/swap/start.
+- `scripts/deploymentConfig.test.js` must assert fail-fast shell mode, `.env` export before any environment-dependent subprocess, tracked/staged worktree guards, private-backup/readable-build umask ordering, verified backup, fast-forward-only Git update, staged `dist` output, Nginx validation, onboarding apply, readiness polling, and the ordering boundaries around stop/migrate/swap/start.
 - Validate the script with `bash -n deploy/update-production.sh`.
 - Exercise the exact staged build form with `npm run build -- --outDir <temporary-dist>` so the Vite CLI override and output location are proven.
 - Run `npm run check`; on the target host, the script itself must pass `nginx -t` and the readiness request before reporting success.

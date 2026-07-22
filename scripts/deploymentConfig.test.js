@@ -62,6 +62,11 @@ describe("production deployment templates", () => {
     expect(script).toContain("set -Eeuo pipefail");
     expect(script).toContain("git diff --quiet");
     expect(script).toContain("git diff --cached --quiet");
+    expect(script).toContain("set -a");
+    expect(script).toContain('. "${PROJECT_DIR}/.env"');
+    expect(script).toContain("set +a");
+    expect(script.indexOf('. "${PROJECT_DIR}/.env"')).toBeLessThan(script.indexOf("npm run backup:sqlite"));
+    expect(script.indexOf('. "${PROJECT_DIR}/.env"')).toBeLessThan(script.indexOf("npm run check:production"));
     expect(script).toContain('[[ -d "${PROJECT_DIR}/dist" ]] || fail "Current production bundle is missing: ${PROJECT_DIR}/dist"');
     expect(script).toContain('git pull --ff-only origin "${EXPECTED_BRANCH}"');
     expect(script).toContain('npm run backup:sqlite -- --source "${DATABASE_PATH}" --output "${DATABASE_BACKUP}"');

@@ -1,10 +1,47 @@
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const scriptPath = path.join(process.cwd(), "scripts", "check-production-config.mjs");
 
 describe("production config check script", () => {
+  it("loads the production values from the current working directory .env", () => {
+    const workingDirectory = mkdtempSync(path.join(tmpdir(), "sigrikago-production-config-"));
+    const env = { ...process.env, NODE_ENV: "production" };
+    for (const key of [
+      "JWT_SECRET",
+      "PUBLIC_ORIGIN",
+      "SITE_ORIGIN",
+      "ALLOWED_ORIGINS",
+      "ENABLE_TEST_ACTIONS",
+      "WEB_CONCURRENCY",
+      "PM2_INSTANCES",
+      "NODE_APP_INSTANCE"
+    ]) {
+      delete env[key];
+    }
+
+    try {
+      writeFileSync(
+        path.join(workingDirectory, ".env"),
+        "JWT_SECRET=0123456789abcdef0123456789abcdef\nPUBLIC_ORIGIN=https://sigrikago.com\n",
+        "utf8"
+      );
+
+      const output = execFileSync(process.execPath, [scriptPath], {
+        cwd: workingDirectory,
+        env,
+        encoding: "utf8"
+      });
+
+      expect(output).toContain("Production deployment configuration OK");
+    } finally {
+      rmSync(workingDirectory, { recursive: true, force: true });
+    }
+  });
+
   it("prints ok for valid production deployment config", () => {
     const output = execFileSync(process.execPath, [scriptPath], {
       cwd: process.cwd(),

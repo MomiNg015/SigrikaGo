@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { validateProductionDeployment } from "../server/security.js";
 
 const env = {

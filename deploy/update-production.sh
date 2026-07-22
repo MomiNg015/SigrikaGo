@@ -71,6 +71,10 @@ done
 cd -- "${PROJECT_DIR}"
 [[ -d .git ]] || fail "Not a Git checkout: ${PROJECT_DIR}"
 [[ -f .env ]] || fail "Missing production environment file: ${PROJECT_DIR}/.env"
+set -a
+# shellcheck disable=SC1091
+. "${PROJECT_DIR}/.env"
+set +a
 [[ "${DATABASE_PATH}" == /* ]] || fail "Database path must be absolute: ${DATABASE_PATH}"
 [[ "${BACKUP_DIR}" == /* ]] || fail "Backup directory must be absolute: ${BACKUP_DIR}"
 [[ "${NGINX_SITE_PATH}" == /etc/nginx/* ]] || fail "Nginx site path must stay below /etc/nginx"

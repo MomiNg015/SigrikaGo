@@ -21,7 +21,7 @@
 
 - Runtime security helpers live in `server/security.js`.
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
-- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
+- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 `dotenv/config` 加载当前工作目录的 `.env`，再由进程环境覆盖同名值，并默认按生产规则检查，因此一键更新脚本不会漏掉 systemd `EnvironmentFile` 中的真实配置，调用方忘记设置 `NODE_ENV=production` 时也不会按开发环境误通过。
 - `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
 - 2026-07-20 依赖加固后，`npm audit --omit=dev` 已无 high/critical；Multer、Express/`qs`、Socket.IO/`ws` 与 Vite/Vitest/Babel 工具链使用当前主版本内的修复版本。保留的 ExcelJS/`uuid` moderate 传递告警仅位于管理员按需加载的剧情工作簿功能，项目不直接调用 `uuid`；上游 ExcelJS 尚无修复版，禁止用审计建议的降级或未经验证的跨主版本 override 替代回归验证。
 - `.github/workflows/ci.yml` 是仓库级远端质量门：pull request 和 `master` push 会在 Ubuntu 上执行 `npm ci`、`npm test`、`npm run build`、示例生产配置检查和 `npm run docs:system-design`。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。
