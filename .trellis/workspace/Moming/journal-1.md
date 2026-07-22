@@ -1925,3 +1925,36 @@ Added Aemeath's accepted/rejected rainbow bean candy story, 35% rejection settle
 ### Next Steps
 
 - None - task complete
+
+
+## Session 59: Zhunshibao practice mode
+
+**Date**: 2026-07-22
+**Task**: Zhunshibao practice mode
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Implemented authoritative Spark practice rooms with beginner/basic Zhunshibao decisions, persistence and restore, scoring automation, no-record progression isolation, accessible desktop/mobile entry, result copy, tests, capacity verification, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `122bd087` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
