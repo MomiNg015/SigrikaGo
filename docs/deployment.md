@@ -194,7 +194,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## Nginx 与 HTTPS
 
-仓库中的完整模板位于 `deploy/nginx/sigrikago.conf`。它不会再把所有请求统一交给 Node，而是按职责拆分：
+仓库中的 HTTPS 站点模板位于 `deploy/nginx/sigrikago.conf`，共用路由片段位于 `deploy/nginx/sigrikago-routes.conf`。站点模板固定当前正式域名 `sigrikago.com` / `www.sigrikago.com` 和 Let's Encrypt 默认证书路径；路由片段负责 gzip、缓存、SPA CSP 以及 Node/静态资源分流。它不会再把所有请求统一交给 Node，而是按职责拆分：
 
 | 路径 | 处理方 | 生产合同 |
 | --- | --- | --- |
@@ -205,27 +205,37 @@ curl --fail http://127.0.0.1:3001/health/ready
 | `/assets/**` 命名资源 | Nginx/CDN | 1 小时新鲜期、24 小时 `stale-while-revalidate` |
 | `index.html`、SPA 路由 | Nginx | `no-cache`，每次发布可及时发现新入口 |
 
-安装前按实际域名修改 `server_name`：
+已有 HTTPS 证书的服务器更新配置前，先确认模板引用的证书文件存在并备份当前站点配置：
 
 ```bash
+sudo test -f /etc/letsencrypt/live/sigrikago.com/fullchain.pem
+sudo test -f /etc/letsencrypt/live/sigrikago.com/privkey.pem
+sudo cp /etc/nginx/sites-available/sigrikago \
+  "/etc/nginx/sites-available/sigrikago.bak-$(date +%F-%H%M%S)"
+sudo cp deploy/nginx/sigrikago-routes.conf /etc/nginx/snippets/sigrikago-routes.conf
 sudo cp deploy/nginx/sigrikago.conf /etc/nginx/sites-available/sigrikago
-sudo sed -i 's/go.example.com/实际域名/' /etc/nginx/sites-available/sigrikago
-```
-
-模板使用 `/opt/sigrikago/dist` 作为前端根目录、`/var/lib/sigrikago/uploads` 作为上传目录。若实际目录不同，必须同步修改 `root` 和 `alias`。Nginx 原生支持音频 Range 请求；只对 HTML、CSS、JavaScript、JSON、XML 和 SVG 启用 gzip，不重复压缩 OGG、WebP、PNG 等已压缩媒体。
-
-启用并申请证书：
-
-```bash
-sudo ln -s /etc/nginx/sites-available/sigrikago /etc/nginx/sites-enabled/sigrikago
+sudo ln -sfn /etc/nginx/sites-available/sigrikago /etc/nginx/sites-enabled/sigrikago
 sudo nginx -t
 sudo systemctl reload nginx
-sudo certbot --nginx -d go.example.com
 ```
+
+如果任一证书检查或 `nginx -t` 失败，不要 reload，恢复刚才的 `.bak-*` 配置后再核对。模板使用 `/opt/sigrikago/dist` 作为前端根目录、`/var/lib/sigrikago/uploads` 作为上传目录。若实际目录不同，必须同步修改路由片段中的 `root` 和 `alias`。Nginx 原生支持音频 Range 请求；只对 HTML、CSS、JavaScript、JSON、XML 和 SVG 启用 gzip，不重复压缩 OGG、WebP、PNG 等已压缩媒体。浏览器入口的 CSP 与 Node 保持一致：页面脚本仍只允许同源，Pixi 图像解码所需的 `blob:` 只放在 `worker-src`。
+
+全新服务器尚无证书时，不能直接启用引用证书文件的正式模板。先保证 80 端口未被占用，用 Certbot standalone 首次签发，再安装上面的正式模板：
+
+```bash
+sudo systemctl stop nginx
+sudo certbot certonly --standalone \
+  -d sigrikago.com \
+  -d www.sigrikago.com
+sudo systemctl start nginx
+```
+
+首次签发后再执行“已有 HTTPS 证书”的复制、`nginx -t` 和 reload 命令。Certbot 的自动续期继续使用 `/etc/letsencrypt/live/sigrikago.com/` 下的稳定链接。
 
 ### CDN 接入边界
 
-第一阶段不需要修改前端 `/assets/...` URL。可以让 CDN 以 `https://go.example.com/assets/` 为同源加速路径，源站仍指向上述 Nginx；这样不会引入额外的 CORS、媒体权限和 CSP 风险。CDN 规则必须与 Nginx 缓存合同一致：hash 资源可长期缓存，普通命名图片/音乐/语音保持短缓存并允许发布时清理，`index.html` 不进入长期缓存。
+第一阶段不需要修改前端 `/assets/...` URL。可以让 CDN 以 `https://sigrikago.com/assets/` 为同源加速路径，源站仍指向上述 Nginx；这样不会引入额外的 CORS、媒体权限和 CSP 风险。CDN 规则必须与 Nginx 缓存合同一致：hash 资源可长期缓存，普通命名图片/音乐/语音保持短缓存并允许发布时清理，`index.html` 不进入长期缓存。
 
 后续如果把 `/assets/` 上传到对象存储，应先上传新资源并验证 HTTP 200、Range 和缓存头，最后再发布新的 `index.html`；回滚时保留前一版资源，不能先删除旧 hash 文件。CDN 只负责静态资源，不代理或缓存 `/socket.io/`、动态 `/api/` 和健康检查。
 
@@ -312,17 +322,50 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## 更新流程
 
+### 本次默认新手引导同步
+
+`server/adminDefaultSnapshot.js` 的普通启动补种只创建缺失记录，不会覆盖云端已有的后台内容。因此，本次更新需要在数据库备份后执行一次定向同步；该命令只读取提交中的 `onboarding.default` 并只写这一条 `StoryScript`，不会改用户、对局或其他后台配置。
+
 ```bash
 cd /opt/sigrikago
-git pull
+sudo systemctl stop sigrikago
+mkdir -p /var/backups/sigrikago
+npm run backup:sqlite -- \
+  --source /var/lib/sigrikago/prod.db \
+  --output "/var/backups/sigrikago/pre-onboarding-sync-$(date +%F-%H%M%S).db"
+
+npm run admin:sync-onboarding
+npm run admin:sync-onboarding -- --apply
+
+sudo systemctl start sigrikago
+curl --fail http://127.0.0.1:3001/health/ready
+```
+
+第一条同步命令只是预览，第二条才会应用。如果它提示云端脚本比提交快照更新，立即停止，不要追加 `--force`；先从后台或数据库核对云端改动，避免覆盖更新内容。应用成功后不需要重复运行。
+
+### 常规更新
+
+```bash
+cd /opt/sigrikago
+git pull --ff-only
 npm ci
 npx prisma migrate deploy
 npm run build
 npm run check:production
+
+sudo cp /etc/nginx/sites-available/sigrikago \
+  "/etc/nginx/sites-available/sigrikago.bak-$(date +%F-%H%M%S)"
+sudo cp deploy/nginx/sigrikago-routes.conf /etc/nginx/snippets/sigrikago-routes.conf
+sudo cp deploy/nginx/sigrikago.conf /etc/nginx/sites-available/sigrikago
+sudo nginx -t
+sudo systemctl reload nginx
+
 sudo systemctl restart sigrikago
 sudo systemctl status sigrikago
+curl --fail http://127.0.0.1:3001/health/ready
+curl --compressed -I https://sigrikago.com/assets/$(find dist/assets -maxdepth 1 -name '*.css' -printf '%f\n' | head -n 1)
 ```
 
-更新前建议先备份数据库和上传目录。
+更新前建议先备份数据库和上传目录。最后一条命令应看到 `Content-Encoding: gzip`；若 `nginx -t` 失败，不要 reload 或重启应用，先恢复 Nginx 备份。
 
 已经完成 `0_init` 接管的数据库，后续更新只需按正常流程执行新增迁移；不要重复执行基线接管步骤。

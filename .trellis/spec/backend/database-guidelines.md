@@ -1021,3 +1021,55 @@ npx prisma migrate deploy
 <!-- Database-related mistakes your team has made -->
 
 (To be filled by the team)
+
+### Scenario: Scoped Admin Story Snapshot And Production Reconciliation
+
+#### 1. Scope / Trigger
+- Trigger: moving a locally published `StoryScript` into repository defaults or applying that default to an existing deployment.
+- The committed snapshot is a bootstrap source; ordinary startup seeding must continue to preserve existing cloud rows.
+
+#### 2. Signatures
+- `npm run admin:snapshot:onboarding` replaces only the committed `onboarding.default` snapshot row.
+- `mergeSelectedStoryScripts(baseConfig, sourceConfig, storyKeys) -> config` preserves every unselected collection and story.
+- `npm run admin:sync-onboarding` previews; `npm run admin:sync-onboarding -- --apply` writes only `StoryScript.key = "onboarding.default"`.
+
+#### 3. Contracts
+- A scoped export reads the selected local row but uses the current committed snapshot as the base, so unrelated local admin drift cannot enter the generated file.
+- Production sync maps every editable/published story field but preserves an existing database row's `id` and touches no user, audit, or other admin table.
+- Preview is the default. Apply requires an operator backup and stopped service in the deployment runbook.
+- A database row with a later `publishedAt` than the committed snapshot is protected from accidental overwrite; `--force` is an explicit reviewed escape hatch.
+
+#### 4. Validation & Error Matrix
+- Empty key -> fail before a database write.
+- Selected key missing from local export source or committed snapshot -> fail with the missing key.
+- Existing row equals the snapshot -> successful no-op.
+- Existing row is older -> preview reports update; `--apply` updates exactly that key.
+- Existing row is newer -> reject unless the operator explicitly supplies `--force` after review.
+
+#### 5. Good/Base/Bad Cases
+- Good: publish onboarding locally, run the scoped snapshot command, commit only that story change, back up cloud SQLite, preview, then apply.
+- Base: a fresh database receives the row from normal bootstrap seeding and needs no sync.
+- Bad: run the full `admin:snapshot` for a one-story release and accidentally commit unrelated site, catalog, character, or shop edits.
+- Bad: delete the whole production database merely to make create-only seeding pick up one changed script.
+
+#### 6. Tests Required
+- Export tests assert a selected story changes while unrelated collections and stories remain byte-equivalent in data.
+- Sync tests cover preview/no-write, update, create, identical no-op, missing key, and newer-cloud rejection.
+- Snapshot tests parse and validate both draft/published onboarding graphs and lock the intended node hashes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```bash
+npm run admin:snapshot
+npx prisma migrate reset
+```
+
+Correct:
+
+```bash
+npm run admin:snapshot:onboarding
+npm run admin:sync-onboarding
+npm run admin:sync-onboarding -- --apply
+```

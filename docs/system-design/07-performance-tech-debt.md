@@ -110,4 +110,4 @@ Phase 3 已把上述观察线做成 `npm run verify:capacity`：smoke profile �
 
 SQLite 运维入口 `npm run backup:sqlite -- --source <db> --output <backup>` 拒绝源/目标相同、拒绝覆盖现有输出并默认拒绝仓库 `prisma/dev.db`，随后使用 `VACUUM INTO` 和 `integrity_check` 生成一致性备份。`npm run verify:backup-restore` 只在 `.tmp/backup-restore/` 创建迁移后的源库、备份与恢复副本，借助哨兵数据验证恢复点不会被源库后续写入污染；正式恢复仍要求停服、保存故障现场、校验完整性并记录备份时间点后的数据损失。
 
-静态流量的生产边界由 `deploy/nginx/sigrikago.conf` 固化：Nginx 直接发送 `dist`、`/assets/` 和 `/uploads/`，Node 只处理实时 Socket、API 与健康检查。登录资源清单把商店、库存、非当前角色、战斗音轨和语音移到后台队列；战斗加载只阻塞实际选中的 battle/skill 音轨和当前房间资源，从而避免 97MB 音乐目录在冷登录或每次匹配时形成源站突发。
+静态流量的生产边界由 `deploy/nginx/sigrikago.conf` 与共享的 `deploy/nginx/sigrikago-routes.conf` 固化：Nginx 直接发送并 gzip `dist` 文本产物，直接发送 `/assets/` 和 `/uploads/`，Node 只处理实时 Socket、API 与健康检查。SPA HTML 保留严格的同源脚本 CSP，并只在 `worker-src` 放行 Pixi 动态图片解码需要的 Blob Worker。登录资源清单把商店、库存、非当前角色、战斗音轨和语音移到后台队列；战斗加载只阻塞实际选中的 battle/skill 音轨和当前房间资源，从而避免 97MB 音乐目录在冷登录或每次匹配时形成源站突发。

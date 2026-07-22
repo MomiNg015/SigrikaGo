@@ -1963,3 +1963,56 @@ const profile = await fetch(`/api/users/${userId}/profile?mode=${mode}`);
 const replayPage = await fetch(`/api/replays?mode=${mode}&cursor=${nextCursor}`);
 // Profile owns complete rated statistics; replay pages only own history presentation.
 ```
+
+### Scenario: Pixi Blob Worker CSP And HTTPS Static Delivery
+
+#### 1. Scope / Trigger
+- Trigger: changing Helmet CSP, Pixi texture-backed effects, the production Nginx site, or static cache/compression behavior.
+- Pixi may create Blob workers while decoding animated WebP textures; allowing page scripts and allowing workers are separate security decisions.
+
+#### 2. Signatures
+- `CONTENT_SECURITY_POLICY_DIRECTIVES.workerSrc = ["'self'", "blob:"]`.
+- `CONTENT_SECURITY_POLICY_DIRECTIVES.scriptSrc = ["'self'"]`.
+- `/etc/nginx/sites-available/sigrikago` includes `/etc/nginx/snippets/sigrikago-routes.conf` inside the HTTPS server.
+- `deploy/nginx/sigrikago-routes.conf` owns gzip, cache locations, SPA shell CSP, and Node proxy boundaries.
+
+#### 3. Contracts
+- Never add `blob:` or `'unsafe-eval'` to `script-src` to fix a worker error. Grant Blob URLs only through `worker-src`.
+- Helmet and the Nginx-served SPA shell must carry equivalent CSP directives, because direct Nginx HTML bypasses Node middleware.
+- Nginx serves built/uploaded files directly; only `/socket.io/`, `/api/`, and `/health/*` reach Node.
+- Compress CSS, JavaScript, HTML, JSON, XML, and SVG; do not recompress WebP, PNG, OGG, or other already-compressed media.
+- Hashed CSS/JS remains one-year immutable, named assets remain short-cache plus stale-while-revalidate, and HTML remains no-cache.
+
+#### 4. Validation & Error Matrix
+- Animated texture creates `blob:` worker under strict fallback `script-src` -> blocked effect; add the explicit worker directive.
+- `blob:` appears in `script-src` -> fail the security contract test.
+- Nginx serves `index.html` without worker CSP -> effect remains broken even if Helmet is correct.
+- `nginx -t` fails -> do not reload; restore/review the backed-up site configuration.
+- Text asset response lacks `Content-Encoding: gzip` after deployment -> verify the HTTPS server includes the shared routes snippet.
+
+#### 5. Good/Base/Bad Cases
+- Good: Danea animated WebP, Baconbits WebP, Changli SVG sprites, and Voyage Star WebP load under `worker-src 'self' blob:` while page scripts remain same-origin only.
+- Base: procedural effects require no texture worker and continue through the same renderer registry.
+- Bad: proxy every static request through Node, omit gzip, and rely on Helmet for HTML that Nginx actually serves.
+- Bad: loosen `script-src` globally because one Pixi decoder worker was blocked.
+
+#### 6. Tests Required
+- Server header tests assert exact `workerSrc`, strict `scriptSrc`, and Helmet wiring.
+- Deployment template tests assert HTTPS domain/include, gzip types, cache contracts, and the strict script/Blob-worker CSP split.
+- Board effect asset/registry/component tests cover every registered texture-backed effect, preload behavior, and runtime error containment.
+- Run `npm run check`; run `sudo nginx -t` on the target host before reload and verify a built CSS response with `curl --compressed -I`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+scriptSrc: ["'self'", "blob:", "'unsafe-eval'"]
+```
+
+Correct:
+
+```js
+scriptSrc: ["'self'"],
+workerSrc: ["'self'", "blob:"]
+```
