@@ -238,7 +238,7 @@ Correct:
 - For Sigrika, Denia, and Aemeath, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
 - Rejection performs no user/structured-asset write, does not decrement inventory, does not switch Sigrika, does not trigger the Denia candy achievement, and selects `rejected-start` in the returned published script.
 - Acceptance consumes one candy, applies the character's temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules.
-- Aemeath's board marker is presentation-only: it is attached to the exact latest move point, is pointer-transparent, keeps the underlying black/white stone unchanged, and has a `prefers-reduced-motion` fallback. Opponent moves, passes, skills, and inactive Aemeath users must not show it.
+- Aemeath's board marker is presentation-only: it is attached to the exact latest move point, is pointer-transparent, keeps the underlying black/white stone unchanged, and has a `prefers-reduced-motion` fallback. Its source must inherit the rendered stone's deterministic jitter offset so the two visual centers stay within 1 CSS pixel. Four traces follow the real horizontal/vertical axes to their corresponding board edges, fade from opaque at the source to transparent outward, and light each crossed intersection with distance-attenuated nodes. The Bright School portrait-mobile global `max-width` guard must be cleared only on owned trace elements so multi-cell rays are not capped to one point. Seven discrete frequency echoes replace a generic conic-gradient circle. Opponent moves, passes, skills, and inactive Aemeath users must not show it.
 - A valid finished game clears `aemeathRainbowMove` only when that user played Aemeath; playing another character must preserve it for a later Aemeath game.
 - Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
 
@@ -252,7 +252,7 @@ Correct:
 
 #### 5. Good/Base/Bad Cases
 - Good: an injected `0.349999` rejects Denia, keeps the candy, leaves `deniaRainbowGlow` unset, and suppresses `denia-rainbow-bean-candy`.
-- Good: an accepted Aemeath move renders one short rainbow pixel ring at that move's point while the ordinary stone remains present.
+- Good: an accepted Aemeath move renders one short, stone-centered rainbow grid pulse whose four rays fade toward the board edges while the ordinary stone remains present.
 - Base: an injected `0.35` accepts, proving the exact 35% boundary without an off-by-one gap.
 - Bad: decrementing inventory before the roll and trying to restore it on rejection, because structured sync and achievement side effects can already have escaped.
 - Bad: setting narrator `speakerName: "旁白"`, because the player window must leave the character region blank.
@@ -265,7 +265,7 @@ Correct:
 - `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
 - `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
 - `src/modals/WarehouseModal.test.js` asserts rejection toast and skip copy do not claim success or consumption.
-- `src/room/roomView.test.js` asserts the latest-action/player/effect gate, and `src/room/Board.test.js` asserts one pointer-transparent marker, an unchanged stone, memo-comparator coverage, 620ms motion, and reduced-motion fallback.
+- `src/room/roomView.test.js` asserts the latest-action/player/effect gate, and `src/room/Board.test.js` asserts one pointer-transparent marker, an unchanged stone, four directional traces, distance-attenuated intersection nodes, seven pixel echoes, stone-offset origin variables, portrait width-guard reset, memo-comparator coverage, bounded motion, absence of the old ring keyframes, and reduced-motion fallback.
 
 #### 7. Wrong vs Correct
 

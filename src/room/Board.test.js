@@ -137,9 +137,21 @@ describe("areBoardPropsEqual", () => {
     })));
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
 
-    expect(markup.match(/aemeath-rainbow-move/g)).toHaveLength(1);
+    expect(markup.match(/class="aemeath-rainbow-move"/g)).toHaveLength(1);
+    expect(markup.match(/aemeath-rainbow-move__trace/g)).toHaveLength(4);
+    expect(markup.match(/aemeath-rainbow-move__node/g)).toHaveLength(24);
+    expect(markup.match(/aemeath-rainbow-move__echo is-/g)).toHaveLength(7);
+    expect(markup).toContain("aemeath-rainbow-point");
+    expect(markup).toContain("--aemeath-origin-offset-x:");
+    expect(markup).toContain("--aemeath-origin-offset-y:");
     expect(markup).toContain('class="stone');
-    expect(css).toContain("animation: aemeath-rainbow-move-ring 620ms");
+    expect(css).toContain("animation: aemeath-rainbow-trace 480ms");
+    expect(css).toContain("animation: aemeath-rainbow-node 520ms");
+    expect(css).toContain("@keyframes aemeath-rainbow-echo");
+    expect(css).toContain("max-width: none !important");
+    expect(css).toContain("rgba(0, 0, 0, 0.34) 66%, transparent 100%");
+    expect(css).not.toContain("@keyframes aemeath-rainbow-move-ring");
+    expect(css).not.toContain("@keyframes aemeath-rainbow-move-grid");
     expect(css).toContain("pointer-events: none");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });

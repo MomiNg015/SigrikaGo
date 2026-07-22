@@ -1,0 +1,170 @@
+.aemeath-rainbow-move {
+  --aemeath-rainbow-red: #ff4668;
+  --aemeath-rainbow-orange: #ff9c42;
+  --aemeath-rainbow-yellow: #ffe85d;
+  --aemeath-rainbow-green: #5ee38a;
+  --aemeath-rainbow-cyan: #38e4f2;
+  --aemeath-rainbow-blue: #4f8cff;
+  --aemeath-rainbow-violet: #c65cff;
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  transform: none;
+  contain: layout style;
+  isolation: isolate;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point > .aemeath-rainbow-move {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point > .aemeath-rainbow-move .aemeath-rainbow-move__trace {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.aemeath-rainbow-move,
+.aemeath-rainbow-move * {
+  pointer-events: none;
+}
+
+.aemeath-rainbow-move__core,
+.aemeath-rainbow-move__trace {
+  position: absolute;
+  left: calc(50% + var(--aemeath-origin-offset-x, 0px));
+  top: calc(50% + var(--aemeath-origin-offset-y, 0px));
+}
+
+.aemeath-rainbow-move__core {
+  width: clamp(9px, 38%, 14px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 12%, #cfffff 24%, rgba(56, 228, 242, 0.52) 43%, transparent 70%);
+  box-shadow:
+    0 0 7px rgba(255, 255, 255, 0.98),
+    0 0 16px rgba(56, 228, 242, 0.82),
+    0 0 28px rgba(198, 92, 255, 0.48);
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: aemeath-rainbow-core 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  z-index: 3;
+}
+
+.aemeath-rainbow-move__core::before,
+.aemeath-rainbow-move__core::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(247, 255, 255, 0.96);
+  transform: translate(-50%, -50%);
+}
+
+.aemeath-rainbow-move__core::before {
+  width: 280%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.96) 42% 58%, transparent);
+}
+
+.aemeath-rainbow-move__core::after {
+  width: 1px;
+  height: 280%;
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.96) 42% 58%, transparent);
+}
+
+.aemeath-rainbow-move__trace {
+  width: var(--aemeath-trace-length);
+  height: 12px;
+  overflow: visible;
+  transform-origin: 0 50%;
+  transform: translateY(-50%) rotate(var(--aemeath-trace-rotation)) scaleX(0.02);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.88), var(--aemeath-trace-hot) 9%, var(--aemeath-trace-mid) 38%, transparent 88%) center / 100% 2px no-repeat,
+    linear-gradient(90deg, var(--aemeath-trace-hot), var(--aemeath-trace-mid) 28%, var(--aemeath-trace-tail) 60%, transparent 92%) center / 100% 8px no-repeat;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.72)) drop-shadow(0 0 5px var(--aemeath-trace-mid));
+  -webkit-mask-image: linear-gradient(90deg, #000 0 8%, rgba(0, 0, 0, 0.82) 28%, rgba(0, 0, 0, 0.34) 66%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0 8%, rgba(0, 0, 0, 0.82) 28%, rgba(0, 0, 0, 0.34) 66%, transparent 100%);
+  opacity: 0;
+  animation: aemeath-rainbow-trace 480ms cubic-bezier(0.16, 1, 0.3, 1) var(--aemeath-trace-delay) both;
+  z-index: 1;
+}
+
+.aemeath-rainbow-move__trace::before,
+.aemeath-rainbow-move__trace::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.aemeath-rainbow-move__trace::before {
+  height: 7px;
+  background:
+    linear-gradient(90deg, var(--aemeath-packet-near), var(--aemeath-packet-mid) 34%, transparent 78%) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.82), var(--aemeath-trace-mid) 30%, transparent 72%) 0 100% / 100% 1px no-repeat;
+}
+
+.aemeath-rainbow-move__trace::after {
+  height: 7px;
+  background:
+    radial-gradient(circle at 18% 50%, var(--aemeath-packet-near) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 43% 50%, var(--aemeath-packet-mid) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 50%, var(--aemeath-packet-far) 0 0.8px, transparent 1.4px);
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes aemeath-rainbow-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  52% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.92); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.68); }
+}
+
+@keyframes aemeath-rainbow-trace {
+  0% { opacity: 0; transform: translateY(-50%) rotate(var(--aemeath-trace-rotation)) scaleX(0.02); }
+  16% { opacity: 1; }
+  68% { opacity: 0.94; transform: translateY(-50%) rotate(var(--aemeath-trace-rotation)) scaleX(1); }
+  100% { opacity: 0; transform: translateY(-50%) rotate(var(--aemeath-trace-rotation)) scaleX(1); }
+}
+
+.point.aemeath-rainbow-point .stone i {
+  animation: aemeath-rainbow-latest-marker-return 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes aemeath-rainbow-latest-marker-return {
+  0%, 74% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .point.aemeath-rainbow-point .stone i,
+  .aemeath-rainbow-move__core,
+  .aemeath-rainbow-move__trace {
+    animation: none;
+  }
+
+  .aemeath-rainbow-move__core {
+    opacity: 0.92;
+    transform: translate(-50%, -50%) scale(0.76);
+  }
+
+  .aemeath-rainbow-move__trace {
+    width: min(var(--aemeath-trace-length), 78%);
+    opacity: 0.62;
+    transform: translateY(-50%) rotate(var(--aemeath-trace-rotation)) scaleX(1);
+  }
+
+  .aemeath-rainbow-move__trace::after {
+    display: none;
+  }
+}

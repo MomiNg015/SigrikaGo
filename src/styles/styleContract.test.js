@@ -1248,6 +1248,8 @@ describe("root CSS entry contract", () => {
       "./board/spray-stone-effects.css",
       "./board/gomoku-winning-line.css",
       "./board/latest-touch-void.css",
+      "./board/aemeath-rainbow-move.css",
+      "./board/aemeath-rainbow-move-particles.css",
       "./board/grid-scoring.css"
     ]);
     expect(boardEntry).not.toContain(".board-wrap {");

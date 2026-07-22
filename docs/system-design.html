@@ -599,7 +599,7 @@
 <li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听 <code>denia-rainbow-bean-candy</code> 道具使用事件；只有达妮娅接受并吃下彩虹豆豆跳跳糖后才会触发并获得 100 金币，35% 拒绝分支不会触发，不回溯统计成就上线前发生过的使用记录。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅和爱弥斯三名角色，三者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 620ms 的七彩像素光纹，棋子和围棋规则保持不变，并在她完成一盘有效对局后解除。三份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
+<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅和爱弥斯三名角色，三者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 520ms 的电子彩虹反馈：光源跟随棋子抖动后的实际视觉中心，七色细光沿棋盘横纵线向四个棋盘边缘传播，并以统一透明度遮罩从中心的高亮逐步衰减到边缘透明；沿途交叉点按距离依次点亮、亮度向外递减。明亮学园竖屏的全局 <code>max-width</code> 保护会由特效 owner 定点解除，避免光轨被裁成一格；效果不使用通用圆形彩虹环，也不改变棋子和围棋规则，并在她完成一盘有效对局后解除。三份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
 </ul>
 <ul>
 <li>新增内置成就“点亮语义！”使用 <code>mode_character_wins</code> 条件统计玩家使用西格莉卡在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>/assets/achievements/semantic-nameplate.png</code> 用户名背景；<code>seedBuiltinAchievements</code> 会让管理员默认达成所有内置成就并标记奖励已发放。</li>
@@ -2153,7 +2153,7 @@
 <li>彩虹豆豆跳跳糖对达妮娅使用时同样先判定 35% 拒绝概率；拒绝分支不消耗道具、不应用效果且不触发“你给我吃了什么！？”成就。接受分支消耗 1 个道具并将 <code>itemEffects.deniaRainbowGlow</code> 置为 true，剧情和特殊立绘表现为她的双眼与嘴巴发出三道彩虹射线，而不是全身发光；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.webp</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖对爱弥斯使用时同样先判定 35% 拒绝概率；拒绝分支不消耗道具、不应用效果。接受分支消耗 1 个道具并将 <code>itemEffects.aemeathRainbowMove</code> 置为 true，棋舍以“彩虹落子模式”徽标展示；对局展示层只在当前最后一步确实由带有效果的爱弥斯落子时，于对应交叉点播放约 620ms 的七彩像素光纹，棋子仍保持普通黑白外观且不改变规则、技能或数值。光纹标记指针穿透，连续关键帧仅改变 <code>transform</code> 与 <code>opacity</code>，<code>prefers-reduced-motion</code> 下冻结为局部静态彩环；爱弥斯完成一盘有效对局后清除该状态，使用其它角色完成对局不会误清除。</li>
+<li>彩虹豆豆跳跳糖对爱弥斯使用时同样先判定 35% 拒绝概率；拒绝分支不消耗道具、不应用效果。接受分支消耗 1 个道具并将 <code>itemEffects.aemeathRainbowMove</code> 置为 true，棋舍以“彩虹落子模式”徽标展示；对局展示层只在当前最后一步确实由带有效果的爱弥斯落子时，于对应交叉点播放约 520ms 的电子彩虹反馈：光源使用棋子抖动后的实际偏移，保证与棋子视觉中心重合；四条七色细光贴合棋盘横纵线延伸至对应边缘，整体透明度由中心向外平滑衰减，沿途交叉点按距离依次点亮且逐渐变淡，七个频率残影在中心附近错位弹开，不再使用圆形渐变环。明亮学园竖屏全局宽度限制由该特效 owner 定点解除，防止长光轨被裁成单格。棋子仍保持普通黑白外观且不改变规则、技能或数值。标记及所有子层均指针穿透，连续关键帧只改变 <code>transform</code> 与 <code>opacity</code>，<code>prefers-reduced-motion</code> 下冻结为紧凑的静态网格光标；爱弥斯完成一盘有效对局后清除该状态，使用其它角色完成对局不会误清除。</li>
 </ul>
 <ul>
 <li>西格莉卡、达妮娅与爱弥斯的默认糖果脚本都在一份已发布记录内包含 <code>accepted-start</code> / <code>rejected-start</code> 两套节点，服务端按本次 <code>itemUseOutcome</code> 选择响应起点。叙述节点保持 <code>speakerName: &quot;&quot;</code> 与 <code>characterId: &quot;&quot;</code>，剧情窗口角色区域为空，不渲染“旁白”字样。</li>
