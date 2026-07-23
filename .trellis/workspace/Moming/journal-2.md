@@ -138,3 +138,36 @@ Matched the Zhunshibao practice badge to the Bright School home utility hard-sha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 65: Add Lynae rainbow candy story and voice effect
+
+**Date**: 2026-07-23
+**Task**: Add Lynae rainbow candy story and voice effect
+**Branch**: `master`
+
+### Summary
+
+Added Lynae accepted/rejected rainbow candy story, 35 percent rejection handling, persistent contrary-voice effect with deterministic event swaps, valid-game cleanup and result snapshot, deployment snapshot, tests, and system design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `439df835` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
