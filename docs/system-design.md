@@ -15,6 +15,7 @@
 
 ## 当前架构摘要
 
+- 独立静态原型 `public/iris-database-prototype.html` 用于评审首页 IRIS 数据库入口，不进入 React 运行时或生产路由：桌面与竖屏移动画框复用现有 Bright School 首页资源，Q 版半身入口贴在模拟视口右侧中段，点击后分别展示桌面双栏、移动上下分区的友情链接窗口；概念图资产集中在 `public/assets/iris-database/`，正式接入时入口定位应从原型画框内的绝对定位映射为带安全区约束的视口 `fixed`。
 - 质量与稳定性基线：Playwright E2E/稳定性服务使用 `.tmp/playwright/` 下的独立临时 SQLite 数据库并在退出时清理；`GameRecord` 按双方用户+时间、模式+计分状态+时间建立查询索引，个人/他人棋谱通过 `(createdAt, id)` 游标每次加载 50 盘并可继续读取完整历史，排行榜和成就兼容扫描仍有明确上限；本人履历与公开详细信息复用同一个服务端计分战绩统计，不再从已加载棋谱推导。所有 `/api` 未捕获异常由末端 JSON 错误中间件统一输出。登录会话将 `lastSeenAt` 写入节流为五分钟，refresh token 使用旧哈希 compare-and-swap 原子轮换；登录/注册凭据限流与 refresh/logout 会话限流使用独立桶，单实例内同一用户的 session replacement 按用户串行并在 Prisma 事务中完成撤销与新建。管理员身份只以数据库 `User.role` 为准，公开注册、登录、refresh 和启动任务都不按用户名自动提权；服务器操作员使用 `npm run admin:promote -- <username>` 幂等提升已存在账号。玩家弹窗可逐步接入共享 `ModalDialog`，获得 dialog 语义、焦点循环/恢复和嵌套 Escape 优先级；`npm run check` 现在先运行 ESLint，并以 jsdom + Testing Library 覆盖真实弹窗键盘交互。
 
 - 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切、内部 tab 单行并列且面板区域独立滚动，资料详情对局回放使用固定头部+内部滚动列表，内层 replay table 不再作为滚动容器以免截断触摸滚动链；移动端图标按钮和关闭按钮由最终安全层兜底为 44px 触控目标，主题动效避免宽度布局动画和弹性曲线，邮箱未读数量在菜单按钮上作为绝对定位角标呈现，不参与按钮文字排版；开发期 Vite `/socket.io` 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。

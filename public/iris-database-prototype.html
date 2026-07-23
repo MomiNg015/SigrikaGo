@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>IRIS 数据库 · 主界面贴边入口原型</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+        --ink: #2d403c;
+        --ink-soft: #56645d;
+        --paper: #fffaf0;
+        --paper-deep: #f3e7ce;
+        --line: #6b5944;
+        --navy: #173a55;
+        --cyan: #5fd3ed;
+        --mint: #b8e6c8;
+        --lime: #c9ef78;
+        --pink: #ec9ba8;
+        --shadow: #493b2f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: #172a29;
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          #172a29;
+        background-size: 28px 28px;
+      }
+
+      button,
+      a {
+        font: inherit;
+      }
+
+      button {
+        color: inherit;
+      }
+
+      .prototype-page {
+        width: min(1480px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 44px 0 80px;
+      }
+
+      .prototype-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 36px;
+        color: #f8f1dc;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: #94d9d8;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 720px;
+        margin: 0;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: clamp(36px, 5.5vw, 74px);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .heading-note {
+        max-width: 390px;
+        margin: 0 0 6px;
+        color: #c9d4ce;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .heading-note strong {
+        color: #eff7d1;
+      }
+
+      .prototype-card {
+        margin-top: 42px;
+      }
+
+      .prototype-card-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin: 0 auto 13px;
+        color: #f8f1dc;
+      }
+
+      .prototype-card-header h2 {
+        margin: 0;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: clamp(24px, 3vw, 38px);
+        font-weight: 500;
+      }
+
+      .prototype-card-header p {
+        margin: 0 0 3px;
+        color: #9eb1a9;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .viewport-shell {
+        position: relative;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.56);
+        background: #2d403c;
+        box-shadow:
+          0 0 0 7px #304b46,
+          0 18px 56px rgba(0, 0, 0, 0.34);
+      }
+
+      .viewport-shell.desktop {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 18px;
+      }
+
+      .mobile-stage {
+        display: grid;
+        place-items: center;
+        padding: 18px 0 0;
+      }
+
+      .viewport-shell.mobile {
+        width: min(390px, calc(100vw - 42px));
+        aspect-ratio: 390 / 844;
+        border-radius: 32px;
+        box-shadow:
+          0 0 0 8px #304b46,
+          0 18px 56px rgba(0, 0, 0, 0.36);
+      }
+
+      .viewport-shell::before {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background:
+          linear-gradient(to bottom, rgba(24, 46, 43, 0.08), rgba(33, 35, 28, 0.34)),
+          url("/assets/home/multipurpose-classroom-bg.webp") center / cover no-repeat;
+        content: "";
+      }
+
+      .viewport-shell.mobile::before {
+        background-position: 55% center;
+      }
+
+      .viewport-shell::after {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 90px rgba(36, 38, 31, 0.24);
+        content: "";
+      }
+
+      .scene-ui {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .school-topbar {
+        position: absolute;
+        top: 2.2%;
+        right: 1.8%;
+        left: 1.8%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 7.5%;
+        padding: 0 1.5%;
+        border: 2px solid rgba(76, 62, 46, 0.84);
+        border-radius: 13px;
+        background: rgba(255, 250, 235, 0.9);
+        box-shadow: 4px 5px 0 rgba(64, 51, 38, 0.48);
+      }
+
+      .school-mark {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: clamp(12px, 1.15vw, 18px);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+
+      .school-mark::before {
+        display: block;
+        width: 16px;
+        aspect-ratio: 1;
+        border: 2px solid #334943;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at center, #fff 0 24%, transparent 26%),
+          conic-gradient(#2f4941 0 25%, #fff 0 50%, #2f4941 0 75%, #fff 0);
+        content: "";
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .topbar-pill {
+        min-width: 72px;
+        padding: 6px 12px;
+        border: 1.5px solid #74634d;
+        border-radius: 999px;
+        background: #fffaf0;
+        color: #57483a;
+        font-size: clamp(9px, 0.8vw, 12px);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .nameplate {
+        position: absolute;
+        top: 12%;
+        left: 2.4%;
+        width: 39%;
+        aspect-ratio: 5 / 1;
+        filter: drop-shadow(4px 6px 0 rgba(70, 56, 41, 0.38));
+      }
+
+      .nameplate > img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .nameplate-copy {
+        position: absolute;
+        inset: 14% 8% 17% 28%;
+        display: grid;
+        grid-template-columns: 1fr 0.86fr;
+        align-items: center;
+        gap: 6%;
+      }
+
+      .player-name {
+        align-self: start;
+        margin-top: 5%;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: clamp(12px, 1.55vw, 22px);
+        font-weight: 700;
+      }
+
+      .player-meta {
+        align-self: end;
+        margin-bottom: 5%;
+        color: #6e5b45;
+        font-size: clamp(8px, 0.76vw, 11px);
+        font-weight: 700;
+      }
+
+      .class-note {
+        color: #5b675e;
+        font-size: clamp(8px, 0.82vw, 12px);
+        line-height: 1.55;
+      }
+
+      .home-board {
+        position: absolute;
+        top: 27%;
+        left: 50%;
+        width: 52%;
+        height: 58%;
+        padding: 4.5% 5.5%;
+        transform: translateX(-50%);
+        background: url("/assets/home/home-main-panel-desktop.webp") center / 100% 100%
+          no-repeat;
+        filter: drop-shadow(8px 11px 0 rgba(67, 50, 34, 0.34));
+      }
+
+      .home-board-content {
+        display: grid;
+        grid-template-columns: 0.76fr 1.24fr;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        gap: 1%;
+      }
+
+      .entry-stack {
+        display: grid;
+        align-content: center;
+        gap: 8%;
+        height: 100%;
+      }
+
+      .home-art-button {
+        position: relative;
+        display: grid;
+        min-height: 42%;
+        place-items: center;
+        overflow: hidden;
+        border: 2px solid #68523d;
+        border-radius: 15px;
+        background: #f6e9cf;
+        box-shadow: 5px 6px 0 rgba(79, 58, 41, 0.42);
+      }
+
+      .home-art-button img {
+        width: 92%;
+        height: 76%;
+        object-fit: contain;
+      }
+
+      .home-art-button span {
+        position: absolute;
+        right: 9%;
+        bottom: 6%;
+        padding: 3px 9px;
+        border: 1px solid #69563f;
+        border-radius: 999px;
+        background: #fffaf0;
+        color: #4f4234;
+        font-size: clamp(8px, 0.78vw, 12px);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+      }
+
+      .match-card {
+        position: relative;
+        display: grid;
+        height: 84%;
+        place-items: center;
+        overflow: hidden;
+        border: 2px solid #576a54;
+        border-radius: 18px;
+        background: rgba(221, 241, 199, 0.78);
+        box-shadow: 6px 7px 0 rgba(67, 60, 43, 0.43);
+      }
+
+      .match-card img {
+        width: 96%;
+        height: 92%;
+        object-fit: contain;
+      }
+
+      .match-card-label {
+        position: absolute;
+        right: 5%;
+        bottom: 5%;
+        left: 5%;
+        padding: 7px 12px;
+        border: 2px solid #42603e;
+        border-radius: 999px;
+        background: var(--lime);
+        color: #29402d;
+        font-size: clamp(10px, 1.05vw, 15px);
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-align: center;
+        box-shadow: 3px 4px 0 rgba(53, 65, 40, 0.38);
+      }
+
+      .utility-dock {
+        position: absolute;
+        bottom: 2.4%;
+        left: 2.2%;
+        display: flex;
+        gap: 8px;
+      }
+
+      .utility {
+        display: grid;
+        width: clamp(44px, 5.2vw, 74px);
+        aspect-ratio: 1;
+        place-items: center;
+        padding: 5px;
+        border: 2px solid #644f3b;
+        border-radius: 16px;
+        background: #fff7e6;
+        box-shadow: 4px 5px 0 rgba(63, 48, 35, 0.46);
+      }
+
+      .utility img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .scene-caption {
+        position: absolute;
+        right: 2.2%;
+        bottom: 2.4%;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        border-radius: 10px;
+        background: rgba(31, 57, 52, 0.84);
+        color: #fff9e8;
+        font-size: clamp(8px, 0.72vw, 11px);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+      }
+
+      .iris-edge-entry {
+        position: absolute;
+        top: 53%;
+        right: -1.1%;
+        z-index: 8;
+        display: block;
+        width: clamp(130px, 13.8vw, 200px);
+        aspect-ratio: 0.78;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        filter: drop-shadow(-7px 8px 0 rgba(33, 45, 42, 0.32));
+        transform: translateY(-50%);
+        transition:
+          filter 180ms ease,
+          transform 180ms ease;
+      }
+
+      .iris-edge-entry::before {
+        position: absolute;
+        right: -2px;
+        bottom: 6%;
+        z-index: -1;
+        width: 78%;
+        height: 33%;
+        border: 2px solid #294854;
+        border-radius: 18px 0 0 18px;
+        background:
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.08) 0 1px,
+            transparent 1px 5px
+          ),
+          #16465d;
+        box-shadow:
+          -5px 6px 0 rgba(28, 44, 43, 0.48),
+          inset 5px 0 0 #5fd3ed;
+        content: "";
+      }
+
+      .iris-edge-entry:hover,
+      .iris-edge-entry:focus-visible {
+        outline: none;
+        filter:
+          drop-shadow(-9px 11px 0 rgba(33, 45, 42, 0.35))
+          drop-shadow(0 0 12px rgba(104, 226, 244, 0.68));
+        transform: translate(-7px, -52%);
+      }
+
+      .iris-edge-entry:active {
+        transform: translate(-3px, -49%);
+      }
+
+      .iris-chibi {
+        position: absolute;
+        right: -7%;
+        bottom: 12%;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+      }
+
+      .iris-entry-label {
+        position: absolute;
+        right: 6%;
+        bottom: 8.5%;
+        width: 60%;
+        color: #f8fdff;
+        font-size: clamp(9px, 0.78vw, 12px);
+        font-weight: 950;
+        line-height: 1.1;
+        letter-spacing: 0.08em;
+        text-align: right;
+        text-shadow: 0 2px 0 #17313d;
+      }
+
+      .iris-entry-label small {
+        display: block;
+        margin-top: 3px;
+        color: #9be9f5;
+        font-size: 0.68em;
+        letter-spacing: 0.14em;
+      }
+
+      .iris-entry-pulse {
+        position: absolute;
+        top: 39%;
+        right: 9%;
+        width: 13%;
+        aspect-ratio: 1;
+        border: 2px solid rgba(125, 238, 251, 0.92);
+        border-radius: 50%;
+        box-shadow: 0 0 0 5px rgba(95, 211, 237, 0.2);
+        pointer-events: none;
+      }
+
+      .iris-modal-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: grid;
+        place-items: center;
+        padding: 2.5%;
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          opacity 180ms ease,
+          visibility 180ms step-end;
+      }
+
+      .viewport-shell.iris-open .iris-modal-layer {
+        visibility: visible;
+        opacity: 1;
+        transition:
+          opacity 180ms ease,
+          visibility 0ms step-start;
+      }
+
+      .iris-backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: rgba(19, 35, 34, 0.7);
+        cursor: default;
+        backdrop-filter: blur(3px);
+      }
+
+      .iris-window {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(250px, 0.78fr) minmax(360px, 1.22fr);
+        width: min(950px, 86%);
+        height: min(570px, 86%);
+        overflow: hidden;
+        border: 3px solid #273f43;
+        border-radius: 22px;
+        background: var(--paper);
+        box-shadow:
+          9px 12px 0 rgba(23, 44, 46, 0.56),
+          inset 0 0 0 4px rgba(255, 255, 255, 0.64);
+        transform: translateY(8px) scale(0.985);
+        transition: transform 180ms ease;
+      }
+
+      .viewport-shell.iris-open .iris-window {
+        transform: translateY(0) scale(1);
+      }
+
+      .iris-window::before {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        left: 14px;
+        z-index: 3;
+        height: 9px;
+        border-top: 2px dashed rgba(67, 87, 83, 0.42);
+        content: "";
+        pointer-events: none;
+      }
+
+      .iris-portrait-panel {
+        position: relative;
+        overflow: hidden;
+        border-right: 3px solid #273f43;
+        background:
+          repeating-linear-gradient(
+            0deg,
+            rgba(105, 226, 242, 0.06) 0 1px,
+            transparent 1px 5px
+          ),
+          #061b35;
+      }
+
+      .iris-portrait-panel::after {
+        position: absolute;
+        inset: auto 7% 4% 7%;
+        height: 28%;
+        border: 1px solid rgba(114, 224, 240, 0.3);
+        background:
+          linear-gradient(90deg, rgba(80, 223, 240, 0.42) 1px, transparent 1px),
+          linear-gradient(rgba(80, 223, 240, 0.42) 1px, transparent 1px);
+        background-size: 15px 15px;
+        content: "";
+        mask-image: linear-gradient(to bottom, transparent, #000);
+        opacity: 0.44;
+      }
+
+      .iris-portrait {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 20%;
+      }
+
+      .iris-id {
+        position: absolute;
+        right: 15px;
+        bottom: 15px;
+        left: 15px;
+        z-index: 2;
+        padding: 10px 12px;
+        border: 1px solid rgba(121, 229, 244, 0.62);
+        background: rgba(5, 24, 43, 0.82);
+        color: #e8fcff;
+        font-size: clamp(9px, 0.8vw, 12px);
+        line-height: 1.55;
+      }
+
+      .iris-id strong {
+        display: block;
+        font-family: Georgia, serif;
+        font-size: 1.25em;
+        letter-spacing: 0.16em;
+      }
+
+      .iris-content {
+        position: relative;
+        min-width: 0;
+        padding: clamp(34px, 4vw, 54px) clamp(24px, 4vw, 50px) 28px;
+        overflow: auto;
+        background:
+          linear-gradient(rgba(51, 91, 84, 0.07) 1px, transparent 1px),
+          var(--paper);
+        background-size: 100% 28px;
+      }
+
+      .iris-content-topline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 7px;
+        color: #337c89;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .iris-content-topline::before {
+        width: 9px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #5fd3ed;
+        box-shadow: 0 0 0 4px rgba(95, 211, 237, 0.2);
+        content: "";
+      }
+
+      .iris-content h3 {
+        margin: 0;
+        color: #243d3a;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: clamp(25px, 2.8vw, 41px);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+
+      .iris-intro {
+        max-width: 580px;
+        margin: 13px 0 20px;
+        color: #596762;
+        font-size: clamp(11px, 0.95vw, 14px);
+        line-height: 1.72;
+      }
+
+      .iris-quote {
+        margin: 0 0 19px;
+        padding: 9px 12px;
+        border: 1px solid #d8b46f;
+        border-radius: 8px;
+        background: rgba(247, 224, 178, 0.5);
+        color: #584a3b;
+        font-size: clamp(10px, 0.88vw, 13px);
+        font-weight: 700;
+      }
+
+      .link-list {
+        display: grid;
+        gap: 9px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .go-link {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        padding: 10px 13px;
+        border: 2px solid #6c5b48;
+        border-radius: 12px;
+        background: rgba(255, 253, 246, 0.94);
+        color: #2c413d;
+        text-decoration: none;
+        box-shadow: 4px 5px 0 rgba(91, 72, 51, 0.2);
+        transition:
+          box-shadow 150ms ease,
+          transform 150ms ease;
+      }
+
+      .go-link:hover,
+      .go-link:focus-visible {
+        outline: 3px solid rgba(95, 211, 237, 0.45);
+        outline-offset: 2px;
+        box-shadow: 6px 7px 0 rgba(91, 72, 51, 0.25);
+        transform: translate(-2px, -2px);
+      }
+
+      .go-link-index {
+        display: grid;
+        width: 32px;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid #385750;
+        border-radius: 50%;
+        background: #cbe8d0;
+        font-family: Georgia, serif;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .go-link-copy {
+        min-width: 0;
+      }
+
+      .go-link-copy strong,
+      .go-link-copy small {
+        display: block;
+      }
+
+      .go-link-copy strong {
+        overflow: hidden;
+        font-size: clamp(11px, 1vw, 14px);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .go-link-copy small {
+        margin-top: 3px;
+        overflow: hidden;
+        color: #7c7a6b;
+        font-size: clamp(8px, 0.72vw, 10px);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .go-link-arrow {
+        color: #287381;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .iris-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 6;
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 2px solid #3d554f;
+        border-radius: 50%;
+        background: #fffaf0;
+        color: #324b45;
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1;
+        box-shadow: 3px 4px 0 rgba(67, 57, 45, 0.34);
+        cursor: pointer;
+      }
+
+      .iris-close:hover,
+      .iris-close:focus-visible {
+        outline: 3px solid rgba(95, 211, 237, 0.45);
+        outline-offset: 2px;
+        background: #def5e5;
+      }
+
+      .viewport-shell.mobile .school-topbar {
+        top: 2%;
+        right: 3%;
+        left: 3%;
+        height: 5.5%;
+        padding: 0 3%;
+        border-radius: 10px;
+        box-shadow: 3px 4px 0 rgba(64, 51, 38, 0.42);
+      }
+
+      .viewport-shell.mobile .school-mark {
+        gap: 5px;
+        font-size: 10px;
+      }
+
+      .viewport-shell.mobile .school-mark::before {
+        width: 12px;
+      }
+
+      .viewport-shell.mobile .topbar-actions {
+        gap: 4px;
+      }
+
+      .viewport-shell.mobile .topbar-pill {
+        min-width: 0;
+        padding: 4px 7px;
+        font-size: 8px;
+      }
+
+      .viewport-shell.mobile .topbar-pill:first-child {
+        display: none;
+      }
+
+      .viewport-shell.mobile .nameplate {
+        top: 9%;
+        left: 4%;
+        width: 77%;
+      }
+
+      .viewport-shell.mobile .nameplate-copy {
+        inset: 14% 8% 17% 28%;
+      }
+
+      .viewport-shell.mobile .player-name {
+        margin-top: 1%;
+        font-size: 10px;
+      }
+
+      .viewport-shell.mobile .player-meta,
+      .viewport-shell.mobile .class-note {
+        font-size: 6px;
+      }
+
+      .viewport-shell.mobile .home-board {
+        top: 24%;
+        width: 86%;
+        height: 54%;
+        padding: 10% 10%;
+        background-image: url("/assets/home/home-main-panel-mobile.webp");
+      }
+
+      .viewport-shell.mobile .home-board-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: 0.72fr 1.28fr;
+        gap: 5%;
+      }
+
+      .viewport-shell.mobile .entry-stack {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        gap: 6%;
+      }
+
+      .viewport-shell.mobile .home-art-button {
+        min-height: 100%;
+        border-radius: 11px;
+        box-shadow: 3px 4px 0 rgba(79, 58, 41, 0.38);
+      }
+
+      .viewport-shell.mobile .home-art-button span {
+        right: 6%;
+        bottom: 5%;
+        padding: 2px 5px;
+        font-size: 6px;
+      }
+
+      .viewport-shell.mobile .match-card {
+        height: 100%;
+        border-radius: 12px;
+        box-shadow: 3px 4px 0 rgba(67, 60, 43, 0.4);
+      }
+
+      .viewport-shell.mobile .match-card-label {
+        padding: 4px 8px;
+        font-size: 8px;
+      }
+
+      .viewport-shell.mobile .utility-dock {
+        right: 6%;
+        bottom: 2.5%;
+        left: 6%;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .viewport-shell.mobile .utility {
+        width: 45px;
+        padding: 3px;
+        border-radius: 12px;
+        box-shadow: 3px 4px 0 rgba(63, 48, 35, 0.42);
+      }
+
+      .viewport-shell.mobile .scene-caption {
+        display: none;
+      }
+
+      .viewport-shell.mobile .iris-edge-entry {
+        top: 50%;
+        right: -8px;
+        width: 116px;
+        min-width: 0;
+        filter: drop-shadow(-4px 5px 0 rgba(33, 45, 42, 0.28));
+      }
+
+      .viewport-shell.mobile .iris-edge-entry::before {
+        right: 0;
+        bottom: 7%;
+        width: 72%;
+        height: 31%;
+        border-radius: 12px 0 0 12px;
+        box-shadow:
+          -3px 4px 0 rgba(28, 44, 43, 0.44),
+          inset 4px 0 0 #5fd3ed;
+      }
+
+      .viewport-shell.mobile .iris-chibi {
+        right: -10%;
+        bottom: 11%;
+      }
+
+      .viewport-shell.mobile .iris-entry-label {
+        right: 6%;
+        bottom: 9%;
+        width: 58%;
+        font-size: 7px;
+      }
+
+      .viewport-shell.mobile .iris-entry-pulse {
+        top: 39%;
+        right: 9%;
+        border-width: 1px;
+        box-shadow: 0 0 0 3px rgba(95, 211, 237, 0.2);
+      }
+
+      .viewport-shell.mobile .iris-modal-layer {
+        padding:
+          max(10px, env(safe-area-inset-top))
+          max(9px, env(safe-area-inset-right))
+          max(10px, env(safe-area-inset-bottom))
+          max(9px, env(safe-area-inset-left));
+      }
+
+      .viewport-shell.mobile .iris-window {
+        grid-template-columns: 1fr;
+        grid-template-rows: 38% minmax(0, 62%);
+        width: 100%;
+        height: 100%;
+        border-radius: 21px;
+        box-shadow:
+          5px 7px 0 rgba(23, 44, 46, 0.52),
+          inset 0 0 0 3px rgba(255, 255, 255, 0.64);
+      }
+
+      .viewport-shell.mobile .iris-portrait-panel {
+        border-right: 0;
+        border-bottom: 3px solid #273f43;
+      }
+
+      .viewport-shell.mobile .iris-portrait {
+        object-position: center 18%;
+      }
+
+      .viewport-shell.mobile .iris-id {
+        right: 12px;
+        bottom: 10px;
+        left: 12px;
+        padding: 7px 9px;
+        font-size: 8px;
+      }
+
+      .viewport-shell.mobile .iris-content {
+        padding: 28px 17px 18px;
+        background-size: 100% 23px;
+      }
+
+      .viewport-shell.mobile .iris-content-topline {
+        margin-bottom: 5px;
+        font-size: 8px;
+      }
+
+      .viewport-shell.mobile .iris-content h3 {
+        font-size: 24px;
+      }
+
+      .viewport-shell.mobile .iris-intro {
+        margin: 9px 0 10px;
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .viewport-shell.mobile .iris-quote {
+        margin-bottom: 11px;
+        padding: 7px 9px;
+        font-size: 9px;
+        line-height: 1.45;
+      }
+
+      .viewport-shell.mobile .link-list {
+        gap: 7px;
+      }
+
+      .viewport-shell.mobile .go-link {
+        min-height: 51px;
+        gap: 9px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        box-shadow: 3px 4px 0 rgba(91, 72, 51, 0.18);
+      }
+
+      .viewport-shell.mobile .go-link-index {
+        width: 28px;
+        font-size: 12px;
+      }
+
+      .viewport-shell.mobile .go-link-copy strong {
+        font-size: 10px;
+      }
+
+      .viewport-shell.mobile .go-link-copy small {
+        font-size: 8px;
+      }
+
+      .viewport-shell.mobile .go-link-arrow {
+        font-size: 16px;
+      }
+
+      .viewport-shell.mobile .iris-close {
+        top: 17px;
+        right: 17px;
+        width: 44px;
+        height: 44px;
+        border-color: rgba(169, 230, 239, 0.84);
+        background: rgba(8, 31, 50, 0.86);
+        color: #effcff;
+        box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.28);
+      }
+
+      .design-contract {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin: 52px auto 0;
+      }
+
+      .contract-item {
+        min-height: 150px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 13px;
+        background: rgba(245, 241, 223, 0.08);
+        color: #dfe8df;
+      }
+
+      .contract-kicker {
+        display: block;
+        margin-bottom: 20px;
+        color: #8ad8df;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+
+      .contract-item strong {
+        display: block;
+        margin-bottom: 7px;
+        color: #fff8df;
+        font-family: Georgia, "Noto Serif SC", serif;
+        font-size: 19px;
+        font-weight: 500;
+      }
+
+      .contract-item p {
+        margin: 0;
+        color: #aebfb7;
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      @media (max-width: 760px) {
+        .prototype-page {
+          width: min(100% - 22px, 1480px);
+          padding-top: 28px;
+        }
+
+        .prototype-heading {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .heading-note {
+          margin: 0;
+        }
+
+        .prototype-card {
+          margin-top: 34px;
+        }
+
+        .prototype-card.desktop-sample {
+          overflow-x: auto;
+          padding: 0 8px 24px;
+        }
+
+        .prototype-card.desktop-sample .prototype-card-header,
+        .prototype-card.desktop-sample .viewport-shell {
+          width: 980px;
+        }
+
+        .prototype-card-header {
+          align-items: start;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .design-contract {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="prototype-page">
+      <header class="prototype-heading">
+        <div>
+          <p class="eyebrow">SigrikaGo · home edge utility concept</p>
+          <h1>IRIS 数据库<br />贴边入口原型</h1>
+        </div>
+        <p class="heading-note">
+          Q 版半身从<strong>视口右侧中段</strong>探出，不占据主菜单编队；
+          点击后由正常比例 IRIS 进入资料窗口。下方两个画框分别模拟桌面与竖屏手机视口。
+        </p>
+      </header>
+
+      <section class="prototype-card desktop-sample">
+        <div class="prototype-card-header">
+          <h2>桌面端</h2>
+          <p>1440 × 810 · 右侧 53% 高度 · 点击 Q 版入口</p>
+        </div>
+        <div class="viewport-shell desktop" data-iris-frame="desktop">
+          <div class="scene-ui">
+            <div class="school-topbar" aria-hidden="true">
+              <div class="school-mark">BRIGHT SCHOOL · 围棋部</div>
+              <div class="topbar-actions">
+                <span class="topbar-pill">公告</span>
+                <span class="topbar-pill">设置</span>
+                <span class="topbar-pill">Moming</span>
+              </div>
+            </div>
+
+            <div class="nameplate" aria-hidden="true">
+              <img src="/assets/home/student-id-nameplate.webp" alt="" />
+              <div class="nameplate-copy">
+                <div>
+                  <div class="player-name">MOMING</div>
+                  <div class="player-meta">围棋部 · 见习棋士</div>
+                </div>
+                <div class="class-note">今日值日<br />棋具归位 · 18:00</div>
+              </div>
+            </div>
+
+            <div class="home-board" aria-hidden="true">
+              <div class="home-board-content">
+                <div class="entry-stack">
+                  <div class="home-art-button">
+                    <img src="/assets/home/book-entry.webp" alt="" />
+                    <span>棋舍手册</span>
+                  </div>
+                  <div class="home-art-button">
+                    <img src="/assets/home/home-utility-friends.webp" alt="" />
+                    <span>好友</span>
+                  </div>
+                </div>
+                <div class="match-card">
+                  <img src="/assets/home/fantasy-match-entry.webp" alt="" />
+                  <div class="match-card-label">开始一局 · GO!</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="utility-dock" aria-hidden="true">
+              <div class="utility">
+                <img src="/assets/home/home-utility-shop.webp" alt="" />
+              </div>
+              <div class="utility">
+                <img src="/assets/home/home-utility-warehouse.webp" alt="" />
+              </div>
+              <div class="utility">
+                <img src="/assets/home/home-utility-leaderboard.webp" alt="" />
+              </div>
+              <div class="utility">
+                <img src="/assets/home/home-utility-recruitment.webp" alt="" />
+              </div>
+            </div>
+
+            <div class="scene-caption">入口位置：固定于浏览器视口，不随主页内容滚动</div>
+          </div>
+
+          <button
+            class="iris-edge-entry"
+            type="button"
+            aria-label="打开 IRIS 数据库"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+          >
+            <img
+              class="iris-chibi"
+              src="/assets/iris-database/iris-edge-chibi-v1.png"
+              alt=""
+            />
+            <span class="iris-entry-pulse" aria-hidden="true"></span>
+            <span class="iris-entry-label"
+              >IRIS 数据库<small>ARCHIVE ONLINE</small></span
+            >
+          </button>
+
+          <div class="iris-modal-layer" aria-hidden="true">
+            <button class="iris-backdrop" type="button" aria-label="关闭 IRIS 数据库"></button>
+            <section class="iris-window" role="dialog" aria-modal="true" aria-label="IRIS 数据库">
+              <button class="iris-close" type="button" aria-label="关闭">×</button>
+              <div class="iris-portrait-panel">
+                <img
+                  class="iris-portrait"
+                  src="/assets/iris-database/iris-modal-portrait-v1.png"
+                  alt="IRIS 正常比例概念立绘"
+                />
+                <div class="iris-id">
+                  <strong>I.R.I.S.</strong>
+                  Intelligent Retrieval &amp; Indexing System
+                </div>
+              </div>
+              <div class="iris-content">
+                <div class="iris-content-topline">Spacetrek archive / link index</div>
+                <h3>围棋资料索引</h3>
+                <p class="iris-intro">
+                  我把常用的围棋资料重新编了目录。规则、赛事、线上对弈和术语库——
+                  只要告诉我你想查什么就好。
+                </p>
+                <p class="iris-quote">“检索完成。顺便说一句，你昨天漏看的那盘棋我也找到了。”</p>
+                <ul class="link-list">
+                  <li>
+                    <a class="go-link" href="https://www.weiqi.org.cn/" target="_blank" rel="noreferrer">
+                      <span class="go-link-index">01</span>
+                      <span class="go-link-copy">
+                        <strong>中国围棋协会</strong>
+                        <small>赛事资讯 · 行业动态 · weiqi.org.cn</small>
+                      </span>
+                      <span class="go-link-arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="go-link" href="https://online-go.com/" target="_blank" rel="noreferrer">
+                      <span class="go-link-index">02</span>
+                      <span class="go-link-copy">
+                        <strong>Online Go Server</strong>
+                        <small>线上对弈 · 棋局复盘 · online-go.com</small>
+                      </span>
+                      <span class="go-link-arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="go-link" href="https://senseis.xmp.net/" target="_blank" rel="noreferrer">
+                      <span class="go-link-index">03</span>
+                      <span class="go-link-copy">
+                        <strong>Sensei’s Library</strong>
+                        <small>围棋术语与知识 Wiki · senseis.xmp.net</small>
+                      </span>
+                      <span class="go-link-arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="prototype-card">
+        <div class="prototype-card-header">
+          <h2>移动端</h2>
+          <p>390 × 844 · 竖屏安全区 · 同一 Q 版资源缩放</p>
+        </div>
+        <div class="mobile-stage">
+          <div class="viewport-shell mobile" data-iris-frame="mobile">
+            <div class="scene-ui">
+              <div class="school-topbar" aria-hidden="true">
+                <div class="school-mark">BRIGHT SCHOOL</div>
+                <div class="topbar-actions">
+                  <span class="topbar-pill">公告</span>
+                  <span class="topbar-pill">菜单</span>
+                  <span class="topbar-pill">Moming</span>
+                </div>
+              </div>
+
+              <div class="nameplate" aria-hidden="true">
+                <img src="/assets/home/student-id-nameplate.webp" alt="" />
+                <div class="nameplate-copy">
+                  <div>
+                    <div class="player-name">MOMING</div>
+                    <div class="player-meta">围棋部 · 见习棋士</div>
+                  </div>
+                  <div class="class-note">今日值日<br />棋具归位</div>
+                </div>
+              </div>
+
+              <div class="home-board" aria-hidden="true">
+                <div class="home-board-content">
+                  <div class="entry-stack">
+                    <div class="home-art-button">
+                      <img src="/assets/home/book-entry.webp" alt="" />
+                      <span>棋舍手册</span>
+                    </div>
+                    <div class="home-art-button">
+                      <img src="/assets/home/home-utility-friends.webp" alt="" />
+                      <span>好友</span>
+                    </div>
+                  </div>
+                  <div class="match-card">
+                    <img src="/assets/home/fantasy-match-entry.webp" alt="" />
+                    <div class="match-card-label">开始一局 · GO!</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="utility-dock" aria-hidden="true">
+                <div class="utility">
+                  <img src="/assets/home/home-utility-shop.webp" alt="" />
+                </div>
+                <div class="utility">
+                  <img src="/assets/home/home-utility-warehouse.webp" alt="" />
+                </div>
+                <div class="utility">
+                  <img src="/assets/home/home-utility-leaderboard.webp" alt="" />
+                </div>
+                <div class="utility">
+                  <img src="/assets/home/home-utility-recruitment.webp" alt="" />
+                </div>
+              </div>
+            </div>
+
+            <button
+              class="iris-edge-entry"
+              type="button"
+              aria-label="打开 IRIS 数据库"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+            >
+              <img
+                class="iris-chibi"
+                src="/assets/iris-database/iris-edge-chibi-v1.png"
+                alt=""
+              />
+              <span class="iris-entry-pulse" aria-hidden="true"></span>
+              <span class="iris-entry-label"
+                >IRIS 数据库<small>ARCHIVE ONLINE</small></span
+              >
+            </button>
+
+            <div class="iris-modal-layer" aria-hidden="true">
+              <button class="iris-backdrop" type="button" aria-label="关闭 IRIS 数据库"></button>
+              <section class="iris-window" role="dialog" aria-modal="true" aria-label="IRIS 数据库">
+                <button class="iris-close" type="button" aria-label="关闭">×</button>
+                <div class="iris-portrait-panel">
+                  <img
+                    class="iris-portrait"
+                    src="/assets/iris-database/iris-modal-portrait-v1.png"
+                    alt="IRIS 正常比例概念立绘"
+                  />
+                  <div class="iris-id">
+                    <strong>I.R.I.S.</strong>
+                    Intelligent Retrieval &amp; Indexing System
+                  </div>
+                </div>
+                <div class="iris-content">
+                  <div class="iris-content-topline">Spacetrek archive / link index</div>
+                  <h3>围棋资料索引</h3>
+                  <p class="iris-intro">
+                    常用资料已经重新编目。规则、赛事、线上对弈和术语库，都从这里进入。
+                  </p>
+                  <p class="iris-quote">“检索完成。你昨天漏看的那盘棋，我也找到了。”</p>
+                  <ul class="link-list">
+                    <li>
+                      <a class="go-link" href="https://www.weiqi.org.cn/" target="_blank" rel="noreferrer">
+                        <span class="go-link-index">01</span>
+                        <span class="go-link-copy">
+                          <strong>中国围棋协会</strong>
+                          <small>赛事资讯 · 行业动态</small>
+                        </span>
+                        <span class="go-link-arrow" aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="go-link" href="https://online-go.com/" target="_blank" rel="noreferrer">
+                        <span class="go-link-index">02</span>
+                        <span class="go-link-copy">
+                          <strong>Online Go Server</strong>
+                          <small>线上对弈 · 棋局复盘</small>
+                        </span>
+                        <span class="go-link-arrow" aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="go-link" href="https://senseis.xmp.net/" target="_blank" rel="noreferrer">
+                        <span class="go-link-index">03</span>
+                        <span class="go-link-copy">
+                          <strong>Sensei’s Library</strong>
+                          <small>围棋术语与知识 Wiki</small>
+                        </span>
+                        <span class="go-link-arrow" aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="design-contract" aria-label="入口设计约束">
+        <article class="contract-item">
+          <span class="contract-kicker">POSITION</span>
+          <strong>右侧中段，避开底部主操作</strong>
+          <p>桌面约 53vh，移动约 50vh。视觉上像 IRIS 从屏幕外探入，也不会和左下工具组抢位置。</p>
+        </article>
+        <article class="contract-item">
+          <span class="contract-kicker">ASSET SPLIT</span>
+          <strong>入口 Q 版，弹窗正常比例</strong>
+          <p>两个用途各用一张资产，不强行把全身立绘缩成难辨认的小图标；移动端复用同一透明 Q 版图。</p>
+        </article>
+        <article class="contract-item">
+          <span class="contract-kicker">BEHAVIOR</span>
+          <strong>生产实现使用 position: fixed</strong>
+          <p>本页的画框代表独立视口，入口相对画框绝对定位；接入主页时映射为视口 fixed 并读取安全区。</p>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const frames = document.querySelectorAll("[data-iris-frame]");
+
+      const setOpen = (frame, shouldOpen) => {
+        const entry = frame.querySelector(".iris-edge-entry");
+        const layer = frame.querySelector(".iris-modal-layer");
+        frame.classList.toggle("iris-open", shouldOpen);
+        entry.setAttribute("aria-expanded", String(shouldOpen));
+        layer.setAttribute("aria-hidden", String(!shouldOpen));
+        entry.toggleAttribute("inert", shouldOpen);
+
+        if (shouldOpen) {
+          frame.querySelector(".iris-close").focus({ preventScroll: true });
+        } else {
+          entry.focus({ preventScroll: true });
+        }
+      };
+
+      frames.forEach((frame) => {
+        frame
+          .querySelector(".iris-edge-entry")
+          .addEventListener("click", () => setOpen(frame, true));
+        frame
+          .querySelector(".iris-close")
+          .addEventListener("click", () => setOpen(frame, false));
+        frame
+          .querySelector(".iris-backdrop")
+          .addEventListener("click", () => setOpen(frame, false));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const openFrame = document.querySelector(".viewport-shell.iris-open");
+        if (!openFrame) return;
+
+        if (event.key === "Escape") {
+          setOpen(openFrame, false);
+          return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const focusable = [
+          ...openFrame.querySelectorAll(
+            ".iris-window button:not([disabled]), .iris-window a[href]",
+          ),
+        ];
+        const first = focusable[0];
+        const last = focusable.at(-1);
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    </script>
+  </body>
+</html>
