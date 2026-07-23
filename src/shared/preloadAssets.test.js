@@ -9,7 +9,7 @@ import {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE
 } from "./shopMascotAssets.js";
-import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
+import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadImageAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
   it("uses same-origin socket connections in the browser", () => {
@@ -23,7 +23,7 @@ describe("deployment preload asset helpers", () => {
     ]);
   });
 
-  it("blocks login only on the active home shell and defers secondary accessible media", () => {
+  it("blocks login on the current account's accessible non-replay media", () => {
     const assets = loginPreloadAssets({
       characters: {
         sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
@@ -79,9 +79,11 @@ describe("deployment preload asset helpers", () => {
     expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.images).toContain("/assets/items/qiuyuan-zhouwo.webp");
     expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
-    expect(assets.deferredImages).toContain("/assets/items/shop-only.webp");
-    expect(assets.deferredImages).toContain("/assets/items/inventory-only.webp");
-    expect(assets.deferredImages).toContain("/assets/achievements/semantic-nameplate.png");
+    expect(assets.criticalImages).toContain("/assets/items/shop-only.webp");
+    expect(assets.criticalImages).toContain("/assets/items/inventory-only.webp");
+    expect(assets.criticalImages).toContain("/assets/achievements/semantic-nameplate.png");
+    expect(assets.deferredImages).toEqual([]);
+    expect(assets.images).toEqual(assets.criticalImages);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
     expect(assets.audio).toContain("/assets/music/ui_close_window.ogg");
     expect(assets.audio).toContain("/assets/music/ui_confirm.ogg");
@@ -100,13 +102,15 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_once.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/music/shanjifu_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/music/sigrika_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
     expect(assets.audio).not.toContain("/assets/music/aemeath0_loop.ogg");
     expect(assets.audio).not.toContain("/assets/music/qiuyuan_loop.ogg");
     expect(assets.audio).not.toContain("/assets/music/lynae_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/voice/sigrika_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/sigrika_skill_cast.ogg");
+    expect(assets.deferredAudio).toEqual([]);
+    expect(assets.audio).toEqual(assets.criticalAudio);
     expect(assets.audio).not.toContain("/assets/voice/qiuyuan_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
   });
@@ -118,10 +122,11 @@ describe("deployment preload asset helpers", () => {
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
-    expect(assets.deferredImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.deferredImages).toEqual([]);
   });
 
-  it("blocks on the selected character portrait and defers other owned portraits", () => {
+  it("blocks on every owned character portrait", () => {
     const assets = loginPreloadAssets({
       characters: {
         sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
@@ -135,8 +140,8 @@ describe("deployment preload asset helpers", () => {
     });
 
     expect(assets.criticalImages).toContain("/assets/Aemeath_centered.webp");
-    expect(assets.criticalImages).not.toContain("/assets/sigrika_centered.webp");
-    expect(assets.deferredImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.deferredImages).toEqual([]);
   });
 
   it("derives critical interaction audio from the runtime asset registry", () => {
@@ -280,7 +285,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
   });
 
-  it("keeps the home shell blocking while moving battle and secondary surfaces to background preload", () => {
+  it("keeps the accessible login manifest blocking while leaving room-specific assets to battle preload", () => {
     const assets = loginPreloadAssets({
       characters: {
         sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" }
@@ -293,13 +298,15 @@ describe("deployment preload asset helpers", () => {
     });
 
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
-    expect(assets.deferredImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.deferredImages).toEqual([]);
     expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_once.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/music/shanjifu_loop.ogg");
-    expect(assets.deferredAudio).toContain("/assets/music/sigrika_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_loop.ogg");
+    expect(assets.deferredAudio).toEqual([]);
   });
 
   it("keeps the runtime asset registry independent from playback implementations", () => {
@@ -360,6 +367,49 @@ describe("deployment preload asset helpers", () => {
     ]);
     expect(maxDeferred).toBe(1);
     deferredCompletions.forEach((resolve) => resolve());
+  });
+
+  it("waits for browser image decoding before treating an image as preloaded", async () => {
+    const OriginalImage = globalThis.Image;
+    let releaseDecode;
+    let imageInstance;
+
+    class DecodingImage {
+      constructor() {
+        imageInstance = this;
+      }
+
+      set src(value) {
+        this.currentSrc = value;
+        queueMicrotask(() => this.onload?.());
+      }
+
+      decode() {
+        return new Promise((resolve) => {
+          releaseDecode = resolve;
+        });
+      }
+    }
+
+    globalThis.Image = DecodingImage;
+    try {
+      let settled = false;
+      const preloadPromise = preloadImageAssets(["/assets/home/test.webp"], { taskTimeoutMs: 1000 })
+        .then(() => {
+          settled = true;
+        });
+
+      await vi.waitFor(() => expect(releaseDecode).toBeTypeOf("function"));
+      expect(imageInstance.decoding).toBe("async");
+      expect(imageInstance.currentSrc).toBe("/assets/home/test.webp");
+      expect(settled).toBe(false);
+
+      releaseDecode();
+      await preloadPromise;
+      expect(settled).toBe(true);
+    } finally {
+      globalThis.Image = OriginalImage;
+    }
   });
 
   it("does not keep login preload stuck when a critical asset loader never settles", async () => {

@@ -81,9 +81,12 @@
   transform: translateY(1px) rotate(1deg) scale(0.985) !important;
 }
 
+.theme-bright-school .home-image-entry:active .home-entry-motion {
+  transform: translateY(1px) scale(0.992) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
   filter: drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important;
-  transform: translateY(1px) scale(0.992) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:active img {
@@ -101,7 +104,7 @@
     transform: scale(0.99) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
+  .theme-bright-school .home-image-entry:active .home-entry-motion {
     transform: scale(0.995) !important;
   }
 }
@@ -111,8 +114,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
+  .theme-bright-school :is(.home-image-entry, .home-image-entry:active) .home-entry-motion {
     transform: none !important;
   }
 }

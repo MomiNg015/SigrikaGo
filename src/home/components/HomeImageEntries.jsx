@@ -1,7 +1,9 @@
 export function HouseManualEntry({ onOpenHouse }) {
   return (
     <button className="home-image-entry house-manual-entry hologram-entry" data-ui-sound="none" onClick={onOpenHouse} aria-label="部员手册">
-      <img src="/assets/home/book-entry.webp" alt="" aria-hidden="true" decoding="async" />
+      <span className="home-entry-motion" aria-hidden="true">
+        <img src="/assets/home/book-entry.webp" alt="" decoding="async" />
+      </span>
     </button>
   );
 }
@@ -17,7 +19,9 @@ export function MatchEntry({ onStartMatch, onPreloadPlayableReady }) {
         onPointerEnter={onPreloadPlayableReady}
         aria-label="星炬对弈"
       >
-        <img src="/assets/home/fantasy-match-entry.webp" alt="" aria-hidden="true" decoding="async" />
+        <span className="home-entry-motion" aria-hidden="true">
+          <img src="/assets/home/fantasy-match-entry.webp" alt="" decoding="async" />
+        </span>
       </button>
     </section>
   );

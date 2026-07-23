@@ -255,7 +255,7 @@ Required assertion points:
 
 #### 1. Scope / Trigger
 - Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, project handoff verification commands, or the GitHub Actions CI quality gate.
-- Startup preload is user-visible performance infrastructure. It must block only on the selected character, immediately visible home shell, interaction audio, and reachable home BGM; secondary accessible shop/inventory/character/battle/voice media stays in the bounded deferred queue, while inaccessible resources such as unpurchased music audio remain excluded.
+- Startup preload is user-visible performance infrastructure. The login-generated manifest uses a bandwidth-first, account-accessible gate: owned character portraits, home/shop/recruitment/inventory/equipment/decoration images, interaction/result sounds, reachable default/owned BGM, and owned-character skill/system voices block the post-login progress screen. Inaccessible resources such as unpurchased music, replay data, and room-specific opponent/Pixi resources remain excluded or battle-gated.
 
 #### 2. Signatures
 - `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
@@ -273,9 +273,10 @@ Required assertion points:
 
 #### 3. Contracts
 - Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
-- Critical login images include only the selected character portrait and `RUNTIME_IMAGE_ASSETS.home`. Other owned character portraits, shop/recruitment/inventory/equipment images, and stone decorations remain accessible through `images` but belong to `deferredImages`.
-- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction` plus reachable home BGM candidates because home playback chooses among them. Match/result sounds, battle/skill tracks, and character/system voices remain accessible through `audio` but belong to `deferredAudio`. Unpurchased music product audio must not be preloaded.
-- Deferred work starts only after critical completion and remains concurrency-limited. Moving an asset to deferred must not remove it from the flattened compatibility arrays.
+- Critical login images include all account-accessible non-room images assembled by `loginPreloadAssets()`: owned character portraits, `RUNTIME_IMAGE_ASSETS.home`, `RUNTIME_IMAGE_ASSETS.shop`, recruitment surfaces/items, current shop/inventory items, equipped achievement assets, and owned stone decorations.
+- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction`, match/result sounds, every reachable default/owned track candidate, and skill/system voice candidates for owned characters. Unpurchased music product audio must not be preloaded.
+- `loginPreloadAssets()` currently returns empty `deferredImages` and `deferredAudio`; its flattened `images`/`audio` arrays must equal the critical groups. The generic grouped executor still supports deferred work for other callers, starts it only after critical completion, and keeps it concurrency-limited.
+- `useStartupPreload()` uses six blocking workers. Do not raise concurrency again without checking source/origin behavior and 2 GB deployment memory; per-resource timeout and lower-concurrency retry remain mandatory.
 - Battle preload must derive assets from the current room, players, mode, and current user. It blocks on both player portraits, the one resolved battle track, one resolved track per relevant base/derived skill slot, required voice candidates, and mode-specific effect images; it must not preload every configured battle track or every purchasable alternative for a slot. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
 - Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
 - `AssetPreloadScreen` owns normalized `--preload-progress`, `--preload-mask-size`, and `--preload-mascot-rotation` values for one shared paper-strip progress stage. Keep the paper track at 20px on desktop and 18px on phones, the mascot height at exactly three times the track height with `width: auto`, and reserve half a mascot at both horizontal ends so 0% and 100% remain fully visible. The orange-yellow crayon fill, scratches, paper gaps, and warm glow must stay full-width with progress-independent background sizing; reveal them from the left through `mask-size` plus an equivalent `clip-path` fallback, never `scaleX()`. Keep position, clockwise 0–720-degree roll, and post-idle breathing on separate transform owners. Movement above one percentage point enters the 420ms ease-out position/roll transition and returns to breathing after 600ms; unchanged or one-point progress remains idle. Reduced-motion keeps the correct endpoint and revealed range while removing interpolation, roll, and breathing. Theme-wide media and meter rules may provide semantic colors but must not replace the paper texture, mask/clip reveal, or mascot owners.
@@ -301,19 +302,20 @@ Required assertion points:
 - Selected battle/skill track is unavailable or not owned -> use the existing music-library fallback for that slot; never preload an arbitrary inaccessible alternative.
 
 #### 5. Good/Base/Bad Cases
-- Good: Login reaches home after the selected portrait, home art, UI/board SFX, and reachable home BGM are ready while shop, inventory, battle tracks, and voices load in the background.
+- Good: Login reaches home after the current account's accessible image, music, and voice manifest has completed or timed out; opening home, shop, warehouse, recruitment, and owned-character audio surfaces begins from a warmed browser cache.
 - Good: Match preload fetches the user's selected battle track and the resolved skill-slot tracks for the two room characters, not the whole music catalog.
 - Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
 - Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
 - Good: CI runs the same core quality surfaces as local handoff so pull requests catch tests, build, production config, and system-design docs regressions before merge.
 - Base: Older tests or helpers that pass only `images` and `audio` still work.
-- Bad: Awaiting every configured music and voice file before home entry.
+- Bad: Preloading the whole configured music/voice catalog regardless of ownership, or pulling room-specific opponent/Pixi resources before a room exists.
+- Bad: Moving owned/reachable music or owned-character voices back to the login deferred queue without an explicit product decision and updated loading-screen contract.
 - Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
 - Bad: CI runs only `npm test`, because build, docs, and production config drift can still merge.
 
 #### 6. Tests Required
 - API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
-- Asset grouping tests must assert the selected portrait/home shell/home BGM are critical; secondary owned portraits, shop/inventory/equipment, battle/skill music, and voices are deferred; inaccessible unpurchased music audio is excluded.
+- Asset grouping tests must assert owned portraits, home/shop/recruitment/inventory/equipment/decoration images, reachable default/owned music, match/result sounds, and owned-character skill/system voices are critical; generated login deferred groups are empty; inaccessible unpurchased music audio is excluded.
 - Battle grouping tests must assert selected battle music replaces the default candidate, derived skill slots remain covered, both room portraits are present, and no-skill modes omit skill-only resources.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
@@ -348,7 +350,7 @@ await preloadLoginAssets(loginPreloadAssets({ characters, user, shopItems, inven
 retrySkippedPreloadAssets(skipped, { concurrency: 2 });
 ```
 
-`loginPreloadAssets` splits the current user's accessible manifest into a small home-critical tier and a bounded deferred tier, while `preloadLoginAssets` bounds each asset and reports skipped sources for background retry.
+`loginPreloadAssets` places the current user's accessible non-room manifest in the critical tier and excludes inaccessible or room-specific resources. `preloadLoginAssets` bounds each asset, reports skipped sources, and allows the caller to retry those sources after home entry.
 
 Wrong:
 
@@ -1106,7 +1108,28 @@ Required assertion points:
 - Home plaque stats must be in a shrinkable grid column with `min-width: 0`; avoid fixed pixel stats columns on mobile because long usernames need the remaining space.
 - Phone portrait must remain a usable home layout, not an orientation gate. Below the phone breakpoint, keep `.home-main-panel` visible and stack the stage as `player`, `match`, `manual`, `utility`; do not render or reveal `.home-orientation-guard`.
 - Bright School home utility entries may use image-only hand-drawn button art when the image itself contains the icon and title. In that mode, keep native `<button>` semantics and `aria-label`s, render the `<img>` as decorative `.utility-entry-art`, and keep DOM icon/title fallbacks visually hidden instead of visible. Non-image utility entries should still keep recognisable icon and main `<strong>` title content visible so the 2x3 mobile toolbox preserves clear touch targets.
-- Bright School image-only home entries and utility buttons rely on `filter: drop-shadow(...)` for the paper depth. Keep `.home-image-entry`, `.match-image-entry`, `.house-manual-entry`, `.home-utility-grid`, and `.utility-entry` overflow-visible on desktop and mobile; `.utility-entry-art` must reserve right/bottom transparent bleed such as `padding: 0 6px 6px 0` so the shadow is not clipped by either the replaced image box or a final mobile safety rule. For the six desktop utility buttons, deterministic tone-scoped `--utility-tilt` values may vary the resting art angle, but `.utility-entry` must remain `transform: none`; apply rest/hover/active transforms only to `.utility-entry-art` and use fixed `grid-auto-rows`. Each tone must also keep a same-direction `--utility-hover-tilt` around `3.8deg` to `4.4deg`, with the shared hover/focus `scale(1.015)` compensation; do not force negative resting tilts across zero to a common positive endpoint because the long raster labels appear to shrink during that path. This prevents transformed overflow from changing the main-panel/background height while preserving stable hit boxes; mobile keeps its existing 2x3 sizing and final interaction overrides.
+- Bright School image-only home entries and utility buttons rely on `filter: drop-shadow(...)` for the paper depth. Keep `.home-image-entry`, `.match-image-entry`, `.house-manual-entry`, `.home-utility-grid`, and `.utility-entry` overflow-visible on desktop and mobile; `.utility-entry-art` must reserve right/bottom transparent bleed such as `padding: 0 6px 6px 0` so the shadow is not clipped by either the replaced image box or a final mobile safety rule. Large home-entry transforms belong to `.home-entry-motion`, and utility rest/hover/active transforms belong to `.utility-entry-motion`; the nested raster images own filter/shadow only. Never animate `transform` on the same image element that owns `drop-shadow`, because desktop browsers may rerasterize the filtered transparent image on every frame. For the six desktop utility buttons, deterministic tone-scoped `--utility-tilt` values may vary the resting art angle, but `.utility-entry` must remain `transform: none`; use fixed `grid-auto-rows`. Each tone must also keep a same-direction `--utility-hover-tilt` around `3.8deg` to `4.4deg`, with the shared hover/focus `scale(1.015)` compensation; do not force negative resting tilts across zero to a common positive endpoint because the long raster labels appear to shrink during that path. This prevents transformed overflow from changing the main-panel/background height while preserving stable hit boxes; mobile keeps its existing 2x3 sizing and final interaction overrides by splitting transform selectors onto `.utility-entry-motion` and filter selectors onto `.utility-entry-art`.
+
+```jsx
+// Correct: the replaceable image remains a filtered raster-only layer.
+<span className="utility-entry-motion" aria-hidden="true">
+  <img className="utility-entry-art" src={imageUrl} alt="" />
+</span>
+```
+
+```css
+.utility-entry-motion {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.utility-entry-art {
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3));
+  transition: filter 160ms ease-out;
+}
+```
+
+Required regression points: `src/home/HomeScreen.test.jsx` must assert the motion-wrapper markup and separate desktop/mobile transform-versus-filter selectors; `src/app/AppRoutes.dom.test.jsx` must prove room-only route state does not rerender a stable home tree; `src/shared/preloadAssets.test.js` must prove the default image loader does not settle before `decode()` resolves.
 - Bright School hard-shadow cards and rows inside scroll/clipping owners must reserve trailing and bottom bleed on the list/layout owner instead of weakening the existing shadow. Check both desktop and mobile owner CSS for house manual `.character-list`, leaderboard `.leaderboard-list` plus `.leaderboard-current`, warehouse `.warehouse-grid`, shop `.shop-layout`, and friends `.friends-list` before calling a shadow-clipping fix complete.
 
 Wrong:

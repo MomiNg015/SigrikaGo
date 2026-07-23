@@ -12,12 +12,18 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid :is(.utility-image-entry:hover:not(:disabled), .utility-image-entry:focus-visible:not(:disabled)) .utility-entry-art {
     filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) brightness(1.04) saturate(1.06) !important;
+  }
+
+  .theme-bright-school :is(.utility-image-entry:hover:not(:disabled), .utility-image-entry:focus-visible:not(:disabled)) .utility-entry-motion {
     transform: translateY(-1px) rotate(0.6deg) !important;
     transform-origin: center !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-image-entry:active:not(:disabled) .utility-entry-art {
     filter: drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26)) brightness(0.99) saturate(1.02) !important;
+  }
+
+  .theme-bright-school .utility-image-entry:active:not(:disabled) .utility-entry-motion {
     transform: translateY(1px) !important;
   }
 }

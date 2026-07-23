@@ -87,7 +87,9 @@ export default function HomeUtilityDock({
           title={title}
           type="button"
         >
-          <img className="utility-entry-art" src={image} alt="" aria-hidden="true" decoding="async" />
+          <span className="utility-entry-motion" aria-hidden="true">
+            <img className="utility-entry-art" src={image} alt="" decoding="async" />
+          </span>
           <i className="utility-entry-icon" aria-hidden="true">
             <Icon size={24} />
           </i>
