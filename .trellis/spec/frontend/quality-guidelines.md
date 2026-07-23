@@ -384,6 +384,56 @@ connectGameSocket({ socketBase, token });
 
 The socket lifecycle hook owns realtime reconnects while startup preload remains tied to the confirmed token.
 
+### Memoized home route callback forwarding contracts
+
+#### 1. Scope / Trigger
+- Trigger: changing `AppRoutes`, `HomeRoute`, `HomeScreen` action props, or the memoized home render boundary.
+
+#### 2. Signatures
+- `HomeRoute` is a thin memoized wrapper around `HomeScreen`.
+- Core action props are `onLogout`, `onSelectCharacter`, `onStartMatch`, and `onStartPractice`.
+
+#### 3. Contracts
+- A thin memo boundary must preserve the wrapped component's public action-prop names end to end. Do not pass `onStartMatch` into the wrapper and destructure it as `startMatch`.
+- Memoization may suppress rerenders only when consumed inputs remain equal; it must never replace, alias, or drop an action callback.
+- Match-mode close state and match/practice startup are separate callbacks. Tests must prove both the visual close and the authoritative startup action occur.
+
+#### 4. Validation & Error Matrix
+- Any match mode -> the picker closes and the original `startMatch(mode)` callback is invoked.
+- Practice quick start -> the picker closes and the original `startPractice(options)` callback is invoked.
+- Logout or character selection -> the original app callback is invoked through `HomeScreen`.
+- Room/replay-only prop update -> `HomeScreen` remains memoized when all consumed home props are stable.
+
+#### 5. Good/Base/Bad Cases
+- Good: `AppRoutes` passes `onStartMatch={startMatch}`, `HomeRoute` reads `onStartMatch`, and `HomeScreen` receives `onStartMatch`.
+- Base: non-action room state changes do not rerender the home tree.
+- Bad: a wrapper renames `onStartMatch` to `startMatch` only on one side; React accepts the missing callback and the button silently becomes inert.
+
+#### 6. Tests Required
+- `src/app/AppRoutes.dom.test.jsx` must assert callback identity and invocation for logout, character selection, all match modes, and practice start.
+- The same suite must keep its room/replay-only rerender guard.
+- `src/home/HomeScreen.dom.test.jsx` must continue covering the practice picker close plus quick-start request.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<HomeRoute onStartMatch={startMatch} />
+function HomeRoute({ startMatch }) {
+  return <HomeScreen onStartMatch={startMatch} />;
+}
+```
+
+Correct:
+
+```jsx
+<HomeRoute onStartMatch={startMatch} />
+function HomeRoute({ onStartMatch }) {
+  return <HomeScreen onStartMatch={onStartMatch} />;
+}
+```
+
 ### Board point and interaction feedback performance contracts
 
 #### 1. Scope / Trigger
