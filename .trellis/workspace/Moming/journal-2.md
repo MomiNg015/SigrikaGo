@@ -105,3 +105,36 @@ Matched the Zhunshibao practice badge to the Bright School home utility hard-sha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 64: 修复首页模式与准时宝陪练启动无响应
+
+**Date**: 2026-07-23
+**Task**: 修复首页模式与准时宝陪练启动无响应
+**Branch**: `codex/fix-practice-start`
+
+### Summary
+
+修复 HomeRoute memo 边界对 onStartMatch、onStartPractice、onLogout、onSelectCharacter 的属性命名断链；新增三种匹配、准时宝陪练、退出与角色选择的回调透传回归测试，保留首页渲染稳定化，并通过 2148 项测试和完整质量门禁。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `15e951c0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

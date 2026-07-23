@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 63
+- **Total Sessions**: 64
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~107 | Active |
+| `journal-2.md` | ~140 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 64 | 2026-07-23 | 修复首页模式与准时宝陪练启动无响应 | `15e951c0` | `codex/fix-practice-start` |
 | 63 | 2026-07-23 | 桌面端主界面零视觉性能优化与登录后资源预载 | `58e3001f`, `78110ec0` | `codex/human-vs-ai` |
 | 62 | 2026-07-23 | Align Zhunshibao practice entry shadow | `f2e37c98` | `codex/human-vs-ai` |
 | 61 | 2026-07-23 | Polish replay practice watch and shop UI | `39f48a7b` | `codex/human-vs-ai` |
