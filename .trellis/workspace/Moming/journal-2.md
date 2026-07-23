@@ -71,3 +71,37 @@ Matched the Zhunshibao practice badge to the Bright School home utility hard-sha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 63: 桌面端主界面零视觉性能优化与登录后资源预载
+
+**Date**: 2026-07-23
+**Task**: 桌面端主界面零视觉性能优化与登录后资源预载
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+保留现有视觉和动效，拆分主界面位移与滤镜合成层并稳定路由；登录后加载页以 6 并发预载当前账号可访问的大部分图片、音乐与角色音声，保留单资源超时和房间/回放资源按需加载；npm run check 全量通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `58e3001f` | (see git log) |
+| `78110ec0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
