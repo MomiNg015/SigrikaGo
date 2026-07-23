@@ -1,5 +1,5 @@
 import express from "express";
-import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { GAME_MODE_IDS, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { USER_ASSET_RELATION_SELECT } from "./db.js";
 import { listPublicCharacterResponse } from "./characters.js";
 import { createFeedbackMessage } from "./feedback.js";
@@ -89,7 +89,16 @@ export function createPublicRouteHandlers({
 
   async function watchRooms(req, res) {
     const mode = normalizeMode(req.query.mode);
-    res.json({ rooms: listWatchRooms().filter((room) => normalizeMode(room.mode) === mode) });
+    const watchableRooms = listWatchRooms();
+    const roomCounts = Object.fromEntries(GAME_MODE_IDS.map((modeId) => [modeId, 0]));
+    for (const room of watchableRooms) {
+      const roomMode = normalizeMode(room.mode);
+      if (Object.hasOwn(roomCounts, roomMode)) roomCounts[roomMode] += 1;
+    }
+    res.json({
+      rooms: watchableRooms.filter((room) => normalizeMode(room.mode) === mode),
+      roomCounts
+    });
   }
 
   return {

@@ -68,7 +68,7 @@
   box-shadow: none !important;
   clip-path: none !important;
   filter: none !important;
-  transform: translateX(-50%) !important;
+  transform: translateX(-50%) translateY(var(--practice-entry-lift, 0px)) rotate(var(--practice-entry-rotation, 0deg)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),

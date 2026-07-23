@@ -155,7 +155,12 @@ describe("public and lobby route handlers", () => {
       rooms: [
         { code: "spark-room", mode: "spark" },
         { code: "legacy-room" }
-      ]
+      ],
+      roomCounts: {
+        spark: 2,
+        standard: 1,
+        gomoku: 0
+      }
     });
   });
 

@@ -131,7 +131,11 @@ describe("roomFactory", () => {
       preload: { readyCount: 1, requiredCount: 2 }
     });
     const bot = room.players.find((player) => player.isBot);
-    expect(bot).toMatchObject({ color: COLORS.black, characterId: null, user: { username: "准时宝", rating: null } });
+    expect(bot).toMatchObject({
+      color: COLORS.black,
+      characterId: null,
+      user: { username: "准时宝", rank: "入门陪练", rating: null }
+    });
     expect(bot.botProfile.portraitUrl).toBe("/assets/characters/zhunshibao.png");
     expect(room.preload.readyUserIds).toEqual([bot.user.id]);
     expect(room.game.skillUses[COLORS.black]).toBe(0);

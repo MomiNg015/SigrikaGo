@@ -7,9 +7,9 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-1.md`
-- **Total Sessions**: 60
-- **Last Active**: 2026-07-22
+- **Active File**: `journal-2.md`
+- **Total Sessions**: 62
+- **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1993 | Active |
+| `journal-2.md` | ~73 | Active |
+| `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +30,8 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 62 | 2026-07-23 | Align Zhunshibao practice entry shadow | `f2e37c98` | `codex/human-vs-ai` |
+| 61 | 2026-07-23 | Polish replay practice watch and shop UI | `39f48a7b` | `codex/human-vs-ai` |
 | 60 | 2026-07-22 | Zhunshibao practice baseline verification | `611d57f8` | `codex/human-vs-ai` |
 | 59 | 2026-07-22 | Zhunshibao practice mode | `122bd087` | `codex/human-vs-ai` |
 | 58 | 2026-07-22 | Add Aemeath rainbow candy story and move effect | `f82f7404` | `codex/rainbow-bean-popping-candy-story` |

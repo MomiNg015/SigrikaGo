@@ -92,9 +92,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         <div className="result-summary">
           <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
           <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
-          {isPractice
-            ? <p className="result-match-note">人机练习 · 不计成长 · 不保存棋谱</p>
-            : isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
+          {!isPractice && isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
           {reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>

@@ -296,6 +296,7 @@ describe("Zahira shop window", () => {
     );
 
     expect(commerceCss).toContain(".shop-product-stage");
+    expect(commerceCss).toContain("font-size: 15px;");
     expect(commerceCss).toContain("overflow: hidden");
     expect(commerceCss).toContain("transform: rotate(var(--shop-card-rotation))");
     expect(commerceCss).toContain("--shop-card-float-travel: calc(var(--shop-card-float) * 2)");
@@ -321,6 +322,7 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain("clip-path: polygon(");
     expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
     expect(mobileCss).toContain("height: 56% !important");
+    expect(mobileCss).toContain("font-size: clamp(13px, 3.3vw, 16px) !important");
     expect(mobileCss).toContain("--shop-wall-axis: 180deg");
     expect(mobileCss).toContain("--shop-display-end: 56%");
     expect(mobileCss).toContain("100% 56.15%");

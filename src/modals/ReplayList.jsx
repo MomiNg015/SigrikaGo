@@ -60,9 +60,6 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
           <button type="button" onClick={retry}>重新加载</button>
         </div>
       )}
-      {!loading && !error && records.length > 0 && !hasMore && (
-        <p className="quiet-text replay-pagination-status">已加载全部棋谱</p>
-      )}
     </>
   );
 }

@@ -1079,6 +1079,9 @@ describe("HomeScreen", () => {
     const practiceWrapBlock = modalCss.match(/\.match-mode-option-wrap\.has-practice-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const practiceImageBlock = modalCss.match(/\.practice-entry-button img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPracticeBlock = brightSchoolCss.match(/button\.practice-entry-button,[\s\S]+?button\.practice-entry-button:active\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeShadowBlock = brightSchoolCss.match(/button\.practice-entry-button img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeHoverShadowBlock = brightSchoolCss.match(/button\.practice-entry-button:focus-visible img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeActiveShadowBlock = brightSchoolCss.match(/button\.practice-entry-button:active img\s*\{[^}]+\}/)?.[0] ?? "";
     const mobilePracticeBlock = mobileCss.match(/\.practice-entry-button\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain('aria-label="准时宝陪练"');
@@ -1095,19 +1098,31 @@ describe("HomeScreen", () => {
     expect(practiceButtonBlock).toContain("aspect-ratio: 5 / 2");
     expect(practiceButtonBlock).toContain("top: 0");
     expect(practiceButtonBlock).toContain("left: 168px");
-    expect(practiceButtonBlock).toContain("width: 132px");
-    expect(practiceButtonBlock).toContain("transform: translateX(-50%)");
+    expect(practiceButtonBlock).toContain("width: 144px");
+    expect(practiceButtonBlock).toContain("--practice-entry-rotation: 0deg");
+    expect(practiceButtonBlock).toContain("rotate(var(--practice-entry-rotation))");
+    expect(practiceButtonBlock).toContain("transform-origin: 22% 58%");
     expect(practiceButtonBlock).toContain("background: transparent");
     expect(practiceWrapBlock).toContain("padding-top: 32px");
     expect(practiceImageBlock).toContain("object-fit: contain");
     expect(practiceImageBlock).toContain("drop-shadow(0 4px 3px");
-    expect(modalCss).toContain(".practice-entry-button:hover img");
-    expect(modalCss).toContain("rotate(3deg)");
+    expect(modalCss).toContain(".practice-entry-button:hover,");
+    expect(modalCss).toContain("--practice-entry-lift: -2px");
+    expect(modalCss).toContain("--practice-entry-rotation: 7deg");
     expect(modalCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(brightPracticeBlock).toContain("background: transparent !important");
     expect(brightPracticeBlock).toContain("box-shadow: none !important");
-    expect(mobilePracticeBlock).toContain("width: 126px");
+    expect(brightPracticeBlock).toContain("translateY(var(--practice-entry-lift, 0px))");
+    expect(brightPracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg)) !important");
+    expect(brightSchoolCss).toContain("transform: none !important");
+    expect(brightPracticeShadowBlock).toContain("drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
+    expect(brightPracticeHoverShadowBlock).toContain("drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
+    expect(brightPracticeHoverShadowBlock).not.toContain("transform:");
+    expect(brightPracticeActiveShadowBlock).toContain("drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important");
+    expect(brightPracticeActiveShadowBlock).not.toContain("transform:");
+    expect(mobilePracticeBlock).toContain("width: 136px");
     expect(mobilePracticeBlock).toContain("left: min(154px, calc(100% - 64px))");
+    expect(mobilePracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg))");
   });
 
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {

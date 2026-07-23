@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
-import { ReplayList, replayOutcomeForUser } from "./ReplayList.jsx";
+import { PaginatedReplayList, ReplayList, replayOutcomeForUser } from "./ReplayList.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ReplayList", () => {
@@ -91,6 +91,35 @@ describe("ReplayList", () => {
 
     expect(html).toContain("replay-friendly-icon");
     expect(html).toContain("aria-label=\"友谊对局\"");
+  });
+
+  it("does not render an end-of-history status after the last replay page", () => {
+    const html = renderToStaticMarkup(createElement(PaginatedReplayList, {
+      characters,
+      currentUser: { id: "user-1", username: "moming" },
+      onOpenReplay: () => {},
+      pagination: {
+        records: [{
+          id: "record-final",
+          createdAt: "2026-06-06T00:31:00.000Z",
+          blackUserId: "user-1",
+          whiteUserId: "user-2",
+          blackName: "moming",
+          whiteName: "other",
+          blackCharacter: "sigrika",
+          whiteCharacter: "denia",
+          winnerColor: "black",
+          resultText: "黑胜",
+          moveCount: 50
+        }],
+        loading: false,
+        error: "",
+        hasMore: false,
+        retry: () => {}
+      }
+    }));
+
+    expect(html).not.toContain("已加载全部棋谱");
   });
 
   it("keeps desktop replay timestamps fully visible", () => {
