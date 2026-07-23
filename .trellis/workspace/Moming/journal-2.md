@@ -171,3 +171,36 @@ Added Lynae accepted/rejected rainbow candy story, 35 percent rejection handling
 ### Next Steps
 
 - None - task complete
+
+
+## Session 66: Allow Rainbow Candy On Lynae
+
+**Date**: 2026-07-23
+**Task**: Allow Rainbow Candy On Lynae
+**Branch**: `master`
+
+### Summary
+
+Fixed the warehouse candy target whitelist drift by sharing supported target rules across frontend and backend, added Lynae target regression coverage, synchronized the candy contract and system-design docs, and passed the full project check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `da66d4ae` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
