@@ -38,3 +38,36 @@ Removed terminal replay/result copy, expanded Zhunshibao entry, fixed its hover 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 62: Align Zhunshibao practice entry shadow
+
+**Date**: 2026-07-23
+**Task**: Align Zhunshibao practice entry shadow
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Matched the Zhunshibao practice badge to the Bright School home utility hard-shadow contract for rest, hover, focus, and active states; added regression coverage, updated CSS debt baseline, specs, and system design, and passed npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f2e37c98` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
