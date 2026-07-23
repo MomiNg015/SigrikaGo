@@ -56,13 +56,19 @@
   filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button img {
+  filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
   transform: rotate(2deg) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover img,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible img {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:hover img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:focus-visible img {
   filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important;
 }
 
@@ -78,6 +84,10 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
   filter: drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important;
   transform: translateY(1px) scale(0.992) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button:active img {
+  filter: drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important;
 }
 
 @media (max-width: 760px) and (orientation: portrait) {

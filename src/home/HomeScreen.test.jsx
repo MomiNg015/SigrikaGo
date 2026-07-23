@@ -1079,6 +1079,9 @@ describe("HomeScreen", () => {
     const practiceWrapBlock = modalCss.match(/\.match-mode-option-wrap\.has-practice-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const practiceImageBlock = modalCss.match(/\.practice-entry-button img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPracticeBlock = brightSchoolCss.match(/button\.practice-entry-button,[\s\S]+?button\.practice-entry-button:active\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeShadowBlock = brightSchoolCss.match(/button\.practice-entry-button img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeHoverShadowBlock = brightSchoolCss.match(/button\.practice-entry-button:focus-visible img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPracticeActiveShadowBlock = brightSchoolCss.match(/button\.practice-entry-button:active img\s*\{[^}]+\}/)?.[0] ?? "";
     const mobilePracticeBlock = mobileCss.match(/\.practice-entry-button\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain('aria-label="准时宝陪练"');
@@ -1111,8 +1114,12 @@ describe("HomeScreen", () => {
     expect(brightPracticeBlock).toContain("box-shadow: none !important");
     expect(brightPracticeBlock).toContain("translateY(var(--practice-entry-lift, 0px))");
     expect(brightPracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg)) !important");
-    expect(brightSchoolCss).not.toContain("button.practice-entry-button:hover img");
     expect(brightSchoolCss).toContain("transform: none !important");
+    expect(brightPracticeShadowBlock).toContain("drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
+    expect(brightPracticeHoverShadowBlock).toContain("drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
+    expect(brightPracticeHoverShadowBlock).not.toContain("transform:");
+    expect(brightPracticeActiveShadowBlock).toContain("drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important");
+    expect(brightPracticeActiveShadowBlock).not.toContain("transform:");
     expect(mobilePracticeBlock).toContain("width: 136px");
     expect(mobilePracticeBlock).toContain("left: min(154px, calc(100% - 64px))");
     expect(mobilePracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg))");
