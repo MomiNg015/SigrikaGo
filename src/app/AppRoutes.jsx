@@ -259,14 +259,16 @@ const HomeRoute = memo(function HomeRoute({
   audioSettings,
   characters,
   lobbyStats,
-  logout,
   mailboxBadgeCount,
   matchModePickerOpen,
+  onLogout,
   onMatchModePickerOpenChange,
   onOpenOnboardingStory,
   onPreloadPlayableReady,
+  onSelectCharacter,
+  onStartMatch,
+  onStartPractice,
   recruitmentReady,
-  selectCharacter,
   setShowAnnouncements,
   setShowFriends,
   setShowHouse,
@@ -281,8 +283,6 @@ const HomeRoute = memo(function HomeRoute({
   setShowWatch,
   setView,
   siteSettings,
-  startMatch,
-  startPractice,
   user
 }) {
   return (
@@ -291,10 +291,10 @@ const HomeRoute = memo(function HomeRoute({
       characters={characters}
       siteSettings={siteSettings}
       lobbyStats={lobbyStats}
-      onLogout={logout}
-      onSelectCharacter={selectCharacter}
-      onStartMatch={startMatch}
-      onStartPractice={startPractice}
+      onLogout={onLogout}
+      onSelectCharacter={onSelectCharacter}
+      onStartMatch={onStartMatch}
+      onStartPractice={onStartPractice}
       onPreloadPlayableReady={onPreloadPlayableReady}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={matchModePickerOpen}
