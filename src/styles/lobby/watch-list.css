@@ -43,9 +43,9 @@
 }
 
 .watch-list-modal .mode-tabs {
-  width: auto;
-  justify-self: start;
-  grid-template-columns: repeat(3, max-content);
+  width: 100%;
+  justify-self: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   margin: 0;
   padding: 3px;
@@ -58,8 +58,23 @@
   min-height: 44px;
   padding: 0 16px;
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1;
+  gap: 1em;
+}
+
+.watch-list-modal .watch-mode-count {
+  min-width: 20px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(80, 91, 143, 0.12);
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.watch-list-modal .mode-tabs button.active .watch-mode-count,
+.watch-list-modal .mode-tabs button[aria-selected="true"] .watch-mode-count {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .watch-room-table {

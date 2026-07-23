@@ -1095,19 +1095,27 @@ describe("HomeScreen", () => {
     expect(practiceButtonBlock).toContain("aspect-ratio: 5 / 2");
     expect(practiceButtonBlock).toContain("top: 0");
     expect(practiceButtonBlock).toContain("left: 168px");
-    expect(practiceButtonBlock).toContain("width: 132px");
-    expect(practiceButtonBlock).toContain("transform: translateX(-50%)");
+    expect(practiceButtonBlock).toContain("width: 144px");
+    expect(practiceButtonBlock).toContain("--practice-entry-rotation: 0deg");
+    expect(practiceButtonBlock).toContain("rotate(var(--practice-entry-rotation))");
+    expect(practiceButtonBlock).toContain("transform-origin: 22% 58%");
     expect(practiceButtonBlock).toContain("background: transparent");
     expect(practiceWrapBlock).toContain("padding-top: 32px");
     expect(practiceImageBlock).toContain("object-fit: contain");
     expect(practiceImageBlock).toContain("drop-shadow(0 4px 3px");
-    expect(modalCss).toContain(".practice-entry-button:hover img");
-    expect(modalCss).toContain("rotate(3deg)");
+    expect(modalCss).toContain(".practice-entry-button:hover,");
+    expect(modalCss).toContain("--practice-entry-lift: -2px");
+    expect(modalCss).toContain("--practice-entry-rotation: 7deg");
     expect(modalCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(brightPracticeBlock).toContain("background: transparent !important");
     expect(brightPracticeBlock).toContain("box-shadow: none !important");
-    expect(mobilePracticeBlock).toContain("width: 126px");
+    expect(brightPracticeBlock).toContain("translateY(var(--practice-entry-lift, 0px))");
+    expect(brightPracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg)) !important");
+    expect(brightSchoolCss).not.toContain("button.practice-entry-button:hover img");
+    expect(brightSchoolCss).toContain("transform: none !important");
+    expect(mobilePracticeBlock).toContain("width: 136px");
     expect(mobilePracticeBlock).toContain("left: min(154px, calc(100% - 64px))");
+    expect(mobilePracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg))");
   });
 
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {

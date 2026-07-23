@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { colorTextForPlayer, formatSignedDelta, OpeningModal, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
+import { colorTextForPlayer, formatSignedDelta, OpeningModal, ResultModal, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
 import { COLORS } from "../shared/game.js";
 
 describe("GameLifecycleModals helpers", () => {
@@ -109,6 +109,32 @@ describe("GameLifecycleModals helpers", () => {
     };
 
     expect(resultRewardForRoom(room, { id: "u1" })).toBeNull();
+  });
+
+  it("omits the practice result note while retaining the friendly-match note", () => {
+    const baseRoom = {
+      rated: false,
+      players: [{ user: { id: "u1", username: "moming" }, color: COLORS.black }],
+      game: { winner: { winnerColor: COLORS.black, text: "黑胜" } }
+    };
+    const practiceMarkup = renderToStaticMarkup(createElement(ResultModal, {
+      room: { ...baseRoom, matchSource: "practice", recordPolicy: "none" },
+      user: { id: "u1" },
+      characters: {},
+      audioSettings: {},
+      onClose: () => {}
+    }));
+    const friendlyMarkup = renderToStaticMarkup(createElement(ResultModal, {
+      room: { ...baseRoom, matchSource: "duel" },
+      user: { id: "u1" },
+      characters: {},
+      audioSettings: {},
+      onClose: () => {}
+    }));
+
+    expect(practiceMarkup).not.toContain("人机练习");
+    expect(practiceMarkup).not.toContain("不保存棋谱");
+    expect(friendlyMarkup).toContain("友谊对局 · 不计入积分与段位");
   });
 
   it("prefers settled result rewards from the room snapshot", () => {

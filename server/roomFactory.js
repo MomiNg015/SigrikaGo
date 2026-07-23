@@ -90,7 +90,7 @@ export function createPracticeRoom(player, {
     user: {
       id: botActorId,
       username: PRACTICE_BOT_NAME,
-      rank: `${difficulty.label}陪练`,
+      rank: "入门陪练",
       rating: null,
       selectedCharacter: null,
       isBot: true
