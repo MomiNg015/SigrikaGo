@@ -24,7 +24,11 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const currentPlayer = resultPlayerForRoom(room, user);
   const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);
   const character = displayPlayer ? findCharacter(characters, displayPlayer?.character ?? displayPlayer?.characterId) : null;
-  const voiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
+  const resultVoiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
+  const voiceCharacter = resultVoiceCharacter ? {
+    ...resultVoiceCharacter,
+    itemEffects: currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}
+  } : null;
   const reward = resultRewardForRoom(room, user);
   const isPractice = isPracticeRoom(room);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;

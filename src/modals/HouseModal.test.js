@@ -40,7 +40,8 @@ describe("deriveCharacterRecordStats", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
       deniaRainbowGlow: true,
-      aemeathRainbowMove: true
+      aemeathRainbowMove: true,
+      lynaeContraryVoice: true
     };
 
     expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
@@ -166,7 +167,8 @@ describe("deriveCharacterRecordStats", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
       deniaRainbowGlow: true,
-      aemeathRainbowMove: true
+      aemeathRainbowMove: true,
+      lynaeContraryVoice: true
     };
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
@@ -175,7 +177,7 @@ describe("deriveCharacterRecordStats", () => {
         rank: "1段",
         rating: 1000,
         coins: 0,
-        ownedCharacters: ["sigrika", "denia", "aemeath"],
+        ownedCharacters: ["sigrika", "denia", "aemeath", "lynae"],
         ownedDecorations: [],
         selectedCharacter: "denia",
         itemEffects
@@ -184,7 +186,8 @@ describe("deriveCharacterRecordStats", () => {
       characterListView: [
         { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
         { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
-        { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath.webp", skill: { name: "技能", description: "", cost: 1 } }
+        { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "lynae", name: "琳奈", portrait: "/assets/lynae.webp", skill: { name: "技能", description: "", cost: 1 } }
       ],
       audioSettings: {},
       onClose: () => {},
@@ -211,11 +214,19 @@ describe("deriveCharacterRecordStats", () => {
         icon: "/assets/items/rainbow-bean-candy.webp"
       })
     ]);
-    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(3);
+    expect(activeCharacterItemEffects("lynae", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "lynaeContraryVoice",
+        label: "反话语音模式",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(4);
     expect(html).toContain("src=\"/assets/items/rainbow-bean-candy.webp\"");
     expect(html).toContain("alt=\"彩虹豆豆跳跳糖效果中\"");
     expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
     expect(html).toContain("title=\"彩虹落子模式\"");
+    expect(html).toContain("title=\"反话语音模式\"");
   });
 
   it("hides character chain badges in the house manual character grid", () => {
@@ -258,13 +269,17 @@ describe("deriveCharacterRecordStats", () => {
     selectSortieCharacter({
       character,
       disabled: false,
+      itemEffects: { lynaeContraryVoice: true },
       audioSettings: { voiceVolume: 0.8 },
       playVoice: (event, options) => calls.push(["voice", event, options]),
       onSelectCharacter: (characterId) => calls.push(["select", characterId])
     });
 
     expect(calls).toEqual([
-      ["voice", "sortie", { character, audioSettings: { voiceVolume: 0.8 } }],
+      ["voice", "sortie", {
+        character: { ...character, itemEffects: { lynaeContraryVoice: true } },
+        audioSettings: { voiceVolume: 0.8 }
+      }],
       ["select", "sigrika"]
     ]);
   });

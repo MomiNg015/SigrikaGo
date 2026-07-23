@@ -7,15 +7,16 @@ import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 export default function SkillBanner({ banner, characters, audioSettings }) {
   const playedVoiceBannerRef = useRef("");
   const character = findCharacter(characters, banner.character ?? banner.characterId);
+  const voiceCharacter = { ...character, itemEffects: banner.itemEffects ?? {} };
   const effectType = banner.effectType;
 
   useEffect(() => {
     const voiceParams = { effectType };
-    const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character, params: voiceParams });
+    const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character: voiceCharacter, params: voiceParams });
     if (!shouldPlaySkillBannerVoice(banner, playedVoiceBannerRef.current, voice)) return;
     playedVoiceBannerRef.current = banner.id;
-    playSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character, params: voiceParams, audioSettings });
-  }, [banner, character, effectType, audioSettings]);
+    playSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character: voiceCharacter, params: voiceParams, audioSettings });
+  }, [banner, voiceCharacter, effectType, audioSettings]);
 
   return (
     <div className="skill-burst" aria-live="polite">

@@ -10,7 +10,8 @@ import {
   replayRoomAt,
   roomPeople,
   signedStoneTerm,
-  stoneDecorationsForRoom
+  stoneDecorationsForRoom,
+  voiceCharacterForPlayer
 } from "./roomView.js";
 import { COLORS, GAME_PHASES, createGameState, getPoint, pointId, useSkill } from "../shared/game.js";
 
@@ -127,6 +128,18 @@ describe("roomView helpers", () => {
     expect(lines.map((line) => line.key)).toContain("col-6-7-12");
     expect(lines.map((line) => line.key)).not.toContain("row-6-0-12");
     expect(lines.map((line) => line.key)).not.toContain("col-6-0-12");
+  });
+
+  test("carries player item effects into the character used for voice resolution", () => {
+    const character = voiceCharacterForPlayer({
+      characterId: "lynae",
+      user: { itemEffects: { lynaeContraryVoice: true } }
+    }, CHARACTERS);
+
+    expect(character).toMatchObject({
+      id: "lynae",
+      itemEffects: { lynaeContraryVoice: true }
+    });
   });
 
   test("selects a rainbow move marker only for the latest move by affected Aemeath", () => {

@@ -1,3 +1,5 @@
+import { canonicalCharacterId } from "./characterAliases.js";
+
 export const SYSTEM_VOICE_EVENTS = {
   gameStart: "game-start",
   skillCast: "skill-cast",
@@ -22,6 +24,8 @@ export const SYSTEM_VOICE_MODE_EVENTS = {
 export const SYSTEM_VOICE_SKILL_EVENTS = {
   voyageStarSkillCast: `${SYSTEM_VOICE_EVENTS.skillCast}:voyage-star`
 };
+
+export const LYNAE_CONTRARY_VOICE_EFFECT_KEY = "lynaeContraryVoice";
 
 export function voiceSourceCandidates(value) {
   if (Array.isArray(value)) return value.map(normalizeVoiceSource).filter(Boolean);
@@ -64,17 +68,18 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
   if (event === SYSTEM_VOICE_EVENTS.timeout) {
     return { type: "tts", text: "" };
   }
-  const modeVoiceEvent = modeSpecificVoiceEvent(event, params.mode);
+  const resolvedEvent = contraryLynaeVoiceEvent(event, { character, params });
+  const modeVoiceEvent = modeSpecificVoiceEvent(resolvedEvent, params.mode);
   const modeCharacterVoice = resolveVoiceSource(character?.systemVoices?.[modeVoiceEvent]);
   if (modeCharacterVoice) return { type: "audio", src: modeCharacterVoice };
 
-  const skillVoiceEvent = skillSpecificVoiceEvent(event, params.effectType);
+  const skillVoiceEvent = skillSpecificVoiceEvent(resolvedEvent, params.effectType);
   const skillCharacterVoice = resolveVoiceSource(character?.systemVoices?.[skillVoiceEvent]);
   if (skillCharacterVoice) return { type: "audio", src: skillCharacterVoice };
 
-  const characterVoice = resolveVoiceSource(character?.systemVoices?.[event]);
+  const characterVoice = resolveVoiceSource(character?.systemVoices?.[resolvedEvent]);
   if (characterVoice) return { type: "audio", src: characterVoice };
-  if (event === SYSTEM_VOICE_EVENTS.byoYomiPeriods) {
+  if (resolvedEvent === SYSTEM_VOICE_EVENTS.byoYomiPeriods) {
     if (params.periods === 2) {
       return resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiPeriod2, { character, params });
     }
@@ -83,13 +88,43 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
     }
     return { type: "tts", text: `还剩${params.periods}次读秒` };
   }
-  if (event === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
+  if (resolvedEvent === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
     return { type: "tts", text: countdownText(params.seconds) };
   }
-  if (countdownMatch) {
-    return { type: "tts", text: countdownText(Number(countdownMatch[2])) };
+  const resolvedCountdownMatch = /^(countdown-(1|2|3|4|5|6|7|8|9|10))$/.exec(resolvedEvent);
+  if (resolvedCountdownMatch) {
+    return { type: "tts", text: countdownText(Number(resolvedCountdownMatch[2])) };
   }
-  return { type: "tts", text: DEFAULT_SYSTEM_VOICE_TEXT[event] ?? "" };
+  return { type: "tts", text: DEFAULT_SYSTEM_VOICE_TEXT[resolvedEvent] ?? "" };
+}
+
+export function contraryLynaeVoiceEvent(event, { character = null, params = {} } = {}) {
+  if (
+    canonicalCharacterId(character?.id) !== "lynae"
+    || character?.itemEffects?.[LYNAE_CONTRARY_VOICE_EFFECT_KEY] !== true
+  ) {
+    return event;
+  }
+  const pairedEvent = {
+    [SYSTEM_VOICE_EVENTS.gameStart]: SYSTEM_VOICE_EVENTS.byoYomiStart,
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: SYSTEM_VOICE_EVENTS.gameStart,
+    [SYSTEM_VOICE_EVENTS.sortie]: SYSTEM_VOICE_EVENTS.skillCast,
+    [SYSTEM_VOICE_EVENTS.skillCast]: SYSTEM_VOICE_EVENTS.sortie,
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: SYSTEM_VOICE_EVENTS.byoYomiPeriod1,
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: SYSTEM_VOICE_EVENTS.byoYomiPeriod2,
+    [SYSTEM_VOICE_EVENTS.resultVictory]: SYSTEM_VOICE_EVENTS.resultDefeat,
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: SYSTEM_VOICE_EVENTS.resultVictory
+  }[event];
+  if (pairedEvent) return pairedEvent;
+  if (event === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
+    return Number.isInteger(params.seconds) && params.seconds >= 1 && params.seconds <= 10
+      ? SYSTEM_VOICE_EVENTS.countdown(11 - params.seconds)
+      : event;
+  }
+  const countdownMatch = /^countdown-(1|2|3|4|5|6|7|8|9|10)$/.exec(event);
+  return countdownMatch
+    ? SYSTEM_VOICE_EVENTS.countdown(11 - Number(countdownMatch[1]))
+    : event;
 }
 
 function modeSpecificVoiceEvent(event, mode) {

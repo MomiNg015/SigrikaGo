@@ -3,6 +3,7 @@ import {
   SYSTEM_VOICE_EVENTS,
   SYSTEM_VOICE_MODE_EVENTS,
   SYSTEM_VOICE_SKILL_EVENTS,
+  contraryLynaeVoiceEvent,
   resolveSystemVoice,
   resolveVoiceSource,
   voiceSourceCandidates
@@ -223,6 +224,95 @@ describe("system voices", () => {
     expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiPeriods, { params: { periods: 1 } })).toEqual({
       type: "tts",
       text: "还剩1次读秒"
+    });
+  });
+
+  it("deterministically swaps Lynae's voice lines while the contrary effect is active", () => {
+    const character = {
+      id: "lynae",
+      itemEffects: { lynaeContraryVoice: true },
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/lynae_match_start.ogg",
+        [SYSTEM_VOICE_EVENTS.skillCast]: "/assets/voice/lynae_skill_cast.ogg",
+        [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/lynae_sortie.ogg",
+        [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/lynae_byoyomi_start.ogg",
+        [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/lynae_byoyomi_remaining_2.ogg",
+        [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/lynae_byoyomi_remaining_1.ogg",
+        [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/lynae_countdown_10.ogg",
+        [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/lynae_countdown_1.ogg",
+        [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/lynae_result_win.ogg",
+        [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/lynae_result_loss.ogg",
+        [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/lynae_result_draw.ogg"
+      }
+    };
+
+    for (const [left, right] of [
+      [SYSTEM_VOICE_EVENTS.gameStart, SYSTEM_VOICE_EVENTS.byoYomiStart],
+      [SYSTEM_VOICE_EVENTS.sortie, SYSTEM_VOICE_EVENTS.skillCast],
+      [SYSTEM_VOICE_EVENTS.byoYomiPeriod2, SYSTEM_VOICE_EVENTS.byoYomiPeriod1],
+      [SYSTEM_VOICE_EVENTS.resultVictory, SYSTEM_VOICE_EVENTS.resultDefeat]
+    ]) {
+      expect(contraryLynaeVoiceEvent(left, { character })).toBe(right);
+      expect(contraryLynaeVoiceEvent(right, { character })).toBe(left);
+    }
+    for (let seconds = 1; seconds <= 10; seconds += 1) {
+      expect(contraryLynaeVoiceEvent(SYSTEM_VOICE_EVENTS.countdown(seconds), { character }))
+        .toBe(SYSTEM_VOICE_EVENTS.countdown(11 - seconds));
+    }
+    expect(contraryLynaeVoiceEvent(SYSTEM_VOICE_EVENTS.resultDraw, { character }))
+      .toBe(SYSTEM_VOICE_EVENTS.resultDraw);
+
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_byoyomi_start.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.sortie, { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_skill_cast.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_sortie.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiPeriods, {
+      character,
+      params: { periods: 2 }
+    })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_byoyomi_remaining_1.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(10), { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_countdown_1.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(1), { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_countdown_10.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.resultVictory, { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_result_loss.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.resultDraw, { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_result_draw.ogg"
+    });
+  });
+
+  it("keeps Lynae's ordinary voice mapping when the contrary effect is absent", () => {
+    const character = {
+      id: "lynae",
+      itemEffects: {},
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/lynae_countdown_10.ogg"
+      }
+    };
+
+    expect(contraryLynaeVoiceEvent(SYSTEM_VOICE_EVENTS.countdown(10), { character }))
+      .toBe(SYSTEM_VOICE_EVENTS.countdown(10));
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(10), { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/lynae_countdown_10.ogg"
     });
   });
 });

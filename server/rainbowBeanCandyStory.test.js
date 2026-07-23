@@ -9,7 +9,7 @@ import {
 describe("rainbow bean candy story", () => {
   it("uses a strict 35 percent rejection boundary for every supported character", () => {
     expect(RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY).toBe(0.35);
-    for (const characterId of ["sigrika", "denia", "aemeath"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.349999)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.35)).toBe("accepted");
@@ -26,7 +26,7 @@ describe("rainbow bean candy story", () => {
   });
 
   it("keeps every narration node free of speaker and character labels", () => {
-    for (const characterId of ["sigrika", "denia", "aemeath"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
       const draft = defaultRainbowBeanCandyStoryDraft(characterId);
       const narrationNodes = draft.nodes.filter((node) => node.type === "story" && !node.characterId);
       expect(narrationNodes.length).toBeGreaterThan(0);
@@ -39,6 +39,7 @@ describe("rainbow bean candy story", () => {
     const sigrika = defaultRainbowBeanCandyStoryDraft("sigrika").nodes;
     const denia = defaultRainbowBeanCandyStoryDraft("denia").nodes;
     const aemeath = defaultRainbowBeanCandyStoryDraft("aemeath").nodes;
+    const lynae = defaultRainbowBeanCandyStoryDraft("lynae").nodes;
 
     expect(sigrika).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "accepted-unavailable", text: "看来暂时不能找她下棋了。" }),
@@ -53,6 +54,12 @@ describe("rainbow bean candy story", () => {
       expect.objectContaining({ id: "accepted-ripple", text: "棋子接触交叉点的瞬间，一圈七彩像素光纹“啪”地绽开，沿着棋盘线飞快扩散。" }),
       expect.objectContaining({ id: "accepted-name", text: "好！这个状态就叫——彩虹落子模式！" }),
       expect.objectContaining({ id: "rejected-title", text: "诶，别走呀？标题我都想好了——《{username}的整蛊糖果首秀》！真的不考虑一下吗？" })
+    ]));
+    expect(lynae).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "accepted-correct", text: "不是！我刚才明明想说难吃！" }),
+      expect.objectContaining({ id: "accepted-boring", text: "这颗糖很无聊——不对，是无聊！非常无聊！" }),
+      expect.objectContaining({ id: "rejected-boundary", text: "我喜欢惊喜，但不喜欢别人替我决定惊喜什么时候爆开。" }),
+      expect.objectContaining({ id: "rejected-finish", text: "琳奈继续给棋罐喷上新的颜色。彩虹豆豆跳跳糖被完整地退了回来。" })
     ]));
   });
 });

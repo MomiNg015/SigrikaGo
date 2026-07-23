@@ -79,6 +79,7 @@ describe("GameLifecycleModals helpers", () => {
 
     expect(source).toContain("const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);");
     expect(source).toContain("src={resolveCandyPortrait(character, displayPlayer?.user?.itemEffects)}");
+    expect(source).toContain("currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}");
     expect(source).toContain("<CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />");
     expect(source).toContain("`result-outcome-${outcome}`");
     expect(source).toContain('outcome === "loss"');

@@ -29,6 +29,7 @@ export function buildRoomView(room, viewerId, options = {}) {
     role,
     players: room.players.map((player) => ({
       user: player.user,
+      completedItemEffects: player.completedItemEffects ?? null,
       color: player.color,
       characterId: player.characterId,
       character: player.character,

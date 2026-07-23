@@ -54,7 +54,11 @@ export function aemeathRainbowMoveEffectForRoom(room = {}) {
 
 export function voiceCharacterForPlayer(player, characters) {
   if (!player) return null;
-  return findCharacter(characters, player.character ?? player.characterId);
+  const character = findCharacter(characters, player.character ?? player.characterId);
+  return {
+    ...character,
+    itemEffects: player.user?.itemEffects ?? {}
+  };
 }
 
 export function roomPeople(room) {

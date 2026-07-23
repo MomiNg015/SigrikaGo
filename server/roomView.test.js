@@ -73,6 +73,16 @@ describe("room view serialization", () => {
     expect(white).toMatchObject({ connected: false, disconnectedAt: 12345 });
   });
 
+  it("exposes the completed item-effect snapshot for result-only presentation", () => {
+    const room = testRoom();
+    room.players[0].completedItemEffects = { lynaeContraryVoice: true };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.players[0].completedItemEffects).toEqual({ lynaeContraryVoice: true });
+    expect(view.players[1].completedItemEffects).toBeNull();
+  });
+
   it("uses game as the black spectator view and includes only the white alternate view", () => {
     const view = buildRoomView(testRoom(), "spectator");
 

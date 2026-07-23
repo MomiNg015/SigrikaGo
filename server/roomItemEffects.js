@@ -1,5 +1,5 @@
 import { GAME_PHASES } from "../src/shared/game.js";
-import { clearCandyEffectsForValidGame } from "./itemEffects.js";
+import { clearCandyEffectsForValidGame, parseItemEffects } from "./itemEffects.js";
 
 export function candyEffectData(player, candyEffectUpdates) {
   const entry = candyEffectUpdates.find((candidate) => candidate.player.user.id === player.user.id);
@@ -24,6 +24,7 @@ export function prepareCandyEffectUpdates(room) {
 
 function applyCandyEffectUpdatesToRoom(candyEffectUpdates) {
   for (const { player, clear } of candyEffectUpdates) {
+    player.completedItemEffects = parseItemEffects(player.user?.itemEffects);
     player.user = {
       ...player.user,
       itemEffects: clear.itemEffects ? JSON.parse(clear.itemEffects) : {}

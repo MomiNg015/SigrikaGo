@@ -30,17 +30,46 @@ describe("room item effects", () => {
             id: "aemeath-user",
             itemEffects: { aemeathRainbowMove: true }
           }
+        },
+        {
+          characterId: "lynae",
+          user: {
+            id: "lynae-user",
+            itemEffects: { lynaeContraryVoice: true }
+          }
         }
       ]
     };
 
     const updates = prepareCandyEffectUpdates(room);
 
-    expect(updates).toHaveLength(3);
+    expect(updates).toHaveLength(4);
     expect(room.players[0].user.itemEffects).toEqual({});
     expect(room.players[1].user.itemEffects).toEqual({});
     expect(room.players[2].user.itemEffects).toEqual({});
+    expect(room.players[3].user.itemEffects).toEqual({});
+    expect(room.players[3].completedItemEffects).toEqual({ lynaeContraryVoice: true });
     expect(candyEffectData(room.players[0], updates)).toEqual({ itemEffects: "{}" });
+  });
+
+  it("keeps Lynae's contrary voice effect when another character completes the game", () => {
+    const room = {
+      game: {
+        phase: GAME_PHASES.finished,
+        winner: { winnerColor: "black" }
+      },
+      players: [{
+        characterId: "denia",
+        user: {
+          id: "lynae-user",
+          itemEffects: { lynaeContraryVoice: true }
+        }
+      }]
+    };
+
+    expect(prepareCandyEffectUpdates(room)).toEqual([]);
+    expect(room.players[0].user.itemEffects).toEqual({ lynaeContraryVoice: true });
+    expect(room.players[0]).not.toHaveProperty("completedItemEffects");
   });
 
   it("keeps Aemeath's rainbow move effect when another character completes the game", () => {

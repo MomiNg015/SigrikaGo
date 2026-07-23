@@ -223,23 +223,27 @@ Correct:
 ### Scenario: Rainbow Bean Candy Rejection Settlement And Story Branching
 
 #### 1. Scope / Trigger
-- Trigger: changing rainbow bean candy probability, `useInventoryItem()`, candy story nodes, temporary candy effects, Aemeath move feedback, the Denia candy achievement event, or warehouse item-use feedback.
-- This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, achievement evaluation, and Aemeath's room-board feedback.
+- Trigger: changing rainbow bean candy probability, `useInventoryItem()`, candy story nodes, temporary candy effects, Aemeath move feedback, Lynae voice remapping, the Denia candy achievement event, or warehouse item-use feedback.
+- This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, achievement evaluation, Aemeath's room-board feedback, and Lynae's room/house/result voice routing.
 
 #### 2. Signatures
 - `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `itemUseOutcome: "accepted" | "rejected"`.
 - `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`.
 - Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
-- Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, and `aemeathRainbowMove`.
+- Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, `aemeathRainbowMove`, and `lynaeContraryVoice`.
 - `aemeathRainbowMoveEffectForRoom(room)` returns `{ pointId, key }` only when the latest history action is a move by an Aemeath player whose public user has `aemeathRainbowMove === true`; otherwise it returns `null`.
+- `contraryLynaeVoiceEvent(event, { character, params })` remaps an event only when `canonicalCharacterId(character.id) === "lynae"` and `character.itemEffects.lynaeContraryVoice === true`.
+- Finished room player payloads may expose `completedItemEffects: object | null`; this is a result-presentation snapshot, not the user's current persistent effect state.
 
 #### 3. Contracts
 - Resolve ownership, target validity, an already-active effect, and Sigrika fallback-character availability before rolling. Invalid use remains an HTTP error and never turns into a narrative rejection.
-- For Sigrika, Denia, and Aemeath, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
+- For Sigrika, Denia, Aemeath, and Lynae, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
 - Rejection performs no user/structured-asset write, does not decrement inventory, does not switch Sigrika, does not trigger the Denia candy achievement, and selects `rejected-start` in the returned published script.
-- Acceptance consumes one candy, applies the character's temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules.
+- Acceptance consumes one candy, applies the character's temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules. Lynae acceptance applies `lynaeContraryVoice` without changing UI text, clock state, skill behavior, winner data, rewards, or result SFX.
 - Aemeath's board marker is presentation-only: it is attached to the exact latest move point, is pointer-transparent, keeps the underlying black/white stone unchanged, and has a `prefers-reduced-motion` fallback. Its source must inherit the rendered stone's deterministic jitter offset so the two visual centers stay within 1 CSS pixel. Four traces follow the real horizontal/vertical axes to their corresponding board edges, fade from opaque at the source to transparent outward, and light each crossed intersection with distance-attenuated nodes. The Bright School portrait-mobile global `max-width` guard must be cleared only on owned trace elements so multi-cell rays are not capped to one point. Seven discrete frequency echoes replace a generic conic-gradient circle. Opponent moves, passes, skills, and inactive Aemeath users must not show it.
 - A valid finished game clears `aemeathRainbowMove` only when that user played Aemeath; playing another character must preserve it for a later Aemeath game.
+- Lynae voice remapping is fixed, not random: countdown `N` maps to `11-N`; period 2 ↔ period 1, game start ↔ byo-yomi start, sortie ↔ skill cast, and victory ↔ defeat. Draw, house detail, and timeout silence stay unchanged.
+- A valid finished game clears `lynaeContraryVoice` only when that user played Lynae. Before mutating `player.user.itemEffects`, `prepareCandyEffectUpdates()` copies the pre-clear effects to `player.completedItemEffects`; `buildRoomView()` exposes that snapshot so `ResultModal` can still swap the current game's victory/defeat voice after persistent cleanup. No other next-game voice path may consume `completedItemEffects`.
 - Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
 
 #### 4. Validation & Error Matrix
@@ -249,23 +253,29 @@ Correct:
 - Rejected response with a published branch -> HTTP 200, unchanged user/items, blank `effectText`, `itemUseOutcome: "rejected"`, story `startNodeId: "rejected-start"`.
 - Accepted response without a published script -> preserve the legacy `effectText` fallback.
 - Latest action is not an Aemeath move with an active effect -> no rainbow board marker.
+- Lynae effect is absent or the voice belongs to another character -> resolve the original event.
+- Invalid or practice game -> do not clear `lynaeContraryVoice` and do not create a completion snapshot.
+- Valid Lynae game -> persistent `itemEffects` no longer contains `lynaeContraryVoice`, while the finished room player exposes it in `completedItemEffects` for result voice only.
 
 #### 5. Good/Base/Bad Cases
 - Good: an injected `0.349999` rejects Denia, keeps the candy, leaves `deniaRainbowGlow` unset, and suppresses `denia-rainbow-bean-candy`.
 - Good: an accepted Aemeath move renders one short, stone-centered rainbow grid pulse whose four rays fade toward the board edges while the ordinary stone remains present.
+- Good: Lynae reaches 10 seconds and plays `lynae_countdown_1.ogg`; the timer still displays 10, then the final win UI/SFX remain a win while her result voice uses the loss line.
 - Base: an injected `0.35` accepts, proving the exact 35% boundary without an off-by-one gap.
 - Bad: decrementing inventory before the roll and trying to restore it on rejection, because structured sync and achievement side effects can already have escaped.
 - Bad: setting narrator `speakerName: "旁白"`, because the player window must leave the character region blank.
 - Bad: tinting or replacing every Aemeath stone, because the agreed effect is a transient move-contact ripple and not a stone decoration or game rule.
+- Bad: reading cleared `currentPlayer.user.itemEffects` for Lynae's result voice, because result persistence removes the effect before the finished room is broadcast.
 
 #### 6. Tests Required
 - `server/rainbowBeanCandyStory.test.js` locks the probability boundary, stable start ids, Word-authored lines, and blank narrator identity.
-- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for all three characters.
-- `server/roomItemEffects.test.js` asserts Aemeath's effect clears after a valid Aemeath game and survives a valid game played as another character.
+- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for all four characters.
+- `server/roomItemEffects.test.js` asserts Aemeath and Lynae effects clear after a valid matching-character game, survive a valid game played as another character, and preserve Lynae's result-only completion snapshot.
 - `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
 - `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
 - `src/modals/WarehouseModal.test.js` asserts rejection toast and skip copy do not claim success or consumption.
 - `src/room/roomView.test.js` asserts the latest-action/player/effect gate, and `src/room/Board.test.js` asserts one pointer-transparent marker, an unchanged stone, four directional traces, distance-attenuated intersection nodes, seven pixel echoes, stone-offset origin variables, portrait width-guard reset, memo-comparator coverage, bounded motion, absence of the old ring keyframes, and reduced-motion fallback.
+- `src/shared/systemVoices.test.js` asserts every Lynae event pair, reverse countdown endpoints, unchanged draw behavior, and the no-effect baseline. Room, skill-banner, house-sortie, and result tests must assert that their voice character carries the correct active or completed effect object.
 
 #### 7. Wrong vs Correct
 
@@ -288,6 +298,25 @@ if (outcome === "rejected") {
   };
 }
 ownedItems[itemId] -= 1;
+```
+
+Wrong:
+
+```js
+playSystemVoice(resultEvent, {
+  character: { ...character, itemEffects: currentPlayer.user.itemEffects }
+});
+```
+
+Correct:
+
+```js
+playSystemVoice(resultEvent, {
+  character: {
+    ...character,
+    itemEffects: currentPlayer.completedItemEffects ?? currentPlayer.user.itemEffects ?? {}
+  }
+});
 ```
 
 Wrong:

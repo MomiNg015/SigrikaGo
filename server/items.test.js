@@ -314,10 +314,35 @@ describe("items", () => {
     })]);
   });
 
+  it("uses rainbow candy on Lynae by enabling contrary voice effects", async () => {
+    const structuredWrites = [];
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "lynae",
+      random: () => 0.99,
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,lynae",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        structuredWrites
+      })
+    });
+
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.effectText).toContain("对局语音也开始混乱");
+    expect(response.user.itemEffects).toMatchObject({ lynaeContraryVoice: true });
+    expect(structuredWrites).toContainEqual(["userItemEffect.upsert", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "lynaeContraryVoice" } }
+    })]);
+  });
+
   it.each([
     ["sigrika", "sigrikaCandyDisabled"],
     ["denia", "deniaRainbowGlow"],
-    ["aemeath", "aemeathRainbowMove"]
+    ["aemeath", "aemeathRainbowMove"],
+    ["lynae", "lynaeContraryVoice"]
   ])("keeps the candy and user state unchanged when %s rejects it", async (characterId, effectKey) => {
     const updates = [];
     const structuredWrites = [];
@@ -328,7 +353,7 @@ describe("items", () => {
       random: () => 0.349999,
       prisma: inventoryPrisma({
         selectedCharacter: "sigrika",
-        ownedCharacters: "sigrika,denia,aemeath",
+        ownedCharacters: "sigrika,denia,aemeath,lynae",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character",

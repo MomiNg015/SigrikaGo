@@ -4,6 +4,7 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
   AEMEATH_CANDY_EFFECT_TEXT,
   DENIA_CANDY_EFFECT_TEXT,
+  LYNAE_CANDY_EFFECT_TEXT,
   parseItemEffects,
   RAINBOW_BEAN_CANDY_ID,
   serializeItemEffects,
@@ -201,6 +202,15 @@ function resolveItemEffect({ item, user, characterId }) {
         itemEffects: serializeItemEffects({ ...itemEffects, aemeathRainbowMove: true })
       },
       effectText: AEMEATH_CANDY_EFFECT_TEXT
+    };
+  }
+  if (targetCharacter === "lynae") {
+    if (itemEffects.lynaeContraryVoice) throw routeError(400, "琳奈已经处于糖果效果中");
+    return {
+      data: {
+        itemEffects: serializeItemEffects({ ...itemEffects, lynaeContraryVoice: true })
+      },
+      effectText: LYNAE_CANDY_EFFECT_TEXT
     };
   }
   throw routeError(400, "这个角色暂时没有糖果效果");

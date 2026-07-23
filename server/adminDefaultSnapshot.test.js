@@ -49,7 +49,7 @@ const BOARD_EXPECTATIONS = Object.freeze({
 
 describe("admin default onboarding story snapshot", () => {
   it("publishes both Word-authored candy outcomes with blank narration identity", () => {
-    for (const characterId of ["sigrika", "denia", "aemeath"]) {
+    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
       const script = ADMIN_DEFAULT_CONFIG.storyScripts.find((entry) => entry.key === `item.rainbow-bean-candy.${characterId}`);
       const expected = defaultRainbowBeanCandyStoryDraft(characterId);
       const draftNodes = JSON.parse(script.draftNodesJson);

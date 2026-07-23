@@ -58,6 +58,7 @@ export default function HouseCharacterGrid({
                 selectSortieCharacter({
                   character,
                   disabled: sortieDisabled,
+                  itemEffects,
                   audioSettings,
                   onSelectCharacter
                 });

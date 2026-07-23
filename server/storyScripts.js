@@ -382,6 +382,13 @@ export function defaultStoryScriptSeeds() {
       triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
       triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "aemeath" },
       draft: defaultRainbowBeanCandyStoryDraft("aemeath")
+    },
+    {
+      key: "item.rainbow-bean-candy.lynae",
+      title: "琳奈的彩虹豆豆跳跳糖",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "lynae" },
+      draft: defaultRainbowBeanCandyStoryDraft("lynae")
     }
   ];
 }

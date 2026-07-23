@@ -12,7 +12,7 @@ export const RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS = Object.freeze({
   [RAINBOW_BEAN_CANDY_OUTCOMES.rejected]: "rejected-start"
 });
 
-const SUPPORTED_CHARACTER_IDS = new Set(["sigrika", "denia", "aemeath"]);
+const SUPPORTED_CHARACTER_IDS = new Set(["sigrika", "denia", "aemeath", "lynae"]);
 
 export function rollRainbowBeanCandyOutcome(characterId, random = Math.random) {
   if (!SUPPORTED_CHARACTER_IDS.has(canonicalCharacterId(characterId))) {
@@ -37,6 +37,7 @@ export function defaultRainbowBeanCandyStoryDraft(characterId) {
   if (canonicalId === "sigrika") return sigrikaStoryDraft();
   if (canonicalId === "denia") return deniaStoryDraft();
   if (canonicalId === "aemeath") return aemeathStoryDraft();
+  if (canonicalId === "lynae") return lynaeStoryDraft();
   return null;
 }
 
@@ -141,6 +142,52 @@ function aemeathStoryDraft() {
       characterNode("rejected-record", "爱弥斯", "aemeath", "你先吃，我负责录像、剪辑，再把全过程上传到学院论坛。这样我们谁也不吃亏，对吧？", "rejected-withdraw"),
       narrationNode("rejected-withdraw", "你默默收回了糖果。爱弥斯托着脸，满是遗憾地看着你。", "rejected-title"),
       characterNode("rejected-title", "爱弥斯", "aemeath", "诶，别走呀？标题我都想好了——《{username}的整蛊糖果首秀》！真的不考虑一下吗？")
+    ]
+  };
+}
+
+function lynaeStoryDraft() {
+  return {
+    startNodeId: RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted,
+    nodes: [
+      narrationNode("accepted-start", "傍晚的活动部，琳奈盘腿坐在地板上，正在给几个旧棋罐做重新喷涂。", "accepted-paint"),
+      characterNode("accepted-paint", "琳奈", "lynae", "黑色、白色、黑色、白色……围棋本身明明很有趣，装棋子的东西也可以再大胆一点嘛。", "", [
+        option("把彩虹豆豆跳跳糖递给琳奈", "accepted-color")
+      ]),
+      characterNode("accepted-color", "琳奈", "lynae", "哇，这个配色不错！是糖果，还是某种可以吃的颜料？", "", [
+        option("是糖，要尝一颗吗？", "accepted-try")
+      ]),
+      characterNode("accepted-try", "琳奈", "lynae", "当然！越是猜不出味道，才越值得试试看。", "accepted-eat"),
+      narrationNode("accepted-eat", "琳奈将糖果丢进口中。细碎的噼啪声响起，她饶有兴致地嚼了几下。", "accepted-taste"),
+      characterNode("accepted-taste", "琳奈", "lynae", "嗯，味道还挺难吃的……", "accepted-freeze"),
+      narrationNode("accepted-freeze", "琳奈脸上的笑容突然僵住了。", "", [
+        option("这么难吃吗？", "accepted-correct")
+      ]),
+      characterNode("accepted-correct", "琳奈", "lynae", "不是！我刚才明明想说难吃！", "accepted-boring"),
+      characterNode("accepted-boring", "琳奈", "lynae", "这颗糖很无聊——不对，是无聊！非常无聊！", "", [
+        option("难道......你说的话全都变成反话了？！", "accepted-realize")
+      ]),
+      characterNode("accepted-realize", "琳奈", "lynae", "呜哇，看来是这样。真方便……", "accepted-shrug"),
+      narrationNode("accepted-shrug", "琳奈愣了一下，耸了耸肩。", "accepted-silence"),
+      characterNode("accepted-silence", "琳奈", "lynae", "……我还是等时效过去再说话吧。"),
+      narrationNode("rejected-start", "琳奈坐在围棋部的窗边，正对着一个旧棋罐试验新的喷涂配色。", "", [
+        option("把彩虹豆豆跳跳糖递给琳奈", "rejected-color")
+      ]),
+      characterNode("rejected-color", "琳奈", "lynae", "这个颜色挺有意思。是最近流行的新品吗？", "", [
+        option("只是普通的糖，尝一颗吧。", "rejected-ordinary")
+      ]),
+      characterNode("rejected-ordinary", "琳奈", "lynae", "普通？", "rejected-boring"),
+      characterNode("rejected-boring", "琳奈", "lynae", "那不是对食物最无聊的评价吗？", "rejected-inspect"),
+      narrationNode("rejected-inspect", "琳奈接过糖果翻看了一圈，又抬眼看向你始终压在包装背面的手指。", "rejected-unmarked"),
+      characterNode("rejected-unmarked", "琳奈", "lynae", "没有配料，没有厂牌，你还一直把背面藏在手心里……", "rejected-prank"),
+      characterNode("rejected-prank", "琳奈", "lynae", "这听起来可不像‘普通的糖’，更像某场恶作剧的开场白。", "", [
+        option("你想多了。", "rejected-boundary")
+      ]),
+      characterNode("rejected-boundary", "琳奈", "lynae", "我喜欢惊喜，但不喜欢别人替我决定惊喜什么时候爆开。", "rejected-return"),
+      narrationNode("rejected-return", "琳奈把糖果放回你的掌心，又拿起喷罐晃了晃。", "rejected-invite"),
+      characterNode("rejected-invite", "琳奈", "lynae", "等你愿意把知道的都告诉我，再来邀请我吧。", "rejected-interest"),
+      characterNode("rejected-interest", "琳奈", "lynae", "到时候，我说不定真的会很感兴趣哦。", "rejected-finish"),
+      narrationNode("rejected-finish", "琳奈继续给棋罐喷上新的颜色。彩虹豆豆跳跳糖被完整地退了回来。")
     ]
   };
 }

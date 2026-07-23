@@ -28,6 +28,13 @@ const CHARACTER_ITEM_EFFECT_BADGES = [
     itemId: "rainbow-bean-candy",
     label: "彩虹豆豆跳跳糖效果中",
     icon: RAINBOW_BEAN_CANDY_ICON
+  },
+  {
+    characterId: "lynae",
+    effectKey: "lynaeContraryVoice",
+    itemId: "rainbow-bean-candy",
+    label: "反话语音模式",
+    icon: RAINBOW_BEAN_CANDY_ICON
   }
 ];
 
@@ -78,12 +85,16 @@ export function activeCharacterItemEffects(characterId, itemEffects = {}) {
 export function selectSortieCharacter({
   character = {},
   disabled = false,
+  itemEffects = {},
   audioSettings = undefined,
   playVoice = playSystemVoice,
   onSelectCharacter = () => {}
 } = {}) {
   if (disabled) return;
-  playVoice(SYSTEM_VOICE_EVENTS.sortie, { character, audioSettings });
+  playVoice(SYSTEM_VOICE_EVENTS.sortie, {
+    character: { ...character, itemEffects },
+    audioSettings
+  });
   onSelectCharacter(canonicalCharacterId(character.id));
 }
 

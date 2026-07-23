@@ -132,7 +132,7 @@
 - `audioRuntime.js` 通过统一 helper 暴露浏览器 `AudioContext` 构造器；倒计时 beep、门铃音和 TTS 在缺少 `window`、`AudioContext` 或 `speechSynthesis` 时静默 no-op，避免测试、预渲染或非浏览器执行路径因音频副作用抛错。
 
 - 匹配成功后先播放原有 3 秒匹配成功倒计时弹窗，倒计时结束后才进入对局资源预加载页并停止 BGM；该页复用登录加载页样式，但不显示转圈动画，只显示本机玩家出战角色跳动立绘、该角色的加载台词，以及 `资源加载中 0/2`、`1/2` 或 `2/2`，客户端完成本地资源预载后发出 `room:preload-ready`。进入对局页需要同时满足匹配成功倒计时完成和双方都 ready：倒计时先结束时进入并继续停在资源加载页，资源先 ready 时继续显示倒计时并在倒计时结束后直接进入对局页；服务端 90 秒未等齐会中止匹配并由前端 toast `一方加载超时，匹配中止`。
-- 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 `result-victory`、`result-defeat` 或 `result-draw` 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。棋谱回放模式不会弹结果弹窗，也不会触发结果音效或结果角色语音。
+- 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 `result-victory`、`result-defeat` 或 `result-draw` 系统语音；琳奈的 `lynaeContraryVoice` 生效时，结算使用服务端清除前写入的 `completedItemEffects` 快照将胜利与失败语音互换，界面结果与胜负音效仍保持真实结果，和棋语音不变。无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。棋谱回放模式不会弹结果弹窗，也不会触发结果音效或结果角色语音。
 - 普通落子播放 `godown_clear.ogg`。
 - 提子动作播放 `go_capture_clear.ogg`。
 - 隐藏手暴露播放 `hidden_hand_reveal.ogg`；回放下一步遇到带有隐藏手暴露标记的历史动作时也会播放该音效。
@@ -160,6 +160,7 @@
 - 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限。
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
+- 琳奈的 `lynaeContraryVoice` 由 resolver 在选取音频前做固定事件重映射：`countdown-N` 映射为 `countdown-(11-N)`，`byo-yomi-period-2` ↔ `byo-yomi-period-1`、`game-start` ↔ `byo-yomi-start`、`sortie` ↔ `skill-cast`、`result-victory` ↔ `result-defeat`；`result-draw`、`house-detail` 与超时静音保持原样。房间语音角色、技能横幅、棋舍出战和结果弹窗都必须显式携带对应的 `itemEffects`，不能修改静态角色目录或真实事件数据。
 - 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
 - 已预留事件：`game-start`、`game-start:gomoku`、`skill-cast`、`sortie`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
