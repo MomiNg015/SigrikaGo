@@ -208,6 +208,7 @@ describe("WarehouseModal candy feedback", () => {
       denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" },
       sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
       aemeath: { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath_centered.webp" },
+      lynae: { id: "lynae", name: "琳奈", portrait: "/assets/lynae.png" },
       momo: { id: "momo", name: "莫名", portrait: "/assets/momo.webp" }
     };
 
@@ -231,10 +232,20 @@ describe("WarehouseModal candy feedback", () => {
       item,
       itemEffects: {}
     })).toEqual({ disabled: false, reason: "" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.lynae,
+      item,
+      itemEffects: {}
+    })).toEqual({ disabled: false, reason: "" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.lynae,
+      item,
+      itemEffects: { lynaeContraryVoice: true }
+    })).toEqual({ disabled: true, reason: "效果中" });
 
     const html = renderToStaticMarkup(createElement(WarehouseTargetModal, {
       characters,
-      ownedCharacters: [characters.denia, characters.sigrika, characters.momo],
+      ownedCharacters: [characters.denia, characters.sigrika, characters.lynae, characters.momo],
       targetItem: item,
       targetResult: null,
       user: { itemEffects: { deniaRainbowGlow: true } },
@@ -244,6 +255,7 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html.match(/warehouse-target-disabled/g)).toHaveLength(2);
     expect(html.match(/disabled=""/g)).toHaveLength(2);
+    expect(html).toContain("琳奈</span>");
     expect(html).not.toContain("<small");
     expect(html).not.toContain("title=\"效果中");
     expect(html).not.toContain("title=\"无效果");

@@ -49,7 +49,7 @@ Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js
 - `ownedCharacters`: 逗号分隔的角色 slug 字符串；新用户默认只有 `sigrika,denia`。启动清理会把旧达妮娅 slug `danea`/`denea` 迁移到 `denia`；`202607170002_aemeath_ticket_acquisition` 与 `migrateLegacyAemeathOwnership()` 会在切换获得方式时把 `aemeath` 写入所有既有用户的 legacy 字段和 `UserCharacter` 镜像，然后以 `SiteSetting` marker 保证运行期迁移只执行一次。
 - `ownedItems`: JSON 数量表字符串，例如 `{"dream-ticket":2}`；兼容旧逗号分隔字符串读取，API 对外返回 `{ itemId, quantity }` 数组。
 - `itemPurchaseCounts`: JSON 数量表字符串，例如 `{"rainbow-bean-candy":3}`；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。
-- `itemEffects`: JSON 状态字符串，当前支持 `sigrikaCandyDisabled`、`deniaRainbowGlow` 与 `aemeathRainbowMove` 三个彩虹豆豆跳跳糖临时效果。
+- `itemEffects`: JSON 状态字符串，当前支持 `sigrikaCandyDisabled`、`deniaRainbowGlow`、`aemeathRainbowMove` 与 `lynaeContraryVoice` 四个彩虹豆豆跳跳糖临时效果。
 - `ownedDecorations`: 逗号分隔装饰 slug。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 

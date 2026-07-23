@@ -1,6 +1,10 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import {
+  RAINBOW_BEAN_CANDY_ID,
+  RAINBOW_BEAN_CANDY_TARGET_RULES
+} from "../src/shared/rainbowBeanCandy.js";
 
-export const RAINBOW_BEAN_CANDY_ID = "rainbow-bean-candy";
+export { RAINBOW_BEAN_CANDY_ID };
 export const SIGRIKA_CANDY_EFFECT_TEXT = "西格莉卡吃下糖果后一直打嗝，急匆匆跑去找陆医生了。看来暂时不能找她下棋了。";
 export const DENIA_CANDY_EFFECT_TEXT = "达妮娅吃下糖果后，双眼和嘴巴同时喷出了三道彩虹射线。达妮娅惊呼：“{username}！你到底给我吃了什么！”";
 export const AEMEATH_CANDY_EFFECT_TEXT = "爱弥斯吃下糖果后进入了“彩虹落子模式”，每次落子都会绽开七彩像素光纹。";
@@ -23,12 +27,11 @@ export function serializeItemEffects(value) {
 }
 
 export function normalizeItemEffects(value) {
-  return {
-    ...(value?.sigrikaCandyDisabled ? { sigrikaCandyDisabled: true } : {}),
-    ...(value?.deniaRainbowGlow ? { deniaRainbowGlow: true } : {}),
-    ...(value?.aemeathRainbowMove ? { aemeathRainbowMove: true } : {}),
-    ...(value?.lynaeContraryVoice ? { lynaeContraryVoice: true } : {})
-  };
+  const normalized = {};
+  for (const { effectKey } of Object.values(RAINBOW_BEAN_CANDY_TARGET_RULES)) {
+    if (value?.[effectKey]) normalized[effectKey] = true;
+  }
+  return normalized;
 }
 
 export function blockedCharactersForItemEffects(value) {

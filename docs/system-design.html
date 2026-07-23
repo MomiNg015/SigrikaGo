@@ -611,7 +611,7 @@
 <li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听 <code>denia-rainbow-bean-candy</code> 道具使用事件；只有达妮娅接受并吃下彩虹豆豆跳跳糖后才会触发并获得 100 金币，35% 拒绝分支不会触发，不回溯统计成就上线前发生过的使用记录。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅、爱弥斯和琳奈四名角色，四者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 520ms 的电子彩虹反馈：光源跟随棋子抖动后的实际视觉中心，七色细光沿棋盘横纵线向四个棋盘边缘传播，并以统一透明度遮罩从中心的高亮逐步衰减到边缘透明；沿途交叉点按距离依次点亮、亮度向外递减。明亮学园竖屏的全局 <code>max-width</code> 保护会由特效 owner 定点解除，避免光轨被裁成一格；效果不使用通用圆形彩虹环，也不改变棋子和围棋规则，并在她完成一盘有效对局后解除。琳奈接受后获得 <code>lynaeContraryVoice</code> 临时状态，只交换她的语音事件：读秒 10→1 与 1→10 成对倒置，剩余读秒 2↔1、开局↔开始读秒、出战↔技能、胜利↔失败，和棋及界面文字、计时与结算数据保持不变；完成一盘使用琳奈的有效对局后清除，结算房间通过 <code>completedItemEffects</code> 保留仅供本局胜负语音解析的完成时快照。四份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
+<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅、爱弥斯和琳奈四名角色；<code>src/shared/rainbowBeanCandy.js</code> 统一登记道具 ID、支持角色与效果键，仓库目标选择和服务端效果常量共同消费这份契约，避免前端白名单漏掉已接入角色。四者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 520ms 的电子彩虹反馈：光源跟随棋子抖动后的实际视觉中心，七色细光沿棋盘横纵线向四个棋盘边缘传播，并以统一透明度遮罩从中心的高亮逐步衰减到边缘透明；沿途交叉点按距离依次点亮、亮度向外递减。明亮学园竖屏的全局 <code>max-width</code> 保护会由特效 owner 定点解除，避免光轨被裁成一格；效果不使用通用圆形彩虹环，也不改变棋子和围棋规则，并在她完成一盘有效对局后解除。琳奈接受后获得 <code>lynaeContraryVoice</code> 临时状态，只交换她的语音事件：读秒 10→1 与 1→10 成对倒置，剩余读秒 2↔1、开局↔开始读秒、出战↔技能、胜利↔失败，和棋及界面文字、计时与结算数据保持不变；完成一盘使用琳奈的有效对局后清除，结算房间通过 <code>completedItemEffects</code> 保留仅供本局胜负语音解析的完成时快照。四份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
 </ul>
 <ul>
 <li>新增内置成就“点亮语义！”使用 <code>mode_character_wins</code> 条件统计玩家使用西格莉卡在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>/assets/achievements/semantic-nameplate.png</code> 用户名背景；<code>seedBuiltinAchievements</code> 会让管理员默认达成所有内置成就并标记奖励已发放。</li>
@@ -2156,7 +2156,7 @@
 <li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 <code>/api/me</code> 刷新的铭牌统计体现最新段位积分。</li>
 </ul>
 <ul>
-<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。服务端会把商品、仓库和玩家侧抽卡奖项/结果中的内置糖果旧 PNG 图路径归一为当前 WebP，默认快照里的糖果商品和卡池奖励也使用同一路径。该道具只能对角色使用，目前西格莉卡、达妮娅和爱弥斯有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
+<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。服务端会把商品、仓库和玩家侧抽卡奖项/结果中的内置糖果旧 PNG 图路径归一为当前 WebP，默认快照里的糖果商品和卡池奖励也使用同一路径。该道具只能对角色使用，目前西格莉卡、达妮娅、爱弥斯和琳奈有实际效果；<code>src/shared/rainbowBeanCandy.js</code> 统一登记支持角色及效果键，仓库目标选择不再维护独立白名单。其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
 </ul>
 <ul>
 <li>彩虹豆豆跳跳糖对西格莉卡使用时先判定 35% 拒绝概率；拒绝分支不消耗道具、不改变金币、效果或出战角色。接受分支消耗 1 个道具且不再奖励 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动切换到一名已拥有且可出战的其它角色；没有可替换角色时在随机判定前拒绝使用且不消耗道具。成功剧情明确她去找医生且暂时不能找她下棋；任意角色完成一盘有效对局后清除该状态。</li>
@@ -3332,7 +3332,7 @@
 <li><code>useInventoryItem()</code> applies the item business effect first. For character-target item use it then looks up a published <code>item-character-use</code> story with exact <code>{ itemId, characterId }</code> trigger params, interpolates whitelisted <code>{username}</code>, <code>{characterName}</code>, and <code>{itemName}</code> variables, and returns <code>storyScript</code> alongside the existing <code>effectText</code>. Missing scripts keep the legacy effect-text fallback.</li>
 </ul>
 <ul>
-<li><code>initializeServerData()</code> runs <code>ensureStoryScriptSchema()</code>, then the onboarding compatibility schema guard, then <code>seedDefaultStoryScripts()</code>. The seed creates default onboarding plus rainbow-bean-candy scripts for Sigrika and Denia only when missing, and migrates an existing published legacy <code>OnboardingStoryScript</code> into <code>onboarding.default</code> when that generic key does not exist.</li>
+<li><code>initializeServerData()</code> runs <code>ensureStoryScriptSchema()</code>, then the onboarding compatibility schema guard, then <code>seedDefaultStoryScripts()</code>. The seed creates default onboarding plus rainbow-bean-candy scripts for Sigrika, Denia, Aemeath, and Lynae only when missing, and migrates an existing published legacy <code>OnboardingStoryScript</code> into <code>onboarding.default</code> when that generic key does not exist.</li>
 </ul>
 <h2>Admin Analytics API</h2>
 <ul>
@@ -3479,7 +3479,7 @@
 <li><code>itemPurchaseCounts</code>: JSON 数量表字符串，例如 <code>{&quot;rainbow-bean-candy&quot;:3}</code>；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。</li>
 </ul>
 <ul>
-<li><code>itemEffects</code>: JSON 状态字符串，当前支持 <code>sigrikaCandyDisabled</code>、<code>deniaRainbowGlow</code> 与 <code>aemeathRainbowMove</code> 三个彩虹豆豆跳跳糖临时效果。</li>
+<li><code>itemEffects</code>: JSON 状态字符串，当前支持 <code>sigrikaCandyDisabled</code>、<code>deniaRainbowGlow</code>、<code>aemeathRainbowMove</code> 与 <code>lynaeContraryVoice</code> 四个彩虹豆豆跳跳糖临时效果。</li>
 </ul>
 <ul>
 <li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>

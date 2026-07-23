@@ -1,22 +1,10 @@
 import { UserRound, X } from "lucide-react";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-
-const RAINBOW_BEAN_CANDY_ID = "rainbow-bean-candy";
-const CANDY_TARGET_RULES = {
-  aemeath: {
-    effectKey: "aemeathRainbowMove",
-    activeLabel: "效果中"
-  },
-  denia: {
-    effectKey: "deniaRainbowGlow",
-    activeLabel: "效果中"
-  },
-  sigrika: {
-    effectKey: "sigrikaCandyDisabled",
-    activeLabel: "效果中"
-  }
-};
+import {
+  RAINBOW_BEAN_CANDY_ID,
+  RAINBOW_BEAN_CANDY_TARGET_RULES
+} from "../../shared/rainbowBeanCandy.js";
 
 export default function WarehouseTargetModal({
   characters,
@@ -94,7 +82,7 @@ export function warehouseTargetState(targetState) {
 export function warehouseCharacterTargetAvailability({ character, item, itemEffects = {} }) {
   if (!item || item.itemId !== RAINBOW_BEAN_CANDY_ID) return { disabled: false, reason: "" };
   const characterId = canonicalCharacterId(character?.id);
-  const targetRule = CANDY_TARGET_RULES[characterId];
+  const targetRule = RAINBOW_BEAN_CANDY_TARGET_RULES[characterId];
   if (!targetRule) return { disabled: true, reason: "无效果" };
   if (itemEffects?.[targetRule.effectKey]) return { disabled: true, reason: targetRule.activeLabel };
   return { disabled: false, reason: "" };

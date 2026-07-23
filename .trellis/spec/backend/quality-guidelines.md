@@ -231,6 +231,7 @@ Correct:
 - `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`.
 - Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
 - Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, `aemeathRainbowMove`, and `lynaeContraryVoice`.
+- `src/shared/rainbowBeanCandy.js` is the shared frontend/backend registry for the candy item id, supported character ids, effect keys, and active-state labels. Warehouse target availability must consume this registry instead of maintaining a local character whitelist.
 - `aemeathRainbowMoveEffectForRoom(room)` returns `{ pointId, key }` only when the latest history action is a move by an Aemeath player whose public user has `aemeathRainbowMove === true`; otherwise it returns `null`.
 - `contraryLynaeVoiceEvent(event, { character, params })` remaps an event only when `canonicalCharacterId(character.id) === "lynae"` and `character.itemEffects.lynaeContraryVoice === true`.
 - Finished room player payloads may expose `completedItemEffects: object | null`; this is a result-presentation snapshot, not the user's current persistent effect state.
@@ -245,6 +246,7 @@ Correct:
 - Lynae voice remapping is fixed, not random: countdown `N` maps to `11-N`; period 2 ↔ period 1, game start ↔ byo-yomi start, sortie ↔ skill cast, and victory ↔ defeat. Draw, house detail, and timeout silence stay unchanged.
 - A valid finished game clears `lynaeContraryVoice` only when that user played Lynae. Before mutating `player.user.itemEffects`, `prepareCandyEffectUpdates()` copies the pre-clear effects to `player.completedItemEffects`; `buildRoomView()` exposes that snapshot so `ResultModal` can still swap the current game's victory/defeat voice after persistent cleanup. No other next-game voice path may consume `completedItemEffects`.
 - Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
+- Every server-supported candy target must be selectable in the warehouse while its effect is inactive and disabled as “效果中” while its registered effect key is active.
 
 #### 4. Validation & Error Matrix
 - Unsupported candy character -> existing HTTP 400 no-effect error, no random narrative branch.
@@ -274,6 +276,7 @@ Correct:
 - `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
 - `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
 - `src/modals/WarehouseModal.test.js` asserts rejection toast and skip copy do not claim success or consumption.
+- `src/modals/WarehouseModal.test.js` also asserts all registered candy targets, including Lynae, remain selectable while inactive and become disabled only while their own effect is active.
 - `src/room/roomView.test.js` asserts the latest-action/player/effect gate, and `src/room/Board.test.js` asserts one pointer-transparent marker, an unchanged stone, four directional traces, distance-attenuated intersection nodes, seven pixel echoes, stone-offset origin variables, portrait width-guard reset, memo-comparator coverage, bounded motion, absence of the old ring keyframes, and reduced-motion fallback.
 - `src/shared/systemVoices.test.js` asserts every Lynae event pair, reverse countdown endpoints, unchanged draw behavior, and the no-effect baseline. Room, skill-banner, house-sortie, and result tests must assert that their voice character carries the correct active or completed effect object.
 
@@ -298,6 +301,23 @@ if (outcome === "rejected") {
   };
 }
 ownedItems[itemId] -= 1;
+```
+
+Wrong:
+
+```js
+const CANDY_TARGET_RULES = {
+  sigrika: { effectKey: "sigrikaCandyDisabled" },
+  denia: { effectKey: "deniaRainbowGlow" }
+};
+```
+
+Correct:
+
+```js
+import {
+  RAINBOW_BEAN_CANDY_TARGET_RULES
+} from "../../shared/rainbowBeanCandy.js";
 ```
 
 Wrong:
