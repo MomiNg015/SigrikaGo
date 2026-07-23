@@ -35,6 +35,13 @@ describe("App startup preload wiring", () => {
     expect(source).toMatch(/if \(shouldShowStartupPreload\(\{[\s\S]*?setView\("preloading"\);[\s\S]*?\}/);
   });
 
+  it("uses the bandwidth-first login preload concurrency", () => {
+    const source = readFileSync(new URL("./useStartupPreload.js", import.meta.url), "utf8");
+
+    expect(source).toContain("concurrency: 6");
+    expect(source).toContain("retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 })");
+  });
+
   it("derives the character list view through the shared catalog sorter", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 

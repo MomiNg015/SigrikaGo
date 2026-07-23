@@ -65,7 +65,7 @@ export function useStartupPreload({
           ],
           tracks: nextMusicTracks
         }), {
-          concurrency: 4,
+          concurrency: 6,
           onSkipped: (src) => skippedAssets.push(src),
           onProgress: (progress) => {
             if (!cancelled) setAssetProgress(progress);

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, memo, Suspense } from "react";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
@@ -89,7 +89,7 @@ export default function AppRoutes({
   announcementUnread
 }) {
   const homeScreen = user && (
-    <HomeScreen
+    <HomeRoute
       user={user}
       characters={characters}
       siteSettings={siteSettings}
@@ -99,50 +99,26 @@ export default function AppRoutes({
       onStartMatch={startMatch}
       onStartPractice={startPractice}
       onPreloadPlayableReady={onPreloadPlayableReady}
-      onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={showMatchModePicker}
       onMatchModePickerOpenChange={setShowMatchModePicker}
-      onOpenHouse={() => {
-        playUiHouseOpenSound(audioSettings);
-        setShowHouse(true);
-      }}
-      onOpenResume={() => {
-        playUiResumeOpenSound(audioSettings);
-        setShowResume(true);
-      }}
-      onOpenWarehouse={() => {
-        playUiWarehouseOpenSound(audioSettings);
-        setShowWarehouse(true);
-      }}
-      onOpenLeaderboard={() => {
-        playUiLeaderboardOpenSound(audioSettings);
-        setShowLeaderboard(true);
-      }}
-      onOpenWatch={() => {
-        playUiWatchOpenSound(audioSettings);
-        setShowWatch(true);
-      }}
-      onOpenShop={() => {
-        playUiShopOpenSound(audioSettings);
-        setShowShop(true);
-      }}
+      audioSettings={audioSettings}
+      setShowHouse={setShowHouse}
+      setShowResume={setShowResume}
+      setShowWarehouse={setShowWarehouse}
+      setShowLeaderboard={setShowLeaderboard}
+      setShowWatch={setShowWatch}
+      setShowShop={setShowShop}
       recruitmentReady={recruitmentReady}
       mailboxBadgeCount={mailboxBadgeCount}
       announcementUnread={announcementUnread}
-      onOpenRecruitment={() => {
-        playUiRecruitmentOpenSound(audioSettings);
-        setShowRecruitment(true);
-      }}
-      onOpenFriends={() => {
-        playUiFriendsOpenSound(audioSettings);
-        setShowFriends(true);
-      }}
-      onOpenSettings={() => setShowSettings(true)}
-      onOpenAnnouncements={() => setShowAnnouncements(true)}
-      onOpenMailbox={() => setShowMailbox(true)}
-      onOpenMessageBoard={() => setShowMessageBoard(true)}
+      setShowRecruitment={setShowRecruitment}
+      setShowFriends={setShowFriends}
+      setShowSettings={setShowSettings}
+      setShowAnnouncements={setShowAnnouncements}
+      setShowMailbox={setShowMailbox}
+      setShowMessageBoard={setShowMessageBoard}
       onOpenOnboardingStory={onOpenOnboardingStory}
-      onOpenAdmin={() => setView("admin")}
+      setView={setView}
     />
   );
   const routeLoadingScreen = (
@@ -277,6 +253,96 @@ export default function AppRoutes({
     </>
   );
 }
+
+const HomeRoute = memo(function HomeRoute({
+  announcementUnread,
+  audioSettings,
+  characters,
+  lobbyStats,
+  logout,
+  mailboxBadgeCount,
+  matchModePickerOpen,
+  onMatchModePickerOpenChange,
+  onOpenOnboardingStory,
+  onPreloadPlayableReady,
+  recruitmentReady,
+  selectCharacter,
+  setShowAnnouncements,
+  setShowFriends,
+  setShowHouse,
+  setShowLeaderboard,
+  setShowMailbox,
+  setShowMessageBoard,
+  setShowRecruitment,
+  setShowResume,
+  setShowSettings,
+  setShowShop,
+  setShowWarehouse,
+  setShowWatch,
+  setView,
+  siteSettings,
+  startMatch,
+  startPractice,
+  user
+}) {
+  return (
+    <HomeScreen
+      user={user}
+      characters={characters}
+      siteSettings={siteSettings}
+      lobbyStats={lobbyStats}
+      onLogout={logout}
+      onSelectCharacter={selectCharacter}
+      onStartMatch={startMatch}
+      onStartPractice={startPractice}
+      onPreloadPlayableReady={onPreloadPlayableReady}
+      onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
+      matchModePickerOpen={matchModePickerOpen}
+      onMatchModePickerOpenChange={onMatchModePickerOpenChange}
+      onOpenHouse={() => {
+        playUiHouseOpenSound(audioSettings);
+        setShowHouse(true);
+      }}
+      onOpenResume={() => {
+        playUiResumeOpenSound(audioSettings);
+        setShowResume(true);
+      }}
+      onOpenWarehouse={() => {
+        playUiWarehouseOpenSound(audioSettings);
+        setShowWarehouse(true);
+      }}
+      onOpenLeaderboard={() => {
+        playUiLeaderboardOpenSound(audioSettings);
+        setShowLeaderboard(true);
+      }}
+      onOpenWatch={() => {
+        playUiWatchOpenSound(audioSettings);
+        setShowWatch(true);
+      }}
+      onOpenShop={() => {
+        playUiShopOpenSound(audioSettings);
+        setShowShop(true);
+      }}
+      recruitmentReady={recruitmentReady}
+      mailboxBadgeCount={mailboxBadgeCount}
+      announcementUnread={announcementUnread}
+      onOpenRecruitment={() => {
+        playUiRecruitmentOpenSound(audioSettings);
+        setShowRecruitment(true);
+      }}
+      onOpenFriends={() => {
+        playUiFriendsOpenSound(audioSettings);
+        setShowFriends(true);
+      }}
+      onOpenSettings={() => setShowSettings(true)}
+      onOpenAnnouncements={() => setShowAnnouncements(true)}
+      onOpenMailbox={() => setShowMailbox(true)}
+      onOpenMessageBoard={() => setShowMessageBoard(true)}
+      onOpenOnboardingStory={onOpenOnboardingStory}
+      onOpenAdmin={() => setView("admin")}
+    />
+  );
+});
 
 function tutorialBattleLoadingCharacter(session, characters) {
   const startNodeId = String(session?.startNodeId ?? session?.script?.startNodeId ?? "");

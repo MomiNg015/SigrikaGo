@@ -64,7 +64,8 @@
     transform: rotate(2deg) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry > img {
+  .theme-bright-school .home-image-entry > .home-entry-motion,
+  .theme-bright-school .home-entry-motion > img {
     box-sizing: border-box !important;
     width: 100% !important;
     height: 100% !important;

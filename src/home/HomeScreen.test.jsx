@@ -215,8 +215,8 @@ describe("HomeScreen", () => {
     expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
     expect(html).toContain('aria-label="部员手册"');
     expect(html).toContain('aria-label="星炬对弈"');
-    expect(html).toContain('<img src="/assets/home/book-entry.webp" alt="" aria-hidden="true" decoding="async"/>');
-    expect(html).toContain('<img src="/assets/home/fantasy-match-entry.webp" alt="" aria-hidden="true" decoding="async"/>');
+    expect(html).toContain('<span class="home-entry-motion" aria-hidden="true"><img src="/assets/home/book-entry.webp" alt="" decoding="async"/></span>');
+    expect(html).toContain('<span class="home-entry-motion" aria-hidden="true"><img src="/assets/home/fantasy-match-entry.webp" alt="" decoding="async"/></span>');
     expect(html).not.toContain("home-match-mode-tickets");
     expect(html).not.toContain("home-match-mode-ticket");
     expect(html).not.toContain("home-match-mode-count");
@@ -609,6 +609,7 @@ describe("HomeScreen", () => {
     expect(brightToolboxEntry).toContain("gap: clamp(4px, 0.55vw, 8px) !important");
     expect(narrowDesktopCss.match(/gap: clamp\(4px, 0\.55vw, 8px\) !important/g)?.length).toBeGreaterThanOrEqual(2);
     expect(brightToolboxEntry).toContain("transform: translate(var(--utility-x, 0), var(--utility-y, 0)) rotate(var(--utility-tilt, 0deg)) !important");
+    expect(brightToolboxEntry).toContain(".utility-entry-motion");
     expect(brightToolboxEntry).toContain(".utility-entry-art");
     expect(brightToolboxEntry).toContain("place-self: center !important");
     expect(brightToolboxEntry).toContain("width: 128% !important");
@@ -886,7 +887,8 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("@media (min-width: 701px)");
     expect(finalMobileCss).toContain("transform: rotate(2deg) !important");
     expect(finalMobileCss).not.toContain("transform: translateY(-6px) !important");
-    expect(finalMobileCss).toContain(".home-image-entry > img");
+    expect(finalMobileCss).toContain(".home-image-entry > .home-entry-motion");
+    expect(finalMobileCss).toContain(".home-entry-motion > img");
     expect(finalMobileCss).toContain("box-sizing: border-box !important");
     expect(finalMobileCss).toContain("max-height: 100% !important");
     expect(finalMobileCss).toContain("grid-template-areas:");
@@ -1034,6 +1036,7 @@ describe("HomeScreen", () => {
     expect(source).toContain("recruitmentReady");
     expect(source).toContain("招募");
     expect(source).toContain("utility-image-entry");
+    expect(source).toContain("utility-entry-motion");
     expect(source).toContain("utility-entry-art");
     expect(source).toContain("home-utility-recruitment.webp");
     expect(source).not.toContain("成员补给");
@@ -1043,6 +1046,8 @@ describe("HomeScreen", () => {
     const mobileUtilityContainerBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\), \.utility-image-entry:active:not\(:disabled\)\)\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileUtilityHoverArtBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\)\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileUtilityActiveArtBlock = mobileCss.match(/\.utility-image-entry:active:not\(:disabled\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileUtilityHoverMotionBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\)\) \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileUtilityActiveMotionBlock = mobileCss.match(/\.utility-image-entry:active:not\(:disabled\) \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
     expect(mobileUtilityContainerBlock).toContain("background: transparent !important");
     expect(mobileUtilityContainerBlock).toContain("border: 0 !important");
     expect(mobileUtilityContainerBlock).toContain("padding: 0 !important");
@@ -1050,9 +1055,11 @@ describe("HomeScreen", () => {
     expect(mobileUtilityContainerBlock).toContain("overflow: visible !important");
     expect(mobileUtilityContainerBlock).toContain("transform: none !important");
     expect(mobileUtilityHoverArtBlock).toContain("brightness(1.04) saturate(1.06)");
-    expect(mobileUtilityHoverArtBlock).toContain("transform: translateY(-1px) rotate(0.6deg) !important");
+    expect(mobileUtilityHoverArtBlock).not.toContain("transform:");
+    expect(mobileUtilityHoverMotionBlock).toContain("transform: translateY(-1px) rotate(0.6deg) !important");
     expect(mobileUtilityActiveArtBlock).toContain("drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26))");
-    expect(mobileUtilityActiveArtBlock).toContain("transform: translateY(1px) !important");
+    expect(mobileUtilityActiveArtBlock).not.toContain("transform:");
+    expect(mobileUtilityActiveMotionBlock).toContain("transform: translateY(1px) !important");
     expect(mobileUtilityActiveArtBlock).not.toContain("scale(");
     expect(stageSource).toContain("onOpenRecruitment");
     expect(routeSource).toContain("setShowRecruitment(true)");
