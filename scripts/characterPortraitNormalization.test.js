@@ -50,6 +50,49 @@ describe("character portrait normalization", () => {
     expect(second.buffer.equals(first.buffer)).toBe(true);
   });
 
+  it("preserves animated WebP frames, timing, loop, and one shared placement", async () => {
+    const source = await testAnimatedPortrait();
+    const normalized = await normalizePortraitBuffer(source);
+    const validation = await validateNormalizedPortrait(normalized.buffer, {
+      requireAnimation: true
+    });
+
+    expect(validation.ok).toBe(true);
+    expect(validation.animation).toMatchObject({
+      pages: 2,
+      pageHeight: PORTRAIT_CANVAS_SIZE,
+      delay: [40, 80],
+      loop: 2
+    });
+    expect(normalized.animation).toEqual({
+      pages: 2,
+      delay: [40, 80],
+      loop: 2
+    });
+    expect(Math.max(validation.bounds.width, validation.bounds.height)).toBe(PORTRAIT_SAFE_SIZE);
+
+    const second = await normalizePortraitBuffer(normalized.buffer);
+    expect(second.buffer.equals(normalized.buffer)).toBe(true);
+  });
+
+  it("rejects a static portrait when its asset contract requires animation", async () => {
+    const source = await testPortrait({
+      width: 200,
+      height: 240,
+      left: 40,
+      top: 30,
+      subjectWidth: 100,
+      subjectHeight: 180
+    });
+    const normalized = await normalizePortraitBuffer(source);
+    const validation = await validateNormalizedPortrait(normalized.buffer, {
+      requireAnimation: true
+    });
+
+    expect(validation.ok).toBe(false);
+    expect(validation.errors).toContain("expected an animated portrait with at least 2 frames");
+  });
+
   it("rejects opaque, empty, and non-normalized assets", async () => {
     const opaque = await sharp({
       create: { width: 20, height: 20, channels: 3, background: "#f00" }
@@ -103,6 +146,24 @@ describe("character portrait normalization", () => {
     expect(assets).toHaveLength(expectedUrls.length);
     expect(urls).toEqual(new Set(expectedUrls));
     expect(expectedUrls.every((url) => url.endsWith(".webp"))).toBe(true);
+    expect(assets.find((asset) => asset.url === DENIA_CANDY_PORTRAIT_ASSET.url))
+      .toMatchObject({ requiresAnimation: true });
+  });
+
+  it("keeps the committed Denia candy portrait at its authored animation timing", async () => {
+    const publicRoot = path.join(process.cwd(), "public");
+    const assetPath = portraitUrlToFilePath(DENIA_CANDY_PORTRAIT_ASSET.url, publicRoot);
+    const validation = await validateNormalizedPortrait(await fs.readFile(assetPath), {
+      requireAnimation: true
+    });
+
+    expect(validation.ok).toBe(true);
+    expect(validation.animation).toMatchObject({
+      pages: 16,
+      pageHeight: PORTRAIT_CANVAS_SIZE,
+      loop: 0
+    });
+    expect(validation.animation.delay).toEqual(Array(16).fill(70));
   });
 
   it("skips remote URLs without trying to read or write them", async () => {
@@ -171,6 +232,47 @@ describe("character portrait normalization", () => {
     expect(writeResults).toEqual([expect.objectContaining({ status: "valid" })]);
     expect(checkResults).toEqual([expect.objectContaining({ status: "valid" })]);
   });
+
+  it("rebuilds a required animation from its legacy source when the output is static", async () => {
+    const publicRoot = await fs.mkdtemp(path.join(os.tmpdir(), "sigrikago-portrait-animation-"));
+    const legacyUrl = "/assets/legacy/animated.webp";
+    const outputUrl = "/assets/characters/animated.webp";
+    const legacyPath = portraitUrlToFilePath(legacyUrl, publicRoot);
+    const outputPath = portraitUrlToFilePath(outputUrl, publicRoot);
+    await fs.mkdir(path.dirname(legacyPath), { recursive: true });
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(legacyPath, await testAnimatedPortrait());
+    await fs.writeFile(outputPath, (await normalizePortraitBuffer(await testPortrait({
+      width: 100,
+      height: 100,
+      left: 10,
+      top: 10,
+      subjectWidth: 80,
+      subjectHeight: 80
+    }))).buffer);
+
+    const assets = [{
+      url: outputUrl,
+      owners: ["test"],
+      legacySourceUrl: legacyUrl,
+      requiresAnimation: true
+    }];
+    const results = await processConfiguredPortraitAssets({
+      mode: "write",
+      publicRoot,
+      assets,
+      log: () => {}
+    });
+    const output = await fs.readFile(outputPath);
+    const validation = await validateNormalizedPortrait(output, { requireAnimation: true });
+
+    expect(results).toEqual([expect.objectContaining({ status: "valid" })]);
+    expect(validation.animation).toMatchObject({
+      pages: 2,
+      delay: [40, 80],
+      loop: 2
+    });
+  });
 });
 
 async function testPortrait({ width, height, left, top, subjectWidth, subjectHeight }) {
@@ -192,5 +294,29 @@ async function testPortrait({ width, height, left, top, subjectWidth, subjectHei
   })
     .composite([{ input: subject, left, top }])
     .png()
+    .toBuffer();
+}
+
+async function testAnimatedPortrait() {
+  const frames = await Promise.all([
+    testPortrait({
+      width: 120,
+      height: 140,
+      left: 20,
+      top: 20,
+      subjectWidth: 60,
+      subjectHeight: 100
+    }),
+    testPortrait({
+      width: 120,
+      height: 140,
+      left: 28,
+      top: 15,
+      subjectWidth: 60,
+      subjectHeight: 100
+    })
+  ]);
+  return sharp(frames, { join: { animated: true } })
+    .webp({ quality: 90, alphaQuality: 100, delay: [40, 80], loop: 2 })
     .toBuffer();
 }

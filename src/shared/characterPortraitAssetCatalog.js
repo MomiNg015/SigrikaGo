@@ -71,7 +71,8 @@ export const COSTUME_PORTRAIT_ASSETS = Object.freeze({
 
 export const DENIA_CANDY_PORTRAIT_ASSET = Object.freeze({
   url: "/assets/characters/portraits/denia-candy.webp",
-  legacyUrl: "/assets/characters/denia_color.webp"
+  legacyUrl: "/assets/characters/denia_color.webp",
+  requiresAnimation: true
 });
 
 export function builtinPortraitLegacySource(url) {

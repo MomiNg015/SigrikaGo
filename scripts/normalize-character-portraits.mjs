@@ -10,6 +10,7 @@ import { FALLBACK_CHARACTERS } from "../src/shared/characterFallback.js";
 import {
   isRemotePortraitUrl,
   isRepositoryPortraitUrl,
+  decodePortraitFrames,
   normalizePortraitBuffer,
   portraitUrlToFilePath,
   validateNormalizedPortrait
@@ -25,18 +26,20 @@ export function discoverConfiguredPortraitAssets({
   baseCandyPortraitUrl = DENIA_CANDY_PORTRAIT_ASSET.url
 } = {}) {
   const discovered = new Map();
-  const add = (url, owner) => {
+  const add = (url, owner, contract = {}) => {
     const normalizedUrl = String(url ?? "").trim();
     if (!normalizedUrl) return;
     const existing = discovered.get(normalizedUrl);
     if (existing) {
       existing.owners.push(owner);
+      existing.requiresAnimation ||= contract.requiresAnimation === true;
       return;
     }
     discovered.set(normalizedUrl, {
       url: normalizedUrl,
       owners: [owner],
-      legacySourceUrl: builtinPortraitLegacySource(normalizedUrl)
+      legacySourceUrl: builtinPortraitLegacySource(normalizedUrl),
+      requiresAnimation: contract.requiresAnimation === true
     });
   };
 
@@ -50,7 +53,10 @@ export function discoverConfiguredPortraitAssets({
     add(costume?.portraitUrl, `costume:${costume?.id ?? "unknown"}`);
     add(costume?.candyEffectPortraitUrl, `costume candy:${costume?.id ?? "unknown"}`);
   }
-  add(baseCandyPortraitUrl, "base candy:denia");
+  add(baseCandyPortraitUrl, "base candy:denia", {
+    requiresAnimation: baseCandyPortraitUrl === DENIA_CANDY_PORTRAIT_ASSET.url
+      && DENIA_CANDY_PORTRAIT_ASSET.requiresAnimation
+  });
 
   return [...discovered.values()].sort((left, right) => left.url.localeCompare(right.url));
 }
@@ -91,7 +97,9 @@ export async function processConfiguredPortraitAssets({
         await fs.writeFile(outputPath, normalized.buffer);
       }
       const output = await fs.readFile(outputPath);
-      const validation = await validateNormalizedPortrait(output);
+      const validation = await validateNormalizedPortrait(output, {
+        requireAnimation: asset.requiresAnimation
+      });
       const status = validation.ok ? "valid" : "invalid";
       results.push({ ...asset, status, errors: validation.errors, bounds: validation.bounds });
       log(validation.ok
@@ -107,12 +115,24 @@ export async function processConfiguredPortraitAssets({
 }
 
 async function resolveSourcePath(asset, publicRoot, outputPath) {
-  if (await fileExists(outputPath)) return outputPath;
+  if (await fileExists(outputPath)) {
+    if (!asset.requiresAnimation || await fileHasAnimation(outputPath)) return outputPath;
+  }
   if (asset.legacySourceUrl) {
     const legacyPath = portraitUrlToFilePath(asset.legacySourceUrl, publicRoot);
     if (await fileExists(legacyPath)) return legacyPath;
   }
+  if (await fileExists(outputPath)) return outputPath;
   throw new Error(`No source file found for ${asset.url}`);
+}
+
+async function fileHasAnimation(filePath) {
+  try {
+    const input = await fs.readFile(filePath);
+    return (await decodePortraitFrames(input)).pages > 1;
+  } catch {
+    return false;
+  }
 }
 
 async function fileExists(filePath) {

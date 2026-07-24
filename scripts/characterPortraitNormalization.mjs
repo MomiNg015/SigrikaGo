@@ -5,6 +5,7 @@ export const PORTRAIT_CANVAS_SIZE = 900;
 export const PORTRAIT_SAFE_SIZE = 792;
 export const PORTRAIT_MARGIN = (PORTRAIT_CANVAS_SIZE - PORTRAIT_SAFE_SIZE) / 2;
 export const PORTRAIT_MAX_FILE_BYTES = 2_000_000;
+export const PORTRAIT_ANIMATION_QUALITY = 90;
 
 export function isRemotePortraitUrl(url) {
   return /^https?:\/\//i.test(String(url ?? "").trim());
@@ -66,6 +67,60 @@ export async function alphaBounds(input, { alphaThreshold = 0 } = {}) {
   };
 }
 
+export async function decodePortraitFrames(input) {
+  const metadata = await sharp(input, { animated: true, failOn: "error" }).metadata();
+  const pages = Math.max(1, Number(metadata.pages) || 1);
+  const pageHeight = Number(metadata.pageHeight) || Number(metadata.height) || 0;
+  const frames = [];
+
+  for (let page = 0; page < pages; page += 1) {
+    frames.push(await sharp(input, {
+      page,
+      pages: 1,
+      failOn: "error"
+    }).ensureAlpha().png().toBuffer());
+  }
+
+  return {
+    metadata,
+    pages,
+    pageHeight,
+    frames,
+    delay: normalizeFrameDelays(metadata.delay, pages),
+    loop: Number.isInteger(metadata.loop) ? metadata.loop : 0
+  };
+}
+
+export async function alphaBoundsAcrossFrames(frames, { alphaThreshold = 0 } = {}) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    throw new Error("Portrait must contain at least one frame");
+  }
+
+  const frameBounds = await Promise.all(frames.map((frame) => alphaBounds(frame, { alphaThreshold })));
+  const imageWidth = frameBounds[0].imageWidth;
+  const imageHeight = frameBounds[0].imageHeight;
+  if (frameBounds.some((bounds) => (
+    bounds.imageWidth !== imageWidth || bounds.imageHeight !== imageHeight
+  ))) {
+    throw new Error("Portrait animation frames must use the same canvas size");
+  }
+
+  const left = Math.min(...frameBounds.map((bounds) => bounds.left));
+  const top = Math.min(...frameBounds.map((bounds) => bounds.top));
+  const right = Math.max(...frameBounds.map((bounds) => bounds.right));
+  const bottom = Math.max(...frameBounds.map((bounds) => bounds.bottom));
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    width: right - left + 1,
+    height: bottom - top + 1,
+    imageWidth,
+    imageHeight
+  };
+}
+
 export async function normalizePortraitBuffer(input, {
   canvasSize = PORTRAIT_CANVAS_SIZE,
   safeSize = PORTRAIT_SAFE_SIZE,
@@ -91,65 +146,97 @@ export async function normalizePortraitBuffer(input, {
       }
     };
   }
-  const bounds = await alphaBounds(input, { alphaThreshold });
-  const content = await resizeVisibleContent(input, bounds, safeSize, alphaThreshold);
-  const contentBounds = await alphaBounds(content, { alphaThreshold });
-  const croppedContent = await sharp(content, { failOn: "error" })
-    .extract({
-      left: contentBounds.left,
-      top: contentBounds.top,
-      width: contentBounds.width,
-      height: contentBounds.height
-    })
-    .png()
-    .toBuffer();
+  const decoded = await decodePortraitFrames(input);
+  const bounds = await alphaBoundsAcrossFrames(decoded.frames, { alphaThreshold });
+  const resized = await resizeVisibleFrames(
+    decoded.frames,
+    bounds,
+    safeSize,
+    alphaThreshold
+  );
+  const contentBounds = resized.bounds;
   const width = contentBounds.width;
   const height = contentBounds.height;
   const margin = (canvasSize - safeSize) / 2;
   const left = Math.floor((canvasSize - width) / 2);
   const top = canvasSize - margin - height;
 
-  const buffer = await sharp({
-    create: {
-      width: canvasSize,
-      height: canvasSize,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 }
-    }
-  })
-    .composite([{ input: croppedContent, left, top }])
-    .webp({ lossless: true, effort: 6 })
-    .toBuffer();
+  const normalizedFrames = await Promise.all(resized.frames.map(async (content) => {
+    const croppedContent = await sharp(content, { failOn: "error" })
+      .extract({
+        left: contentBounds.left,
+        top: contentBounds.top,
+        width,
+        height
+      })
+      .png()
+      .toBuffer();
+    return sharp({
+      create: {
+        width: canvasSize,
+        height: canvasSize,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 }
+      }
+    })
+      .composite([{ input: croppedContent, left, top }])
+      .png()
+      .toBuffer();
+  }));
+
+  const buffer = decoded.pages > 1
+    ? await sharp(normalizedFrames, { join: { animated: true } })
+      .webp({
+        quality: PORTRAIT_ANIMATION_QUALITY,
+        alphaQuality: 100,
+        smartSubsample: true,
+        effort: 4,
+        delay: decoded.delay,
+        loop: decoded.loop
+      })
+      .toBuffer()
+    : await sharp(normalizedFrames[0], { failOn: "error" })
+      .webp({ lossless: true, effort: 6 })
+      .toBuffer();
 
   return {
     buffer,
     sourceBounds: bounds,
-    placement: { left, top, width, height, margin }
+    placement: { left, top, width, height, margin },
+    animation: {
+      pages: decoded.pages,
+      delay: decoded.delay,
+      loop: decoded.loop
+    }
   };
 }
 
-async function resizeVisibleContent(input, bounds, safeSize, alphaThreshold) {
+async function resizeVisibleFrames(frames, bounds, safeSize, alphaThreshold) {
   const initialScale = Math.min(safeSize / bounds.width, safeSize / bounds.height);
   let requestedWidth = Math.max(1, Math.round(bounds.width * initialScale));
   let requestedHeight = Math.max(1, Math.round(bounds.height * initialScale));
 
   for (let attempt = 0; attempt < 6; attempt += 1) {
-    let pipeline = sharp(input, { failOn: "error" }).extract({
-      left: bounds.left,
-      top: bounds.top,
-      width: bounds.width,
-      height: bounds.height
-    });
-    if (requestedWidth !== bounds.width || requestedHeight !== bounds.height) {
-      pipeline = pipeline.resize(requestedWidth, requestedHeight, {
-        fit: "fill",
-        kernel: sharp.kernel.lanczos3
+    const resizedFrames = await Promise.all(frames.map(async (frame) => {
+      let pipeline = sharp(frame, { failOn: "error" }).extract({
+        left: bounds.left,
+        top: bounds.top,
+        width: bounds.width,
+        height: bounds.height
       });
-    }
-    const content = await pipeline.ensureAlpha().png().toBuffer();
-    const resizedBounds = await alphaBounds(content, { alphaThreshold });
+      if (requestedWidth !== bounds.width || requestedHeight !== bounds.height) {
+        pipeline = pipeline.resize(requestedWidth, requestedHeight, {
+          fit: "fill",
+          kernel: sharp.kernel.lanczos3
+        });
+      }
+      return pipeline.ensureAlpha().png().toBuffer();
+    }));
+    const resizedBounds = await alphaBoundsAcrossFrames(resizedFrames, { alphaThreshold });
     const longestEdge = Math.max(resizedBounds.width, resizedBounds.height);
-    if (longestEdge === safeSize) return content;
+    if (longestEdge === safeSize) {
+      return { frames: resizedFrames, bounds: resizedBounds };
+    }
     const correction = safeSize / longestEdge;
     requestedWidth = Math.max(1, Math.round(requestedWidth * correction));
     requestedHeight = Math.max(1, Math.round(requestedHeight * correction));
@@ -162,23 +249,28 @@ export async function validateNormalizedPortrait(input, {
   canvasSize = PORTRAIT_CANVAS_SIZE,
   safeSize = PORTRAIT_SAFE_SIZE,
   maxFileBytes = PORTRAIT_MAX_FILE_BYTES,
-  alphaThreshold = 0
+  alphaThreshold = 0,
+  requireAnimation = false
 } = {}) {
   validateGeometry(canvasSize, safeSize);
   const errors = [];
-  const metadata = await sharp(input, { failOn: "error" }).metadata();
+  const decoded = await decodePortraitFrames(input);
+  const metadata = decoded.metadata;
   if (metadata.format !== "webp") errors.push(`expected WebP, got ${metadata.format ?? "unknown"}`);
-  if (metadata.width !== canvasSize || metadata.height !== canvasSize) {
-    errors.push(`expected ${canvasSize}x${canvasSize}, got ${metadata.width}x${metadata.height}`);
+  if (metadata.width !== canvasSize || decoded.pageHeight !== canvasSize) {
+    errors.push(`expected ${canvasSize}x${canvasSize} frames, got ${metadata.width}x${decoded.pageHeight}`);
   }
   if (!metadata.hasAlpha) errors.push("missing alpha channel");
+  if (requireAnimation && decoded.pages < 2) {
+    errors.push("expected an animated portrait with at least 2 frames");
+  }
   if (Buffer.byteLength(input) > maxFileBytes) {
     errors.push(`file exceeds ${maxFileBytes} bytes`);
   }
 
   let bounds = null;
   try {
-    bounds = await alphaBounds(input, { alphaThreshold });
+    bounds = await alphaBoundsAcrossFrames(decoded.frames, { alphaThreshold });
   } catch (error) {
     errors.push(error.message);
   }
@@ -203,7 +295,26 @@ export async function validateNormalizedPortrait(input, {
     }
   }
 
-  return { ok: errors.length === 0, errors, metadata, bounds };
+  return {
+    ok: errors.length === 0,
+    errors,
+    metadata,
+    bounds,
+    animation: {
+      pages: decoded.pages,
+      pageHeight: decoded.pageHeight,
+      delay: decoded.delay,
+      loop: decoded.loop
+    }
+  };
+}
+
+function normalizeFrameDelays(delay, pages) {
+  const values = Array.isArray(delay) ? delay : [delay];
+  return Array.from({ length: pages }, (_, index) => {
+    const candidate = Number(values[index] ?? values[0]);
+    return Number.isFinite(candidate) && candidate >= 0 ? Math.round(candidate) : 100;
+  });
 }
 
 function validateGeometry(canvasSize, safeSize) {
