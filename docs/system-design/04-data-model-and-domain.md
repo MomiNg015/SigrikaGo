@@ -115,6 +115,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `blackCharacter`, `whiteCharacter`: 双方角色 slug 快照。
 - `blackCostumeId`, `whiteCostumeId`: 开局时双方当前非默认服装 id；默认服装为空字符串。
 - `blackCostumePortraitUrl`, `whiteCostumePortraitUrl`: 开局时双方服装立绘 URL 快照，供棋谱摘要在服装目录后续变化后继续稳定展示。
+- `black/whiteCostumePortraitScalePercent`、`black/whiteCostumePortraitOffsetXPercent`、`black/whiteCostumePortraitOffsetYPercent`: 开局时双方服装显示校准快照，避免后台后续调整改变历史棋谱头像构图。
 - `resultText`: 结果文本。
 - `moveCount`: 手数。
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
@@ -231,7 +232,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 ### Costume、UserCostume 与 UserCostumeEquipment
 
-- `Costume` 是后台管理的服装目录，稳定 `id` 不能在创建后修改；字段包括名称、`characterSlug`、常态 `portraitUrl`、可选 `candyEffectPortraitUrl`、描述、illust 名称/链接、金币原价、折扣、商店展示、可购买、启用、排序和来源。公开 payload 额外计算 `finalPrice`。
+- `Costume` 是后台管理的服装目录，稳定 `id` 不能在创建后修改；字段包括名称、`characterSlug`、常态 `portraitUrl`、可选 `candyEffectPortraitUrl`、显示缩放 `portraitScalePercent`、横纵偏移 `portraitOffsetXPercent/portraitOffsetYPercent`、描述、illust 名称/链接、金币原价、折扣、商店展示、可购买、启用、排序和来源。缩放默认 100、允许 50–150，偏移默认 0、允许 -50–50；公开 payload 额外计算 `finalPrice`。
 - `UserCostume` 以唯一 `(userId, costumeId)` 保存永久所有权和获得来源。服装被后台停用时仍保留该行，因此重新启用后玩家不需再次购买。
 - `UserCostumeEquipment` 以唯一 `(userId, characterSlug)` 保存角色当前非默认服装。选择默认服装会删除该行；停用服装或把服装改到其他角色时也只删除相关装备行。
 - `resolveCharacterPortrait()` 是玩家角色立绘选择边界：房间 `costumeSnapshot` 优先于实时账号装备；达妮娅糖果效果优先于普通服装立绘，服装提供糖果特效立绘时使用该图，否则回退基础糖果图；没有糖果效果时使用服装常态立绘，最后才回退角色默认立绘。

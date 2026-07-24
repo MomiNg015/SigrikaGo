@@ -1,6 +1,9 @@
-@keyframes costume-card-arrive {
-  from { opacity: 0; transform: translateY(12px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.costume-shop-card-slot:has(
+  .costume-shop-card:hover,
+  .costume-shop-card:focus-within,
+  .costume-shop-card:active
+) .shop-card-float {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -11,7 +14,7 @@
     transition: none;
   }
 
-  .costume-shop-card-slot {
-    animation: none;
+  .costume-shop-batch-layer {
+    animation: shop-batch-fade 80ms linear both;
   }
 }

@@ -5,7 +5,10 @@ import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { PaginatedReplayList } from "../ReplayList.jsx";
 import { characterRecordColumns } from "../UserProfileCard.jsx";
-import { characterCandyPortrait } from "./houseStats.js";
+import {
+  characterCandyPortrait,
+  characterCandyPortraitProps
+} from "./houseStats.js";
 import SkillDescription from "../../shared/SkillDescription.jsx";
 import { formatSkillOverclock } from "../../shared/skillTraits.js";
 
@@ -54,7 +57,7 @@ export function CharacterDetailDialog({
           <button className="character-costume-open-button" type="button" aria-label={`查看${character.name}的服装`} onClick={onOpenCostumes}>
             <Shirt aria-hidden="true" />
           </button>
-          <img src={characterCandyPortrait(character, itemEffects, user)} alt={character.name} />
+          <img {...characterCandyPortraitProps(character, itemEffects, user)} alt={character.name} />
         </div>
         <div className="character-detail-copy">
           <div className="character-detail-heading">

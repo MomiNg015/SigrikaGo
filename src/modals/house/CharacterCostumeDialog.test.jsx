@@ -25,6 +25,9 @@ const costumes = [
     name: "当前服装",
     characterSlug: "denia",
     portraitUrl: "/assets/costumes/denia-01.webp",
+    portraitScalePercent: 88,
+    portraitOffsetXPercent: -2,
+    portraitOffsetYPercent: 3,
     owned: true,
     enabled: true,
     sortOrder: 10
@@ -76,6 +79,8 @@ describe("CharacterCostumeDialog", () => {
     expect(html).toContain('aria-label="装扮默认服装"');
     expect(html).toContain('aria-current="true"');
     expect(html).toContain("达妮娅的衣柜");
+    expect(html).toContain("scale:0.88");
+    expect(html).toContain("translate:-2% 3%");
     expect(html).not.toContain("character-costume-equipped-label");
     expect(html).not.toContain('character-costume-card is-unowned is-equipped');
     expect(html).not.toContain("部员手册 · 服装");

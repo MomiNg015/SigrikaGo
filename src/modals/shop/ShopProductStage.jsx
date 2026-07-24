@@ -1,31 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import ShopItemCard from "./ShopItemCard.jsx";
 import { layoutShopCards, SHOP_CARD_BASE_SIZE } from "./shopLayout.js";
+import { useShopStageSize } from "./useShopStageSize.js";
 
 export default function ShopProductStage({ batch, batchVersion, purchasingId, user, onBuy, onShowDetail }) {
   const stageRef = useRef(null);
-  const [size, setSize] = useState({ width: 0, height: 0, mobile: false });
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return undefined;
-    const updateSize = () => {
-      const rect = stage.getBoundingClientRect();
-      setSize({
-        width: rect.width,
-        height: rect.height,
-        mobile: window.matchMedia("(max-width: 768px)").matches
-      });
-    };
-    updateSize();
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(updateSize);
-    observer?.observe(stage);
-    window.addEventListener("resize", updateSize);
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener("resize", updateSize);
-    };
-  }, []);
+  const size = useShopStageSize(stageRef);
 
   const entries = useMemo(() => {
     const placements = layoutShopCards({

@@ -174,7 +174,10 @@ export function toRoomPlayer(player, color, mode = "spark") {
     costumeSnapshot: equippedCostume ? {
       id: equippedCostume.id,
       portraitUrl: equippedCostume.portraitUrl,
-      candyEffectPortraitUrl: equippedCostume.candyEffectPortraitUrl ?? ""
+      candyEffectPortraitUrl: equippedCostume.candyEffectPortraitUrl ?? "",
+      portraitScalePercent: equippedCostume.portraitScalePercent ?? 100,
+      portraitOffsetXPercent: equippedCostume.portraitOffsetXPercent ?? 0,
+      portraitOffsetYPercent: equippedCostume.portraitOffsetYPercent ?? 0
     } : null,
     time: createPlayerClock()
   };

@@ -12,10 +12,10 @@
 
 ### Database
 
-- `Costume { id, name, characterSlug, portraitUrl, candyEffectPortraitUrl, description, illustName, illustUrl, priceCoins, discountPercent, shopVisible, purchasable, enabled, sortOrder, source, createdAt, updatedAt }`.
+- `Costume { id, name, characterSlug, portraitUrl, candyEffectPortraitUrl, portraitScalePercent, portraitOffsetXPercent, portraitOffsetYPercent, description, illustName, illustUrl, priceCoins, discountPercent, shopVisible, purchasable, enabled, sortOrder, source, createdAt, updatedAt }`.
 - `UserCostume` owns one unique `(userId, costumeId)` pair.
 - `UserCostumeEquipment` owns one unique `(userId, characterSlug)` pair.
-- `GameRecord` stores `blackCostumeId`, `whiteCostumeId`, `blackCostumePortraitUrl`, and `whiteCostumePortraitUrl`.
+- `GameRecord` stores each side's costume id, portrait URL, display scale, horizontal offset, and vertical offset.
 
 ### Player API
 
@@ -33,13 +33,14 @@
 ### Shared resolution
 
 - `resolveCharacterPortrait(character, { itemEffects, user, equippedCostumes, costumeSnapshot })` returns the effective portrait URL.
+- `resolveCharacterPortraitPresentation(...)` returns the URL plus normalized framing, and `characterPortraitImageProps(...)` exposes render-ready image props.
 - `finalCostumePrice(costume)` uses `ceil(priceCoins * (100 - discountPercent) / 100)`, clamped to a non-negative safe integer.
 
 ## 3. Contracts
 
 - Player catalog rows expose the normalized admin fields plus `finalPrice`, `owned`, `characterOwned`, and `equipped`.
 - Player listing returns enabled costumes. Shop visibility and purchase flags still gate store selection and settlement; the handbook may render the complete enabled character catalog.
-- The costume shop shows at most five unowned rows per batch. Purchasable rows for owned characters are selected before gray locked rows for unowned characters.
+- The costume shop shows at most five unowned rows per batch. Purchasable rows for owned characters are selected before gray locked rows for unowned characters. Its stage reuses Zahira's measured `layoutShopCards` contract so one to five visible products are centered according to the actual count without empty placeholder slots.
 - A purchase runs in one Prisma transaction: re-read user, costume, and ownership; atomically decrement coins with `coins >= finalPrice`; create `UserCostume`; write the progress ledger; return the refreshed public user.
 - Purchasing never equips implicitly. The success dialog may offer equipment, but declining equipment must keep the just-purchased costume owned.
 - The wardrobe always includes a virtual `default` card. Default is not a `UserCostume` row and is equipable only when the user owns the base character.
@@ -50,10 +51,12 @@
   1. explicit room/replay `costumeSnapshot`;
   2. supplied/account equipped costume;
   3. base character portrait.
-- For Denia's rainbow candy effect, use the equipped costume's `candyEffectPortraitUrl` when configured; otherwise fall back to the base candy portrait. A costume without a candy asset must not suppress the candy effect.
-- Match creation snapshots `{ id, portraitUrl, candyEffectPortraitUrl }` into the room player. Result persistence copies the effective costume id and portrait URL into `GameRecord`; replay and result UI read snapshots rather than current account equipment.
+- Costume framing defaults to `100/0/0`; scale accepts `50..150`, and each offset accepts `-50..50`. Framing applies to wardrobe thumbnails and effective equipped-character portraits, but not to shop product art or costume detail art.
+- For Denia's rainbow candy effect, use the equipped costume's `candyEffectPortraitUrl` and costume framing when configured; otherwise fall back to the base candy portrait at `100/0/0`. A costume without a candy asset must not suppress the candy effect.
+- Match creation snapshots `{ id, portraitUrl, candyEffectPortraitUrl, portraitScalePercent, portraitOffsetXPercent, portraitOffsetYPercent }` into the room player. Result persistence copies the effective costume id, portrait URL, and framing into `GameRecord`; replay and result UI read snapshots rather than current account equipment.
 - Costume and mascot source PNGs are converted to lossless WebP under `public/assets/costumes/`. The five shop costume portraits are cropped to non-zero alpha bounds, scaled proportionally to at most 900px on either axis, and keep their tight rectangular canvas; the three mascot states keep a 1024x1024 transparent canvas. Runtime code references only committed WebP paths and does not hardcode the source PNG dimensions.
 - The costume shop title is exactly `残星会cosplay部` and remains a complete single line. Each price badge is a child of the shrink-wrapped `.costume-shop-art` owner so it overlaps the visible portrait's lower-right corner rather than the surrounding grid slot.
+- Costume products reuse Zahira's per-batch slight rotation and vertical float parameters. The portrait and nested price badge stay inside the same transform wrappers, pause together on hover/focus/press, and stop continuous floating under reduced motion.
 - The wardrobe and costume detail are sibling top-level overlays under the app portal root. A costume detail backdrop must never be a positioned child of the wardrobe dialog. The card detail trigger stays transparent and shadowless; equipped state color belongs to the outer `.character-costume-card.is-equipped`.
 - `Costume` is part of `ADMIN_DEFAULT_CONFIG`. Startup creates missing default rows without overwriting admin-edited rows; explicit admin-default sync remains the overwrite-capable deployment path.
 - `ensureCostumeSchema()` creates costume tables/indexes before default seeding for legacy development databases. `ensureGameModeSchema()` adds missing `GameRecord` costume snapshot columns before runtime record operations.
@@ -64,6 +67,7 @@
 |---|---|
 | Costume id is not 2-64 lowercase letters, numbers, or hyphens | Admin `400` validation error |
 | Missing name, character, valid portrait URL, or non-negative integer price | Admin `400` validation error |
+| Scale is outside `50..150`, or an offset is outside `-50..50` | Admin `400` validation error |
 | Asset URL is neither `/assets/...` nor HTTP(S) | Admin `400` validation error |
 | Costume target character does not exist | Admin `400` |
 | Create uses an existing costume id | Admin `409` |
@@ -80,9 +84,10 @@
 
 - Good: buy a 600-coin Denia costume with 800 coins; one transaction returns 200 coins, ownership, a `costume.purchase` ledger entry, and no automatic equipment.
 - Good: disable an equipped costume in admin; ownership remains, equipment resets to default, and future portrait projections use the base character.
-- Good: start a match while a costume is equipped, then change clothes later; the room, result, and replay keep the start-time portrait.
+- Good: start a match while a costume is equipped, then change clothes or its admin framing later; the room, result, and replay keep the start-time portrait and framing.
 - Good: open a costume detail from the wardrobe; the detail backdrop covers the viewport as a sibling overlay while the wardrobe remains dimmed behind it.
 - Good: resize the shop to portrait mobile; the complete `残星会cosplay部` title remains on one line and each price badge still overlaps its alpha-cropped portrait.
+- Good: refresh from five visible costumes to three or one; the measured stage recenters only the existing product cards, and each portrait plus price badge floats and rotates as one unit.
 - Base: a user owns the base character but no costumes; the wardrobe shows default first and enabled unowned costumes gray.
 - Base: a costume has no candy portrait; Denia's active candy effect uses the existing base candy art.
 - Bad: derive replay portraits from the current account equipment, because historical matches would visually change.
@@ -91,10 +96,11 @@
 - Bad: delete `UserCostume` ownership when an admin disables a catalog row.
 - Bad: put an opaque button surface inside an equipped wardrobe card, because it hides the outer pale-green equipped state.
 - Bad: anchor a shop price badge to the full grid slot or a padded square image canvas, because the badge will float below the visible character.
+- Bad: hardcode costume slots with `nth-child` columns or animate the price badge outside the portrait card, because counts below five leave holes and the product separates while moving.
 
 ## 6. Tests Required
 
-- Schema and migration tests assert all three costume models, uniqueness/indexes, and the four `GameRecord` snapshot fields.
+- Schema and migration tests assert all three costume models, uniqueness/indexes, and all costume/framing `GameRecord` snapshot fields.
 - `server/costumes.test.js` covers validation, schema guard SQL, listing projection, atomic purchase, character ownership, default equipment, and owned costume equipment.
 - Admin tests cover create/update audits, duplicate ids, character existence, and equipment reset on disable or character reassignment.
 - Route tests cover authentication and player/admin endpoint wiring.
@@ -102,9 +108,9 @@
 - Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, purchase persistence, and optional post-purchase equipment.
 - Wardrobe tests cover virtual default ordering, gray unowned cards, disabled equipment, immediate equipment, and detail-card behavior.
 - Wardrobe DOM/CSS tests assert the detail backdrop is a direct app-root overlay, the trigger surface is transparent and shadowless, and the equipped outer card owns the pale-green state.
-- Shop source/CSS tests assert the exact non-wrapping title, alpha-trimmed WebP dimensions, shrink-wrapped art owner, and price positioning inside that owner.
-- Portrait tests cover base/equipped/snapshot precedence and candy fallback.
-- Room factory/view/result/replay tests assert the start-time costume id and URL survive the full record path.
+- Shop source/CSS tests assert the exact non-wrapping title, alpha-trimmed WebP dimensions, shrink-wrapped art owner, price positioning inside that owner, measured count-aware layout reuse, whole-card motion wrappers, hover pause, and reduced-motion fallback.
+- Portrait tests cover base/equipped/snapshot precedence, normalized framing, and candy fallback.
+- Room factory/view/result/replay tests assert the start-time costume id, URL, and framing survive the full record path.
 - CSS contracts cover shared import-only splits, Bright School overlay order, final-mobile placement, reduced motion, and non-growth metrics.
 
 ## 7. Wrong vs Correct
@@ -169,3 +175,25 @@ Correct:
 ```
 
 The detail overlay is a portal-root sibling, so parent overflow and descendant-position overrides cannot turn it into inline content.
+
+Wrong:
+
+```css
+.costume-shop-card-slot:nth-child(1) { grid-column: 2 / span 2; }
+.costume-shop-card-slot:nth-child(2) { grid-column: 4 / span 2; }
+```
+
+Correct:
+
+```jsx
+const size = useShopStageSize(stageRef);
+const placements = layoutShopCards({
+  width: size.width,
+  height: size.height,
+  count: batch.length,
+  mobile: size.mobile,
+  seed: (batchVersion * 97) + batch.length
+});
+```
+
+Count-aware measured placements keep one to five products centered. The portrait and its nested price badge must then be rendered inside the same shared scale, rotation, and float wrappers.

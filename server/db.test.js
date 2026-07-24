@@ -182,6 +182,8 @@ describe("ensureGameModeSchema", () => {
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "rank" TEXT NOT NULL DEFAULT \'3段\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "recentResults" TEXT NOT NULL DEFAULT \'\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT \'spark\'');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitScalePercent" INTEGER NOT NULL DEFAULT 100');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('INSERT OR IGNORE INTO "UserModeStats"'));
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining("'gomoku'"));
   });

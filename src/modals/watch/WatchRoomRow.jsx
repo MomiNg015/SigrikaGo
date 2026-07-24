@@ -1,5 +1,5 @@
 import { findCharacter } from "../../shared/characterDisplay.js";
-import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export default function WatchRoomRow({ room, characters, onJoinRoom, onClose }) {
@@ -27,7 +27,7 @@ function WatchPlayerCell({ player, characters, side }) {
   return (
     <span className={`watch-player-cell ${side} ${player.connected ? "" : "disconnected"}`}>
       <span className="watch-side-label">{side === "black" ? "●" : "○"}</span>
-      <img src={resolveCharacterPortrait(character, { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot })} alt={character.name} />
+      <img {...characterPortraitImageProps(character, { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot })} alt={character.name} />
       <UserIdentity user={player.user} compact />
     </span>
   );

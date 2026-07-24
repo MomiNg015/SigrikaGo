@@ -2,6 +2,7 @@ import { Handshake } from "lucide-react";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { COLORS } from "../shared/game.js";
 import { recordWinnerColor } from "../shared/gameRecords.js";
+import { costumePortraitFrameStyle } from "../shared/costumes.js";
 
 export function ReplayList({ records = [], characters, onOpenReplay, compact = false, currentUser = null }) {
   if (records.length === 0) return <p className="quiet-text">暂无已结束的对局记录。</p>;
@@ -28,8 +29,8 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
             )}
             <span>{formatReplayTime(record.createdAt)}</span>
           </span>
-          <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} costumePortraitUrl={record.blackCostumePortraitUrl} characters={characters} />
-          <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} costumePortraitUrl={record.whiteCostumePortraitUrl} characters={characters} />
+          <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} costumePortraitUrl={record.blackCostumePortraitUrl} costumeFraming={replayCostumeFraming(record, "black")} characters={characters} />
+          <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} costumePortraitUrl={record.whiteCostumePortraitUrl} costumeFraming={replayCostumeFraming(record, "white")} characters={characters} />
           <span>{record.resultText}</span>
           <span>{record.moveCount}手</span>
         </button>
@@ -64,14 +65,29 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
   );
 }
 
-function ReplayPlayer({ name, characterId, costumePortraitUrl, characters }) {
+function ReplayPlayer({ name, characterId, costumePortraitUrl, costumeFraming, characters }) {
   const character = findCharacter(characters, characterId);
   return (
     <span className="replay-player-cell">
-      {character && <img src={costumePortraitUrl || character.portrait} alt={character.name} />}
+      {character && (
+        <img
+          src={costumePortraitUrl || character.portrait}
+          style={costumePortraitUrl ? costumePortraitFrameStyle(costumeFraming) : undefined}
+          alt={character.name}
+        />
+      )}
       <b>{name}</b>
     </span>
   );
+}
+
+function replayCostumeFraming(record, side) {
+  const prefix = side === "white" ? "white" : "black";
+  return {
+    portraitScalePercent: record[`${prefix}CostumePortraitScalePercent`],
+    portraitOffsetXPercent: record[`${prefix}CostumePortraitOffsetXPercent`],
+    portraitOffsetYPercent: record[`${prefix}CostumePortraitOffsetYPercent`]
+  };
 }
 
 function formatReplayTime(value) {

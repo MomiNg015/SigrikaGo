@@ -1,4 +1,4 @@
-import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 
@@ -15,7 +15,7 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
     <article className={`leaderboard-row ${leaderboardRankClass(rank)} ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`} data-rank={rank}>
       <strong className="leaderboard-rank">#{rank}</strong>
       <div className="leaderboard-avatar" data-character-id={characterId}>
-        <img src={resolveCharacterPortrait(character, { itemEffects: player.itemEffects, user: player })} alt={`${player.username}头像`} />
+        <img {...characterPortraitImageProps(character, { itemEffects: player.itemEffects, user: player })} alt={`${player.username}头像`} />
       </div>
       <div className="leaderboard-player">
         <strong>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../shared/systemVoices.js";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 
@@ -21,7 +21,7 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
   return (
     <div className="skill-burst" aria-live="polite">
       <img
-        src={resolveCharacterPortrait(character, {
+        {...characterPortraitImageProps(character, {
           itemEffects: banner.itemEffects,
           equippedCostumes: banner.equippedCostumes,
           costumeSnapshot: banner.costumeSnapshot

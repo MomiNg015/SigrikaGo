@@ -4,7 +4,10 @@ import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import {
+  resolveCharacterPortrait,
+  resolveCharacterPortraitPresentation
+} from "../shared/characterPortraits.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -51,7 +54,7 @@ export default function StoryPlayerModal({
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveCharacter(node?.characterId, characters);
-  const portraitUrl = resolveCharacterPortrait({
+  const portraitPresentation = resolveCharacterPortraitPresentation({
     id: node?.characterId,
     portraitUrl: character.portraitUrl
   }, { itemEffects: user?.itemEffects, user });
@@ -61,7 +64,7 @@ export default function StoryPlayerModal({
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
-  const portraitKey = `${node?.characterId || ""}:${portraitUrl}`;
+  const portraitKey = `${node?.characterId || ""}:${portraitPresentation.src}`;
   const availablePortraitNodes = portraitNodes ?? script?.nodes ?? [];
   const portraitUrls = useMemo(
     () => storyPortraitUrls(availablePortraitNodes, characters, user),
@@ -207,10 +210,11 @@ export default function StoryPlayerModal({
           data-story-character-id={node.characterId || ""}
           aria-label={character.name || node.speakerName || ""}
         >
-          {portraitUrl && (
+          {portraitPresentation.src && (
             <img
               key={portraitKey}
-              src={portraitUrl}
+              src={portraitPresentation.src}
+              style={portraitPresentation.style}
               alt=""
               aria-hidden="true"
               loading="eager"

@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Settings } from "lucide-react";
 import { CHARACTERS } from "../../shared/characters.js";
-import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 
@@ -38,7 +38,7 @@ export default function FriendsList({
           <Fragment key={row.id}>
             <article className="friends-row">
               <span className={`online-status ${row.status}`}>{STATUS_LABELS[row.status]}</span>
-              <img src={resolveCharacterPortrait(character, { itemEffects: row.itemEffects, user: row })} alt={character.name} />
+              <img {...characterPortraitImageProps(character, { itemEffects: row.itemEffects, user: row })} alt={character.name} />
               <div className="friend-main">
                 <strong className="friend-username">
                   <UserIdentity user={row} compact />

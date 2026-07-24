@@ -80,6 +80,9 @@ describe("ReplayList", () => {
         blackCharacter: "sigrika",
         whiteCharacter: "denia",
         blackCostumePortraitUrl: "/assets/costumes/sigrika-01.webp",
+        blackCostumePortraitScalePercent: 83,
+        blackCostumePortraitOffsetXPercent: 0,
+        blackCostumePortraitOffsetYPercent: 0,
         whiteCostumePortraitUrl: "",
         resultText: "黑胜",
         moveCount: 50
@@ -87,6 +90,7 @@ describe("ReplayList", () => {
     }));
 
     expect(html).toContain('src="/assets/costumes/sigrika-01.webp"');
+    expect(html).toContain("scale:0.83");
     expect(html).toContain('src="/denia.webp"');
   });
 

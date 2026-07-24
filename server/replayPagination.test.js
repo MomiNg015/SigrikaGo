@@ -38,7 +38,10 @@ describe("replay summary pagination", () => {
       blackCostumeId: true,
       whiteCostumeId: true,
       blackCostumePortraitUrl: true,
-      whiteCostumePortraitUrl: true
+      whiteCostumePortraitUrl: true,
+      blackCostumePortraitScalePercent: true,
+      blackCostumePortraitOffsetXPercent: true,
+      blackCostumePortraitOffsetYPercent: true
     });
     expect(page.records[0].blackCostumePortraitUrl).toBe("/assets/costumes/sigrika-01.webp");
   });
@@ -106,6 +109,12 @@ function replayRecord(index) {
     whiteCostumeId: "",
     blackCostumePortraitUrl: "/assets/costumes/sigrika-01.webp",
     whiteCostumePortraitUrl: "",
+    blackCostumePortraitScalePercent: 83,
+    whiteCostumePortraitScalePercent: 100,
+    blackCostumePortraitOffsetXPercent: 0,
+    whiteCostumePortraitOffsetXPercent: 0,
+    blackCostumePortraitOffsetYPercent: 0,
+    whiteCostumePortraitOffsetYPercent: 0,
     createdAt: new Date(Date.UTC(2026, 0, 1, 0, 0, 100 - index))
   };
 }

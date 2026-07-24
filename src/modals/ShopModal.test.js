@@ -231,6 +231,30 @@ describe("Zahira shop window", () => {
     expect(Math.abs(presentation.floatDelay)).toBe(0);
   });
 
+  it("reuses the measured count-aware stage and whole-card motion for costume products", () => {
+    const panelSource = readFileSync(new URL("./shop/CostumeStorePanel.jsx", import.meta.url), "utf8");
+    const cardSource = readFileSync(new URL("./shop/CostumeCard.jsx", import.meta.url), "utf8");
+    const cardsCss = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/cards.css", import.meta.url),
+      "utf8"
+    );
+    const motionCss = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/motion.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(panelSource).toContain("useShopStageSize(stageRef)");
+    expect(panelSource).toContain("layoutShopCards({");
+    expect(panelSource).toContain("buildShopCardPresentation(");
+    expect(panelSource).toContain('className="shop-card-position costume-shop-card-slot"');
+    expect(panelSource).toContain('className="shop-card-rotation"');
+    expect(panelSource).toContain('className="shop-card-float"');
+    expect(cardSource.indexOf("costume-shop-price")).toBeGreaterThan(cardSource.indexOf("costume-shop-art"));
+    expect(cardsCss).not.toContain(".costume-shop-card-slot:nth-child");
+    expect(motionCss).toContain(".costume-shop-card-slot:has(");
+    expect(motionCss).toContain("animation-play-state: paused");
+  });
+
   it("uses balanced desktop 2+3, 2+2, and 2+1 rows with safe seeded jitter", () => {
     const five = layoutShopCards({ width: 760, height: 540, count: 5, seed: 22 });
     const four = layoutShopCards({ width: 760, height: 540, count: 4, seed: 22 });
@@ -259,7 +283,7 @@ describe("Zahira shop window", () => {
   });
 
   it("uses mobile 2+3 and 2+1 compositions, tighter gaps, wider cards, and sub-44px scaling", () => {
-    const stageSource = readFileSync(new URL("./shop/ShopProductStage.jsx", import.meta.url), "utf8");
+    const stageSource = readFileSync(new URL("./shop/useShopStageSize.js", import.meta.url), "utf8");
     const five = layoutShopCards({ width: 360, height: 470, count: 5, mobile: true });
     const four = layoutShopCards({ width: 351, height: 407, count: 4, mobile: true });
     const three = layoutShopCards({ width: 351, height: 407, count: 3, mobile: true });

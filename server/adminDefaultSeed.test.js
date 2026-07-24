@@ -91,7 +91,10 @@ describe("admin default config seed", () => {
       data: expect.objectContaining({
         id: "snapshot-costume",
         characterSlug: "snapshot-character",
-        priceCoins: 600
+        priceCoins: 600,
+        portraitScalePercent: 88,
+        portraitOffsetXPercent: -2,
+        portraitOffsetYPercent: 3
       })
     })]);
     expect(calls).toContainEqual(["shopItem.create", expect.objectContaining({
@@ -227,7 +230,12 @@ describe("admin default config seed", () => {
     })]);
     expect(calls).toContainEqual(["costume.update", expect.objectContaining({
       where: { id: "snapshot-costume" },
-      data: expect.objectContaining({ priceCoins: 600 })
+      data: expect.objectContaining({
+        priceCoins: 600,
+        portraitScalePercent: 88,
+        portraitOffsetXPercent: -2,
+        portraitOffsetYPercent: 3
+      })
     })]);
     expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
       where: { id: "shop-existing" }
@@ -362,6 +370,9 @@ const sampleSnapshot = {
     characterSlug: "snapshot-character",
     portraitUrl: "/assets/costumes/snapshot.webp",
     candyEffectPortraitUrl: "",
+    portraitScalePercent: 88,
+    portraitOffsetXPercent: -2,
+    portraitOffsetYPercent: 3,
     description: "Snapshot costume description.",
     illustName: "",
     illustUrl: "",

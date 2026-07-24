@@ -1,5 +1,5 @@
 import { UserRound, X } from "lucide-react";
-import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import {
   RAINBOW_BEAN_CANDY_ID,
@@ -45,7 +45,7 @@ export default function WarehouseTargetModal({
                       if (!targetAvailability.disabled) onUseItem(targetItem, character.id);
                     }}
                   >
-                    <img src={resolveCharacterPortrait(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
+                    <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
                     <span>{character.name}</span>
                   </button>
                 );
@@ -66,7 +66,7 @@ function WarehouseEffectResult({ targetState, characters, user }) {
   if (!character) return null;
   return (
     <div className={`warehouse-effect-result warehouse-item-category-${targetState.item?.targetType || "self"}`}>
-      <img src={resolveCharacterPortrait(character, { itemEffects: targetState.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
+      <img {...characterPortraitImageProps(character, { itemEffects: targetState.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
       <strong>{character.name}</strong>
       <p>{targetState.effectText}</p>
     </div>

@@ -4,7 +4,10 @@ import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import {
+  characterPortraitImageProps,
+  resolveCharacterPortrait
+} from "../shared/characterPortraits.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
@@ -79,7 +82,7 @@ function PlayerInfo({
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
   const portraitContent = (
     <>
-      {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
+      {hasCharacter && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
       {isBot && isNoCharacter && (botPortraitUrl
         ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
         : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
@@ -297,6 +300,13 @@ export function isDisconnectedPlayer(player, game) {
 
 export function playerCandyPortrait(character = {}, player = {}) {
   return resolveCharacterPortrait(
+    { ...character, id: canonicalCharacterId(player.characterId ?? character.id) },
+    { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot }
+  );
+}
+
+export function playerCandyPortraitProps(character = {}, player = {}) {
+  return characterPortraitImageProps(
     { ...character, id: canonicalCharacterId(player.characterId ?? character.id) },
     { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot }
   );

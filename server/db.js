@@ -32,6 +32,9 @@ export const USER_ASSET_RELATION_SELECT = {
           characterSlug: true,
           portraitUrl: true,
           candyEffectPortraitUrl: true,
+          portraitScalePercent: true,
+          portraitOffsetXPercent: true,
+          portraitOffsetYPercent: true,
           description: true,
           illustName: true,
           illustUrl: true,
@@ -121,6 +124,12 @@ export async function ensureGameModeSchema(client = prisma) {
   await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumeId", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumeId" TEXT NOT NULL DEFAULT ''`);
   await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumePortraitUrl", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitUrl" TEXT NOT NULL DEFAULT ''`);
   await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumePortraitUrl", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitUrl" TEXT NOT NULL DEFAULT ''`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumePortraitScalePercent", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitScalePercent" INTEGER NOT NULL DEFAULT 100`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumePortraitScalePercent", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitScalePercent" INTEGER NOT NULL DEFAULT 100`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumePortraitOffsetXPercent", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumePortraitOffsetXPercent", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumePortraitOffsetYPercent", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumePortraitOffsetYPercent", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0`);
   await client.$executeRawUnsafe(`UPDATE "GameRecord" SET "mode" = 'spark' WHERE "mode" IS NULL OR "mode" = ''`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_blackUserId_createdAt_idx" ON "GameRecord"("blackUserId", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_whiteUserId_createdAt_idx" ON "GameRecord"("whiteUserId", "createdAt")`);

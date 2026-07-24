@@ -83,6 +83,12 @@ function replaySummarySelect() {
     whiteCostumeId: true,
     blackCostumePortraitUrl: true,
     whiteCostumePortraitUrl: true,
+    blackCostumePortraitScalePercent: true,
+    whiteCostumePortraitScalePercent: true,
+    blackCostumePortraitOffsetXPercent: true,
+    whiteCostumePortraitOffsetXPercent: true,
+    blackCostumePortraitOffsetYPercent: true,
+    whiteCostumePortraitOffsetYPercent: true,
     createdAt: true
   };
 }

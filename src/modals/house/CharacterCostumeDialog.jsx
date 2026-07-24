@@ -2,7 +2,10 @@ import { Shirt, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import { defaultCostumeCard } from "../../shared/costumes.js";
+import {
+  costumePortraitFrameStyle,
+  defaultCostumeCard
+} from "../../shared/costumes.js";
 import { ModalDialog } from "../modalComponents.jsx";
 
 export default function CharacterCostumeDialog({
@@ -59,7 +62,13 @@ export default function CharacterCostumeDialog({
                   aria-label={`查看${costume.name}详情${equipped ? "，正在装扮" : ""}`}
                   onClick={() => setDetailCostume(costume)}
                 >
-                  <img src={costume.portraitUrl} alt="" loading="lazy" decoding="async" />
+                  <img
+                    src={costume.portraitUrl}
+                    style={costume.isDefault ? undefined : costumePortraitFrameStyle(costume)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <strong>{costume.name}</strong>
                 </button>
                 <button

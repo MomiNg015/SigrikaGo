@@ -312,6 +312,9 @@ describe("admin draft helpers", () => {
       candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp",
       priceCoins: "600",
       discountPercent: "10",
+      portraitScalePercent: "88",
+      portraitOffsetXPercent: "-2",
+      portraitOffsetYPercent: "3",
       sortOrder: "20",
       illustName: "Artist",
       illustUrl: "https://example.com/artist"
@@ -324,11 +327,16 @@ describe("admin draft helpers", () => {
         characterSlug: "denia",
         priceCoins: 600,
         discountPercent: 10,
+        portraitScalePercent: 88,
+        portraitOffsetXPercent: -2,
+        portraitOffsetYPercent: 3,
         sortOrder: 20
       })
     });
     expect(costumeDraftToBody({ ...draft, id: "Invalid ID" }).ok).toBe(false);
     expect(costumeDraftToBody({ ...draft, priceCoins: "-1" }).ok).toBe(false);
+    expect(costumeDraftToBody({ ...draft, portraitScalePercent: "151" }).ok).toBe(false);
+    expect(costumeDraftToBody({ ...draft, portraitOffsetXPercent: "-51" }).ok).toBe(false);
     expect(costumeDraftToBody({ ...draft, illustName: "", illustUrl: "https://example.com/artist" }).ok).toBe(false);
   });
 

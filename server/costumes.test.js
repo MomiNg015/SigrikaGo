@@ -13,6 +13,9 @@ const COSTUME = {
   characterSlug: "denia",
   portraitUrl: "/assets/costumes/denia-01.webp",
   candyEffectPortraitUrl: "",
+  portraitScalePercent: 88,
+  portraitOffsetXPercent: -2,
+  portraitOffsetYPercent: 3,
   description: "",
   illustName: "",
   illustUrl: "",
@@ -69,6 +72,19 @@ describe("costume schema", () => {
     expect(sql).toContain('"UserCostumeEquipment_userId_characterSlug_key"');
   });
 
+  it("adds portrait framing columns to an existing costume catalog without replacing rows", async () => {
+    const client = {
+      $executeRawUnsafe: vi.fn(async () => 0),
+      $queryRawUnsafe: vi.fn(async () => [{ name: "id" }, { name: "portraitUrl" }])
+    };
+    await ensureCostumeSchema(client);
+    const sql = client.$executeRawUnsafe.mock.calls.map(([statement]) => statement).join("\n");
+    expect(sql).toContain('ALTER TABLE "Costume" ADD COLUMN "portraitScalePercent"');
+    expect(sql).toContain('ALTER TABLE "Costume" ADD COLUMN "portraitOffsetXPercent"');
+    expect(sql).toContain('ALTER TABLE "Costume" ADD COLUMN "portraitOffsetYPercent"');
+    expect(sql).not.toContain('DROP TABLE');
+  });
+
   it("does nothing for narrowed test doubles without raw SQL support", async () => {
     await expect(ensureCostumeSchema({})).resolves.toBeUndefined();
   });
@@ -86,7 +102,10 @@ describe("costume input", () => {
       value: {
         id: "denia-costume-01",
         characterSlug: "denia",
-        portraitUrl: "/assets/costumes/denia-01.webp"
+        portraitUrl: "/assets/costumes/denia-01.webp",
+        portraitScalePercent: 88,
+        portraitOffsetXPercent: -2,
+        portraitOffsetYPercent: 3
       }
     });
   });
@@ -95,6 +114,12 @@ describe("costume input", () => {
     const result = validateCostumeInput({ ...COSTUME, portraitUrl: "javascript:alert(1)" });
     expect(result.ok).toBe(false);
     expect(result.error).toContain("portraitUrl");
+  });
+
+  it("rejects portrait framing values outside the admin contract", () => {
+    expect(validateCostumeInput({ ...COSTUME, portraitScalePercent: 49 }).error).toContain("portraitScalePercent");
+    expect(validateCostumeInput({ ...COSTUME, portraitOffsetXPercent: 51 }).error).toContain("portraitOffsetXPercent");
+    expect(validateCostumeInput({ ...COSTUME, portraitOffsetYPercent: -51 }).error).toContain("portraitOffsetYPercent");
   });
 });
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChartNoAxesColumn, CircleAlert, MonitorPlay, Star, ThumbsUp, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
@@ -131,7 +131,7 @@ export function UserProfileCard({
     <section className="user-profile-card">
       <div className="profile-resume-hero">
         <span className="profile-chain-portrait">
-          <img src={resolveCharacterPortrait(mainCharacter, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={mainCharacter.name} />
+          <img {...characterPortraitImageProps(mainCharacter, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={mainCharacter.name} />
           <CharacterChainBadge user={profileUser} characterId={mainCharacter.id} />
         </span>
         <div className="profile-identity-block">
@@ -202,7 +202,7 @@ export function UserProfileCard({
             return (
               <div className="profile-character-row" key={item.characterId}>
                 <span className="profile-chain-portrait small">
-                  <img src={resolveCharacterPortrait(character, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={character.name} />
+                  <img {...characterPortraitImageProps(character, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={character.name} />
                   <CharacterChainBadge user={profileUser} characterId={character.id} />
                 </span>
                 <span>{character.name}</span>

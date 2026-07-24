@@ -131,6 +131,18 @@ export default function AdminCostumes({ costumes, characters, token, onSaved, on
                 <input value={draft.candyEffectPortraitUrl} onChange={(event) => setDraft({ ...draft, candyEffectPortraitUrl: event.target.value })} />
               </label>
               <label>
+                <AdminFieldLabel text="显示缩放（%）" tip="只影响衣柜缩略图和角色实际装扮后的显示；商店商品图与详情图保持原尺寸。" />
+                <input type="number" min="50" max="150" value={draft.portraitScalePercent} onChange={(event) => setDraft({ ...draft, portraitScalePercent: event.target.value })} />
+              </label>
+              <label>
+                <AdminFieldLabel text="横向偏移（%）" tip="负数向左，正数向右；范围 -50 到 50。" />
+                <input type="number" min="-50" max="50" value={draft.portraitOffsetXPercent} onChange={(event) => setDraft({ ...draft, portraitOffsetXPercent: event.target.value })} />
+              </label>
+              <label>
+                <AdminFieldLabel text="纵向偏移（%）" tip="负数向上，正数向下；范围 -50 到 50。" />
+                <input type="number" min="-50" max="50" value={draft.portraitOffsetYPercent} onChange={(event) => setDraft({ ...draft, portraitOffsetYPercent: event.target.value })} />
+              </label>
+              <label>
                 <AdminFieldLabel text="illust 名称" tip="立绘作者名。" />
                 <input value={draft.illustName} onChange={(event) => setDraft({ ...draft, illustName: event.target.value })} />
               </label>

@@ -265,6 +265,9 @@ model Costume {
   characterSlug            String
   portraitUrl              String
   candyEffectPortraitUrl   String   @default("")
+  portraitScalePercent     Int      @default(100)
+  portraitOffsetXPercent   Int      @default(0)
+  portraitOffsetYPercent   Int      @default(0)
   description              String   @default("")
   illustName               String   @default("")
   illustUrl                String   @default("")
@@ -432,6 +435,12 @@ model GameRecord {
   whiteCostumeId String @default("")
   blackCostumePortraitUrl String @default("")
   whiteCostumePortraitUrl String @default("")
+  blackCostumePortraitScalePercent Int @default(100)
+  whiteCostumePortraitScalePercent Int @default(100)
+  blackCostumePortraitOffsetXPercent Int @default(0)
+  whiteCostumePortraitOffsetXPercent Int @default(0)
+  blackCostumePortraitOffsetYPercent Int @default(0)
+  whiteCostumePortraitOffsetYPercent Int @default(0)
   resultText  String
   winnerColor String?
   resultReason String?

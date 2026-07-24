@@ -300,6 +300,9 @@ export function emptyCostumeDraft() {
     characterSlug: "",
     portraitUrl: "",
     candyEffectPortraitUrl: "",
+    portraitScalePercent: 100,
+    portraitOffsetXPercent: 0,
+    portraitOffsetYPercent: 0,
     description: "",
     illustName: "",
     illustUrl: "",
@@ -320,6 +323,9 @@ export function buildCostumeDraft(costume) {
 export function costumeDraftToBody(draft, { editing = false } = {}) {
   const priceCoins = parseAdminInteger(draft.priceCoins);
   const discountPercent = parseAdminInteger(draft.discountPercent);
+  const portraitScalePercent = parseAdminInteger(draft.portraitScalePercent);
+  const portraitOffsetXPercent = parseAdminInteger(draft.portraitOffsetXPercent);
+  const portraitOffsetYPercent = parseAdminInteger(draft.portraitOffsetYPercent);
   const sortOrder = parseAdminInteger(draft.sortOrder);
   const errors = [];
   if (!editing && !/^[a-z0-9][a-z0-9-]{1,63}$/.test(String(draft.id ?? "").trim())) errors.push("服装 ID");
@@ -328,6 +334,9 @@ export function costumeDraftToBody(draft, { editing = false } = {}) {
   if (!String(draft.portraitUrl ?? "").trim()) errors.push("服装立绘");
   if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
   if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
+  if (portraitScalePercent == null || portraitScalePercent < 50 || portraitScalePercent > 150) errors.push("立绘缩放必须是 50 到 150 的整数");
+  if (portraitOffsetXPercent == null || portraitOffsetXPercent < -50 || portraitOffsetXPercent > 50) errors.push("立绘横向偏移必须是 -50 到 50 的整数");
+  if (portraitOffsetYPercent == null || portraitOffsetYPercent < -50 || portraitOffsetYPercent > 50) errors.push("立绘纵向偏移必须是 -50 到 50 的整数");
   if (sortOrder == null) errors.push("排序必须是整数");
   if (String(draft.illustUrl ?? "").trim() && !String(draft.illustName ?? "").trim()) errors.push("填写 illust 链接时必须填写绘师名");
   if (errors.length) return { ok: false, error: `请检查：${errors.join("、")}` };
@@ -339,6 +348,9 @@ export function costumeDraftToBody(draft, { editing = false } = {}) {
       characterSlug: String(draft.characterSlug).trim(),
       portraitUrl: String(draft.portraitUrl).trim(),
       candyEffectPortraitUrl: String(draft.candyEffectPortraitUrl ?? "").trim(),
+      portraitScalePercent,
+      portraitOffsetXPercent,
+      portraitOffsetYPercent,
       description: String(draft.description ?? "").trim(),
       illustName: String(draft.illustName ?? "").trim(),
       illustUrl: String(draft.illustUrl ?? "").trim(),

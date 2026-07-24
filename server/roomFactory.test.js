@@ -117,7 +117,10 @@ describe("roomFactory", () => {
           denia: {
             id: "denia-costume-01",
             portraitUrl: "/assets/costumes/denia-01.webp",
-            candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp"
+            candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp",
+            portraitScalePercent: 88,
+            portraitOffsetXPercent: -2,
+            portraitOffsetYPercent: 3
           }
         }
       }
@@ -126,7 +129,10 @@ describe("roomFactory", () => {
     expect(player.costumeSnapshot).toEqual({
       id: "denia-costume-01",
       portraitUrl: "/assets/costumes/denia-01.webp",
-      candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp"
+      candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp",
+      portraitScalePercent: 88,
+      portraitOffsetXPercent: -2,
+      portraitOffsetYPercent: 3
     });
     player.user.equippedCostumes.denia.portraitUrl = "/assets/costumes/changed-later.webp";
     expect(player.costumeSnapshot.portraitUrl).toBe("/assets/costumes/denia-01.webp");

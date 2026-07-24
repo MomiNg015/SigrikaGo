@@ -12,7 +12,7 @@ export function layoutShopCards({ width, height, count, mobile = false, seed = 1
   if (!safeCount || width <= 0 || height <= 0) return [];
   return mobile
     ? layoutMobileCards(width, height, safeCount)
-    : layoutDesktopCards(width, height, safeCount, seededRandom(seed));
+    : layoutDesktopCards(width, height, safeCount, createShopSeededRandom(seed));
 }
 
 function layoutDesktopCards(width, height, count, random) {
@@ -101,7 +101,7 @@ function cardRows(count) {
   return [count];
 }
 
-function seededRandom(seed) {
+export function createShopSeededRandom(seed) {
   let value = (Number(seed) || 1) >>> 0;
   return () => {
     value = ((value * 1664525) + 1013904223) >>> 0;

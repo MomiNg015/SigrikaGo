@@ -3,7 +3,7 @@ import { ClipboardList, Clock, Radio, Ticket, X } from "lucide-react";
 import { playRecruitmentResultSound } from "../audio/playback.jsx";
 import { RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
 import { ModalDialog } from "./modalComponents.jsx";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import RecruitmentCinematicOverlay from "./recruitment/RecruitmentCinematicOverlay.jsx";
 import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
 
@@ -221,7 +221,7 @@ function ResultBoard({ result, task, characters, user }) {
   return (
     <section className="recruitment-result-card recruitment-result-success">
       {character?.portrait
-        ? <img src={resolveCharacterPortrait(character, { itemEffects: user?.itemEffects, user })} alt={character.name} />
+        ? <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} />
         : <RecruitmentItemIcon item={task} large />}
       <div>
         <strong>{character?.name ?? result.characterId}</strong>

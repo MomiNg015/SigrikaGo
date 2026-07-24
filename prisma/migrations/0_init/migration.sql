@@ -319,6 +319,12 @@ CREATE TABLE "GameRecord" (
     "whiteCostumeId" TEXT NOT NULL DEFAULT '',
     "blackCostumePortraitUrl" TEXT NOT NULL DEFAULT '',
     "whiteCostumePortraitUrl" TEXT NOT NULL DEFAULT '',
+    "blackCostumePortraitScalePercent" INTEGER NOT NULL DEFAULT 100,
+    "whiteCostumePortraitScalePercent" INTEGER NOT NULL DEFAULT 100,
+    "blackCostumePortraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0,
+    "whiteCostumePortraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0,
+    "blackCostumePortraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0,
+    "whiteCostumePortraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -348,6 +354,9 @@ CREATE TABLE "Costume" (
     "characterSlug" TEXT NOT NULL,
     "portraitUrl" TEXT NOT NULL,
     "candyEffectPortraitUrl" TEXT NOT NULL DEFAULT '',
+    "portraitScalePercent" INTEGER NOT NULL DEFAULT 100,
+    "portraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0,
+    "portraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0,
     "description" TEXT NOT NULL DEFAULT '',
     "illustName" TEXT NOT NULL DEFAULT '',
     "illustUrl" TEXT NOT NULL DEFAULT '',

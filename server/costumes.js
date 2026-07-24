@@ -1,6 +1,9 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
+  COSTUME_PORTRAIT_OFFSET_RANGE,
+  COSTUME_PORTRAIT_SCALE_RANGE,
   DEFAULT_COSTUME_ID,
+  DEFAULT_COSTUME_PORTRAIT_FRAMING,
   finalCostumePrice,
   normalizeCostumeId,
   toCostumePayload
@@ -25,6 +28,9 @@ export async function ensureCostumeSchema(client) {
       "characterSlug" TEXT NOT NULL,
       "portraitUrl" TEXT NOT NULL,
       "candyEffectPortraitUrl" TEXT NOT NULL DEFAULT '',
+      "portraitScalePercent" INTEGER NOT NULL DEFAULT 100,
+      "portraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0,
+      "portraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0,
       "description" TEXT NOT NULL DEFAULT '',
       "illustName" TEXT NOT NULL DEFAULT '',
       "illustUrl" TEXT NOT NULL DEFAULT '',
@@ -39,6 +45,12 @@ export async function ensureCostumeSchema(client) {
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  if (client?.$queryRawUnsafe) {
+    const columns = await client.$queryRawUnsafe(`PRAGMA table_info("Costume")`);
+    await ensureCostumeColumn(client, columns, "portraitScalePercent", `ALTER TABLE "Costume" ADD COLUMN "portraitScalePercent" INTEGER NOT NULL DEFAULT 100`);
+    await ensureCostumeColumn(client, columns, "portraitOffsetXPercent", `ALTER TABLE "Costume" ADD COLUMN "portraitOffsetXPercent" INTEGER NOT NULL DEFAULT 0`);
+    await ensureCostumeColumn(client, columns, "portraitOffsetYPercent", `ALTER TABLE "Costume" ADD COLUMN "portraitOffsetYPercent" INTEGER NOT NULL DEFAULT 0`);
+  }
   await client.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "UserCostume" (
       "id" TEXT NOT NULL PRIMARY KEY,
@@ -82,6 +94,18 @@ export function validateCostumeInput(input = {}, { requireId = true } = {}) {
   const illustName = String(input.illustName ?? "").trim();
   const priceCoins = parseInteger(input.priceCoins, { min: 0 });
   const discountPercent = parseInteger(input.discountPercent ?? 0, { min: 0, max: 100 });
+  const portraitScalePercent = parseInteger(
+    input.portraitScalePercent ?? DEFAULT_COSTUME_PORTRAIT_FRAMING.scalePercent,
+    COSTUME_PORTRAIT_SCALE_RANGE
+  );
+  const portraitOffsetXPercent = parseInteger(
+    input.portraitOffsetXPercent ?? DEFAULT_COSTUME_PORTRAIT_FRAMING.offsetXPercent,
+    COSTUME_PORTRAIT_OFFSET_RANGE
+  );
+  const portraitOffsetYPercent = parseInteger(
+    input.portraitOffsetYPercent ?? DEFAULT_COSTUME_PORTRAIT_FRAMING.offsetYPercent,
+    COSTUME_PORTRAIT_OFFSET_RANGE
+  );
   const sortOrder = parseInteger(input.sortOrder ?? 0);
   const shopVisible = input.shopVisible ?? true;
   const purchasable = input.purchasable ?? true;
@@ -96,6 +120,9 @@ export function validateCostumeInput(input = {}, { requireId = true } = {}) {
   if (illustUrl && !illustName) errors.push("illustName is required when illustUrl is set");
   if (priceCoins == null) errors.push("priceCoins must be a non-negative integer");
   if (discountPercent == null) errors.push("discountPercent must be an integer from 0 to 100");
+  if (portraitScalePercent == null) errors.push("portraitScalePercent must be an integer from 50 to 150");
+  if (portraitOffsetXPercent == null) errors.push("portraitOffsetXPercent must be an integer from -50 to 50");
+  if (portraitOffsetYPercent == null) errors.push("portraitOffsetYPercent must be an integer from -50 to 50");
   if (sortOrder == null) errors.push("sortOrder must be an integer");
   if (typeof shopVisible !== "boolean") errors.push("shopVisible must be a boolean");
   if (typeof purchasable !== "boolean") errors.push("purchasable must be a boolean");
@@ -110,6 +137,9 @@ export function validateCostumeInput(input = {}, { requireId = true } = {}) {
       characterSlug,
       portraitUrl,
       candyEffectPortraitUrl,
+      portraitScalePercent,
+      portraitOffsetXPercent,
+      portraitOffsetYPercent,
       description: String(input.description ?? "").trim(),
       illustName,
       illustUrl,
@@ -278,4 +308,10 @@ function parseInteger(value, { min = Number.MIN_SAFE_INTEGER, max = Number.MAX_S
   const number = typeof value === "number" ? value : Number(String(value ?? "").trim());
   if (!Number.isSafeInteger(number) || number < min || number > max) return null;
   return number;
+}
+
+async function ensureCostumeColumn(client, columns, name, sql) {
+  if (!columns.some((column) => column.name === name)) {
+    await client.$executeRawUnsafe(sql);
+  }
 }

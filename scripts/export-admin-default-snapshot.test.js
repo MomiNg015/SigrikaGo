@@ -33,6 +33,9 @@ describe("admin default snapshot export", () => {
       id: "sigrika-costume-01",
       characterSlug: "sigrika",
       portraitUrl: "/assets/costumes/sigrika-01.webp",
+      portraitScalePercent: 83,
+      portraitOffsetXPercent: 0,
+      portraitOffsetYPercent: 0,
       priceCoins: 600
     });
     expect(config.gachaPools[0]).toMatchObject({
@@ -183,6 +186,9 @@ function snapshotPrisma() {
         characterSlug: "sigrika",
         portraitUrl: "/assets/costumes/sigrika-01.webp",
         candyEffectPortraitUrl: "",
+        portraitScalePercent: 83,
+        portraitOffsetXPercent: 0,
+        portraitOffsetYPercent: 0,
         description: "",
         illustName: "",
         illustUrl: "",

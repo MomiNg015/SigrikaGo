@@ -88,12 +88,10 @@
   position: absolute;
   z-index: 5;
   inset: 5% 4% 7% 35%;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  align-items: center;
-  gap: 2% 1%;
-  padding: 2%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  contain: layout paint;
 }
 
 .costume-shop-host {
@@ -163,10 +161,11 @@
 }
 
 .costume-shop-empty {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-  align-self: center;
-  justify-self: center;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
   color: #f4d889;
   font-weight: 900;
 }

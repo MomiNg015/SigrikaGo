@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
-import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import { resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
 
 const TIP_ROTATION_MS = 10000;
 const PRELOAD_PROGRESS_MASCOT = "/assets/preload/orange-mascot.png";
@@ -114,7 +114,7 @@ export default function AssetPreloadScreen({
   const displayCharacter = character
     ? characterFromCatalogById(characters, character.id) ?? character
     : characterFromCatalogById(characters, randomCharacterId) ?? randomCharacter;
-  const displayPortrait = resolveCharacterPortrait(displayCharacter, {
+  const displayPortrait = resolveCharacterPortraitPresentation(displayCharacter, {
     itemEffects: user?.itemEffects,
     user,
     costumeSnapshot: displayCharacter?.costumeSnapshot
@@ -175,9 +175,9 @@ export default function AssetPreloadScreen({
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
-        {displayPortrait ? (
+        {displayPortrait.src ? (
           <span className="preload-character" aria-label={displayCharacter.name ?? "当前角色"}>
-            <img src={displayPortrait} alt={displayCharacter.name ?? ""} />
+            <img src={displayPortrait.src} style={displayPortrait.style} alt={displayCharacter.name ?? ""} />
           </span>
         ) : (
           <div className="preload-mark" />
