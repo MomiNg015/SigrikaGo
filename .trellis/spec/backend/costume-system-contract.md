@@ -29,6 +29,7 @@
 - `GET /api/admin/costumes` -> `{ costumes }`.
 - `POST /api/admin/costumes` creates one catalog row.
 - `PATCH /api/admin/costumes/:id` updates mutable catalog fields; the stable URL id is not renamed.
+- Admin character payloads expose the canonical character slug through `id`. Costume-admin selectors and lookups must use `character.id`, with `character.slug` only as a compatibility fallback, and submit that canonical value as `characterSlug`.
 
 ### Shared resolution
 
@@ -57,7 +58,7 @@
 - Character, costume, and costume candy-effect portraits configured as local `/assets/...` URLs are normalized through `npm run portraits:normalize`: crop to the union of non-zero alpha bounds, preserve aspect ratio and complete visible content, fit the longest edge to a shared 792px safe box, and bottom-center it with a 54px margin on a transparent 900x900 per-frame canvas. Static inputs encode as lossless WebP. Animated WebP inputs preserve every frame, per-frame delay, and loop metadata; every frame uses the same union-bounds transform so animation does not jump, and assets marked `requiresAnimation` fail validation if reduced to one frame. `npm run check:portraits` is part of the repository gate and rejects local catalog portraits that drift from this contract; HTTP(S) URLs are supported but skipped without fetching. The three costume-shop mascot states remain independent 1024x1024 compositions and are outside this portrait contract.
 - Built-in normalized portraits use new current URLs while legacy files remain committed for room/replay snapshots that preserve old URL plus framing. `migrateBuiltinPortraitAssets()` updates only exact untouched default character/costume rows and resets those costume rows to `100/0/0`; it must not change custom admin rows, ownership/equipment, rooms, or `GameRecord` history.
 - The costume shop title is exactly `残星会cosplay部` and remains a complete single line. Each price badge is a child of the shrink-wrapped `.costume-shop-art` owner so it overlaps the visible portrait's lower-right corner rather than the surrounding grid slot.
-- A costume product detail reuses Zahira's `.shop-item-detail-modal`, `.shop-detail-art`, `.shop-detail-copy`, and `.shop-detail-stats` structure. Costume-specific classes are theme modifiers only; the bottom stats slot contains the purchase button instead of Zahira's ownership row.
+- A costume product detail reuses Zahira's `.shop-item-detail-modal`, `.shop-detail-art`, `.shop-detail-copy`, and `.shop-detail-stats` structure. Costume-specific classes are theme modifiers only. Its category label is `{character display name}服装`; the bottom stats slot replaces Zahira's ownership row with a left-aligned price line followed by one full-width purchase button.
 - A settled detail purchase attempt always closes the costume detail in `finally`. Only a truthy successful purchase result opens the sibling `CostumePurchaseEquipDialog`; rejection or a falsy result shows no equipment prompt. The prompt equips only after the explicit confirmation and closes only when that equipment request succeeds.
 - Zahira and Nivora mascot feedback is explicit modal state, not a timer. Purchase success or failure copy and portrait remain until refresh, shop switch, close/reopen, or another explicit state transition; shop hooks must not schedule delayed resets.
 - Costume products reuse Zahira's per-batch slight rotation and vertical float parameters. The portrait and nested price badge stay inside the same transform wrappers, pause together on hover/focus/press, and stop continuous floating under reduced motion.
@@ -73,7 +74,7 @@
 | Missing name, character, valid portrait URL, or non-negative integer price | Admin `400` validation error |
 | Scale is outside `50..150`, or an offset is outside `-50..50` | Admin `400` validation error |
 | Asset URL is neither `/assets/...` nor HTTP(S) | Admin `400` validation error |
-| Costume target character does not exist | Admin `400` |
+| Costume target character does not exist | Admin `400`, `服装所属角色不存在` |
 | Create uses an existing costume id | Admin `409` |
 | Update target does not exist | Admin `404` |
 | Purchase target is missing, disabled, hidden, or not purchasable | Player `400`, `服装不可购买` |
@@ -93,12 +94,14 @@
 
 - Good: buy a 600-coin Denia costume with 800 coins; one transaction returns 200 coins, ownership, a `costume.purchase` ledger entry, and no automatic equipment.
 - Good: disable an equipped costume in admin; ownership remains, equipment resets to default, and future portrait projections use the base character.
+- Good: edit a Nivora costume from an admin character payload shaped as `{ id: "nabomo", name: "娜波摩" }`; the form keeps and submits `characterSlug: "nabomo"`.
 - Good: start a match while a costume is equipped, then change clothes or its admin framing later; the room, result, and replay keep the start-time portrait and framing.
 - Good: open a costume detail from the wardrobe; the detail backdrop covers the viewport as a sibling overlay while the wardrobe remains dimmed behind it.
 - Good: resize the shop to portrait mobile; the complete `残星会cosplay部` title remains on one line and each price badge still overlaps its alpha-cropped portrait.
 - Good: refresh from five visible costumes to three or one; the measured stage recenters only the existing product cards, and each portrait plus price badge floats and rotates as one unit.
 - Good: buy a costume from its Zahira-shaped detail; the detail closes, then one centered prompt offers immediate equipment without equipping implicitly.
 - Good: fail a costume purchase; the detail still closes, no equipment prompt appears, and Nivora's failure feedback remains visible until an explicit action changes it.
+- Good: open Nivora's costume detail; the category reads `娜波摩服装`, then the bottom slot renders a left-aligned `售价 600 金币` line above one horizontal purchase button.
 - Good: normalize the 16-frame Denia candy WebP; all frames use one union-bounds transform and retain their authored 70ms delays and infinite loop.
 - Base: a user owns the base character but no costumes; the wardrobe shows default first and enabled unowned costumes gray.
 - Base: a costume has no candy portrait; Denia's active candy effect uses the existing base candy art.
@@ -109,18 +112,20 @@
 - Bad: put an opaque button surface inside an equipped wardrobe card, because it hides the outer pale-green equipped state.
 - Bad: anchor a shop price badge to the full grid slot or a padded square image canvas, because the badge will float below the visible character.
 - Bad: hardcode costume slots with `nth-child` columns or animate the price badge outside the portrait card, because counts below five leave holes and the product separates while moving.
+- Bad: read only `character.slug` in the costume admin, because current admin character payloads expose the canonical slug as `id` and an undefined option value can submit the display name instead.
 - Bad: reset either shop mascot with `setTimeout`, because feedback disappears while the player is still reading it and timer cleanup can race with shop switching.
 - Bad: keep the costume detail mounted after settlement or open the equipment prompt from a failed request.
+- Bad: place the price inside the purchase button or use another descendant `div` for the costume action layout, because Zahira's `.shop-detail-stats div` two-column owner will split and overlap the content.
 - Bad: open an animated portrait with the default single-page decoder before normalization, because the output silently becomes a static first frame.
 
 ## 6. Tests Required
 
 - Schema and migration tests assert all three costume models, uniqueness/indexes, and all costume/framing `GameRecord` snapshot fields.
 - `server/costumes.test.js` covers validation, schema guard SQL, listing projection, atomic purchase, character ownership, default equipment, and owned costume equipment.
-- Admin tests cover create/update audits, duplicate ids, character existence, and equipment reset on disable or character reassignment.
+- Admin tests cover create/update audits, duplicate ids, localized character-existence failures, equipment reset on disable or character reassignment, and preservation of the canonical target through a `{ id, name }` character payload edit/save cycle.
 - Route tests cover authentication and player/admin endpoint wiring.
 - Snapshot/export/seed tests assert all costume fields survive bootstrap export and create-only startup seeding.
-- Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, persistent mascot feedback without timers, purchase persistence, detail closure on both purchase outcomes, success-only equipment prompting, and optional post-purchase equipment.
+- Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, persistent mascot feedback without timers, purchase persistence, role-specific costume labels, price/button sibling structure, detail closure on both purchase outcomes, success-only equipment prompting, and optional post-purchase equipment.
 - Wardrobe tests cover virtual default ordering, gray unowned cards, disabled equipment, immediate equipment, and detail-card behavior.
 - Wardrobe DOM/CSS tests assert the detail backdrop is a direct app-root overlay, the trigger surface is transparent and shadowless, and the equipped outer card owns the pale-green state.
 - Shop source/CSS tests assert the exact non-wrapping title, alpha-trimmed WebP dimensions, shrink-wrapped art owner, price positioning inside that owner, measured count-aware layout reuse, whole-card motion wrappers, hover pause, and reduced-motion fallback.

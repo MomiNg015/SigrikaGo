@@ -1,5 +1,7 @@
 import { Shirt, X } from "lucide-react";
 import { useId } from "react";
+import { canonicalCharacterId } from "../../shared/characterAliases.js";
+import { CHARACTERS } from "../../shared/characters.js";
 import { ModalActionButton, ModalDialog } from "../modalComponents.jsx";
 
 export default function CostumeDetailDialog({
@@ -12,6 +14,7 @@ export default function CostumeDetailDialog({
   if (!costume) return null;
   const owned = costume.owned;
   const canPurchase = costume.characterOwned && costume.purchasable && !owned;
+  const characterName = CHARACTERS[canonicalCharacterId(costume.characterSlug)]?.name ?? "角色";
   const purchaseLabel = purchasing
     ? "购买中…"
     : owned
@@ -45,7 +48,7 @@ export default function CostumeDetailDialog({
           <img src={costume.portraitUrl} alt="" />
         </div>
         <div className="shop-detail-copy costume-detail-copy">
-          <span className="shop-detail-category costume-detail-category">残星会服装</span>
+          <span className="shop-detail-category costume-detail-category">{characterName}服装</span>
           <div className="shop-detail-title-row costume-detail-title-row">
             <h3>{costume.name}</h3>
             {costume.illustName && (
@@ -56,7 +59,11 @@ export default function CostumeDetailDialog({
           </div>
           <p>{costume.description || "这套服装的介绍尚未填写。"}</p>
           <div className="shop-detail-stats costume-detail-actions">
-            <div className="costume-detail-purchase-row">
+            <section className="costume-detail-purchase-row" aria-label="服装售价与购买">
+              <dl className="costume-detail-price">
+                <dt>售价</dt>
+                <dd>{costume.finalPrice} 金币</dd>
+              </dl>
               <button
                 className="primary-action costume-detail-purchase-button"
                 type="button"
@@ -65,9 +72,8 @@ export default function CostumeDetailDialog({
                 onClick={purchase}
               >
                 <strong>{purchaseLabel}</strong>
-                <span>{costume.finalPrice} 金币</span>
               </button>
-            </div>
+            </section>
           </div>
         </div>
       </ModalDialog>

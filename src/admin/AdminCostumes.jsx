@@ -14,6 +14,10 @@ import {
   AdminTableScroll
 } from "./adminComponents.jsx";
 
+export function adminCharacterId(character) {
+  return character?.id ?? character?.slug ?? "";
+}
+
 export default function AdminCostumes({ costumes, characters, token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
   const [editingId, setEditingId] = useState("");
@@ -69,7 +73,7 @@ export default function AdminCostumes({ costumes, characters, token, onSaved, on
               <tr key={costume.id} onClick={() => editCostume(costume)}>
                 <td><img className="admin-costume-thumb" src={costume.portraitUrl} alt="" /></td>
                 <td><strong>{costume.name}</strong><small>{costume.id}</small></td>
-                <td>{characters.find((character) => character.slug === costume.characterSlug)?.name ?? costume.characterSlug}</td>
+                <td>{characters.find((character) => adminCharacterId(character) === costume.characterSlug)?.name ?? costume.characterSlug}</td>
                 <td>{costume.finalPrice}/{costume.priceCoins}</td>
                 <td><AdminStatusPill tone={costume.shopVisible ? "green" : "neutral"}>{costume.shopVisible ? "展示" : "隐藏"}</AdminStatusPill></td>
                 <td><AdminStatusPill tone={costume.enabled ? "green" : "neutral"}>{costume.enabled ? "启用" : "停用"}</AdminStatusPill></td>
@@ -107,7 +111,10 @@ export default function AdminCostumes({ costumes, characters, token, onSaved, on
                 <AdminFieldLabel text="所属角色" tip="服装只能由对应角色装扮。" />
                 <select value={draft.characterSlug} onChange={(event) => setDraft({ ...draft, characterSlug: event.target.value })}>
                   <option value="">请选择角色</option>
-                  {characters.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
+                  {characters.map((character) => {
+                    const characterId = adminCharacterId(character);
+                    return <option key={characterId} value={characterId}>{character.name}</option>;
+                  })}
                 </select>
               </label>
               <label>

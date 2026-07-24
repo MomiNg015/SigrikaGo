@@ -27,7 +27,10 @@ describe("admin costume management", () => {
   it("rejects costumes whose character target does not exist", async () => {
     await expect(assertCostumeCharacterExists({
       character: { findUnique: vi.fn(async () => null) }
-    }, costume)).rejects.toMatchObject({ status: 400 });
+    }, costume)).rejects.toMatchObject({
+      status: 400,
+      message: "服装所属角色不存在"
+    });
   });
 
   it("creates a costume and writes an audit row in one transaction", async () => {

@@ -61,6 +61,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-modal {
+  --costume-detail-gold: #efc96f;
   color: #f7e4bd !important;
   background:
     radial-gradient(circle at 24% 28%, rgba(238, 179, 82, 0.12), transparent 28%),
@@ -78,26 +79,39 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy h3,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy p,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy a,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy .shop-detail-illust-label {
   color: #f7e4bd !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-category {
+  background: var(--costume-detail-gold) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy > p {
   padding: 14px 16px !important;
-  background: rgba(20, 4, 8, 0.44) !important;
-  border: 2px solid rgba(228, 190, 107, 0.35) !important;
+  background: rgba(20, 4, 8, 0.64) !important;
+  border: 2px solid rgba(228, 190, 107, 0.52) !important;
   border-radius: 12px !important;
   line-height: 1.65 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-actions .costume-detail-purchase-row {
-  color: #f8e7c2 !important;
-  background: rgba(15, 3, 7, 0.52) !important;
-  border-color: rgba(228, 190, 107, 0.45) !important;
+  color: #f8e7c2;
+  background: rgba(15, 3, 7, 0.66);
+  border: 2px solid rgba(228, 190, 107, 0.52);
+  border-radius: 12px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-price dt {
+  color: rgba(248, 231, 194, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-price dd {
+  color: var(--costume-detail-gold) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button {
-  background: #efc96f !important;
+  background: var(--costume-detail-gold) !important;
   color: var(--bright-ink) !important;
   border: 3px solid var(--bright-border) !important;
   box-shadow: 3px 4px 0 rgba(12, 2, 5, 0.72) !important;

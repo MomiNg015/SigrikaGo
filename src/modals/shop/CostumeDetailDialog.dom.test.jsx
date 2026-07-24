@@ -9,6 +9,7 @@ afterEach(cleanup);
 const costume = {
   id: "denia-costume-01",
   name: "达妮娅舞台服",
+  characterSlug: "denia",
   portraitUrl: "/assets/costumes/denia-01.webp",
   description: "舞台服装。",
   finalPrice: 600,
@@ -79,6 +80,11 @@ describe("CostumeDetailDialog", () => {
     expect(container.querySelector(".shop-detail-art.costume-detail-art")).toBeTruthy();
     expect(container.querySelector(".shop-detail-copy.costume-detail-copy")).toBeTruthy();
     expect(container.querySelector(".shop-detail-stats .costume-detail-purchase-button")).toBeTruthy();
+    expect(screen.getByText("达妮娅服装")).toBeTruthy();
+    expect(screen.getByText("售价")).toBeTruthy();
+    expect(screen.getByText("600 金币")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "购买服装" }).textContent).toBe("购买服装");
+    expect(container.querySelector(".costume-detail-price + .costume-detail-purchase-button")).toBeTruthy();
     expect(screen.queryByText("持有状态")).toBeNull();
   });
 });

@@ -1,5 +1,26 @@
 .costume-detail-actions .costume-detail-purchase-row {
+  display: grid;
   grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.costume-detail-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0;
+}
+
+.costume-detail-price dt,
+.costume-detail-price dd {
+  margin: 0;
+  font-weight: 900;
+}
+
+.costume-detail-price dd {
+  font-size: 20px;
 }
 
 .costume-detail-purchase-button {
@@ -7,20 +28,13 @@
   min-height: 54px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
   padding: 10px 14px;
+  white-space: nowrap;
 }
 
 .costume-detail-purchase-button strong {
-  min-width: 0;
-  text-align: left;
-}
-
-.costume-detail-purchase-button span {
-  flex: 0 0 auto;
-  font-size: 13px;
-  font-weight: 900;
+  text-align: center;
 }
 
 .costume-detail-purchase-button:disabled {

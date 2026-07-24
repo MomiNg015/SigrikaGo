@@ -4,7 +4,7 @@ import { routeError } from "./adminRouteErrors.js";
 
 export async function assertCostumeCharacterExists(prisma, costume) {
   const character = await prisma.character.findUnique({ where: { slug: costume.characterSlug } });
-  if (!character) throw routeError(400, "Costume character target does not exist");
+  if (!character) throw routeError(400, "服装所属角色不存在");
 }
 
 export async function createCostume({ prisma, adminUser, input }) {
