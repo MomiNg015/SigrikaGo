@@ -237,3 +237,36 @@ Added persisted costume portrait framing across admin, rooms, results and replay
 ### Next Steps
 
 - None - task complete
+
+
+## Session 68: Normalize character portrait assets
+
+**Date**: 2026-07-24
+**Task**: Normalize character portrait assets
+**Branch**: `codex/normalize-character-portraits`
+
+### Summary
+
+Added catalog-driven 900x900 portrait normalization, migrated built-in character and costume URLs safely, and added validation, tests, and system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `89b899d4ceb7b4d748ab80b8ae935bf5981239ef` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
