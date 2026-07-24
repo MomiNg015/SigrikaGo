@@ -32,7 +32,6 @@ import {
   SHOP_MASCOT_LOADING_LINE,
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_REFRESH_LINES,
-  SHOP_MASCOT_THANKS_DURATION_MS,
   SHOP_MASCOT_THANKS_IMAGE,
   SHOP_MASCOT_THANKS_LINE,
   SHOP_REFRESH_COOLDOWN_MS,
@@ -43,10 +42,6 @@ import {
   getShopItemDetailStatus,
   getShopOwnedItemQuantity
 } from "./shop/shopItemDetail.js";
-import {
-  clearShopMascotThanksTimer,
-  scheduleShopMascotThanks
-} from "./shop/useShopCatalog.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 const sampleItem = {
@@ -382,23 +377,18 @@ describe("Zahira shop window", () => {
     expect(refreshBlock).toContain("setCurrentBatch(preparedBatch)");
   });
 
-  it("schedules thank-you feedback for five seconds and cleans repeated timers", () => {
-    const timerRef = { current: null };
-    const moods = [];
-    const cleared = [];
-    const scheduled = [];
-    const setTimeoutFn = (callback, delayMs) => {
-      const id = `timer-${scheduled.length + 1}`;
-      scheduled.push({ id, callback, delayMs });
-      return id;
-    };
+  it("keeps Zahira and Nivora feedback until an explicit shop action changes it", () => {
+    const zahiraSource = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
+    const costumeSource = readFileSync(new URL("./shop/useCostumeCatalog.js", import.meta.url), "utf8");
+    const zahiraRefreshBlock = zahiraSource.slice(zahiraSource.indexOf("function refreshCatalog"), zahiraSource.indexOf("const eligibleCount"));
+    const costumeRefreshBlock = costumeSource.slice(costumeSource.indexOf("function refreshCatalog"), costumeSource.indexOf("function setMascotFeedback"));
 
-    scheduleShopMascotThanks({ timerRef, setMascotMood: (mood) => moods.push(mood), setTimeoutFn, clearTimeoutFn: (id) => cleared.push(id) });
-    scheduleShopMascotThanks({ timerRef, setMascotMood: (mood) => moods.push(mood), setTimeoutFn, clearTimeoutFn: (id) => cleared.push(id) });
-    expect(scheduled.map((entry) => entry.delayMs)).toEqual([SHOP_MASCOT_THANKS_DURATION_MS, SHOP_MASCOT_THANKS_DURATION_MS]);
-    expect(cleared).toEqual(["timer-1"]);
-    clearShopMascotThanksTimer(timerRef, (id) => cleared.push(id));
-    expect(cleared).toEqual(["timer-1", "timer-2"]);
+    expect(zahiraSource).toContain("setMascotMood(SHOP_MASCOT_MOODS.thanks)");
+    expect(zahiraSource).not.toContain("setTimeout");
+    expect(zahiraRefreshBlock).toContain("setMascotMood(SHOP_MASCOT_MOODS.default)");
+    expect(costumeSource).not.toContain("setTimeout");
+    expect(costumeSource).toContain('setMascotFeedback("thanks", COSTUME_THANKS_LINE)');
+    expect(costumeRefreshBlock).toContain('setMascotMood(preparedBatch.length ? "greeting" : "empty")');
   });
 
   it("encodes no-scroll, fixed rotation, float pause, reduced-motion, and final mobile overrides in CSS", () => {
@@ -446,6 +436,10 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain("clip-path: polygon(");
     expect(themeCss).toContain(".costume-shop-card-trigger:hover");
     expect(themeCss).toContain("background: transparent !important");
+    expect(themeCss).toContain(".costume-detail-purchase-button");
+    expect(themeCss).toContain(".costume-equip-prompt-modal");
+    expect(themeCss).toContain("width: min(430px, calc(100vw - 32px)) !important");
+    expect(themeCss).toContain("background: #f4cfc4 !important");
     expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
     expect(mobileCss).toContain("height: 56% !important");
     expect(mobileCss).toContain("font-size: clamp(13px, 3.3vw, 16px) !important");

@@ -4,7 +4,7 @@ import { ModalDialog } from "./modalComponents.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import ShopProductStage from "./shop/ShopProductStage.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
-import CostumeDetailDialog from "./shop/CostumeDetailDialog.jsx";
+import CostumeDetailDialog, { CostumePurchaseEquipDialog } from "./shop/CostumeDetailDialog.jsx";
 import CostumeStorePanel from "./shop/CostumeStorePanel.jsx";
 import { useCostumeCatalog } from "./shop/useCostumeCatalog.js";
 import { useShopCatalog } from "./shop/useShopCatalog.js";
@@ -13,6 +13,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
   const [activeStore, setActiveStore] = useState("zahira");
   const [detailItem, setDetailItem] = useState(null);
   const [detailCostume, setDetailCostume] = useState(null);
+  const [equipPromptCostume, setEquipPromptCostume] = useState(null);
   const zahiraCatalog = useShopCatalog({ token, user, musicTracks, onNotice, onPurchased });
   const costumeCatalog = useCostumeCatalog({ token, user, onNotice, onPurchased });
   const activeCatalog = activeStore === "costume" ? costumeCatalog : zahiraCatalog;
@@ -35,6 +36,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
   function switchStore(nextStore) {
     setDetailItem(null);
     setDetailCostume(null);
+    setEquipPromptCostume(null);
     setActiveStore(nextStore);
   }
 
@@ -102,10 +104,15 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
         <CostumeDetailDialog
           costume={detailCostume}
           purchasing={costumeCatalog.purchasingId === detailCostume?.id}
-          equipping={costumeCatalog.equippingId === detailCostume?.id}
           onPurchase={costumeCatalog.purchaseCostume}
-          onEquip={costumeCatalog.equipCostume}
+          onPurchaseSuccess={setEquipPromptCostume}
           onClose={() => setDetailCostume(null)}
+        />
+        <CostumePurchaseEquipDialog
+          costume={equipPromptCostume}
+          equipping={costumeCatalog.equippingId === equipPromptCostume?.id}
+          onEquip={costumeCatalog.equipCostume}
+          onClose={() => setEquipPromptCostume(null)}
         />
       </ModalDialog>
     </div>

@@ -57,6 +57,9 @@
 - Character, costume, and costume candy-effect portraits configured as local `/assets/...` URLs are normalized through `npm run portraits:normalize`: crop to the union of non-zero alpha bounds, preserve aspect ratio and complete visible content, fit the longest edge to a shared 792px safe box, and bottom-center it with a 54px margin on a transparent 900x900 per-frame canvas. Static inputs encode as lossless WebP. Animated WebP inputs preserve every frame, per-frame delay, and loop metadata; every frame uses the same union-bounds transform so animation does not jump, and assets marked `requiresAnimation` fail validation if reduced to one frame. `npm run check:portraits` is part of the repository gate and rejects local catalog portraits that drift from this contract; HTTP(S) URLs are supported but skipped without fetching. The three costume-shop mascot states remain independent 1024x1024 compositions and are outside this portrait contract.
 - Built-in normalized portraits use new current URLs while legacy files remain committed for room/replay snapshots that preserve old URL plus framing. `migrateBuiltinPortraitAssets()` updates only exact untouched default character/costume rows and resets those costume rows to `100/0/0`; it must not change custom admin rows, ownership/equipment, rooms, or `GameRecord` history.
 - The costume shop title is exactly `残星会cosplay部` and remains a complete single line. Each price badge is a child of the shrink-wrapped `.costume-shop-art` owner so it overlaps the visible portrait's lower-right corner rather than the surrounding grid slot.
+- A costume product detail reuses Zahira's `.shop-item-detail-modal`, `.shop-detail-art`, `.shop-detail-copy`, and `.shop-detail-stats` structure. Costume-specific classes are theme modifiers only; the bottom stats slot contains the purchase button instead of Zahira's ownership row.
+- A settled detail purchase attempt always closes the costume detail in `finally`. Only a truthy successful purchase result opens the sibling `CostumePurchaseEquipDialog`; rejection or a falsy result shows no equipment prompt. The prompt equips only after the explicit confirmation and closes only when that equipment request succeeds.
+- Zahira and Nivora mascot feedback is explicit modal state, not a timer. Purchase success or failure copy and portrait remain until refresh, shop switch, close/reopen, or another explicit state transition; shop hooks must not schedule delayed resets.
 - Costume products reuse Zahira's per-batch slight rotation and vertical float parameters. The portrait and nested price badge stay inside the same transform wrappers, pause together on hover/focus/press, and stop continuous floating under reduced motion.
 - The wardrobe and costume detail are sibling top-level overlays under the app portal root. A costume detail backdrop must never be a positioned child of the wardrobe dialog. The card detail trigger stays transparent and shadowless; equipped state color belongs to the outer `.character-costume-card.is-equipped`.
 - `Costume` is part of `ADMIN_DEFAULT_CONFIG`. Startup creates missing default rows without overwriting admin-edited rows; explicit admin-default sync remains the overwrite-capable deployment path.
@@ -77,6 +80,9 @@
 | User already owns the costume | Player `400`, `已拥有该服装` |
 | User does not own the base character | Player purchase `400`, `需要先拥有对应角色`; equip `400`, `尚未拥有该角色` |
 | Coin balance is below `finalPrice`, including an update race | Player `400`, `金币不足`; transaction creates no ownership |
+| Costume purchase rejects or returns no purchased costume | Detail closes; equipment prompt remains absent |
+| Costume purchase returns a purchased costume | Detail closes; centered equipment prompt opens with that costume |
+| Equipment confirmation rejects or returns false | Prompt remains open so the user can retry or decline |
 | Equipment target is disabled or belongs to another character | Player `400`, `服装不可装扮` |
 | Equipment target is not owned | Player `400`, `尚未拥有该服装` |
 | Default equipment requested for an owned character | Delete only that character's equipment row |
@@ -91,6 +97,8 @@
 - Good: open a costume detail from the wardrobe; the detail backdrop covers the viewport as a sibling overlay while the wardrobe remains dimmed behind it.
 - Good: resize the shop to portrait mobile; the complete `残星会cosplay部` title remains on one line and each price badge still overlaps its alpha-cropped portrait.
 - Good: refresh from five visible costumes to three or one; the measured stage recenters only the existing product cards, and each portrait plus price badge floats and rotates as one unit.
+- Good: buy a costume from its Zahira-shaped detail; the detail closes, then one centered prompt offers immediate equipment without equipping implicitly.
+- Good: fail a costume purchase; the detail still closes, no equipment prompt appears, and Nivora's failure feedback remains visible until an explicit action changes it.
 - Good: normalize the 16-frame Denia candy WebP; all frames use one union-bounds transform and retain their authored 70ms delays and infinite loop.
 - Base: a user owns the base character but no costumes; the wardrobe shows default first and enabled unowned costumes gray.
 - Base: a costume has no candy portrait; Denia's active candy effect uses the existing base candy art.
@@ -101,6 +109,8 @@
 - Bad: put an opaque button surface inside an equipped wardrobe card, because it hides the outer pale-green equipped state.
 - Bad: anchor a shop price badge to the full grid slot or a padded square image canvas, because the badge will float below the visible character.
 - Bad: hardcode costume slots with `nth-child` columns or animate the price badge outside the portrait card, because counts below five leave holes and the product separates while moving.
+- Bad: reset either shop mascot with `setTimeout`, because feedback disappears while the player is still reading it and timer cleanup can race with shop switching.
+- Bad: keep the costume detail mounted after settlement or open the equipment prompt from a failed request.
 - Bad: open an animated portrait with the default single-page decoder before normalization, because the output silently becomes a static first frame.
 
 ## 6. Tests Required
@@ -110,7 +120,7 @@
 - Admin tests cover create/update audits, duplicate ids, character existence, and equipment reset on disable or character reassignment.
 - Route tests cover authentication and player/admin endpoint wiring.
 - Snapshot/export/seed tests assert all costume fields survive bootstrap export and create-only startup seeding.
-- Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, purchase persistence, and optional post-purchase equipment.
+- Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, persistent mascot feedback without timers, purchase persistence, detail closure on both purchase outcomes, success-only equipment prompting, and optional post-purchase equipment.
 - Wardrobe tests cover virtual default ordering, gray unowned cards, disabled equipment, immediate equipment, and detail-card behavior.
 - Wardrobe DOM/CSS tests assert the detail backdrop is a direct app-root overlay, the trigger surface is transparent and shadowless, and the equipped outer card owns the pale-green state.
 - Shop source/CSS tests assert the exact non-wrapping title, alpha-trimmed WebP dimensions, shrink-wrapped art owner, price positioning inside that owner, measured count-aware layout reuse, whole-card motion wrappers, hover pause, and reduced-motion fallback.
@@ -218,3 +228,27 @@ const bounds = await alphaBoundsAcrossFrames(decoded.frames);
 ```
 
 Decode every page, calculate one alpha-union transform, normalize every frame with that transform, then rejoin with the source `delay` and `loop`. Assets marked `requiresAnimation` must also fail read-only validation when only one page remains.
+
+Wrong:
+
+```js
+const purchased = await onPurchase(costume);
+if (purchased) {
+  setShowEquipPrompt(true);
+  setTimeout(resetMascot, 5000);
+}
+```
+
+Correct:
+
+```js
+let purchased = null;
+try {
+  purchased = await onPurchase(costume);
+} finally {
+  onClose();
+}
+if (purchased) onPurchaseSuccess(purchased);
+```
+
+Purchase settlement owns detail closure, while the parent owns the sibling equipment prompt. Mascot feedback changes only through explicit shop actions.

@@ -40,7 +40,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-price {
   color: #3a0a13 !important;
-  background: #e5b7aa !important;
+  background: #f4cfc4 !important;
   border: 3px solid #21080d !important;
   box-shadow: 3px 4px 0 rgba(11, 2, 5, 0.64) !important;
 }
@@ -72,12 +72,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-art {
   background: radial-gradient(circle, rgba(238, 185, 91, 0.2), transparent 68%) !important;
-  border: 2px solid rgba(228, 190, 107, 0.42) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-kicker,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-price {
-  color: #efc96f !important;
+  border: 3px dashed rgba(228, 190, 107, 0.48) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy h3,
@@ -95,11 +90,24 @@
   line-height: 1.65 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-lock,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-owned,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-purchase-equip-prompt {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-actions .costume-detail-purchase-row {
   color: #f8e7c2 !important;
   background: rgba(15, 3, 7, 0.52) !important;
-  border: 2px solid rgba(228, 190, 107, 0.38) !important;
-  border-radius: 12px !important;
+  border-color: rgba(228, 190, 107, 0.45) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button {
+  background: #efc96f !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  box-shadow: 3px 4px 0 rgba(12, 2, 5, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button:focus-visible {
+  background: var(--bright-cream) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-equip-prompt-modal {
+  width: min(430px, calc(100vw - 32px)) !important;
 }

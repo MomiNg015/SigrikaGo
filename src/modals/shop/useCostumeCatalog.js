@@ -29,7 +29,6 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
   const [mascotMood, setMascotMood] = useState("greeting");
   const [purchasingId, setPurchasingId] = useState("");
   const [equippingId, setEquippingId] = useState("");
-  const resetTimerRef = useRef(null);
   const onNoticeRef = useRef(onNotice);
   const onPurchasedRef = useRef(onPurchased);
   const userRef = useRef(user);
@@ -41,7 +40,6 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
   }, [onNotice, onPurchased, user]);
 
   useEffect(() => setEffectiveUser(user), [user]);
-  useEffect(() => () => clearTimeout(resetTimerRef.current), []);
 
   useEffect(() => {
     let alive = true;
@@ -111,14 +109,14 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
       setCurrentBatch((current) => current.map((entry) => (
         entry.id === costume.id ? { ...entry, ...data.costume, owned: true } : entry
       )));
-      showMascotFeedback("thanks", COSTUME_THANKS_LINE);
+      setMascotFeedback("thanks", COSTUME_THANKS_LINE);
       onNoticeRef.current?.(`已购买${costume.name}`, "success");
       for (const unlock of data.achievementUnlocks ?? []) {
         onNoticeRef.current?.(`达成成就：${unlock.name}`, "achievement");
       }
       return data.costume;
     } catch (error) {
-      if (error.message === "金币不足") showMascotFeedback("empty", COSTUME_INSUFFICIENT_LINE);
+      if (error.message === "金币不足") setMascotFeedback("empty", COSTUME_INSUFFICIENT_LINE);
       onNoticeRef.current?.(error.message, "danger");
       return null;
     } finally {
@@ -164,19 +162,14 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
     setCurrentBatch(preparedBatch);
     setPreparedBatch(null);
     setBatchVersion((version) => version + 1);
-    setMascotMood("empty");
+    setMascotMood(preparedBatch.length ? "greeting" : "empty");
     setMascotLine(preparedBatch.length ? pickCostumeLine(COSTUME_REFRESH_LINES) : COSTUME_EMPTY_LINE);
     if (preparedBatch.length) startCooldown(setCooldownUntil, setCooldownRemaining);
   }
 
-  function showMascotFeedback(mood, line) {
-    clearTimeout(resetTimerRef.current);
+  function setMascotFeedback(mood, line) {
     setMascotMood(mood);
     setMascotLine(line);
-    resetTimerRef.current = setTimeout(() => {
-      setMascotMood("greeting");
-      setMascotLine(pickCostumeLine(COSTUME_GREETING_LINES));
-    }, 2200);
   }
 
   const eligibleCount = eligibleCostumes(costumes).length;

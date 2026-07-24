@@ -12,7 +12,6 @@ import {
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_REFRESH_LINES,
   SHOP_MASCOT_THANKS_LINE,
-  SHOP_MASCOT_THANKS_DURATION_MS,
   SHOP_REFRESH_COOLDOWN_MS
 } from "../shopModalHelpers.js";
 
@@ -29,7 +28,6 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
   const [contextualLine, setContextualLine] = useState(SHOP_MASCOT_LOADING_LINE);
   const [mascotMood, setMascotMood] = useState(SHOP_MASCOT_MOODS.default);
   const [purchasingId, setPurchasingId] = useState("");
-  const mascotResetTimerRef = useRef(null);
   const userRef = useRef(user);
   const musicTracksRef = useRef(musicTracks);
   const onNoticeRef = useRef(onNotice);
@@ -43,7 +41,6 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
   }, [musicTracks, onNotice, onPurchased, user]);
 
   useEffect(() => setEffectiveUser(user), [user]);
-  useEffect(() => () => clearShopMascotThanksTimer(mascotResetTimerRef), []);
 
   useEffect(() => {
     let alive = true;
@@ -60,6 +57,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     }
 
     setCatalogState("loading");
+    setMascotMood(SHOP_MASCOT_MOODS.default);
     setContextualLine(SHOP_MASCOT_LOADING_LINE);
     setCurrentBatch([]);
     setPreparedBatch(null);
@@ -80,6 +78,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
       .catch((apiError) => {
         if (!alive) return;
         setCatalogState("error");
+        setMascotMood(SHOP_MASCOT_MOODS.default);
         setContextualLine(SHOP_MASCOT_ERROR_LINE);
         onNoticeRef.current?.(apiError.message, "danger");
       });
@@ -125,7 +124,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
           entry.item.id === data.item.id ? { ...entry, item: data.item } : entry
         )));
       }
-      scheduleShopMascotThanks({ timerRef: mascotResetTimerRef, setMascotMood });
+      setMascotMood(SHOP_MASCOT_MOODS.thanks);
       onNoticeRef.current?.(`已购买${item.name}`, "success");
       notifyAchievementUnlocks(data.achievementUnlocks, onNoticeRef.current);
     } catch (apiError) {
@@ -145,6 +144,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     setCurrentBatch(preparedBatch);
     setPreparedBatch(null);
     setBatchVersion((version) => version + 1);
+    setMascotMood(SHOP_MASCOT_MOODS.default);
     setContextualLine(preparedBatch.length
       ? pickShopMascotLine(Math.random, SHOP_MASCOT_REFRESH_LINES)
       : SHOP_MASCOT_EMPTY_LINE);
@@ -174,26 +174,6 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
 function startShopCooldown(setCooldownUntil, setCooldownRemaining) {
   setCooldownRemaining(Math.ceil(SHOP_REFRESH_COOLDOWN_MS / 1000));
   setCooldownUntil(Date.now() + SHOP_REFRESH_COOLDOWN_MS);
-}
-
-export function scheduleShopMascotThanks({
-  timerRef,
-  setMascotMood,
-  setTimeoutFn = setTimeout,
-  clearTimeoutFn = clearTimeout
-}) {
-  clearShopMascotThanksTimer(timerRef, clearTimeoutFn);
-  setMascotMood(SHOP_MASCOT_MOODS.thanks);
-  timerRef.current = setTimeoutFn(() => {
-    setMascotMood(SHOP_MASCOT_MOODS.default);
-    timerRef.current = null;
-  }, SHOP_MASCOT_THANKS_DURATION_MS);
-}
-
-export function clearShopMascotThanksTimer(timerRef, clearTimeoutFn = clearTimeout) {
-  if (!timerRef.current) return;
-  clearTimeoutFn(timerRef.current);
-  timerRef.current = null;
 }
 
 function notifyAchievementUnlocks(unlocks = [], onNotice) {

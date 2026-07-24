@@ -1,76 +1,64 @@
-.costume-detail-modal {
-  width: min(780px, calc(100vw - 36px));
-  display: grid;
-  grid-template-columns: minmax(230px, 0.8fr) minmax(0, 1fr);
-  gap: 22px;
-  padding: 24px;
-  overflow: auto;
+.costume-detail-actions .costume-detail-purchase-row {
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.costume-detail-art {
-  min-height: 310px;
-  display: grid;
-  place-items: center;
-}
-
-.costume-detail-art img {
+.costume-detail-purchase-button {
   width: 100%;
-  max-height: 330px;
-  object-fit: contain;
-}
-
-.costume-detail-copy {
-  min-width: 0;
-  display: grid;
-  align-content: start;
-  gap: 12px;
-}
-
-.costume-detail-copy h3,
-.costume-detail-copy p {
-  margin: 0;
-}
-
-.costume-detail-kicker {
-  width: fit-content;
-  font-weight: 900;
-}
-
-.costume-detail-price {
+  min-height: 54px;
   display: flex;
-  align-items: baseline;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
 }
 
-.costume-detail-price strong {
-  font-size: 28px;
+.costume-detail-purchase-button strong {
+  min-width: 0;
+  text-align: left;
 }
 
-.costume-detail-lock,
-.costume-detail-owned {
-  min-height: 44px;
-  display: grid;
-  place-items: center;
-  padding: 9px 12px;
+.costume-detail-purchase-button span {
+  flex: 0 0 auto;
+  font-size: 13px;
   font-weight: 900;
 }
 
-.costume-detail-copy .primary-action:disabled {
+.costume-detail-purchase-button:disabled {
   cursor: not-allowed;
   filter: grayscale(1);
   opacity: 0.58;
   transform: none;
 }
 
-.costume-purchase-equip-prompt {
+.costume-equip-prompt-backdrop {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  place-items: center;
 }
 
-.costume-purchase-equip-prompt .primary-action {
-  display: inline-flex;
-  align-items: center;
+.costume-equip-prompt-modal {
+  width: min(430px, calc(100vw - 32px));
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 28px 24px 24px;
+  text-align: center;
+}
+
+.costume-equip-prompt-modal h3,
+.costume-equip-prompt-modal p {
+  margin: 0;
+}
+
+.costume-equip-prompt-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.costume-equip-prompt-actions {
+  width: 100%;
   justify-content: center;
-  gap: 7px;
+}
+
+.costume-equip-prompt-actions button {
+  min-height: 44px;
 }

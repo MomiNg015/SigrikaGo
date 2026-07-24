@@ -104,29 +104,13 @@
     width: calc(100vw - 20px) !important;
     max-height: calc(100dvh - 24px) !important;
     grid-template-columns: 1fr !important;
-    grid-template-rows: minmax(180px, 42dvh) auto !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
     gap: 12px !important;
     padding: 18px 14px !important;
     overflow: auto !important;
   }
 
-  .costume-detail-art {
-    min-height: 180px !important;
-  }
-
-  .costume-detail-art img {
-    max-height: 40dvh !important;
-  }
-
-  .costume-detail-copy {
-    gap: 10px !important;
-  }
-
-  .costume-detail-copy h3 {
-    font-size: 24px !important;
-  }
-
-  .costume-purchase-equip-prompt .inline-actions {
+  .costume-equip-prompt-actions {
     display: grid !important;
     grid-template-columns: 1fr !important;
   }
