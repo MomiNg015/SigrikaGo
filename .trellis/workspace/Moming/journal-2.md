@@ -270,3 +270,36 @@ Added catalog-driven 900x900 portrait normalization, migrated built-in character
 ### Next Steps
 
 - None - task complete
+
+
+## Session 69: Preserve Denia candy portrait animation
+
+**Date**: 2026-07-24
+**Task**: Preserve Denia candy portrait animation
+**Branch**: `codex/normalize-character-portraits`
+
+### Summary
+
+Restored the 16-frame Denia candy WebP and made portrait normalization preserve animated frame geometry, timing, loops, and required-animation validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9114100d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
