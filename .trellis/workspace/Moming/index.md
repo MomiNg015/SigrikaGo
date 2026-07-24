@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 69
+- **Total Sessions**: 70
 - **Last Active**: 2026-07-24
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~305 | Active |
+| `journal-2.md` | ~338 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 70 | 2026-07-24 | Polish costume shop purchase flow | `a86b83e6` | `codex/frontend-chores` |
 | 69 | 2026-07-24 | Preserve Denia candy portrait animation | `9114100d` | `codex/normalize-character-portraits` |
 | 68 | 2026-07-24 | Normalize character portrait assets | `89b899d4ceb7b4d748ab80b8ae935bf5981239ef` | `codex/normalize-character-portraits` |
 | 67 | 2026-07-24 | Costume portrait calibration and dynamic shop stage | `72702e97` | `master` |

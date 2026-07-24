@@ -303,3 +303,36 @@ Restored the 16-frame Denia candy WebP and made portrait normalization preserve 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 70: Polish costume shop purchase flow
+
+**Date**: 2026-07-24
+**Task**: Polish costume shop purchase flow
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Unified Residual Star costume details with Zahira's structure, added success-only equip confirmation, preserved both shop mascots' feedback until explicit actions, brightened price tags, and validated desktop/mobile behavior.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a86b83e6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
