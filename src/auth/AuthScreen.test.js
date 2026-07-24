@@ -87,7 +87,7 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
     expect(html).toContain('src="/assets/login-sigrika-mascot.webp"');
-    expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
+    expect(html).not.toContain('src="/assets/characters/portraits/sigrika.webp"');
     expect(html).toContain('<p class="text-display-accent">SigrikaGo</p>');
     expect(html).toContain("autoComplete=\"username\"");
     expect(html).toContain("name=\"username\"");

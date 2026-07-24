@@ -154,7 +154,7 @@ describe("boardSkillEffectRegistry", () => {
 
   test("exposes renderer asset urls for banner-window preloading", () => {
     expect(boardSkillEffectAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
-    expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
+    expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/characters/portraits/baconbits.webp"]);
     expect(boardSkillEffectAssetUrls("row-slash")).toEqual([]);
     expect(boardSkillEffectAssetUrls("unknown-effect")).toEqual([]);
   });

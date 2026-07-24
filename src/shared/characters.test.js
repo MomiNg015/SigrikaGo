@@ -8,7 +8,7 @@ describe("character fallback", () => {
     expect(CHARACTERS.qiuyuan).toMatchObject({
       id: "qiuyuan",
       name: "仇远",
-      portrait: "/assets/characters/qiuyuan.png",
+      portrait: "/assets/characters/portraits/qiuyuan.webp",
       acquisitionMethod: "部员招募获得",
       skill: {
         id: "row-slash",
@@ -20,7 +20,7 @@ describe("character fallback", () => {
     expect(CHARACTERS.lynae).toMatchObject({
       id: "lynae",
       name: "琳奈",
-      portrait: "/assets/characters/lynae_centered.webp",
+      portrait: "/assets/characters/portraits/lynae.webp",
       skill: {
         id: "spray-stone",
         name: "流光溢彩",
@@ -33,7 +33,7 @@ describe("character fallback", () => {
     expect(CHARACTERS.mornye).toMatchObject({
       id: "mornye",
       name: "莫宁",
-      portrait: "/assets/characters/mornye.png",
+      portrait: "/assets/characters/portraits/mornye.webp",
       acquisitionMethod: "招募获得",
       skill: {
         id: "protocol-takeover",
@@ -49,7 +49,7 @@ describe("character fallback", () => {
       id: "changli",
       name: "长离",
       englishName: "ChangLi",
-      portrait: "/assets/characters/changli.png",
+      portrait: "/assets/characters/portraits/changli.webp",
       acquisitionMethod: "招募获得",
       skill: {
         id: "double-move",
@@ -66,7 +66,7 @@ describe("character fallback", () => {
       id: "chisa",
       name: "千咲",
       englishName: "Chisa",
-      portrait: "/assets/characters/chisa.png",
+      portrait: "/assets/characters/portraits/chisa.webp",
       acquisitionMethod: "招募获得",
       skill: {
         id: "liberty-purge",

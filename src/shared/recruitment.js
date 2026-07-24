@@ -1,4 +1,5 @@
 import { AEMEATH_CHARACTER_ID } from "./aemeathAcquisition.js";
+import { CHARACTER_PORTRAIT_ASSETS } from "./characterPortraitAssetCatalog.js";
 
 export const RECRUITMENT_ITEM_TYPES = Object.freeze({
   campusPoster: "campus-recruitment-poster",
@@ -38,7 +39,7 @@ export function cinematicPresentationReadyAt(task, now = Date.now()) {
 
 export const AEMEATH_RECRUITMENT_ASSET_SLOTS = Object.freeze({
   ticketImageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
-  cinematicSpriteUrl: "/assets/Aemeath_centered.webp",
+  cinematicSpriteUrl: CHARACTER_PORTRAIT_ASSETS.aemeath.url,
   cinematicSpriteSheetUrl: "/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp",
   flightSoundUrl: "",
   flashSoundUrl: "/assets/music/aemeath-recruitment-full-white-burst.ogg"

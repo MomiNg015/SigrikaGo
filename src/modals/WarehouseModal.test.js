@@ -84,7 +84,7 @@ describe("WarehouseModal candy feedback", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("/assets/characters/denia_color.webp");
+    expect(html).toContain("/assets/characters/portraits/denia-candy.webp");
     expect(html).not.toContain("/assets/Danea_centered.webp");
   });
 

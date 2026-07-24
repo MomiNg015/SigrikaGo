@@ -28,6 +28,7 @@ describe("server startup", () => {
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
     const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
+    const migrateBuiltinPortraitAssets = task("migrateBuiltinPortraitAssets");
     const migrateLegacyAemeathOwnership = task("migrateLegacyAemeathOwnership");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
@@ -56,6 +57,7 @@ describe("server startup", () => {
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
       seedAdminDefaultConfig,
+      migrateBuiltinPortraitAssets,
       migrateLegacyAemeathOwnership,
       seedBuiltinAchievements,
       cleanupLegacyDeniaCharacterData,
@@ -74,6 +76,7 @@ describe("server startup", () => {
       "ensureOnboardingStorySchema",
       "ensureSkillTraitSchema",
       "ensureCostumeSchema",
+      "migrateBuiltinPortraitAssets",
       "seedAdminDefaultConfig",
       "migrateLegacyAemeathOwnership",
       "seedDefaultStoryScripts",

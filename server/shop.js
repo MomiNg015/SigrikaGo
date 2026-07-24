@@ -22,6 +22,7 @@ import {
   recruitmentItemForType
 } from "../src/shared/recruitment.js";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../src/shared/shopItemIllust.js";
+import { CHARACTER_PORTRAIT_ASSETS } from "../src/shared/characterPortraitAssetCatalog.js";
 import {
   RAINBOW_BEAN_CANDY_IMAGE_URL,
   RAINBOW_BEAN_CANDY_STALE_IMAGE_URLS,
@@ -42,7 +43,7 @@ const BUILTIN_SHOP_ITEMS = [
     enabled: false,
     sortOrder: 100,
     description: "获得角色猪小仙。",
-    imageUrl: "/assets/baconbits.webp"
+    imageUrl: CHARACTER_PORTRAIT_ASSETS.baconbits.url
   },
   ...Object.values(RECRUITMENT_ITEMS).map((item) => ({
     name: item.name,

@@ -15,7 +15,7 @@ describe("boardSkillEffectAssets", () => {
     expect(CHANGLI_FLAME_SPRITE_IMAGE).toBe("/assets/effects/changli-flame-sprite.svg");
     expect(DANEA_BUBBLE_IMAGE).toBe("/assets/effects/denia-bubble-pop.webp");
     expect(VOYAGE_STAR_CRATER_IMAGE).toBe("/assets/effects/voyage-star-crater.webp");
-    expect(BACONBITS_IMAGE).toBe("/assets/baconbits.webp");
+    expect(BACONBITS_IMAGE).toBe("/assets/characters/portraits/baconbits.webp");
   });
 
   test("exposes banner-window preload URLs without loading the renderer map", () => {
@@ -25,7 +25,7 @@ describe("boardSkillEffectAssets", () => {
     ]);
     expect(boardSkillEffectAssetUrls("voyage-star")).toEqual(["/assets/effects/voyage-star-crater.webp"]);
     expect(boardSkillEffectAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
-    expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
+    expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/characters/portraits/baconbits.webp"]);
     expect(boardSkillEffectAssetUrls("row-slash")).toEqual([]);
     expect(boardSkillEffectAssetUrls("unknown-effect")).toEqual([]);
   });
@@ -36,7 +36,7 @@ describe("boardSkillEffectAssets", () => {
       "/assets/effects/changli-flame-sprite.svg"
     ]);
     expect(boardSkillEffectBlockingAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
-    expect(boardSkillEffectBlockingAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
+    expect(boardSkillEffectBlockingAssetUrls("random-blast")).toEqual(["/assets/characters/portraits/baconbits.webp"]);
     expect(boardSkillEffectBlockingAssetUrls("voyage-star")).toEqual([]);
   });
 });

@@ -261,7 +261,7 @@ describe("AdminOnboardingStory", () => {
       expect.objectContaining({
         slug: DENIA_RAINBOW_GLOW_STORY_PORTRAIT_ID,
         name: "发彩虹光的达妮娅",
-        portraitUrl: "/assets/characters/denia_color.webp"
+        portraitUrl: "/assets/characters/portraits/denia-candy.webp"
       })
     ]));
     expect(adminSource).toContain("const portraitOptions = useMemo(() => storyPortraitOptions(characters), [characters]);");

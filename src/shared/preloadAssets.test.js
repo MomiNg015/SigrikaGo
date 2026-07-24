@@ -472,7 +472,7 @@ describe("deployment preload asset helpers", () => {
   it("keeps the project check command as the core handoff gate", () => {
     const packageJson = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf8"));
 
-    expect(packageJson.scripts.check).toContain("npm test && npm run check:admin-snapshot && npm run build");
+    expect(packageJson.scripts.check).toContain("npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build");
     expect(packageJson.scripts.check).toContain("scripts/check-production-config.mjs");
     expect(packageJson.scripts.check).toContain("JWT_SECRET");
     expect(packageJson.scripts.check).toContain("PUBLIC_ORIGIN");

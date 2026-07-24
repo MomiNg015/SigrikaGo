@@ -60,7 +60,7 @@ Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js
 
 Character-target inventory item use loads structured `userCharacters` and validates ownership through `publicUserAssets()`. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old `ownedCharacters` string mirror is stale.
 
-仇远（`qiuyuan`）是内置剑客角色，立绘位于 `/assets/characters/qiuyuan.png`，获得方式文案为“部员招募获得”。莫宁（`mornye` / Mornye）是内置科学家角色，立绘位于 `/assets/characters/mornye.png`，获得方式文案为“招募获得”。部员招募尚未实装时，`server/userAssets.js` 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan` 和 `mornye`，普通玩家不会默认拥有或部署。
+仇远（`qiuyuan`）是内置剑客角色，规范化立绘位于 `/assets/characters/portraits/qiuyuan.webp`，获得方式文案为“部员招募获得”。莫宁（`mornye` / Mornye）是内置科学家角色，规范化立绘位于 `/assets/characters/portraits/mornye.webp`，获得方式文案为“招募获得”。部员招募尚未实装时，`server/userAssets.js` 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan` 和 `mornye`，普通玩家不会默认拥有或部署。
 
 ### LoginSession
 

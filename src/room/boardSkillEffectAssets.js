@@ -1,4 +1,6 @@
-export const BACONBITS_IMAGE = "/assets/baconbits.webp";
+import { CHARACTER_PORTRAIT_ASSETS } from "../shared/characterPortraitAssetCatalog.js";
+
+export const BACONBITS_IMAGE = CHARACTER_PORTRAIT_ASSETS.baconbits.url;
 export const CHANGLI_FIRE_PHOENIX_IMAGE = "/assets/effects/changli-fire-phoenix.svg";
 export const CHANGLI_FLAME_SPRITE_IMAGE = "/assets/effects/changli-flame-sprite.svg";
 export const DANEA_BUBBLE_IMAGE = "/assets/effects/denia-bubble-pop.webp";

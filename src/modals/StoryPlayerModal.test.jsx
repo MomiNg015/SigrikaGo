@@ -69,7 +69,7 @@ describe("StoryPlayerModal", () => {
     }));
 
     expect(html).toContain("发彩虹光的达妮娅");
-    expect(html).toContain("/assets/characters/denia_color.webp");
+    expect(html).toContain("/assets/characters/portraits/denia-candy.webp");
   });
 
   it("treats an option with an empty target as the close-window path", () => {

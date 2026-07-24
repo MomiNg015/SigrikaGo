@@ -1,5 +1,6 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import { DEFAULT_VOYAGE_STAR_DERIVED_SKILL } from "./derivedSkills.js";
+import { CHARACTER_PORTRAIT_ASSETS } from "./characterPortraitAssetCatalog.js";
 
 export const FALLBACK_CHARACTERS = {
   sigrika: {
@@ -7,7 +8,7 @@ export const FALLBACK_CHARACTERS = {
     name: "西格莉卡",
     description: "星辉社团的符文棋手，擅长用精准的星光符号改写棋盘节奏。",
     palette: "#ff9b4d",
-    portrait: "/assets/sigrika_centered.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.sigrika.url,
     skill: {
       id: "erase-point",
       name: "星辉符文",
@@ -25,7 +26,7 @@ export const FALLBACK_CHARACTERS = {
     name: "达妮娅",
     description: "月色与泡影之间的术师，能把棋子的立场悄然翻转。",
     palette: "#f2a4d8",
-    portrait: "/assets/Danea_centered.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.denia.url,
     skill: {
       id: "flip-stone",
       name: "泡影幻梦",
@@ -42,7 +43,7 @@ export const FALLBACK_CHARACTERS = {
     name: "爱弥斯",
     description: "活泼的电子幽灵伙伴，最喜欢用出其不意的隐藏手扰乱对局。",
     palette: "#67d9e8",
-    portrait: "/assets/Aemeath_centered.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.aemeath.url,
     skill: {
       id: "hidden-hand",
       name: "小爱出击",
@@ -63,7 +64,7 @@ export const FALLBACK_CHARACTERS = {
     name: "猪小仙",
     description: "看似悠闲的爆破型棋手，常用一场热闹的爆炸打开局面。",
     palette: "#f59ab2",
-    portrait: "/assets/baconbits.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.baconbits.url,
     acquisitionMethod: "商城购买",
     skill: {
       id: "random-blast",
@@ -83,7 +84,7 @@ export const FALLBACK_CHARACTERS = {
     name: "琳奈",
     description: "以流光颜料改写棋子阵营的幻彩棋手，让棋盘边界在一瞬间变得难以预测。",
     palette: "#38d7c2",
-    portrait: "/assets/characters/lynae_centered.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.lynae.url,
     acquisitionMethod: "首次升上5段自动获得（管理员可以直接拥有）",
     skill: {
       id: "spray-stone",
@@ -101,7 +102,7 @@ export const FALLBACK_CHARACTERS = {
     name: "仇远",
     description: "沉默寡言的剑客，只需一斩便能让棋盘横线归于清寂。",
     palette: "#2f3a3d",
-    portrait: "/assets/characters/qiuyuan.png",
+    portrait: CHARACTER_PORTRAIT_ASSETS.qiuyuan.url,
     acquisitionMethod: "部员招募获得",
     skill: {
       id: "row-slash",
@@ -119,7 +120,7 @@ export const FALLBACK_CHARACTERS = {
     name: "莫宁",
     description: "以科学家的冷静视角接管棋盘协议，在关键交叉点写入只针对对手的禁入规则。",
     palette: "#8aa0ff",
-    portrait: "/assets/characters/mornye.png",
+    portrait: CHARACTER_PORTRAIT_ASSETS.mornye.url,
     acquisitionMethod: "招募获得",
     skill: {
       id: "protocol-takeover",
@@ -139,7 +140,7 @@ export const FALLBACK_CHARACTERS = {
     englishName: "ChangLi",
     description: "古风围棋高手，擅长在对手亮出手段后谋定后动，以连续两手重塑棋局。",
     palette: "#e96c7d",
-    portrait: "/assets/characters/changli.png",
+    portrait: CHARACTER_PORTRAIT_ASSETS.changli.url,
     acquisitionMethod: "招募获得",
     skill: {
       id: "double-move",
@@ -160,7 +161,7 @@ export const FALLBACK_CHARACTERS = {
     englishName: "Chisa",
     description: "黑发红眸的女子高中生棋手，会在合法落子后拨断棋盘上濒临断气的棋块。",
     palette: "#d74255",
-    portrait: "/assets/characters/chisa.png",
+    portrait: CHARACTER_PORTRAIT_ASSETS.chisa.url,
     acquisitionMethod: "招募获得",
     skill: {
       id: "liberty-purge",
@@ -179,7 +180,7 @@ export const FALLBACK_CHARACTERS = {
     name: "娜波摩",
     description: "擅长伪装与错觉的幻色棋手，会让对手眼中的棋盘变得难以捉摸。",
     palette: "#8fb4f7",
-    portrait: "/assets/nabomo.webp",
+    portrait: CHARACTER_PORTRAIT_ASSETS.nabomo.url,
     acquisitionMethod: "积分达到1400分时自动获得",
     skill: {
       id: "color-illusion-passive",

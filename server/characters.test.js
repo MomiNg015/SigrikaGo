@@ -546,7 +546,7 @@ describe("character admin helpers", () => {
     expect(updates).toContainEqual({
       where: { id: "character-db-nabomo" },
       data: {
-        portraitUrl: "/assets/nabomo.webp",
+        portraitUrl: "/assets/characters/portraits/nabomo.webp",
         portraitSource: "url"
       }
     });
