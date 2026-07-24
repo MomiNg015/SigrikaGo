@@ -336,3 +336,36 @@ Unified Residual Star costume details with Zahira's structure, added success-onl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 71: 修正服装详情与后台保存
+
+**Date**: 2026-07-24
+**Task**: 修正服装详情与后台保存
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+统一残星会服装详情标签、价格布局和深红金色配色；修复后台服装编辑器误用角色 slug 字段导致保存失败，并补充交互、服务端测试与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b58054a9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
