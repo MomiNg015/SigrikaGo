@@ -1,5 +1,5 @@
 import { UserRound, X } from "lucide-react";
-import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import {
   RAINBOW_BEAN_CANDY_ID,
@@ -22,7 +22,7 @@ export default function WarehouseTargetModal({
       <section className="character-target-modal" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         {warehouseTargetState(targetResult).isResolved ? (
-          <WarehouseEffectResult targetState={targetResult} characters={characters} />
+          <WarehouseEffectResult targetState={targetResult} characters={characters} user={user} />
         ) : (
           <>
             <h2>选择角色</h2>
@@ -45,7 +45,7 @@ export default function WarehouseTargetModal({
                       if (!targetAvailability.disabled) onUseItem(targetItem, character.id);
                     }}
                   >
-                    <img src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} loading="lazy" decoding="async" />
+                    <img src={resolveCharacterPortrait(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
                     <span>{character.name}</span>
                   </button>
                 );
@@ -61,12 +61,12 @@ export default function WarehouseTargetModal({
   );
 }
 
-function WarehouseEffectResult({ targetState, characters }) {
+function WarehouseEffectResult({ targetState, characters, user }) {
   const character = characters[targetState.characterId];
   if (!character) return null;
   return (
     <div className={`warehouse-effect-result warehouse-item-category-${targetState.item?.targetType || "self"}`}>
-      <img src={resolveCandyPortrait(character, targetState.itemEffects)} alt={character.name} loading="lazy" decoding="async" />
+      <img src={resolveCharacterPortrait(character, { itemEffects: targetState.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
       <strong>{character.name}</strong>
       <p>{targetState.effectText}</p>
     </div>

@@ -53,6 +53,14 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     winnerColor
   } = useRoomBoardView({ room, user, replayStep });
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
+  const skillBanner = skillPreview
+    ? {
+        ...skillPreview,
+        costumeSnapshot: skillPreview.costumeSnapshot
+          ?? displayRoom.players.find((player) => player.color === skillPreview.color)?.costumeSnapshot
+          ?? null
+      }
+    : null;
   const useMobileLayout = useMobileRoomLayout();
   const { roomRequestToast, handleTimedRequestAction } = useTimedRoomRequestToast({
     room: displayRoom,
@@ -219,7 +227,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       {!isReplay && displayRoom.game.phase === GAME_PHASES.opening && (
         <OpeningModal room={displayRoom} player={me} />
       )}
-      {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
+      {skillBanner && <SkillBanner banner={skillBanner} characters={characters} audioSettings={audioSettings} />}
     </Layout>
   );
 }

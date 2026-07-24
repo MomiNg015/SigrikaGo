@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Shirt, X } from "lucide-react";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
 import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/characterCv.js";
@@ -17,6 +17,7 @@ export function CharacterDetailDialog({
   audioSettings,
   musicTracks,
   onSelectCharacterMusic,
+  onOpenCostumes,
   onPlayDetailVoice,
   onClose
 }) {
@@ -50,7 +51,10 @@ export function CharacterDetailDialog({
       >
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         <div className="character-detail-art">
-          <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
+          <button className="character-costume-open-button" type="button" aria-label={`查看${character.name}的服装`} onClick={onOpenCostumes}>
+            <Shirt aria-hidden="true" />
+          </button>
+          <img src={characterCandyPortrait(character, itemEffects, user)} alt={character.name} />
         </div>
         <div className="character-detail-copy">
           <div className="character-detail-heading">

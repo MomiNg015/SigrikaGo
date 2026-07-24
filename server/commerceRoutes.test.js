@@ -171,6 +171,8 @@ describe("commerce route handlers", () => {
 
     expect(routes).toEqual([
       ["/shop/:id/purchase", ["post"]],
+      ["/costumes/:id/purchase", ["post"]],
+      ["/costumes/equip", ["post"]],
       ["/items/inventory", ["get"]],
       ["/items/:itemId/use", ["post"]]
     ]);

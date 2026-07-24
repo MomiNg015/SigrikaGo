@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 
 const TIP_ROTATION_MS = 10000;
 const PRELOAD_PROGRESS_MASCOT = "/assets/preload/orange-mascot.png";
@@ -91,7 +92,8 @@ export default function AssetPreloadScreen({
   progress,
   statusText = "",
   showTips = true,
-  tipsText
+  tipsText,
+  user = null
 }) {
   const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
   const tips = useMemo(() => preloadTipList(tipsText), [tipsText]);
@@ -112,6 +114,11 @@ export default function AssetPreloadScreen({
   const displayCharacter = character
     ? characterFromCatalogById(characters, character.id) ?? character
     : characterFromCatalogById(characters, randomCharacterId) ?? randomCharacter;
+  const displayPortrait = resolveCharacterPortrait(displayCharacter, {
+    itemEffects: user?.itemEffects,
+    user,
+    costumeSnapshot: displayCharacter?.costumeSnapshot
+  });
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
   const title = label || characterLoadingLine(displayCharacter, loadingLinesText);
 
@@ -168,9 +175,9 @@ export default function AssetPreloadScreen({
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
-        {displayCharacter?.portrait ? (
+        {displayPortrait ? (
           <span className="preload-character" aria-label={displayCharacter.name ?? "当前角色"}>
-            <img src={displayCharacter.portrait} alt={displayCharacter.name ?? ""} />
+            <img src={displayPortrait} alt={displayCharacter.name ?? ""} />
           </span>
         ) : (
           <div className="preload-mark" />

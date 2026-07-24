@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
-import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
@@ -75,7 +75,11 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
             <span className="result-winner-portrait-wrap">
               <img
                 className="result-player-portrait-image"
-                src={resolveCandyPortrait(character, displayPlayer?.user?.itemEffects)}
+                src={resolveCharacterPortrait(character, {
+                  itemEffects: displayPlayer?.user?.itemEffects,
+                  user: displayPlayer?.user,
+                  costumeSnapshot: displayPlayer?.costumeSnapshot
+                })}
                 alt={character.name}
               />
               {outcome === "loss" && (

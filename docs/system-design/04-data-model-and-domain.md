@@ -6,6 +6,7 @@
 
 - Prisma Migrate 的生产历史从单条 `0_init` 完整 SQLite 基线开始：空库使用 `prisma migrate deploy` 建库，已有预上线数据库必须停服备份、确认无旧迁移记录并验证 schema 完全一致后，再以 `prisma migrate resolve --applied 0_init` 接管；业务启动流程不自动写 `_prisma_migrations`。
 - 账号资产正在从字符串字段逐步迁移到结构化关系表，旧字段仍承担兼容镜像职责；legacy 字段解析、结构化同步和公开资产合并边界集中在 `server/userAssets.js`。
+- 服装不写入 legacy 逗号字段：`UserCostume` 保存永久所有权，`UserCostumeEquipment` 为每名角色保存至多一个当前服装，公开用户资产投影输出 `ownedCostumeIds` 与 `equippedCostumes`。
 - 模式化对局数据以 `mode` 串联房间、记录、排行榜、履历和用户模式统计。
 - `gomoku` 是独立统计桶：既有用户通过迁移和 `ensureGameModeSchema()` 回填 `UserModeStats(mode=gomoku)`，默认 `rating=1000`、`rank=3段`、`recentResults=''`、胜负和棋全为 0；排行榜仍只展示该模式已有完成对局的用户。
 - 抽卡是独立奖励子系统，和商城购买共享角色、装饰、音乐、道具等资源目录。
@@ -24,7 +25,7 @@
 
 ### Admin Deployment Defaults
 
-Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js`, generated from local `prisma/dev.db` with `npm run admin:snapshot`. The exporter includes admin-owned `SiteSetting` rows (including recruitment configuration), skill traits, characters/skills, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, story/tutorial scripts, announcement/changelog entries, and the legacy onboarding singleton, while filtering internal `migration.*` markers and excluding every user-owned/history/runtime domain. `npm run check:admin-snapshot` structurally compares these collections with the ignored local database and is part of `npm run check`, so a local admin save cannot silently miss the next commit. Ordinary server startup remains create-only through `seedAdminDefaultConfig()` and therefore never overwrites a cloud admin edit merely because the service restarted. Formal deployment deliberately uses `npm run admin:sync-defaults` after backup and migrations: preview reports create/update/unchanged/cloud-only counts, and `-- --apply` updates rows represented by the committed snapshot and creates missing rows without deleting cloud-only rows or touching users, owned assets, purchases, draw history, feedback, reports, audit logs, analytics, announcement reads, mailbox data, game records, or live rooms. The scoped onboarding export/sync commands remain for exceptional single-story maintenance, but the maintained production update script uses the full non-user sync contract.
+Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js`, generated from local `prisma/dev.db` with `npm run admin:snapshot`. The exporter includes admin-owned `SiteSetting` rows (including recruitment configuration), skill traits, characters/skills, decorations, costumes, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, story/tutorial scripts, announcement/changelog entries, and the legacy onboarding singleton, while filtering internal `migration.*` markers and excluding every user-owned/history/runtime domain. `npm run check:admin-snapshot` structurally compares these collections with the ignored local database and is part of `npm run check`, so a local admin save cannot silently miss the next commit. Ordinary server startup remains create-only through `seedAdminDefaultConfig()` and therefore never overwrites a cloud admin edit merely because the service restarted. Formal deployment deliberately uses `npm run admin:sync-defaults` after backup and migrations: preview reports create/update/unchanged/cloud-only counts, and `-- --apply` updates rows represented by the committed snapshot and creates missing rows without deleting cloud-only rows or touching users, owned assets, purchases, draw history, feedback, reports, audit logs, analytics, announcement reads, mailbox data, game records, or live rooms. The scoped onboarding export/sync commands remain for exceptional single-story maintenance, but the maintained production update script uses the full non-user sync contract.
 
 ### User
 
@@ -53,7 +54,7 @@ Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js
 - `ownedDecorations`: 逗号分隔装饰 slug。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
-`server/userAssets.js` 是账号资产兼容边界：`parseAssetList()` / `parseOwnedItemCounts()` 处理旧字符串和公开数组 payload，`syncStructuredUserAssets()` 将 legacy 字段替换式同步到 `UserCharacter`、`UserDecoration`、`UserItem` 和 `UserItemEffect`，`publicUserAssets()` 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。`server/db.js` 的 `publicUser()` 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。
+`server/userAssets.js` 是账号资产兼容边界：`parseAssetList()` / `parseOwnedItemCounts()` 处理旧字符串和公开数组 payload，`syncStructuredUserAssets()` 将 legacy 字段替换式同步到 `UserCharacter`、`UserDecoration`、`UserItem` 和 `UserItemEffect`，`publicUserAssets()` 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数、道具效果、服装所有权和当前装备。`server/db.js` 的 `publicUser()` 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。
 
 `User.musicSelections` 的技能选曲 JSON 保持向后兼容：普通技能使用 `skill[characterId] = trackId`，派生技使用 `derivedSkill[characterId][effectType] = trackId`。服务端音乐选择边界按角色与效果类型验证曲目归属和库存后只更新对应槽位，因此派生技选择不会覆盖普通技能选择，也不需要新增数据库列或迁移旧 JSON。
 
@@ -112,6 +113,8 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `blackUserId`, `whiteUserId`: 黑白双方用户 id。
 - `blackName`, `whiteName`: 保存时的用户名快照。
 - `blackCharacter`, `whiteCharacter`: 双方角色 slug 快照。
+- `blackCostumeId`, `whiteCostumeId`: 开局时双方当前非默认服装 id；默认服装为空字符串。
+- `blackCostumePortraitUrl`, `whiteCostumePortraitUrl`: 开局时双方服装立绘 URL 快照，供棋谱摘要在服装目录后续变化后继续稳定展示。
 - `resultText`: 结果文本。
 - `moveCount`: 手数。
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
@@ -225,6 +228,14 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `imageUrl`: 图片地址。
 - `illustName`, `illustUrl`: 商品图插画署名。后台商品管理可填写 illust 名称和可选链接；`illustUrl` 只接受 `http://`、`https://` 或站内 `/...` 路径，并且必须与非空 `illustName` 同时存在。公开商城 payload 会透传这两个字段，商品详情在空名称时隐藏标签。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+
+### Costume、UserCostume 与 UserCostumeEquipment
+
+- `Costume` 是后台管理的服装目录，稳定 `id` 不能在创建后修改；字段包括名称、`characterSlug`、常态 `portraitUrl`、可选 `candyEffectPortraitUrl`、描述、illust 名称/链接、金币原价、折扣、商店展示、可购买、启用、排序和来源。公开 payload 额外计算 `finalPrice`。
+- `UserCostume` 以唯一 `(userId, costumeId)` 保存永久所有权和获得来源。服装被后台停用时仍保留该行，因此重新启用后玩家不需再次购买。
+- `UserCostumeEquipment` 以唯一 `(userId, characterSlug)` 保存角色当前非默认服装。选择默认服装会删除该行；停用服装或把服装改到其他角色时也只删除相关装备行。
+- `resolveCharacterPortrait()` 是玩家角色立绘选择边界：房间 `costumeSnapshot` 优先于实时账号装备；达妮娅糖果效果优先于普通服装立绘，服装提供糖果特效立绘时使用该图，否则回退基础糖果图；没有糖果效果时使用服装常态立绘，最后才回退角色默认立绘。
+- `createRoom()` 只在匹配/约战生成房间时复制当前装备的 id、常态立绘和糖果候选立绘，房间视图与回放快照透传该不可变值。`GameRecord` 同时保存摘要列与 `snapshotVersion=2` 房间 JSON，后续装备变化不追溯修改历史。
 
 ### AdminAuditLog
 

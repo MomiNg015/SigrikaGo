@@ -3,6 +3,7 @@ import { ensureAnnouncementSchema } from "./announcements.js";
 import { ensureOnboardingStorySchema } from "./onboardingStory.js";
 import { ensureStoryScriptSchema, seedDefaultStoryScripts } from "./storyScripts.js";
 import { seedCharacters } from "./characters.js";
+import { ensureCostumeSchema } from "./costumes.js";
 import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
 import { ensureMailboxSchema } from "./mailbox.js";
@@ -28,6 +29,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureStoryScriptSchema",
   "ensureOnboardingStorySchema",
   "ensureSkillTraitSchema",
+  "ensureCostumeSchema",
   "seedAdminDefaultConfig",
   "migrateLegacyAemeathOwnership",
   "seedDefaultStoryScripts",
@@ -62,6 +64,7 @@ export async function initializeServerData({
   ensureStoryScriptSchema: ensureStoryScriptSchemaTask = ensureStoryScriptSchema,
   ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask = ensureOnboardingStorySchema,
   ensureSkillTraitSchema: ensureSkillTraitSchemaTask = ensureSkillTraitSchema,
+  ensureCostumeSchema: ensureCostumeSchemaTask = ensureCostumeSchema,
   seedDefaultStoryScripts: seedDefaultStoryScriptsTask = seedDefaultStoryScripts,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
@@ -81,6 +84,7 @@ export async function initializeServerData({
     ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
     ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
     ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
+    ensureCostumeSchema: ensureCostumeSchemaTask,
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
     ensureGachaSchema: ensureGachaSchemaTask,
     ensureGameModeSchema: ensureGameModeSchemaTask,

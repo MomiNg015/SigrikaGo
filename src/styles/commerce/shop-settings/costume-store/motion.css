@@ -1,0 +1,17 @@
+@keyframes costume-card-arrive {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-store-track,
+  .costume-shop-mascot,
+  .costume-shop-card::before,
+  .costume-shop-card-trigger {
+    transition: none;
+  }
+
+  .costume-shop-card-slot {
+    animation: none;
+  }
+}

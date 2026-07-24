@@ -1,0 +1,218 @@
+.character-detail-art {
+  position: relative;
+}
+
+.character-costume-open-button {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  right: 12px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #372b3e;
+  background: #fff8df;
+  border: 3px solid #372b3e;
+  border-radius: 14px;
+  box-shadow: 3px 4px 0 rgba(55, 43, 62, 0.52);
+}
+
+.character-costume-open-button:hover,
+.character-costume-open-button:focus-visible {
+  transform: translateY(-2px);
+  background: #ffe1eb;
+}
+
+.character-costume-dialog {
+  position: relative;
+  inset: auto;
+  width: min(940px, calc(100vw - 32px));
+  max-height: min(760px, calc(100dvh - 32px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.character-costume-backdrop {
+  z-index: 161;
+}
+
+.character-costume-header {
+  position: sticky;
+  z-index: 12;
+  top: 0;
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 72px 14px 20px;
+  color: #33283a;
+  background: #fff8e8;
+  border-bottom: 3px solid #46374e;
+}
+
+.character-costume-header h3 {
+  margin: 0;
+  font-size: 27px;
+}
+
+.character-costume-header .close-button {
+  top: 14px;
+  right: 14px;
+}
+
+.character-costume-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(240px, auto);
+  gap: 14px;
+  align-content: start;
+  padding: 18px;
+  overflow: auto;
+  background:
+    linear-gradient(rgba(123, 92, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 92, 131, 0.06) 1px, transparent 1px),
+    #f9f3ed;
+  background-size: 20px 20px;
+}
+
+.character-costume-card {
+  position: relative;
+  min-width: 0;
+  min-height: 240px;
+  background: #fffdf8;
+  border: 3px solid #493950;
+  border-radius: 16px;
+  box-shadow: 4px 5px 0 rgba(73, 57, 80, 0.34);
+  overflow: hidden;
+}
+
+.character-costume-card.is-equipped {
+  background: #ddf7df;
+  border-color: #4f8b63;
+}
+
+.character-costume-card.is-unowned {
+  background: #d3d0d1;
+  border-color: #706b72;
+  box-shadow: 3px 4px 0 rgba(55, 51, 58, 0.24);
+}
+
+.character-costume-detail-trigger {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  gap: 6px;
+  padding: 10px 10px 52px;
+  color: #33283a;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.character-costume-detail-trigger img {
+  width: 100%;
+  height: 152px;
+  object-fit: contain;
+}
+
+.character-costume-card.is-unowned .character-costume-detail-trigger img {
+  filter: grayscale(1) brightness(0.62);
+}
+
+.character-costume-detail-trigger strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.character-costume-equip-button {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+  bottom: 10px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #33283a;
+  background: #fff3bf;
+  border: 2px solid #493950;
+  border-radius: 12px;
+  box-shadow: 2px 3px 0 rgba(73, 57, 80, 0.34);
+}
+
+.character-costume-equip-button:disabled {
+  color: #777278;
+  background: #b9b6b8;
+  border-color: #777278;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+.character-costume-empty {
+  grid-column: 1 / -1;
+  align-self: center;
+  justify-self: center;
+  color: #706475;
+  font-weight: 900;
+}
+
+.character-costume-detail-backdrop {
+  position: fixed;
+  z-index: 162;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(42, 31, 47, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.character-costume-detail {
+  position: relative;
+  width: min(680px, calc(100vw - 36px));
+  max-height: calc(100dvh - 36px);
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr);
+  gap: 20px;
+  padding: 22px;
+  color: #33283a;
+  background: #fffaf0;
+  border: 3px solid #493950;
+  border-radius: 18px;
+  box-shadow: 6px 7px 0 rgba(44, 34, 48, 0.55);
+  overflow: auto;
+}
+
+.character-costume-detail > img {
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+}
+
+.character-costume-detail h4 {
+  margin: 22px 0 10px;
+  font-size: 26px;
+}
+
+.character-costume-detail p {
+  line-height: 1.65;
+}

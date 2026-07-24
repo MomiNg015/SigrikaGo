@@ -5,7 +5,13 @@ import { describe, expect, it } from "vitest";
 import ShopModal from "./ShopModal.jsx";
 import ShopItemCard from "./shop/ShopItemCard.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
+import CostumeSidebar from "./shop/CostumeSidebar.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
+import {
+  COSTUME_MASCOT_IMAGES,
+  eligibleCostumes,
+  selectCostumeBatch
+} from "./costumeShopHelpers.js";
 import { layoutShopCards } from "./shop/shopLayout.js";
 import {
   buildShopCardPresentation,
@@ -98,10 +104,95 @@ describe("Zahira shop window", () => {
     expect(html).toContain('aria-label="持有金币 180"');
   });
 
+  it("reuses the Zahira wallet component inside the clothing store", () => {
+    const html = renderToStaticMarkup(createElement(CostumeSidebar, {
+      line: "欢迎光临。",
+      mood: "greeting",
+      user: { coins: 460 }
+    }));
+
+    expect(html).toContain('class="shop-wallet-wrap costume-shop-wallet-wrap"');
+    expect(html).toContain(`src="${SHOP_WALLET_IMAGE}"`);
+    expect(html).toContain('aria-label="持有金币 460"');
+    expect(html).not.toContain("✉️");
+  });
+
   it("keeps mascot and wallet WebP assets at their source dimensions", () => {
     expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
     expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
     expect(webpInfo("../../public/assets/shop/zahira-wallet-v1.webp")).toEqual({ encoding: "VP8L", width: 1024, height: 768 });
+  });
+
+  it("ships alpha-trimmed costume art and square mascot art as lossless WebP assets", () => {
+    const costumeSizes = {
+      "sigrika-01": { width: 756, height: 900 },
+      "denia-01": { width: 780, height: 900 },
+      "denia-02": { width: 848, height: 900 },
+      "nabomo-01": { width: 719, height: 900 },
+      "nabomo-02": { width: 711, height: 900 }
+    };
+    for (const [name, size] of Object.entries(costumeSizes)) {
+      expect(webpInfo(`../../public/assets/costumes/${name}.webp`)).toEqual({
+        encoding: "VP8L",
+        ...size
+      });
+    }
+    for (const name of ["nivora-greeting", "nivora-thanks", "nivora-empty"]) {
+      expect(webpInfo(`../../public/assets/costumes/${name}.webp`)).toEqual({
+        encoding: "VP8L",
+        width: 1024,
+        height: 1024
+      });
+    }
+  });
+
+  it("mounts the sliding clothing-store page with all three Nivora states", () => {
+    const source = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("shop-store-track");
+    expect(html).toContain("← 残星会");
+    expect(html).toContain("扎希拉商店 →");
+    expect(source).toContain('"残星会cosplay部"');
+    expect(source).not.toContain("残星会 cosplay 服装店");
+    for (const src of Object.values(COSTUME_MASCOT_IMAGES)) {
+      expect(html).toContain(`src="${src}"`);
+    }
+  });
+
+  it("keeps the portrait home width guard from collapsing the two-page shop track", () => {
+    const mobileHomeShell = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/home-shell/shell-base.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(mobileHomeShell).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen :where(*, *::before, *::after)"
+    );
+    expect(mobileHomeShell).not.toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(*, *::before, *::after)"
+    );
+  });
+
+  it("prioritizes purchasable costumes, excludes owned entries, and caps batches at five", () => {
+    const costumes = Array.from({ length: 7 }, (_, index) => ({
+      id: `costume-${index}`,
+      enabled: true,
+      shopVisible: true,
+      owned: index === 6,
+      characterOwned: index < 3
+    }));
+    const batch = selectCostumeBatch(costumes, [], () => 0.5);
+
+    expect(eligibleCostumes(costumes)).toHaveLength(6);
+    expect(batch).toHaveLength(5);
+    expect(batch.slice(0, 3).every((costume) => costume.characterOwned)).toBe(true);
+    expect(batch.some((costume) => costume.owned)).toBe(false);
   });
 
   it("filters owned one-time goods and per-user sold-out consumables from new batches", () => {
@@ -296,6 +387,9 @@ describe("Zahira shop window", () => {
     );
 
     expect(commerceCss).toContain(".shop-product-stage");
+    expect(commerceCss).toContain("white-space: nowrap;");
+    expect(commerceCss).toContain("overflow: visible;");
+    expect(commerceCss).toContain("text-overflow: clip;");
     expect(commerceCss).toContain("font-size: 15px;");
     expect(commerceCss).toContain("overflow: hidden");
     expect(commerceCss).toContain("transform: rotate(var(--shop-card-rotation))");
@@ -305,6 +399,12 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain(".shop-card-position .shop-corner-badge");
     expect(commerceCss).toContain(".shop-card-position .shop-quantity-badge");
     expect(commerceCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(commerceCss).toContain(".costume-shop-card::before");
+    expect(commerceCss).toContain("radial-gradient");
+    expect(commerceCss).toContain(".costume-shop-art");
+    expect(commerceCss).toContain(".costume-shop-price");
+    expect(commerceCss).toContain("right: -5px;");
+    expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
     expect(themeCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
@@ -320,6 +420,8 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain(".shop-layout.shop-window-body::after");
     expect(themeCss).toContain("68.35% 55%");
     expect(themeCss).toContain("clip-path: polygon(");
+    expect(themeCss).toContain(".costume-shop-card-trigger:hover");
+    expect(themeCss).toContain("background: transparent !important");
     expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
     expect(mobileCss).toContain("height: 56% !important");
     expect(mobileCss).toContain("font-size: clamp(13px, 3.3vw, 16px) !important");
@@ -359,6 +461,11 @@ describe("Zahira shop window", () => {
     expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
     expect(mobileCss).not.toContain("margin-left: -16px !important");
     expect(mobileCss).toContain("width: 44px !important");
+    expect(mobileCss).toContain(".shop-header h2.is-costume-title");
+    expect(mobileCss).toContain("font-size: clamp(17px, 4.9vw, 22px) !important");
+    expect(mobileCss).toContain(".costume-shop-price");
+    expect(mobileCss).toContain("right: -3px !important");
+    expect(mobileCss).toContain("bottom: 1px !important");
     expect(mobileCss).not.toContain(".shop-window-body {\n    overflow: auto");
   });
 

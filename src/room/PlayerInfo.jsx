@@ -4,7 +4,7 @@ import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
-import { resolveCandyPortrait } from "../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
@@ -296,9 +296,9 @@ export function isDisconnectedPlayer(player, game) {
 }
 
 export function playerCandyPortrait(character = {}, player = {}) {
-  return resolveCandyPortrait(
+  return resolveCharacterPortrait(
     { ...character, id: canonicalCharacterId(player.characterId ?? character.id) },
-    player.user?.itemEffects
+    { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot }
   );
 }
 

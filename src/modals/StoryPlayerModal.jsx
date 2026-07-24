@@ -4,6 +4,7 @@ import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -28,6 +29,7 @@ export default function StoryPlayerModal({
   script,
   characters = {},
   labels = {},
+  user = null,
   onClose,
   onNavigate,
   portraitNodes,
@@ -49,17 +51,21 @@ export default function StoryPlayerModal({
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveCharacter(node?.characterId, characters);
+  const portraitUrl = resolveCharacterPortrait({
+    id: node?.characterId,
+    portraitUrl: character.portraitUrl
+  }, { itemEffects: user?.itemEffects, user });
   const nodeElapsedMs = nodeTimer.nodeId === activeNodeId ? nodeTimer.elapsedMs : 0;
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
-  const portraitKey = `${node?.characterId || ""}:${character.portraitUrl || ""}`;
+  const portraitKey = `${node?.characterId || ""}:${portraitUrl}`;
   const availablePortraitNodes = portraitNodes ?? script?.nodes ?? [];
   const portraitUrls = useMemo(
-    () => storyPortraitUrls(availablePortraitNodes, characters),
-    [availablePortraitNodes, characters]
+    () => storyPortraitUrls(availablePortraitNodes, characters, user),
+    [availablePortraitNodes, characters, user]
   );
 
   useStoryLayoutEffect(() => {
@@ -201,10 +207,10 @@ export default function StoryPlayerModal({
           data-story-character-id={node.characterId || ""}
           aria-label={character.name || node.speakerName || ""}
         >
-          {character.portraitUrl && (
+          {portraitUrl && (
             <img
               key={portraitKey}
-              src={character.portraitUrl}
+              src={portraitUrl}
               alt=""
               aria-hidden="true"
               loading="eager"
@@ -330,10 +336,16 @@ function resolveCharacter(characterId, characters) {
   };
 }
 
-export function storyPortraitUrls(nodes = [], characters = {}) {
+export function storyPortraitUrls(nodes = [], characters = {}, user = null) {
   return [...new Set(
     (Array.isArray(nodes) ? nodes : [])
-      .map((entry) => resolveCharacter(entry?.characterId, characters).portraitUrl)
+      .map((entry) => {
+        const character = resolveCharacter(entry?.characterId, characters);
+        return resolveCharacterPortrait({
+          id: entry?.characterId,
+          portraitUrl: character.portraitUrl
+        }, { itemEffects: user?.itemEffects, user });
+      })
       .filter(Boolean)
   )];
 }

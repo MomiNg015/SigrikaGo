@@ -22,6 +22,14 @@
     font-size: clamp(20px, 6.4vw, 28px) !important;
     text-align: center !important;
     letter-spacing: 0.03em !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .shop-header h2.is-costume-title {
+    font-size: clamp(17px, 4.9vw, 22px) !important;
+    letter-spacing: 0 !important;
   }
 
   .shop-refresh-button,

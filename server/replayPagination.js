@@ -79,6 +79,10 @@ function replaySummarySelect() {
     mode: true,
     blackCharacter: true,
     whiteCharacter: true,
+    blackCostumeId: true,
+    whiteCostumeId: true,
+    blackCostumePortraitUrl: true,
+    whiteCostumePortraitUrl: true,
     createdAt: true
   };
 }

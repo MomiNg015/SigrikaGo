@@ -124,6 +124,21 @@
   gap: 12px;
 }
 
+.admin-costume-thumb {
+  display: block;
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f3f4f6;
+}
+
+.admin-table td > small {
+  display: block;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
 .admin-character-form label {
   min-width: 0;
   display: grid;

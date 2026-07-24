@@ -215,6 +215,8 @@ describe("user asset list helpers", () => {
         sigrikaCandyDisabled: true,
         deniaRainbowGlow: true
       },
+      ownedCostumeIds: [],
+      equippedCostumes: {},
       ownedDecorations: ["legacy-decoration", "paw-stone"]
     });
   });

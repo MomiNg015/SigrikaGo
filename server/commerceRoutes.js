@@ -6,12 +6,15 @@ import {
 } from "./achievements.js";
 import { listItemInventory, useInventoryItem } from "./items.js";
 import { purchaseShopItem } from "./shop.js";
+import { equipCostume, purchaseCostume } from "./costumes.js";
 
 export function createCommerceRouteHandlers({
   prisma,
   evaluateAchievementsForUserFn = evaluateAchievementsForUser,
   incrementAchievementCounterFn = incrementAchievementCounter,
+  equipCostumeFn = equipCostume,
   listItemInventoryFn = listItemInventory,
+  purchaseCostumeFn = purchaseCostume,
   purchaseShopItemFn = purchaseShopItem,
   useInventoryItemFn = useInventoryItem
 }) {
@@ -38,6 +41,34 @@ export function createCommerceRouteHandlers({
     }
   }
 
+  async function costumePurchase(req, res) {
+    try {
+      const result = await purchaseCostumeFn({
+        prisma,
+        userId: req.user.id,
+        costumeId: req.params.id
+      });
+      await incrementAchievementCounterFn({ prisma, userId: req.user.id, metric: "purchase_count" });
+      const achievementUnlocks = await evaluateAchievementsForUserFn({ prisma, userId: req.user.id });
+      res.json(withAchievementUnlocks(result, achievementUnlocks));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "购买服装失败" });
+    }
+  }
+
+  async function costumeEquip(req, res) {
+    try {
+      res.json(await equipCostumeFn({
+        prisma,
+        userId: req.user.id,
+        characterSlug: req.body.characterSlug,
+        costumeId: req.body.costumeId
+      }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "更换服装失败" });
+    }
+  }
+
   async function useItem(req, res) {
     try {
       const result = await useInventoryItemFn({
@@ -60,6 +91,8 @@ export function createCommerceRouteHandlers({
 
   return {
     purchase,
+    costumePurchase,
+    costumeEquip,
     inventory,
     useItem
   };
@@ -73,6 +106,8 @@ export function createCommerceRouter(deps) {
   const router = express.Router();
   const handlers = createCommerceRouteHandlers(deps);
   router.post("/shop/:id/purchase", handlers.purchase);
+  router.post("/costumes/:id/purchase", handlers.costumePurchase);
+  router.post("/costumes/equip", handlers.costumeEquip);
   router.get("/items/inventory", handlers.inventory);
   router.post("/items/:itemId/use", handlers.useItem);
   return router;

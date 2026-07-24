@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import {
   buildCharacterDraft,
+  buildCostumeDraft,
   buildDecorationDraft,
   buildGachaPoolDraft,
   buildShopItemDraft,
   characterDraftToBody,
+  costumeDraftToBody,
   decorationDraftToBody,
   emptyCharacterDraft,
+  emptyCostumeDraft,
   emptyGachaPoolDraft,
   emptyShopItemDraft,
   gachaPoolDraftToBody,
@@ -297,6 +300,36 @@ describe("admin draft helpers", () => {
       name: "Moon Frame",
       sortOrder: "1"
     }))).toMatchObject({ slug: "moon-frame", sortOrder: 1 });
+  });
+
+  it("validates and normalizes costume admin drafts", () => {
+    const draft = buildCostumeDraft({
+      ...emptyCostumeDraft(),
+      id: "denia-costume-01",
+      name: "达妮娅舞台服",
+      characterSlug: "denia",
+      portraitUrl: "/assets/costumes/denia-01.webp",
+      candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp",
+      priceCoins: "600",
+      discountPercent: "10",
+      sortOrder: "20",
+      illustName: "Artist",
+      illustUrl: "https://example.com/artist"
+    });
+
+    expect(costumeDraftToBody(draft)).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        id: "denia-costume-01",
+        characterSlug: "denia",
+        priceCoins: 600,
+        discountPercent: 10,
+        sortOrder: 20
+      })
+    });
+    expect(costumeDraftToBody({ ...draft, id: "Invalid ID" }).ok).toBe(false);
+    expect(costumeDraftToBody({ ...draft, priceCoins: "-1" }).ok).toBe(false);
+    expect(costumeDraftToBody({ ...draft, illustName: "", illustUrl: "https://example.com/artist" }).ok).toBe(false);
   });
 
   it("parses only safe Prisma integers", () => {

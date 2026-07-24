@@ -64,6 +64,7 @@ export default function BattleAssetPreloadScreen({
       character={character}
       loadingLinesText={siteSettings?.characterLoadingLines}
       progress={progress}
+      user={user}
       statusText={`资源加载中 ${readyCount}/${requiredCount}`}
       tipsText={siteSettings?.preloadTips}
     />
@@ -75,7 +76,8 @@ export function ownPreloadCharacter({ characters = CHARACTERS, room, user } = {}
     ?? (room?.players ?? [])[0]
     ?? null;
   const characterId = canonicalCharacterId(player?.character?.id ?? player?.characterId ?? user?.selectedCharacter);
-  return player?.character ?? characters?.[characterId] ?? CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+  const character = player?.character ?? characters?.[characterId] ?? CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+  return { ...character, costumeSnapshot: player?.costumeSnapshot ?? null };
 }
 
 export function createPreloadReadyReporter({

@@ -1,0 +1,172 @@
+.shop-store-viewport {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 68px);
+  overflow: hidden;
+}
+
+.shop-store-track {
+  width: 200%;
+  height: 100%;
+  display: flex;
+  transform: translate3d(0, 0, 0);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shop-store-viewport.is-costume .shop-store-track {
+  transform: translate3d(-50%, 0, 0);
+}
+
+.shop-store-page {
+  position: relative;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.shop-store-page > .shop-window-body {
+  height: 100%;
+}
+
+.shop-switch-button {
+  position: absolute;
+  z-index: 18;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 3px solid currentColor;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.zahira-to-costume {
+  left: 14px;
+  bottom: 96px;
+}
+
+.costume-store-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #f8e7c2;
+  background:
+    radial-gradient(circle at 68% 24%, rgba(255, 210, 116, 0.16), transparent 25%),
+    linear-gradient(90deg, rgba(24, 5, 12, 0.94) 0 34%, transparent 34%),
+    linear-gradient(135deg, #5c0d20, #260711 72%);
+}
+
+.costume-store-panel::before,
+.costume-store-panel::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 15%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 7px, rgba(0, 0, 0, 0.12) 8px 15px),
+    linear-gradient(90deg, #310711, #74152b 46%, #2a050e);
+  filter: drop-shadow(0 0 14px rgba(0, 0, 0, 0.42));
+}
+
+.costume-store-panel::before {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 72% 14%, 88% 32%, 66% 53%, 85% 74%, 70% 100%, 0 100%);
+}
+
+.costume-store-panel::after {
+  right: 0;
+  transform: scaleX(-1);
+  clip-path: polygon(0 0, 100% 0, 72% 14%, 88% 32%, 66% 53%, 85% 74%, 70% 100%, 0 100%);
+}
+
+.costume-shop-stage {
+  position: absolute;
+  z-index: 5;
+  inset: 5% 4% 7% 35%;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 2% 1%;
+  padding: 2%;
+}
+
+.costume-shop-host {
+  position: absolute;
+  z-index: 6;
+  inset: 0 66% 0 0;
+  pointer-events: none;
+}
+
+.costume-shop-mascot-slot {
+  position: absolute;
+  z-index: 4;
+  left: -4%;
+  bottom: -2%;
+  width: 112%;
+  height: 72%;
+}
+
+.costume-shop-mascot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+}
+
+.costume-shop-mascot.is-active {
+  opacity: 1;
+}
+
+.costume-shop-bubble {
+  position: absolute;
+  z-index: 7;
+  top: 7%;
+  left: 12%;
+  width: 82%;
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  padding: 12px 15px;
+  color: #401018;
+  background: #e8d95a;
+  border: 3px solid #21080d;
+  border-radius: 38% 20% 32% 18% / 28% 34% 24% 30%;
+  font-weight: 900;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 5px 6px 0 rgba(8, 2, 3, 0.52);
+}
+
+.costume-shop-wallet-wrap {
+  position: absolute;
+  z-index: 8;
+  top: auto;
+  right: auto;
+  left: 11%;
+  bottom: 4%;
+  margin: 0;
+}
+
+.costume-to-zahira {
+  right: 14px;
+  bottom: 14px;
+}
+
+.costume-shop-empty {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  align-self: center;
+  justify-self: center;
+  color: #f4d889;
+  font-weight: 900;
+}

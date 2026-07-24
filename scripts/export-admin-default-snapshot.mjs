@@ -12,6 +12,7 @@ export async function buildAdminDefaultConfig(prisma) {
     skillTraits,
     characters,
     decorations,
+    costumes,
     shopItems,
     gachaPools,
     achievementRewardAssets,
@@ -34,6 +35,9 @@ export async function buildAdminDefaultConfig(prisma) {
     }),
     prisma.decoration.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { slug: "asc" }]
+    }),
+    prisma.costume.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }]
     }),
     prisma.shopItem.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { category: "asc" }, { targetId: "asc" }]
@@ -72,6 +76,7 @@ export async function buildAdminDefaultConfig(prisma) {
     skillTraits: skillTraits.map(skillTraitSnapshot),
     characters: characters.map(characterSnapshot),
     decorations: decorations.map(decorationSnapshot),
+    costumes: costumes.map(costumeSnapshot),
     shopItems: shopItems.map(shopItemSnapshot),
     gachaPools: gachaPools.map(gachaPoolSnapshot),
     achievementRewardAssets: achievementRewardAssets.map(achievementRewardAssetSnapshot),
@@ -166,6 +171,26 @@ function characterSkillSnapshot(row) {
 
 function decorationSnapshot(row) {
   return pick(row, ["slug", "name", "description", "imageUrl", "source", "enabled", "sortOrder"]);
+}
+
+function costumeSnapshot(row) {
+  return pick(row, [
+    "id",
+    "name",
+    "characterSlug",
+    "portraitUrl",
+    "candyEffectPortraitUrl",
+    "description",
+    "illustName",
+    "illustUrl",
+    "priceCoins",
+    "discountPercent",
+    "shopVisible",
+    "purchasable",
+    "enabled",
+    "sortOrder",
+    "source"
+  ]);
 }
 
 function shopItemSnapshot(row) {

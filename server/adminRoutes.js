@@ -71,6 +71,13 @@ import {
 } from "./adminGachaManagement.js";
 import { listMusicTrackSettings, updateMusicTrackSetting } from "./musicTracks.js";
 import { getRecruitmentConfig, updateRecruitmentConfig } from "./recruitment.js";
+import { toCostumePayload } from "../src/shared/costumes.js";
+import { validateCostumeInput } from "./costumes.js";
+import {
+  assertCostumeCharacterExists,
+  createCostume,
+  updateCostume
+} from "./adminCostumeManagement.js";
 import {
   createMailboxBatch,
   listAdminMailboxBatches,
@@ -550,6 +557,48 @@ export function createAdminRouter({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
     res.json({ items: items.map(toShopItemPayload) });
+  });
+
+  router.get("/costumes", async (_req, res) => {
+    const costumes = await prisma.costume.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }]
+    });
+    res.json({ costumes: costumes.map(toCostumePayload) });
+  });
+
+  router.post("/costumes", async (req, res) => {
+    const validated = validateCostumeInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      await assertCostumeCharacterExists(prisma, validated.value);
+      const costume = await createCostume({ prisma, adminUser: req.user, input: validated.value });
+      res.json({ costume: toCostumePayload(costume) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/costumes/:id", async (req, res) => {
+    const validated = validateCostumeInput(req.body, { requireId: false });
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      await assertCostumeCharacterExists(prisma, validated.value);
+      const costume = await updateCostume({
+        prisma,
+        adminUser: req.user,
+        costumeId: req.params.id,
+        input: validated.value
+      });
+      res.json({ costume: toCostumePayload(costume) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.get("/music-tracks", async (_req, res) => {

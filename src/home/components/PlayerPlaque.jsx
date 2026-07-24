@@ -1,4 +1,4 @@
-import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
@@ -11,7 +11,7 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
       <div className="home-player-row tactical-id-row" style={plaqueStyle}>
         <button className="home-player-plaque tactical-id-card" data-ui-sound="none" type="button" onClick={onOpenResume} aria-label="打开履历">
           <span className="plaque-avatar">
-            <img src={resolveCandyPortrait(character, user.itemEffects)} alt="当前出战角色" />
+            <img src={resolveCharacterPortrait(character, { itemEffects: user.itemEffects, user })} alt="当前出战角色" />
             <CharacterChainBadge user={user} characterId={character.id} />
           </span>
           <strong>

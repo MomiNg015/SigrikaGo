@@ -78,12 +78,13 @@ describe("GameLifecycleModals helpers", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);");
-    expect(source).toContain("src={resolveCandyPortrait(character, displayPlayer?.user?.itemEffects)}");
+    expect(source).toContain("src={resolveCharacterPortrait(character, {");
+    expect(source).toContain("costumeSnapshot: displayPlayer?.costumeSnapshot");
     expect(source).toContain("currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}");
     expect(source).toContain("<CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />");
     expect(source).toContain("`result-outcome-${outcome}`");
     expect(source).toContain('outcome === "loss"');
-    expect(source).not.toContain("src={resolveCandyPortrait(character, winner?.user?.itemEffects)}");
+    expect(source).not.toContain("costumeSnapshot: winner?.costumeSnapshot");
   });
 
   it("shows zero reward deltas for invalid early resign results", () => {

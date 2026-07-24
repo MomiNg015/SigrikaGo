@@ -3,6 +3,7 @@ import { ClipboardList, Clock, Radio, Ticket, X } from "lucide-react";
 import { playRecruitmentResultSound } from "../audio/playback.jsx";
 import { RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
 import { ModalDialog } from "./modalComponents.jsx";
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import RecruitmentCinematicOverlay from "./recruitment/RecruitmentCinematicOverlay.jsx";
 import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
 
@@ -93,7 +94,7 @@ export default function RecruitmentModal({
             />
           )}
           {!loading && phase === "ready" && <ReadyBoard task={task} busy={busy} onClaim={claim} />}
-          {!loading && phase === "result" && <ResultBoard result={result} task={task} characters={characters} />}
+          {!loading && phase === "result" && <ResultBoard result={result} task={task} characters={characters} user={user} />}
         </main>
 
         {phase === "idle" && (
@@ -205,7 +206,7 @@ function ReadyBoard({ task, busy, onClaim }) {
   );
 }
 
-function ResultBoard({ result, task, characters }) {
+function ResultBoard({ result, task, characters, user }) {
   const character = result?.characterId ? characters[result.characterId] : null;
   if (result?.type !== "success") {
     return (
@@ -219,7 +220,9 @@ function ResultBoard({ result, task, characters }) {
   }
   return (
     <section className="recruitment-result-card recruitment-result-success">
-      {character?.portrait ? <img src={character.portrait} alt={character.name} /> : <RecruitmentItemIcon item={task} large />}
+      {character?.portrait
+        ? <img src={resolveCharacterPortrait(character, { itemEffects: user?.itemEffects, user })} alt={character.name} />
+        : <RecruitmentItemIcon item={task} large />}
       <div>
         <strong>{character?.name ?? result.characterId}</strong>
         <p>{result.text}</p>

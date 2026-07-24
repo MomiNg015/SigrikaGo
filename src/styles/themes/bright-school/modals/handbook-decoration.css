@@ -101,3 +101,19 @@
   box-shadow: none !important;
   filter: none !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:active {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card.is-equipped {
+  background: #ddf7df !important;
+  border-color: #4f8b63 !important;
+}

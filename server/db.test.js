@@ -48,6 +48,8 @@ describe("publicUser", () => {
       ownedItems: [],
       characterChains: {},
       itemEffects: { sigrikaCandyDisabled: true },
+      ownedCostumeIds: [],
+      equippedCostumes: {},
       ownedDecorations: [],
       ownedMusicIds: [
         "home-default",

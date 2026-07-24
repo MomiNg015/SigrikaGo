@@ -162,13 +162,20 @@ export function createPracticeRoom(player, {
 }
 
 export function toRoomPlayer(player, color, mode = "spark") {
+  const characterId = player.user.selectedCharacter;
+  const equippedCostume = player.user.equippedCostumes?.[characterId] ?? null;
   return {
     user: userForRoomMode(player.user, mode),
     socketId: player.socketId,
     disconnectedAt: null,
     color,
-    characterId: player.user.selectedCharacter,
+    characterId,
     character: player.user.characterConfig ?? null,
+    costumeSnapshot: equippedCostume ? {
+      id: equippedCostume.id,
+      portraitUrl: equippedCostume.portraitUrl,
+      candyEffectPortraitUrl: equippedCostume.candyEffectPortraitUrl ?? ""
+    } : null,
     time: createPlayerClock()
   };
 }

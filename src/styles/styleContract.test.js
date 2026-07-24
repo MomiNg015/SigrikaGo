@@ -614,6 +614,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/shop-window-card-layout.css",
       "./mobile-adaptive/shop-window-compact.css",
       "./mobile-adaptive/shop-card-badges.css",
+      "./mobile-adaptive/costume-store.css",
       "./mobile-adaptive/user-nameplate-final.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
@@ -857,7 +858,8 @@ describe("root CSS entry contract", () => {
       "./shop-settings/phone-layouts.css",
       "./shop-settings/shop-window-redesign.css",
       "./shop-settings/shop-window-card-layout.css",
-      "./shop-settings/shop-card-badges.css"
+      "./shop-settings/shop-card-badges.css",
+      "./shop-settings/costume-store.css"
     ]);
     expect(shopSettingsEntry).not.toContain(".shop-modal {");
     expect(shopSettingsEntry).not.toContain(".shop-item {");
@@ -1376,7 +1378,9 @@ describe("root CSS entry contract", () => {
       "./character-opening/skill-copy.css",
       "./character-opening/replay-match.css",
       "./character-opening/opening-animation.css",
-      "./character-opening/keyframes.css"
+      "./character-opening/keyframes.css",
+      "./character-opening/costume-wardrobe.css",
+      "./character-opening/costume-wardrobe-mobile.css"
     ]);
     expect(characterOpeningEntry).not.toContain(".character-detail {");
 

@@ -33,6 +33,7 @@ export function buildRoomView(room, viewerId, options = {}) {
       color: player.color,
       characterId: player.characterId,
       character: player.character,
+      costumeSnapshot: player.costumeSnapshot ?? null,
       isBot: Boolean(player.isBot || player.user?.isBot),
       botProfile: player.botProfile ?? null,
       captures: room.game.captures[player.color],

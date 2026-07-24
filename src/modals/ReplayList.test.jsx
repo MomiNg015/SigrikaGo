@@ -69,6 +69,27 @@ describe("ReplayList", () => {
     expect(html).toContain("replay-table-row outcome-loss");
   });
 
+  it("renders the snapshotted costume portrait instead of the current base portrait", () => {
+    const html = renderToStaticMarkup(createElement(ReplayList, {
+      characters,
+      records: [{
+        id: "record-costume",
+        createdAt: "2026-06-06T00:31:00.000Z",
+        blackName: "moming",
+        whiteName: "other",
+        blackCharacter: "sigrika",
+        whiteCharacter: "denia",
+        blackCostumePortraitUrl: "/assets/costumes/sigrika-01.webp",
+        whiteCostumePortraitUrl: "",
+        resultText: "黑胜",
+        moveCount: 50
+      }]
+    }));
+
+    expect(html).toContain('src="/assets/costumes/sigrika-01.webp"');
+    expect(html).toContain('src="/denia.webp"');
+  });
+
   it("marks unrated friendly replays with an accessible handshake icon", () => {
     const html = renderToStaticMarkup(createElement(ReplayList, {
       characters,

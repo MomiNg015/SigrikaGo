@@ -87,6 +87,13 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["decoration.create", expect.objectContaining({
       data: expect.objectContaining({ slug: "snapshot-decoration" })
     })]);
+    expect(calls).toContainEqual(["costume.create", expect.objectContaining({
+      data: expect.objectContaining({
+        id: "snapshot-costume",
+        characterSlug: "snapshot-character",
+        priceCoins: 600
+      })
+    })]);
     expect(calls).toContainEqual(["shopItem.create", expect.objectContaining({
       data: expect.objectContaining({ category: "decoration", targetId: "snapshot-decoration" })
     })]);
@@ -141,6 +148,7 @@ describe("admin default config seed", () => {
       skillTraits: new Set(["trait-snapshot"]),
       characters: new Set(["snapshot-character"]),
       decorations: new Set(["snapshot-decoration"]),
+      costumes: new Set(["snapshot-costume"]),
       shopTargets: new Set(["decoration:snapshot-decoration"]),
       gachaPools: new Set(["pool-snapshot"]),
       rewardAssets: new Set(["reward-snapshot"]),
@@ -158,6 +166,8 @@ describe("admin default config seed", () => {
     expect(calls.some(([name]) => name === "character.update")).toBe(false);
     expect(calls.some(([name]) => name === "decoration.create")).toBe(false);
     expect(calls.some(([name]) => name === "decoration.update")).toBe(false);
+    expect(calls.some(([name]) => name === "costume.create")).toBe(false);
+    expect(calls.some(([name]) => name === "costume.update")).toBe(false);
     expect(calls.some(([name]) => name === "shopItem.create")).toBe(false);
     expect(calls.some(([name]) => name === "shopItem.update")).toBe(false);
     expect(calls.some(([name]) => name === "gachaPool.create")).toBe(false);
@@ -186,6 +196,7 @@ describe("admin default config seed", () => {
       skillTraits: new Set(["trait-snapshot"]),
       characters: new Set(["snapshot-character"]),
       decorations: new Set(["snapshot-decoration"]),
+      costumes: new Set(["snapshot-costume"]),
       shopTargets: new Set(["decoration:snapshot-decoration"]),
       gachaPools: new Set(["pool-snapshot"]),
       rewardAssets: new Set(["reward-snapshot"]),
@@ -213,6 +224,10 @@ describe("admin default config seed", () => {
     })]);
     expect(calls).toContainEqual(["decoration.update", expect.objectContaining({
       where: { slug: "snapshot-decoration" }
+    })]);
+    expect(calls).toContainEqual(["costume.update", expect.objectContaining({
+      where: { id: "snapshot-costume" },
+      data: expect.objectContaining({ priceCoins: 600 })
     })]);
     expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
       where: { id: "shop-existing" }
@@ -341,6 +356,23 @@ const sampleSnapshot = {
     enabled: true,
     sortOrder: 20
   }],
+  costumes: [{
+    id: "snapshot-costume",
+    name: "Snapshot Costume",
+    characterSlug: "snapshot-character",
+    portraitUrl: "/assets/costumes/snapshot.webp",
+    candyEffectPortraitUrl: "",
+    description: "Snapshot costume description.",
+    illustName: "",
+    illustUrl: "",
+    priceCoins: 600,
+    discountPercent: 0,
+    shopVisible: true,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 25,
+    source: "default"
+  }],
   shopItems: [{
     name: "Snapshot Shop Item",
     category: "decoration",
@@ -461,6 +493,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
       if (name === "onboardingStoryScript") return has("onboardingStoryScripts", key) ? { id: key } : null;
       if (name === "gachaPool") return has("gachaPools", key) ? { id: key } : null;
       if (name === "decoration") return has("decorations", key) ? { id: key } : null;
+      if (name === "costume") return has("costumes", key) ? { id: key } : null;
       if (name === "character") return has("characters", where?.slug) ? { id: "existing" } : null;
       if (name === "skillTrait") return has("skillTraits", key) ? { id: key } : null;
       return null;
@@ -490,6 +523,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     skillTrait: delegate("skillTrait"),
     character: delegate("character"),
     decoration: delegate("decoration"),
+    costume: delegate("costume"),
     shopItem: delegate("shopItem"),
     gachaPool: delegate("gachaPool"),
     gachaPrize: delegate("gachaPrize"),

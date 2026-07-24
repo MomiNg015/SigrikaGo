@@ -1,6 +1,7 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
+import { toCostumePayload } from "../src/shared/costumes.js";
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia"];
 const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan", "mornye", "changli", "chisa"];
@@ -125,7 +126,9 @@ export function publicUserAssets(user) {
     ownedItems: publicOwnedItems(user),
     characterChains: publicCharacterChains(user),
     itemEffects: publicItemEffects(user),
-    ownedDecorations: publicOwnedDecorations(user)
+    ownedDecorations: publicOwnedDecorations(user),
+    ownedCostumeIds: publicOwnedCostumeIds(user),
+    equippedCostumes: publicEquippedCostumes(user)
   };
 }
 
@@ -305,6 +308,27 @@ function publicItemEffects(user) {
     }
   }
   return effects;
+}
+
+function publicOwnedCostumeIds(user) {
+  const ids = new Set();
+  for (const entry of user?.userCostumes ?? []) {
+    const costumeId = String(entry?.costumeId ?? entry?.costume?.id ?? "").trim();
+    if (costumeId) ids.add(costumeId);
+  }
+  return [...ids];
+}
+
+function publicEquippedCostumes(user) {
+  const equipped = {};
+  for (const entry of user?.costumeEquipment ?? []) {
+    const costume = entry?.costume;
+    if (!costume || costume.enabled === false) continue;
+    const characterSlug = canonicalCharacterId(entry.characterSlug ?? costume.characterSlug);
+    if (!characterSlug || canonicalCharacterId(costume.characterSlug) !== characterSlug) continue;
+    equipped[characterSlug] = toCostumePayload(costume);
+  }
+  return equipped;
 }
 
 function normalizeItemEffectsMap(value) {

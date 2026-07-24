@@ -6,6 +6,7 @@ import AdminAudit from "./AdminAudit.jsx";
 import AdminAchievements from "./AdminAchievements.jsx";
 import AdminAnnouncements from "./AdminAnnouncements.jsx";
 import AdminCharacters from "./AdminCharacters.jsx";
+import AdminCostumes from "./AdminCostumes.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
@@ -33,6 +34,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   const [feedbackMessages, setFeedbackMessages] = useState([]);
   const [userReports, setUserReports] = useState([]);
   const [shopItems, setShopItems] = useState([]);
+  const [costumes, setCostumes] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [gachaPools, setGachaPools] = useState([]);
   const [mailboxBatches, setMailboxBatches] = useState([]);
@@ -93,6 +95,11 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   useEffect(() => {
     if (tab !== "decorations") return;
     refreshDecorations();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "costumes") return;
+    Promise.all([refreshCostumes(), refreshCharacters()]);
   }, [tab, token]);
 
   useEffect(() => {
@@ -213,6 +220,16 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
     try {
       const data = await adminApi("/decorations", token);
       setDecorations(data.decorations ?? []);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
+  async function refreshCostumes() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/costumes", token);
+      setCostumes(data.costumes ?? []);
     } catch (error) {
       notify(error.message);
     }
@@ -339,6 +356,15 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
       )}
       {tab === "shop" && (
         <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} onNotice={notify} />
+      )}
+      {tab === "costumes" && (
+        <AdminCostumes
+          costumes={costumes}
+          characters={adminCharacters}
+          token={token}
+          onSaved={refreshCostumes}
+          onNotice={notify}
+        />
       )}
       {tab === "items" && (
         <AdminShopItems

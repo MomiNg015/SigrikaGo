@@ -79,6 +79,9 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
+<li>服装系统由独立 <code>Costume</code> 目录、<code>UserCostume</code> 所有权和 <code>UserCostumeEquipment</code> 角色槽位组成；残星会服装店与扎希拉商铺在同一窗口内平移切换，但各自维护最多五件商品和独立 3 秒刷新批次，移动端首页宽度安全规则不得压缩这条双页滑轨。服装页标题固定为不换行的“残星会cosplay部”；商品售价由随透明裁边立绘收缩的 <code>.costume-shop-art</code> 锚定在可见人物右下角并少量叠压，桌面悬停保留位移动效但不铺粉色卡底，只在立绘后方显出局部暖金舞台光。两家商店复用同一个 <code>ShopWallet</code> 钱包图片、金币胶囊和排版组件，仅由各自页面决定位置。购买与金币扣除在事务内完成，部员手册可随时查看角色全部服装并即时装扮；服装选择与服装详情分别作为应用根下的同级顶层覆盖窗口，详情不嵌入或裁在衣柜窗口内部。衣柜标题固定为“{角色名}的衣柜”，不显示副标题或只有默认服装的解释；服装立绘触发区保持透明且无额外阴影，当前服装只由外层卡片的浅绿色背景表达。角色立绘统一经过服装/糖果优先级解析。正式对局在房间创建时固化双方服装 id 与立绘 URL，并写入 <code>GameRecord</code>，因此后续换装不会改写进行中房间或历史棋谱。后台“服装管理”维护服装元数据、上下架与糖果特效候选立绘，停用服装只清除当前装备、不删除所有权。</li>
+</ul>
+<ul>
 <li>星炬模式提供服务端权威的“准时宝”人机练习：客户端通过绝对定位在“星炬对弈”标题右上方、水平中心线与卡片上边框平齐的 <code>/assets/home/home-practice-zhunshibao.webp</code> 透明图标签直接开局；标签保留“准时宝陪练”可访问名称，桌面/竖屏宽度分别为 <code>144px</code> / <code>136px</code>。Bright School 最终效果层让该透明图复用主页左下工具图片按钮的硬边手绘阴影：常态/悬停/聚焦为 <code>6px 8px 0 rgba(61, 43, 37, 0.42)</code>，按下为 <code>4px 5px 0 rgba(61, 43, 37, 0.34)</code>，覆盖共享模态层的柔影后备。悬停/键盘聚焦动效由按钮级 CSS 变量合成居中、抬升与顺时针 7 度旋转，并在 Bright School 最终按钮胜出层完整引用这些变量，避免通用 <code>button &gt; *</code> 子元素重置吞掉图片旋转；旋转轴锚在左侧准时宝主体附近，使右侧牌面清晰摆动。减少动态效果时仅取消过渡、保留即时悬停状态。入口不再打开二次选择窗，统一发送 <code>practice:start</code> 的基础难度与随机黑白配置；接口仍保留入门/基础和黑/白/随机参数能力。练习房固定 <code>rated=false</code>、<code>matchSource=practice</code>、<code>recordPolicy=none</code>，复用正式预加载、开局、5 分钟与 30 秒 3 次读秒、技能、数子、断线恢复和运行快照；共享执色开局窗在人机房的“本局你执黑/白”下方额外显示红色胜利提示，基础档为“吃掉准时宝22颗棋子就算胜利！”，恢复旧入门房时按配置显示 11，真人局不显示。虚拟玩家 <code>zhunshibao</code> 无角色与技能并自动 ready，展示段位统一为“入门陪练”，但 <code>basic</code> / <code>beginner</code> 内部难度和 22/11 子阈值保持独立；其结果弹窗不再重复显示“不计成长/不保存棋谱”说明。准时宝使用 <code>/assets/characters/zhunshibao.png</code> 透明立绘；立绘存在时不套用教学无角色框或机器人专属缩放，而是继承普通角色桌面 <code>--side-portrait</code> 与竖屏 <code>46px</code> 头像几何。其 <code>PlayerInfo</code> 同时复用不可见评分和技能占位，保持与普通角色信息区相同的桌面及竖屏结构高度，但不显示虚假评分或技能。练习房计入活跃房间容量，但不进入匹配人数、队列或公开观战列表，也不生成 <code>GameRecord</code>、奖励、成长和任务进度。准时宝只从自身 <code>gameViewForColor</code> 按紧急吃逃、最近局部、开局点和棋形理由生成至多 48 个候选，以正式 <code>playMove</code> 做一层战术安全检查，并过滤自打吃、填眼、空三角和非战斗性的早期直线延伸；前两手普通落子优先占据两个不同角星位，入门随机也只在接近最佳分的合理候选内选择。低价值候选仅在空交叉点不超过有效棋盘的 12%（且阈值至少为 8 点）时允许弃手，不再按手数提前弃手。入门/基础分别在玩家普通提子达到 11/22 子后于下一次行动前认输，<code>skillRemovals</code> 不计入阈值。</li>
 </ul>
 <ul>
@@ -2991,6 +2994,22 @@
 <li><code>server/roomQueries.js</code> remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>, while the current single-process runtime continues to use in-memory rooms as the default fallback.</li>
 </ul>
 <h2>API 与实时事件</h2>
+<h3>服装目录、购买与装扮 API</h3>
+<ul>
+<li>登录玩家通过 <code>GET /api/costumes</code> 读取启用服装目录；每条 payload 同时包含当前用户是否拥有服装、是否拥有对应角色、是否正在装扮和折后价格。商店展示/批次随机由前端会话处理，服务端仍是可见性、可购买性与所有权的最终权威。</li>
+</ul>
+<ul>
+<li><code>POST /api/costumes/:id/purchase</code> 在单个 Prisma 事务内校验服装启用/商店展示/可购买、对应角色所有权、重复购买与金币余额，以条件扣款避免并发超花，然后创建 <code>UserCostume</code> 和 <code>costume.purchase</code> 金币流水。路由沿用商城的购买次数成就计数和成就结算。</li>
+</ul>
+<ul>
+<li><code>POST /api/costumes/equip</code> 接受 <code>{ characterSlug, costumeId }</code>；非默认服装必须启用、归属同一角色且由用户拥有。<code>costumeId=&quot;default&quot;</code> 删除该角色唯一装备槽，恢复代码/角色目录的默认立绘。</li>
+</ul>
+<ul>
+<li>管理接口为 <code>GET/POST/PATCH /api/admin/costumes</code>。保存前验证稳定 id、角色目标、资源 URL、价格/折扣和展示状态并写审计；停用服装或修改所属角色时删除引用该服装的 <code>UserCostumeEquipment</code>，但保留 <code>UserCostume</code>。</li>
+</ul>
+<ul>
+<li><code>ensureCostumeSchema()</code> 必须在 <code>seedAdminDefaultConfig()</code> 前运行，使未执行 Prisma migration 的旧开发 SQLite 也能先建立服装目录、所有权、装备表和索引；生产仍以 migration deploy 为准。</li>
+</ul>
 <h2>Production Deployment Hardening</h2>
 <ul>
 <li>Runtime security helpers live in <code>server/security.js</code>.</li>
@@ -3403,6 +3422,9 @@
 <li>账号资产正在从字符串字段逐步迁移到结构化关系表，旧字段仍承担兼容镜像职责；legacy 字段解析、结构化同步和公开资产合并边界集中在 <code>server/userAssets.js</code>。</li>
 </ul>
 <ul>
+<li>服装不写入 legacy 逗号字段：<code>UserCostume</code> 保存永久所有权，<code>UserCostumeEquipment</code> 为每名角色保存至多一个当前服装，公开用户资产投影输出 <code>ownedCostumeIds</code> 与 <code>equippedCostumes</code>。</li>
+</ul>
+<ul>
 <li>模式化对局数据以 <code>mode</code> 串联房间、记录、排行榜、履历和用户模式统计。</li>
 </ul>
 <ul>
@@ -3418,7 +3440,7 @@
 <p><code>npm run verify:migrations</code> 是迁移发布门禁。验证器只允许数据库位于仓库 <code>.tmp/migration-baseline/</code> 下，并覆盖两条路径：空库连续两次 <code>migrate deploy</code>；直接执行基线 SQL 构造无迁移历史的同结构旧库，写入哨兵数据后 <code>resolve --applied 0_init</code> 并连续两次 deploy。两条路径最后都运行 schema diff，旧库路径还验证哨兵数据和全部活动迁移记录。验证过程不使用 <code>db push</code>，生产部署同样禁止使用。</p>
 <p>已有数据的数据库接管是操作员动作：先停止服务和做 SQLite 在线备份，再确认迁移表没有非基线历史，并用 <code>migrate diff --exit-code</code> 验证数据库与 <code>schema.prisma</code> 无差异，最后才登记 <code>0_init</code>。任何迁移记录冲突或 schema drift 都进入人工审查，启动任务和部署脚本都不能猜测性修复或自动标记迁移。</p>
 <h3>Admin Deployment Defaults</h3>
-<p>Non-user admin deployment configuration lives in <code>server/adminDefaultSnapshot.js</code>, generated from local <code>prisma/dev.db</code> with <code>npm run admin:snapshot</code>. The exporter includes admin-owned <code>SiteSetting</code> rows (including recruitment configuration), skill traits, characters/skills, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, story/tutorial scripts, announcement/changelog entries, and the legacy onboarding singleton, while filtering internal <code>migration.*</code> markers and excluding every user-owned/history/runtime domain. <code>npm run check:admin-snapshot</code> structurally compares these collections with the ignored local database and is part of <code>npm run check</code>, so a local admin save cannot silently miss the next commit. Ordinary server startup remains create-only through <code>seedAdminDefaultConfig()</code> and therefore never overwrites a cloud admin edit merely because the service restarted. Formal deployment deliberately uses <code>npm run admin:sync-defaults</code> after backup and migrations: preview reports create/update/unchanged/cloud-only counts, and <code>-- --apply</code> updates rows represented by the committed snapshot and creates missing rows without deleting cloud-only rows or touching users, owned assets, purchases, draw history, feedback, reports, audit logs, analytics, announcement reads, mailbox data, game records, or live rooms. The scoped onboarding export/sync commands remain for exceptional single-story maintenance, but the maintained production update script uses the full non-user sync contract.</p>
+<p>Non-user admin deployment configuration lives in <code>server/adminDefaultSnapshot.js</code>, generated from local <code>prisma/dev.db</code> with <code>npm run admin:snapshot</code>. The exporter includes admin-owned <code>SiteSetting</code> rows (including recruitment configuration), skill traits, characters/skills, decorations, costumes, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, story/tutorial scripts, announcement/changelog entries, and the legacy onboarding singleton, while filtering internal <code>migration.*</code> markers and excluding every user-owned/history/runtime domain. <code>npm run check:admin-snapshot</code> structurally compares these collections with the ignored local database and is part of <code>npm run check</code>, so a local admin save cannot silently miss the next commit. Ordinary server startup remains create-only through <code>seedAdminDefaultConfig()</code> and therefore never overwrites a cloud admin edit merely because the service restarted. Formal deployment deliberately uses <code>npm run admin:sync-defaults</code> after backup and migrations: preview reports create/update/unchanged/cloud-only counts, and <code>-- --apply</code> updates rows represented by the committed snapshot and creates missing rows without deleting cloud-only rows or touching users, owned assets, purchases, draw history, feedback, reports, audit logs, analytics, announcement reads, mailbox data, game records, or live rooms. The scoped onboarding export/sync commands remain for exceptional single-story maintenance, but the maintained production update script uses the full non-user sync contract.</p>
 <h3>User</h3>
 <p>用户账号与资产/战绩。</p>
 <ul>
@@ -3487,7 +3509,7 @@
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
-<p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
+<p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数、道具效果、服装所有权和当前装备。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
 <p><code>User.musicSelections</code> 的技能选曲 JSON 保持向后兼容：普通技能使用 <code>skill[characterId] = trackId</code>，派生技使用 <code>derivedSkill[characterId][effectType] = trackId</code>。服务端音乐选择边界按角色与效果类型验证曲目归属和库存后只更新对应槽位，因此派生技选择不会覆盖普通技能选择，也不需要新增数据库列或迁移旧 JSON。</p>
 <p>Character-target inventory item use loads structured <code>userCharacters</code> and validates ownership through <code>publicUserAssets()</code>. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old <code>ownedCharacters</code> string mirror is stale.</p>
 <p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。莫宁（<code>mornye</code> / Mornye）是内置科学家角色，立绘位于 <code>/assets/characters/mornye.png</code>，获得方式文案为“招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code> 和 <code>mornye</code>，普通玩家不会默认拥有或部署。</p>
@@ -3581,6 +3603,12 @@
 </ul>
 <ul>
 <li><code>blackCharacter</code>, <code>whiteCharacter</code>: 双方角色 slug 快照。</li>
+</ul>
+<ul>
+<li><code>blackCostumeId</code>, <code>whiteCostumeId</code>: 开局时双方当前非默认服装 id；默认服装为空字符串。</li>
+</ul>
+<ul>
+<li><code>blackCostumePortraitUrl</code>, <code>whiteCostumePortraitUrl</code>: 开局时双方服装立绘 URL 快照，供棋谱摘要在服装目录后续变化后继续稳定展示。</li>
 </ul>
 <ul>
 <li><code>resultText</code>: 结果文本。</li>
@@ -3789,6 +3817,22 @@
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
+<h3>Costume、UserCostume 与 UserCostumeEquipment</h3>
+<ul>
+<li><code>Costume</code> 是后台管理的服装目录，稳定 <code>id</code> 不能在创建后修改；字段包括名称、<code>characterSlug</code>、常态 <code>portraitUrl</code>、可选 <code>candyEffectPortraitUrl</code>、描述、illust 名称/链接、金币原价、折扣、商店展示、可购买、启用、排序和来源。公开 payload 额外计算 <code>finalPrice</code>。</li>
+</ul>
+<ul>
+<li><code>UserCostume</code> 以唯一 <code>(userId, costumeId)</code> 保存永久所有权和获得来源。服装被后台停用时仍保留该行，因此重新启用后玩家不需再次购买。</li>
+</ul>
+<ul>
+<li><code>UserCostumeEquipment</code> 以唯一 <code>(userId, characterSlug)</code> 保存角色当前非默认服装。选择默认服装会删除该行；停用服装或把服装改到其他角色时也只删除相关装备行。</li>
+</ul>
+<ul>
+<li><code>resolveCharacterPortrait()</code> 是玩家角色立绘选择边界：房间 <code>costumeSnapshot</code> 优先于实时账号装备；达妮娅糖果效果优先于普通服装立绘，服装提供糖果特效立绘时使用该图，否则回退基础糖果图；没有糖果效果时使用服装常态立绘，最后才回退角色默认立绘。</li>
+</ul>
+<ul>
+<li><code>createRoom()</code> 只在匹配/约战生成房间时复制当前装备的 id、常态立绘和糖果候选立绘，房间视图与回放快照透传该不可变值。<code>GameRecord</code> 同时保存摘要列与 <code>snapshotVersion=2</code> 房间 JSON，后续装备变化不追溯修改历史。</li>
+</ul>
 <h3>AdminAuditLog</h3>
 <p>后台审计日志。</p>
 <ul>
@@ -3963,6 +4007,9 @@
 <h2>当前结论</h2>
 <ul>
 <li>运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。</li>
+</ul>
+<ul>
+<li>首批服装店资源统一放在 <code>public/assets/costumes/</code> 并提交 lossless VP8L WebP：西格莉卡 1 套、达妮娅 2 套、娜波摩 2 套，以及看板娘娜波摩 greeting/thanks/empty 三种状态。<code>scripts/prepare-costume-assets.py</code> 会把五张商品服装图裁到非零 alpha 边界、保持原比例并缩放到最长边不超过 900px，输出不补透明方形画布的紧边矩形 WebP，使商店售价可以相对可见立绘定位；三张看板娘状态图仍放进 1024×1024 透明画布，保持接待区构图一致。常态商品/看板娘资源进入商店启动清单，用户已装备服装及其可选糖果特效立绘进入登录 critical images，房间双方开局服装快照进入 battle preload。</li>
 </ul>
 <ul>
 <li>招募道具运行期图标由 <code>src/shared/recruitment.js</code> 统一暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动种子也会按每个道具的 <code>staleImageUrls</code> 回填空值或精确旧默认 SVG 路径，避免已有 SQLite 行继续显示旧资源且不覆盖后台自定义图。“招新贴报/招新海报”使用 <code>public/assets/items/recruitment-poster.webp</code>，由 <code>C:/codex/image/item/Recruitment_paper.png</code> 无损 WebP 转换而来；“先约电台广播券”使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损 WebP 转换而来；服务端 <code>server/itemImages.js</code> 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 <code>/assets/items/rainbow-bean-candy.png</code>。<code>public/assets/promotional/</code> 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 和“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>。这些候选 PNG 不进入 <code>RUNTIME_IMAGE_ASSETS</code> 或启动预加载，除非后续 UI 明确引用。</li>
@@ -4559,6 +4606,12 @@
 </ul>
 <ul>
 <li>视觉合同应靠 CSS contract tests 锁定，避免后续主题覆盖把语义状态、关闭按钮、移动列表等打散。</li>
+</ul>
+<ul>
+<li>商店窗口在同一 <code>ModalDialog</code> 内挂载扎希拉商铺与残星会服装店，两页用 240ms transform 平移切换并在 reduced-motion 下取消过渡；每页保留独立目录、批次、3 秒刷新冷却和错误重试状态。Bright School 竖屏首页的通用 <code>max-width</code> 保护只作用于 <code>.home-screen</code> 后代，不能压缩商店的 200% 双页滑轨。服装店使用深红幕布/暗舞台配色，页头标题固定为不换行且完整显示的“残星会cosplay部”；桌面让娜波摩位于左侧、最多五件服装按 2+3 陈列在右侧，竖屏改为商品上半区、看板娘/气泡/钱包下半区。五张商品图使用裁到 alpha 内容边界的矩形 WebP，<code>.costume-shop-art</code> 随实际立绘尺寸收缩，售价绝对定位到该锚点右下角并与可见立绘少量重叠；桌面悬停保留原位移动效但卡片背景保持透明，只在立绘后方显示局部暖金舞台光。两家商店共用 <code>ShopWallet</code> 的钱包 WebP、金币胶囊和数字/单位排版，只覆盖各自的布局锚点；未拥有对应角色的服装卡只灰化立绘，仍可打开详情，购买按钮不可用。</li>
+</ul>
+<ul>
+<li>部员手册角色详情的衣服图标始终可点，桌面位于立绘区右上角、移动端移到左上角以避开关闭按钮。服装选择通过 portal 挂到主题应用根并使用独立顶层遮罩，不受部员手册父窗口的布局与裁剪影响；窗口只显示“{角色名}的衣柜”标题，不显示副标题、“只有默认服装”等解释性文案；列表固定“默认服装”第一、当前非默认服装第二、其他已拥有服装随后、未拥有服装最后。卡片主体打开详情且必须保持透明、无边框和无额外阴影，让外层卡片承担与部员手册角色卡片一致的纸卡轮廓；独立衣服按钮即时装扮。当前服装仅以外层浅绿色卡片背景表达，并通过 <code>aria-current</code> 保留语义，不显示“装扮中”文案。未拥有服装与未拥有角色的装扮按钮使用原生 disabled，不增加额外提示；默认服装不灰化。移动端规则由 <code>modals/character-opening/costume-wardrobe-mobile.css</code> 单独拥有，服装网格为两列、内部滚动，卡内立绘与装扮按钮纵向排列并水平居中；服装详情使用应用根下的第二个固定定位顶层遮罩，与衣柜窗口互为同级，不能作为衣柜内部的相对定位子层。</li>
 </ul>
 <ul>
 <li>Board move preview and mobile touch-confirmation markers must stay centered by the <code>.point</code> absolute coordinate contract: each point receives <code>--board-point-center-x/y</code>, sits on the same intersection as SVG grid lines, and centers its preview pseudo-element internally. The shared <code>.board .point</code> rule repeats <code>transform: translate(-50%, -50%) !important</code> so later generic button hover/active transforms cannot shift board points into grid cells. ChangLi's extra-turn placements reuse ordinary move placement hints, so they must stay on the same intersections as stones and SVG grid lines. Mobile touch confirmation must render only the inner <code>.touch-confirm-marker</code>; <code>.point.touch-confirming::before</code> stays hidden, and confirmation feedback may brighten the point but must not drop the centering transform. If a mobile press state scales a point, it must compose with <code>translate(-50%, -50%)</code>, and reduced-motion states must keep the same translate so stones do not animate from grid cells back to intersections after placement.</li>

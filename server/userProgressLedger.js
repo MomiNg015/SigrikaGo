@@ -8,6 +8,7 @@ export const PROGRESS_REASONS = {
   gameResult: "game.result",
   gachaDraw: "gacha.draw",
   mailboxClaim: "mailbox.claim",
+  costumePurchase: "costume.purchase",
   shopPurchase: "shop.purchase"
 };
 

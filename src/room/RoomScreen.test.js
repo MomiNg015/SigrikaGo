@@ -15,6 +15,11 @@ describe("RoomScreen helpers", () => {
         user: { id: "black", username: "black", rank: "1段", rating: 1000 },
         characterId: "sigrika",
         character: CHARACTERS.sigrika,
+        costumeSnapshot: {
+          id: "sigrika-costume-01",
+          portraitUrl: "/assets/costumes/sigrika-01.webp",
+          candyEffectPortraitUrl: ""
+        },
         captures: 0,
         skillRemovals: 0,
         time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
@@ -71,6 +76,11 @@ describe("RoomScreen helpers", () => {
         user: { id: "black", username: "black", rank: "1段", rating: 1000 },
         characterId: "sigrika",
         character: CHARACTERS.sigrika,
+        costumeSnapshot: {
+          id: "sigrika-costume-01",
+          portraitUrl: "/assets/costumes/sigrika-01.webp",
+          candyEffectPortraitUrl: ""
+        },
         captures: 0,
         skillRemovals: 0,
         time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
@@ -130,6 +140,7 @@ describe("RoomScreen helpers", () => {
 
     expect(html).toContain("skill-burst");
     expect(html).toContain(CHARACTERS.sigrika.skill.name);
+    expect(html).toContain("/assets/costumes/sigrika-01.webp");
   });
 
   it("formats room header game information", () => {

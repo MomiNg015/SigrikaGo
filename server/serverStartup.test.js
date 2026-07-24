@@ -23,6 +23,7 @@ describe("server startup", () => {
     const ensureStoryScriptSchema = task("ensureStoryScriptSchema");
     const ensureOnboardingStorySchema = task("ensureOnboardingStorySchema");
     const ensureSkillTraitSchema = task("ensureSkillTraitSchema");
+    const ensureCostumeSchema = task("ensureCostumeSchema");
     const seedDefaultStoryScripts = task("seedDefaultStoryScripts");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
@@ -50,6 +51,7 @@ describe("server startup", () => {
       ensureStoryScriptSchema,
       ensureOnboardingStorySchema,
       ensureSkillTraitSchema,
+      ensureCostumeSchema,
       seedDefaultStoryScripts,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
@@ -71,6 +73,7 @@ describe("server startup", () => {
       "ensureStoryScriptSchema",
       "ensureOnboardingStorySchema",
       "ensureSkillTraitSchema",
+      "ensureCostumeSchema",
       "seedAdminDefaultConfig",
       "migrateLegacyAemeathOwnership",
       "seedDefaultStoryScripts",

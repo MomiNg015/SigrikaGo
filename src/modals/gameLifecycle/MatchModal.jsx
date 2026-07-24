@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { gameModeById } from "../../shared/gameModes.js";
@@ -19,7 +19,7 @@ export default function MatchModal({ user, startedAt, mode = "spark", onCancel, 
     <div className="modal-backdrop" onClick={onCancel}>
       <section className="small-modal" onClick={(event) => event.stopPropagation()}>
         <span className="match-portrait-wrap">
-          <img className="match-portrait" src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} />
+          <img className="match-portrait" src={resolveCharacterPortrait(character, { itemEffects: user?.itemEffects, user })} alt={character.name} />
           <CharacterChainBadge user={user} characterId={character.id} />
         </span>
         <h2>{gameMode.title}匹配中</h2>

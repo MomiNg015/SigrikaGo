@@ -66,9 +66,11 @@ export function loginPreloadAssets({
     return visibleCharacterIdSet.has(canonicalCharacterId(track.characterId));
   });
   const equipmentAssets = Object.values(achievementEquipmentAssets ?? {});
+  const equippedCostumes = Object.values(user?.equippedCostumes ?? {});
 
   const criticalImages = compactUnique([
     ...visibleCharacters.map((character) => character?.portrait),
+    ...equippedCostumes.flatMap((costume) => [costume?.portraitUrl, costume?.candyEffectPortraitUrl]),
     ...RUNTIME_IMAGE_ASSETS.home,
     ...RUNTIME_IMAGE_ASSETS.shop,
     ...Object.values(RECRUITMENT_ITEMS).map((item) => item?.imageUrl),
@@ -141,6 +143,10 @@ export function battlePreloadAssets({
 
   const criticalImages = compactUnique([
     ...roomCharacters.map((character) => character?.portrait),
+    ...players.flatMap((player) => [
+      player.costumeSnapshot?.portraitUrl,
+      player.costumeSnapshot?.candyEffectPortraitUrl
+    ]),
     ...players.map((player) => player.botProfile?.portraitUrl),
     ...(skillEnabled ? RUNTIME_IMAGE_ASSETS.effects : [])
   ]);

@@ -8,6 +8,7 @@ import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { listShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
 import { listPublicSkillTraits } from "./skillTraits.js";
+import { listCostumes } from "./costumes.js";
 
 export const LEADERBOARD_RECORD_SCAN_LIMIT = 10_000;
 
@@ -19,6 +20,7 @@ export function createPublicRouteHandlers({
   getPublicSiteSettingsFn = getPublicSiteSettings,
   listPublicCharacterResponseFn = listPublicCharacterResponse,
   listPublicSkillTraitsFn = listPublicSkillTraits,
+  listCostumesFn = listCostumes,
   listShopItemsFn = listShopItems,
   normalizeMode = normalizeGameModeId
 }) {
@@ -36,6 +38,14 @@ export function createPublicRouteHandlers({
 
   async function shop(req, res) {
     res.json(await listShopItemsFn(prisma, req.user.id));
+  }
+
+  async function costumes(req, res) {
+    try {
+      res.json(await listCostumesFn({ prisma, userId: req.user.id }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "读取服装目录失败" });
+    }
   }
 
   async function siteSettings(_req, res) {
@@ -106,6 +116,7 @@ export function createPublicRouteHandlers({
     characters,
     skillTraits,
     shop,
+    costumes,
     siteSettings,
     feedback,
     leaderboard,
@@ -120,6 +131,7 @@ export function createPublicRouter({ authHttp, ...deps }) {
   router.get("/characters", handlers.characters);
   router.get("/skill-traits", handlers.skillTraits);
   router.get("/shop", authHttp, handlers.shop);
+  router.get("/costumes", authHttp, handlers.costumes);
   router.get("/site-settings", handlers.siteSettings);
   router.post("/feedback", authHttp, handlers.feedback);
   router.get("/leaderboard", authHttp, handlers.leaderboard);

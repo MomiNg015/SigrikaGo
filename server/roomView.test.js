@@ -83,6 +83,20 @@ describe("room view serialization", () => {
     expect(view.players[1].completedItemEffects).toBeNull();
   });
 
+  it("serializes each player's room-start costume snapshot", () => {
+    const room = testRoom();
+    room.players[0].costumeSnapshot = {
+      id: "sigrika-costume-01",
+      portraitUrl: "/assets/costumes/sigrika-01.webp",
+      candyEffectPortraitUrl: ""
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.players[0].costumeSnapshot).toEqual(room.players[0].costumeSnapshot);
+    expect(view.players[1].costumeSnapshot).toBeNull();
+  });
+
   it("uses game as the black spectator view and includes only the white alternate view", () => {
     const view = buildRoomView(testRoom(), "spectator");
 

@@ -1,0 +1,71 @@
+@media (max-width: 768px) {
+  .character-costume-open-button {
+    top: 8px !important;
+    right: auto !important;
+    left: 8px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .character-costume-dialog {
+    width: calc(100vw - 14px) !important;
+    height: calc(100dvh - 14px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    max-height: none !important;
+  }
+
+  .character-costume-header {
+    min-height: 70px !important;
+    padding: 10px 64px 10px 14px !important;
+  }
+
+  .character-costume-header h3 {
+    font-size: 22px !important;
+  }
+
+  .character-costume-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(226px, auto) !important;
+    gap: 9px !important;
+    padding: 10px !important;
+  }
+
+  .character-costume-card {
+    min-height: 226px !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    justify-items: center !important;
+  }
+
+  .character-costume-detail-trigger {
+    min-height: 0 !important;
+    height: 100% !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    justify-items: center !important;
+    padding: 7px !important;
+  }
+
+  .character-costume-detail-trigger img {
+    height: 120px !important;
+  }
+
+  .character-costume-equip-button {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    justify-self: center !important;
+    margin: 0 0 10px !important;
+  }
+
+  .character-costume-detail {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: minmax(180px, 42dvh) auto !important;
+    gap: 10px !important;
+    padding: 16px !important;
+  }
+
+  .character-costume-detail > img {
+    max-height: 40dvh !important;
+  }
+}

@@ -152,6 +152,7 @@ export default function AppOverlays({
       <Suspense fallback={null}>
         {showHouse && user && (
           <HouseModal
+            token={token}
             user={user}
             characterListView={characterListView}
             audioSettings={audioSettings}
@@ -160,6 +161,8 @@ export default function AppOverlays({
             onSelectCharacter={selectCharacter}
             onSelectCharacterMusic={selectCharacterMusic}
             onApplyDecoration={applyStoneDecoration}
+            onUserChange={updateUser}
+            onNotice={showToast}
           />
         )}
         {showResume && user && (
@@ -308,6 +311,7 @@ export default function AppOverlays({
           <StoryPlayerModal
             script={storyPlayerScript?.script}
             characters={characters}
+            user={user}
             labels={storyPlayerScript?.labels}
             onClose={closeStoryPlayer}
           />

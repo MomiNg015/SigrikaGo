@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-23",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight nameplate shells plus their reduced-motion owners, Aemeath exact-ID username treatment and radial snowfluff core, the board-owned Aemeath rainbow grid-trace and particle owners with their reduced-motion fallback, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox item attachment art/name row, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared orange preload fill-flow, borderless warm-glow, upright endpoint-glide, and disabled password-toggle centering owners, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, crayon-background, and enlarged mascot-copy owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, the full-width 16px watch-mode tabs with one-em room-count spacing, the final Bright School practice-entry rotation, reduced-motion behavior, and home-utility hard-shadow parity owner, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
+  date: "2026-07-24",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight nameplate shells plus their reduced-motion owners, Aemeath exact-ID username treatment and radial snowfluff core, the board-owned Aemeath rainbow grid-trace and particle owners with their reduced-motion fallback, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox item attachment art/name row, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared orange preload fill-flow, borderless warm-glow, upright endpoint-glide, and disabled password-toggle centering owners, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, crayon-background, and enlarged mascot-copy owner files, the deep-red theatrical costume storefront with a separate card/art owner, portaled wardrobe dialog, split responsive wardrobe layout, Bright School costume overlay owners, and home-scoped portrait width guard, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, the full-width 16px watch-mode tabs with one-em room-count spacing, the final Bright School practice-entry rotation, reduced-motion behavior, and home-utility hard-shadow parity owner, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
-    totalFiles: 614,
-    totalBytes: 1228934,
-    importantCount: 7400,
-    importantFiles: 294,
-    hardcodedHexCount: 2344,
-    mediaFiles: 232,
-    reducedMotionFiles: 35,
+    totalFiles: 623,
+    totalBytes: 1252605,
+    importantCount: 7558,
+    importantFiles: 297,
+    hardcodedHexCount: 2407,
+    mediaFiles: 235,
+    reducedMotionFiles: 37,
     highZIndexFiles: 7
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-22 byte baseline records the final exact-asset Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight owners, including their persistent alpha-following rim lights, illustration-bound local motion, reduced-motion states, and Aemeath-only readable username edge treatment plus radial snowfluff pulse without perpendicular checker or cross gradients; it also records the split Aemeath rainbow-move owners, whose source follows the rendered stone center, whose four grid-axis traces clear the portrait width cap and fade toward the board edges, and whose distance-attenuated intersection nodes plus seven frequency echoes remain pointer-transparent before freezing to a compact reduced-motion mark. The baseline further records the isolated memorial-ticket hologram, the dedicated cinematic owner for the fixed lock/flight/atlas-frame/wave/flash timeline, the mailbox item-attachment art/name row that keeps internal item ids out of player copy, and the bounded shared preload fill-flow/warm-glow/upright-glide treatment plus password-toggle disabled-state centering repair. Keeping these owners separate preserves the generic fallback and makes each winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-24 byte baseline records the final exact-asset Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight owners, including their persistent alpha-following rim lights, illustration-bound local motion, reduced-motion states, and Aemeath-only readable username edge treatment plus radial snowfluff pulse without perpendicular checker or cross gradients; it also records the split Aemeath rainbow-move owners, whose source follows the rendered stone center, whose four grid-axis traces clear the portrait width cap and fade toward the board edges, and whose distance-attenuated intersection nodes plus seven frequency echoes remain pointer-transparent before freezing to a compact reduced-motion mark. The baseline further records the isolated memorial-ticket hologram, the dedicated cinematic owner for the fixed lock/flight/atlas-frame/wave/flash timeline, the mailbox item-attachment art/name row that keeps internal item ids out of player copy, the bounded shared preload fill-flow/warm-glow/upright-glide treatment plus password-toggle disabled-state centering repair, and the split costume storefront/detail, portal wardrobe, Bright School overlay, final-mobile owners, and home-scoped portrait width guard. The latest costume delta is limited to the alpha-trimmed art wrapper and portrait-overlapping price badge, single-line store title sizing, a local warm-gold hover spotlight with reduced-motion coverage, positioning overrides for the shared ShopWallet component, an explicit transparent handbook costume trigger that beats the generic button surface, and a fixed full-screen wardrobe-detail backdrop; it does not add another wallet or card visual system. Keeping these owners separate preserves the generic fallback and makes each winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
@@ -165,6 +165,8 @@ export const CSS_LAYER_GROUPS = [
       "modals/character-opening/replay-match.css",
       "modals/character-opening/opening-animation.css",
       "modals/character-opening/keyframes.css",
+      "modals/character-opening/costume-wardrobe.css",
+      "modals/character-opening/costume-wardrobe-mobile.css",
       "modals/character-music-player.css",
       "modals/character-music-player/shell-title.css",
       "modals/character-music-player/track-sheet.css",
@@ -181,6 +183,11 @@ export const CSS_LAYER_GROUPS = [
       "commerce/warehouse-toast/character-target.css",
       "commerce/warehouse-toast/toast-stack.css",
       "commerce/warehouse-toast/phone-layouts.css",
+      "commerce/shop-settings/costume-store.css",
+      "commerce/shop-settings/costume-store/storefront.css",
+      "commerce/shop-settings/costume-store/cards.css",
+      "commerce/shop-settings/costume-store/detail.css",
+      "commerce/shop-settings/costume-store/motion.css",
       "commerce/recruitment/board.css",
       "commerce/recruitment/board/surface.css",
       "commerce/recruitment/board/cards.css",
@@ -330,6 +337,7 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/qa-guard.css",
       "themes/bright-school/quality-base.css",
       "themes/bright-school/commerce.css",
+      "themes/bright-school/commerce/shop/costume-store.css",
       "themes/bright-school/home.css",
       "themes/bright-school/room.css",
       "themes/bright-school/modals.css",
@@ -402,6 +410,7 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/bright-school-portrait/settings-tabs/shared-active-tabs.css",
       "mobile-adaptive/information-center.css",
       "mobile-adaptive/semantic-accent-typography.css",
+      "mobile-adaptive/costume-store.css",
       "mobile-adaptive/user-nameplate-final.css",
       "mobile-adaptive/reduced-motion.css"
     ],
@@ -526,7 +535,18 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "modals/character-opening/skill-copy.css",
       "modals/character-opening/replay-match.css",
       "modals/character-opening/opening-animation.css",
-      "modals/character-opening/keyframes.css"
+      "modals/character-opening/keyframes.css",
+      "modals/character-opening/costume-wardrobe.css",
+      "modals/character-opening/costume-wardrobe-mobile.css"
+    ]
+  },
+  {
+    entry: "commerce/shop-settings/costume-store.css",
+    files: [
+      "commerce/shop-settings/costume-store/storefront.css",
+      "commerce/shop-settings/costume-store/cards.css",
+      "commerce/shop-settings/costume-store/detail.css",
+      "commerce/shop-settings/costume-store/motion.css"
     ]
   },
   {

@@ -266,6 +266,8 @@ export function toSocialUser(user, status = "offline", mode = "spark") {
     recentResults: modeStats?.recentResults ?? [],
     characterId: profile.selectedCharacter ?? "sigrika",
     itemEffects: profile.itemEffects,
+    equippedCostumes: profile.equippedCostumes,
+    ownedCostumeIds: profile.ownedCostumeIds,
     achievementEquipment: {
       titleAssetId: user.achievementEquipment?.titleAssetId ?? "",
       badgeAssetId: user.achievementEquipment?.badgeAssetId ?? "",

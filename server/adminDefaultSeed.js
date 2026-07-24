@@ -6,6 +6,7 @@ export async function seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CO
   await seedDefaultSkillTraits(prisma, snapshot.skillTraits);
   await seedCharacters(prisma, snapshot.characters);
   await seedDecorations(prisma, snapshot.decorations);
+  await seedCostumes(prisma, snapshot.costumes);
   await seedShopItems(prisma, snapshot.shopItems);
   await seedGachaPools(prisma, snapshot.gachaPools);
   await seedAchievementRewardAssets(prisma, snapshot.achievementRewardAssets);
@@ -21,6 +22,7 @@ export async function syncAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CO
   await syncSkillTraits(prisma, snapshot.skillTraits);
   await syncCharacters(prisma, snapshot.characters);
   await syncDecorations(prisma, snapshot.decorations);
+  await syncCostumes(prisma, snapshot.costumes);
   await syncShopItems(prisma, snapshot.shopItems);
   await syncGachaPools(prisma, snapshot.gachaPools);
   await syncAchievementRewardAssets(prisma, snapshot.achievementRewardAssets);
@@ -100,6 +102,19 @@ async function syncDecorations(prisma, rows = []) {
       continue;
     }
     await prisma.decoration.update({ where: { slug: row.slug }, data });
+  }
+}
+
+async function syncCostumes(prisma, rows = []) {
+  if (!prisma?.costume?.findUnique || !prisma?.costume?.create || !prisma?.costume?.update) return;
+  for (const row of rows) {
+    const existing = await prisma.costume.findUnique({ where: { id: row.id } });
+    const data = costumeData(row);
+    if (!existing) {
+      await prisma.costume.create({ data: { id: row.id, ...data } });
+      continue;
+    }
+    await prisma.costume.update({ where: { id: row.id }, data });
   }
 }
 
@@ -264,6 +279,20 @@ async function seedDecorations(prisma, rows = []) {
   }
 }
 
+async function seedCostumes(prisma, rows = []) {
+  if (!prisma?.costume?.findUnique || !prisma?.costume?.create) return;
+  for (const row of rows) {
+    const existing = await prisma.costume.findUnique({ where: { id: row.id } });
+    if (existing) continue;
+    await prisma.costume.create({
+      data: {
+        id: row.id,
+        ...costumeData(row)
+      }
+    });
+  }
+}
+
 async function seedShopItems(prisma, rows = []) {
   if (!prisma?.shopItem?.findFirst || !prisma?.shopItem?.create) return;
   for (const row of rows) {
@@ -418,6 +447,25 @@ function decorationData(row) {
     source: row.source ?? "default",
     enabled: row.enabled !== false,
     sortOrder: row.sortOrder ?? 0
+  };
+}
+
+function costumeData(row) {
+  return {
+    name: row.name,
+    characterSlug: row.characterSlug,
+    portraitUrl: row.portraitUrl,
+    candyEffectPortraitUrl: row.candyEffectPortraitUrl ?? "",
+    description: row.description ?? "",
+    illustName: row.illustName ?? "",
+    illustUrl: row.illustUrl ?? "",
+    priceCoins: row.priceCoins,
+    discountPercent: row.discountPercent ?? 0,
+    shopVisible: row.shopVisible !== false,
+    purchasable: row.purchasable !== false,
+    enabled: row.enabled !== false,
+    sortOrder: row.sortOrder ?? 0,
+    source: row.source ?? "default"
   };
 }
 

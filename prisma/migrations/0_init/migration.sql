@@ -315,6 +315,10 @@ CREATE TABLE "GameRecord" (
     "mode" TEXT NOT NULL DEFAULT 'spark',
     "snapshot" TEXT NOT NULL,
     "snapshotVersion" INTEGER NOT NULL DEFAULT 1,
+    "blackCostumeId" TEXT NOT NULL DEFAULT '',
+    "whiteCostumeId" TEXT NOT NULL DEFAULT '',
+    "blackCostumePortraitUrl" TEXT NOT NULL DEFAULT '',
+    "whiteCostumePortraitUrl" TEXT NOT NULL DEFAULT '',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -335,6 +339,51 @@ CREATE TABLE "Character" (
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Costume" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "characterSlug" TEXT NOT NULL,
+    "portraitUrl" TEXT NOT NULL,
+    "candyEffectPortraitUrl" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
+    "illustName" TEXT NOT NULL DEFAULT '',
+    "illustUrl" TEXT NOT NULL DEFAULT '',
+    "priceCoins" INTEGER NOT NULL,
+    "discountPercent" INTEGER NOT NULL DEFAULT 0,
+    "shopVisible" BOOLEAN NOT NULL DEFAULT true,
+    "purchasable" BOOLEAN NOT NULL DEFAULT true,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "source" TEXT NOT NULL DEFAULT 'default',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "UserCostume" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "costumeId" TEXT NOT NULL,
+    "source" TEXT NOT NULL DEFAULT 'purchase',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "UserCostume_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "UserCostume_costumeId_fkey" FOREIGN KEY ("costumeId") REFERENCES "Costume" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "UserCostumeEquipment" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "characterSlug" TEXT NOT NULL,
+    "costumeId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "UserCostumeEquipment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "UserCostumeEquipment_costumeId_fkey" FOREIGN KEY ("costumeId") REFERENCES "Costume" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -722,6 +771,24 @@ CREATE INDEX "GameRecord_mode_rated_createdAt_idx" ON "GameRecord"("mode", "rate
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Character_slug_key" ON "Character"("slug");
+
+-- CreateIndex
+CREATE INDEX "Costume_characterSlug_enabled_sortOrder_idx" ON "Costume"("characterSlug", "enabled", "sortOrder");
+
+-- CreateIndex
+CREATE INDEX "Costume_shopVisible_purchasable_enabled_sortOrder_idx" ON "Costume"("shopVisible", "purchasable", "enabled", "sortOrder");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserCostume_userId_costumeId_key" ON "UserCostume"("userId", "costumeId");
+
+-- CreateIndex
+CREATE INDEX "UserCostume_costumeId_idx" ON "UserCostume"("costumeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserCostumeEquipment_userId_characterSlug_key" ON "UserCostumeEquipment"("userId", "characterSlug");
+
+-- CreateIndex
+CREATE INDEX "UserCostumeEquipment_costumeId_idx" ON "UserCostumeEquipment"("costumeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CharacterSkill_characterId_key" ON "CharacterSkill"("characterId");

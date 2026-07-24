@@ -161,6 +161,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     catalogState,
     cooldownRemaining,
     currentBatch,
+    effectiveUser,
     mascotLine: mascotMood === SHOP_MASCOT_MOODS.thanks ? SHOP_MASCOT_THANKS_LINE : contextualLine,
     mascotMood,
     purchasingId,

@@ -11,6 +11,8 @@ export const USER_ASSET_RELATION_INCLUDE = {
   userDecorations: true,
   userItems: true,
   userItemEffects: true,
+  userCostumes: true,
+  costumeEquipment: { include: { costume: true } },
   modeStats: true
 };
 
@@ -19,6 +21,31 @@ export const USER_ASSET_RELATION_SELECT = {
   userDecorations: { select: { decorationSlug: true } },
   userItems: { select: { itemId: true, quantity: true } },
   userItemEffects: { select: { effectKey: true, effectValue: true } },
+  userCostumes: { select: { costumeId: true } },
+  costumeEquipment: {
+    select: {
+      characterSlug: true,
+      costume: {
+        select: {
+          id: true,
+          name: true,
+          characterSlug: true,
+          portraitUrl: true,
+          candyEffectPortraitUrl: true,
+          description: true,
+          illustName: true,
+          illustUrl: true,
+          priceCoins: true,
+          discountPercent: true,
+          shopVisible: true,
+          purchasable: true,
+          enabled: true,
+          sortOrder: true,
+          source: true
+        }
+      }
+    }
+  },
   modeStats: { select: { mode: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true } }
 };
 
@@ -90,6 +117,10 @@ export async function ensureGameModeSchema(client = prisma) {
   await ensureGameRecordColumn(client, gameRecordColumns, "whiteCoinsDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCoinsDelta" INTEGER NOT NULL DEFAULT 0`);
   await ensureGameRecordColumn(client, gameRecordColumns, "blackRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "blackRankDelta" INTEGER NOT NULL DEFAULT 0`);
   await ensureGameRecordColumn(client, gameRecordColumns, "whiteRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteRankDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumeId", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumeId" TEXT NOT NULL DEFAULT ''`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumeId", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumeId" TEXT NOT NULL DEFAULT ''`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCostumePortraitUrl", `ALTER TABLE "GameRecord" ADD COLUMN "blackCostumePortraitUrl" TEXT NOT NULL DEFAULT ''`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCostumePortraitUrl", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCostumePortraitUrl" TEXT NOT NULL DEFAULT ''`);
   await client.$executeRawUnsafe(`UPDATE "GameRecord" SET "mode" = 'spark' WHERE "mode" IS NULL OR "mode" = ''`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_blackUserId_createdAt_idx" ON "GameRecord"("blackUserId", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_whiteUserId_createdAt_idx" ON "GameRecord"("whiteUserId", "createdAt")`);

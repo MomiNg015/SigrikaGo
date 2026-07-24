@@ -109,6 +109,29 @@ describe("roomFactory", () => {
     expect(room.matchSource).toBe("duel");
   });
 
+  test("captures the selected character outfit as an immutable room snapshot", () => {
+    const player = toRoomPlayer(queuePlayer("costumed", "socket-costumed", {
+      user: {
+        selectedCharacter: "denia",
+        equippedCostumes: {
+          denia: {
+            id: "denia-costume-01",
+            portraitUrl: "/assets/costumes/denia-01.webp",
+            candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp"
+          }
+        }
+      }
+    }), COLORS.black);
+
+    expect(player.costumeSnapshot).toEqual({
+      id: "denia-costume-01",
+      portraitUrl: "/assets/costumes/denia-01.webp",
+      candyEffectPortraitUrl: "/assets/costumes/denia-01-candy.webp"
+    });
+    player.user.equippedCostumes.denia.portraitUrl = "/assets/costumes/changed-later.webp";
+    expect(player.costumeSnapshot.portraitUrl).toBe("/assets/costumes/denia-01.webp");
+  });
+
   test("creates a no-skill practice room with requested color and bot preloaded", () => {
     const room = createPracticeRoom(queuePlayer("human", "socket-human"), {
       difficulty: "basic",

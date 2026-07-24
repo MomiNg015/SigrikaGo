@@ -28,8 +28,8 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
             )}
             <span>{formatReplayTime(record.createdAt)}</span>
           </span>
-          <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} characters={characters} />
-          <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} characters={characters} />
+          <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} costumePortraitUrl={record.blackCostumePortraitUrl} characters={characters} />
+          <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} costumePortraitUrl={record.whiteCostumePortraitUrl} characters={characters} />
           <span>{record.resultText}</span>
           <span>{record.moveCount}手</span>
         </button>
@@ -64,11 +64,11 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
   );
 }
 
-function ReplayPlayer({ name, characterId, characters }) {
+function ReplayPlayer({ name, characterId, costumePortraitUrl, characters }) {
   const character = findCharacter(characters, characterId);
   return (
     <span className="replay-player-cell">
-      {character && <img src={character.portrait} alt={character.name} />}
+      {character && <img src={costumePortraitUrl || character.portrait} alt={character.name} />}
       <b>{name}</b>
     </span>
   );

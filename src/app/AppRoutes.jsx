@@ -126,6 +126,7 @@ export default function AppRoutes({
       characters={characters}
       loadingLinesText={siteSettings.characterLoadingLines}
       progress={assetProgress}
+      user={user}
       statusText="正在加载界面..."
       tipsText={siteSettings.preloadTips}
     />
@@ -137,6 +138,7 @@ export default function AppRoutes({
       label={TUTORIAL_BATTLE_ENTRY_LOADING_TEXT}
       progress={assetProgress}
       showTips={false}
+      user={user}
     />
   );
 
@@ -148,6 +150,7 @@ export default function AppRoutes({
           characters={characters}
           loadingLinesText={siteSettings.characterLoadingLines}
           progress={assetProgress}
+          user={user}
           tipsText={siteSettings.preloadTips}
         />
       )}
@@ -230,6 +233,7 @@ export default function AppRoutes({
           progress={assetProgress}
           statusText="正在恢复对局..."
           tipsText={siteSettings.preloadTips}
+          user={user}
         />
       )}
       {view === "tutorial-battle" && tutorialBattleSession && user && (

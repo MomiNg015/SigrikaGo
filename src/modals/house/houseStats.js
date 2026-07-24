@@ -1,6 +1,6 @@
 import { COLORS } from "../../shared/game.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import { resolveCharacterPortrait } from "../../shared/characterPortraits.js";
 import { recordWinnerColor } from "../../shared/gameRecords.js";
 import { SYSTEM_VOICE_EVENTS } from "../../shared/systemVoices.js";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
@@ -71,8 +71,8 @@ export function characterSortieDisabledReason(characterId, itemEffects = {}) {
     : "";
 }
 
-export function characterCandyPortrait(character = {}, itemEffects = {}) {
-  return resolveCandyPortrait(character, itemEffects);
+export function characterCandyPortrait(character = {}, itemEffects = {}, user = null) {
+  return resolveCharacterPortrait(character, { itemEffects, user });
 }
 
 export function activeCharacterItemEffects(characterId, itemEffects = {}) {

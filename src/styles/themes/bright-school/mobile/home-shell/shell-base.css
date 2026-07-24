@@ -9,7 +9,7 @@
     touch-action: pan-y !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(*, *::before, *::after) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen :where(*, *::before, *::after) {
     max-width: 100% !important;
   }
 

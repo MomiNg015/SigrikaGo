@@ -40,6 +40,8 @@ model User {
   userDecorations    UserDecoration[]
   userItems          UserItem[]
   userItemEffects    UserItemEffect[]
+  userCostumes       UserCostume[]
+  costumeEquipment   UserCostumeEquipment[]
   modeStats          UserModeStats[]
   gachaDraws         GachaDraw[]
   recruitmentTasks   RecruitmentTask[]
@@ -257,6 +259,59 @@ model UserItemEffect {
   @@index([effectKey])
 }
 
+model Costume {
+  id                       String   @id
+  name                     String
+  characterSlug            String
+  portraitUrl              String
+  candyEffectPortraitUrl   String   @default("")
+  description              String   @default("")
+  illustName               String   @default("")
+  illustUrl                String   @default("")
+  priceCoins               Int
+  discountPercent          Int      @default(0)
+  shopVisible              Boolean  @default(true)
+  purchasable              Boolean  @default(true)
+  enabled                  Boolean  @default(true)
+  sortOrder                Int      @default(0)
+  source                   String   @default("default")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  owners                   UserCostume[]
+  equippedBy               UserCostumeEquipment[]
+
+  @@index([characterSlug, enabled, sortOrder])
+  @@index([shopVisible, purchasable, enabled, sortOrder])
+}
+
+model UserCostume {
+  id        String   @id @default(cuid())
+  userId    String
+  costumeId String
+  source    String   @default("purchase")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  costume   Costume  @relation(fields: [costumeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, costumeId])
+  @@index([costumeId])
+}
+
+model UserCostumeEquipment {
+  id            String   @id @default(cuid())
+  userId        String
+  characterSlug String
+  costumeId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  costume       Costume  @relation(fields: [costumeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, characterSlug])
+  @@index([costumeId])
+}
+
 model UserProgressLedger {
   id          String   @id @default(cuid())
   userId      String
@@ -373,6 +428,10 @@ model GameRecord {
   whiteName   String
   blackCharacter String
   whiteCharacter String
+  blackCostumeId String @default("")
+  whiteCostumeId String @default("")
+  blackCostumePortraitUrl String @default("")
+  whiteCostumePortraitUrl String @default("")
   resultText  String
   winnerColor String?
   resultReason String?

@@ -22,6 +22,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Structured Skill Descriptions](./skill-description-contract.md) | Persisted trait glossary, reference safety, and overclock display contract | Filled |
 | [Practice Room Contract](./practice-room-contract.md) | Practice socket, bot authority, persistence, visibility, and no-progression boundaries | Filled |
+| [Costume System Contract](./costume-system-contract.md) | Catalog, purchase, equipment, portrait precedence, match snapshots, and admin lifecycle | Filled |
 
 ---
 

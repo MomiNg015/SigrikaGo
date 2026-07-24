@@ -34,6 +34,13 @@ describe("replay summary pagination", () => {
       { blackUserId: "user-1" },
       { whiteUserId: "user-1" }
     ]);
+    expect(query.select).toMatchObject({
+      blackCostumeId: true,
+      whiteCostumeId: true,
+      blackCostumePortraitUrl: true,
+      whiteCostumePortraitUrl: true
+    });
+    expect(page.records[0].blackCostumePortraitUrl).toBe("/assets/costumes/sigrika-01.webp");
   });
 
   it("applies the composite createdAt/id cursor without skipping equal timestamps", async () => {
@@ -95,6 +102,10 @@ function replayRecord(index) {
     mode: "spark",
     blackCharacter: "sigrika",
     whiteCharacter: "aemeath",
+    blackCostumeId: "sigrika-costume-01",
+    whiteCostumeId: "",
+    blackCostumePortraitUrl: "/assets/costumes/sigrika-01.webp",
+    whiteCostumePortraitUrl: "",
     createdAt: new Date(Date.UTC(2026, 0, 1, 0, 0, 100 - index))
   };
 }

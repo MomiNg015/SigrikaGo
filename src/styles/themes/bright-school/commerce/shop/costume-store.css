@@ -1,0 +1,105 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-store-page > .shop-layout.shop-window-body {
+  height: 100% !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button {
+  color: #3d2b25 !important;
+  background: #efff8a !important;
+  border-color: #3d2b25 !important;
+  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.76) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:focus-visible {
+  background: #fff7aa !important;
+  transform: translateY(-1px) rotate(-1deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
+  color: #f8e7c2 !important;
+  background:
+    radial-gradient(circle at 68% 24%, rgba(255, 210, 116, 0.17), transparent 26%),
+    linear-gradient(90deg, rgba(24, 5, 12, 0.96) 0 34%, transparent 34%),
+    linear-gradient(135deg, #671126, #260711 72%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-card-trigger {
+  color: #f4d889 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-card-trigger:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-card-trigger:focus-visible {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-price {
+  color: #3a0a13 !important;
+  background: #e5b7aa !important;
+  border: 3px solid #21080d !important;
+  box-shadow: 3px 4px 0 rgba(11, 2, 5, 0.64) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-wallet-wrap {
+  top: auto !important;
+  right: auto !important;
+  bottom: 4% !important;
+  left: 11% !important;
+  width: auto !important;
+  margin: 0 !important;
+  transform: rotate(-1.5deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-backdrop {
+  background: rgba(22, 2, 8, 0.62) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-modal {
+  color: #f7e4bd !important;
+  background:
+    radial-gradient(circle at 24% 28%, rgba(238, 179, 82, 0.12), transparent 28%),
+    linear-gradient(135deg, #52101d, #1f070c) !important;
+  border: 4px solid #2b0a10 !important;
+  border-radius: 18px !important;
+  box-shadow: 8px 9px 0 rgba(27, 5, 10, 0.88), 0 24px 48px rgba(0, 0, 0, 0.44) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-art {
+  background: radial-gradient(circle, rgba(238, 185, 91, 0.2), transparent 68%) !important;
+  border: 2px solid rgba(228, 190, 107, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-kicker,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-price {
+  color: #efc96f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy h3,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy p,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy a,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy span {
+  color: #f7e4bd !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-copy > p {
+  padding: 14px 16px !important;
+  background: rgba(20, 4, 8, 0.44) !important;
+  border: 2px solid rgba(228, 190, 107, 0.35) !important;
+  border-radius: 12px !important;
+  line-height: 1.65 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-lock,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-owned,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-purchase-equip-prompt {
+  color: #f8e7c2 !important;
+  background: rgba(15, 3, 7, 0.52) !important;
+  border: 2px solid rgba(228, 190, 107, 0.38) !important;
+  border-radius: 12px !important;
+}

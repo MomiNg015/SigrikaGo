@@ -10,6 +10,7 @@ const DOMAIN_KEYS = Object.freeze({
   skillTraits: (row) => row.id,
   characters: (row) => row.slug,
   decorations: (row) => row.slug,
+  costumes: (row) => row.id,
   shopItems: (row) => `${row.category}:${row.targetId}`,
   gachaPools: (row) => row.id,
   achievementRewardAssets: (row) => row.id,

@@ -1,0 +1,76 @@
+.costume-detail-modal {
+  width: min(780px, calc(100vw - 36px));
+  display: grid;
+  grid-template-columns: minmax(230px, 0.8fr) minmax(0, 1fr);
+  gap: 22px;
+  padding: 24px;
+  overflow: auto;
+}
+
+.costume-detail-art {
+  min-height: 310px;
+  display: grid;
+  place-items: center;
+}
+
+.costume-detail-art img {
+  width: 100%;
+  max-height: 330px;
+  object-fit: contain;
+}
+
+.costume-detail-copy {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.costume-detail-copy h3,
+.costume-detail-copy p {
+  margin: 0;
+}
+
+.costume-detail-kicker {
+  width: fit-content;
+  font-weight: 900;
+}
+
+.costume-detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.costume-detail-price strong {
+  font-size: 28px;
+}
+
+.costume-detail-lock,
+.costume-detail-owned {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 9px 12px;
+  font-weight: 900;
+}
+
+.costume-detail-copy .primary-action:disabled {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.58;
+  transform: none;
+}
+
+.costume-purchase-equip-prompt {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.costume-purchase-equip-prompt .primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}

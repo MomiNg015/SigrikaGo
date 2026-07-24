@@ -29,6 +29,12 @@ describe("admin default snapshot export", () => {
       illustName: "憨态喵",
       illustUrl: "https://space.bilibili.com/392815021"
     });
+    expect(config.costumes[0]).toMatchObject({
+      id: "sigrika-costume-01",
+      characterSlug: "sigrika",
+      portraitUrl: "/assets/costumes/sigrika-01.webp",
+      priceCoins: 600
+    });
     expect(config.gachaPools[0]).toMatchObject({
       startsAt: "2026-01-02T03:04:05.000Z",
       endsAt: null,
@@ -168,6 +174,25 @@ function snapshotPrisma() {
         source: "default",
         enabled: true,
         sortOrder: 201
+      }]
+    },
+    costume: {
+      findMany: async () => [{
+        id: "sigrika-costume-01",
+        name: "西格莉卡·服装 01",
+        characterSlug: "sigrika",
+        portraitUrl: "/assets/costumes/sigrika-01.webp",
+        candyEffectPortraitUrl: "",
+        description: "",
+        illustName: "",
+        illustUrl: "",
+        priceCoins: 600,
+        discountPercent: 0,
+        shopVisible: true,
+        purchasable: true,
+        enabled: true,
+        sortOrder: 100,
+        source: "default"
       }]
     },
     shopItem: {

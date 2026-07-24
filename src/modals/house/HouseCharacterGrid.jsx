@@ -81,7 +81,7 @@ export default function HouseCharacterGrid({
                 ))}
               </div>
             )}
-            <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
+            <img src={characterCandyPortrait(character, itemEffects, user)} alt={character.name} />
             <CharacterChainBadge user={user} characterId={characterId} />
             <strong>{character.name}</strong>
           </div>

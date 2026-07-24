@@ -59,6 +59,10 @@ export async function saveGameRecord({ prisma, room }) {
       whiteName: white.user.username,
       blackCharacter: black.characterId,
       whiteCharacter: white.characterId,
+      blackCostumeId: black.costumeSnapshot?.id ?? "",
+      whiteCostumeId: white.costumeSnapshot?.id ?? "",
+      blackCostumePortraitUrl: black.costumeSnapshot?.portraitUrl ?? "",
+      whiteCostumePortraitUrl: white.costumeSnapshot?.portraitUrl ?? "",
       resultText: room.game.winner?.text ?? "对局结束",
       winnerColor: resultMetadata.winnerColor,
       resultReason: resultMetadata.resultReason,
@@ -73,7 +77,7 @@ export async function saveGameRecord({ prisma, room }) {
       moveCount: room.game.moveNumber,
       mode,
       snapshot: JSON.stringify(roomView(room, black.user.id)),
-      snapshotVersion: 1
+      snapshotVersion: 2
     }
   });
 

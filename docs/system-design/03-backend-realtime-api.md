@@ -18,6 +18,14 @@
 
 ## API 与实时事件
 
+### 服装目录、购买与装扮 API
+
+- 登录玩家通过 `GET /api/costumes` 读取启用服装目录；每条 payload 同时包含当前用户是否拥有服装、是否拥有对应角色、是否正在装扮和折后价格。商店展示/批次随机由前端会话处理，服务端仍是可见性、可购买性与所有权的最终权威。
+- `POST /api/costumes/:id/purchase` 在单个 Prisma 事务内校验服装启用/商店展示/可购买、对应角色所有权、重复购买与金币余额，以条件扣款避免并发超花，然后创建 `UserCostume` 和 `costume.purchase` 金币流水。路由沿用商城的购买次数成就计数和成就结算。
+- `POST /api/costumes/equip` 接受 `{ characterSlug, costumeId }`；非默认服装必须启用、归属同一角色且由用户拥有。`costumeId="default"` 删除该角色唯一装备槽，恢复代码/角色目录的默认立绘。
+- 管理接口为 `GET/POST/PATCH /api/admin/costumes`。保存前验证稳定 id、角色目标、资源 URL、价格/折扣和展示状态并写审计；停用服装或修改所属角色时删除引用该服装的 `UserCostumeEquipment`，但保留 `UserCostume`。
+- `ensureCostumeSchema()` 必须在 `seedAdminDefaultConfig()` 前运行，使未执行 Prisma migration 的旧开发 SQLite 也能先建立服装目录、所有权、装备表和索引；生产仍以 migration deploy 为准。
+
 ## Production Deployment Hardening
 
 - Runtime security helpers live in `server/security.js`.

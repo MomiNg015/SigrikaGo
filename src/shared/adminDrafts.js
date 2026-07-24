@@ -293,6 +293,66 @@ export function decorationDraftToBody(draft) {
   };
 }
 
+export function emptyCostumeDraft() {
+  return {
+    id: "",
+    name: "",
+    characterSlug: "",
+    portraitUrl: "",
+    candyEffectPortraitUrl: "",
+    description: "",
+    illustName: "",
+    illustUrl: "",
+    priceCoins: 600,
+    discountPercent: 0,
+    shopVisible: true,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 0,
+    source: "admin"
+  };
+}
+
+export function buildCostumeDraft(costume) {
+  return { ...emptyCostumeDraft(), ...costume };
+}
+
+export function costumeDraftToBody(draft, { editing = false } = {}) {
+  const priceCoins = parseAdminInteger(draft.priceCoins);
+  const discountPercent = parseAdminInteger(draft.discountPercent);
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const errors = [];
+  if (!editing && !/^[a-z0-9][a-z0-9-]{1,63}$/.test(String(draft.id ?? "").trim())) errors.push("服装 ID");
+  if (!String(draft.name ?? "").trim()) errors.push("服装名称");
+  if (!String(draft.characterSlug ?? "").trim()) errors.push("所属角色");
+  if (!String(draft.portraitUrl ?? "").trim()) errors.push("服装立绘");
+  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
+  if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
+  if (sortOrder == null) errors.push("排序必须是整数");
+  if (String(draft.illustUrl ?? "").trim() && !String(draft.illustName ?? "").trim()) errors.push("填写 illust 链接时必须填写绘师名");
+  if (errors.length) return { ok: false, error: `请检查：${errors.join("、")}` };
+  return {
+    ok: true,
+    value: {
+      ...(!editing ? { id: String(draft.id).trim() } : {}),
+      name: String(draft.name).trim(),
+      characterSlug: String(draft.characterSlug).trim(),
+      portraitUrl: String(draft.portraitUrl).trim(),
+      candyEffectPortraitUrl: String(draft.candyEffectPortraitUrl ?? "").trim(),
+      description: String(draft.description ?? "").trim(),
+      illustName: String(draft.illustName ?? "").trim(),
+      illustUrl: String(draft.illustUrl ?? "").trim(),
+      priceCoins,
+      discountPercent,
+      shopVisible: Boolean(draft.shopVisible),
+      purchasable: Boolean(draft.purchasable),
+      enabled: Boolean(draft.enabled),
+      sortOrder,
+      source: String(draft.source ?? "admin").trim() || "admin"
+    }
+  };
+}
+
 export function shopCategoryLabel(category) {
   if (category === "music") return "闊充箰";
   if (category === "decoration") return "装饰";

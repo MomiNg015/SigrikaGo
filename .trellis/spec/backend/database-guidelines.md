@@ -47,7 +47,7 @@ Questions to answer:
 - `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
 
 #### 3. Contracts
-- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
+- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Costume`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
 - The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, game records, live-room state, and internal `SiteSetting` keys prefixed with `migration.`.
 - When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
 - `npm run check` must run `check:admin-snapshot` so unexported local admin edits fail before commit/build handoff.
@@ -56,7 +56,7 @@ Questions to answer:
 - Formal deployment is a separate boundary: after the verified backup and migrations, preview then apply `admin:sync-defaults`. It updates matching snapshot rows and creates missing rows, but does not delete cloud-only rows or touch excluded user/history/runtime tables.
 - When a built-in catalog resource has a code-owned current asset, API payload helpers should normalize that built-in row from the shared/static source of truth across every player-visible projection, including shop, inventory, and gacha reward/prize payloads. If an old default path must be cleaned up at startup, use a narrowly keyed `updateMany` for empty values or exact stale default paths only; do not overwrite arbitrary admin-managed custom image URLs.
 - Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
-- Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
+- Startup order matters: schema guards for achievement, gacha, music track, recruitment, and costume tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
 
 #### 4. Validation & Error Matrix
 - Existing row found during startup by stable key/slug/id -> skip without changing admin-managed fields.
@@ -961,7 +961,7 @@ await prisma.$executeRaw`
 
 #### 3. Contracts
 - Fresh databases use `prisma migrate deploy`; never use `prisma db push` for production deployment.
-- Do not edit a migration that may already be deployed. Add a new ordered migration for every later schema change.
+- Do not edit a migration that may already be deployed. While the repository is explicitly in prelaunch single-baseline mode and `migrationBaselineVerification.test.js` requires exactly `[0_init]`, fold new schema into the complete baseline and rerun `npm run verify:migrations`. After the first production baseline adoption, add a new ordered migration for every later schema change and update the active-history contract test deliberately.
 - An existing data-bearing database may adopt `0_init` only after service shutdown, a verified backup, confirmation that no conflicting migration history exists, and a zero schema diff against `prisma/schema.prisma`.
 - Existing-database adoption uses `prisma migrate resolve --applied 0_init`, then `prisma migrate deploy`; application startup must never write or infer `_prisma_migrations` rows.
 - Migration verification databases must resolve below `.tmp/migration-baseline/`; the verifier must reject `prisma/dev.db` and any caller-selected external path.
@@ -971,6 +971,8 @@ await prisma.$executeRaw`
 - Current-schema database with no migration history -> preserve a sentinel row, resolve `0_init`, deploy with no pending SQL, and retain the sentinel.
 - Schema diff exits 2 -> stop adoption and review the drift; do not resolve the baseline.
 - `_prisma_migrations` contains old or unknown rows -> stop for manual reconciliation.
+- Repository still enforces a single prelaunch baseline and no production database has adopted it -> update `0_init`, keep one active migration directory, and verify fresh/adoption fixtures.
+- Production has already adopted `0_init` -> never rewrite it; create a later migration and review the changed active-history expectation.
 - Backup, database-path, or service-stop uncertainty -> stop before any migration-history write.
 
 #### 5. Good/Base/Bad Cases
@@ -981,7 +983,7 @@ await prisma.$executeRaw`
 - Bad: retaining an incomplete pre-baseline migration chain whose first operation alters a table that no active migration creates.
 
 #### 6. Tests Required
-- Assert the active history contains only the full baseline plus the SQLite migration lock until a legitimate post-baseline migration is added.
+- Assert the active history contains only the full baseline plus the SQLite migration lock while the repository remains in explicit prelaunch single-baseline mode; the first legitimate post-baseline migration must update this assertion and deployment documentation together.
 - Assert every Prisma model has a matching baseline `CREATE TABLE` statement.
 - Run the disposable end-to-end verifier for fresh deploy, repeated deploy, existing-schema adoption, sentinel preservation, migration status, and zero schema diff.
 - Unit-test path guards so repository and external database paths are rejected.

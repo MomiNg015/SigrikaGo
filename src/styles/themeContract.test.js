@@ -122,7 +122,8 @@ describe("player theme CSS contract", () => {
       "./shop/window-redesign.css",
       "./shop/background-crayon.css",
       "./shop/window-card-layout.css",
-      "./shop/card-badges.css"
+      "./shop/card-badges.css",
+      "./shop/costume-store.css"
     ]);
     expect(shopEntry).not.toContain(".shop-layout {");
     expect(shopEntry).not.toContain(".shop-item {");

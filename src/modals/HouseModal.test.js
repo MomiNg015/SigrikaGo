@@ -304,7 +304,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(source).toContain("function closeHouseModal()");
     expect(source).toContain("function playCharacterDetailVoice(character)");
     expect(source.match(/stopVoicePlayback\(\);/g)).toHaveLength(1);
-    expect(source).toMatch(/function closeCharacterDetail\(\) \{\s*stopVoicePlayback\(\);\s*setDetailCharacter\(null\);\s*\}/);
+    expect(source).toMatch(/function closeCharacterDetail\(\) \{\s*stopVoicePlayback\(\);\s*setShowCostumes\(false\);\s*setDetailCharacter\(null\);\s*\}/);
     expect(source).toMatch(/function closeHouseModal\(\) \{\s*onClose\?\.\(\);\s*\}/);
     expect(source).toContain("onClose={closeCharacterDetail}");
     expect(source).toContain("onPlayDetailVoice={() => playCharacterDetailVoice(detailCharacter)}");
