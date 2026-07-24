@@ -204,3 +204,36 @@ Fixed the warehouse candy target whitelist drift by sharing supported target rul
 ### Next Steps
 
 - None - task complete
+
+
+## Session 67: Costume portrait calibration and dynamic shop stage
+
+**Date**: 2026-07-24
+**Task**: Costume portrait calibration and dynamic shop stage
+**Branch**: `master`
+
+### Summary
+
+Added persisted costume portrait framing across admin, rooms, results and replays; replaced the costume shop fixed slots with Zahira's measured count-aware layout and whole-card rotation/float motion; updated tests, specs, and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `72702e97` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

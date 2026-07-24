@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 66
-- **Last Active**: 2026-07-23
+- **Total Sessions**: 67
+- **Last Active**: 2026-07-24
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~206 | Active |
+| `journal-2.md` | ~239 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 67 | 2026-07-24 | Costume portrait calibration and dynamic shop stage | `72702e97` | `master` |
 | 66 | 2026-07-23 | Allow Rainbow Candy On Lynae | `da66d4ae` | `master` |
 | 65 | 2026-07-23 | Add Lynae rainbow candy story and voice effect | `439df835` | `master` |
 | 64 | 2026-07-23 | 修复首页模式与准时宝陪练启动无响应 | `15e951c0` | `codex/fix-practice-start` |
