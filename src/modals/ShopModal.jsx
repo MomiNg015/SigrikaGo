@@ -48,7 +48,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="shop-header">
+        <header className="shop-header" data-store={activeStore}>
           <button
             className={`shop-refresh-button is-${activeCatalog.refreshMode}`}
             type="button"

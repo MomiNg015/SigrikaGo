@@ -21,8 +21,10 @@ import {
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { modeOrderedEntries } from "./gameModes.js";
 import {
+  SHOP_BACKGROUND_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MOBILE_BACKGROUND_IMAGE,
   SHOP_WALLET_IMAGE
 } from "./shopMascotAssets.js";
 
@@ -40,6 +42,8 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     ...modeOrderedEntries().map((mode) => mode.iconUrl)
   ]),
   shop: Object.freeze([
+    SHOP_BACKGROUND_IMAGE,
+    SHOP_MOBILE_BACKGROUND_IMAGE,
     SHOP_MASCOT_DEFAULT_IMAGE,
     SHOP_MASCOT_THANKS_IMAGE,
     SHOP_WALLET_IMAGE,

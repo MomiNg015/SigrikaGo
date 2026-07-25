@@ -6,8 +6,10 @@ import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { modeOrderedEntries } from "./gameModes.js";
 import {
+  SHOP_BACKGROUND_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
-  SHOP_MASCOT_THANKS_IMAGE
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MOBILE_BACKGROUND_IMAGE
 } from "./shopMascotAssets.js";
 import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadImageAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
 
@@ -74,6 +76,8 @@ describe("deployment preload asset helpers", () => {
       expect(assets.images).toContain(mode.iconUrl);
       expect(assets.criticalImages).toContain(mode.iconUrl);
     }
+    expect(assets.images).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(assets.images).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(assets.images).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
@@ -118,8 +122,12 @@ describe("deployment preload asset helpers", () => {
   it("derives static image preload groups from the runtime asset registry", () => {
     const assets = loginPreloadAssets();
 
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(fs.existsSync(path.resolve("public", SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));

@@ -25,6 +25,7 @@ import {
   pickShopMascotLine,
   selectShopBatch,
   SHOP_BATCH_SIZE,
+  SHOP_BACKGROUND_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_EMPTY_LINE,
   SHOP_MASCOT_ERROR_LINE,
@@ -34,6 +35,7 @@ import {
   SHOP_MASCOT_REFRESH_LINES,
   SHOP_MASCOT_THANKS_IMAGE,
   SHOP_MASCOT_THANKS_LINE,
+  SHOP_MOBILE_BACKGROUND_IMAGE,
   SHOP_REFRESH_COOLDOWN_MS,
   SHOP_WALLET_IMAGE
 } from "./shopModalHelpers.js";
@@ -72,6 +74,7 @@ describe("Zahira shop window", () => {
     expect(html).toContain('aria-labelledby="shop-window-title"');
     expect(html).toContain("shop-refresh-button");
     expect(html).toContain("扎希拉商铺");
+    expect(html).toContain('data-store="zahira"');
     expect(html).toContain("shop-close-button");
     const headerHtml = html.slice(html.indexOf("<header"), html.indexOf("</header>"));
     expect(headerHtml.indexOf("shop-refresh-button")).toBeLessThan(headerHtml.indexOf("shop-window-title"));
@@ -421,19 +424,19 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
+    expect(themeCss).toContain('.shop-header[data-store="zahira"]');
+    expect(themeCss).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(themeCss).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(themeCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
     expect(themeCss).toContain("display: contents !important");
     expect(themeCss).toContain(".shop-category-badge-decoration");
     expect(themeCss).toContain("bottom: 52% !important");
-    expect(themeCss).toContain("--shop-wall-axis: 90deg");
-    expect(themeCss).toContain("--shop-display-end: 68%");
-    expect(themeCss).toContain("--shop-display-crayon: oklch(91% 0.035 215)");
-    expect(themeCss).toContain("--shop-reception-crayon: oklch(90% 0.045 145)");
-    expect(themeCss).toContain("--shop-counter-crayon: oklch(63% 0.085 55)");
+    expect(themeCss).toContain("--shop-background-image:");
+    expect(themeCss).toContain("--shop-mobile-background-image:");
     expect(themeCss).toContain(".shop-layout.shop-window-body::before");
     expect(themeCss).toContain(".shop-layout.shop-window-body::after");
-    expect(themeCss).toContain("68.35% 55%");
-    expect(themeCss).toContain("clip-path: polygon(");
+    expect(themeCss).toContain("background-size: auto, cover");
+    expect(themeCss).toContain("content: none !important");
     expect(themeCss).toContain(".costume-shop-card-trigger:hover");
     expect(themeCss).toContain("background: transparent !important");
     expect(themeCss).toContain(".costume-detail-purchase-button");
@@ -443,10 +446,9 @@ describe("Zahira shop window", () => {
     expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
     expect(mobileCss).toContain("height: 56% !important");
     expect(mobileCss).toContain("font-size: clamp(13px, 3.3vw, 16px) !important");
-    expect(mobileCss).toContain("--shop-wall-axis: 180deg");
-    expect(mobileCss).toContain("--shop-display-end: 56%");
-    expect(mobileCss).toContain("100% 56.15%");
-    expect(mobileCss).toContain("61% 56.25%");
+    expect(mobileCss).toContain("var(--shop-mobile-background-image)");
+    expect(mobileCss).toContain("background-position: 0 0, center !important");
+    expect(mobileCss).toContain("background-size: auto, cover !important");
     expect(mobileCss).toContain("padding: 0 !important");
     expect(mobileCss).toContain("gap: 0 !important");
     expect(mobileCss).toContain("max-width: none !important");

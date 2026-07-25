@@ -1,0 +1,16 @@
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body {
+    background-color: oklch(76% 0.035 285) !important;
+    background-image:
+      linear-gradient(rgba(255, 250, 232, 0.03), rgba(41, 30, 49, 0.08)),
+      var(--shop-mobile-background-image) !important;
+    background-position: 0 0, center !important;
+    background-repeat: no-repeat !important;
+    background-size: auto, cover !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body::after {
+    content: none !important;
+  }
+}

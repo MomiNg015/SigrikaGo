@@ -611,6 +611,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/information-center.css",
       "./mobile-adaptive/semantic-accent-typography.css",
       "./mobile-adaptive/shop-window-redesign.css",
+      "./mobile-adaptive/shop-background-raster.css",
       "./mobile-adaptive/shop-window-card-layout.css",
       "./mobile-adaptive/shop-window-compact.css",
       "./mobile-adaptive/shop-card-badges.css",
