@@ -369,3 +369,36 @@ Unified Residual Star costume details with Zahira's structure, added success-onl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 72: Zahira shop crayon backgrounds
+
+**Date**: 2026-07-25
+**Task**: Zahira shop crayon backgrounds
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Added independent desktop and portrait mobile crayon backgrounds for Zahira shop, a Zahira-only header treatment, runtime preload registration, responsive CSS contracts, browser QA, tests, and system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d4185bd7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
