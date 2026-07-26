@@ -31,19 +31,50 @@
 }
 
 .shop-switch-button {
+  --shop-sign-clip: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   position: absolute;
   z-index: 18;
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 3px solid currentColor;
-  border-radius: 999px;
+  min-width: 154px;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 8px 24px;
+  border: 0;
+  border-radius: 0;
+  clip-path: var(--shop-sign-clip);
   font-weight: 900;
   letter-spacing: 0.04em;
+  isolation: isolate;
+}
+
+.shop-switch-button::before,
+.shop-switch-button::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.shop-switch-button::before {
+  z-index: 0;
+  inset: 3px;
+  clip-path: var(--shop-sign-clip);
+}
+
+.shop-switch-button::after {
+  z-index: 1;
+  inset: 0;
+}
+
+.shop-switch-button > span {
+  position: relative;
+  z-index: 2;
 }
 
 .zahira-to-costume {
+  --shop-sign-clip: polygon(0 50%, 20px 4%, 97% 0, 100% 91%, 20px 100%);
   left: 14px;
   bottom: 96px;
+  padding-left: 31px;
 }
 
 .costume-store-panel {
@@ -134,8 +165,10 @@
 }
 
 .costume-to-zahira {
+  --shop-sign-clip: polygon(0 6%, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 3% 94%);
   right: 14px;
   bottom: 14px;
+  padding-right: 31px;
 }
 
 .costume-shop-empty {

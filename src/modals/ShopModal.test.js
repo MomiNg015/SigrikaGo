@@ -156,8 +156,12 @@ describe("Zahira shop window", () => {
     }));
 
     expect(html).toContain("shop-store-track");
-    expect(html).toContain("← 残星会");
-    expect(html).toContain("扎希拉商店 →");
+    expect(html).toContain(">残星会</span>");
+    expect(html).toContain(">扎希拉商店</span>");
+    expect(html).not.toContain("前往残星会");
+    expect(html).not.toContain("前往扎希拉商店");
+    expect(html).not.toContain("← 残星会");
+    expect(html).not.toContain("扎希拉商店 →");
     expect(source).toContain('"残星会cosplay部"');
     expect(source).not.toContain("残星会 cosplay 服装店");
     for (const src of Object.values(COSTUME_MASCOT_IMAGES)) {
@@ -434,6 +438,13 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
+    expect(commerceCss).toContain("--shop-sign-clip");
+    expect(commerceCss).toContain(".zahira-to-costume");
+    expect(commerceCss).toContain(".costume-to-zahira");
+    expect(themeCss).toContain(".shop-switch-button::before");
+    expect(themeCss).toContain(".shop-switch-button::after");
+    expect(themeCss).toContain("filter: drop-shadow");
+    expect(themeCss).toContain(".shop-switch-button:active");
     expect(shopWindowSource).toContain("overflow: hidden !important");
     expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");
     expect(themeCss).toContain('.shop-header[data-store="zahira"]');
@@ -514,6 +525,9 @@ describe("Zahira shop window", () => {
     expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
     expect(mobileCss).not.toContain("margin-left: -16px !important");
     expect(mobileCss).toContain("width: 44px !important");
+    expect(mobileCss).toContain("min-height: 44px !important");
+    expect(mobileCss).toContain("min-width: 126px !important");
+    expect(mobileCss).toContain("min-width: 148px !important");
     expect(mobileCss).toContain(".shop-header h2.is-costume-title");
     expect(mobileCss).toContain("font-size: clamp(17px, 4.9vw, 22px) !important");
     expect(mobileCss).toContain(".costume-shop-price");

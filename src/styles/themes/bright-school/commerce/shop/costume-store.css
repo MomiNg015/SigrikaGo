@@ -2,19 +2,6 @@
   height: 100% !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button {
-  color: #3d2b25 !important;
-  background: #efff8a !important;
-  border-color: #3d2b25 !important;
-  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.76) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:focus-visible {
-  background: #fff7aa !important;
-  transform: translateY(-1px) rotate(-1deg) !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
   color: #f8e7c2 !important;
   background:

@@ -83,7 +83,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
                 />
                 <ShopSidebar mascotLine={mascotLine} mascotMood={mascotMood} user={zahiraCatalog.effectiveUser} />
                 <button className="shop-switch-button zahira-to-costume" type="button" onClick={() => switchStore("costume")}>
-                  ← 残星会
+                  <span>残星会</span>
                 </button>
               </div>
             </div>

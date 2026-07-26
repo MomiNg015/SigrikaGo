@@ -1344,6 +1344,9 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Keep the two Fractsidus WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`, retain their same-name PNG sources, and disable the old `.costume-store-panel` curtain pseudo-elements. Under Bright School, the final mobile rule must use `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel` so its mobile asset wins against the equally important theme owner; an unscoped `.costume-store-panel` rule loses on specificity and silently crops the desktop image on phones.
 - Zahira-only header styling is selected by `.shop-header[data-store="zahira"]` and uses a simple low-detail blue-gray to muted-purple color band. Do not crop or imitate the body scene in this header: scene-like canopy, tassel, shelf, or tent details create a false expectation that header and body are one continuous illustration. Costume-store headers must not inherit this background.
 - In the final portrait layer, the Bright School-scoped shop close-button owner must beat the theme-wide important `.close-button` absolute-position rule, restore `position: static` / `inset: auto`, and align the 44px close and refresh buttons to the same grid center. A later but lower-specificity shop selector is insufficient.
+- Store-to-store navigation stays as native `.shop-switch-button` controls with visible copy `残星会` and `扎希拉商店`. Do not add `前往` or encode direction with a text arrow; `.zahira-to-costume` and `.costume-to-zahira` own mirrored `--shop-sign-clip` polygons so the board tip itself points toward the target store.
+- The shared signpost is CSS-only: the button supplies the dark outer silhouette, `::before` supplies one low-detail warm-brown board face, and `::after` supplies two simple nail dots. The Bright School owner must explicitly restore the clip path and zero radius with sufficient specificity because generic theme button rules otherwise turn the outer silhouette back into a rounded pill.
+- Signpost interaction is transform/filter-only: desktop stays at least 48px high, portrait mobile stays at least 44px high, hover/focus may lift by 1px, active may press by 2px, and reduced motion removes those transforms. The control must not add a continuous animation or new image asset.
 
 #### 4. Validation & Error Matrix
 - Unknown category -> category badge falls back to `商品`.
@@ -1360,6 +1363,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Fractsidus portrait background -> the computed image is the mobile WebP at both 375x812 and 375x600; the stage/host split remains 57/43 and the document has no horizontal overflow.
 - Costume store active -> the computed header background does not contain either Zahira background asset.
 - 375x812 and 375x600 Zahira headers -> refresh and close controls are both 44x44, their computed top coordinates match, and the close button computes to `position: static`.
+- Either store active -> the visible switch computes to the matching left/right polygon, the board pseudo-elements are present, and the control has no rounded-pill outer radius.
+- 1440x900, 375x812, and 375x600 -> the visible signpost does not intersect product cards or the wallet, does not create horizontal overflow, and keeps the 48px desktop / 44px portrait minimum target.
 
 #### 5. Good/Base/Bad Cases
 - Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
@@ -1372,6 +1377,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Bad: `.shop-item[role="button"]` with a nested purchase `<button>`.
 - Bad: a high-detail, glossy deep-red illustration that matches Fractsidus colors but not the existing Zahira crayon medium.
 - Bad: relying on an unscoped final-mobile `.costume-store-panel` rule when the Bright School theme owns the same background with higher specificity.
+- Bad: keeping `←` / `→` inside the label, adding a painted sign image, or letting a generic `border-radius: 14px !important` / `clip-path: none !important` rule flatten the owner-defined arrow silhouette.
 
 #### 6. Tests Required
 - `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
@@ -1379,6 +1385,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
 - Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.
+- `src/modals/ShopModal.test.js` must assert both accessible switch labels, reject the old text-arrow labels, and lock the shared polygon/pseudo-element, Bright School clip/radius/press, reduced-motion, and portrait minimum-size hooks. Browser QA still verifies the rendered silhouette and non-overlap at the three target viewports.
 
 #### 7. Wrong vs Correct
 
@@ -1452,6 +1459,20 @@ Correct:
     background-image: var(--costume-shop-mobile-background-image) !important;
   }
 }
+```
+
+Wrong:
+
+```jsx
+<button className="shop-switch-button">扎希拉商店 →</button>
+```
+
+Correct:
+
+```jsx
+<button className="shop-switch-button costume-to-zahira">
+  <span>扎希拉商店</span>
+</button>
 ```
 
 ### Scenario: Shared Modal Dialog and Lint Boundary
