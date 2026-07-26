@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 74
+- **Total Sessions**: 75
 - **Last Active**: 2026-07-26
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~470 | Active |
+| `journal-2.md` | ~503 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 75 | 2026-07-26 | Simplify Zahira shop header and align mobile controls | `d3074297` | `codex/frontend-chores` |
 | 74 | 2026-07-26 | Style Fractsidus shop header | `20b232c1` | `codex/frontend-chores` |
 | 73 | 2026-07-26 | Fractsidus costume shop crayon backgrounds | `234ccc54` | `codex/frontend-chores` |
 | 72 | 2026-07-25 | Zahira shop crayon backgrounds | `d4185bd7` | `codex/frontend-chores` |

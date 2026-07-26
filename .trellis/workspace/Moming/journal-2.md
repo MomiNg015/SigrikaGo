@@ -468,3 +468,36 @@ Added a deep-red crayon curtain header for the Fractsidus costume shop, preserve
 ### Next Steps
 
 - None - task complete
+
+
+## Session 75: Simplify Zahira shop header and align mobile controls
+
+**Date**: 2026-07-26
+**Task**: Simplify Zahira shop header and align mobile controls
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Replaced Zahira's scene-like header crop with a simple blue-gray to muted-purple color band, fixed the portrait close button to share the refresh button grid center, added CSS contracts, synchronized system-design docs, and verified desktop plus 375x812/375x600 layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d3074297` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

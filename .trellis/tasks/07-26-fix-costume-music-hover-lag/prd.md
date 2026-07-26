@@ -7,19 +7,19 @@
 ## Requirements
 
 - 保留两个按钮现有的悬停位移、配色、阴影和按压视觉。
-- 阻止全局终端按钮规则在非 Bright School 环境为这两个局部控件额外施加昂贵的悬停 `filter`。
-- 为服装装扮按钮补充与现有播放按钮一致的、仅针对 `transform` 的合成提示。
-- 在 Bright School 下把音乐播放键的绿色悬停键面预绘到局部伪元素，并仅以 `opacity` 显示；服装装扮按钮通过局部绘制隔离限制背景与阴影重绘范围。
-- 不改动服装装备请求、音乐播放逻辑、弹窗层级或背景模糊视觉。
-- 增加样式契约测试，防止全局 `filter` 再次污染这两个按钮。
+- 保留播放键、装扮键现有的按钮级悬停规则，不再叠加未经运行时证明的预绘、`will-change` 或 paint-containment 补丁。
+- 角色详情与其他嵌套弹窗不再使用全屏实时 `backdrop-filter`；使用静态半透明遮罩维持前后景分离。
+- 不改动服装装备请求、音乐播放逻辑或弹窗层级。
+- 增加样式契约测试，禁止实时全屏模糊重新进入嵌套交互弹窗。
 
 ## Acceptance Criteria
 
-- [x] 装扮按钮悬停仍保持原视觉反馈，但计算样式不再进入亮度/饱和度滤镜过渡。
-- [x] 播放按钮悬停仍保持 `translateY(-1px)` 反馈，但不再进入全局滤镜过渡。
-- [x] 装扮按钮声明 `will-change: transform`，不预声明不需要的属性。
+- [x] 装扮按钮悬停保持原视觉反馈，不增加额外合成层。
+- [x] 播放按钮悬停保持 `translateY(-1px)`、绿色键面和按压反馈，不增加第二个键面伪元素。
+- [x] `.nested-modal-backdrop` 及其静态 `::before` 绘制层均为 `backdrop-filter: none`。
 - [x] 两个按钮的点击、禁用和按压行为不变。
-- [x] 相关样式测试通过，项目 lint 通过。
+- [x] 真实页面中播放键、装扮键的焦点反馈和服装弹窗关闭/焦点回退路径正常。
+- [x] 相关样式与组件测试通过。
 - [x] 若现有系统设计分篇记录了悬停性能约定，则同步更新并重新生成 `docs/system-design.html`。
 
 ## Definition of Done
@@ -30,22 +30,21 @@
 
 ## Technical Approach
 
-在两个语义所有者选择器上显式设置 `filter: none`，隔离非 Bright School 环境的全局终端滤镜；保留局部 `transform` 规则。Bright School 已通过最终按钮层固定 `filter: none !important`，因此播放键预绘绿色悬停键面并以 `opacity` 合成显示，同时保持原有位移、颜色和阴影。`.character-costume-equip-button` 使用 `contain: paint` 限制重绘范围，并增加 `will-change: transform` 避免首次悬停临时提升图层。通过样式契约测试锁定该边界，不扩大到所有弹窗按钮。
+恢复两个按钮原本的局部交互实现，删除没有改善用户体感的预绘键面、paint containment 和额外 `will-change`。根因修复位于共同祖先：`.nested-modal-backdrop` 及其绝对定位、`pointer-events: none` 的 `::before` 绘制层都显式禁用 `backdrop-filter`，后者只绘制静态半透明填充。这样 Chrome 不需要在详情页任何 hover/focus 变化时维持全屏实时背景采样。
 
 ## Decision (ADR-lite)
 
-**Context**: 全局按钮动效将 `filter` 应用于所有按钮；两个目标控件又位于全屏 `backdrop-filter` 弹窗合成环境中，导致小范围悬停触发昂贵合成。
+**Context**: 第一轮只改按钮，第二轮把 `blur(8px)` 移到静态伪元素；两轮静态测试均通过，但用户在 Chrome 中都没有感到改善。真实 Chrome 测量显示手册“设为出战”按钮从鼠标进入到样式变化约 3.8ms，详情播放键约 5.8ms，否定了事件、React 和 CSS 匹配延迟。两轮仍共同保留了全屏实时背景模糊，因此延迟位于 Chrome 栅格化/合成显示路径。
 
-**Decision**: 对两个已确认卡顿的语义控件做局部滤镜隔离；Bright School 播放键将绿色悬停键面改为预绘后的 opacity 合成，装扮按钮则使用 paint containment 和 transform 合成提示。
+**Decision**: 完全移除嵌套弹窗的实时 `backdrop-filter`，以静态半透明填充替代；同时撤回无效的按钮级合成补丁。契约测试锁定父容器和绘制层都不得包含 `blur(...)`。
 
-**Consequences**: 动效外观保持不变，修改范围小；其他尚未报告的弹窗按钮不在本次任务中一并重构。
+**Consequences**: 按钮动效、弹窗层级与命中测试保持不变；背景从实时模糊改为静态半透明弱化。所有复用 `.nested-modal-backdrop` 的嵌套弹窗同时避开相同的 Chrome 全屏实时滤镜成本。
 
 ## Out of Scope
 
 - 重构全局按钮动效系统。
-- 移除或改变全屏弹窗背景模糊。
 - 调整服装、音乐业务逻辑。
-- 处理其他未确认卡顿的按钮。
+- 重构不使用 `.nested-modal-backdrop` 的其他弹窗。
 
 ## Technical Notes
 
@@ -53,4 +52,5 @@
 - 服装按钮所有者：`src/styles/modals/character-opening/costume-wardrobe.css`
 - 播放按钮所有者：`src/styles/modals/character-music-player/shell-title.css`
 - 全屏模糊层：`src/styles/modals/terminal-system/replay-profile-surfaces.css`
-- 运行时确认两个按钮均继承全局 180ms 过渡属性列表；Bright School 的最终按钮层已将实际 `filter` 值固定为 `none !important`，但悬停键面仍直接改变背景/阴影。播放按钮已有 `will-change: transform`，装扮按钮没有。
+- 修复前运行时确认两个按钮均继承 180ms 过渡，Bright School 下实际 `filter` 已经是 `none`；这否定了“按钮滤镜仍是主因”的判断。
+- 最终实现要求 `.nested-modal-backdrop` 与 `::before` 的计算值都为 `backdrop-filter: none`；Bright School 使用静态暖白半透明填充，普通主题保留原暗色半透明填充。
