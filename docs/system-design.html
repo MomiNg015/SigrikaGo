@@ -474,7 +474,7 @@
 <li>莫宁（<code>mornye</code>）已接入完整角色语音：技能、出战、对局开始、读秒开始、剩余读秒次数、10 到 1 秒倒计时、胜负和结果，以及 <code>house-detail</code> 角色详情语音。部员手册中打开莫宁角色详情或点击详情内的“描述”文本区域会通过现有 <code>house-detail</code> 事件播放 <code>/assets/voice/mornye_detail.ogg</code>；关闭角色详情弹窗或关闭整个部员手册时会调用 <code>stopVoicePlayback()</code> 停止当前角色语音，避免详情长语音在窗口关闭后继续播放。</li>
 </ul>
 <ul>
-<li>新用户或没有有效本地音频设置的环境默认使用 <code>master: 100</code>、<code>bgm: 60</code>、<code>sfx: 100</code>、<code>voice: 100</code>；已有 <code>sigrika-audio-settings</code> 继续覆盖默认值。角色音频和 TTS 不再因播放状态衰减 BGM，背景音乐始终保持用户设置音量；<code>requestBackgroundMusicDuck()</code> 只保留给招募演出等明确的非语音场景。10 到 1 秒倒计时解码语音仍绕过空灵混响，但继续使用 voice 音量、增益和 RMS 响度归一化。</li>
+<li>新用户或没有有效本地音频设置的环境默认使用 <code>master: 100</code>、<code>bgm: 60</code>、<code>sfx: 100</code>、<code>voice: 100</code>；已有 <code>sigrika-audio-settings</code> 继续覆盖默认值。角色音频和 TTS 不再因播放状态衰减 BGM，背景音乐始终保持用户设置音量；<code>requestBackgroundMusicDuck()</code> 只保留给招募演出等明确的非语音场景。角色语音源资产通过 <code>npm run voices:normalize</code> 离线校准到 <code>-18 LUFS</code> 且不超过 <code>-2 dBTP</code>，短于 500ms 的片段使用 <code>-19 dBFS RMS</code> 回退；<code>npm run check:voices</code> 只读检查响度漂移。运行时不再按 <code>AudioBuffer</code> RMS 二次改写逐文件增益，10 到 1 秒倒计时仍绕过空灵混响并继续使用用户 voice 音量。没有角色的练习机器人通过 <code>botProfile.id</code> 保留独立语音身份；准时宝（<code>zhunshibao</code>）没有静态系统语音映射，读秒开始、剩余次数和 10 到 1 秒倒计时均走现有 <code>zh-CN</code> TTS，不能进入通用角色查找的西格莉卡回退。</li>
 </ul>
 <ul>
 <li>角色技能 BGM 当前配置：主界面默认曲池包含 <code>home-default</code>（<code>main_bgm.ogg</code>）和 <code>home-main-bgm-1</code>（<code>main_bgm_1_once.ogg</code> + <code>main_bgm_1_loop.ogg</code>），达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯“小爱出击”使用 <code>aemeath0_once.ogg</code> + <code>aemeath0_loop.ogg</code>，爱弥斯“远航星”使用 <code>lhl_intro_once.ogg</code> + <code>lhl_loop.ogg</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>，长离使用 <code>changli_intro_once.ogg</code> + <code>changli_loop.ogg</code>，莫宁使用 <code>mornye_intro_once.ogg</code> + <code>mornye_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM；pending skill 与最新历史技能使用独立 <code>musicEffectType</code> 选择普通或派生槽位，派生技能的 <code>musicTrackId</code> 同时作为槽位 fallback 延续，避免演出中途回退到角色普通技能 BGM。未来爱弥斯商城技能 BGM 若替换“小爱出击”默认曲，继续写入 <code>musicSelections.skill.aemeath</code>；若替换“远航星”等派生技默认曲，则写入现有 <code>musicSelections.derivedSkill.aemeath[effectType]</code> 槽位。</li>
@@ -498,7 +498,7 @@
 <li>仇远（<code>qiuyuan</code>）的默认技能 BGM 是 <code>qiuyuan-skill-default</code>，使用两段式 <code>intro-loop</code> 播放：<code>/assets/music/qiuyuan_intro_once.ogg</code> 播放一次后接 <code>/assets/music/qiuyuan_loop.ogg</code> 循环；第二版技能 BGM <code>qiuyuan-skill-zhouwo</code> 显示名为“肘我”，使用单文件循环 <code>/assets/music/qiuyuan_zhouwo_loop.ogg</code>，商城商品图使用居中裁切 WebP <code>/assets/items/qiuyuan-zhouwo.webp</code>，不默认解锁但可作为商城音乐商品购买；启动内置商城 seed 会为已存在且 <code>imageUrl</code> 为空的 <code>qiuyuan-skill-zhouwo</code> 音乐商品回填该商品图，不覆盖后台已配置的非空图片，购买后会出现在仇远角色详情播放器的技能 BGM 选择中。</li>
 </ul>
 <ul>
-<li>仇远（<code>qiuyuan</code>）的技能发动语音配置为两个候选音频：<code>/assets/voice/qiuyuan_skill_cast.ogg</code> 和 <code>/assets/voice/qiuyuan_skill_cast_1.ogg</code>；<code>skill-cast</code> 系统语音每次解析时随机选择一个，启动/对局预加载会展开全部候选路径。</li>
+<li>仇远（<code>qiuyuan</code>）的技能发动语音配置为两个候选音频：<code>/assets/voice/qiuyuan_skill_cast.ogg</code> 和 <code>/assets/voice/qiuyuan_skill_cast_1.ogg</code>；<code>skill-cast</code> 系统语音每次解析时随机选择一个，启动/对局预加载会展开全部候选路径。其原先依赖浏览器 TTS 的 <code>game-start</code>、<code>sortie</code>、读秒开始、剩余 2/1 次读秒、10 到 1 秒倒计时及胜/负/和结果共 18 个事件已用固定 <code>Microsoft Kangkang</code> 中文男声生成静态 Ogg，并通过 <code>CHARACTER_SYSTEM_VOICES.qiuyuan</code> 显式映射、预加载和统一响度校准，避免声线与响度随操作系统变化。</li>
 </ul>
 <ul>
 <li>爱弥斯（<code>aemeath</code>）普通技能语音继续使用 <code>/assets/voice/aemeath_skill_cast.ogg</code>；远航星（<code>voyage-star</code>）技能横幅会通过 <code>skill-cast:voyage-star</code> 优先播放 <code>/assets/voice/aemeath_skill_cast_voyage.ogg</code>。</li>
@@ -4051,7 +4051,7 @@
 <li>登录后加载页阻塞当前账号可访问的主要图片、音乐和音声资源；<code>useStartupPreload</code> 使用 6 路并发，单资源 8 秒超时，失败项进入首页后以较低并发重试。通用分组执行器仍支持 deferred 队列，但 <code>loginPreloadAssets()</code> 当前生成的 deferred image/audio 组为空；棋谱数据、未购买资源和房间专属资源不进入该登录清单。</li>
 </ul>
 <ul>
-<li>音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 <code>response.ok</code> 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 <code>Audio</code> fallback 播放当前曲目，并在 socket 重连、<code>pageshow</code>、可见性恢复、在线恢复和首次交互后重试当前曲目。</li>
+<li>音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 <code>response.ok</code> 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 <code>Audio</code> fallback 播放当前曲目，并在 socket 重连、<code>pageshow</code>、可见性恢复、在线恢复和首次交互后重试当前曲目。无角色练习机器人不会经过 <code>findCharacter()</code> 的西格莉卡兼容回退：<code>voiceCharacterForPlayer()</code> 使用 <code>botProfile.id</code> 构造独立、无静态 <code>systemVoices</code> 的语音身份，因此准时宝的读秒事件由 <code>resolveSystemVoice()</code> 解析为现有 <code>zh-CN</code> TTS；TTS 不进入静态音频预加载或离线 LUFS 校准。</li>
 </ul>
 <ul>
 <li>首页铭牌（履历）、仓库、观战、好友和排行入口的专属 OGG 分别为 <code>ui_resume_open.ogg</code>、<code>ui_warehouse_open.ogg</code>、<code>ui_watch_open.ogg</code>、<code>ui_friends_open.ogg</code>、<code>ui_leaderboard_open.ogg</code>。路径常量由 <code>src/shared/audioAssets.js</code> 统一声明，<code>AppRoutes</code> 在打开对应界面前调用 <code>effectPlayback.js</code> 的具名 helper；五项都进入 <code>RUNTIME_AUDIO_ASSETS.interaction</code> 的 critical audio 预加载组并遵循 <code>audioSettings.sfx</code>，按钮使用 <code>data-ui-sound=&quot;none&quot;</code> 防止与通用确认音叠放。</li>
@@ -4421,7 +4421,7 @@
 <li>娜波摩被动灰白化层由 <code>BoardAmbientEffects</code> 根据 <code>game.passives.*.colorIllusion.active</code> 派生，使用 pointer-transparent 的 CSS 中心向外扩散波纹表现发动过程，同时 <code>.board-wrap.color-illusion-board-surface::before</code> 会把棋盘背景从中心扩散切换到 <code>/assets/boards/nabomo-color-illusion-board.webp</code>；该专用 WebP 由 <code>C:/codex/image/go-board-background-reference-color-vertical-2048.jpg</code> 转换而来，并作为效果资源延迟预加载。该被动不再使用持续 Pixi 烟雾或每帧 ticker 绘制，也不允许回退为整块矩形半透明贴层，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。</li>
 </ul>
 <ul>
-<li>读秒 10 到 1 秒倒计时通过 <code>playSystemVoice(countdown-N)</code> 播放角色语音或 TTS；<code>useRoomAudioEffects</code> 不再为最后 10 秒申请 BGM duck，单个片段也不会改变 BGM 音量。解码倒计时语音继续使用无混响的 <code>countdown</code> playback profile；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。</li>
+<li>读秒 10 到 1 秒倒计时通过 <code>playSystemVoice(countdown-N)</code> 播放角色语音或 TTS；<code>useRoomAudioEffects</code> 不再为最后 10 秒申请 BGM duck，单个片段也不会改变 BGM 音量。解码倒计时语音继续使用无混响的 <code>countdown</code> playback profile，并直接消费离线校准后的源资产，不做运行时逐文件 RMS 修正；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。</li>
 </ul>
 <ul>
 <li>角色技能语音配置集中在 <code>CHARACTER_SKILL_VOICES</code>，派生技能等效果特定语音通过 <code>SYSTEM_VOICE_SKILL_EVENTS</code> 的模式化事件覆盖普通 <code>skill-cast</code>。</li>
@@ -4439,7 +4439,7 @@
 <li><code>characterVoiceMapForSkill</code> 可将现有技能语音桥接为角色 <code>systemVoices</code> 的 <code>skill-cast</code> 事件映射。</li>
 </ul>
 <ul>
-<li>角色出战按钮会触发 <code>sortie</code> 角色语音事件；当前达妮娅、西格莉卡、猪小仙、琳奈、长离、千咲和莫宁已分别接入 <code>denia_sortie.ogg</code>、<code>sigrika_sortie.ogg</code>、<code>baconbits_sortie.ogg</code>、<code>lynae_sortie.ogg</code>、<code>changli_sortie.ogg</code>、<code>chisa_sortie.ogg</code> 与 <code>mornye_sortie.ogg</code>。</li>
+<li>角色出战按钮会触发 <code>sortie</code> 角色语音事件；当前达妮娅、西格莉卡、猪小仙、琳奈、长离、千咲、莫宁和仇远已分别接入 <code>denia_sortie.ogg</code>、<code>sigrika_sortie.ogg</code>、<code>baconbits_sortie.ogg</code>、<code>lynae_sortie.ogg</code>、<code>changli_sortie.ogg</code>、<code>chisa_sortie.ogg</code>、<code>mornye_sortie.ogg</code> 与 <code>qiuyuan_sortie.ogg</code>。</li>
 </ul>
 <ul>
 <li><code>SkillBanner</code> 出现时同步触发技能语音，同一个 banner id 只播放一次。</li>
@@ -4448,7 +4448,7 @@
 <li>技能语音走 <code>voice</code> 音量通道。</li>
 </ul>
 <ul>
-<li><code>playVoiceSound</code> 使用 Web Audio 播放链：source -&gt; RMS normalization gain -&gt; dry/wet reverb mix -&gt; voice gain -&gt; destination。</li>
+<li><code>playVoiceSound</code> 使用 Web Audio 播放链：离线响度校准 source -&gt; dry/wet reverb mix -&gt; voice gain -&gt; destination；逐文件响度由源资产契约负责，运行时只应用用户 voice 音量与现有 profile。</li>
 </ul>
 <ul>
 <li>同一客户端只允许一个角色语音处于活动播放状态；新的角色语音或 TTS 开始前会立即停止上一段角色语音，避免同一用户连续触发角色语音时叠音。</li>
@@ -4460,10 +4460,13 @@
 <li>角色音频和 TTS 播放不再通知 BGM ducking 状态，也不改变背景音乐 gain；BGM 保持用户设置音量。<code>backgroundDucking.js</code> 只处理招募演出等非语音场景显式申请的 scoped request。</li>
 </ul>
 <ul>
-<li><code>voiceEffects.js</code> 当前预设为轻量空灵混响：<code>boost: 1.35</code>、<code>wet: 0.28</code>、<code>dry: 0.9</code>、<code>reverbSeconds: 1.6</code>、<code>reverbDecay: 2.2</code>、<code>preDelaySeconds: 0.035</code>，并以 <code>targetRms: 0.12</code>、<code>minNormalizationGain: 0.4</code>、<code>maxNormalizationGain: 2.4</code> 做运行时语音响度一致化。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走归一化后的干声支路，避免一秒一段的混响尾音堆叠；普通 <code>Audio</code> fallback 本身无 Web Audio 混响。</li>
+<li><code>voiceEffects.js</code> 当前只保留轻量空灵混响与通道增益预设：<code>boost: 1.35</code>、<code>wet: 0.28</code>、<code>dry: 0.9</code>、<code>reverbSeconds: 1.6</code>、<code>reverbDecay: 2.2</code>、<code>preDelaySeconds: 0.035</code>。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走干声支路，避免一秒一段的混响尾音堆叠。</li>
 </ul>
 <ul>
-<li>如果 Web Audio 或资源加载失败，技能语音会回退到普通 <code>Audio</code> 播放，仍应用 1.35 倍 voice 增益上限。</li>
+<li>如果 Web Audio 或资源加载失败，技能语音会回退到普通 <code>Audio</code> 播放，仍应用 1.35 倍 voice 增益上限；两条路径消费同一批已离线校准的 Ogg，因此 fallback 不再缺失独立的逐文件响度修正。</li>
+</ul>
+<ul>
+<li><code>scripts/normalize-character-voices.mjs</code> 与 <code>scripts/voiceLoudnessNormalization.mjs</code> 提供可复用的 <code>npm run voices:normalize</code> 写入流程和 <code>npm run check:voices</code> 只读漂移检查。普通片段按 BS.1770/EBU R128 integrated loudness 校准到 <code>-18 LUFS</code>，最终 Ogg True Peak 必须不超过 <code>-2 dBTP</code>；短于 500ms 或 integrated loudness 不可测的片段改用 <code>-19 dBFS RMS</code>。处理链保留声道数和采样率，使用高质量 Vorbis 编码，在系统临时目录完成全部输出、最终 Ogg 复测和路径验证，只有整批无失败时才覆盖仓库资产。</li>
 </ul>
 <ul>
 <li>系统语音事件集中在 <code>src/shared/systemVoices.js</code>，通过 <code>resolveSystemVoice</code> 解析。</li>
@@ -4472,7 +4475,7 @@
 <li>琳奈的 <code>lynaeContraryVoice</code> 由 resolver 在选取音频前做固定事件重映射：<code>countdown-N</code> 映射为 <code>countdown-(11-N)</code>，<code>byo-yomi-period-2</code> ↔ <code>byo-yomi-period-1</code>、<code>game-start</code> ↔ <code>byo-yomi-start</code>、<code>sortie</code> ↔ <code>skill-cast</code>、<code>result-victory</code> ↔ <code>result-defeat</code>；<code>result-draw</code>、<code>house-detail</code> 与超时静音保持原样。房间语音角色、技能横幅、棋舍出战和结果弹窗都必须显式携带对应的 <code>itemEffects</code>，不能修改静态角色目录或真实事件数据。</li>
 </ul>
 <ul>
-<li>当前默认走 TTS 文本；如果角色配置了 <code>systemVoices[event]</code>，则优先播放对应音频。</li>
+<li>当前未映射角色事件默认走 TTS 文本；如果角色配置了 <code>systemVoices[event]</code>，则优先播放对应音频。仇远的 18 个标准系统事件已通过 <code>scripts/generate-qiuyuan-system-voices.ps1</code> 使用固定 <code>Microsoft Kangkang</code> 中文成年男声生成并映射为静态 Ogg，覆盖 <code>game-start</code>、<code>sortie</code>、读秒开始、剩余 2/1 次读秒、<code>countdown-10</code> 到 <code>countdown-1</code>、<code>result-victory</code>、<code>result-defeat</code> 与 <code>result-draw</code>，不再随浏览器 TTS 声线变化。</li>
 </ul>
 <ul>
 <li>已预留事件：<code>game-start</code>、<code>game-start:gomoku</code>、<code>skill-cast</code>、<code>sortie</code>、<code>byo-yomi-start</code>、<code>byo-yomi-periods</code>、<code>byo-yomi-period-2</code>、<code>byo-yomi-period-1</code>、<code>byo-yomi-countdown</code>、<code>countdown-N</code>、<code>timeout</code>、<code>result-victory</code>、<code>result-defeat</code>、<code>result-draw</code>、<code>house-detail</code>。</li>
@@ -4502,10 +4505,10 @@
 <li>Voice playback uses a shared module-level Web Audio context when available; regular voice playback, cached playback, and preload decoding all reuse that context. Future tuning may still need more explicit lifecycle cleanup and browser autoplay handling.</li>
 </ul>
 <ul>
-<li>Audio settings, background music ducking, runtime voice loudness helpers, and no-browser audio API guards are covered by deterministic helper tests, but not by a browser-level audio graph test.</li>
+<li>Audio settings, background music ducking, offline voice loudness helpers, and no-browser audio API guards are covered by deterministic helper tests, but not by a browser-level audio graph test.</li>
 </ul>
 <ul>
-<li>Runtime voice loudness normalization uses decoded <code>AudioBuffer</code> RMS statistics and clamps correction gain between 0.4 and 2.4, so authored assets can remain unchanged while character voices play at a closer perceived level.</li>
+<li>Character voice loudness is an authored-asset/build-tool contract rather than a runtime <code>AudioBuffer</code> correction. <code>check:voices</code> must pass after adding or replacing any <code>public/assets/voice/*.ogg</code>; runtime Web Audio and ordinary <code>Audio</code> fallback intentionally avoid independent per-file normalization so their relative source loudness cannot diverge.</li>
 </ul>
 <ul>
 <li>Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.</li>

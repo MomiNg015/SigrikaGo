@@ -1535,16 +1535,24 @@ Correct:
 - `requestBackgroundMusicDuck({ ratio, attackMs, releaseMs })` returns an idempotent release callback; overlapping explicit scene requests resolve to the lowest active ratio.
 - `playSystemVoice(event, { character, params, fallbackText, audioSettings, playbackProfile })` resolves character audio or TTS; `playbackProfile` controls the decoded voice effect chain, not BGM gain.
 - `DEFAULT_AUDIO_SETTINGS` is the only new-user default source; persisted `sigrika-audio-settings` values override it.
+- `npm run voices:normalize` performs staged offline normalization for `public/assets/voice/*.ogg`; `npm run check:voices` is the read-only drift gate and requires `ffmpeg` plus `ffprobe` on `PATH`.
 
 #### 3. Contracts
 - Voice audio and TTS never create, update, or release BGM duck requests. BGM remains at the user's configured gain throughout voice playback.
-- Ordinary decoded voices use the normalized dry/wet reverb chain. Countdown decoded voices bypass reverb but preserve user voice volume, boost, RMS normalization, single-active-voice behavior, preload/cache reuse, and fallback behavior.
+- Ordinary decoded voices use the dry/wet reverb chain. Countdown decoded voices bypass reverb but preserve user voice volume, boost, single-active-voice behavior, preload/cache reuse, and fallback behavior.
+- Static character voices are authored at `-18 LUFS integrated` with final Ogg True Peak no higher than `-2 dBTP`. Clips shorter than 500ms or without a finite integrated measurement use `-19 dBFS RMS`; do not reintroduce decoded-buffer RMS gain because it would undo the authored LUFS contract and diverge from ordinary `Audio` fallback.
+- Voice normalization preserves each existing file's sample rate and channel count, writes high-quality Vorbis to a temporary staging directory, validates the final encoded Ogg, and replaces repository assets only when the whole batch passes. Final Ogg measurement must drive limiter correction because Vorbis can overshoot the PCM intermediate True Peak.
+- A characterless room bot with `botProfile.id` keeps that id as its voice identity and an empty static `systemVoices` map. In particular, Zhunshibao resolves countdown events through the existing `zh-CN` TTS fallback; do not pass its null `character` / `characterId` through `findCharacter()`, whose compatibility fallback is Sigrika.
 - `backgroundDucking.js` is reserved for explicit non-voice scene direction such as the recruitment cinematic; a caller that acquires a request owns its idempotent release on completion, interruption, and unmount.
 - New-user defaults are `master: 100`, `bgm: 60`, `sfx: 100`, and `voice: 100`. Do not migrate or overwrite existing saved percentages when changing defaults.
 
 #### 4. Validation & Error Matrix
 - Voice starts, ends, overlaps, or is interrupted -> BGM gain does not change.
 - Web Audio/decode failure -> ordinary `Audio` fallback and TTS still do not touch BGM gain.
+- Voice asset outside loudness/True Peak tolerance -> `npm run check:voices` reports the exact file and exits non-zero.
+- Any staged normalization output fails loudness, codec, sample-rate, channel-count, or path validation -> do not replace any repository voice asset.
+- Integrated loudness becomes unstable around the measurement window -> classify clips below 500ms as short voices and validate RMS plus True Peak instead.
+- Characterless bot has a non-empty `botProfile.id` -> preserve the bot identity and resolve unmapped system events as TTS, never as Sigrika audio.
 - No persisted settings or invalid persisted JSON -> load the new-user defaults.
 - Valid persisted percentages -> keep them unchanged over the defaults.
 - Another explicit scoped request is active -> the shared duck manager keeps its authored ratio until its owning scene releases it.
@@ -1552,8 +1560,12 @@ Correct:
 #### 5. Good/Base/Bad Cases
 - Good: play skill, story, result, and countdown voices without importing or calling `backgroundDucking.js` from the voice runtime.
 - Base: countdown audio uses `{ reverb: false }`; ordinary decoded voice uses `{ reverb: true }`.
+- Good: run `npm run voices:normalize` after adding/replacing voices, then commit only after `npm run check:voices` reports every file valid.
+- Good: `voiceCharacterForPlayer()` returns `{ id: "zhunshibao", systemVoices: {} }` for the characterless practice bot, so `resolveSystemVoice("countdown-10")` returns `{ type: "tts", text: "10" }`.
 - Good: an authored cinematic owns a scoped request and releases it on every exit path.
+- Bad: normalize PCM once and skip final Ogg measurement, or apply a runtime RMS correction on top of calibrated source assets.
 - Bad: reintroducing a voice-active counter, per-clip gain ramp, or room countdown request to alter BGM.
+- Bad: resolving a characterless bot with `findCharacter(characters, null)`, because the compatibility fallback attaches Sigrika's static voice map.
 
 #### 6. Tests Required
 - `src/audio/audioSettings.test.js` covers the new-user defaults, invalid storage fallback, and persisted-value precedence.
@@ -1561,7 +1573,10 @@ Correct:
 - `src/audio/systemVoicePlayback.test.js` covers decoded audio profile forwarding and TTS playback without BGM options.
 - `src/audio/backgroundDucking.test.js` covers explicit scoped scene requests independently from voice playback.
 - `src/audio/voiceBackgroundIndependence.test.js` guards the voice runtime and room countdown path against reintroducing BGM duck coupling.
-- Run focused audio/time-announcement tests, then `npm run check` before handoff.
+- `src/room/roomView.test.js` covers characterless bot voice identity and proves Zhunshibao's byo-yomi/countdown events resolve to TTS rather than Sigrika audio.
+- `scripts/voiceLoudnessNormalization.test.js` covers FFmpeg metric parsing, short-clip routing, target calculation, tolerance validation, and path safety.
+- `src/shared/musicLibrary.test.js` covers every fixed character system-voice mapping, including Qiuyuan's static Kangkang set.
+- Run `npm run check:voices`, focused audio/time-announcement tests, then `npm run check` before handoff.
 
 #### 7. Wrong vs Correct
 
@@ -1575,6 +1590,19 @@ Correct:
 
 ```js
 playSystemVoice(`countdown-${second}`, { playbackProfile: VOICE_PLAYBACK_PROFILES.countdown });
+```
+
+Wrong:
+
+```js
+findCharacter(characters, practiceBot.characterId); // null becomes Sigrika
+```
+
+Correct:
+
+```js
+const character = { id: practiceBot.botProfile.id, systemVoices: {} };
+resolveSystemVoice(`countdown-${second}`, { character }); // TTS
 ```
 
 ### Scenario: Story Trigger and Player-Surface Routing

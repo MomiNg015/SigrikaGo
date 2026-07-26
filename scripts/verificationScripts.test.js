@@ -9,6 +9,11 @@ describe("verification script contracts", () => {
     expect(packageJson.scripts["verify:battle-fixes"]).toBe("node scripts/verify-battle-fixes.mjs");
   });
 
+  it("wires reusable character voice normalization and drift checks", () => {
+    expect(packageJson.scripts["voices:normalize"]).toBe("node scripts/normalize-character-voices.mjs --write");
+    expect(packageJson.scripts["check:voices"]).toBe("node scripts/normalize-character-voices.mjs --check");
+  });
+
   it("covers the battle board, skill, capture, chat, and docs regressions", () => {
     [
       "src/styles/cssLayerInventory.test.js",

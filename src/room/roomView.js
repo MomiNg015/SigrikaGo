@@ -54,10 +54,24 @@ export function aemeathRainbowMoveEffectForRoom(room = {}) {
 
 export function voiceCharacterForPlayer(player, characters) {
   if (!player) return null;
+  const itemEffects = player.user?.itemEffects ?? {};
+  const botVoiceId = canonicalCharacterId(
+    (player.isBot || player.user?.isBot) && !player.character && !player.characterId
+      ? player.botProfile?.id
+      : ""
+  );
+  if (botVoiceId) {
+    return {
+      id: botVoiceId,
+      name: player.botProfile?.name ?? botVoiceId,
+      systemVoices: {},
+      itemEffects
+    };
+  }
   const character = findCharacter(characters, player.character ?? player.characterId);
   return {
     ...character,
-    itemEffects: player.user?.itemEffects ?? {}
+    itemEffects
   };
 }
 

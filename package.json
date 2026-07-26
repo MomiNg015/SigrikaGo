@@ -35,6 +35,8 @@
     "check:admin-snapshot": "node scripts/check-admin-default-snapshot.mjs",
     "portraits:normalize": "node scripts/normalize-character-portraits.mjs --write",
     "check:portraits": "node scripts/normalize-character-portraits.mjs --check",
+    "voices:normalize": "node scripts/normalize-character-voices.mjs --write",
+    "check:voices": "node scripts/normalize-character-voices.mjs --check",
     "admin:sync-defaults": "node scripts/sync-admin-default-config.mjs",
     "admin:sync-onboarding": "node scripts/sync-admin-default-story.mjs --key onboarding.default",
     "backfill:user-assets": "node scripts/backfill-structured-user-assets.mjs",

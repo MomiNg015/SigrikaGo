@@ -1,4 +1,4 @@
-import { VOICE_EFFECT_SETTINGS, audioBufferStats, boostedVoiceVolume, createAiryReverbImpulse, voiceNormalizationGain } from "../shared/voiceEffects.js";
+import { VOICE_EFFECT_SETTINGS, boostedVoiceVolume, createAiryReverbImpulse } from "../shared/voiceEffects.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
 
@@ -140,7 +140,7 @@ async function playVoiceBuffer(buffer, volume, playbackOptions = {}) {
   const source = context.createBufferSource();
   source.buffer = buffer;
 
-  const cleanupNodes = connectVoiceSource(context, source, normalizedVoiceVolume(buffer, volume), playbackOptions);
+  const cleanupNodes = connectVoiceSource(context, source, volume, playbackOptions);
   let released = false;
   const voiceHandle = {
     stop: () => {
@@ -164,10 +164,6 @@ async function playVoiceBuffer(buffer, volume, playbackOptions = {}) {
   activeVoicePlayback = voiceHandle;
   source.start();
   source.onended = release;
-}
-
-function normalizedVoiceVolume(buffer, volume) {
-  return volume * voiceNormalizationGain(audioBufferStats(buffer));
 }
 
 function connectVoiceSource(context, source, volume, playbackOptions = {}) {

@@ -14,6 +14,7 @@ import {
   voiceCharacterForPlayer
 } from "./roomView.js";
 import { COLORS, GAME_PHASES, createGameState, getPoint, pointId, useSkill } from "../shared/game.js";
+import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../shared/systemVoices.js";
 
 describe("roomView helpers", () => {
   test("formats room members from players and spectators", () => {
@@ -139,6 +140,31 @@ describe("roomView helpers", () => {
     expect(character).toMatchObject({
       id: "lynae",
       itemEffects: { lynaeContraryVoice: true }
+    });
+  });
+
+  test("keeps the characterless practice bot on TTS instead of falling back to Sigrika voices", () => {
+    const character = voiceCharacterForPlayer({
+      characterId: null,
+      character: null,
+      isBot: true,
+      botProfile: { id: "zhunshibao", name: "准时宝" },
+      user: { isBot: true }
+    }, CHARACTERS);
+
+    expect(character).toEqual({
+      id: "zhunshibao",
+      name: "准时宝",
+      systemVoices: {},
+      itemEffects: {}
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiStart, { character })).toEqual({
+      type: "tts",
+      text: "开始读秒"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(10), { character })).toEqual({
+      type: "tts",
+      text: "10"
     });
   });
 

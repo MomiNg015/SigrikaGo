@@ -198,6 +198,26 @@ export const CHARACTER_SYSTEM_VOICES = {
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/baconbits_byo_yomi_periods.ogg",
     [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/baconbits_result_win.ogg",
     [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/baconbits_result_loss.ogg"
+  },
+  qiuyuan: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/qiuyuan_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/qiuyuan_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/qiuyuan_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/qiuyuan_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/qiuyuan_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/qiuyuan_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/qiuyuan_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/qiuyuan_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/qiuyuan_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/qiuyuan_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/qiuyuan_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/qiuyuan_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/qiuyuan_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/qiuyuan_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/qiuyuan_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/qiuyuan_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/qiuyuan_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/qiuyuan_result_draw.ogg"
   }
 };
 

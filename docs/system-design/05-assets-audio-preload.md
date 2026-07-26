@@ -16,7 +16,7 @@
 - 匹配成功后的对局资源预加载使用 `battlePreloadAssets()` 按双方房间角色收集立绘、对局 BGM、角色技能 BGM、技能/系统语音和棋盘特效图片，但加载页视觉只展示当前用户自己的出战角色跳动立绘和该角色的后台配置加载台词。本地加载完成后通过 `room:preload-ready` ack 协议通知服务端；客户端在未收到 `{ ok: true }` 前会退避重试，socket 重连后也会立即重发当前房间 ready，服务端可安全去重同一玩家的 ready。
 - 对局前还有一层客户端 playable-ready 预热：`src/app/playableReadyPreload.js` 会预热 lazy 的 `BattleAssetPreloadScreen` 对局资源加载页 chunk；`usePlayableReadyPreload()` 在登录进入 home 后通过 idle 调度触发一次，桌面匹配入口和模式按钮在 pointer/focus 意图时触发，开始匹配时按选中模式再次触发并仅为 `spark` 这类技能开启模式预热 Pixi。该预热层去重并记录 `sigrika:playable-ready-preload` 浏览器指标，但它只是本地缓存准备，不能替代 battle preload 或 `room:preload-ready` 服务端屏障。
 - 登录后加载页阻塞当前账号可访问的主要图片、音乐和音声资源；`useStartupPreload` 使用 6 路并发，单资源 8 秒超时，失败项进入首页后以较低并发重试。通用分组执行器仍支持 deferred 队列，但 `loginPreloadAssets()` 当前生成的 deferred image/audio 组为空；棋谱数据、未购买资源和房间专属资源不进入该登录清单。
-- 音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 `response.ok` 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 `Audio` fallback 播放当前曲目，并在 socket 重连、`pageshow`、可见性恢复、在线恢复和首次交互后重试当前曲目。
+- 音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 `response.ok` 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 `Audio` fallback 播放当前曲目，并在 socket 重连、`pageshow`、可见性恢复、在线恢复和首次交互后重试当前曲目。无角色练习机器人不会经过 `findCharacter()` 的西格莉卡兼容回退：`voiceCharacterForPlayer()` 使用 `botProfile.id` 构造独立、无静态 `systemVoices` 的语音身份，因此准时宝的读秒事件由 `resolveSystemVoice()` 解析为现有 `zh-CN` TTS；TTS 不进入静态音频预加载或离线 LUFS 校准。
 - 首页铭牌（履历）、仓库、观战、好友和排行入口的专属 OGG 分别为 `ui_resume_open.ogg`、`ui_warehouse_open.ogg`、`ui_watch_open.ogg`、`ui_friends_open.ogg`、`ui_leaderboard_open.ogg`。路径常量由 `src/shared/audioAssets.js` 统一声明，`AppRoutes` 在打开对应界面前调用 `effectPlayback.js` 的具名 helper；五项都进入 `RUNTIME_AUDIO_ASSETS.interaction` 的 critical audio 预加载组并遵循 `audioSettings.sfx`，按钮使用 `data-ui-sound="none"` 防止与通用确认音叠放。
 - 西格莉卡 `erase-point` 结算后的无效交叉点使用 `/assets/effects/sigrika-erased-field-marker.webp` 透明 WebP 作为坑洞标记，`.void` 在共享棋盘 CSS 中按 `150%` point-cell 尺寸显示，即 1.5 个棋盘格子长度，桌面和移动端共用同一资源与尺寸合同。
 
@@ -145,26 +145,27 @@
 - 星炬棋盘技能特效的程序化音效由 `src/room/boardSkillEffectSoundScheduler.js` 按 catalog cue 点调度，并由 `src/audio/skillEffectSounds.js` 负责真正发声；这些音效只读 `audioSettings.sfx`，不参与服务端结算，也不会在 reduced-motion 棋盘演出中播放爆炸/飞入类音效。`src/shared/skillPresentation.js` 会先判断该技能演出和音效层是否启用，关闭特效时不进入 SFX 调度；后台 `skillEffectsEnabled` 关闭后，服务端 pending skill preview 也只等待技能横幅时长，随后直接广播技能结算结果。`src/room/pixiPrewarm.js` 在技能可用棋盘空闲时预热 `pixi.js`，真实演出时复用同一个加载 promise，避免首个技能把模块加载成本集中到动画开始时；关闭特效或无技能棋盘不会为技能演出预热 Pixi。
 - `row-slash` 使用 `skillEffectSoundCues` cue 元数据调度程序化技能音效；技能横幅结束后通过 `BoardSkillEffects` 预热并播放不依赖图片资源的 Pixi Graphics 水墨刀光，结算后的持久棋盘刀痕仍走 DOM/CSS overlay，没有独立刀光图片或音频文件依赖。`protocol-takeover` 使用程序化淡紫与冰蓝数据流 Pixi 光束演出，并通过 WebAudio 程序化播放更明显的两段式数据束启动与目标锁定 SFX，结算后的协议禁入标记继续走 DOM/CSS overlay。`double-move` 使用程序化火焰 SFX，并把凤凰与火焰透明 SVG 加入 `RUNTIME_IMAGE_ASSETS.effects` 延迟预加载，技能横幅后的全盘演出通过 Pixi 复用纹理，实际连落点位继续通过 DOM/CSS 显示持续火焰。
 - 娜波摩被动灰白化层由 `BoardAmbientEffects` 根据 `game.passives.*.colorIllusion.active` 派生，使用 pointer-transparent 的 CSS 中心向外扩散波纹表现发动过程，同时 `.board-wrap.color-illusion-board-surface::before` 会把棋盘背景从中心扩散切换到 `/assets/boards/nabomo-color-illusion-board.webp`；该专用 WebP 由 `C:/codex/image/go-board-background-reference-color-vertical-2048.jpg` 转换而来，并作为效果资源延迟预加载。该被动不再使用持续 Pixi 烟雾或每帧 ticker 绘制，也不允许回退为整块矩形半透明贴层，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。
-- 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS；`useRoomAudioEffects` 不再为最后 10 秒申请 BGM duck，单个片段也不会改变 BGM 音量。解码倒计时语音继续使用无混响的 `countdown` playback profile；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。
+- 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS；`useRoomAudioEffects` 不再为最后 10 秒申请 BGM duck，单个片段也不会改变 BGM 音量。解码倒计时语音继续使用无混响的 `countdown` playback profile，并直接消费离线校准后的源资产，不做运行时逐文件 RMS 修正；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。
 
 - 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`，派生技能等效果特定语音通过 `SYSTEM_VOICE_SKILL_EVENTS` 的模式化事件覆盖普通 `skill-cast`。
 - `CHARACTER_SKILL_VOICES` 支持单个路径或候选路径数组；`resolveSystemVoice` 每次解析数组候选时随机选择一个，`loginPreloadAssets()` 与 `battlePreloadAssets()` 会展开候选数组，保证所有可能播放的语音都纳入预加载。
 - 当前已配置：西格莉卡技能发动使用 `sigrika_skill_cast.ogg`，爱弥斯普通技能使用 `aemeath_skill_cast.ogg`，爱弥斯“远航星”通过 `skill-cast:voyage-star` 使用 `aemeath_skill_cast_voyage.ogg`，娜波摩使用 `nabomo_skill_cast.ogg`，猪小仙使用 `baconbits_skill_cast.ogg`，琳奈使用 `lynae_skill_cast.ogg`，长离使用 `changli_skill_cast.ogg`，千咲使用 `chisa_skill_cast.ogg`，莫宁使用 `mornye_skill_cast.ogg`。
 - 仇远技能发动语音使用候选 `qiuyuan_skill_cast.ogg` 与 `qiuyuan_skill_cast_1.ogg`，每次释放技能随机播放其中一个。
 - `characterVoiceMapForSkill` 可将现有技能语音桥接为角色 `systemVoices` 的 `skill-cast` 事件映射。
-- 角色出战按钮会触发 `sortie` 角色语音事件；当前达妮娅、西格莉卡、猪小仙、琳奈、长离、千咲和莫宁已分别接入 `denia_sortie.ogg`、`sigrika_sortie.ogg`、`baconbits_sortie.ogg`、`lynae_sortie.ogg`、`changli_sortie.ogg`、`chisa_sortie.ogg` 与 `mornye_sortie.ogg`。
+- 角色出战按钮会触发 `sortie` 角色语音事件；当前达妮娅、西格莉卡、猪小仙、琳奈、长离、千咲、莫宁和仇远已分别接入 `denia_sortie.ogg`、`sigrika_sortie.ogg`、`baconbits_sortie.ogg`、`lynae_sortie.ogg`、`changli_sortie.ogg`、`chisa_sortie.ogg`、`mornye_sortie.ogg` 与 `qiuyuan_sortie.ogg`。
 - `SkillBanner` 出现时同步触发技能语音，同一个 banner id 只播放一次。
 - 技能语音走 `voice` 音量通道。
-- `playVoiceSound` 使用 Web Audio 播放链：source -> RMS normalization gain -> dry/wet reverb mix -> voice gain -> destination。
+- `playVoiceSound` 使用 Web Audio 播放链：离线响度校准 source -> dry/wet reverb mix -> voice gain -> destination；逐文件响度由源资产契约负责，运行时只应用用户 voice 音量与现有 profile。
 - 同一客户端只允许一个角色语音处于活动播放状态；新的角色语音或 TTS 开始前会立即停止上一段角色语音，避免同一用户连续触发角色语音时叠音。
 - 莫宁（`mornye`）已接入 `game-start`、`sortie`、`skill-cast`、`byo-yomi-start`、`byo-yomi-period-2`、`byo-yomi-period-1`、`countdown-10` 到 `countdown-1`、`result-victory`、`result-defeat`、`result-draw` 与 `house-detail` 语音；`house-detail` 使用 `/assets/voice/mornye_detail.ogg`，打开角色详情或点击详情内“描述”文本区域都会播放该语音，关闭角色详情弹窗或关闭整个部员手册会调用 `stopVoicePlayback()` 停止当前角色语音。
 - 角色音频和 TTS 播放不再通知 BGM ducking 状态，也不改变背景音乐 gain；BGM 保持用户设置音量。`backgroundDucking.js` 只处理招募演出等非语音场景显式申请的 scoped request。
-- `voiceEffects.js` 当前预设为轻量空灵混响：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`，并以 `targetRms: 0.12`、`minNormalizationGain: 0.4`、`maxNormalizationGain: 2.4` 做运行时语音响度一致化。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走归一化后的干声支路，避免一秒一段的混响尾音堆叠；普通 `Audio` fallback 本身无 Web Audio 混响。
-- 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限。
+- `voiceEffects.js` 当前只保留轻量空灵混响与通道增益预设：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走干声支路，避免一秒一段的混响尾音堆叠。
+- 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限；两条路径消费同一批已离线校准的 Ogg，因此 fallback 不再缺失独立的逐文件响度修正。
+- `scripts/normalize-character-voices.mjs` 与 `scripts/voiceLoudnessNormalization.mjs` 提供可复用的 `npm run voices:normalize` 写入流程和 `npm run check:voices` 只读漂移检查。普通片段按 BS.1770/EBU R128 integrated loudness 校准到 `-18 LUFS`，最终 Ogg True Peak 必须不超过 `-2 dBTP`；短于 500ms 或 integrated loudness 不可测的片段改用 `-19 dBFS RMS`。处理链保留声道数和采样率，使用高质量 Vorbis 编码，在系统临时目录完成全部输出、最终 Ogg 复测和路径验证，只有整批无失败时才覆盖仓库资产。
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
 - 琳奈的 `lynaeContraryVoice` 由 resolver 在选取音频前做固定事件重映射：`countdown-N` 映射为 `countdown-(11-N)`，`byo-yomi-period-2` ↔ `byo-yomi-period-1`、`game-start` ↔ `byo-yomi-start`、`sortie` ↔ `skill-cast`、`result-victory` ↔ `result-defeat`；`result-draw`、`house-detail` 与超时静音保持原样。房间语音角色、技能横幅、棋舍出战和结果弹窗都必须显式携带对应的 `itemEffects`，不能修改静态角色目录或真实事件数据。
-- 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
+- 当前未映射角色事件默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。仇远的 18 个标准系统事件已通过 `scripts/generate-qiuyuan-system-voices.ps1` 使用固定 `Microsoft Kangkang` 中文成年男声生成并映射为静态 Ogg，覆盖 `game-start`、`sortie`、读秒开始、剩余 2/1 次读秒、`countdown-10` 到 `countdown-1`、`result-victory`、`result-defeat` 与 `result-draw`，不再随浏览器 TTS 声线变化。
 - 已预留事件：`game-start`、`game-start:gomoku`、`skill-cast`、`sortie`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
 - `game-start:gomoku` 是 `game-start` 的模式化角色语音变体；当前长离在五子棋模式开局时优先播放 `changli_wuzi_match_start.ogg`，其它模式继续播放 `changli_match_start.ogg`；长离倒计时已覆盖 10 到 1 秒。
@@ -176,8 +177,8 @@
 
 - Runtime audio playback now lives across focused `src/audio/` modules: audio settings, BGM ducking, browser audio runtime detection, procedural generated sounds, background music scheduling, and effect playback are split out, while `playback.jsx` keeps voice/TTS helpers plus compatibility re-exports. Future cleanup can continue splitting voice and audio-cache concerns if the feature set grows.
 - Voice playback uses a shared module-level Web Audio context when available; regular voice playback, cached playback, and preload decoding all reuse that context. Future tuning may still need more explicit lifecycle cleanup and browser autoplay handling.
-- Audio settings, background music ducking, runtime voice loudness helpers, and no-browser audio API guards are covered by deterministic helper tests, but not by a browser-level audio graph test.
-- Runtime voice loudness normalization uses decoded `AudioBuffer` RMS statistics and clamps correction gain between 0.4 and 2.4, so authored assets can remain unchanged while character voices play at a closer perceived level.
+- Audio settings, background music ducking, offline voice loudness helpers, and no-browser audio API guards are covered by deterministic helper tests, but not by a browser-level audio graph test.
+- Character voice loudness is an authored-asset/build-tool contract rather than a runtime `AudioBuffer` correction. `check:voices` must pass after adding or replacing any `public/assets/voice/*.ogg`; runtime Web Audio and ordinary `Audio` fallback intentionally avoid independent per-file normalization so their relative source loudness cannot diverge.
 - Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.
 - BGM assets are committed directly under `public/assets/music/` and increase repository size. If the soundtrack grows, consider Git LFS, an asset CDN, or a manifest-driven asset pipeline.
 - Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.

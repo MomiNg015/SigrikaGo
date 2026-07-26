@@ -786,6 +786,25 @@ describe("background music library", () => {
     expect(CHARACTER_SYSTEM_VOICES.baconbits).not.toHaveProperty("timeout");
   });
 
+  it("includes Qiuyuan's fixed Kangkang system voice set", () => {
+    expect(CHARACTER_SYSTEM_VOICES.qiuyuan).toMatchObject({
+      "game-start": "/assets/voice/qiuyuan_match_start.ogg",
+      sortie: "/assets/voice/qiuyuan_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/qiuyuan_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/qiuyuan_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/qiuyuan_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/qiuyuan_countdown_10.ogg",
+      "countdown-1": "/assets/voice/qiuyuan_countdown_1.ogg",
+      "result-victory": "/assets/voice/qiuyuan_result_win.ogg",
+      "result-defeat": "/assets/voice/qiuyuan_result_loss.ogg",
+      "result-draw": "/assets/voice/qiuyuan_result_draw.ogg"
+    });
+    expect(characterVoiceMapForSkill().qiuyuan["skill-cast"]).toEqual([
+      "/assets/voice/qiuyuan_skill_cast.ogg",
+      "/assets/voice/qiuyuan_skill_cast_1.ogg"
+    ]);
+  });
+
   it("includes Denia character system voices", () => {
     expect(CHARACTER_SYSTEM_VOICES.denia).toMatchObject({
       "game-start": "/assets/voice/denia_match_start.ogg",
