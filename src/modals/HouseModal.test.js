@@ -533,7 +533,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(nestedBackdropPaintBlock).toContain("backdrop-filter: none");
     expect(nestedBackdropPaintBlock).not.toContain("blur(");
     expect(nestedBackdropPaintBlock).toContain("pointer-events: none");
-    expect(brightSchoolRootShell).toContain("--nested-modal-backdrop-fill: rgba(255, 250, 240, 0.62)");
+    expect(brightSchoolRootShell).toContain("--nested-modal-backdrop-fill: rgba(35, 27, 31, 0.64)");
     expect(nestedModalBlock).toContain("position: relative");
     expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
     expect(closeButtonBlock).toContain("position: absolute");
