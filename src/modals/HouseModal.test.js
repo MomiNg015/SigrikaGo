@@ -514,14 +514,26 @@ describe("deriveCharacterRecordStats", () => {
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const nestedSource = readFileSync(new URL("./house/HouseNestedDialogs.jsx", import.meta.url), "utf8");
     const nestedBackdropBlock = css.match(/\.nested-modal-backdrop\s*\{[^}]+\}/g)?.at(-1) ?? "";
+    const nestedBackdropPaintBlock = css.match(/\.nested-modal-backdrop::before\s*\{[^}]+\}/)?.[0] ?? "";
     const nestedModalBlock = css.match(/\.nested-modal-backdrop \.nested-modal\s*\{[^}]+\}/)?.[0] ?? "";
     const closeButtonBlock = css.match(/\.modal-backdrop \.close-button,\s*\.nested-modal-backdrop \.close-button\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightSchoolRootShell = readFileSync(
+      new URL("../styles/themes/bright-school/surface-contracts/root-shell.css", import.meta.url),
+      "utf8"
+    );
 
     expect(nestedSource).toContain("character-details-modal");
     expect(nestedBackdropBlock).toContain("position: fixed");
     expect(nestedBackdropBlock).toContain("inset: 0");
     expect(nestedBackdropBlock).toContain("z-index: 80");
     expect(nestedBackdropBlock).toContain("place-items: center");
+    expect(nestedBackdropBlock).toContain("backdrop-filter: none");
+    expect(nestedBackdropPaintBlock).toContain('content: ""');
+    expect(nestedBackdropPaintBlock).toContain("z-index: -1");
+    expect(nestedBackdropPaintBlock).toContain("backdrop-filter: none");
+    expect(nestedBackdropPaintBlock).not.toContain("blur(");
+    expect(nestedBackdropPaintBlock).toContain("pointer-events: none");
+    expect(brightSchoolRootShell).toContain("--nested-modal-backdrop-fill: rgba(255, 250, 240, 0.62)");
     expect(nestedModalBlock).toContain("position: relative");
     expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
     expect(closeButtonBlock).toContain("position: absolute");

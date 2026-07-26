@@ -61,6 +61,26 @@ Questions to answer:
 - Hover and press feedback for the play button must not change layout dimensions. Use transform, color, or opacity changes rather than width, height, border-width, padding, or DOM regeneration.
 - Bright School button press feedback models depth instead of scale: hover raises the 44px control by 1px, active lowers it by 2px and shortens the pseudo-element shadow, and the active transform must not include `scale(...)`.
 - The theme-wide `final-controls-forms.css` `button:hover`/`button:focus-visible` rule colors the full 44px button and adds a hard shadow. The character-music owner must explicitly keep the real button background, background image, border color, and box shadow transparent/none in hover, focus, and active states so only the inset pseudo-element changes color.
+- Do not add a second prepainted key face, button-only `will-change`, or paint containment as a substitute for measuring the whole character-detail surface. The original inset key face owns green hover/focus and red active feedback.
+- Character-detail and other nested interactive overlays must not use real-time full-viewport `backdrop-filter`, including on a separated pseudo-element. Keep both `.nested-modal-backdrop` and its static, pointer-transparent `::before` paint layer at `backdrop-filter: none`; use a theme-owned translucent fill for background separation.
+
+```css
+/* Wrong: moving the same live blur to a pseudo-layer keeps the GPU cost. */
+.nested-modal-backdrop::before { backdrop-filter: blur(8px); }
+
+/* Correct: the paint layer is static and has no live backdrop sampling. */
+.nested-modal-backdrop { backdrop-filter: none; }
+.nested-modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nested-modal-backdrop-fill);
+  backdrop-filter: none;
+  pointer-events: none;
+}
+```
+
 - Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid; the mobile playback key remains at least 44px.
 
 #### 4. Validation & Error Matrix
@@ -72,6 +92,7 @@ Questions to answer:
 - Derived slot selected -> request includes its exact non-empty `effectType`; ordinary slot uses an empty value.
 - Ordinary runtime preview with gameplay `effectType: "flip-stone"` or `"liberty-purge"` -> resolve `musicSelections.skill[characterId]`, not a derived slot.
 - Bright School active -> themed hover/active rules keep transform-only feedback.
+- Character detail open in Chromium -> both the interactive backdrop and pointer-transparent paint layer compute to no backdrop filter.
 - Reduced motion -> no automatic title animation; text remains horizontally reachable.
 - Portrait mobile -> final mobile safety layer preserves the same non-overlap grid contract as the theme layer.
 
@@ -86,6 +107,7 @@ Questions to answer:
 - Bad: using runtime gameplay `effectType` directly as the music slot discriminator, because every ordinary active skill also has a non-empty gameplay effect type.
 - Bad: using an infinite CSS marquee without measuring overflow or honoring `prefers-reduced-motion`.
 - Bad: running Rough.js drawing or replacing SVG children inside hover, focus, active, or click handlers.
+- Bad: retaining full-viewport `backdrop-filter` on either the interactive container or a pseudo-layer, then treating button-only `will-change` or immediate computed-style changes as proof that the visible Chrome paint path is fast.
 - Bad: rendering `shortLabel`, `普通技`, `派生技`, or the skill name beside the closed music title, because it duplicates the track-sheet tabs and reduces marquee space.
 - Bad: enclosing the compact player in a bowed Rough.js rectangle, adding a second Rough.js ring around the solid key, or using the display title font for track data; together these make the control read like a novelty widget instead of a dependable player.
 

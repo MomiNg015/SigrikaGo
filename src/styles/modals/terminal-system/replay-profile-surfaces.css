@@ -32,14 +32,26 @@
 }
 
 .nested-modal-backdrop {
+  --nested-modal-backdrop-fill: rgba(1, 9, 13, 0.46);
   position: fixed;
   inset: 0;
   z-index: 80;
   display: grid;
   place-items: center;
-  background: rgba(1, 9, 13, 0.46);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.nested-modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nested-modal-backdrop-fill);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  pointer-events: none;
 }
 
 .nested-modal-backdrop .nested-modal {

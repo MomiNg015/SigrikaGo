@@ -96,3 +96,7 @@
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal-backdrop {
+  --nested-modal-backdrop-fill: rgba(255, 250, 240, 0.62);
+}
