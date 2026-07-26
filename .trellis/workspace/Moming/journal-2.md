@@ -435,3 +435,36 @@ Researched Fractsidus visual language, generated and integrated independent desk
 ### Next Steps
 
 - None - task complete
+
+
+## Session 74: Style Fractsidus shop header
+
+**Date**: 2026-07-26
+**Task**: Style Fractsidus shop header
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Added a deep-red crayon curtain header for the Fractsidus costume shop, preserved 44px mobile controls, added CSS contracts, synced system design docs, and visually verified desktop plus portrait layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `20b232c1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
