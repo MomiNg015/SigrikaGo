@@ -534,3 +534,36 @@ Removed inherited stable both-edge scrollbar gutters from the fixed shop shell, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 77: 商店切换路标按钮
+
+**Date**: 2026-07-26
+**Task**: 商店切换路标按钮
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+将扎希拉与残星会商店切换按钮改为左右镜像的蜡笔木制路标，精简店名文案，补齐移动端触控尺寸、主题与 CSS 契约测试，并同步系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cf2e3a04` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
