@@ -1332,6 +1332,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Desktop and mobile use the same count-aware topology: five offers use 2+3, four use 2+2, three use 2+1, and one or two stay centered on one row.
 - Mobile mode is selected from `window.matchMedia("(max-width: 768px)")`, not product-stage width. The desktop product lane can itself be narrower than 768px.
 - Desktop placement confines seeded jitter to balanced row cells and reserves at least 28px before rotation/float safety; it must never shuffle four offers into 1+3 or three offers into arbitrary free placement.
+- The shop window is a fixed clipping shell, not a scroll owner. Its Bright School owner must keep `overflow: hidden !important` and `scrollbar-gutter: auto !important` so the generic modal `stable both-edges` gutter cannot inset the shared header, 200% store track, or either shop background.
 - Final mobile shop CSS must clear the shared modal shell's padding/gap, give header/body the full paper width, and never use negative-margin width compensation. Mobile horizontal gaps stay at 4–5px; vertical geometry reserves the hard shadow while preserving roughly the same visible clearance, and the whole card still scales together.
 - Final mobile card CSS must explicitly clear portrait-wide `max-width: 100%` from `.shop-card-scale`, `.shop-card-rotation`, and `.shop-card-float`, and must beat legacy `.shop-item` height/min-height rules with a `.shop-window`-scoped owner selector. Otherwise the child width is scaled twice while the legacy card height overflows the algorithmic slot.
 - The offer shell and rendered card share `--shop-card-width` / `--shop-card-height`; the detail trigger owns enlarged media/name/price rows and the purchase action owns a separate fixed bottom row. Do not make the whole article a pseudo-button containing the purchase button.
@@ -1351,6 +1352,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Three items in either layout family -> two top placements plus one centered lower placement.
 - Four desktop items -> two balanced rows of two; five desktop items -> two top plus three bottom.
 - Desktop viewport with a sub-768px product lane -> still uses the desktop card base and spacing algorithm.
+- Desktop and portrait shop shells -> header, active store page, and active background share the `.shop-window` padding-box edges; the document has no horizontal overflow.
 - Portrait mobile with four offers -> computed `.shop-item` bounds remain inside the corresponding placement plus rotation/float/shadow bleed; old minimum heights cannot create row overlap.
 - 375x600 with five offers -> the bottom purchase controls remain above the product-stage clip boundary.
 - Portrait mobile background -> the independent mobile WebP is the computed background image; its display-wall boundary equals the product-stage bottom, the bubble and wallet begin in the reception wall, and the counter remains behind Zahira without horizontal overflow.
@@ -1364,6 +1366,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Base: one or two items remain centered on a single row while desktop cards keep only bounded slot jitter.
 - Bad: `size.width <= 760` selects mobile mode, because the normal desktop stage is commonly about 744px wide.
 - Bad: a generic mobile modal shell adds padding/gap back to `.shop-window`, or a `width: calc(100% + ...)` plus negative margin attempts to compensate for the lost card width.
+- Bad: allowing the generic modal `scrollbar-gutter: stable both-edges` rule to win on `.shop-window`, because it leaves a visible empty strip on both sides even when the shop never scrolls.
 - Bad: repeating `不限量` or remaining stock in the card body after the corner badge is present.
 - Bad: testing only `layoutShopCards()` rectangles while generic/theme CSS changes the final `.shop-item` width or height.
 - Bad: `.shop-item[role="button"]` with a nested purchase `<button>`.
@@ -1372,6 +1375,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 
 #### 6. Tests Required
 - `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
+- The same CSS contract must assert the shop owner restores `overflow: hidden` and `scrollbar-gutter: auto`; browser QA must compare the shop shell padding-box edges with the header and active body edges at 1440x900, 375x812, and 375x600 for both stores.
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
 - Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.

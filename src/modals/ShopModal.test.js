@@ -404,6 +404,10 @@ describe("Zahira shop window", () => {
       new URL("../styles/themes/bright-school/commerce/shop/background-crayon.css", import.meta.url),
       "utf8"
     );
+    const shopWindowSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/window-redesign.css", import.meta.url),
+      "utf8"
+    );
     const costumeMobileSource = readFileSync(
       new URL("../styles/mobile-adaptive/costume-store.css", import.meta.url),
       "utf8"
@@ -430,6 +434,8 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
+    expect(shopWindowSource).toContain("overflow: hidden !important");
+    expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");
     expect(themeCss).toContain('.shop-header[data-store="zahira"]');
     expect(shopBackgroundSource).toContain(
       "background: linear-gradient(90deg, rgb(211 215 217), rgb(154 139 166) 48%, rgb(215 204 194)) !important"
