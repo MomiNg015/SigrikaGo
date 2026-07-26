@@ -41,6 +41,18 @@
     padding: 0 !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header :is(.shop-refresh-button, .shop-close-button) {
+    align-self: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header .shop-close-button {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+
   .shop-layout.shop-window-body,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout.shop-window-body {
     display: block !important;
