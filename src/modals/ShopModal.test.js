@@ -14,6 +14,8 @@ import {
 } from "./costumeShopHelpers.js";
 import { layoutShopCards } from "./shop/shopLayout.js";
 import {
+  COSTUME_SHOP_BACKGROUND_IMAGE,
+  COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE,
   buildShopCardPresentation,
   eligibleShopItems,
   getShopItemCategoryLabel,
@@ -402,6 +404,10 @@ describe("Zahira shop window", () => {
       new URL("../styles/themes/bright-school/commerce/shop/background-crayon.css", import.meta.url),
       "utf8"
     );
+    const costumeMobileSource = readFileSync(
+      new URL("../styles/mobile-adaptive/costume-store.css", import.meta.url),
+      "utf8"
+    );
 
     expect(commerceCss).toContain(".shop-product-stage");
     expect(commerceCss).toContain("white-space: nowrap;");
@@ -427,6 +433,14 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain('.shop-header[data-store="zahira"]');
     expect(themeCss).toContain(SHOP_BACKGROUND_IMAGE);
     expect(themeCss).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(commerceCss).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
+    expect(commerceCss).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(themeCss).toContain("var(--costume-shop-background-image)");
+    expect(mobileCss).toContain("var(--costume-shop-mobile-background-image)");
+    expect(costumeMobileSource).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel"
+    );
+    expect(costumeMobileSource).toContain("var(--costume-shop-mobile-background-image)");
     expect(themeCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
     expect(themeCss).toContain("display: contents !important");
     expect(themeCss).toContain(".shop-category-badge-decoration");

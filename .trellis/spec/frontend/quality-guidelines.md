@@ -1317,6 +1317,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - The 4–6px seeded float value is the mobile total travel. Desktop may multiply it to an 8–12px total travel inside the transform-only float layer, while mobile resets the effective travel and reduced-motion continues to disable continuous floating.
 - Bright School Zahira background depth belongs to `.zahira-store-page .shop-layout.shop-window-body`, not the outer modal or card layers. Desktop uses versioned `/assets/shop/zahira-shop-background-crayon-v1.webp` (1586x992); portrait mobile uses its independently composed `/assets/shop/zahira-shop-background-crayon-mobile-v1.webp` (941x1672, approximately 9:16), selected by the final `max-width: 768px` owner rather than cropping the desktop scene. Both use centered `cover`, no pseudo background layers, runtime filter, repeating stripe texture, or continuous decorative motion.
 - The desktop art reserves the left 68% for products and the right reception/counter area for Zahira. The mobile art reserves the upper 56% for products and the lower 44% for the bubble, wallet, counter, and Zahira. Keep both WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`; retain the corresponding PNG files as editable sources.
+- The Fractsidus costume shop follows the same two-source contract: `/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp` is 1586x992 and reserves the left 34% for Nivora plus the right 65% for products; `/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp` is an independently composed 941x1672 portrait scene with the upper 57% for products and lower 43% for reception. Both must use the Zahira background's rough wax-crayon grain, uneven outlines, simplified blocks, and deliberately low detail; polished concept-art metal, glass, and cinematic lighting are visual regressions even when the palette is correct.
+- Keep the two Fractsidus WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`, retain their same-name PNG sources, and disable the old `.costume-store-panel` curtain pseudo-elements. Under Bright School, the final mobile rule must use `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel` so its mobile asset wins against the equally important theme owner; an unscoped `.costume-store-panel` rule loses on specificity and silently crops the desktop image on phones.
 - Zahira-only header art is selected by `.shop-header[data-store="zahira"]`. It may reuse a subdued canopy crop from the desktop background beneath a parchment/crayon wash and woven lower edge, but title and controls must remain legible. Costume-store headers must not inherit this background.
 
 #### 4. Validation & Error Matrix
@@ -1329,6 +1331,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Portrait mobile with four offers -> computed `.shop-item` bounds remain inside the corresponding placement plus rotation/float/shadow bleed; old minimum heights cannot create row overlap.
 - 375x600 with five offers -> the bottom purchase controls remain above the product-stage clip boundary.
 - Portrait mobile background -> the independent mobile WebP is the computed background image; its display-wall boundary equals the product-stage bottom, the bubble and wallet begin in the reception wall, and the counter remains behind Zahira without horizontal overflow.
+- Fractsidus desktop background -> the computed image is the desktop WebP; Nivora overlays the left reception scenery and products remain inside the quiet right stage.
+- Fractsidus portrait background -> the computed image is the mobile WebP at both 375x812 and 375x600; the stage/host split remains 57/43 and the document has no horizontal overflow.
 - Costume store active -> the computed header background does not contain either Zahira background asset.
 
 #### 5. Good/Base/Bad Cases
@@ -1339,12 +1343,14 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Bad: repeating `不限量` or remaining stock in the card body after the corner badge is present.
 - Bad: testing only `layoutShopCards()` rectangles while generic/theme CSS changes the final `.shop-item` width or height.
 - Bad: `.shop-item[role="button"]` with a nested purchase `<button>`.
+- Bad: a high-detail, glossy deep-red illustration that matches Fractsidus colors but not the existing Zahira crayon medium.
+- Bad: relying on an unscoped final-mobile `.costume-store-panel` rule when the Bright School theme owns the same background with higher specificity.
 
 #### 6. Tests Required
 - `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
-- Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile 56% boundary, short-screen crop, or header isolation aligns with content.
+- Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.
 
 #### 7. Wrong vs Correct
 
@@ -1396,6 +1402,26 @@ Correct:
     background-image: var(--shop-mobile-background-image);
     background-position: center;
     background-size: cover;
+  }
+}
+```
+
+Wrong:
+
+```css
+@media (max-width: 768px) {
+  .costume-store-panel {
+    background-image: var(--costume-shop-mobile-background-image) !important;
+  }
+}
+```
+
+Correct:
+
+```css
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
+    background-image: var(--costume-shop-mobile-background-image) !important;
   }
 }
 ```

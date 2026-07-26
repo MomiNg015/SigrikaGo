@@ -2,6 +2,8 @@ export const SHOP_MASCOT_DEFAULT_IMAGE = "/assets/zahira_shop_default.webp";
 export const SHOP_MASCOT_THANKS_IMAGE = "/assets/zahira_shop_laugh.webp";
 export const SHOP_BACKGROUND_IMAGE = "/assets/shop/zahira-shop-background-crayon-v1.webp";
 export const SHOP_MOBILE_BACKGROUND_IMAGE = "/assets/shop/zahira-shop-background-crayon-mobile-v1.webp";
+export const COSTUME_SHOP_BACKGROUND_IMAGE = "/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp";
+export const COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE = "/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp";
 export const SHOP_WALLET_IMAGE = "/assets/shop/zahira-wallet-v1.webp";
 export const SHOP_MASCOT_THANKS_LINE = "谢谢惠顾！";
 

@@ -18,16 +18,10 @@
     font-size: 12px !important;
   }
 
-  .costume-store-panel {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
     background:
-      radial-gradient(circle at 50% 18%, rgba(255, 210, 116, 0.18), transparent 30%),
-      linear-gradient(180deg, #5f1023 0 58%, #25070e 58% 100%) !important;
-  }
-
-  .costume-store-panel::before,
-  .costume-store-panel::after {
-    width: 12% !important;
-    bottom: 40% !important;
+      linear-gradient(rgba(18, 2, 9, 0.03), rgba(5, 1, 3, 0.1)) 0 0 / auto no-repeat,
+      var(--costume-shop-mobile-background-image) center / cover no-repeat #24070f !important;
   }
 
   .costume-shop-stage {

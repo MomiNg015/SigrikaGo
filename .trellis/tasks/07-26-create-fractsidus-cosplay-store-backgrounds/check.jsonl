@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Verify final owner placement and cascade safety."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify desktop/mobile visual and asset quality contracts."}
+{"file":".trellis/spec/backend/costume-system-contract.md","reason":"Ensure the existing costume shop behavior remains intact."}
+{"file":".trellis/tasks/07-26-create-fractsidus-cosplay-store-backgrounds/research/fractsidus-visual-language.md","reason":"Check generated assets against researched visual constraints."}
