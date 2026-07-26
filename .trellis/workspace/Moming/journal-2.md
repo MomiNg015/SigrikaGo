@@ -402,3 +402,36 @@ Added independent desktop and portrait mobile crayon backgrounds for Zahira shop
 ### Next Steps
 
 - None - task complete
+
+
+## Session 73: Fractsidus costume shop crayon backgrounds
+
+**Date**: 2026-07-26
+**Task**: Fractsidus costume shop crayon backgrounds
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Researched Fractsidus visual language, generated and integrated independent desktop/mobile deep-red crayon stage backgrounds, registered preload assets, fixed Bright School mobile background specificity, and verified 1440x900, 375x812, and 375x600 layouts plus the full repository check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `234ccc54` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
