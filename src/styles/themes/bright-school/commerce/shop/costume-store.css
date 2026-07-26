@@ -18,8 +18,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
   color: #f8e7c2 !important;
   background:
-    linear-gradient(rgba(18, 2, 9, 0.04), rgba(5, 1, 3, 0.12)) 0 0 / auto no-repeat,
-    var(--costume-shop-background-image) center / cover no-repeat #24070f !important;
+    linear-gradient(rgba(18, 2, 9, 0.04), rgba(5, 1, 3, 0.12)),
+    var(--costume-shop-background-image) center / cover #24070f !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-card-trigger {

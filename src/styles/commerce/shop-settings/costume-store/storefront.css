@@ -47,20 +47,14 @@
 }
 
 .costume-store-panel {
-  --costume-shop-background-image: url("/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp");
-  --costume-shop-mobile-background-image: url("/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp");
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
   color: #f8e7c2;
-  background-color: #24070f;
-  background-image:
+  background:
     linear-gradient(rgba(18, 2, 9, 0.04), rgba(5, 1, 3, 0.12)),
-    var(--costume-shop-background-image);
-  background-position: 0 0, center;
-  background-repeat: no-repeat;
-  background-size: auto, cover;
+    var(--costume-shop-background-image) center / cover #24070f;
 }
 
 .costume-store-panel::before,

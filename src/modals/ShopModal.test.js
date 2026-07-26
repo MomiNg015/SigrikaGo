@@ -431,6 +431,10 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
     expect(themeCss).toContain('.shop-header[data-store="zahira"]');
+    expect(shopBackgroundSource).toContain('.shop-header[data-store="costume"]');
+    expect(shopBackgroundSource).toContain("var(--costume-shop-background-image)");
+    expect(shopBackgroundSource).toContain("--shop-header-title: rgb(244, 228, 196)");
+    expect(themeCss).toContain("color: var(--shop-header-title, #3d2b25) !important");
     expect(themeCss).toContain(SHOP_BACKGROUND_IMAGE);
     expect(themeCss).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(commerceCss).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
@@ -449,7 +453,7 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain("--shop-mobile-background-image:");
     expect(themeCss).toContain(".shop-layout.shop-window-body::before");
     expect(themeCss).toContain(".shop-layout.shop-window-body::after");
-    expect(themeCss).toContain("background-size: auto, cover");
+    expect(shopBackgroundSource).toContain("var(--shop-background-image) center / cover");
     expect(themeCss).toContain("content: none !important");
     expect(themeCss).toContain(".costume-shop-card-trigger:hover");
     expect(themeCss).toContain("background: transparent !important");

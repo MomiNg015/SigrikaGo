@@ -10,22 +10,20 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header h2 {
-  color: #3d2b25 !important;
+  color: var(--shop-header-title, #3d2b25) !important;
   font-family: var(--font-window-title), var(--font-ui-default) !important;
   font-weight: 900 !important;
   letter-spacing: 0.08em !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-refresh-button,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-close-button {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-refresh-button, .shop-close-button) {
   background: #fffdf5 !important;
   color: #3d2b25 !important;
   border: 3px solid #3d2b25 !important;
   box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.76) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-refresh-button:not(:disabled):hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-close-button:hover {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-refresh-button:not(:disabled), .shop-close-button):hover {
   background: #ffe1eb !important;
   transform: translateY(-1px) rotate(-1deg) !important;
 }

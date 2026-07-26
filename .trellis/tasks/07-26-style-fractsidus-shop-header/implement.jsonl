@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Keep the Fractsidus header under its explicit data-store owner and preserve theme/mobile layer order."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Preserve the CSS non-growth baseline and validate desktop plus portrait rendering."}

@@ -1,4 +1,6 @@
 .shop-window {
+  --costume-shop-background-image: url("/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp");
+  --costume-shop-mobile-background-image: url("/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp");
   position: relative;
   width: min(1120px, calc(100vw - (var(--page-pad) * 2)));
   height: min(760px, calc(100dvh - (var(--page-pad) * 2)));

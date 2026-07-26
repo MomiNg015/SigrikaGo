@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Verify the store-scoped selector and shared asset-variable ownership do not leak into Zahira."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify contract tests, CSS debt metrics, documentation, and desktop/mobile visual checks."}
