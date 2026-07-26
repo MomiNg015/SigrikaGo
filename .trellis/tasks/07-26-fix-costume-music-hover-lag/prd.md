@@ -53,4 +53,4 @@
 - 播放按钮所有者：`src/styles/modals/character-music-player/shell-title.css`
 - 全屏模糊层：`src/styles/modals/terminal-system/replay-profile-surfaces.css`
 - 修复前运行时确认两个按钮均继承 180ms 过渡，Bright School 下实际 `filter` 已经是 `none`；这否定了“按钮滤镜仍是主因”的判断。
-- 最终实现要求 `.nested-modal-backdrop` 与 `::before` 的计算值都为 `backdrop-filter: none`；Bright School 使用静态暖白半透明填充，普通主题保留原暗色半透明填充。
+- 最终实现要求 `.nested-modal-backdrop` 与 `::before` 的计算值都为 `backdrop-filter: none`；Bright School 使用静态深色半透明填充以凸显角色详情，普通主题保留原暗色半透明填充。

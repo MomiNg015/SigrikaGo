@@ -501,3 +501,36 @@ Replaced Zahira's scene-like header crop with a simple blue-gray to muted-purple
 ### Next Steps
 
 - None - task complete
+
+
+## Session 76: Fill shop side gutters
+
+**Date**: 2026-07-26
+**Task**: Fill shop side gutters
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Removed inherited stable both-edge scrollbar gutters from the fixed shop shell, added regression contracts, verified both stores on desktop and portrait mobile, and synchronized system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ee943db` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
