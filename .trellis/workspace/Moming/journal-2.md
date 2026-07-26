@@ -567,3 +567,36 @@ Removed inherited stable both-edge scrollbar gutters from the fixed shop shell, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 78: 统一角色语音响度并修复准时宝 TTS
+
+**Date**: 2026-07-26
+**Task**: 统一角色语音响度并修复准时宝 TTS
+**Branch**: `codex/audio-work`
+
+### Summary
+
+批量校准 187 条角色语音，补齐仇远静态系统语音，移除运行时 RMS 修正，并让无角色的准时宝读秒保持独立 zh-CN TTS 身份而不回退到西格莉卡。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `00d579c2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
