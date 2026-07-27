@@ -144,6 +144,30 @@ Correct:
 resolveSkillMusicTrack({ effectType: skillPreview.musicEffectType });
 ```
 
+### Story Guidance Backdrop Performance Contract
+
+- Trigger: changes to `StoryPlayerModal`, `TutorialSessionModal`, `.onboarding-story-backdrop`, `.tutorial-session-backdrop`, or their Bright School root overrides.
+- Ordinary story playback and local board-tutorial playback are two phases of the same player guidance flow. Both full-viewport backdrops must use the shared deep-plum static fill `rgba(35, 27, 31, 0.64)`.
+- Both standard and WebKit `backdrop-filter` must remain `none` on these two backdrop owners. Do not reintroduce live blur for typewriter text, branch options, tutorial-board interaction, or mobile presentation.
+- Bright School's generic `.modal-backdrop` color is weaker, so `root-shell.css` must keep an explicit story/tutorial selector that preserves the deep-plum fill after theme overrides.
+- Do not change story stacking, skip confirmation, click handling, responsive sizing, or teaching-board behavior as part of this performance contract.
+- Validation: ordinary story, empty story, item-triggered story, and local tutorial-board phases must all keep the static fill; admin embedded preview may continue resetting its backdrop to transparent.
+- Good: keep the performance fix on the two full-screen backdrop owners and the Bright School override. Bad: add button-level `will-change` while either owner still samples the live viewport.
+- `OnboardingStoryModal.test.jsx` and `TutorialSessionModal.test.jsx` must assert the static fill and reject `blur(...)`; the onboarding contract also verifies the Bright School override names both runtime phases.
+
+```css
+/* Wrong: every typewriter or board update can invalidate a live full-screen sample. */
+.onboarding-story-backdrop { backdrop-filter: blur(2px); }
+
+/* Correct: preserve separation with one static theme-aligned fill. */
+.onboarding-story-backdrop,
+.tutorial-session-backdrop {
+  background: rgba(35, 27, 31, 0.64);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+```
+
 ### Login mascot asset contract
 
 The login title mascot is a login-owned presentation asset, not the shared character portrait consumed by profiles, loading screens, character lists, or battles.

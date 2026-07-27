@@ -1,8 +1,9 @@
 .tutorial-session-backdrop {
   z-index: 100080 !important;
   padding: 16px;
-  background: rgba(29, 35, 43, 0.42);
-  backdrop-filter: blur(2px);
+  background: rgba(35, 27, 31, 0.64);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .tutorial-session-handoff-preload {

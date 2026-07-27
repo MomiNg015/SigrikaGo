@@ -4,7 +4,18 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import TutorialSessionModal from "./TutorialSessionModal.jsx";
 
+const tutorialSessionCss = readFileSync(new URL("../styles/modals/tutorial-session.css", import.meta.url), "utf8");
+
 describe("TutorialSessionModal", () => {
+  it("uses a static deep-plum backdrop without live background sampling", () => {
+    const backdropBlock = tutorialSessionCss.match(/\.tutorial-session-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(backdropBlock).toContain("background: rgba(35, 27, 31, 0.64)");
+    expect(backdropBlock).toContain("backdrop-filter: none");
+    expect(backdropBlock).toContain("-webkit-backdrop-filter: none");
+    expect(backdropBlock).not.toContain("blur(");
+  });
+
   it("routes board setup handoff through a pre-paint layout effect", () => {
     const source = readFileSync(new URL("./TutorialSessionModal.jsx", import.meta.url), "utf8");
 

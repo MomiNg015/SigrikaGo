@@ -97,6 +97,13 @@
   -webkit-backdrop-filter: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:is(
+  .onboarding-story-backdrop,
+  .tutorial-session-backdrop
+) {
+  background-color: rgba(35, 27, 31, 0.64) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal-backdrop {
   --nested-modal-backdrop-fill: rgba(35, 27, 31, 0.64);
 }

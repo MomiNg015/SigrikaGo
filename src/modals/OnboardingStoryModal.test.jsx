@@ -6,6 +6,9 @@ import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 const onboardingStoryCss = readCssWithImports(new URL("../styles/modals/onboarding-story.css", import.meta.url));
 const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
+const brightSchoolRootShellCss = readCssWithImports(
+  new URL("../styles/themes/bright-school/surface-contracts/root-shell.css", import.meta.url)
+);
 
 const script = {
   startNodeId: "start",
@@ -79,6 +82,13 @@ describe("OnboardingStoryModal", () => {
     const modalBlock = cssBlock(onboardingStoryCss, ".onboarding-story-modal");
 
     expect(backdropBlock).toContain("z-index: 100100 !important");
+    expect(backdropBlock).toContain("background: rgba(35, 27, 31, 0.64)");
+    expect(backdropBlock).toContain("backdrop-filter: none");
+    expect(backdropBlock).toContain("-webkit-backdrop-filter: none");
+    expect(backdropBlock).not.toContain("blur(");
+    expect(brightSchoolRootShellCss).toContain(".onboarding-story-backdrop,");
+    expect(brightSchoolRootShellCss).toContain(".tutorial-session-backdrop");
+    expect(brightSchoolRootShellCss).toContain("background-color: rgba(35, 27, 31, 0.64) !important");
     expect(modalBlock).toContain("padding: clamp(16px, 2.4vw, 24px)");
     expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr)");
     expect(onboardingStoryCss).toContain(".onboarding-story-modal.long-text-compress-portrait");
