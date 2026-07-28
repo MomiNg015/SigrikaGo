@@ -13,7 +13,7 @@
 
   .shop-window .shop-card-float,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-float {
-    --shop-card-float-travel: var(--shop-card-float);
+    --shop-card-float-travel: calc(var(--shop-card-float) * 1.5);
   }
 
   .shop-window .shop-card-position .shop-item,

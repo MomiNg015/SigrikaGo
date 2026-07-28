@@ -161,7 +161,7 @@
 - 角色音频和 TTS 播放不再通知 BGM ducking 状态，也不改变背景音乐 gain；BGM 保持用户设置音量。`backgroundDucking.js` 只处理招募演出等非语音场景显式申请的 scoped request。
 - `voiceEffects.js` 当前只保留轻量空灵混响与通道增益预设：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`。普通语音使用完整 dry/wet 链，连续倒计时解码语音只走干声支路，避免一秒一段的混响尾音堆叠。
 - 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限；两条路径消费同一批已离线校准的 Ogg，因此 fallback 不再缺失独立的逐文件响度修正。
-- `scripts/normalize-character-voices.mjs` 与 `scripts/voiceLoudnessNormalization.mjs` 提供可复用的 `npm run voices:normalize` 写入流程和 `npm run check:voices` 只读漂移检查。普通片段按 BS.1770/EBU R128 integrated loudness 校准到 `-18 LUFS`，最终 Ogg True Peak 必须不超过 `-2 dBTP`；短于 500ms 或 integrated loudness 不可测的片段改用 `-19 dBFS RMS`。处理链保留声道数和采样率，使用高质量 Vorbis 编码，在系统临时目录完成全部输出、最终 Ogg 复测和路径验证，只有整批无失败时才覆盖仓库资产。
+- `scripts/normalize-character-voices.mjs` 与 `scripts/voiceLoudnessNormalization.mjs` 提供可复用的 `npm run voices:normalize` 写入流程和 `npm run check:voices` 只读漂移检查。全部静态角色语音在统一基线上应用 `1.15` 线性增益（约 `+1.214 dB`）：普通片段按 BS.1770/EBU R128 integrated loudness 校准到约 `-16.8 LUFS`，最终 Ogg True Peak 必须不超过约 `-0.8 dBTP`；短于 500ms 或 integrated loudness 不可测的片段改用约 `-17.8 dBFS RMS`。处理链保留声道数和采样率，使用高质量 Vorbis 编码，在系统临时目录完成全部输出、最终 Ogg 复测和路径验证，只有整批无失败时才覆盖仓库资产。普通写入会跳过已处于容差内的文件；全局基线变化时必须运行 `npm run voices:normalize -- --force`，避免新旧容差区重叠导致少数旧文件未重写。
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
 - 琳奈的 `lynaeContraryVoice` 由 resolver 在选取音频前做固定事件重映射：`countdown-N` 映射为 `countdown-(11-N)`，`byo-yomi-period-2` ↔ `byo-yomi-period-1`、`game-start` ↔ `byo-yomi-start`、`sortie` ↔ `skill-cast`、`result-victory` ↔ `result-defeat`；`result-draw`、`house-detail` 与超时静音保持原样。房间语音角色、技能横幅、棋舍出战和结果弹窗都必须显式携带对应的 `itemEffects`，不能修改静态角色目录或真实事件数据。

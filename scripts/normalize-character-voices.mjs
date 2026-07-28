@@ -9,16 +9,24 @@ export function normalizeCharacterVoices(argv = process.argv.slice(2), {
   voiceRoot = DEFAULT_VOICE_ROOT,
   log = console.log
 } = {}) {
-  const mode = argv.includes("--write") ? "write" : argv.includes("--check") ? "check" : "";
-  if (!mode) {
-    throw new Error("Usage: node scripts/normalize-character-voices.mjs <--write|--check>");
-  }
-  const results = processVoiceDirectory({ mode, voiceRoot, log });
+  const { mode, force } = voiceNormalizationOptions(argv);
+  const results = processVoiceDirectory({ mode, force, voiceRoot, log });
   const normalized = results.filter((result) => result.status === "normalized");
   const invalid = results.filter((result) => result.status === "invalid");
   const valid = results.length - invalid.length;
   log(`Voices: ${valid} valid, ${normalized.length} normalized, ${invalid.length} invalid`);
   return { results, normalized, invalid };
+}
+
+export function voiceNormalizationOptions(argv = []) {
+  const mode = argv.includes("--write") ? "write" : argv.includes("--check") ? "check" : "";
+  if (!mode) {
+    throw new Error("Usage: node scripts/normalize-character-voices.mjs <--write|--check> [--force]");
+  }
+  return {
+    mode,
+    force: mode === "write" && argv.includes("--force")
+  };
 }
 
 function main() {

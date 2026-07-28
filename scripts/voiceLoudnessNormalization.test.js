@@ -1,7 +1,11 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { voiceNormalizationOptions } from "./normalize-character-voices.mjs";
 import {
+  VOICE_CALIBRATION_GAIN_DB,
+  VOICE_CALIBRATION_GAIN_RATIO,
   VOICE_MAX_TRUE_PEAK_DBTP,
+  VOICE_PROCESSING_TRUE_PEAK_DBTP,
   VOICE_SHORT_TARGET_RMS_DBFS,
   VOICE_TARGET_LUFS,
   normalizationStrategy,
@@ -13,6 +17,22 @@ import {
 } from "./voiceLoudnessNormalization.mjs";
 
 describe("voice loudness normalization", () => {
+  it("supports forced writes when a global target shift overlaps the old tolerance", () => {
+    expect(voiceNormalizationOptions(["--write"])).toEqual({ mode: "write", force: false });
+    expect(voiceNormalizationOptions(["--write", "--force"])).toEqual({ mode: "write", force: true });
+    expect(voiceNormalizationOptions(["--check", "--force"])).toEqual({ mode: "check", force: false });
+    expect(() => voiceNormalizationOptions([])).toThrow("<--write|--check> [--force]");
+  });
+
+  it("raises every authored calibration target by the same 15 percent gain", () => {
+    expect(VOICE_CALIBRATION_GAIN_RATIO).toBe(1.15);
+    expect(VOICE_CALIBRATION_GAIN_DB).toBeCloseTo(1.2139568);
+    expect(VOICE_TARGET_LUFS).toBeCloseTo(-16.7860432);
+    expect(VOICE_SHORT_TARGET_RMS_DBFS).toBeCloseTo(-17.7860432);
+    expect(VOICE_MAX_TRUE_PEAK_DBTP).toBeCloseTo(-0.7860432);
+    expect(VOICE_PROCESSING_TRUE_PEAK_DBTP).toBeCloseTo(-1.2860432);
+  });
+
   it("parses finite FFmpeg loudnorm and volumedetect metrics", () => {
     const loudness = parseLoudnormMetrics(`
       {
@@ -60,11 +80,11 @@ describe("voice loudness normalization", () => {
     expect(shortVoiceGainDb({
       meanVolumeDbfs: -31,
       truePeakDbtp: -21
-    })).toBeCloseTo(12);
+    })).toBeCloseTo(12 + VOICE_CALIBRATION_GAIN_DB);
     expect(shortVoiceGainDb({
       meanVolumeDbfs: -31,
       truePeakDbtp: -5
-    })).toBeCloseTo(12);
+    })).toBeCloseTo(12 + VOICE_CALIBRATION_GAIN_DB);
   });
 
   it("validates ordinary and short calibrated voices against separate contracts", () => {
@@ -81,7 +101,7 @@ describe("voice loudness normalization", () => {
 
     expect(voiceMetricErrors({
       integratedLufs: -20,
-      truePeakDbtp: -1,
+      truePeakDbtp: 0,
       meanVolumeDbfs: -22
     })).toEqual(expect.arrayContaining([
       expect.stringContaining("True Peak"),

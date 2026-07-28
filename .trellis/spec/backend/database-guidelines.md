@@ -134,10 +134,11 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 #### 2. Signatures
 - `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
 - `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
-- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, and `ratingRules`.
+- Current keys include `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, `characterLoadingLines`, `skillEffectsEnabled`, `ratingRules`, and `irisLinks`.
 - `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
 - `preloadTips` stores one loading-screen tip per line. The frontend parses non-empty trimmed lines, chooses one random tip for the preload screen, and rotates to another random tip every 10 seconds while the preload view stays mounted.
 - `ratingRules` stores JSON for dynamic rating deltas, rank-gap scaling, optional anti-boosting, rank-change rating bonuses/penalties, and friendly-match coin reward limits.
+- `irisLinks` stores a JSON array of at most 30 `{ title, description, href, host }` records. `src/shared/irisLinks.js` requires HTTP(S), bounds field lengths, and derives `host`; the admin UI edits title/description/href rather than accepting raw JSON.
 
 #### 3. Contracts
 - `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
@@ -148,6 +149,7 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
 - Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
 - `ratingRules` must be normalized through `normalizeRatingRules()` on both admin save and backend sanitize paths; backend persistence stores the normalized JSON string.
+- `irisLinks` must be normalized through `normalizeIrisLinks()` on the backend boundary and parsed through `irisLinksFromSettings()` in admin/player consumers; a valid empty array is distinct from malformed JSON.
 
 #### 4. Validation & Error Matrix
 - Missing key in request body -> sanitize to the shared default for that key.
@@ -160,6 +162,7 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
 - `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
 - Invalid or partial `ratingRules` JSON -> merge with `DEFAULT_RATING_RULES` and clamp numeric values before storage.
+- Malformed `irisLinks` JSON -> use shared defaults; a valid empty array -> preserve an intentionally empty catalog; unsafe/incomplete rows -> omit them.
 
 #### 5. Good/Base/Bad Cases
 - Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
@@ -181,6 +184,7 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
 - CSS/static tests assert final theme safety layers preserve the borderless preload panel when theme panel rules would otherwise add a frame.
 - Rating-rule tests assert sanitized defaults and admin-saved values cannot persist malformed/clashing rule objects.
+- IRIS-link tests assert HTTP(S)-only normalization, standalone admin navigation, add/remove/save behavior, unsaved draft preservation across parent rerenders, public round-trip, valid empty arrays, malformed fallback, and player list scrolling.
 
 #### 7. Wrong vs Correct
 

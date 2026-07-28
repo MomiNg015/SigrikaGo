@@ -77,8 +77,8 @@ export function buildShopCardPresentation(items = [], random = Math.random) {
   return items.map((item, index) => ({
     item,
     rotation: roundShopMotion(-2 + ((Number(random()) || 0) * 4)),
-    floatDistance: roundShopMotion(4 + ((Number(random()) || 0) * 2)),
-    floatDuration: roundShopMotion(5 + ((Number(random()) || 0) * 3)),
+    floatDistance: roundShopMotion(6 + ((Number(random()) || 0) * 3)),
+    floatDuration: roundShopMotion(4.2 + ((Number(random()) || 0) * 1.8)),
     floatDelay: roundShopMotion(-((Number(random()) || 0) * 8)),
     stableIndex: index
   }));

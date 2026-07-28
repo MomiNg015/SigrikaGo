@@ -127,7 +127,7 @@ SigrikaGo/
 - `src/admin/AdminConsole.jsx`
   - 后台管理界面模块。
   - 作为后台管理的数据路由容器，负责按 tab 拉取数据、维护选中用户编辑抽屉、转发保存/刷新回调和显示后台错误。
-  - 具体 tab 已拆到 `src/admin/AdminOverview.jsx`、`AdminOperations.jsx`、`AdminUsers.jsx`、`AdminCharacters.jsx`、`AdminShopItems.jsx`、`AdminDecorations.jsx`、`AdminSiteSettings.jsx`、`AdminFeedback.jsx`、`AdminAudit.jsx`；共享后台展示零件和 helper 位于 `adminComponents.jsx`、`adminFormatters.js`、`adminUserDrafts.js`。
+  - 具体 tab 已拆到 `src/admin/AdminOverview.jsx`、`AdminOperations.jsx`、`AdminUsers.jsx`、`AdminCharacters.jsx`、`AdminShopItems.jsx`、`AdminDecorations.jsx`、`AdminIrisSettings.jsx`、`AdminSiteSettings.jsx`、`AdminFeedback.jsx`、`AdminAudit.jsx`；其中 IRIS 看板娘问候语和友情链接使用独立“IRIS 管理”页，不与系统设置共用编辑草稿。共享后台展示零件和 helper 位于 `adminComponents.jsx`、`adminFormatters.js`、`adminUserDrafts.js`。
   - `AdminOverview` 是后台默认“今日简报”，强调可读状态、分级解读和下一步动作；`AdminOperations` 是桌面端运营分析页，使用轻量条形图、分层卡片和经济/玩法摘要支撑长期趋势判断，而不是把复杂 BI 表格放在第一屏。
   - 该模块已从 `src/main.jsx` 拆出，且顶部侧栏/标题外壳已下沉到 `src/admin/AdminShell.jsx`；内部 tab 内容仍可继续按业务域拆分。
 

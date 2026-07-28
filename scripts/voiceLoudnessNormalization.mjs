@@ -10,10 +10,17 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-export const VOICE_TARGET_LUFS = -18;
-export const VOICE_MAX_TRUE_PEAK_DBTP = -2;
-export const VOICE_PROCESSING_TRUE_PEAK_DBTP = -2.5;
-export const VOICE_SHORT_TARGET_RMS_DBFS = -19;
+const VOICE_BASELINE_TARGET_LUFS = -18;
+const VOICE_BASELINE_MAX_TRUE_PEAK_DBTP = -2;
+const VOICE_BASELINE_PROCESSING_TRUE_PEAK_DBTP = -2.5;
+const VOICE_BASELINE_SHORT_TARGET_RMS_DBFS = -19;
+
+export const VOICE_CALIBRATION_GAIN_RATIO = 1.15;
+export const VOICE_CALIBRATION_GAIN_DB = 20 * Math.log10(VOICE_CALIBRATION_GAIN_RATIO);
+export const VOICE_TARGET_LUFS = VOICE_BASELINE_TARGET_LUFS + VOICE_CALIBRATION_GAIN_DB;
+export const VOICE_MAX_TRUE_PEAK_DBTP = VOICE_BASELINE_MAX_TRUE_PEAK_DBTP + VOICE_CALIBRATION_GAIN_DB;
+export const VOICE_PROCESSING_TRUE_PEAK_DBTP = VOICE_BASELINE_PROCESSING_TRUE_PEAK_DBTP + VOICE_CALIBRATION_GAIN_DB;
+export const VOICE_SHORT_TARGET_RMS_DBFS = VOICE_BASELINE_SHORT_TARGET_RMS_DBFS + VOICE_CALIBRATION_GAIN_DB;
 export const VOICE_SHORT_MAX_DURATION_SECONDS = 0.5;
 export const VOICE_LUFS_TOLERANCE = 0.7;
 export const VOICE_TRUE_PEAK_TOLERANCE = 0;
@@ -261,7 +268,8 @@ function renderVoiceFile(inputPath, outputPath, metrics, gainDb, { measurement, 
 export function processVoiceDirectory({
   mode,
   voiceRoot,
-  log = console.log
+  log = console.log,
+  force = false
 }) {
   if (!["check", "write"].includes(mode)) throw new Error(`Unknown voice normalization mode: ${mode}`);
   ensureFfmpegTools();
@@ -277,7 +285,7 @@ export function processVoiceDirectory({
     for (const [index, asset] of assets.entries()) {
       const before = measureVoiceFile(asset.path);
       const beforeErrors = voiceMetricErrors(before);
-      if (beforeErrors.length === 0) {
+      if (beforeErrors.length === 0 && !(mode === "write" && force)) {
         results.push({ ...asset, status: "valid", strategy: normalizationStrategy(before), metrics: before, errors: [] });
         log(`OK   ${asset.name} (${index + 1}/${assets.length})`);
         continue;

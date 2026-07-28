@@ -36,6 +36,10 @@
     height: 100% !important;
   }
 
+  .costume-shop-art {
+    --costume-shop-visual-scale: 1.18;
+  }
+
   .costume-shop-card-trigger {
     padding: 0 2px 4px !important;
   }

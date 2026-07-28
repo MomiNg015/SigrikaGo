@@ -227,12 +227,19 @@ describe("Zahira shop window", () => {
     expect(new Set(batch.map((item) => item.id)).size).toBe(batch.length);
   });
 
-  it("creates fixed per-batch rotation and only 4-6px, 5-8s float parameters", () => {
-    const presentation = buildShopCardPresentation([sampleItem], sequenceRandom([0, 0, 0, 0]))[0];
-    expect(presentation.rotation).toBe(-2);
-    expect(presentation.floatDistance).toBe(4);
-    expect(presentation.floatDuration).toBe(5);
-    expect(Math.abs(presentation.floatDelay)).toBe(0);
+  it("creates fixed per-batch rotation and balanced 6-9px, 4.2-6s float parameters", () => {
+    const minimum = buildShopCardPresentation([sampleItem], sequenceRandom([0, 0, 0, 0]))[0];
+    const maximum = buildShopCardPresentation(
+      [sampleItem],
+      sequenceRandom([0.999, 0.999, 0.999, 0.999])
+    )[0];
+
+    expect(minimum.rotation).toBe(-2);
+    expect(minimum.floatDistance).toBe(6);
+    expect(minimum.floatDuration).toBe(4.2);
+    expect(Math.abs(minimum.floatDelay)).toBe(0);
+    expect(maximum.floatDistance).toBe(9);
+    expect(maximum.floatDuration).toBe(6);
   });
 
   it("reuses the measured count-aware stage and whole-card motion for costume products", () => {
@@ -255,6 +262,8 @@ describe("Zahira shop window", () => {
     expect(panelSource).toContain('className="shop-card-float"');
     expect(cardSource.indexOf("costume-shop-price")).toBeGreaterThan(cardSource.indexOf("costume-shop-art"));
     expect(cardsCss).not.toContain(".costume-shop-card-slot:nth-child");
+    expect(cardsCss).toContain("--costume-shop-visual-scale: 1.14");
+    expect(cardsCss).toContain("transform: scale(var(--costume-shop-visual-scale))");
     expect(motionCss).toContain(".costume-shop-card-slot:has(");
     expect(motionCss).toContain("animation-play-state: paused");
   });
@@ -506,7 +515,8 @@ describe("Zahira shop window", () => {
     expect(mobileCss).toContain("height: 82px !important");
     expect(mobileCss).toContain("height: var(--shop-card-height) !important");
     expect(mobileCss).toContain("min-height: 0 !important");
-    expect(mobileCss).toContain("--shop-card-float-travel: var(--shop-card-float)");
+    expect(mobileCss).toContain("--shop-card-float-travel: calc(var(--shop-card-float) * 1.5)");
+    expect(costumeMobileSource).toContain("--costume-shop-visual-scale: 1.18");
     expect(mobileCss).toContain(".shop-window .shop-card-position .shop-card-meta-price-only .shop-price");
     expect(mobileCss).toContain("justify-content: center !important");
     expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item .primary-action");

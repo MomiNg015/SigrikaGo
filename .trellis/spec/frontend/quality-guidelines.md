@@ -1291,6 +1291,66 @@ Correct:
 }
 ```
 
+### Scenario: IRIS Database Home Entry
+
+#### 1. Scope / Trigger
+
+- Applies when changing the production IRIS Database entry, modal, links, or either reserved character-art region on the real home screen.
+
+#### 2. Signatures
+
+- `IrisDatabase({ links })` owns local open state and renders one viewport-fixed entry plus one shared `ModalDialog` while open.
+- `SiteSetting.irisLinks` stores the JSON catalog; `src/shared/irisLinks.js` owns defaults and normalization, `/api/site-settings` transports it, and the standalone `AdminIrisSettings` tab edits it.
+
+#### 3. Contracts
+
+- `HomeScreen` mounts exactly one `<IrisDatabase />`.
+- The edge entry keeps a transparent Q-version half-body hit area with the blue archive plaque at its lower-right. Blank art must not become a visible portrait card, fallback silhouette, or broken image.
+- Both art slots remain image-free; runtime code must not reference or request candidate Iris character assets.
+- The entry uses viewport `position: fixed`, a safe-area-aware right offset, and no horizontal page overflow.
+- The modal reuses `ModalDialog`; desktop is left blank-art/right links, portrait mobile is top blank-art/bottom links. Intro and quote copy stay absent, while the link list is the independent vertical scroll owner.
+- Link normalization allows at most 30 entries, requires a title plus HTTP(S) URL, derives display hosts, and bounds title/description/URL lengths.
+- External links use `target="_blank"` and `rel="noreferrer"`.
+- IRIS editing must stay outside `AdminSiteSettings`. Its initial fetch may replace defaults only while loading or when the authentication token changes; changing parent callback identities, moving focus, or rerendering the admin shell must not refetch and overwrite the unsaved draft.
+
+#### 4. Validation & Error Matrix
+
+- Character art absent -> render blank reservations without fallback copy or broken images.
+- Narrow/short viewport -> keep the entry reachable and constrain the modal with owned internal scrolling.
+- Missing database row or malformed stored JSON -> use shared defaults; a valid empty array intentionally renders an empty state.
+- Unsafe or incomplete admin row -> omit it from the persisted public catalog.
+
+#### 5. Good/Base/Bad Cases
+
+- Good: transparent entry reservation plus archive plaque, zero art request, admin round-trip, independently scrolling list, desktop and portrait layouts.
+- Base: image-free entry and modal remain usable before approved artwork exists.
+- Bad: replacing absent Q-version art with a framed mini profile panel.
+
+#### 6. Tests Required
+
+- Shared/backend/admin/DOM/CSS tests cover normalization, public settings persistence, the standalone admin tab, editor add/remove/save, unsaved draft preservation across callback rerenders and focus changes, Home wiring, removed copy, image absence, safe links, open/close/focus behavior, fixed placement, list scrolling, responsive geometry, reduced motion, and Bright School owners.
+- Browser QA covers desktop and portrait overflow, 44px close target, empty art regions, and zero candidate-art resources.
+
+#### 7. Wrong vs Correct
+
+```css
+/* Wrong: absent artwork became a generic profile card. */
+.iris-entry-portrait-slot { background: #06182d; border: 1px solid #89e8f4; }
+
+/* Correct: keep the Q-version hit region intentionally transparent. */
+.iris-entry-portrait-slot { position: absolute; inset: 0; background: transparent; border: 0; }
+```
+
+```jsx
+// Wrong: an unstable parent callback refetches and overwrites the active draft.
+useEffect(loadIrisSettings, [token, onNotice]);
+
+// Correct: refresh the callback ref separately; data loading still depends only on token.
+const onNoticeRef = useRef(onNotice);
+useEffect(() => { onNoticeRef.current = onNotice; }, [onNotice]);
+useEffect(loadIrisSettings, [token]);
+```
+
 ### Character Item Effect Badge Contracts
 
 When a character-specific item effect is active in `user.itemEffects`, the house manual character card should render the item's icon as a small badge on the corresponding character card across desktop and mobile.
@@ -1361,7 +1421,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Final mobile card CSS must explicitly clear portrait-wide `max-width: 100%` from `.shop-card-scale`, `.shop-card-rotation`, and `.shop-card-float`, and must beat legacy `.shop-item` height/min-height rules with a `.shop-window`-scoped owner selector. Otherwise the child width is scaled twice while the legacy card height overflows the algorithmic slot.
 - The offer shell and rendered card share `--shop-card-width` / `--shop-card-height`; the detail trigger owns enlarged media/name/price rows and the purchase action owns a separate fixed bottom row. Do not make the whole article a pseudo-button containing the purchase button.
 - The final mobile card owner must restore a full-width `minmax(0, 1fr)` column with stretched grid content, stretch every purchase action to the full card content width, and center `.shop-card-meta-price-only .shop-price` itself; button `width: 100%` is insufficient when a legacy `justify-content: center` rule leaves the grid column shrink-wrapped, while centering only the metadata parent still lets legacy item-category rules right-align the price child.
-- The 4–6px seeded float value is the mobile total travel. Desktop may multiply it to an 8–12px total travel inside the transform-only float layer, while mobile resets the effective travel and reduced-motion continues to disable continuous floating.
+- Each batch seeds a 6–9px float value and a 4.2–6s duration. Desktop multiplies that value to a 12–18px total travel, while portrait mobile uses a 1.5 multiplier for a 9–13.5px total travel; the float layer remains transform-only and reduced-motion continues to disable continuous floating.
+- Fractsidus costume cards keep the shared slot, hit-area, count-aware topology, and collision algorithm. Enlarge only `.costume-shop-art` (which contains both the alpha-trimmed costume image and price tag) with `--costume-shop-visual-scale: 1.14` on desktop and `1.18` on portrait mobile, so the visible product gains presence without changing layout geometry.
 - Bright School Zahira background depth belongs to `.zahira-store-page .shop-layout.shop-window-body`, not the outer modal or card layers. Desktop uses versioned `/assets/shop/zahira-shop-background-crayon-v1.webp` (1586x992); portrait mobile uses its independently composed `/assets/shop/zahira-shop-background-crayon-mobile-v1.webp` (941x1672, approximately 9:16), selected by the final `max-width: 768px` owner rather than cropping the desktop scene. Both use centered `cover`, no pseudo background layers, runtime filter, repeating stripe texture, or continuous decorative motion.
 - The desktop art reserves the left 68% for products and the right reception/counter area for Zahira. The mobile art reserves the upper 56% for products and the lower 44% for the bubble, wallet, counter, and Zahira. Keep both WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`; retain the corresponding PNG files as editable sources.
 - The Fractsidus costume shop follows the same two-source contract: `/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp` is 1586x992 and reserves the left 34% for Nivora plus the right 65% for products; `/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp` is an independently composed 941x1672 portrait scene with the upper 57% for products and lower 43% for reception. Both must use the Zahira background's rough wax-crayon grain, uneven outlines, simplified blocks, and deliberately low detail; polished concept-art metal, glass, and cinematic lighting are visual regressions even when the palette is correct.
@@ -1385,6 +1446,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Portrait mobile background -> the independent mobile WebP is the computed background image; its display-wall boundary equals the product-stage bottom, the bubble and wallet begin in the reception wall, and the counter remains behind Zahira without horizontal overflow.
 - Fractsidus desktop background -> the computed image is the desktop WebP; Nivora overlays the left reception scenery and products remain inside the quiet right stage.
 - Fractsidus portrait background -> the computed image is the mobile WebP at both 375x812 and 375x600; the stage/host split remains 57/43 and the document has no horizontal overflow.
+- Both shop families -> computed float travel is 12–18px on desktop and 9–13.5px on portrait mobile, duration remains 4.2–6s, interaction states pause the current float, and reduced-motion removes it.
+- Fractsidus cards -> the scaled `.costume-shop-art` rectangles remain inside the product stage and do not overlap at 1440x900, 375x812, or 375x600; the trigger hit-area and algorithmic slot bounds remain unchanged.
 - Costume store active -> the computed header background does not contain either Zahira background asset.
 - 375x812 and 375x600 Zahira headers -> refresh and close controls are both 44x44, their computed top coordinates match, and the close button computes to `position: static`.
 - Either store active -> the visible switch computes to the matching left/right polygon, the board pseudo-elements are present, and the control has no rounded-pill outer radius.
@@ -1408,6 +1471,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - The same CSS contract must assert the shop owner restores `overflow: hidden` and `scrollbar-gutter: auto`; browser QA must compare the shop shell padding-box edges with the header and active body edges at 1440x900, 375x812, and 375x600 for both stores.
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
+- `src/modals/ShopModal.test.js` must lock the 6–9px / 4.2–6s seeded boundaries, the desktop 2x and portrait 1.5x travel multipliers, and the Fractsidus 1.14 / 1.18 visual-scale owners.
 - Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.
 - `src/modals/ShopModal.test.js` must assert both accessible switch labels, reject the old text-arrow labels, and lock the shared polygon/pseudo-element, Bright School clip/radius/press, reduced-motion, and portrait minimum-size hooks. Browser QA still verifies the rendered silhouette and non-overlap at the three target viewports.
 
@@ -1564,8 +1628,9 @@ Correct:
 #### 3. Contracts
 - Voice audio and TTS never create, update, or release BGM duck requests. BGM remains at the user's configured gain throughout voice playback.
 - Ordinary decoded voices use the dry/wet reverb chain. Countdown decoded voices bypass reverb but preserve user voice volume, boost, single-active-voice behavior, preload/cache reuse, and fallback behavior.
-- Static character voices are authored at `-18 LUFS integrated` with final Ogg True Peak no higher than `-2 dBTP`. Clips shorter than 500ms or without a finite integrated measurement use `-19 dBFS RMS`; do not reintroduce decoded-buffer RMS gain because it would undo the authored LUFS contract and diverge from ordinary `Audio` fallback.
+- Static character voices apply one shared `1.15` linear calibration gain (about `+1.214 dB`) over the original baseline: ordinary clips target about `-16.8 LUFS integrated` with final Ogg True Peak no higher than about `-0.8 dBTP`, while clips shorter than 500ms or without a finite integrated measurement use about `-17.8 dBFS RMS`. The integrated, RMS, processing-peak, and final-peak targets must all move by the same dB delta; do not reintroduce decoded-buffer RMS gain because it would undo the authored LUFS contract and diverge from ordinary `Audio` fallback.
 - Voice normalization preserves each existing file's sample rate and channel count, writes high-quality Vorbis to a temporary staging directory, validates the final encoded Ogg, and replaces repository assets only when the whole batch passes. Final Ogg measurement must drive limiter correction because Vorbis can overshoot the PCM intermediate True Peak.
+- Routine `npm run voices:normalize` skips files already inside the active tolerance. A global calibration-baseline change must use `npm run voices:normalize -- --force`, because the old and new tolerance bands can overlap even when every intended asset needs recalibration.
 - A characterless room bot with `botProfile.id` keeps that id as its voice identity and an empty static `systemVoices` map. In particular, Zhunshibao resolves countdown events through the existing `zh-CN` TTS fallback; do not pass its null `character` / `characterId` through `findCharacter()`, whose compatibility fallback is Sigrika.
 - `backgroundDucking.js` is reserved for explicit non-voice scene direction such as the recruitment cinematic; a caller that acquires a request owns its idempotent release on completion, interruption, and unmount.
 - New-user defaults are `master: 100`, `bgm: 60`, `sfx: 100`, and `voice: 100`. Do not migrate or overwrite existing saved percentages when changing defaults.
@@ -1576,6 +1641,7 @@ Correct:
 - Voice asset outside loudness/True Peak tolerance -> `npm run check:voices` reports the exact file and exits non-zero.
 - Any staged normalization output fails loudness, codec, sample-rate, channel-count, or path validation -> do not replace any repository voice asset.
 - Integrated loudness becomes unstable around the measurement window -> classify clips below 500ms as short voices and validate RMS plus True Peak instead.
+- Global target delta overlaps the prior tolerance band -> use the forced write mode and assert the expected voice-asset change count before accepting the batch.
 - Characterless bot has a non-empty `botProfile.id` -> preserve the bot identity and resolve unmapped system events as TTS, never as Sigrika audio.
 - No persisted settings or invalid persisted JSON -> load the new-user defaults.
 - Valid persisted percentages -> keep them unchanged over the defaults.
@@ -1585,6 +1651,7 @@ Correct:
 - Good: play skill, story, result, and countdown voices without importing or calling `backgroundDucking.js` from the voice runtime.
 - Base: countdown audio uses `{ reverb: false }`; ordinary decoded voice uses `{ reverb: true }`.
 - Good: run `npm run voices:normalize` after adding/replacing voices, then commit only after `npm run check:voices` reports every file valid.
+- Good: run `npm run voices:normalize -- --force` once when changing the global calibration baseline; subsequent routine writes return to the non-forced command.
 - Good: `voiceCharacterForPlayer()` returns `{ id: "zhunshibao", systemVoices: {} }` for the characterless practice bot, so `resolveSystemVoice("countdown-10")` returns `{ type: "tts", text: "10" }`.
 - Good: an authored cinematic owns a scoped request and releases it on every exit path.
 - Bad: normalize PCM once and skip final Ogg measurement, or apply a runtime RMS correction on top of calibrated source assets.
@@ -1598,7 +1665,7 @@ Correct:
 - `src/audio/backgroundDucking.test.js` covers explicit scoped scene requests independently from voice playback.
 - `src/audio/voiceBackgroundIndependence.test.js` guards the voice runtime and room countdown path against reintroducing BGM duck coupling.
 - `src/room/roomView.test.js` covers characterless bot voice identity and proves Zhunshibao's byo-yomi/countdown events resolve to TTS rather than Sigrika audio.
-- `scripts/voiceLoudnessNormalization.test.js` covers FFmpeg metric parsing, short-clip routing, target calculation, tolerance validation, and path safety.
+- `scripts/voiceLoudnessNormalization.test.js` covers forced-write argument routing, FFmpeg metric parsing, short-clip routing, target calculation, tolerance validation, and path safety.
 - `src/shared/musicLibrary.test.js` covers every fixed character system-voice mapping, including Qiuyuan's static Kangkang set.
 - Run `npm run check:voices`, focused audio/time-announcement tests, then `npm run check` before handoff.
 
