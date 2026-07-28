@@ -1,0 +1,106 @@
+.iris-database-greeting {
+  position: absolute;
+  top: 8%;
+  right: 10%;
+  left: 9%;
+  z-index: 4;
+  width: auto;
+  min-height: 54px;
+  margin: 0;
+  padding: 10px 18px 10px 38px;
+  overflow: hidden;
+  color: #dffcff;
+  background:
+    linear-gradient(90deg, rgba(66, 242, 161, 0.1), transparent 58%),
+    rgba(3, 41, 59, 0.96);
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(0 18px, 18px 18px, 28px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 12px 100%, 12px 72%, 0 62%);
+  box-shadow: none;
+  filter: drop-shadow(5px 6px 0 rgba(0, 13, 22, 0.3));
+  text-align: left;
+}
+
+.iris-database-greeting::before {
+  content: "";
+  position: absolute;
+  top: 29px;
+  left: 13px;
+  width: 12px;
+  height: 12px;
+  background: var(--iris-green);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  box-shadow: 0 0 10px rgba(66, 242, 161, 0.56);
+}
+
+.iris-database-greeting::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 15px;
+  left: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--iris-green), var(--iris-blue) 68%, transparent);
+}
+
+.iris-database-greeting-channel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  color: var(--iris-green);
+  font: 8px var(--iris-data-font);
+  letter-spacing: 0.16em;
+}
+
+.iris-database-greeting-channel::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, rgba(124, 233, 255, 0.46) 0 8px, transparent 8px 13px);
+}
+
+.iris-database-greeting-copy {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  color: #e7ffff;
+  font: 500 13px/1.55 var(--iris-cn-font);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  animation: iris-greeting-decode 1.05s steps(16, end) both;
+}
+
+@keyframes iris-greeting-decode {
+  from { max-width: 0; }
+  to { max-width: 100%; }
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .iris-database-greeting {
+    top: 13%;
+    right: 14%;
+    left: 7%;
+    width: auto;
+    min-height: 48px;
+    margin: 0;
+    padding: 8px 16px 8px 36px;
+  }
+
+  .iris-database-greeting::before {
+    top: 23px;
+    left: 12px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .iris-database-greeting-channel { margin-bottom: 5px; font-size: 6px; }
+  .iris-database-greeting-copy { font-size: 12px; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iris-database-greeting-copy {
+    animation: none;
+  }
+}

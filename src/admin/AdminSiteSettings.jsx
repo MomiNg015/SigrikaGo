@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { normalizeRatingRules } from "../shared/ratingRules.js";
 import { AdminActionButton, AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
 
 export default function AdminSiteSettings({ token, onSaved, onNotice }) {
-  const [draft, setDraft] = useState(DEFAULT_SITE_SETTINGS);
+  const [draft, setDraft] = useState(() => settingsDraftFromApi(DEFAULT_SITE_SETTINGS));
   const [saving, setSaving] = useState(false);
+  const onNoticeRef = useRef(onNotice);
+
+  useEffect(() => {
+    onNoticeRef.current = onNotice;
+  }, [onNotice]);
 
   useEffect(() => {
     adminApi("/site-settings", token)
-      .then((data) => setDraft({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) }))
-      .catch((error) => onNotice?.(error.message, "danger"));
-  }, [token, onNotice]);
+      .then((data) => setDraft(settingsDraftFromApi(data.settings)))
+      .catch((error) => onNoticeRef.current?.(error.message, "danger"));
+  }, [token]);
 
   async function saveSettings(event) {
     event.preventDefault();
@@ -25,7 +30,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
           ratingRules: normalizeRatingRules(draft.ratingRules)
         }
       });
-      setDraft({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) });
+      setDraft(settingsDraftFromApi(data.settings));
       onSaved?.(data.settings);
       onNotice?.("已保存", "success");
     } catch (error) {
@@ -113,6 +118,12 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
       </form>
     </section>
   );
+}
+
+export function settingsDraftFromApi(settings = {}) {
+  const merged = { ...DEFAULT_SITE_SETTINGS, ...(settings ?? {}) };
+  delete merged.irisLinks;
+  return merged;
 }
 
 function RatingRulesEditor({ value, onChange }) {

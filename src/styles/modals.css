@@ -14,3 +14,8 @@
 @import "./modals/announcement.css";
 @import "./modals/onboarding-story.css";
 @import "./modals/tutorial-session.css";
+@import "./modals/iris-database.css";
+@import "./modals/iris-database-greeting.css";
+@import "./modals/iris-database-portrait.css";
+@import "./modals/iris-database-archive.css";
+@import "./modals/iris-database-records.css";

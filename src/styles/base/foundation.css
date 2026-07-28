@@ -20,6 +20,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "IRIS Vonwaon Bitmap";
+  src: url("/assets/fonts/VonwaonBitmap-16px.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   color: #2d2430;
   background: #fff8fb;
@@ -27,6 +35,8 @@
   --font-display-accent: "Sigrika Accent Latin";
   --font-numeric-accent: "Sigrika Accent Latin";
   --font-window-title: "Sigrika Window Title";
+  --font-iris-bitmap: "IRIS Vonwaon Bitmap", "Microsoft YaHei UI", "Microsoft YaHei", monospace;
+  --font-iris-mixed: var(--font-display-accent), var(--font-iris-bitmap);
   font-family: var(--font-ui-default);
   letter-spacing: 0;
   --page-pad: clamp(10px, 1.6vw, 24px);

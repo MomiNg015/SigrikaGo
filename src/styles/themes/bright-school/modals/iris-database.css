@@ -1,0 +1,123 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-backdrop {
+  background:
+    linear-gradient(rgba(2, 20, 32, 0.72), rgba(2, 20, 32, 0.84)),
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(124, 233, 255, 0.05) 3px 4px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-modal {
+  color: #d8fbff !important;
+  background: #021420 !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  clip-path: polygon(30px 0, 78% 0, calc(78% + 15px) 15px, 95% 15px, 100% 60px, 100% calc(100% - 34px), calc(100% - 34px) 100%, 18% 100%, calc(18% - 14px) calc(100% - 14px), 0 calc(100% - 14px), 0 44px) !important;
+  box-shadow: 0 8px 8px rgba(0, 11, 20, 0.5) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-close,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-close:active {
+  color: #7ce9ff !important;
+  background: #021420 !important;
+  border: 1px solid #7ce9ff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-close:hover {
+  color: #021420 !important;
+  background: #42f2a1 !important;
+  border-color: #42f2a1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-close:focus-visible {
+  color: #7ce9ff !important;
+  background: #021420 !important;
+  border-color: #7ce9ff !important;
+  outline: 2px solid #42f2a1 !important;
+  outline-offset: 3px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-portrait-panel {
+  background:
+    linear-gradient(118deg, rgba(22, 184, 221, 0.08), transparent 44%),
+    repeating-linear-gradient(0deg, rgba(124, 233, 255, 0.045) 0 1px, transparent 1px 7px),
+    #05273b !important;
+  clip-path: polygon(0 0, 91% 0, 100% 8%, 100% 92%, 86% 100%, 0 100%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-portrait-slot {
+  background:
+    linear-gradient(90deg, rgba(124, 233, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(rgba(124, 233, 255, 0.09) 1px, transparent 1px) !important;
+  background-size: 34px 34px !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(124, 233, 255, 0.3) !important;
+  border-bottom: 1px solid rgba(124, 233, 255, 0.18) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting {
+  color: #dffcff !important;
+  background:
+    linear-gradient(90deg, rgba(66, 242, 161, 0.1), transparent 58%),
+    rgba(3, 41, 59, 0.96) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting-channel {
+  color: #42f2a1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting-copy,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity strong {
+  color: #e2ffff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity span {
+  color: #7fb8bd !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity small {
+  color: #42f2a1 !important;
+  border-color: #42f2a1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-content {
+  color: #d8fbff !important;
+  background:
+    linear-gradient(125deg, rgba(22, 184, 221, 0.1), transparent 43%),
+    #072338 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-path,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-status b {
+  color: #42f2a1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-header h2 {
+  color: #e6ffff !important;
+  text-shadow: 2px 0 0 rgba(22, 184, 221, 0.44) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-header h2 > span {
+  color: #7ce9ff !important;
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-modal {
+    clip-path: polygon(20px 0, 74% 0, calc(74% + 12px) 12px, 94% 12px, 100% 44px, 100% calc(100% - 24px), calc(100% - 24px) 100%, 15% 100%, calc(15% - 10px) calc(100% - 10px), 0 calc(100% - 10px), 0 28px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-portrait-panel {
+    clip-path: polygon(0 0, 93% 0, 100% 16%, 100% 86%, 88% 100%, 0 100%) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-portrait-slot {
+    background-size: 25px 25px !important;
+  }
+}

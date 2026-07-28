@@ -455,6 +455,9 @@ describe("admin site settings routes", () => {
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
         preloadTips: "第一句提示\n第二句提示",
         characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+        irisLinks: [
+          { title: "棋谱站", description: "公开棋谱", href: "https://example.com/kifu" }
+        ],
         skillEffectsEnabled: false
       }
     });
@@ -468,6 +471,7 @@ describe("admin site settings routes", () => {
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
       preloadTips: "第一句提示\n第二句提示",
       characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+      irisLinks: expect.stringContaining("棋谱站"),
       skillEffectsEnabled: false
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");

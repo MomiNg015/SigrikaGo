@@ -90,6 +90,16 @@ function readCssFixture(path) {
 }
 
 describe("HomeScreen", () => {
+  it("mounts the image-free IRIS Database edge entry", () => {
+    const html = renderHome();
+
+    expect(html).toContain('aria-label="打开 IRIS 数据库"');
+    expect(html).toContain("iris-database-entry");
+    expect(html).toContain("iris-entry-portrait-slot");
+    expect(html).not.toContain("iris-edge-chibi-v1");
+    expect(html).not.toContain("iris-modal-portrait-v1");
+  });
+
   it("renders the lobby as a Startorch tactical terminal shell", () => {
     const html = renderHome();
     const css = readCssFixture("../styles/home-terminal.css");

@@ -1,5 +1,7 @@
 export { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
+import { normalizeIrisGreeting, MAX_IRIS_GREETING_LENGTH } from "../src/shared/irisGreeting.js";
+import { irisLinksSettingJson, normalizeIrisLinks } from "../src/shared/irisLinks.js";
 import { RATING_RULES_SETTING_KEY, normalizeRatingRules } from "../src/shared/ratingRules.js";
 
 const SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS);
@@ -11,6 +13,8 @@ const SITE_SETTING_LIMITS = {
   footerText: 3000,
   preloadTips: 1000,
   characterLoadingLines: 3000,
+  irisGreeting: MAX_IRIS_GREETING_LENGTH,
+  irisLinks: 20000,
   ratingRules: 8000
 };
 const BOOLEAN_SITE_SETTING_KEYS = new Set(["skillEffectsEnabled"]);
@@ -73,6 +77,12 @@ export function sanitizeSiteSettings(body = {}) {
       }
       if (key === RATING_RULES_SETTING_KEY) {
         return [key, JSON.stringify(normalizeRatingRules(body?.[key] ?? fallback), null, 2)];
+      }
+      if (key === "irisLinks") {
+        return [key, irisLinksSettingJson(normalizeIrisLinks(body?.[key] ?? fallback))];
+      }
+      if (key === "irisGreeting") {
+        return [key, normalizeIrisGreeting(body?.[key], fallback)];
       }
       const value = String(body?.[key] ?? fallback).trim().slice(0, SITE_SETTING_LIMITS[key]);
       return [key, value || fallback];

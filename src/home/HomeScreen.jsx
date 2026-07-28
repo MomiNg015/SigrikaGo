@@ -7,6 +7,7 @@ import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 import { HomeActionButton } from "./homeComponents.jsx";
+import IrisDatabase from "./IrisDatabase.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 import MatchModeWatermark from "./MatchModeWatermark.jsx";
 
@@ -75,6 +76,7 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           />
         )}
 
+        <IrisDatabase greeting={siteSettings.irisGreeting} links={siteSettings.irisLinks} />
       </main>
       <HomeFooter footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
     </>

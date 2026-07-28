@@ -1334,6 +1334,7 @@ describe("root CSS entry contract", () => {
       "./home-terminal/entries.css",
       "./home-terminal/utility-footer-motion.css",
       "./home-terminal/recruitment-alert.css",
+      "./home-terminal/iris-database-entry.css",
       "./home-terminal/mobile.css"
     ]);
     expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");
@@ -1360,7 +1361,12 @@ describe("root CSS entry contract", () => {
       "./modals/mailbox.css",
       "./modals/announcement.css",
       "./modals/onboarding-story.css",
-      "./modals/tutorial-session.css"
+      "./modals/tutorial-session.css",
+      "./modals/iris-database.css",
+      "./modals/iris-database-greeting.css",
+      "./modals/iris-database-portrait.css",
+      "./modals/iris-database-archive.css",
+      "./modals/iris-database-records.css"
     ]);
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");

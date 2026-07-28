@@ -1,6 +1,6 @@
 import React from "react";
 
-export const ADMIN_TABS = ["overview", "operations", "users", "characters", "skill-traits", "shop", "costumes", "items", "decorations", "music", "gacha", "recruitment", "announcements", "onboarding", "mailbox", "achievements", "settings", "feedback", "reports", "audit"];
+export const ADMIN_TABS = ["overview", "operations", "users", "characters", "skill-traits", "shop", "costumes", "items", "decorations", "music", "gacha", "recruitment", "announcements", "onboarding", "mailbox", "achievements", "iris", "settings", "feedback", "reports", "audit"];
 
 export const ADMIN_TAB_LABELS = {
   overview: "概况",
@@ -19,6 +19,7 @@ export const ADMIN_TAB_LABELS = {
   onboarding: "剧情教学",
   mailbox: "邮箱管理",
   achievements: "成就管理",
+  iris: "IRIS 管理",
   settings: "系统设置",
   feedback: "留言反馈",
   reports: "用户举报",

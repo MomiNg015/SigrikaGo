@@ -1,0 +1,33 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-close,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-shell-code,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting-channel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-greeting-copy,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-portrait-label,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-identity small,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-content,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-content::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-path,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-header h2,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-header h2 > span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-status,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-status b {
+  font-family: var(--iris-mixed-font) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-links,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-links a,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-index,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-index b,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-copy,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-copy strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-copy span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-copy small,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-arrow,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-links-empty {
+  font-family: var(--iris-bitmap-font) !important;
+}

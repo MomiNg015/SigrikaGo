@@ -44,6 +44,16 @@ describe("site settings defaults", () => {
       update: {}
     });
     expect(upsert).toHaveBeenCalledWith({
+      where: { key: "irisGreeting" },
+      create: { key: "irisGreeting", value: DEFAULT_SITE_SETTINGS.irisGreeting },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "irisLinks" },
+      create: { key: "irisLinks", value: DEFAULT_SITE_SETTINGS.irisLinks },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
       where: { key: "skillEffectsEnabled" },
       create: { key: "skillEffectsEnabled", value: "true" },
       update: {}
@@ -85,5 +95,35 @@ describe("site settings defaults", () => {
       ...DEFAULT_SITE_SETTINGS,
       characterLoadingLines: "sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议"
     }).characterLoadingLines).toBe("sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议");
+  });
+
+  it("normalizes admin-configured IRIS links and rejects unsafe protocols", () => {
+    const settings = sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      irisLinks: [
+        { title: "棋谱站", description: "公开棋谱", href: "https://example.com/kifu" },
+        { title: "危险链接", description: "", href: "javascript:alert(1)" }
+      ]
+    });
+
+    expect(JSON.parse(settings.irisLinks)).toEqual([
+      {
+        title: "棋谱站",
+        description: "公开棋谱",
+        href: "https://example.com/kifu",
+        host: "example.com"
+      }
+    ]);
+  });
+
+  it("normalizes the IRIS greeting and falls back when it is blank", () => {
+    expect(sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      irisGreeting: "  今天\n也要认真复盘。 "
+    }).irisGreeting).toBe("今天 也要认真复盘。");
+    expect(sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      irisGreeting: "   "
+    }).irisGreeting).toBe(DEFAULT_SITE_SETTINGS.irisGreeting);
   });
 });

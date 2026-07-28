@@ -6,6 +6,7 @@ import { AdminActionButton } from "./adminComponents.jsx";
 
 const actionButtonConsumers = [
   "AdminMailbox.jsx",
+  "AdminIrisSettings.jsx",
   "AdminRecruitmentSettings.jsx",
   "AdminSiteSettings.jsx",
   "AdminUsers.jsx"

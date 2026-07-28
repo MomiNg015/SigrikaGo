@@ -268,7 +268,8 @@ describe("player theme CSS contract", () => {
       "./home/short-height.css",
       "./home/narrow-desktop.css",
       "./home/mobile-compact.css",
-      "./home/utility-toolbox.css"
+      "./home/utility-toolbox.css",
+      "./home/iris-database-entry.css"
     ]);
     expect(brightHomeEntry).not.toContain(".home-player-plaque.tactical-id-card {");
     expect(brightHomeEntry).not.toContain(".home-main-panel.home-terminal-main");
@@ -485,7 +486,10 @@ describe("player theme CSS contract", () => {
       "./modals/leaderboard.css",
       "./modals/resume-personalization.css",
       "./modals/result-room-popovers.css",
-      "./modals/stage-decoration-fixes.css"
+      "./modals/stage-decoration-fixes.css",
+      "./modals/iris-database.css",
+      "./modals/iris-database-records.css",
+      "./modals/iris-database-typography.css"
     ]);
     expect(modalsEntry).not.toContain(".settings-modal");
     expect(modalsEntry).not.toContain(".resume-modal");
