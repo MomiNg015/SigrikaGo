@@ -83,7 +83,7 @@
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。
 - `validateShopItemInput` / `validateDecorationInput`: 商城与装饰校验。
-- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines` 与技能特效开关。
+- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines`、`shopMascotDialogues`、`irisGreeting`、`irisLinks` 与技能特效开关。后台 PATCH 先把请求字段合并到事务内读取的当前设置，再统一规范化全部键，因此看板娘等独立编辑页不会重置其它后台配置。
 - `buildLeaderboard`: 排行榜统计。
 - `ratingDeltaForResult`: 根据 `winnerColor` 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。
 - `safeUploadFilename`: 上传文件名清洗。

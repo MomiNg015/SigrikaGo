@@ -58,7 +58,7 @@ describe("AdminShell", () => {
     expect(html).toContain("邮箱管理");
     expect(html).toContain("运营分析");
     expect(html).toContain("用户举报");
-    expect(html).toContain("IRIS 管理");
+    expect(html).toContain("看板娘管理");
     expect(html).toContain("content");
   });
 

@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
+import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../../shared/shopMascotDialogues.js";
 import {
-  COSTUME_EMPTY_LINE,
-  COSTUME_ERROR_LINE,
-  COSTUME_GREETING_LINES,
-  COSTUME_INSUFFICIENT_LINE,
-  COSTUME_LOADING_LINE,
   COSTUME_REFRESH_COOLDOWN_MS,
-  COSTUME_REFRESH_LINES,
-  COSTUME_THANKS_LINE,
   eligibleCostumes,
   pickCostumeLine,
   selectCostumeBatch
 } from "../costumeShopHelpers.js";
 
-export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
+export function useCostumeCatalog({
+  token,
+  user,
+  onNotice,
+  onPurchased,
+  dialogueConfig = DEFAULT_SHOP_MASCOT_DIALOGUES.nabomo
+}) {
   const [costumes, setCostumes] = useState([]);
   const [effectiveUser, setEffectiveUser] = useState(user);
   const [catalogState, setCatalogState] = useState("loading");
@@ -25,7 +25,7 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [retryVersion, setRetryVersion] = useState(0);
-  const [mascotLine, setMascotLine] = useState(COSTUME_LOADING_LINE);
+  const [mascotLine, setMascotLine] = useState(dialogueConfig.loadingLine);
   const [mascotMood, setMascotMood] = useState("greeting");
   const [purchasingId, setPurchasingId] = useState("");
   const [equippingId, setEquippingId] = useState("");
@@ -46,7 +46,7 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
     if (!token || !user?.id) return undefined;
     setCatalogState("loading");
     setMascotMood("greeting");
-    setMascotLine(COSTUME_LOADING_LINE);
+    setMascotLine(dialogueConfig.loadingLine);
     api("/api/costumes", { token })
       .then((data) => {
         if (!alive) return;
@@ -58,20 +58,22 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
         setBatchVersion((version) => version + 1);
         setCatalogState("ready");
         setMascotMood(batch.length ? "greeting" : "empty");
-        setMascotLine(batch.length ? pickCostumeLine(COSTUME_GREETING_LINES) : COSTUME_EMPTY_LINE);
+        setMascotLine(batch.length
+          ? pickCostumeLine(dialogueConfig.greetingLines)
+          : dialogueConfig.emptyLine);
         if (batch.length) startCooldown(setCooldownUntil, setCooldownRemaining);
       })
       .catch((error) => {
         if (!alive) return;
         setCatalogState("error");
         setMascotMood("empty");
-        setMascotLine(COSTUME_ERROR_LINE);
+        setMascotLine(dialogueConfig.errorLine);
         onNoticeRef.current?.(error.message, "danger");
       });
     return () => {
       alive = false;
     };
-  }, [retryVersion, token, user?.id]);
+  }, [dialogueConfig, retryVersion, token, user?.id]);
 
   useEffect(() => {
     if (!cooldownUntil) return undefined;
@@ -109,14 +111,14 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
       setCurrentBatch((current) => current.map((entry) => (
         entry.id === costume.id ? { ...entry, ...data.costume, owned: true } : entry
       )));
-      setMascotFeedback("thanks", COSTUME_THANKS_LINE);
+      setMascotFeedback("thanks", dialogueConfig.thanksLine);
       onNoticeRef.current?.(`已购买${costume.name}`, "success");
       for (const unlock of data.achievementUnlocks ?? []) {
         onNoticeRef.current?.(`达成成就：${unlock.name}`, "achievement");
       }
       return data.costume;
     } catch (error) {
-      if (error.message === "金币不足") setMascotFeedback("empty", COSTUME_INSUFFICIENT_LINE);
+      if (error.message === "金币不足") setMascotFeedback("empty", dialogueConfig.insufficientLine);
       onNoticeRef.current?.(error.message, "danger");
       return null;
     } finally {
@@ -163,7 +165,9 @@ export function useCostumeCatalog({ token, user, onNotice, onPurchased }) {
     setPreparedBatch(null);
     setBatchVersion((version) => version + 1);
     setMascotMood(preparedBatch.length ? "greeting" : "empty");
-    setMascotLine(preparedBatch.length ? pickCostumeLine(COSTUME_REFRESH_LINES) : COSTUME_EMPTY_LINE);
+    setMascotLine(preparedBatch.length
+      ? pickCostumeLine(dialogueConfig.refreshLines)
+      : dialogueConfig.emptyLine);
     if (preparedBatch.length) startCooldown(setCooldownUntil, setCooldownRemaining);
   }
 

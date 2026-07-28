@@ -5,7 +5,6 @@ export const SHOP_MOBILE_BACKGROUND_IMAGE = "/assets/shop/zahira-shop-background
 export const COSTUME_SHOP_BACKGROUND_IMAGE = "/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp";
 export const COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE = "/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp";
 export const SHOP_WALLET_IMAGE = "/assets/shop/zahira-wallet-v1.webp";
-export const SHOP_MASCOT_THANKS_LINE = "谢谢惠顾！";
 
 export const SHOP_MASCOT_MOODS = Object.freeze({
   default: "default",

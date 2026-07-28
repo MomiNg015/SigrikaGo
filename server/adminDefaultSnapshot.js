@@ -1,4 +1,4 @@
-// Generated from prisma/dev.db non-user admin configuration on 2026-07-23.
+// Generated from prisma/dev.db non-user admin configuration on 2026-07-28.
 // Do not include users, audit logs, feedback, reports, game records, mailbox batches/history, or live state here.
 
 export const ADMIN_DEFAULT_CONFIG = {
@@ -25,7 +25,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "key": "irisGreeting",
-      "value": "欢迎回来。今天想从哪盘棋开始复盘？"
+      "value": "[\n  \"欢迎回来。今天想从哪盘棋开始复盘？\"\n]"
     },
     {
       "key": "irisLinks",
@@ -42,6 +42,10 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "key": "recruitmentConfig",
       "value": "{\"durationMs\":300000,\"successRates\":[50,75,100],\"confidenceTexts\":[\"碰碰运气吧，也许能招到新人呢？\",\"今天是休息日，感觉有大概率能抓到新人。\",\"哇，在飞讯上刷到了好多围棋部相关的内容，这次一定会有新人来了！\"],\"noResponseTexts\":{\"campus-recruitment-poster\":[\"招新贴报挂了好久，但没有人关注。只能下次再试试了...\",\"公告栏前人来人往，但好像没有人关注这张贴报...\"],\"radio-recruitment-ticket\":[\"已经通过电台广播出去了，不过这次没有任何回讯...\",\"广播已经播出去了，不过这次没有收到明确回信。\"]},\"successTexts\":{\"lynae\":\"呀吼，听说这里很热闹！让我也来掺和一下吧！\",\"mornye\":\"我是莫宁教授，作为围棋部的指导教师，希望未来能和大家友好交流相处。\",\"chisa\":\"请问这是围棋部吗？听说参与围棋活动会有额外学分拿......之后还请多多指教。\",\"qiuyuan\":\"我只是是来找个清静处的.....有谁要切磋一番的吗？\",\"changli\":\"听说远洋之外居然还有下围棋的地方，我就来了。呵呵，今天有谁愿意和我对弈一盘的吗？\"},\"fixedItemTexts\":{\"aemeath-flight-snow-memorial-ticket\":{\"scopeLabel\":\"总觉得，今天会有一场奇迹般的相遇...\",\"resultText\":\"爱弥斯，回应粉丝的期待，闪亮登台！嗯？是想让我加入围棋部吗？哼哼哼，也好，就让你们见识一下我精湛的棋艺吧！\"}}}"
+    },
+    {
+      "key": "shopMascotDialogues",
+      "value": "{\n  \"zahira\": {\n    \"greetingLines\": [\n      \"……我听见了。你在找能派上用场的东西，对吗？\",\n      \"欢迎。请先随意看看，不必急着开口。\",\n      \"你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？\"\n    ],\n    \"refreshLines\": [\n      \"没有合心意的？请稍等，我再换一批。\"\n    ],\n    \"loadingLine\": \"请稍等……我正在把它们一件件摆好。\",\n    \"emptyLine\": \"今天的货物都已有归处了。等下次集市再见吧。\",\n    \"errorLine\": \"……这一批货物没能顺利抵达。请再给我一点时间。\",\n    \"thanksLine\": \"请收好……看来，它也一直在等你。\"\n  },\n  \"nabomo\": {\n    \"greetingLines\": [\n      \"有兴趣加入残星会吗？什么，只是来看衣服的？好吧，随你。\",\n      \"铛铛！此乃开幕之刻！\",\n      \"今天想扮演谁呢？\"\n    ],\n    \"refreshLines\": [\n      \"不满意？那这些呢？\",\n      \"真是个爱挑剔的客人呢。那看看这些吧。\"\n    ],\n    \"loadingLine\": \"别急，我正在收拾房间。\",\n    \"emptyLine\": \"真不凑巧呢，今天没有能给你看的东西。\",\n    \"errorLine\": \"呃，锁孔卡住了。再重新试一次吧。\",\n    \"thanksLine\": \"嗯，还挺有眼光的。\",\n    \"insufficientLine\": \"你是来找茬的吧？\"\n  }\n}"
     },
     {
       "key": "skillEffectsEnabled",

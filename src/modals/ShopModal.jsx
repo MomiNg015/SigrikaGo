@@ -1,5 +1,7 @@
 import { RefreshCw, RotateCcw, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { shopMascotDialoguesFromSettings } from "../shared/shopMascotDialogues.js";
 import { ModalDialog } from "./modalComponents.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import ShopProductStage from "./shop/ShopProductStage.jsx";
@@ -9,13 +11,38 @@ import CostumeStorePanel from "./shop/CostumeStorePanel.jsx";
 import { useCostumeCatalog } from "./shop/useCostumeCatalog.js";
 import { useShopCatalog } from "./shop/useShopCatalog.js";
 
-export default function ShopModal({ token, user, musicTracks, onPurchased, onNotice, onClose }) {
+export default function ShopModal({
+  token,
+  user,
+  musicTracks,
+  siteSettings = DEFAULT_SITE_SETTINGS,
+  onPurchased,
+  onNotice,
+  onClose
+}) {
   const [activeStore, setActiveStore] = useState("zahira");
   const [detailItem, setDetailItem] = useState(null);
   const [detailCostume, setDetailCostume] = useState(null);
   const [equipPromptCostume, setEquipPromptCostume] = useState(null);
-  const zahiraCatalog = useShopCatalog({ token, user, musicTracks, onNotice, onPurchased });
-  const costumeCatalog = useCostumeCatalog({ token, user, onNotice, onPurchased });
+  const mascotDialogues = useMemo(
+    () => shopMascotDialoguesFromSettings(siteSettings),
+    [siteSettings?.shopMascotDialogues]
+  );
+  const zahiraCatalog = useShopCatalog({
+    token,
+    user,
+    musicTracks,
+    onNotice,
+    onPurchased,
+    dialogueConfig: mascotDialogues.zahira
+  });
+  const costumeCatalog = useCostumeCatalog({
+    token,
+    user,
+    onNotice,
+    onPurchased,
+    dialogueConfig: mascotDialogues.nabomo
+  });
   const activeCatalog = activeStore === "costume" ? costumeCatalog : zahiraCatalog;
   const {
     batchVersion,

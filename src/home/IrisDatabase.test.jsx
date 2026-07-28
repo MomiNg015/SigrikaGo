@@ -13,8 +13,10 @@ describe("IRIS Database production contract", () => {
 
     expect(homeSource).toContain('import IrisDatabase from "./IrisDatabase.jsx"');
     expect(homeSource).toContain(
-      "<IrisDatabase greeting={siteSettings.irisGreeting} links={siteSettings.irisLinks} />"
+      "audioSettings={audioSettings}"
     );
+    expect(homeSource).toContain("greeting={siteSettings.irisGreeting}");
+    expect(homeSource).toContain("links={siteSettings.irisLinks}");
     expect(source).toContain("iris-entry-portrait-slot");
     expect(source).toContain("iris-entry-shard");
     expect(source).toContain("iris-entry-nodes");

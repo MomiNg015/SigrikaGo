@@ -1,16 +1,25 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_IRIS_LINKS } from "../shared/irisLinks.js";
+import { playUiIrisDatabaseOpenSound } from "../audio/playback.jsx";
 import IrisDatabase from "./IrisDatabase.jsx";
 
+vi.mock("../audio/playback.jsx", () => ({
+  playUiIrisDatabaseOpenSound: vi.fn()
+}));
+
 describe("IRIS Database home interaction", () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
 
   it("opens an image-free database dialog and restores focus on Escape", async () => {
     const user = userEvent.setup();
-    const { container } = render(<IrisDatabase />);
+    const audioSettings = { master: 80, sfx: 35 };
+    const { container } = render(<IrisDatabase audioSettings={audioSettings} />);
     const entry = screen.getByRole("button", { name: "打开 IRIS 数据库" });
 
     expect(entry.getAttribute("aria-expanded")).toBe("false");
@@ -19,6 +28,7 @@ describe("IRIS Database home interaction", () => {
 
     await user.click(entry);
 
+    expect(playUiIrisDatabaseOpenSound).toHaveBeenCalledWith(audioSettings);
     const dialog = screen.getByRole("dialog", { name: "围棋资料索引" });
     const close = screen.getByRole("button", { name: "关闭 IRIS 数据库" });
     expect(entry.getAttribute("aria-expanded")).toBe("true");
@@ -71,6 +81,23 @@ describe("IRIS Database home interaction", () => {
     expect(screen.getByText("今天也要认真复盘。")).toBeTruthy();
     expect(greeting.classList.contains("is-collapsed")).toBe(false);
     expect(screen.queryByRole("button", { name: /IRIS 问候语/ })).toBeNull();
+  });
+
+  it("selects a new configured greeting each time the database opens", async () => {
+    const user = userEvent.setup();
+    const random = vi.spyOn(Math, "random")
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.999);
+    render(<IrisDatabase greeting={JSON.stringify(["第一句问候语", "第二句问候语"])} />);
+    const entry = screen.getByRole("button", { name: "打开 IRIS 数据库" });
+
+    await user.click(entry);
+    expect(screen.getByText("第一句问候语")).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "关闭 IRIS 数据库" }));
+    await user.click(entry);
+    expect(screen.getByText("第二句问候语")).toBeTruthy();
+
+    random.mockRestore();
   });
 
   it("closes when the backdrop is activated", async () => {

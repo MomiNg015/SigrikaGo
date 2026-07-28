@@ -19,7 +19,7 @@ export const ADMIN_TAB_LABELS = {
   onboarding: "剧情教学",
   mailbox: "邮箱管理",
   achievements: "成就管理",
-  iris: "IRIS 管理",
+  iris: "看板娘管理",
   settings: "系统设置",
   feedback: "留言反馈",
   reports: "用户举报",

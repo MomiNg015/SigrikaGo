@@ -5,6 +5,7 @@ export const UI_CLOSE_WINDOW_SOUND = "/assets/music/ui_close_window.ogg";
 export const UI_CONFIRM_SOUND = "/assets/music/ui_confirm.ogg";
 export const UI_DETAIL_OPEN_SOUND = "/assets/music/ui_detail_open.ogg";
 export const UI_HOUSE_OPEN_SOUND = "/assets/music/ui_house_open.ogg";
+export const UI_IRIS_DATABASE_OPEN_SOUND = "/assets/music/ui_iris_database_open.ogg";
 export const UI_MATCH_OPEN_SOUND = "/assets/music/ui_match_open.ogg";
 export const UI_RESUME_OPEN_SOUND = "/assets/music/ui_resume_open.ogg";
 export const UI_WAREHOUSE_OPEN_SOUND = "/assets/music/ui_warehouse_open.ogg";

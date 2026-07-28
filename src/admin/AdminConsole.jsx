@@ -10,7 +10,7 @@ import AdminCostumes from "./AdminCostumes.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
-import AdminIrisSettings from "./AdminIrisSettings.jsx";
+import AdminMascotSettings from "./AdminMascotSettings.jsx";
 import AdminMailbox from "./AdminMailbox.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOnboardingStory from "./AdminOnboardingStory.jsx";
@@ -419,7 +419,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
           onNotice={notify}
         />
       )}
-      {tab === "iris" && <AdminIrisSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
+      {tab === "iris" && <AdminMascotSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
       {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
       {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}
       {tab === "reports" && <AdminReports reports={userReports} />}

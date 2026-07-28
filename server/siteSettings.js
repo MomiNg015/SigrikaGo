@@ -1,8 +1,16 @@
 export { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
-import { normalizeIrisGreeting, MAX_IRIS_GREETING_LENGTH } from "../src/shared/irisGreeting.js";
+import {
+  irisGreetingsSettingJson,
+  MAX_IRIS_GREETING_LENGTH,
+  MAX_IRIS_GREETING_POOL_SIZE
+} from "../src/shared/irisGreeting.js";
 import { irisLinksSettingJson, normalizeIrisLinks } from "../src/shared/irisLinks.js";
 import { RATING_RULES_SETTING_KEY, normalizeRatingRules } from "../src/shared/ratingRules.js";
+import {
+  SHOP_MASCOT_DIALOGUE_SETTING_KEY,
+  shopMascotDialoguesSettingJson
+} from "../src/shared/shopMascotDialogues.js";
 
 const SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS);
 let cachedPublicSiteSettings = { ...DEFAULT_SITE_SETTINGS };
@@ -13,7 +21,8 @@ const SITE_SETTING_LIMITS = {
   footerText: 3000,
   preloadTips: 1000,
   characterLoadingLines: 3000,
-  irisGreeting: MAX_IRIS_GREETING_LENGTH,
+  [SHOP_MASCOT_DIALOGUE_SETTING_KEY]: 12000,
+  irisGreeting: MAX_IRIS_GREETING_POOL_SIZE * (MAX_IRIS_GREETING_LENGTH + 8),
   irisLinks: 20000,
   ratingRules: 8000
 };
@@ -42,9 +51,9 @@ export async function ensureDefaultSiteSettings(prisma) {
 }
 
 export async function updateSiteSettings({ prisma, adminUser, body }) {
-  const nextSettings = sanitizeSiteSettings(body);
   return prisma.$transaction(async (tx) => {
     const before = await getPublicSiteSettings(tx);
+    const nextSettings = sanitizeSiteSettings({ ...before, ...body });
     for (const [key, value] of Object.entries(nextSettings)) {
       await tx.siteSetting.upsert({
         where: { key },
@@ -82,7 +91,10 @@ export function sanitizeSiteSettings(body = {}) {
         return [key, irisLinksSettingJson(normalizeIrisLinks(body?.[key] ?? fallback))];
       }
       if (key === "irisGreeting") {
-        return [key, normalizeIrisGreeting(body?.[key], fallback)];
+        return [key, irisGreetingsSettingJson(body?.[key] ?? fallback)];
+      }
+      if (key === SHOP_MASCOT_DIALOGUE_SETTING_KEY) {
+        return [key, shopMascotDialoguesSettingJson(body?.[key] ?? fallback)];
       }
       const value = String(body?.[key] ?? fallback).trim().slice(0, SITE_SETTING_LIMITS[key]);
       return [key, value || fallback];

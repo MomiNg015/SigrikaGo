@@ -1,13 +1,20 @@
 import { useId, useState } from "react";
+import { playUiIrisDatabaseOpenSound } from "../audio/playback.jsx";
 import { ModalDialog } from "../modals/modalComponents.jsx";
-import { normalizeIrisGreeting } from "../shared/irisGreeting.js";
+import { pickIrisGreeting } from "../shared/irisGreeting.js";
 import { normalizeIrisLinks } from "../shared/irisLinks.js";
 
-export default function IrisDatabase({ greeting, links }) {
+export default function IrisDatabase({ audioSettings, greeting, links }) {
   const [open, setOpen] = useState(false);
+  const [activeGreeting, setActiveGreeting] = useState("");
   const titleId = useId();
-  const friendlyGreeting = normalizeIrisGreeting(greeting);
   const friendlyLinks = normalizeIrisLinks(links);
+
+  function openDatabase() {
+    playUiIrisDatabaseOpenSound(audioSettings);
+    setActiveGreeting(pickIrisGreeting(greeting));
+    setOpen(true);
+  }
 
   return (
     <>
@@ -16,8 +23,9 @@ export default function IrisDatabase({ greeting, links }) {
         aria-haspopup="dialog"
         aria-label="打开 IRIS 数据库"
         className="iris-database-entry"
+        data-ui-sound="none"
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openDatabase}
       >
         <span className="iris-entry-shard" aria-hidden="true" />
         <span className="iris-entry-portrait-slot" aria-hidden="true" />
@@ -69,7 +77,7 @@ export default function IrisDatabase({ greeting, links }) {
                 <span className="iris-database-greeting-channel">
                   IRIS // DIRECT LINK
                 </span>
-                <span className="iris-database-greeting-copy">{friendlyGreeting}</span>
+                <span className="iris-database-greeting-copy">{activeGreeting}</span>
               </div>
               <div
                 aria-label="IRIS 人物立绘预留区域，当前为空"

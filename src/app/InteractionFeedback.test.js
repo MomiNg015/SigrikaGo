@@ -30,6 +30,7 @@ describe("InteractionFeedback", () => {
     const houseGridSource = readFileSync(new URL("../modals/house/HouseCharacterGrid.jsx", import.meta.url), "utf8");
     const homeDockSource = readFileSync(new URL("../home/components/HomeUtilityDock.jsx", import.meta.url), "utf8");
     const playerPlaqueSource = readFileSync(new URL("../home/components/PlayerPlaque.jsx", import.meta.url), "utf8");
+    const irisDatabaseSource = readFileSync(new URL("../home/IrisDatabase.jsx", import.meta.url), "utf8");
 
     expect(appRoutesSource).toContain("playUiHouseOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiMatchOpenSound(audioSettings)");
@@ -46,6 +47,8 @@ describe("InteractionFeedback", () => {
     expect(houseGridSource).toContain("data-ui-sound=\"confirm\"");
     expect(homeDockSource).toContain("data-ui-sound=\"none\"");
     expect(playerPlaqueSource).toContain("data-ui-sound=\"none\"");
+    expect(irisDatabaseSource).toContain("data-ui-sound=\"none\"");
+    expect(irisDatabaseSource).toContain("playUiIrisDatabaseOpenSound(audioSettings)");
   });
 
   it("restarts unavailable feedback without forcing synchronous layout", () => {

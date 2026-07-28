@@ -51,12 +51,21 @@ describe("admin default config seed", () => {
 
   it("keeps admin-saved public settings and catalog credits in the deployment snapshot", () => {
     const homeSubtitle = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => row.key === "homeSubtitle");
+    const shopMascotDialogues = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => (
+      row.key === "shopMascotDialogues"
+    ));
     const sigrika = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "sigrika");
     const papaganPeach = ADMIN_DEFAULT_CONFIG.shopItems.find((item) => (
       item.category === "decoration" && item.targetId === "papagan-peach-stone"
     ));
 
     expect(homeSubtitle?.value).toBe("SIGRIKAGO");
+    expect(JSON.parse(shopMascotDialogues?.value).zahira.greetingLines).toContain(
+      "你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？"
+    );
+    expect(JSON.parse(shopMascotDialogues?.value).nabomo.insufficientLine).toBe(
+      "你是来找茬的吧？"
+    );
     expect(sigrika).toMatchObject({
       cvName: "璃音",
       cvUrl: "https://space.bilibili.com/68435776"

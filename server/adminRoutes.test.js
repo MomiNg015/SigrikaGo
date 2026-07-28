@@ -455,6 +455,14 @@ describe("admin site settings routes", () => {
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
         preloadTips: "第一句提示\n第二句提示",
         characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+        shopMascotDialogues: {
+          zahira: {
+            greetingLines: ["欢迎来到新商店。"]
+          },
+          nabomo: {
+            greetingLines: ["欢迎来到新衣柜。"]
+          }
+        },
         irisLinks: [
           { title: "棋谱站", description: "公开棋谱", href: "https://example.com/kifu" }
         ],
@@ -471,6 +479,7 @@ describe("admin site settings routes", () => {
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
       preloadTips: "第一句提示\n第二句提示",
       characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+      shopMascotDialogues: expect.stringContaining("欢迎来到新商店。"),
       irisLinks: expect.stringContaining("棋谱站"),
       skillEffectsEnabled: false
     });

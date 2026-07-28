@@ -234,6 +234,7 @@ export default function AppOverlays({
           <ShopModal
             token={token}
             user={user}
+            siteSettings={siteSettings}
             onPurchased={updateUser}
             onNotice={showToast}
             onClose={() => setShowShop(false)}

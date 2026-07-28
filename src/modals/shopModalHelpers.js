@@ -1,20 +1,21 @@
+import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../shared/shopMascotDialogues.js";
+
+const DEFAULT_ZAHIRA_DIALOGUES = DEFAULT_SHOP_MASCOT_DIALOGUES.zahira;
+
 export const SHOP_MASCOT_LINES = [
-  "今天想买些什么？",
-  "刚刚进了一批好货哟~",
-  "欢迎来到扎希拉商铺！"
+  ...DEFAULT_ZAHIRA_DIALOGUES.greetingLines
 ];
 
 export const SHOP_MASCOT_REFRESH_LINES = [
-  "换一批看看吧，说不定会有惊喜哦。",
-  "这批也是我精心挑选的呢。",
-  "新到的商品已经摆好啦！"
+  ...DEFAULT_ZAHIRA_DIALOGUES.refreshLines
 ];
 
-export const SHOP_MASCOT_LOADING_LINE = "稍等一下，我正在整理商品哦。";
-export const SHOP_MASCOT_EMPTY_LINE = "还在进货中哦，请下次再来吧。";
-export const SHOP_MASCOT_ERROR_LINE = "进货单好像出了点问题，请再试一次吧。";
+export const SHOP_MASCOT_LOADING_LINE = DEFAULT_ZAHIRA_DIALOGUES.loadingLine;
+export const SHOP_MASCOT_EMPTY_LINE = DEFAULT_ZAHIRA_DIALOGUES.emptyLine;
+export const SHOP_MASCOT_ERROR_LINE = DEFAULT_ZAHIRA_DIALOGUES.errorLine;
+export const SHOP_MASCOT_THANKS_LINE = DEFAULT_ZAHIRA_DIALOGUES.thanksLine;
 export const SHOP_BATCH_SIZE = 5;
-export const SHOP_REFRESH_COOLDOWN_MS = 3000;
+export const SHOP_REFRESH_COOLDOWN_MS = 1000;
 
 export const SHOP_ITEM_CATEGORY_LABELS = Object.freeze({
   character: "部员",
@@ -30,7 +31,6 @@ export {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_THANKS_IMAGE,
-  SHOP_MASCOT_THANKS_LINE,
   SHOP_MOBILE_BACKGROUND_IMAGE,
   SHOP_WALLET_IMAGE
 } from "../shared/shopMascotAssets.js";

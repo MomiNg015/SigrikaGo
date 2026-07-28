@@ -320,7 +320,7 @@ Required assertion points:
 #### 3. Contracts
 - Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
 - Critical login images include all account-accessible non-room images assembled by `loginPreloadAssets()`: owned character portraits, `RUNTIME_IMAGE_ASSETS.home`, `RUNTIME_IMAGE_ASSETS.shop`, recruitment surfaces/items, current shop/inventory items, equipped achievement assets, and owned stone decorations.
-- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction`, match/result sounds, every reachable default/owned track candidate, and skill/system voice candidates for owned characters. Unpurchased music product audio must not be preloaded.
+- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction`, match/result sounds, every reachable default/owned track candidate, and skill/system voice candidates for owned characters. Dedicated home destination sounds, including the IRIS database open sound, must use the shared `sfx` channel, join this interaction registry, and mark their trigger with `data-ui-sound="none"` so the generic confirm sound does not stack. Unpurchased music product audio must not be preloaded.
 - `loginPreloadAssets()` currently returns empty `deferredImages` and `deferredAudio`; its flattened `images`/`audio` arrays must equal the critical groups. The generic grouped executor still supports deferred work for other callers, starts it only after critical completion, and keeps it concurrency-limited.
 - `useStartupPreload()` uses six blocking workers. Do not raise concurrency again without checking source/origin behavior and 2 GB deployment memory; per-resource timeout and lower-concurrency retry remain mandatory.
 - Battle preload must derive assets from the current room, players, mode, and current user. It blocks on both player portraits, the one resolved battle track, one resolved track per relevant base/derived skill slot, required voice candidates, and mode-specific effect images; it must not preload every configured battle track or every purchasable alternative for a slot. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
@@ -346,9 +346,11 @@ Required assertion points:
 - Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
 - CI workflow omits docs generation or production config validation -> invalid, because documentation drift and deploy config regressions can merge even when tests pass.
 - Selected battle/skill track is unavailable or not owned -> use the existing music-library fallback for that slot; never preload an arbitrary inaccessible alternative.
+- Dedicated home destination sound is added -> its shared asset constant, named `effectPlayback` helper, `playback.jsx` compatibility export, `RUNTIME_AUDIO_ASSETS.interaction` registration, and trigger `data-ui-sound="none"` marker must move together; omitting any one is invalid.
 
 #### 5. Good/Base/Bad Cases
 - Good: Login reaches home after the current account's accessible image, music, and voice manifest has completed or timed out; opening home, shop, warehouse, recruitment, and owned-character audio surfaces begins from a warmed browser cache.
+- Good: `IrisDatabase` plays `UI_IRIS_DATABASE_OPEN_SOUND` through `playUiIrisDatabaseOpenSound(audioSettings)` immediately before opening, while its trigger suppresses the generic confirm cue.
 - Good: Match preload fetches the user's selected battle track and the resolved skill-slot tracks for the two room characters, not the whole music catalog.
 - Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
 - Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
@@ -362,6 +364,7 @@ Required assertion points:
 #### 6. Tests Required
 - API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
 - Asset grouping tests must assert owned portraits, home/shop/recruitment/inventory/equipment/decoration images, reachable default/owned music, match/result sounds, and owned-character skill/system voices are critical; generated login deferred groups are empty; inaccessible unpurchased music audio is excluded.
+- Dedicated home destination sound tests must assert the stable asset path, named helper routing, presence in `RUNTIME_AUDIO_ASSETS.interaction`, propagation of `audioSettings`, and generic-confirm suppression on the trigger.
 - Battle grouping tests must assert selected battle music replaces the default candidate, derived skill slots remain covered, both room portraits are present, and no-skill modes omit skill-only resources.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
@@ -1300,7 +1303,7 @@ Correct:
 #### 2. Signatures
 
 - `IrisDatabase({ links })` owns local open state and renders one viewport-fixed entry plus one shared `ModalDialog` while open.
-- `SiteSetting.irisLinks` stores the JSON catalog; `src/shared/irisLinks.js` owns defaults and normalization, `/api/site-settings` transports it, and the standalone `AdminIrisSettings` tab edits it.
+- `SiteSetting.irisGreeting` stores a bounded JSON greeting pool and `SiteSetting.irisLinks` stores the JSON catalog; shared normalizers own their defaults and legacy single-string compatibility, `/api/site-settings` transports them, the IRIS section of the unified `AdminMascotSettings` tab edits them, and `IrisDatabase` chooses a fresh greeting on each open.
 
 #### 3. Contracts
 
@@ -1311,7 +1314,7 @@ Correct:
 - The modal reuses `ModalDialog`; desktop is left blank-art/right links, portrait mobile is top blank-art/bottom links. Intro and quote copy stay absent, while the link list is the independent vertical scroll owner.
 - Link normalization allows at most 30 entries, requires a title plus HTTP(S) URL, derives display hosts, and bounds title/description/URL lengths.
 - External links use `target="_blank"` and `rel="noreferrer"`.
-- IRIS editing must stay outside `AdminSiteSettings`. Its initial fetch may replace defaults only while loading or when the authentication token changes; changing parent callback identities, moving focus, or rerendering the admin shell must not refetch and overwrite the unsaved draft.
+- IRIS editing must stay outside `AdminSiteSettings` and share the dedicated `AdminMascotSettings` save boundary with the two shop mascots. Its initial fetch may replace defaults only while loading or when the authentication token changes; changing parent callback identities, moving focus, or rerendering the admin shell must not refetch and overwrite the unsaved draft.
 
 #### 4. Validation & Error Matrix
 
@@ -1328,7 +1331,7 @@ Correct:
 
 #### 6. Tests Required
 
-- Shared/backend/admin/DOM/CSS tests cover normalization, public settings persistence, the standalone admin tab, editor add/remove/save, unsaved draft preservation across callback rerenders and focus changes, Home wiring, removed copy, image absence, safe links, open/close/focus behavior, fixed placement, list scrolling, responsive geometry, reduced motion, and Bright School owners.
+- Shared/backend/admin/DOM/CSS tests cover normalization, public settings persistence, the unified mascot tab and IRIS section, editor add/remove/save, unsaved draft preservation across callback rerenders and focus changes, Home wiring, removed copy, image absence, safe links, open/close/focus behavior, fixed placement, list scrolling, responsive geometry, reduced motion, and Bright School owners.
 - Browser QA covers desktop and portrait overflow, 44px close target, empty art regions, and zero candidate-art resources.
 
 #### 7. Wrong vs Correct

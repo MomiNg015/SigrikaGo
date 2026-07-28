@@ -10,6 +10,7 @@ import {
   UI_DETAIL_OPEN_SOUND,
   UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_IRIS_DATABASE_OPEN_SOUND,
   UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
@@ -33,6 +34,7 @@ export {
   UI_DETAIL_OPEN_SOUND,
   UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_IRIS_DATABASE_OPEN_SOUND,
   UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
@@ -161,6 +163,10 @@ export function playUiDetailOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
 
 export function playUiHouseOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(UI_HOUSE_OPEN_SOUND, audioSettings);
+}
+
+export function playUiIrisDatabaseOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_IRIS_DATABASE_OPEN_SOUND, audioSettings);
 }
 
 export function playUiMatchOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {

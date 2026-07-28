@@ -1,21 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
+import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../../shared/shopMascotDialogues.js";
 import {
   buildShopCardPresentation,
   eligibleShopItems,
   pickShopMascotLine,
   selectShopBatch,
-  SHOP_MASCOT_EMPTY_LINE,
-  SHOP_MASCOT_ERROR_LINE,
-  SHOP_MASCOT_LOADING_LINE,
   SHOP_MASCOT_MOODS,
-  SHOP_MASCOT_REFRESH_LINES,
-  SHOP_MASCOT_THANKS_LINE,
   SHOP_REFRESH_COOLDOWN_MS
 } from "../shopModalHelpers.js";
 
-export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased }) {
+export function useShopCatalog({
+  token,
+  user,
+  musicTracks,
+  onNotice,
+  onPurchased,
+  dialogueConfig = DEFAULT_SHOP_MASCOT_DIALOGUES.zahira
+}) {
   const [items, setItems] = useState([]);
   const [effectiveUser, setEffectiveUser] = useState(user);
   const [catalogState, setCatalogState] = useState("loading");
@@ -25,7 +28,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [retryVersion, setRetryVersion] = useState(0);
-  const [contextualLine, setContextualLine] = useState(SHOP_MASCOT_LOADING_LINE);
+  const [contextualLine, setContextualLine] = useState(dialogueConfig.loadingLine);
   const [mascotMood, setMascotMood] = useState(SHOP_MASCOT_MOODS.default);
   const [purchasingId, setPurchasingId] = useState("");
   const userRef = useRef(user);
@@ -49,7 +52,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
       setItems([]);
       setCurrentBatch([]);
       setPreparedBatch([]);
-      setContextualLine(SHOP_MASCOT_EMPTY_LINE);
+      setContextualLine(dialogueConfig.emptyLine);
       onNoticeRef.current?.("请先登录", "danger");
       return () => {
         alive = false;
@@ -58,7 +61,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
 
     setCatalogState("loading");
     setMascotMood(SHOP_MASCOT_MOODS.default);
-    setContextualLine(SHOP_MASCOT_LOADING_LINE);
+    setContextualLine(dialogueConfig.loadingLine);
     setCurrentBatch([]);
     setPreparedBatch(null);
     api("/api/shop", { token })
@@ -71,7 +74,9 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
         setEffectiveUser(currentUser);
         setCurrentBatch(buildShopCardPresentation(batch));
         setBatchVersion((version) => version + 1);
-        setContextualLine(batch.length ? pickShopMascotLine() : SHOP_MASCOT_EMPTY_LINE);
+        setContextualLine(batch.length
+          ? pickShopMascotLine(Math.random, dialogueConfig.greetingLines)
+          : dialogueConfig.emptyLine);
         setCatalogState("ready");
         if (batch.length) startShopCooldown(setCooldownUntil, setCooldownRemaining);
       })
@@ -79,13 +84,13 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
         if (!alive) return;
         setCatalogState("error");
         setMascotMood(SHOP_MASCOT_MOODS.default);
-        setContextualLine(SHOP_MASCOT_ERROR_LINE);
+        setContextualLine(dialogueConfig.errorLine);
         onNoticeRef.current?.(apiError.message, "danger");
       });
     return () => {
       alive = false;
     };
-  }, [retryVersion, token, user?.id]);
+  }, [dialogueConfig, retryVersion, token, user?.id]);
 
   useEffect(() => {
     if (!cooldownUntil) return undefined;
@@ -146,8 +151,8 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     setBatchVersion((version) => version + 1);
     setMascotMood(SHOP_MASCOT_MOODS.default);
     setContextualLine(preparedBatch.length
-      ? pickShopMascotLine(Math.random, SHOP_MASCOT_REFRESH_LINES)
-      : SHOP_MASCOT_EMPTY_LINE);
+      ? pickShopMascotLine(Math.random, dialogueConfig.refreshLines)
+      : dialogueConfig.emptyLine);
     if (preparedBatch.length) startShopCooldown(setCooldownUntil, setCooldownRemaining);
   }
 
@@ -162,7 +167,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     cooldownRemaining,
     currentBatch,
     effectiveUser,
-    mascotLine: mascotMood === SHOP_MASCOT_MOODS.thanks ? SHOP_MASCOT_THANKS_LINE : contextualLine,
+    mascotLine: mascotMood === SHOP_MASCOT_MOODS.thanks ? dialogueConfig.thanksLine : contextualLine,
     mascotMood,
     purchasingId,
     refreshCatalog,

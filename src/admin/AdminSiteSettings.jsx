@@ -122,7 +122,9 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
 
 export function settingsDraftFromApi(settings = {}) {
   const merged = { ...DEFAULT_SITE_SETTINGS, ...(settings ?? {}) };
+  delete merged.irisGreeting;
   delete merged.irisLinks;
+  delete merged.shopMascotDialogues;
   return merged;
 }
 

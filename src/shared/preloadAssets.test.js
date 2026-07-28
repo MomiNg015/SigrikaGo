@@ -97,6 +97,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/music/ui_confirm.ogg");
     expect(assets.audio).toContain("/assets/music/ui_detail_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_house_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_iris_database_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_match_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_resume_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_warehouse_open.ogg");

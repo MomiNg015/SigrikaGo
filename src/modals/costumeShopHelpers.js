@@ -1,5 +1,9 @@
+import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../shared/shopMascotDialogues.js";
+
+const DEFAULT_NABOMO_DIALOGUES = DEFAULT_SHOP_MASCOT_DIALOGUES.nabomo;
+
 export const COSTUME_BATCH_SIZE = 5;
-export const COSTUME_REFRESH_COOLDOWN_MS = 3000;
+export const COSTUME_REFRESH_COOLDOWN_MS = 1000;
 
 export const COSTUME_MASCOT_IMAGES = {
   greeting: "/assets/costumes/nivora-greeting.webp",
@@ -7,24 +11,13 @@ export const COSTUME_MASCOT_IMAGES = {
   empty: "/assets/costumes/nivora-empty.webp"
 };
 
-export const COSTUME_GREETING_LINES = [
-  "欢迎。想给谁挑一身新衣服？",
-  "舞台已经准备好了，来看看今天的服装吧。",
-  "喜欢哪套就点开看看，别只站在门口。",
-  "残星会的衣柜可不止你眼前这些。"
-];
-
-export const COSTUME_REFRESH_LINES = [
-  "换了一批。你最好能挑中一件。",
-  "衣架重新排过了，再看看吧。",
-  "幕布拉开——这次有中意的吗？"
-];
-
-export const COSTUME_EMPTY_LINE = "暂时没有新的服装了。";
-export const COSTUME_LOADING_LINE = "稍等，我正在整理衣架。";
-export const COSTUME_ERROR_LINE = "衣架好像卡住了，再试一次。";
-export const COSTUME_THANKS_LINE = "谢谢惠顾。";
-export const COSTUME_INSUFFICIENT_LINE = "你是来找茬的吧？";
+export const COSTUME_GREETING_LINES = [...DEFAULT_NABOMO_DIALOGUES.greetingLines];
+export const COSTUME_REFRESH_LINES = [...DEFAULT_NABOMO_DIALOGUES.refreshLines];
+export const COSTUME_EMPTY_LINE = DEFAULT_NABOMO_DIALOGUES.emptyLine;
+export const COSTUME_LOADING_LINE = DEFAULT_NABOMO_DIALOGUES.loadingLine;
+export const COSTUME_ERROR_LINE = DEFAULT_NABOMO_DIALOGUES.errorLine;
+export const COSTUME_THANKS_LINE = DEFAULT_NABOMO_DIALOGUES.thanksLine;
+export const COSTUME_INSUFFICIENT_LINE = DEFAULT_NABOMO_DIALOGUES.insufficientLine;
 
 export function pickCostumeLine(lines = COSTUME_GREETING_LINES, random = Math.random) {
   return lines[Math.floor(random() * lines.length)] ?? lines[0] ?? "";

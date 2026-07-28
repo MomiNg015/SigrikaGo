@@ -11,7 +11,7 @@ import IrisDatabase from "./IrisDatabase.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 import MatchModeWatermark from "./MatchModeWatermark.jsx";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
   const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
@@ -76,7 +76,11 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           />
         )}
 
-        <IrisDatabase greeting={siteSettings.irisGreeting} links={siteSettings.irisLinks} />
+        <IrisDatabase
+          audioSettings={audioSettings}
+          greeting={siteSettings.irisGreeting}
+          links={siteSettings.irisLinks}
+        />
       </main>
       <HomeFooter footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
     </>

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import AppOverlays from "./AppOverlays.jsx";
@@ -7,6 +8,12 @@ import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 
 describe("AppOverlays", () => {
+  it("passes public site settings into the shop overlay", () => {
+    const source = readFileSync(new URL("./AppOverlays.jsx", import.meta.url), "utf8");
+    const shopBlock = source.slice(source.indexOf("{showShop &&"), source.indexOf("{showRecruitment &&"));
+
+    expect(shopBlock).toContain("siteSettings={siteSettings}");
+  });
   it("keeps the match success countdown visible during battle asset preloading", () => {
     const markup = renderToStaticMarkup(createElement(AppOverlays, overlayProps({
       matchSuccess: {

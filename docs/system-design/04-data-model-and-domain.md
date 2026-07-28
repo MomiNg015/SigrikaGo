@@ -255,7 +255,9 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
-- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`；`preloadTips` 以换行文本存储加载页提示语集合。
+- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines`、`shopMascotDialogues`、`irisGreeting`、`irisLinks`、`skillEffectsEnabled` 与 `ratingRules`；`preloadTips` 以换行文本存储加载页提示语集合。
+- `shopMascotDialogues`: 受限 JSON，保存扎希拉和娜波摩的进入/刷新随机池与目录、购买状态单句；共享规范化器限制每池最多 12 条、每句最多 120 字，并为缺失、空白或损坏字段回退代码默认值。
+- `irisGreeting`: 受限 JSON 数组，保存 IRIS 问候语随机池；共享规范化器限制最多 12 条、每条最多 80 字，并把旧数据库里的单条纯文本兼容为一项池。
 - `ratingRules`: JSON SiteSetting value for dynamic rating, rank-gap scaling, optional anti-boosting, rank-change rating delta, and friendly-match coin limits.
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。

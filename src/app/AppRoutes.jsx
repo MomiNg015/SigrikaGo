@@ -293,6 +293,7 @@ const HomeRoute = memo(function HomeRoute({
     <HomeScreen
       user={user}
       characters={characters}
+      audioSettings={audioSettings}
       siteSettings={siteSettings}
       lobbyStats={lobbyStats}
       onLogout={onLogout}

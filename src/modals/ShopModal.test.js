@@ -8,6 +8,7 @@ import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import CostumeSidebar from "./shop/CostumeSidebar.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
 import {
+  COSTUME_REFRESH_COOLDOWN_MS,
   COSTUME_MASCOT_IMAGES,
   eligibleCostumes,
   selectCostumeBatch
@@ -47,6 +48,7 @@ import {
   getShopOwnedItemQuantity
 } from "./shop/shopItemDetail.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
+import { shopMascotDialoguesSettingJson } from "../shared/shopMascotDialogues.js";
 
 const sampleItem = {
   id: "test-card",
@@ -102,6 +104,41 @@ describe("Zahira shop window", () => {
     expect(html).toContain('width="1024"');
     expect(html).toContain('height="768"');
     expect(html).toContain('aria-label="持有金币 180"');
+  });
+
+  it("uses configured mascot dialogue without changing the shop presentation", () => {
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
+      siteSettings: {
+        shopMascotDialogues: shopMascotDialoguesSettingJson({
+          zahira: {
+            greetingLines: ["自定义欢迎"],
+            refreshLines: ["自定义刷新"],
+            loadingLine: "扎希拉正在读取后台台词。",
+            emptyLine: "自定义空目录",
+            errorLine: "自定义失败",
+            thanksLine: "自定义感谢"
+          },
+          nabomo: {
+            greetingLines: ["自定义娜波摩欢迎"],
+            refreshLines: ["自定义娜波摩刷新"],
+            loadingLine: "娜波摩正在读取后台台词。",
+            emptyLine: "自定义娜波摩空目录",
+            errorLine: "自定义娜波摩失败",
+            thanksLine: "自定义娜波摩感谢",
+            insufficientLine: "自定义金币不足"
+          }
+        })
+      },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("扎希拉正在读取后台台词。");
+    expect(html).toContain("娜波摩正在读取后台台词。");
+    expect(html).toContain("shop-product-stage");
+    expect(html).toContain("costume-shop-stage");
   });
 
   it("reuses the Zahira wallet component inside the clothing store", () => {
@@ -378,17 +415,18 @@ describe("Zahira shop window", () => {
   it("keeps opening, refresh, loading, empty, failure, and purchase dialogue contracts", () => {
     expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0));
     expect(SHOP_MASCOT_REFRESH_LINES).toContain(pickShopMascotLine(() => 0.99, SHOP_MASCOT_REFRESH_LINES));
-    expect(SHOP_MASCOT_LOADING_LINE).toBe("稍等一下，我正在整理商品哦。");
-    expect(SHOP_MASCOT_EMPTY_LINE).toBe("还在进货中哦，请下次再来吧。");
-    expect(SHOP_MASCOT_ERROR_LINE).toBe("进货单好像出了点问题，请再试一次吧。");
-    expect(SHOP_MASCOT_THANKS_LINE).toBe("谢谢惠顾！");
+    expect(SHOP_MASCOT_LOADING_LINE).toBe("请稍等……我正在把它们一件件摆好。");
+    expect(SHOP_MASCOT_EMPTY_LINE).toBe("今天的货物都已有归处了。等下次集市再见吧。");
+    expect(SHOP_MASCOT_ERROR_LINE).toBe("……这一批货物没能顺利抵达。请再给我一点时间。");
+    expect(SHOP_MASCOT_THANKS_LINE).toBe("请收好……看来，它也一直在等你。");
   });
 
-  it("keeps refresh local, preloads the prepared batch, and uses the three-second cooldown", () => {
+  it("keeps refresh local, preloads the prepared batch, and uses the one-second cooldown", () => {
     const source = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
     const refreshBlock = source.slice(source.indexOf("function refreshCatalog"), source.indexOf("const eligibleCount"));
 
-    expect(SHOP_REFRESH_COOLDOWN_MS).toBe(3000);
+    expect(SHOP_REFRESH_COOLDOWN_MS).toBe(1000);
+    expect(COSTUME_REFRESH_COOLDOWN_MS).toBe(1000);
     expect(source).toContain("preloadImageAssets(nextItems.map");
     expect(source).toContain("setPreparedBatch(nextPresentation)");
     expect(refreshBlock).not.toContain('api("/api/shop"');
@@ -405,7 +443,8 @@ describe("Zahira shop window", () => {
     expect(zahiraSource).not.toContain("setTimeout");
     expect(zahiraRefreshBlock).toContain("setMascotMood(SHOP_MASCOT_MOODS.default)");
     expect(costumeSource).not.toContain("setTimeout");
-    expect(costumeSource).toContain('setMascotFeedback("thanks", COSTUME_THANKS_LINE)');
+    expect(costumeSource).toContain('setMascotFeedback("thanks", dialogueConfig.thanksLine)');
+    expect(costumeSource).toContain('setMascotFeedback("empty", dialogueConfig.insufficientLine)');
     expect(costumeRefreshBlock).toContain('setMascotMood(preparedBatch.length ? "greeting" : "empty")');
   });
 

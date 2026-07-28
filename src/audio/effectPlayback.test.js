@@ -7,6 +7,7 @@ import {
   playEffectSound,
   playRecruitmentResultSound,
   playUiFriendsOpenSound,
+  playUiIrisDatabaseOpenSound,
   playUiLeaderboardOpenSound,
   playUiRecruitmentOpenSound,
   playUiResumeOpenSound,
@@ -20,6 +21,7 @@ import {
   UI_DETAIL_OPEN_SOUND,
   UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_IRIS_DATABASE_OPEN_SOUND,
   UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
@@ -81,6 +83,7 @@ describe("effect playback", () => {
     expect(UI_CLOSE_WINDOW_SOUND).toBe("/assets/music/ui_close_window.ogg");
     expect(UI_DETAIL_OPEN_SOUND).toBe("/assets/music/ui_detail_open.ogg");
     expect(UI_HOUSE_OPEN_SOUND).toBe("/assets/music/ui_house_open.ogg");
+    expect(UI_IRIS_DATABASE_OPEN_SOUND).toBe("/assets/music/ui_iris_database_open.ogg");
     expect(UI_MATCH_OPEN_SOUND).toBe("/assets/music/ui_match_open.ogg");
     expect(UI_RESUME_OPEN_SOUND).toBe("/assets/music/ui_resume_open.ogg");
     expect(UI_WAREHOUSE_OPEN_SOUND).toBe("/assets/music/ui_warehouse_open.ogg");
@@ -109,13 +112,15 @@ describe("effect playback", () => {
     playUiWatchOpenSound();
     playUiFriendsOpenSound();
     playUiLeaderboardOpenSound();
+    playUiIrisDatabaseOpenSound();
 
     expect(played.map((audio) => audio.src)).toEqual([
       UI_RESUME_OPEN_SOUND,
       UI_WAREHOUSE_OPEN_SOUND,
       UI_WATCH_OPEN_SOUND,
       UI_FRIENDS_OPEN_SOUND,
-      UI_LEADERBOARD_OPEN_SOUND
+      UI_LEADERBOARD_OPEN_SOUND,
+      UI_IRIS_DATABASE_OPEN_SOUND
     ]);
   });
 

@@ -1,6 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
-import { ensureDefaultSiteSettings, sanitizeSiteSettings } from "./siteSettings.js";
+import {
+  ensureDefaultSiteSettings,
+  sanitizeSiteSettings,
+  updateSiteSettings
+} from "./siteSettings.js";
+import {
+  DEFAULT_SHOP_MASCOT_DIALOGUES,
+  shopMascotDialoguesSettingJson
+} from "../src/shared/shopMascotDialogues.js";
 
 describe("site settings defaults", () => {
   it("uses the academy brand as the production fallback title", () => {
@@ -41,6 +49,11 @@ describe("site settings defaults", () => {
     expect(upsert).toHaveBeenCalledWith({
       where: { key: "characterLoadingLines" },
       create: { key: "characterLoadingLines", value: DEFAULT_SITE_SETTINGS.characterLoadingLines },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "shopMascotDialogues" },
+      create: { key: "shopMascotDialogues", value: DEFAULT_SITE_SETTINGS.shopMascotDialogues },
       update: {}
     });
     expect(upsert).toHaveBeenCalledWith({
@@ -117,13 +130,63 @@ describe("site settings defaults", () => {
   });
 
   it("normalizes the IRIS greeting and falls back when it is blank", () => {
-    expect(sanitizeSiteSettings({
+    expect(JSON.parse(sanitizeSiteSettings({
       ...DEFAULT_SITE_SETTINGS,
-      irisGreeting: "  今天\n也要认真复盘。 "
-    }).irisGreeting).toBe("今天 也要认真复盘。");
-    expect(sanitizeSiteSettings({
+      irisGreeting: ["  今天\n也要认真复盘。 ", "欢迎回来。"]
+    }).irisGreeting)).toEqual(["今天 也要认真复盘。", "欢迎回来。"]);
+    expect(JSON.parse(sanitizeSiteSettings({
       ...DEFAULT_SITE_SETTINGS,
       irisGreeting: "   "
-    }).irisGreeting).toBe(DEFAULT_SITE_SETTINGS.irisGreeting);
+    }).irisGreeting)).toEqual(JSON.parse(DEFAULT_SITE_SETTINGS.irisGreeting));
+  });
+
+  it("normalizes shop mascot dialogue JSON at the backend boundary", () => {
+    const settings = sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      shopMascotDialogues: {
+        zahira: {
+          greetingLines: ["  新的\n欢迎语  "],
+          thanksLine: "   "
+        },
+        nabomo: {
+          greetingLines: ["娜波摩欢迎。"]
+        }
+      }
+    });
+    const dialogues = JSON.parse(settings.shopMascotDialogues);
+
+    expect(dialogues.zahira.greetingLines).toEqual(["新的 欢迎语"]);
+    expect(dialogues.zahira.thanksLine).toBe(DEFAULT_SHOP_MASCOT_DIALOGUES.zahira.thanksLine);
+    expect(dialogues.nabomo.greetingLines).toEqual(["娜波摩欢迎。"]);
+  });
+
+  it("merges partial PATCH input over persisted settings before saving", async () => {
+    const store = new Map([
+      ["homeTitle", "已保存的大厅标题"],
+      ["shopMascotDialogues", shopMascotDialoguesSettingJson()]
+    ]);
+    const tx = {
+      siteSetting: {
+        findMany: async () => [...store].map(([key, value]) => ({ key, value })),
+        upsert: async ({ where, update }) => {
+          store.set(where.key, update.value);
+        }
+      },
+      adminAuditLog: {
+        create: vi.fn()
+      }
+    };
+    const prisma = {
+      $transaction: async (callback) => callback(tx)
+    };
+
+    await updateSiteSettings({
+      prisma,
+      adminUser: { id: "admin-1" },
+      body: { irisGreeting: "新的 IRIS 问候语" }
+    });
+
+    expect(store.get("homeTitle")).toBe("已保存的大厅标题");
+    expect(JSON.parse(store.get("irisGreeting"))).toEqual(["新的 IRIS 问候语"]);
   });
 });

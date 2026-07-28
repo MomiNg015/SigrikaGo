@@ -134,25 +134,29 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 #### 2. Signatures
 - `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
 - `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
-- Current keys include `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, `characterLoadingLines`, `skillEffectsEnabled`, `ratingRules`, and `irisLinks`.
+- Current keys include `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, `characterLoadingLines`, `skillEffectsEnabled`, `ratingRules`, `shopMascotDialogues`, `irisGreeting`, and `irisLinks`.
 - `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
 - `preloadTips` stores one loading-screen tip per line. The frontend parses non-empty trimmed lines, chooses one random tip for the preload screen, and rotates to another random tip every 10 seconds while the preload view stays mounted.
 - `ratingRules` stores JSON for dynamic rating deltas, rank-gap scaling, optional anti-boosting, rank-change rating bonuses/penalties, and friendly-match coin reward limits.
+- `shopMascotDialogues` stores normalized JSON for `zahira` and `nabomo`. Each mascot owns `greetingLines`, `refreshLines`, `loadingLine`, `emptyLine`, `errorLine`, and `thanksLine`; Nabomo additionally owns `insufficientLine`. Random pools contain at most 12 non-empty lines, and every line is capped at 120 characters.
 - `irisLinks` stores a JSON array of at most 30 `{ title, description, href, host }` records. `src/shared/irisLinks.js` requires HTTP(S), bounds field lengths, and derives `host`; the admin UI edits title/description/href rather than accepting raw JSON.
 
 #### 3. Contracts
 - `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
 - `getPublicSiteSettings(prisma)` must ignore unknown database rows and merge only supported keys over shared defaults.
-- `updateSiteSettings({ prisma, adminUser, body })` must sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
+- `updateSiteSettings({ prisma, adminUser, body })` is a partial PATCH boundary. Inside one transaction it must read the current supported settings, merge `body` over that snapshot, sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
 - New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, frontend rendering tests, and system-design docs together.
 - The player lobby header must consume both `siteSettings.homeTitle` and `siteSettings.homeSubtitle`; do not hard-code either copy in `HomeScreen`, `HomeHeader`, or theme-specific lobby components.
 - The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
 - Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
 - `ratingRules` must be normalized through `normalizeRatingRules()` on both admin save and backend sanitize paths; backend persistence stores the normalized JSON string.
+- `shopMascotDialogues` must be normalized through `normalizeShopMascotDialogues()` / `shopMascotDialoguesSettingJson()` on the shared, admin-save, and backend boundaries. Player shop hooks consume the parsed configuration passed from the current public site-settings snapshot rather than importing editable copy as runtime constants.
 - `irisLinks` must be normalized through `normalizeIrisLinks()` on the backend boundary and parsed through `irisLinksFromSettings()` in admin/player consumers; a valid empty array is distinct from malformed JSON.
+- The unified `AdminMascotSettings` page owns `shopMascotDialogues`, `irisGreeting`, and `irisLinks`. `irisGreeting` stores a normalized JSON array with at most 12 entries of 80 characters each; legacy plain-text values must be accepted as a one-entry pool and normalized on the next save. `AdminSiteSettings` must omit those keys so each setting has one editing owner.
 
 #### 4. Validation & Error Matrix
-- Missing key in request body -> sanitize to the shared default for that key.
+- Missing key in request body with an existing stored value -> preserve the current value.
+- Missing key in both request body and database -> use the shared default for that key.
 - Blank or whitespace-only value -> fall back to the shared default.
 - Overlong value -> trim and slice to the key-specific `SITE_SETTING_LIMITS` length.
 - Unknown stored key -> ignored by `rowsToSettings`.
@@ -162,6 +166,7 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
 - `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
 - Invalid or partial `ratingRules` JSON -> merge with `DEFAULT_RATING_RULES` and clamp numeric values before storage.
+- Malformed or partial `shopMascotDialogues` JSON -> normalize each known mascot field independently; invalid or empty pools fall back to that mascot's shared default pool; unknown fields are omitted.
 - Malformed `irisLinks` JSON -> use shared defaults; a valid empty array -> preserve an intentionally empty catalog; unsafe/incomplete rows -> omit them.
 
 #### 5. Good/Base/Bad Cases
@@ -169,10 +174,12 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - Good: `HomeScreen` passes `siteSettings.homeSubtitle` to `HomeHeader`, and the configured subtitle appears in `.home-brand-subtitle`.
 - Good: adding `preloadTips` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, preload component tests, style contract tests, and system-design docs in one change.
 - Good: adding `ratingRules` updates shared defaults, backend limits, admin structured controls, settlement tests, admin/site settings tests, and system-design docs in one change.
+- Good: the mascot page PATCHes only `shopMascotDialogues`, `irisGreeting`, and `irisLinks`; unrelated saved titles, preload copy, effects, and rating rules remain byte-for-byte equivalent after the transaction.
 - Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
 - Bad: accepting arbitrary HTML for the footer to make links work.
 - Bad: adding a field only to the admin form while `SITE_SETTING_KEYS` still rejects it.
 - Bad: hard-coding loading tips only in `AssetPreloadScreen`, because admins cannot change them through the existing system settings flow.
+- Bad: treating an omitted PATCH field as a reset request, because a specialized admin page would silently replace settings owned by other pages with defaults.
 
 #### 6. Tests Required
 - Backend defaults tests assert `ensureDefaultSiteSettings()` seeds every supported key.
@@ -184,6 +191,7 @@ The explicit apply path runs only after a verified backup and migrations, so dep
 - CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
 - CSS/static tests assert final theme safety layers preserve the borderless preload panel when theme panel rules would otherwise add a frame.
 - Rating-rule tests assert sanitized defaults and admin-saved values cannot persist malformed/clashing rule objects.
+- Mascot-dialogue tests assert per-field fallback, whitespace/length/pool bounds, both shop runtime consumers, the unified admin form, and a partial PATCH that preserves unrelated persisted settings.
 - IRIS-link tests assert HTTP(S)-only normalization, standalone admin navigation, add/remove/save behavior, unsaved draft preservation across parent rerenders, public round-trip, valid empty arrays, malformed fallback, and player list scrolling.
 
 #### 7. Wrong vs Correct
@@ -245,6 +253,21 @@ const rules = ratingRulesFromSettings(settings);
 ```
 
 `ratingRulesFromSettings()` handles missing, malformed, and partial stored values through the shared normalizer.
+
+Wrong:
+
+```js
+const nextSettings = sanitizeSiteSettings(body);
+```
+
+Correct:
+
+```js
+const before = await getPublicSiteSettings(tx);
+const nextSettings = sanitizeSiteSettings({ ...before, ...body });
+```
+
+The correct partial-PATCH path preserves settings owned by other specialized admin pages while still normalizing the complete persisted snapshot.
 
 ### Scenario: Announcement And Changelog Content Persistence
 
