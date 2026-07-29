@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Swords } from "lucide-react";
-import { isPracticeRoom, practiceDifficulty, PRACTICE_DIFFICULTIES } from "../../shared/practiceMode.js";
+import { isPracticeRoom, practiceCaptureResignThreshold } from "../../shared/practiceMode.js";
 import { colorTextForPlayer, secondsUntilTimestamp } from "./lifecycleHelpers.js";
 
 export default function OpeningModal({ room, player }) {
@@ -8,8 +8,7 @@ export default function OpeningModal({ room, player }) {
   const remaining = secondsUntilTimestamp(room.openingEndsAt ?? now, now);
   const colorText = colorTextForPlayer(player);
   const practiceCaptureTarget = isPracticeRoom(room)
-    ? (practiceDifficulty(room.practice?.difficulty)?.captureResignThreshold
-      ?? PRACTICE_DIFFICULTIES.basic.captureResignThreshold)
+    ? practiceCaptureResignThreshold(room.practice)
     : null;
 
   useEffect(() => {

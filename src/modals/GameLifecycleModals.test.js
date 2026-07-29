@@ -28,7 +28,7 @@ describe("GameLifecycleModals helpers", () => {
     const practiceMarkup = renderToStaticMarkup(createElement(OpeningModal, {
       room: {
         matchSource: "practice",
-        practice: { difficulty: "basic" },
+        practice: { difficulty: "intermediate", captureResignThreshold: 22 },
         openingEndsAt: Date.now() + 3_000
       },
       player: { color: COLORS.black }
@@ -45,6 +45,14 @@ describe("GameLifecycleModals helpers", () => {
       },
       player: { color: COLORS.white }
     }));
+    const newBeginnerMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: {
+        matchSource: "practice",
+        practice: { difficulty: "beginner", captureResignThreshold: 22 },
+        openingEndsAt: Date.now() + 3_000
+      },
+      player: { color: COLORS.black }
+    }));
     const openingCss = readFileSync(new URL("../styles/modals/character-opening/opening-animation.css", import.meta.url), "utf8");
 
     expect(practiceMarkup).toContain("本局你执黑");
@@ -52,6 +60,7 @@ describe("GameLifecycleModals helpers", () => {
     expect(practiceMarkup).toContain("吃掉准时宝22颗棋子就算胜利！");
     expect(regularMarkup).toContain("本局你执白");
     expect(regularMarkup).not.toContain("practice-opening-rule");
+    expect(newBeginnerMarkup).toContain("吃掉准时宝22颗棋子就算胜利！");
     expect(restoredBeginnerMarkup).toContain("吃掉准时宝11颗棋子就算胜利！");
     expect(openingCss).toContain(".opening-modal .practice-opening-rule");
     expect(openingCss).toContain("color: #c62828");

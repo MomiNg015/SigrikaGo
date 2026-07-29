@@ -75,8 +75,13 @@ set -a
 # shellcheck disable=SC1091
 . "${PROJECT_DIR}/.env"
 set +a
+PRACTICE_ENGINE_PATH="${PRACTICE_ENGINE_PATH:-/usr/games/gnugo}"
 [[ "${DATABASE_PATH}" == /* ]] || fail "Database path must be absolute: ${DATABASE_PATH}"
 [[ "${BACKUP_DIR}" == /* ]] || fail "Backup directory must be absolute: ${BACKUP_DIR}"
+[[ "${PRACTICE_ENGINE_PATH}" == /* ]] || fail "Practice engine path must be absolute: ${PRACTICE_ENGINE_PATH}"
+[[ -x "${PRACTICE_ENGINE_PATH}" ]] || fail "GNU Go is missing or not executable: ${PRACTICE_ENGINE_PATH}"
+"${PRACTICE_ENGINE_PATH}" --version >/dev/null \
+  || fail "GNU Go failed its version probe: ${PRACTICE_ENGINE_PATH}"
 [[ "${NGINX_SITE_PATH}" == /etc/nginx/* ]] || fail "Nginx site path must stay below /etc/nginx"
 [[ "${NGINX_SITE_LINK}" == /etc/nginx/* ]] || fail "Nginx site link must stay below /etc/nginx"
 [[ "${NGINX_ROUTES_PATH}" == /etc/nginx/* ]] || fail "Nginx routes path must stay below /etc/nginx"

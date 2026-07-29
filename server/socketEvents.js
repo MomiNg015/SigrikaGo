@@ -65,6 +65,7 @@ export function registerSocketEvents(socket, deps) {
     isUserInActiveRoom: deps.isUserInActiveRoom,
     leaveMatchmaking: deps.leaveMatchmaking,
     broadcastLobbyStats: deps.broadcastLobbyStats,
+    practiceEngineReady: deps.practiceEngineReady,
     runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });

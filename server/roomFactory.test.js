@@ -140,7 +140,7 @@ describe("roomFactory", () => {
 
   test("creates a no-skill practice room with requested color and bot preloaded", () => {
     const room = createPracticeRoom(queuePlayer("human", "socket-human"), {
-      difficulty: "basic",
+      difficulty: "advanced",
       playerColor: "white",
       now: () => 1000,
       random: () => 0.5
@@ -153,7 +153,8 @@ describe("roomFactory", () => {
       recordPolicy: "none",
       practice: {
         botId: "zhunshibao",
-        difficulty: "basic",
+        difficulty: "advanced",
+        captureResignThreshold: 22,
         humanColor: COLORS.white,
         botColor: COLORS.black
       },
@@ -163,7 +164,7 @@ describe("roomFactory", () => {
     expect(bot).toMatchObject({
       color: COLORS.black,
       characterId: null,
-      user: { username: "准时宝", rank: "入门陪练", rating: null }
+      user: { username: "准时宝", rank: "高级陪练", rating: null }
     });
     expect(bot.botProfile.portraitUrl).toBe("/assets/characters/zhunshibao.png");
     expect(room.preload.readyUserIds).toEqual([bot.user.id]);

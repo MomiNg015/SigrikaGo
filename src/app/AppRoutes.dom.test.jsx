@@ -75,7 +75,7 @@ describe("AppRoutes home render boundary", () => {
     const selectCharacter = vi.fn();
     const startMatch = vi.fn();
     const startPractice = vi.fn();
-    const practiceOptions = { difficulty: "basic", color: "random" };
+    const practiceOptions = { difficulty: "intermediate", playerColor: "random" };
 
     render(<AppRoutes {...createBaseProps({
       logout,

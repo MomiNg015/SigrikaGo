@@ -3,10 +3,17 @@ import {
   exposeHiddenHands,
   gameViewForColor,
   markDeadGroup,
+  playMove,
   resignGame
 } from "../src/shared/game.js";
-import { isPracticeRoom, practiceDifficulty } from "../src/shared/practiceMode.js";
-import { choosePracticeAction, obviousDeadBotGroups } from "./practiceBotDecision.js";
+import {
+  isPracticeRoom,
+  practiceCaptureResignThreshold,
+  practiceDifficulty,
+  PRACTICE_DIFFICULTIES
+} from "../src/shared/practiceMode.js";
+import { obviousDeadBotGroups } from "./practiceBotDecision.js";
+import { practiceBotEngine } from "./practiceBotEngine.js";
 
 export function createPracticeRoomAutomation({
   rooms,
@@ -19,12 +26,15 @@ export function createPracticeRoomAutomation({
   appendNotices,
   scheduleRoomClose,
   broadcastRoom,
-  random = Math.random
+  random = Math.random,
+  practiceEngine = practiceBotEngine
 }) {
   const scheduled = new Map();
+  const inFlight = new Map();
 
   function schedule(room, io) {
     if (!isPracticeRoom(room) || !room.practice) return false;
+    if (inFlight.has(room.code)) return false;
     const instruction = nextInstruction(room);
     if (!instruction) {
       scheduled.delete(room.code);
@@ -38,7 +48,12 @@ export function createPracticeRoomAutomation({
       scheduled.delete(room.code);
       const latest = rooms.get(room.code);
       if (!latest || instructionKey(latest, nextInstruction(latest)) !== key) return;
-      execute(latest, instruction, io);
+      inFlight.set(room.code, key);
+      return execute(latest, instruction, io, key).catch(() => null).finally(() => {
+        if (inFlight.get(room.code) === key) inFlight.delete(room.code);
+        const current = rooms.get(room.code);
+        if (current) schedule(current, io);
+      });
     }, instruction.delayMs);
     return true;
   }
@@ -47,10 +62,10 @@ export function createPracticeRoomAutomation({
     if (!humanPlayer(room)?.socketId || room.game.pendingSkill) return null;
     const bot = botPlayer(room);
     if (!bot) return null;
-    const difficulty = practiceDifficulty(room.practice.difficulty);
+    const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
     if (room.game.phase === GAME_PHASES.playing && room.game.turn === bot.color) {
       const human = humanPlayer(room);
-      if (Number(room.game.captures?.[human.color] ?? 0) >= difficulty.captureResignThreshold) {
+      if (Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
         return { type: "resign", delayMs: 120 };
       }
       return { type: "play", delayMs: randomDelay(difficulty.delayMs, random) };
@@ -70,15 +85,25 @@ export function createPracticeRoomAutomation({
     return null;
   }
 
-  function execute(room, instruction, io) {
+  async function execute(room, instruction, io, key) {
     const bot = botPlayer(room);
     let result = null;
     if (instruction.type === "resign") {
       result = resignForCaptureThreshold(room, bot, io);
     } else if (instruction.type === "play") {
       const view = gameViewForColor(room.game, bot.color);
-      const action = choosePracticeAction(view, bot.color, practiceDifficulty(room.practice.difficulty), { random });
-      result = handleGameAction(room.code, bot.user.id, action, io);
+      const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
+      const decision = await chooseBotAction(view, bot.color, difficulty);
+      const latest = rooms.get(room.code);
+      if (!latest || instructionKey(latest, nextInstruction(latest)) !== key) return null;
+      const latestBot = botPlayer(latest);
+      if (!latestBot) return null;
+      if (!decision.ok) {
+        result = handleEngineFailure(latest, latestBot, decision.reason, io);
+      } else {
+        latest.practice.engineFailureCount = 0;
+        result = handleGameAction(latest.code, latestBot.user.id, decision.action, io);
+      }
     } else if (instruction.type === "accept-counting") {
       result = respondCounting(room.code, bot.user.id, true);
     } else if (instruction.type === "accept-draw") {
@@ -90,7 +115,32 @@ export function createPracticeRoomAutomation({
       result = handleScoringAction(room.code, bot.user.id, { type: "accept-result" }, io);
     }
     if (result?.ok) broadcastRoom(io, result.room);
-    else schedule(room, io);
+    return result;
+  }
+
+  async function chooseBotAction(view, botColor, difficulty) {
+    try {
+      const engineResult = await practiceEngine.search(view, botColor, difficulty);
+      if (engineResult?.ok && isLegalPracticeAction(view, botColor, engineResult.action)) {
+        return { ok: true, action: engineResult.action };
+      }
+      return { ok: false, reason: engineResult?.reason ?? "invalid-result" };
+    } catch {
+      return { ok: false, reason: "error" };
+    }
+  }
+
+  function handleEngineFailure(room, bot, reason, io) {
+    if (reason === "busy") return null;
+    room.practice.engineFailureCount = Number(room.practice.engineFailureCount ?? 0) + 1;
+    if (room.practice.engineFailureCount < 3) return null;
+    const result = resignGame(room.game, bot.color);
+    room.game = result.state;
+    if (room.game.winner) delete room.game.winner.invalid;
+    appendNotices(room, exposeHiddenHands(room.game));
+    appendSystem(room, "准时宝的 GNU Go 引擎暂时不可用，本局已结束。");
+    scheduleRoomClose(room.code, io);
+    return { ok: true, room };
   }
 
   function resignForCaptureThreshold(room, bot, io) {
@@ -139,4 +189,10 @@ function instructionKey(room, instruction) {
 
 function randomDelay([minimum, maximum], random) {
   return Math.round(minimum + random() * (maximum - minimum));
+}
+
+function isLegalPracticeAction(game, color, action) {
+  if (action?.type === "pass") return true;
+  if (action?.type !== "move" || typeof action.pointId !== "string") return false;
+  return playMove(game, color, action.pointId, { colorIllusion: null }).ok;
 }

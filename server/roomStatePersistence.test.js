@@ -206,7 +206,7 @@ describe("room state persistence", () => {
       rated: false,
       matchSource: "practice",
       recordPolicy: "none",
-      practice: { botId: "zhunshibao", difficulty: "beginner" },
+      practice: { botId: "zhunshibao", difficulty: "advanced", captureResignThreshold: 22 },
       players: [{ user: { id: "bot", isBot: true }, isBot: true, socketId: null }],
       spectators: [],
       game: { phase: GAME_PHASES.playing },
@@ -218,7 +218,7 @@ describe("room state persistence", () => {
       rated: false,
       matchSource: "practice",
       recordPolicy: "none",
-      practice: { botId: "zhunshibao", difficulty: "beginner" }
+      practice: { botId: "zhunshibao", difficulty: "advanced", captureResignThreshold: 22 }
     });
     expect(hydrated.players[0].disconnectedAt).toBeNull();
   });

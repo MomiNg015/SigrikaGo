@@ -36,6 +36,7 @@ import { installProductionStaticAssets } from "./staticAssets.js";
 import { HELMET_OPTIONS } from "./securityHeaders.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
 import { registerSocketEvents } from "./socketEvents.js";
+import { practiceBotEngine } from "./practiceBotEngine.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import {
   assertProductionDeployment,
@@ -267,6 +268,7 @@ io.on("connection", (socket) => {
     hasBlacklistBetween,
     joinMatchmaking,
     createPracticeRoom,
+    practiceEngineReady: () => practiceBotEngine.ensureAvailable(),
     leaveMatchmaking,
     isUserInActiveRoom,
     broadcastLobbyStats,

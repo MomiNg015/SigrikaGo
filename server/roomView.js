@@ -21,6 +21,7 @@ export function buildRoomView(room, viewerId, options = {}) {
       ? {
           botId: room.practice.botId,
           difficulty: room.practice.difficulty,
+          captureResignThreshold: room.practice.captureResignThreshold,
           humanColor: room.practice.humanColor,
           botColor: room.practice.botColor
         }

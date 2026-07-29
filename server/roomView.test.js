@@ -115,6 +115,7 @@ describe("room view serialization", () => {
       botId: "zhunshibao",
       botActorId: "private-bot-actor",
       difficulty: "beginner",
+      captureResignThreshold: 22,
       humanColor: COLORS.black,
       botColor: COLORS.white
     };
@@ -131,6 +132,7 @@ describe("room view serialization", () => {
     expect(view.practice).toEqual({
       botId: "zhunshibao",
       difficulty: "beginner",
+      captureResignThreshold: 22,
       humanColor: COLORS.black,
       botColor: COLORS.white
     });

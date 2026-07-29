@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
-import { PRACTICE_QUICK_START_OPTIONS } from "../shared/practiceMode.js";
+import { PRACTICE_DIFFICULTY_OPTIONS } from "../shared/practiceMode.js";
 import { UsersRound } from "lucide-react";
+import { ModalDialog } from "../modals/modalComponents.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
@@ -88,6 +90,8 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 }
 
 function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect }) {
+  const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
+
   return (
     <div className="modal-backdrop match-mode-backdrop" onClick={onClose}>
       <section className="small-modal match-mode-modal" onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
@@ -117,7 +121,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                   aria-label="准时宝陪练"
                   className="practice-entry-button"
                   type="button"
-                  onClick={() => onPracticeStart(PRACTICE_QUICK_START_OPTIONS)}
+                  onClick={() => setPracticeDifficultyOpen(true)}
                 >
                   <img
                     src="/assets/home/home-practice-zhunshibao.webp"
@@ -131,7 +135,58 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
           ))}
         </div>
         <HomeActionButton variant="secondary" type="button" onClick={onClose}>取消</HomeActionButton>
+        {practiceDifficultyOpen && (
+          <PracticeDifficultyDialog
+            onClose={() => setPracticeDifficultyOpen(false)}
+            onSelect={(difficulty) => onPracticeStart({
+              difficulty,
+              playerColor: "random"
+            })}
+          />
+        )}
       </section>
+    </div>
+  );
+}
+
+function PracticeDifficultyDialog({ onClose, onSelect }) {
+  return (
+    <div
+      className="nested-modal-backdrop practice-difficulty-backdrop"
+      onClick={(event) => {
+        event.stopPropagation();
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <ModalDialog
+        ariaLabelledBy="practice-difficulty-title"
+        className="nested-modal practice-difficulty-modal"
+        onClick={(event) => event.stopPropagation()}
+        onClose={onClose}
+      >
+        <div className="practice-difficulty-heading">
+          <span className="practice-difficulty-eyebrow">准时宝陪练</span>
+          <h2 id="practice-difficulty-title">选择难度</h2>
+          <p>执棋颜色将随机决定，选定后立即开始。</p>
+        </div>
+        <div className="practice-difficulty-options">
+          {PRACTICE_DIFFICULTY_OPTIONS.map((difficulty, index) => (
+            <button
+              className={`practice-difficulty-option practice-difficulty-${difficulty.id}`}
+              key={difficulty.id}
+              type="button"
+              onClick={() => onSelect(difficulty.id)}
+            >
+              <span className="practice-difficulty-index" aria-hidden="true">0{index + 1}</span>
+              <span className="practice-difficulty-copy">
+                <strong>{difficulty.label}</strong>
+                <small>{difficulty.description}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+        <HomeActionButton variant="secondary" type="button" onClick={onClose}>返回</HomeActionButton>
+      </ModalDialog>
     </div>
   );
 }

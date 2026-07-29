@@ -1,0 +1,36 @@
+@media (max-width: 760px) {
+  .practice-difficulty-backdrop {
+    padding: 10px;
+  }
+
+  .practice-difficulty-backdrop .practice-difficulty-modal {
+    width: min(420px, calc(100vw - 20px)) !important;
+    max-height: calc(100dvh - 20px);
+    gap: 13px;
+    padding: 17px 14px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-backdrop .practice-difficulty-modal {
+    width: min(420px, 100%) !important;
+    max-width: 100% !important;
+  }
+
+  .practice-difficulty-heading p {
+    font-size: 0.86rem;
+  }
+
+  .practice-difficulty-options {
+    gap: 8px;
+  }
+
+  .practice-difficulty-modal .practice-difficulty-option {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    min-height: 64px;
+    padding: 10px 12px;
+  }
+
+  .practice-difficulty-copy small {
+    font-size: 0.78rem;
+  }
+}

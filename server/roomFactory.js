@@ -90,7 +90,7 @@ export function createPracticeRoom(player, {
     user: {
       id: botActorId,
       username: PRACTICE_BOT_NAME,
-      rank: "入门陪练",
+      rank: difficulty.rankLabel,
       rating: null,
       selectedCharacter: null,
       isBot: true
@@ -133,6 +133,7 @@ export function createPracticeRoom(player, {
       humanUserId: player.user.id,
       humanColor,
       difficulty: difficulty.id,
+      captureResignThreshold: difficulty.captureResignThreshold,
       deadAnalysisRequestId: null
     },
     players,

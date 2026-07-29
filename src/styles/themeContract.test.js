@@ -208,6 +208,7 @@ describe("player theme CSS contract", () => {
       "./surface-contracts/final-explicit-surfaces.css",
       "./surface-contracts/final-explicit-pseudo-elements.css",
       "./surface-contracts/final-controls-forms.css",
+      "./surface-contracts/practice-difficulty.css",
       "./surface-contracts/final-semantic-badges.css",
       "./surface-contracts/final-announcement-controls.css",
       "./surface-contracts/final-typography.css"

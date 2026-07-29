@@ -1,4 +1,4 @@
-import { isPracticePlayerColor, practiceDifficulty } from "../src/shared/practiceMode.js";
+import { isPracticePlayerColor, requestedPracticeDifficulty } from "../src/shared/practiceMode.js";
 
 const INVALID_OPTIONS = "练习设置无效";
 
@@ -9,11 +9,12 @@ export function registerPracticeSocketEvents(socket, {
   isUserInActiveRoom,
   leaveMatchmaking,
   broadcastLobbyStats = () => {},
+  practiceEngineReady = async () => ({ ok: true }),
   runtimeServiceState = null,
   metrics = null
 }) {
   socket.on("practice:start", async (payload = {}, acknowledge) => {
-    const difficulty = practiceDifficulty(payload.difficulty);
+    const difficulty = requestedPracticeDifficulty(payload.difficulty);
     if (!difficulty || !isPracticePlayerColor(payload.playerColor)) {
       acknowledge?.({ ok: false, error: INVALID_OPTIONS, code: "invalid_practice_options" });
       return;
@@ -28,6 +29,15 @@ export function registerPracticeSocketEvents(socket, {
       await refreshSocketUser(socket);
       if (isUserInActiveRoom(socket.user.id)) {
         acknowledge?.({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
+        return;
+      }
+      const engineStatus = await practiceEngineReady().catch(() => ({ ok: false }));
+      if (!engineStatus?.ok) {
+        acknowledge?.({
+          ok: false,
+          error: "准时宝的 GNU Go 引擎暂时不可用，请联系管理员",
+          code: "practice_engine_unavailable"
+        });
         return;
       }
       leaveMatchmaking(socket.user.id);

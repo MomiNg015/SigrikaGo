@@ -2,6 +2,16 @@
 
 本文档面向单台云服务器部署。当前项目的实时房间、匹配队列和 Socket 在线状态仍以单 Node.js 进程内存为核心，因此生产环境应先使用单实例运行，不要使用 PM2 cluster、多进程负载均衡或多台机器横向扩容。
 
+准时宝三档陪练使用服务器本机的 GNU Go 3.8，不访问外部围棋服务，也不需要 GPU。Ubuntu 24.04 可直接安装官方仓库包：
+
+```bash
+sudo apt update
+sudo apt install -y gnugo
+/usr/games/gnugo --version
+```
+
+生产更新脚本会在备份、拉取和停服之前检查 `/usr/games/gnugo` 是否存在且能输出版本；检查失败时必须先修复系统依赖，不能让练习房静默回退到自研走法。
+
 ## 部署前检查
 
 在准备发布的提交上先执行阶段 3 本地发布候选门禁：
@@ -40,6 +50,7 @@ DATABASE_URL="file:/var/lib/sigrikago/prod.db"
 JWT_SECRET="replace-with-at-least-32-random-characters"
 PUBLIC_ORIGIN="https://go.example.com"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
+PRACTICE_ENGINE_PATH="/usr/games/gnugo"
 ENABLE_TEST_ACTIONS="false"
 MAX_ONLINE_USERS="500"
 MAX_ACTIVE_ROOMS="100"
@@ -52,6 +63,7 @@ MAX_SPECTATORS_PER_ROOM="20"
 - `JWT_SECRET`: 生产环境必须换成至少 32 位的随机字符串。
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
+- `PRACTICE_ENGINE_PATH`: GNU Go 可执行文件的绝对路径。Ubuntu `gnugo` 包默认安装到 `/usr/games/gnugo`；Windows 本地开发可设置为自行安装的 `gnugo.exe` 绝对路径。
 - `ENABLE_TEST_ACTIONS`: 仅保留为旧部署配置的生产安全检查项，本地开发无需设置；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 - `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
 - `MAX_ACTIVE_ROOMS`: 新匹配/约战/观战接入的活跃房间软上限，默认 100。达到后已有对局和玩家恢复不受影响。

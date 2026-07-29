@@ -51,4 +51,72 @@ describe("practice socket events", () => {
     expect(createPracticeRoom).not.toHaveBeenCalled();
     expect(acknowledge).toHaveBeenCalledWith(expect.objectContaining({ ok: false, code: "invalid_practice_options" }));
   });
+
+  it.each(["beginner", "intermediate", "advanced"])("accepts the public %s difficulty", async (difficulty) => {
+    const socket = createSocket();
+    const acknowledge = vi.fn();
+    const createPracticeRoom = vi.fn(() => ({ code: "24680" }));
+    registerPracticeSocketEvents(socket, {
+      io: {},
+      refreshSocketUser: vi.fn(),
+      createPracticeRoom,
+      isUserInActiveRoom: () => false,
+      leaveMatchmaking: vi.fn()
+    });
+
+    await socket.trigger("practice:start", { difficulty, playerColor: "random" }, acknowledge);
+
+    expect(createPracticeRoom).toHaveBeenCalledWith(
+      expect.anything(),
+      {},
+      { difficulty, playerColor: "random" }
+    );
+  });
+
+  it("rejects the legacy basic alias for new rooms", async () => {
+    const socket = createSocket();
+    const acknowledge = vi.fn();
+    const createPracticeRoom = vi.fn();
+    registerPracticeSocketEvents(socket, {
+      io: {},
+      refreshSocketUser: vi.fn(),
+      createPracticeRoom,
+      isUserInActiveRoom: () => false,
+      leaveMatchmaking: vi.fn()
+    });
+
+    await socket.trigger("practice:start", { difficulty: "basic", playerColor: "random" }, acknowledge);
+
+    expect(createPracticeRoom).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith(expect.objectContaining({ code: "invalid_practice_options" }));
+  });
+
+  it("refuses to create a room when GNU Go is unavailable", async () => {
+    const socket = createSocket();
+    const acknowledge = vi.fn();
+    const createPracticeRoom = vi.fn();
+    const leaveMatchmaking = vi.fn();
+    registerPracticeSocketEvents(socket, {
+      io: {},
+      refreshSocketUser: vi.fn(),
+      createPracticeRoom,
+      isUserInActiveRoom: () => false,
+      leaveMatchmaking,
+      practiceEngineReady: vi.fn().mockResolvedValue({ ok: false })
+    });
+
+    await socket.trigger(
+      "practice:start",
+      { difficulty: "advanced", playerColor: "random" },
+      acknowledge
+    );
+
+    expect(createPracticeRoom).not.toHaveBeenCalled();
+    expect(leaveMatchmaking).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith({
+      ok: false,
+      error: "准时宝的 GNU Go 引擎暂时不可用，请联系管理员",
+      code: "practice_engine_unavailable"
+    });
+  });
 });

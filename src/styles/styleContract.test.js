@@ -633,6 +633,7 @@ describe("root CSS entry contract", () => {
     const phoneCoreEntry = readFileSync(new URL("./mobile-adaptive/phone-core.css", import.meta.url), "utf8");
     expect(cssImports(phoneCoreEntry)).toEqual([
       "./phone-core/match-mode.css",
+      "./phone-core/practice-difficulty.css",
       "./phone-core/global-shell-controls.css",
       "./phone-core/modal-tabs-shell.css",
       "./phone-core/scroll-detail-result.css"
@@ -1439,6 +1440,7 @@ describe("root CSS entry contract", () => {
       "./replay-mode-resume/replay-list-table.css",
       "./replay-mode-resume/resume-header-actions.css",
       "./replay-mode-resume/match-mode-tabs.css",
+      "./replay-mode-resume/practice-difficulty.css",
       "./replay-mode-resume/resume-modal-layout.css",
       "./replay-mode-resume/achievement-modal.css",
       "./replay-mode-resume/personalization-preview-grid.css",

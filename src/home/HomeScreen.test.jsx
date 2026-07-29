@@ -1142,6 +1142,29 @@ describe("HomeScreen", () => {
     expect(mobilePracticeBlock).toContain("rotate(var(--practice-entry-rotation, 0deg))");
   });
 
+  it("keeps the practice difficulty picker compact, theme-scoped, and mobile-safe", () => {
+    const modalCss = readCssFixture("../styles/modals.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
+    const modalBlock = modalCss.match(/\.nested-modal-backdrop \.practice-difficulty-modal\s*\{[^}]+\}/)?.[0] ?? "";
+    const optionBlock = modalCss.match(/\.practice-difficulty-modal \.practice-difficulty-option\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModalBlock = brightSchoolCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.practice-difficulty-modal\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightOptionBlock = brightSchoolCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.practice-difficulty-modal \.practice-difficulty-option\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileModalBlock = mobileCss.match(/\.practice-difficulty-backdrop \.practice-difficulty-modal\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileModalBlock = mobileCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.practice-difficulty-backdrop \.practice-difficulty-modal\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(modalBlock).toContain("width: min(520px, calc(100vw - 32px))");
+    expect(optionBlock).toContain("grid-template-columns: 44px minmax(0, 1fr)");
+    expect(optionBlock).not.toContain("border-left");
+    expect(brightModalBlock).toContain("width: min(520px, calc(100vw - 32px)) !important");
+    expect(brightOptionBlock).toContain("background: rgba(255, 250, 235, 0.96) !important");
+    expect(brightOptionBlock).not.toContain("border-left");
+    expect(mobileModalBlock).toContain("width: min(420px, calc(100vw - 20px)) !important");
+    expect(mobileModalBlock).toContain("max-height: calc(100dvh - 20px)");
+    expect(brightMobileModalBlock).toContain("width: min(420px, 100%) !important");
+    expect(brightMobileModalBlock).toContain("max-width: 100% !important");
+  });
+
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {
     const html = renderHome({ mailboxBadgeCount: 3, announcementUnread: true });
     const homeCss = readCssFixture("../styles/home-terminal.css");

@@ -1,4 +1,5 @@
 @import "./phone-core/match-mode.css";
+@import "./phone-core/practice-difficulty.css";
 @import "./phone-core/global-shell-controls.css";
 @import "./phone-core/modal-tabs-shell.css";
 @import "./phone-core/scroll-detail-result.css";
