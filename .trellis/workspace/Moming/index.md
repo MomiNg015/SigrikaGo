@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 78
-- **Last Active**: 2026-07-26
+- **Total Sessions**: 79
+- **Last Active**: 2026-07-29
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~602 | Active |
+| `journal-2.md` | ~635 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 79 | 2026-07-29 | Use GNU Go for Zhunshibao difficulty tiers | `8a221237` | `codex/zhunshibao-ai` |
 | 78 | 2026-07-26 | 统一角色语音响度并修复准时宝 TTS | `00d579c2` | `codex/audio-work` |
 | 77 | 2026-07-26 | 商店切换路标按钮 | `cf2e3a04` | `codex/frontend-chores` |
 | 76 | 2026-07-26 | Fill shop side gutters | `1ee943db` | `codex/frontend-chores` |

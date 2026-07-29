@@ -600,3 +600,36 @@ Removed inherited stable both-edge scrollbar gutters from the fixed shop shell, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 79: Use GNU Go for Zhunshibao difficulty tiers
+
+**Date**: 2026-07-29
+**Task**: Use GNU Go for Zhunshibao difficulty tiers
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Replaced custom practice move selection with a local single-slot GNU Go GTP adapter, retained beginner/intermediate/advanced UI tiers at engine levels 1/5/10, added readiness and deployment checks, documented the runtime contract, and covered engine failures without a homemade fallback.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8a221237` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
