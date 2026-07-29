@@ -13,11 +13,57 @@ import {
   gtpVertexToPointId,
   legalPracticeGtpVertices,
   pointIdToGtpVertex,
+  resolvePracticeEnginePath,
   runPracticeEngineProcess,
   serializePracticePositionToSgf
 } from "./practiceBotEngine.js";
 
 describe("GNU Go practice engine adapter", () => {
+  it("resolves Windows engines from explicit, managed, installed, then PATH locations", () => {
+    const managedPath = "C:\\Users\\tester\\AppData\\Local\\SigrikaGo\\practice-engine\\gnugo-3.8\\gnugo.exe";
+    const installedPath = "C:\\Program Files\\GNUGo\\bin\\gnugo.exe";
+    const pathExists = vi.fn((candidate) => candidate === managedPath);
+
+    expect(resolvePracticeEnginePath({
+      platform: "win32",
+      env: {
+        PRACTICE_ENGINE_PATH: "  D:\\engines\\gnugo.exe  ",
+        LOCALAPPDATA: "C:\\Users\\tester\\AppData\\Local",
+        ProgramFiles: "C:\\Program Files"
+      },
+      pathExists
+    })).toBe("D:\\engines\\gnugo.exe");
+    expect(pathExists).not.toHaveBeenCalled();
+
+    expect(resolvePracticeEnginePath({
+      platform: "win32",
+      env: {
+        LOCALAPPDATA: "C:\\Users\\tester\\AppData\\Local",
+        ProgramFiles: "C:\\Program Files"
+      },
+      pathExists
+    })).toBe(managedPath);
+
+    expect(resolvePracticeEnginePath({
+      platform: "win32",
+      env: { ProgramFiles: "C:\\Program Files" },
+      pathExists: (candidate) => candidate === installedPath
+    })).toBe(installedPath);
+    expect(resolvePracticeEnginePath({
+      platform: "win32",
+      env: {},
+      pathExists: () => false
+    })).toBe("gnugo.exe");
+  });
+
+  it("keeps the Linux production default independent from Windows setup", () => {
+    expect(resolvePracticeEnginePath({
+      platform: "linux",
+      env: {},
+      pathExists: () => false
+    })).toBe("/usr/games/gnugo");
+  });
+
   it("serializes only the bot-visible black and white position", () => {
     const game = createGameState([
       { userId: "bot", color: COLORS.black },

@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -13,12 +14,34 @@ const ENGINE_OUTPUT_LIMIT = 64 * 1024;
 const AVAILABILITY_RETRY_MS = 5_000;
 const GTP_COLUMNS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
-export const DEFAULT_PRACTICE_ENGINE_PATH = process.platform === "win32"
-  ? "gnugo.exe"
-  : "/usr/games/gnugo";
+export function resolvePracticeEnginePath({
+  platform = process.platform,
+  env = process.env,
+  pathExists = existsSync
+} = {}) {
+  const configuredPath = String(env.PRACTICE_ENGINE_PATH ?? "").trim();
+  if (configuredPath) return configuredPath;
+  if (platform !== "win32") return "/usr/games/gnugo";
+
+  const windowsPath = path.win32;
+  const candidates = [
+    env.LOCALAPPDATA
+      ? windowsPath.join(env.LOCALAPPDATA, "SigrikaGo", "practice-engine", "gnugo-3.8", "gnugo.exe")
+      : null,
+    env.ProgramFiles
+      ? windowsPath.join(env.ProgramFiles, "GNUGo", "bin", "gnugo.exe")
+      : null,
+    env["ProgramFiles(x86)"]
+      ? windowsPath.join(env["ProgramFiles(x86)"], "GNUGo", "bin", "gnugo.exe")
+      : null
+  ].filter(Boolean);
+  return candidates.find((candidate) => pathExists(candidate)) ?? "gnugo.exe";
+}
+
+export const DEFAULT_PRACTICE_ENGINE_PATH = resolvePracticeEnginePath();
 
 export function createPracticeBotEngine({
-  enginePath = process.env.PRACTICE_ENGINE_PATH || DEFAULT_PRACTICE_ENGINE_PATH,
+  enginePath = resolvePracticeEnginePath(),
   tempRoot = process.env.PRACTICE_ENGINE_TEMP_DIR || path.join(process.cwd(), ".tmp"),
   runProcess = runPracticeEngineProcess,
   now = Date.now
