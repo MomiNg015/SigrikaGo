@@ -666,3 +666,36 @@ Windows 后端现按环境变量、用户目录、Program Files 和 PATH 发现 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 81: Restore beginner Zhunshibao practice heuristic
+
+**Date**: 2026-07-29
+**Task**: Restore beginner Zhunshibao practice heuristic
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Restored the original local heuristic for public beginner practice while keeping GNU Go for intermediate and advanced, updated the difficulty dialog copy, added strategy-specific coverage, and synchronized system and deployment documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2e523317` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

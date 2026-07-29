@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 80
+- **Total Sessions**: 81
 - **Last Active**: 2026-07-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~668 | Active |
+| `journal-2.md` | ~701 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 81 | 2026-07-29 | Restore beginner Zhunshibao practice heuristic | `2e523317` | `codex/zhunshibao-ai` |
 | 80 | 2026-07-29 | 修复 Windows 本地 GNU Go 发现 | `a0ff470b` | `codex/zhunshibao-ai` |
 | 79 | 2026-07-29 | Use GNU Go for Zhunshibao difficulty tiers | `8a221237` | `codex/zhunshibao-ai` |
 | 78 | 2026-07-26 | 统一角色语音响度并修复准时宝 TTS | `00d579c2` | `codex/audio-work` |
