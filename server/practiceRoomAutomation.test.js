@@ -106,7 +106,26 @@ describe("practice room automation", () => {
     expect(harness.handleGameAction).toHaveBeenCalledWith(room.code, room.practice.botActorId, expect.objectContaining({ type: "move" }), {});
   });
 
-  it.each(["beginner", "intermediate", "advanced"])("uses GNU Go for %s moves", async (difficulty) => {
+  it("uses the local heuristic for beginner without calling GNU Go", async () => {
+    const room = createPracticeRoom(player(), { difficulty: "beginner", playerColor: "black", random: () => 0 });
+    room.game.phase = GAME_PHASES.playing;
+    room.game.turn = COLORS.white;
+    const practiceEngine = { search: vi.fn() };
+    const harness = automationHarness(room, { practiceEngine });
+
+    harness.automation.schedule(room, {});
+    await harness.run();
+
+    expect(practiceEngine.search).not.toHaveBeenCalled();
+    expect(harness.handleGameAction).toHaveBeenCalledWith(
+      room.code,
+      room.practice.botActorId,
+      expect.objectContaining({ type: "move" }),
+      {}
+    );
+  });
+
+  it.each(["intermediate", "advanced", "basic"])("uses GNU Go for %s moves", async (difficulty) => {
     const room = createPracticeRoom(player(), { difficulty, playerColor: "black", random: () => 0 });
     room.game.phase = GAME_PHASES.playing;
     room.game.turn = COLORS.white;

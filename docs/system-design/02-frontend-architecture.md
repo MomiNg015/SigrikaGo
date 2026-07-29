@@ -36,6 +36,7 @@
 - `SkillBanner`: 技能演出浮层。
 - `ResultModal`: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。
 - 星炬模式选择项使用 `.match-mode-option-wrap` 保持正式匹配按钮与准时宝陪练入口为并列交互元素，禁止嵌套按钮并保留键盘焦点。入口按钮以 `/assets/home/home-practice-zhunshibao.webp` 透明图作为完整视觉内容，保留“准时宝陪练”可访问名称和桌面 `144px` / 竖屏 `136px` 标题右上锚点；Bright School 的硬边阴影、按钮级抬升/旋转和 reduced-motion 合同不变。点击入口打开共享 `ModalDialog` 驱动的内层难度窗，集中渲染 `PRACTICE_DIFFICULTY_OPTIONS` 的“入门 / 中级 / 高级”及简短说明；三个按钮直接发送 `{ difficulty, playerColor: "random" }`，没有执色控件或额外开始按钮。内层 Escape、本层遮罩与“返回”只关闭难度窗并将焦点交还入口；选档才关闭整个模式窗。Bright School 语义 owner 把桌面宽度锁在 `520px`，竖屏以父遮罩可用宽度约束，390px 视口实测宽 356px、选项高 65px且不越界。`useMatchActions.startPractice` 继续预热 Spark 资源并复用 `match:found`。共享 `OpeningModal` 从安全投影的 `room.practice.captureResignThreshold` 显示练习房红色提子规则；新房三档均为 22，旧入门房缺字段时兼容 11，普通房不渲染。`battlePreloadAssets` 继续预载 `botProfile.portraitUrl`；准时宝立绘、占位、结果页和成员交互合同不变。
+- 难度窗不渲染顶部 eyebrow，小窗标题直接为“准时宝陪练”；规则说明固定用换行分隔“随机猜先。”与“吃掉准时宝22颗子或数子胜即算胜利！”，三档辅助文案由共享配置提供“沙包型准时宝 / 一般型准时宝 / 红温型准时宝”。393×852 竖屏实测弹窗宽 359px、高 386px，内容区无横向或纵向溢出。
 - `TestTools`: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。
 
 ### 前端通用函数

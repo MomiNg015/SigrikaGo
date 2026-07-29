@@ -117,7 +117,7 @@ describe("GNU Go practice engine adapter", () => {
   });
 
   it.each([
-    ["beginner", 1],
+    ["basic", 1],
     ["intermediate", 5],
     ["advanced", 10]
   ])("uses GNU Go %s level %i", async (difficultyId, level) => {
@@ -170,7 +170,7 @@ describe("GNU Go practice engine adapter", () => {
       { userId: "human", color: COLORS.white }
     ]);
 
-    const first = engine.search(game, COLORS.black, PRACTICE_DIFFICULTIES.beginner);
+    const first = engine.search(game, COLORS.black, PRACTICE_DIFFICULTIES.basic);
     await expect(
       engine.search(game, COLORS.black, PRACTICE_DIFFICULTIES.advanced)
     ).resolves.toEqual({ ok: false, reason: "busy" });
@@ -219,7 +219,7 @@ describe("GNU Go practice engine adapter", () => {
     ]);
 
     await expect(
-      engine.search(game, COLORS.black, PRACTICE_DIFFICULTIES.beginner)
+      engine.search(game, COLORS.black, PRACTICE_DIFFICULTIES.basic)
     ).resolves.toEqual({ ok: false, reason: "unavailable" });
   });
 

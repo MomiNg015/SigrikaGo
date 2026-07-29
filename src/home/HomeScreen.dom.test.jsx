@@ -29,10 +29,16 @@ describe("HomeScreen practice difficulty picker", () => {
       />
     );
 
-    expect(screen.queryByRole("dialog", { name: "选择难度" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "准时宝陪练" })).toBeNull();
     await user.click(screen.getByRole("button", { name: "准时宝陪练" }));
 
-    expect(screen.getByRole("dialog", { name: "选择难度" })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "准时宝陪练" })).toBeTruthy();
+    expect(screen.queryByText("选择难度")).toBeNull();
+    expect(screen.getByText("随机猜先。")).toBeTruthy();
+    expect(screen.getByText("吃掉准时宝22颗子或数子胜即算胜利！")).toBeTruthy();
+    expect(screen.getByText("沙包型准时宝")).toBeTruthy();
+    expect(screen.getByText("一般型准时宝")).toBeTruthy();
+    expect(screen.getByText("红温型准时宝")).toBeTruthy();
     expect(screen.getByRole("button", { name: /入门/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /中级/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /高级/ })).toBeTruthy();
@@ -73,7 +79,7 @@ describe("HomeScreen practice difficulty picker", () => {
     await user.click(practiceEntry);
     await user.keyboard("{Escape}");
 
-    expect(screen.queryByRole("dialog", { name: "选择难度" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "准时宝陪练" })).toBeNull();
     expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(practiceEntry);
   });

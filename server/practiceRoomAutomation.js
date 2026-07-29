@@ -12,7 +12,7 @@ import {
   practiceDifficulty,
   PRACTICE_DIFFICULTIES
 } from "../src/shared/practiceMode.js";
-import { obviousDeadBotGroups } from "./practiceBotDecision.js";
+import { choosePracticeAction, obviousDeadBotGroups } from "./practiceBotDecision.js";
 import { practiceBotEngine } from "./practiceBotEngine.js";
 
 export function createPracticeRoomAutomation({
@@ -120,6 +120,12 @@ export function createPracticeRoomAutomation({
 
   async function chooseBotAction(view, botColor, difficulty) {
     try {
+      if (difficulty.strategy === "heuristic") {
+        const action = choosePracticeAction(view, botColor, difficulty, { random });
+        return isLegalPracticeAction(view, botColor, action)
+          ? { ok: true, action }
+          : { ok: false, reason: "invalid-result" };
+      }
       const engineResult = await practiceEngine.search(view, botColor, difficulty);
       if (engineResult?.ok && isLegalPracticeAction(view, botColor, engineResult.action)) {
         return { ok: true, action: engineResult.action };

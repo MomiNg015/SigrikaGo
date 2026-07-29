@@ -165,9 +165,12 @@ function PracticeDifficultyDialog({ onClose, onSelect }) {
         onClose={onClose}
       >
         <div className="practice-difficulty-heading">
-          <span className="practice-difficulty-eyebrow">准时宝陪练</span>
-          <h2 id="practice-difficulty-title">选择难度</h2>
-          <p>执棋颜色将随机决定，选定后立即开始。</p>
+          <h2 id="practice-difficulty-title">准时宝陪练</h2>
+          <p>
+            <span>随机猜先。</span>
+            <br />
+            <span>吃掉准时宝22颗子或数子胜即算胜利！</span>
+          </p>
         </div>
         <div className="practice-difficulty-options">
           {PRACTICE_DIFFICULTY_OPTIONS.map((difficulty, index) => (

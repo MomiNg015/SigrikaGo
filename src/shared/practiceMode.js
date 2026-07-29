@@ -7,23 +7,19 @@ export const PRACTICE_BOT_PORTRAIT_URL = "/assets/characters/zhunshibao.png";
 const BEGINNER_DIFFICULTY = Object.freeze({
   id: "beginner",
   label: "入门",
-  description: "成熟引擎的轻量等级，适合熟悉规则",
+  description: "沙包型准时宝",
   rankLabel: "入门陪练",
-  strategy: "gnugo",
+  strategy: "heuristic",
   captureResignThreshold: 22,
-  delayMs: Object.freeze([600, 1000]),
-  engine: Object.freeze({
-    name: "gnugo",
-    level: 1,
-    timeoutMs: 2000,
-    cacheSizeMb: 8
-  })
+  delayMs: Object.freeze([1200, 1800]),
+  topChoices: 8,
+  randomMoveChance: 0.25
 });
 
 const INTERMEDIATE_DIFFICULTY = Object.freeze({
   id: "intermediate",
   label: "中级",
-  description: "成熟引擎的中等读棋等级",
+  description: "一般型准时宝",
   rankLabel: "中级陪练",
   strategy: "gnugo",
   captureResignThreshold: 22,
@@ -39,7 +35,7 @@ const INTERMEDIATE_DIFFICULTY = Object.freeze({
 const ADVANCED_DIFFICULTY = Object.freeze({
   id: "advanced",
   label: "高级",
-  description: "成熟引擎的最高读棋等级，思考更久",
+  description: "红温型准时宝",
   rankLabel: "高级陪练",
   strategy: "gnugo",
   captureResignThreshold: 22,
@@ -53,8 +49,19 @@ const ADVANCED_DIFFICULTY = Object.freeze({
 });
 
 const LEGACY_BASIC_DIFFICULTY = Object.freeze({
-  ...BEGINNER_DIFFICULTY,
   id: "basic",
+  label: "入门",
+  description: "沙包型准时宝",
+  rankLabel: "入门陪练",
+  strategy: "gnugo",
+  captureResignThreshold: 22,
+  delayMs: Object.freeze([600, 1000]),
+  engine: Object.freeze({
+    name: "gnugo",
+    level: 1,
+    timeoutMs: 2000,
+    cacheSizeMb: 8
+  }),
   legacy: true
 });
 

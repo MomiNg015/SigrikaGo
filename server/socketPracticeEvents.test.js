@@ -119,4 +119,29 @@ describe("practice socket events", () => {
       code: "practice_engine_unavailable"
     });
   });
+
+  it("creates a beginner room without probing GNU Go", async () => {
+    const socket = createSocket();
+    const acknowledge = vi.fn();
+    const createPracticeRoom = vi.fn(() => ({ code: "24680" }));
+    const practiceEngineReady = vi.fn().mockResolvedValue({ ok: false });
+    registerPracticeSocketEvents(socket, {
+      io: {},
+      refreshSocketUser: vi.fn(),
+      createPracticeRoom,
+      isUserInActiveRoom: () => false,
+      leaveMatchmaking: vi.fn(),
+      practiceEngineReady
+    });
+
+    await socket.trigger(
+      "practice:start",
+      { difficulty: "beginner", playerColor: "random" },
+      acknowledge
+    );
+
+    expect(practiceEngineReady).not.toHaveBeenCalled();
+    expect(createPracticeRoom).toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith({ ok: true, roomCode: "24680" });
+  });
 });

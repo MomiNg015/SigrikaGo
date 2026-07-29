@@ -31,14 +31,16 @@ export function registerPracticeSocketEvents(socket, {
         acknowledge?.({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
         return;
       }
-      const engineStatus = await practiceEngineReady().catch(() => ({ ok: false }));
-      if (!engineStatus?.ok) {
-        acknowledge?.({
-          ok: false,
-          error: "准时宝的 GNU Go 引擎暂时不可用，请联系管理员",
-          code: "practice_engine_unavailable"
-        });
-        return;
+      if (difficulty.strategy === "gnugo") {
+        const engineStatus = await practiceEngineReady().catch(() => ({ ok: false }));
+        if (!engineStatus?.ok) {
+          acknowledge?.({
+            ok: false,
+            error: "准时宝的 GNU Go 引擎暂时不可用，请联系管理员",
+            code: "practice_engine_unavailable"
+          });
+          return;
+        }
       }
       leaveMatchmaking(socket.user.id);
       const room = createPracticeRoom(

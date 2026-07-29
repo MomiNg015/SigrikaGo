@@ -8,10 +8,14 @@ import {
 
 describe("practice mode difficulty contract", () => {
   it("publishes exactly three 22-capture difficulty levels", () => {
-    expect(PRACTICE_DIFFICULTY_OPTIONS.map(({ id, label }) => ({ id, label }))).toEqual([
-      { id: "beginner", label: "入门" },
-      { id: "intermediate", label: "中级" },
-      { id: "advanced", label: "高级" }
+    expect(PRACTICE_DIFFICULTY_OPTIONS.map(({ id, label, description }) => ({
+      id,
+      label,
+      description
+    }))).toEqual([
+      { id: "beginner", label: "入门", description: "沙包型准时宝" },
+      { id: "intermediate", label: "中级", description: "一般型准时宝" },
+      { id: "advanced", label: "高级", description: "红温型准时宝" }
     ]);
     expect(PRACTICE_DIFFICULTY_OPTIONS.every((difficulty) => (
       difficulty.captureResignThreshold === 22
@@ -20,9 +24,12 @@ describe("practice mode difficulty contract", () => {
 
   it("accepts only public levels for new requests while retaining the basic restore alias", () => {
     expect(requestedPracticeDifficulty("beginner")).toMatchObject({
-      strategy: "gnugo",
-      engine: { name: "gnugo", level: 1 }
+      strategy: "heuristic",
+      delayMs: [1200, 1800],
+      topChoices: 8,
+      randomMoveChance: 0.25
     });
+    expect(requestedPracticeDifficulty("beginner").engine).toBeUndefined();
     expect(requestedPracticeDifficulty("intermediate")).toMatchObject({
       strategy: "gnugo",
       engine: { name: "gnugo", level: 5 }
