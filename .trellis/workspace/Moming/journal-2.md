@@ -633,3 +633,36 @@ Replaced custom practice move selection with a local single-slot GNU Go GTP adap
 ### Next Steps
 
 - None - task complete
+
+
+## Session 80: 修复 Windows 本地 GNU Go 发现
+
+**Date**: 2026-07-29
+**Task**: 修复 Windows 本地 GNU Go 发现
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Windows 后端现按环境变量、用户目录、Program Files 和 PATH 发现 GNU Go；本机 GNU Go 3.8、GTP 落子、适配器测试、构建和生产配置均已验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a0ff470b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
