@@ -732,3 +732,36 @@ Restored the original local heuristic for public beginner practice while keeping
 ### Next Steps
 
 - None - task complete
+
+
+## Session 83: Loading and spectator polish
+
+**Date**: 2026-07-30
+**Task**: Loading and spectator polish
+**Branch**: `master`
+
+### Summary
+
+Fixed tutorial loading progress initialization, removed Baconbits from shared loading screens, and corrected spectator mode count spacing and badge shape.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c3ff926e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
