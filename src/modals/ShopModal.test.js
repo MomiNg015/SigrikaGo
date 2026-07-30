@@ -538,6 +538,12 @@ describe("Zahira shop window", () => {
     expect(signpostSource).not.toContain("radial-gradient");
     expect(commerceCss).toContain(SHOP_DIRECTION_SIGN_IMAGE);
     expect(signpostSource).toContain("filter: drop-shadow");
+    expect(signpostSource).toMatch(
+      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\) rotate\(-1deg\) !important;[^}]*filter:\s*brightness\(1\.04\) !important;/s
+    );
+    expect(signpostSource).not.toMatch(
+      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*drop-shadow/s
+    );
     expect(signpostSource).toContain(".shop-switch-button:active");
     expect(shopWindowSource).toContain("overflow: hidden !important");
     expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");

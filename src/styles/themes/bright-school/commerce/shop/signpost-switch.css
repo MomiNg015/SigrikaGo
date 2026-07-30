@@ -37,9 +37,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:focus-visible {
   background: transparent !important;
   transform: translateY(-1px) rotate(-1deg) !important;
-  filter:
-    brightness(1.04)
-    drop-shadow(3px 5px 0 rgba(47, 20, 13, 0.62)) !important;
+  filter: brightness(1.04) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:active {
