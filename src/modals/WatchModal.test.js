@@ -81,9 +81,17 @@ describe("WatchModal helpers", () => {
     expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("min-height: 44px;");
     expect(css).toContain("font-size: 16px;");
-    expect(css).toContain("gap: 1em;");
-    expect(css).toContain(".watch-list-modal .watch-mode-count");
-    expect(css).toContain("font-size: inherit;");
+    const modeButtonBlock = cssBlock(css, ".watch-list-modal .mode-tabs button");
+    const roomCountBlock = cssBlock(css, ".watch-list-modal .watch-mode-count");
+    expect(modeButtonBlock).toContain("display: inline-flex;");
+    expect(modeButtonBlock).toContain("gap: 1em;");
+    expect(roomCountBlock).toContain("display: inline-grid;");
+    expect(roomCountBlock).toContain("place-items: center;");
+    expect(roomCountBlock).toContain("width: 1.75em;");
+    expect(roomCountBlock).toContain("height: 1.75em;");
+    expect(roomCountBlock).toContain("padding: 0;");
+    expect(roomCountBlock).toContain("border-radius: 50%;");
+    expect(roomCountBlock).toContain("font-size: inherit;");
     expect(css).toContain("grid-template-rows: auto auto minmax(220px, 1fr) auto auto;");
     expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("min-height: 40px;");
@@ -131,4 +139,13 @@ function mediaBlock(css, marker) {
     start = css.indexOf(marker, start + marker.length);
   }
   return blocks.join("\n");
+}
+
+function cssBlock(css, selector) {
+  const source = css.replace(/\r\n/g, "\n");
+  const start = source.indexOf(`${selector} {`);
+  if (start === -1) return "";
+  const bodyStart = source.indexOf("{", start);
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source.slice(bodyStart + 1, bodyEnd);
 }

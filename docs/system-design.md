@@ -15,6 +15,8 @@
 
 ## 当前架构摘要
 
+- 新手引导对弈的计时加载组件按 `loading.id` 重新挂载，因此连续进入不同加载阶段时首帧固定为 0%，不会沿用上一阶段的 100%；所有共享加载页在随机角色候选与显式固定角色路径上统一排除 `baconbits`，即使玩家选中猪小仙或后台配置其加载台词，也会改用其他有立绘的角色，非加载场景不受影响；桌面观战模式选项卡由 `src/styles/lobby/watch-list.css` 明确使用 flex 间距与等宽高圆形房间数徽标，避免通用按钮布局让 `1em` 间距失效或把徽标拉成椭圆。
+
 - 质量与稳定性基线：Playwright E2E/稳定性服务使用 `.tmp/playwright/` 下的独立临时 SQLite 数据库并在退出时清理；`GameRecord` 按双方用户+时间、模式+计分状态+时间建立查询索引，个人/他人棋谱通过 `(createdAt, id)` 游标每次加载 50 盘并可继续读取完整历史，排行榜和成就兼容扫描仍有明确上限；本人履历与公开详细信息复用同一个服务端计分战绩统计，不再从已加载棋谱推导。所有 `/api` 未捕获异常由末端 JSON 错误中间件统一输出。登录会话将 `lastSeenAt` 写入节流为五分钟，refresh token 使用旧哈希 compare-and-swap 原子轮换；登录/注册凭据限流与 refresh/logout 会话限流使用独立桶，单实例内同一用户的 session replacement 按用户串行并在 Prisma 事务中完成撤销与新建。管理员身份只以数据库 `User.role` 为准，公开注册、登录、refresh 和启动任务都不按用户名自动提权；服务器操作员使用 `npm run admin:promote -- <username>` 幂等提升已存在账号。玩家弹窗可逐步接入共享 `ModalDialog`，获得 dialog 语义、焦点循环/恢复和嵌套 Escape 优先级；`npm run check` 现在先运行 ESLint，并以 jsdom + Testing Library 覆盖真实弹窗键盘交互、在 Vite 构建后校验关键 CSS 产物合同。正式更新在 migration 后、后台默认快照同步前运行幂等 schema 兼容任务，避免历史 SQLite 迁移记录与实际列结构漂移导致 Prisma `P2022`。
 
 - 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切、内部 tab 单行并列且面板区域独立滚动，资料详情对局回放使用固定头部+内部滚动列表，内层 replay table 不再作为滚动容器以免截断触摸滚动链；移动端图标按钮和关闭按钮由最终安全层兜底为 44px 触控目标，主题动效避免宽度布局动画和弹性曲线，邮箱未读数量在菜单按钮上作为绝对定位角标呈现，不参与按钮文字排版；开发期 Vite `/socket.io` 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。

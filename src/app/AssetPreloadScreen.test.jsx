@@ -118,11 +118,41 @@ describe("AssetPreloadScreen", () => {
     expect(characterLoadingLine({ id: "unknown", name: "新角色" }, "sigrika=西格莉卡正在戳棋盘")).toBe("新角色正在加载中");
   });
 
+  it("never exposes the excluded Baconbits loading line", () => {
+    expect(characterLoadingLine(
+      { id: "baconbits", name: "猪小仙" },
+      "baconbits=猪小仙正在点燃炸弹"
+    )).toBe("资源正在加载中");
+  });
+
   it("selects a random preload character from the catalog", () => {
     expect(randomPreloadCharacter({
       sigrika: { id: "sigrika", portrait: "/sigrika.webp" },
       mornye: { id: "mornye", portrait: "/mornye.webp" }
     }, () => 0.75).id).toBe("mornye");
+  });
+
+  it("excludes Baconbits from random and fixed-character loading screens", () => {
+    const characters = {
+      baconbits: { id: "baconbits", name: "猪小仙", portrait: "/baconbits.webp" },
+      mornye: { id: "mornye", name: "莫宁", portrait: "/mornye.webp" }
+    };
+
+    expect(randomPreloadCharacter(characters, () => 0).id).toBe("mornye");
+
+    const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      character: characters.baconbits,
+      characters,
+      loadingLinesText: "baconbits=猪小仙正在点燃炸弹\nmornye=莫宁正在校准协议",
+      progress: 0.5,
+      showTips: false
+    }));
+
+    expect(html).toContain("莫宁正在校准协议");
+    expect(html).toContain("/mornye.webp");
+    expect(html).not.toContain("猪小仙");
+    expect(html).not.toContain("/baconbits.webp");
+    expect(html).not.toContain("猪小仙正在点燃炸弹");
   });
 
   it("can hide random tips while reusing the shared loading template", () => {

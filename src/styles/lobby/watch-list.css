@@ -55,6 +55,7 @@
 }
 
 .watch-list-modal .mode-tabs button {
+  display: inline-flex;
   min-height: 44px;
   padding: 0 16px;
   border-radius: 7px;
@@ -64,11 +65,15 @@
 }
 
 .watch-list-modal .watch-mode-count {
-  min-width: 20px;
-  padding: 3px;
-  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  width: 1.75em;
+  height: 1.75em;
+  padding: 0;
+  border-radius: 50%;
   background: rgba(80, 91, 143, 0.12);
   font-size: inherit;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 

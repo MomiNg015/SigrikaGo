@@ -802,7 +802,14 @@ export default function TutorialBattleScreen({
           onChoice={handleChoice}
           revealedNpcBubbleId={revealedNpcBubbleId}
         />
-        {loading && <TutorialBattleLoading loading={loading} characters={characters} players={players} />}
+        {loading && (
+          <TutorialBattleLoading
+            key={loading.id}
+            loading={loading}
+            characters={characters}
+            players={players}
+          />
+        )}
       </div>
       {battleMusicActive && tutorialMusic && <BackgroundMusic track={tutorialMusic} audioSettings={audioSettings} />}
       {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
