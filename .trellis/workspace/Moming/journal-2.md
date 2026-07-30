@@ -699,3 +699,36 @@ Restored the original local heuristic for public beginner practice while keeping
 ### Next Steps
 
 - None - task complete
+
+
+## Session 82: 修复生产部署样式与后台同步
+
+**Date**: 2026-07-30
+**Task**: 修复生产部署样式与后台同步
+**Branch**: `master`
+
+### Summary
+
+修复生产构建弹窗遮罩模糊，增加构建 CSS 合同检查；在后台默认快照同步前执行幂等 SQLite schema 兼容；刷新角色 illust 与服装后台默认快照，并更新部署文档和系统设计。完整 npm run check 通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0fac40ff` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

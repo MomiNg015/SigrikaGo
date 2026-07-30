@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 81
-- **Last Active**: 2026-07-29
+- **Total Sessions**: 82
+- **Last Active**: 2026-07-30
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~701 | Active |
+| `journal-2.md` | ~734 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 82 | 2026-07-30 | 修复生产部署样式与后台同步 | `0fac40ff` | `master` |
 | 81 | 2026-07-29 | Restore beginner Zhunshibao practice heuristic | `2e523317` | `codex/zhunshibao-ai` |
 | 80 | 2026-07-29 | 修复 Windows 本地 GNU Go 发现 | `a0ff470b` | `codex/zhunshibao-ai` |
 | 79 | 2026-07-29 | Use GNU Go for Zhunshibao difficulty tiers | `8a221237` | `codex/zhunshibao-ai` |
