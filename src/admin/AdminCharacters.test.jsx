@@ -20,6 +20,10 @@ describe("AdminCharacters skill editor", () => {
     expect(source).not.toContain("新增派生技能");
     expect(source).not.toContain("删除派生技能");
     expect(source).toContain("插入特性词");
+    expect(source).toContain('text="默认服装 illust 名称"');
+    expect(source).toContain('text="默认服装 illust 链接"');
+    expect(source).toContain("draft.illustName");
+    expect(source).toContain("draft.illustUrl");
   });
 
   it("inserts an unused trait at the current selection and rejects duplicates", () => {

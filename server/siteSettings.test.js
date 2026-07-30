@@ -13,6 +13,7 @@ import {
 describe("site settings defaults", () => {
   it("uses the academy brand as the production fallback title", () => {
     expect(DEFAULT_SITE_SETTINGS.homeTitle).toBe("星炬学院围棋部");
+    expect(DEFAULT_SITE_SETTINGS.homeVersion).toBe("v0.1.0");
     expect(DEFAULT_SITE_SETTINGS.homeSubtitle).toBe("连罗伊人的都爱玩的智力游戏");
   });
 
@@ -34,6 +35,11 @@ describe("site settings defaults", () => {
     expect(upsert).toHaveBeenCalledWith({
       where: { key: "homeSubtitle" },
       create: { key: "homeSubtitle", value: DEFAULT_SITE_SETTINGS.homeSubtitle },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "homeVersion" },
+      create: { key: "homeVersion", value: DEFAULT_SITE_SETTINGS.homeVersion },
       update: {}
     });
     expect(upsert).toHaveBeenCalledWith({
@@ -108,6 +114,16 @@ describe("site settings defaults", () => {
       ...DEFAULT_SITE_SETTINGS,
       characterLoadingLines: "sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议"
     }).characterLoadingLines).toBe("sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议");
+  });
+
+  it("trims and limits the configurable home version", () => {
+    const settings = sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      homeVersion: `  v${"1".repeat(40)}  `
+    });
+
+    expect(settings.homeVersion).toHaveLength(24);
+    expect(settings.homeVersion).toBe(`v${"1".repeat(23)}`);
   });
 
   it("normalizes admin-configured IRIS links and rejects unsafe protocols", () => {

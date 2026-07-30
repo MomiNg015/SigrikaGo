@@ -1,6 +1,6 @@
 .iris-database-links {
-  --iris-data-font: var(--iris-bitmap-font);
-  --iris-cn-font: var(--iris-bitmap-font);
+  --iris-data-font: var(--iris-dotted-font);
+  --iris-cn-font: var(--iris-dotted-font);
   min-height: 0;
   flex: 1 1 auto;
   margin: 0;
@@ -12,7 +12,7 @@
   scrollbar-width: thin;
   list-style: none;
   border-top: 1px solid rgba(124, 233, 255, 0.36);
-  font-family: var(--iris-bitmap-font);
+  font-family: var(--iris-dotted-font);
 }
 
 .iris-database-links li {

@@ -42,7 +42,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、副标题、关于文本和页脚信息" />
+      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、项目版本号、关于文本和页脚信息" />
       <form className="admin-form admin-settings-form" onSubmit={saveSettings}>
         <label>
           <AdminFieldLabel text="大厅标题" tip="显示在大厅顶部的主标题。" />
@@ -53,12 +53,11 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
           />
         </label>
         <label>
-          <AdminFieldLabel text="大厅副标题" tip="显示在大厅标题上方的小字，可用于服务器名称或活动文案。" />
-          <textarea
-            maxLength={80}
-            rows={3}
-            value={draft.homeSubtitle}
-            onChange={(event) => setDraft((current) => ({ ...current, homeSubtitle: event.target.value }))}
+          <AdminFieldLabel text="项目版本号" tip="显示在大厅标题旁，例如 v0.1.0；不附加测试服、构建时间等其它文案。" />
+          <input
+            maxLength={24}
+            value={draft.homeVersion}
+            onChange={(event) => setDraft((current) => ({ ...current, homeVersion: event.target.value }))}
           />
         </label>
         <label>
@@ -125,6 +124,7 @@ export function settingsDraftFromApi(settings = {}) {
   delete merged.irisGreeting;
   delete merged.irisLinks;
   delete merged.shopMascotDialogues;
+  delete merged.homeSubtitle;
   return merged;
 }
 

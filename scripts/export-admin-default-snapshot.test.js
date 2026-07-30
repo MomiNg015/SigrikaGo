@@ -18,6 +18,8 @@ describe("admin default snapshot export", () => {
       slug: "sigrika",
       cvName: "璃音",
       cvUrl: "https://space.bilibili.com/68435776",
+      illustName: "绘师",
+      illustUrl: "https://example.com/illustrator",
       skill: {
         name: "星辉符文",
         paramsJson: "{}"
@@ -149,6 +151,8 @@ function snapshotPrisma() {
         acquisitionMethod: "初始获得",
         cvName: "璃音",
         cvUrl: "https://space.bilibili.com/68435776",
+        illustName: "绘师",
+        illustUrl: "https://example.com/illustrator",
         source: "default",
         palette: "#ff9b4d",
         enabled: true,

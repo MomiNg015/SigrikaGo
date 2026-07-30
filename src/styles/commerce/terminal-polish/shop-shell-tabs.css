@@ -16,7 +16,7 @@
     rgba(5, 19, 26, 0.42);
 }
 
-.shop-mascot-bubble {
+:is(.shop-mascot-bubble, .costume-shop-bubble) {
   border: 1px solid rgba(0, 255, 190, 0.48);
   border-radius: 2px;
   clip-path: var(--terminal-row-cut);

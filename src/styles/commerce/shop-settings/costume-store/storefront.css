@@ -31,9 +31,11 @@
 }
 
 .shop-switch-button {
-  --shop-sign-clip: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  --shop-sign-image: url("/assets/shop/shop-direction-sign-sticker-right-v2.webp");
+  --shop-sign-image-scale-x: 1;
   position: absolute;
   z-index: 18;
+  width: 184px;
   min-width: 154px;
   min-height: 48px;
   display: grid;
@@ -41,10 +43,12 @@
   padding: 8px 24px;
   border: 0;
   border-radius: 0;
-  clip-path: var(--shop-sign-clip);
+  background: transparent;
+  clip-path: none;
   font-weight: 900;
   letter-spacing: 0.04em;
   isolation: isolate;
+  overflow: visible;
 }
 
 .shop-switch-button::before,
@@ -56,22 +60,24 @@
 
 .shop-switch-button::before {
   z-index: 0;
-  inset: 3px;
-  clip-path: var(--shop-sign-clip);
+  inset: 0;
+  background: var(--shop-sign-image) center / contain no-repeat;
+  transform: scaleX(var(--shop-sign-image-scale-x));
+  transform-origin: center;
 }
 
 .shop-switch-button::after {
-  z-index: 1;
-  inset: 0;
+  content: none;
 }
 
 .shop-switch-button > span {
   position: relative;
   z-index: 2;
+  transform: translateY(-3px);
 }
 
 .zahira-to-costume {
-  --shop-sign-clip: polygon(0 50%, 20px 4%, 97% 0, 100% 91%, 20px 100%);
+  --shop-sign-image-scale-x: -1;
   left: 14px;
   bottom: 96px;
   padding-left: 31px;
@@ -141,17 +147,6 @@
   left: 12%;
   width: 82%;
   min-height: 72px;
-  display: grid;
-  place-items: center;
-  padding: 12px 15px;
-  color: #401018;
-  background: #e8d95a;
-  border: 3px solid #21080d;
-  border-radius: 38% 20% 32% 18% / 28% 34% 24% 30%;
-  font-weight: 900;
-  line-height: 1.4;
-  text-align: center;
-  box-shadow: 5px 6px 0 rgba(8, 2, 3, 0.52);
 }
 
 .costume-shop-wallet-wrap {
@@ -165,7 +160,7 @@
 }
 
 .costume-to-zahira {
-  --shop-sign-clip: polygon(0 6%, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 3% 94%);
+  --shop-sign-image-scale-x: 1;
   right: 14px;
   bottom: 14px;
   padding-right: 31px;

@@ -21,8 +21,8 @@
 }
 
 @font-face {
-  font-family: "IRIS Vonwaon Bitmap";
-  src: url("/assets/fonts/VonwaonBitmap-16px.ttf") format("truetype");
+  font-family: "IRIS Dotted Songti Circle";
+  src: url("/assets/fonts/DottedSongtiCircleRegular.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -35,8 +35,8 @@
   --font-display-accent: "Sigrika Accent Latin";
   --font-numeric-accent: "Sigrika Accent Latin";
   --font-window-title: "Sigrika Window Title";
-  --font-iris-bitmap: "IRIS Vonwaon Bitmap", "Microsoft YaHei UI", "Microsoft YaHei", monospace;
-  --font-iris-mixed: var(--font-display-accent), var(--font-iris-bitmap);
+  --font-iris-dotted: "IRIS Dotted Songti Circle", "Microsoft YaHei UI", "Microsoft YaHei", serif;
+  --font-iris-mixed: var(--font-display-accent), var(--font-iris-dotted);
   font-family: var(--font-ui-default);
   letter-spacing: 0;
   --page-pad: clamp(10px, 1.6vw, 24px);

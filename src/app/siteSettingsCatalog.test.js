@@ -6,6 +6,7 @@ describe("public site settings loading", () => {
     const defaults = {
       homeTitle: "Default title",
       homeSubtitle: "Default subtitle",
+      homeVersion: "v0.1.0",
       aboutText: "Default about",
       footerText: "Default footer",
       preloadTips: "Default tip"
@@ -17,6 +18,7 @@ describe("public site settings loading", () => {
     await expect(loadPublicSiteSettings({ apiClient, defaults })).resolves.toEqual({
       homeTitle: "Remote title",
       homeSubtitle: "Default subtitle",
+      homeVersion: "v0.1.0",
       aboutText: "Default about",
       footerText: "Default footer",
       preloadTips: "Default tip"

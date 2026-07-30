@@ -81,12 +81,16 @@ describe("Prisma schema integrity", () => {
     expect(migrationSql).toMatch(/CREATE TABLE(?: IF NOT EXISTS)? "PersistedRoom"/);
   });
 
-  it("tracks character CV fields through a migration", () => {
+  it("tracks character credit fields through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     expect(schema).toContain("cvName");
     expect(schema).toContain("cvUrl");
+    expect(schema).toContain("illustName");
+    expect(schema).toContain("illustUrl");
     expect(migrationSql).toContain('"cvName" TEXT');
     expect(migrationSql).toContain('"cvUrl" TEXT');
+    expect(migrationSql).toContain('"illustName" TEXT');
+    expect(migrationSql).toContain('"illustUrl" TEXT');
   });
 
   it("tracks the skill trait glossary through schema, migration, and runtime guard", () => {

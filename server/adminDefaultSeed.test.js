@@ -50,7 +50,7 @@ describe("admin default config seed", () => {
   });
 
   it("keeps admin-saved public settings and catalog credits in the deployment snapshot", () => {
-    const homeSubtitle = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => row.key === "homeSubtitle");
+    const homeVersion = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => row.key === "homeVersion");
     const shopMascotDialogues = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => (
       row.key === "shopMascotDialogues"
     ));
@@ -59,7 +59,7 @@ describe("admin default config seed", () => {
       item.category === "decoration" && item.targetId === "papagan-peach-stone"
     ));
 
-    expect(homeSubtitle?.value).toBe("SIGRIKAGO");
+    expect(homeVersion?.value).toBe("v0.1.0");
     expect(JSON.parse(shopMascotDialogues?.value).zahira.greetingLines).toContain(
       "你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？"
     );
@@ -68,7 +68,9 @@ describe("admin default config seed", () => {
     );
     expect(sigrika).toMatchObject({
       cvName: "璃音",
-      cvUrl: "https://space.bilibili.com/68435776"
+      cvUrl: "https://space.bilibili.com/68435776",
+      illustName: "",
+      illustUrl: ""
     });
     expect(papaganPeach).toMatchObject({
       illustName: "憨态喵",
@@ -231,6 +233,8 @@ describe("admin default config seed", () => {
       where: { slug: "snapshot-character" },
       data: expect.objectContaining({
         name: "Snapshot Character",
+        illustName: "Snapshot Illustrator",
+        illustUrl: "https://example.com/snapshot-illustrator",
         skill: { upsert: expect.any(Object) }
       })
     })]);
@@ -278,7 +282,7 @@ describe("admin default config seed", () => {
     expect(calls.some(([name]) => name === "character.update")).toBe(false);
   });
 
-  it("preserves saved character CV metadata even when the deployment snapshot declares it", async () => {
+  it("preserves saved character credit metadata during create-only startup", async () => {
     const calls = [];
     const existing = {
       characters: new Set(["snapshot-character"])
@@ -290,7 +294,9 @@ describe("admin default config seed", () => {
       characters: [{
         ...sampleSnapshot.characters[0],
         cvName: "Snapshot CV",
-        cvUrl: "https://example.com/snapshot-cv"
+        cvUrl: "https://example.com/snapshot-cv",
+        illustName: "Snapshot Illustrator",
+        illustUrl: "https://example.com/snapshot-illustrator"
       }]
     });
 
@@ -346,6 +352,8 @@ const sampleSnapshot = {
     portraitUrl: "/assets/snapshot.webp",
     portraitSource: "url",
     acquisitionMethod: "Snapshot acquisition",
+    illustName: "Snapshot Illustrator",
+    illustUrl: "https://example.com/snapshot-illustrator",
     source: "default",
     palette: "#123456",
     enabled: true,

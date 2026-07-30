@@ -7,8 +7,11 @@ import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { modeOrderedEntries } from "./gameModes.js";
 import {
   COSTUME_SHOP_BACKGROUND_IMAGE,
+  COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
   COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE,
   SHOP_BACKGROUND_IMAGE,
+  SHOP_DIALOGUE_FRAME_IMAGE,
+  SHOP_DIRECTION_SIGN_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE,
   SHOP_MOBILE_BACKGROUND_IMAGE
@@ -82,6 +85,9 @@ describe("deployment preload asset helpers", () => {
     expect(assets.images).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(assets.images).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
     expect(assets.images).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(assets.images).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(assets.images).toContain(SHOP_DIRECTION_SIGN_IMAGE);
     expect(assets.images).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(assets.images).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
@@ -131,12 +137,18 @@ describe("deployment preload asset helpers", () => {
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_DIRECTION_SIGN_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(fs.existsSync(path.resolve("public", SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(fs.existsSync(path.resolve("public", SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_DIALOGUE_FRAME_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_DIALOGUE_FRAME_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_DIRECTION_SIGN_IMAGE.slice(1)))).toBe(true);
     expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));

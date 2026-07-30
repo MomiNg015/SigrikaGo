@@ -24,6 +24,7 @@
 - `POST /api/costumes/:id/purchase` 在单个 Prisma 事务内校验服装启用/商店展示/可购买、对应角色所有权、重复购买与金币余额，以条件扣款避免并发超花，然后创建 `UserCostume` 和 `costume.purchase` 金币流水。路由沿用商城的购买次数成就计数和成就结算。
 - `POST /api/costumes/equip` 接受 `{ characterSlug, costumeId }`；非默认服装必须启用、归属同一角色且由用户拥有。`costumeId="default"` 删除该角色唯一装备槽，恢复代码/角色目录的默认立绘。
 - 管理接口为 `GET/POST/PATCH /api/admin/costumes`。保存前验证稳定 id、角色目标、资源 URL、价格/折扣和展示状态并写审计；停用服装或修改所属角色时删除引用该服装的 `UserCostumeEquipment`，但保留 `UserCostume`。
+- `GET/POST/PATCH /api/admin/characters` 同时读写默认服装的可选 `illustName` / `illustUrl`；链接只接受 HTTP(S) 或站内根路径，填写链接时必须同时填写名称。公开角色 payload 透传字段，供客户端构建虚拟默认服装条目。
 - `ensureCostumeSchema()` 必须在 `seedAdminDefaultConfig()` 前运行，使未执行 Prisma migration 的旧开发 SQLite 也能先建立服装目录、所有权、装备表和索引；生产仍以 migration deploy 为准。
 
 ## Production Deployment Hardening

@@ -117,3 +117,7 @@
   background: #ddf7df !important;
   border-color: #4f8b63 !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-art.character-costume-detail-art img {
+  filter: none !important;
+}

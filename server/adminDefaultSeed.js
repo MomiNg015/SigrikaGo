@@ -436,6 +436,11 @@ function characterData(row, { existing = false } = {}) {
     data.cvName = row.cvName ?? "";
     data.cvUrl = row.cvUrl ?? "";
   }
+  const hasIllustFields = Object.hasOwn(row, "illustName") || Object.hasOwn(row, "illustUrl");
+  if (!existing || hasIllustFields) {
+    data.illustName = row.illustName ?? "";
+    data.illustUrl = row.illustUrl ?? "";
+  }
   return data;
 }
 

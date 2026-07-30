@@ -27,8 +27,8 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
         <HomeHeader
           isAdmin={user.role === "admin"}
           onlineCount={onlineCount}
-          siteSubtitle={siteSettings.homeSubtitle}
           siteTitle={siteSettings.homeTitle}
+          siteVersion={siteSettings.homeVersion}
           mailboxBadgeCount={mailboxBadgeCount}
           announcementUnread={announcementUnread}
           onLogout={onLogout}

@@ -12,6 +12,7 @@
 
 ### Database
 
+- `Character { ..., portraitUrl, cvName, cvUrl, illustName, illustUrl, ... }`; `illustName` / `illustUrl` are the optional credit metadata for that character's virtual default costume.
 - `Costume { id, name, characterSlug, portraitUrl, candyEffectPortraitUrl, portraitScalePercent, portraitOffsetXPercent, portraitOffsetYPercent, description, illustName, illustUrl, priceCoins, discountPercent, shopVisible, purchasable, enabled, sortOrder, source, createdAt, updatedAt }`.
 - `UserCostume` owns one unique `(userId, costumeId)` pair.
 - `UserCostumeEquipment` owns one unique `(userId, characterSlug)` pair.
@@ -26,6 +27,7 @@
 
 ### Admin API
 
+- `GET /api/admin/characters` includes `illustName` / `illustUrl`; `POST /api/admin/characters` and `PATCH /api/admin/characters/:id` persist those fields through the shared character validation boundary.
 - `GET /api/admin/costumes` -> `{ costumes }`.
 - `POST /api/admin/costumes` creates one catalog row.
 - `PATCH /api/admin/costumes/:id` updates mutable catalog fields; the stable URL id is not renamed.
@@ -44,7 +46,7 @@
 - The costume shop shows at most five unowned rows per batch. Purchasable rows for owned characters are selected before gray locked rows for unowned characters. Its stage reuses Zahira's measured `layoutShopCards` contract so one to five visible products are centered according to the actual count without empty placeholder slots.
 - A purchase runs in one Prisma transaction: re-read user, costume, and ownership; atomically decrement coins with `coins >= finalPrice`; create `UserCostume`; write the progress ledger; return the refreshed public user.
 - Purchasing never equips implicitly. The success dialog may offer equipment, but declining equipment must keep the just-purchased costume owned.
-- The wardrobe always includes a virtual `default` card. Default is not a `UserCostume` row and is equipable only when the user owns the base character.
+- The wardrobe always includes a virtual `default` card. Default is not a `Costume` or `UserCostume` row and is equipable only when the user owns the base character. `defaultCostumeCard(character)` takes its portrait from the character and its optional credit from `Character.illustName` / `Character.illustUrl`; the main character detail must not duplicate this default-costume-only credit. Wardrobe costume details reuse the shared shop item detail art, category, copy, and description structure; the optional credit sits below the costume name and aligns left, and the wardrobe variant omits the shop ownership-status area. The wardrobe art modifier clears the shared shop image drop-shadow while preserving the art frame and the shop product/detail shadow contract.
 - Unowned costume cards remain inspectable but gray. Their equipment button is natively disabled and has no extra warning flow.
 - Disabling a costume or changing its target character deletes matching equipment rows but keeps ownership rows.
 - `publicUser()` and every player projection that renders a portrait must carry `equippedCostumes`.
@@ -62,9 +64,11 @@
 - A settled detail purchase attempt always closes the costume detail in `finally`. Only a truthy successful purchase result opens the sibling `CostumePurchaseEquipDialog`; rejection or a falsy result shows no equipment prompt. The prompt equips only after the explicit confirmation and closes only when that equipment request succeeds.
 - Zahira and Nivora mascot feedback is explicit modal state, not a timer. Purchase success or failure copy and portrait remain until refresh, shop switch, close/reopen, or another explicit state transition; shop hooks must not schedule delayed resets.
 - Costume products reuse Zahira's per-batch slight rotation and vertical float parameters. The portrait and nested price badge stay inside the same transform wrappers, pause together on hover/focus/press, and stop continuous floating under reduced motion.
-- The wardrobe and costume detail are sibling top-level overlays under the app portal root. A costume detail backdrop must never be a positioned child of the wardrobe dialog. The card detail trigger stays transparent and shadowless; equipped state color belongs to the outer `.character-costume-card.is-equipped`.
+- The wardrobe and costume detail are sibling top-level overlays under the app portal root. A costume detail backdrop must never be a positioned child of the wardrobe dialog. Because the later shared `.nested-modal-backdrop` owner resolves to z-index `80` while the wardrobe uses `161`, the detail owner must use the more specific `.nested-modal-backdrop.character-costume-detail-backdrop { z-index: 162; }`; a bare `.character-costume-detail-backdrop` selector loses in the cascade and leaves the open detail behind the wardrobe. The card detail trigger stays transparent and shadowless; equipped state color belongs to the outer `.character-costume-card.is-equipped`.
 - `Costume` is part of `ADMIN_DEFAULT_CONFIG`. Startup creates missing default rows without overwriting admin-edited rows; explicit admin-default sync remains the overwrite-capable deployment path.
+- Character default-costume credit fields are part of the character admin snapshot. Export must include both fields, create-only startup must preserve existing rows, and explicit sync may overwrite them only when the committed character snapshot declares them.
 - `ensureCostumeSchema()` creates costume tables/indexes before default seeding for legacy development databases. `ensureGameModeSchema()` adds missing `GameRecord` costume snapshot columns before runtime record operations.
+- The legacy SQLite guard adds missing `Character.illustName` / `Character.illustUrl` columns before any character snapshot or public/admin character query.
 
 ## 4. Validation & Error Matrix
 
@@ -72,6 +76,9 @@
 |---|---|
 | Costume id is not 2-64 lowercase letters, numbers, or hyphens | Admin `400` validation error |
 | Missing name, character, valid portrait URL, or non-negative integer price | Admin `400` validation error |
+| Default-costume `illustUrl` is not HTTP(S) or a root-relative path | Admin character `400`, error includes `illustUrl` |
+| Default-costume `illustUrl` is set while `illustName` is empty | Admin character `400`, error includes `illustName` |
+| Both default-costume credit fields are empty | Save succeeds; default costume detail omits the credit label |
 | Scale is outside `50..150`, or an offset is outside `-50..50` | Admin `400` validation error |
 | Asset URL is neither `/assets/...` nor HTTP(S) | Admin `400` validation error |
 | Costume target character does not exist | Admin `400`, `服装所属角色不存在` |
@@ -95,8 +102,10 @@
 - Good: buy a 600-coin Denia costume with 800 coins; one transaction returns 200 coins, ownership, a `costume.purchase` ledger entry, and no automatic equipment.
 - Good: disable an equipped costume in admin; ownership remains, equipment resets to default, and future portrait projections use the base character.
 - Good: edit a Nivora costume from an admin character payload shaped as `{ id: "nabomo", name: "娜波摩" }`; the form keeps and submits `characterSlug: "nabomo"`.
+- Good: save `{ illustName: "Artist", illustUrl: "https://example.com/artist" }` on a character, reload admin data, then open that character's default costume detail and see a linked `illust：Artist` credit.
 - Good: start a match while a costume is equipped, then change clothes or its admin framing later; the room, result, and replay keep the start-time portrait and framing.
 - Good: open a costume detail from the wardrobe; the detail backdrop covers the viewport as a sibling overlay while the wardrobe remains dimmed behind it.
+- Good: open a wardrobe costume detail under Bright School; the portrait has no computed filter while the shared art frame and shop product-detail shadows remain intact.
 - Good: resize the shop to portrait mobile; the complete `残星会cosplay部` title remains on one line and each price badge still overlaps its alpha-cropped portrait.
 - Good: refresh from five visible costumes to three or one; the measured stage recenters only the existing product cards, and each portrait plus price badge floats and rotates as one unit.
 - Good: buy a costume from its Zahira-shaped detail; the detail closes, then one centered prompt offers immediate equipment without equipping implicitly.
@@ -104,6 +113,7 @@
 - Good: open Nivora's costume detail; the category reads `娜波摩服装`, then the bottom slot renders a left-aligned `售价 600 金币` line above one horizontal purchase button.
 - Good: normalize the 16-frame Denia candy WebP; all frames use one union-bounds transform and retain their authored 70ms delays and infinite loop.
 - Base: a user owns the base character but no costumes; the wardrobe shows default first and enabled unowned costumes gray.
+- Base: a character has no default-costume credit; its virtual default card still renders and equips normally without an illust label.
 - Base: a costume has no candy portrait; Denia's active candy effect uses the existing base candy art.
 - Bad: derive replay portraits from the current account equipment, because historical matches would visually change.
 - Bad: deduct coins before entering the ownership transaction or trust the client-reported price.
@@ -113,6 +123,7 @@
 - Bad: anchor a shop price badge to the full grid slot or a padded square image canvas, because the badge will float below the visible character.
 - Bad: hardcode costume slots with `nth-child` columns or animate the price badge outside the portrait card, because counts below five leave holes and the product separates while moving.
 - Bad: read only `character.slug` in the costume admin, because current admin character payloads expose the canonical slug as `id` and an undefined option value can submit the display name instead.
+- Bad: create a persisted `Costume` row only to store default-costume credit, because default ownership/equipment semantics intentionally depend on one virtual card backed by `Character`.
 - Bad: reset either shop mascot with `setTimeout`, because feedback disappears while the player is still reading it and timer cleanup can race with shop switching.
 - Bad: keep the costume detail mounted after settlement or open the equipment prompt from a failed request.
 - Bad: place the price inside the purchase button or use another descendant `div` for the costume action layout, because Zahira's `.shop-detail-stats div` two-column owner will split and overlap the content.
@@ -125,9 +136,10 @@
 - Admin tests cover create/update audits, duplicate ids, localized character-existence failures, equipment reset on disable or character reassignment, and preservation of the canonical target through a `{ id, name }` character payload edit/save cycle.
 - Route tests cover authentication and player/admin endpoint wiring.
 - Snapshot/export/seed tests assert all costume fields survive bootstrap export and create-only startup seeding.
+- Character validation, admin route, draft, merge, schema-guard, migration, and snapshot tests assert default-costume `illustName` / `illustUrl` survive save/reload and public projection while unsafe or nameless links are rejected.
 - Shop helper and modal tests cover five-row selection, owned-character priority, gray locks, independent refresh state, insufficient-funds copy, persistent mascot feedback without timers, purchase persistence, role-specific costume labels, price/button sibling structure, detail closure on both purchase outcomes, success-only equipment prompting, and optional post-purchase equipment.
 - Wardrobe tests cover virtual default ordering, gray unowned cards, disabled equipment, immediate equipment, and detail-card behavior.
-- Wardrobe DOM/CSS tests assert the detail backdrop is a direct app-root overlay, the trigger surface is transparent and shadowless, and the equipped outer card owns the pale-green state.
+- Wardrobe DOM/CSS tests assert the detail backdrop is a direct app-root overlay with the specific `162` stacking owner above the `161` wardrobe, the trigger surface is transparent and shadowless, the equipped outer card owns the pale-green state, the detail reuses the shop item template classes without an ownership-status node, a rendered illust credit sits below the costume name in a left-aligned heading group, and only the wardrobe detail illustration clears the shared shop image drop-shadow.
 - Shop source/CSS tests assert the exact non-wrapping title, alpha-trimmed WebP dimensions, shrink-wrapped art owner, price positioning inside that owner, measured count-aware layout reuse, whole-card motion wrappers, hover pause, and reduced-motion fallback.
 - Portrait normalization tests cover alpha trimming, shared canvas/safe-box geometry, bottom-center anchoring, WebP/alpha validation, idempotence, catalog discovery, remote skips, exact built-in migration guards, animation frame/timing/loop preservation, shared frame placement, static-output rejection for `requiresAnimation`, and the committed Denia asset's 16×70ms contract.
 - Portrait tests cover base/equipped/snapshot precedence, normalized framing, and candy fallback.
@@ -180,6 +192,23 @@ The room snapshot is authoritative for an in-progress or recorded match; account
 
 Wrong:
 
+```js
+await prisma.costume.create({
+  data: { id: `${character.slug}-default`, characterSlug: character.slug }
+});
+```
+
+Correct:
+
+```js
+const defaultCard = defaultCostumeCard(character);
+// character.illustName / character.illustUrl flow through the public character payload.
+```
+
+The default outfit remains virtual, so adding its credit does not create purchase, ownership, or equipment rows.
+
+Wrong:
+
 ```jsx
 <section className="character-costume-dialog">
   <div className="character-costume-detail-backdrop">...</div>
@@ -196,6 +225,29 @@ Correct:
 ```
 
 The detail overlay is a portal-root sibling, so parent overflow and descendant-position overrides cannot turn it into inline content.
+
+Wrong:
+
+```css
+.shop-detail-art img {
+  filter: none !important;
+}
+```
+
+Correct:
+
+```css
+.shop-detail-art.character-costume-detail-art img {
+  filter: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .shop-detail-art.character-costume-detail-art img {
+  filter: none !important;
+}
+```
+
+The base modifier limits the change to wardrobe details, and the theme-specific winner is required because Bright School's shared shop portrait filter is itself important.
 
 Wrong:
 

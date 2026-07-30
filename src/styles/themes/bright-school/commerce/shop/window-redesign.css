@@ -53,30 +53,15 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
+  --shop-dialogue-frame-image: url("/assets/shop/zahira-dialogue-frame-v2.webp");
+  --shop-dialogue-frame-aspect: 1060 / 465;
+  --shop-dialogue-frame-padding: 21px 27px 39px;
+  --shop-dialogue-ink: #3d2b25;
   top: auto !important;
-  right: 74px !important;
+  right: 68px !important;
   bottom: 52% !important;
-  width: min(30%, 310px) !important;
+  width: min(32%, 340px) !important;
   max-width: none !important;
-  min-height: 64px !important;
-  margin: 0 !important;
-  background: #ffdfeb !important;
-  border-radius: 18px 22px 16px 24px !important;
-  transform: rotate(1deg) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble::after {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  right: 24% !important;
-  bottom: -17px !important;
-  width: 24px !important;
-  height: 24px !important;
-  background: #ffdfeb !important;
-  border-right: 3px solid #3d2b25 !important;
-  border-bottom: 3px solid #3d2b25 !important;
-  transform: rotate(45deg) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {

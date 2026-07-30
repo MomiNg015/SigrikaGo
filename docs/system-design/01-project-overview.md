@@ -193,7 +193,7 @@ SigrikaGo/
   - Converts a replay record snapshot into the room-screen state used by normal house replays and admin replays: room snapshot, latest replay step, cleared pending skill, and `room` view.
 - `src/app/siteSettingsCatalog.js`
   - Loads public site settings from `/api/site-settings`, merges them over shared defaults, and falls back to `DEFAULT_SITE_SETTINGS` when the request fails.
-  - Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to `home`, so the preload screen and first home render use configured loading tips, title, and subtitle instead of briefly showing defaults.
+  - Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to `home`, so the preload screen and first home render use configured loading tips, title, and project version instead of briefly showing defaults.
 - `src/shared/game.js`
   - 共享的游戏规则引擎。
   - 负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、主动技能执行函数、隐藏手、死子标记、数子、回放重算等。
@@ -483,7 +483,7 @@ SigrikaGo/
 
 - `server/siteSettings.js`
   - 站点公开配置读取和后台更新逻辑。
-  - 当前管理大厅标题 `homeTitle`、大厅副标题 `homeSubtitle`、设置关于页长文本 `aboutText` 与首页 footer 长文本 `footerText`，并写入后台审计日志。
+  - 当前管理大厅标题 `homeTitle`、项目版本号 `homeVersion`、设置关于页长文本 `aboutText` 与首页 footer 长文本 `footerText`，并写入后台审计日志；旧 `homeSubtitle` 键仅保留存量兼容。
 
 - `server/characters.js`
   - 角色输入校验、技能校验、公开 payload 转换、内置角色初始化。

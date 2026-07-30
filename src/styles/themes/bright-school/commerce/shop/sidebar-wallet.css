@@ -6,43 +6,39 @@
   box-sizing: border-box !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
-  position: relative !important;
-  display: grid !important;
-  grid-template-areas:
-    "."
-    "bubble"
-    "."
-    "mascot" !important;
-  grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto !important;
-  align-content: stretch !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-mascot-bubble, .costume-shop-bubble) {
+  min-height: 0 !important;
+  aspect-ratio: var(--shop-dialogue-frame-aspect) !important;
+  display: flex !important;
   align-items: center !important;
-  justify-items: center !important;
-  gap: 0 !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-  text-align: center !important;
-  background: #fff3d5 !important;
-  color: #3d2b25 !important;
-  border: 3px solid #3d2b25 !important;
-  border-radius: 22px !important;
-  box-shadow: 6px 7px 0 rgba(61, 43, 37, 0.88) !important;
-  overflow: hidden !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: var(--shop-dialogue-frame-padding) !important;
+  overflow: visible !important;
+  color: var(--shop-dialogue-ink) !important;
+  background-color: transparent !important;
+  background-image: var(--shop-dialogue-frame-image) !important;
+  background-position: center !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-blend-mode: normal !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0.01em !important;
+  text-align: left !important;
+  text-wrap: pretty !important;
+  transform: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
-  grid-area: bubble !important;
-  width: fit-content !important;
-  max-width: calc(100% - 32px) !important;
-  margin: 0 16px !important;
-  padding: 10px 16px !important;
-  background: #ffdfeb !important;
-  color: #3d2b25 !important;
-  border: 3px solid #3d2b25 !important;
-  border-radius: 999px !important;
-  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.82) !important;
-  text-align: center !important;
-  transform: rotate(-1deg) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-mascot-bubble, .costume-shop-bubble)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-mascot-bubble, .costume-shop-bubble)::after {
+  content: none !important;
+  display: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {

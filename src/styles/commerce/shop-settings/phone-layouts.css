@@ -39,17 +39,6 @@
     overflow: hidden;
   }
 
-  .shop-mascot-bubble {
-    grid-area: bubble;
-    width: 100%;
-    min-height: 0;
-    margin: 0;
-    padding: 7px 9px;
-    border-width: 1px;
-    border-radius: 8px;
-    font-size: 11px;
-  }
-
   .shop-mascot-slot {
     grid-area: mascot;
     align-self: end;

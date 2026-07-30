@@ -145,6 +145,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `acquisitionMethod`: 获得途径纯文本，显示在棋舍角色详情中。
 - `description`: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以紫色斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。
 - `cvName`, `cvUrl`: 角色配音人员展示信息。后台角色管理可填写 CV 名称和可选链接；`cvUrl` 只接受 `http://`、`https://` 或站内 `/...` 路径，并且必须与非空 `cvName` 同时存在。公开角色 payload 会透传这两个字段，棋舍角色详情在空名称时隐藏标签。
+- `illustName`, `illustUrl`: 角色默认服装的插画署名。后台角色管理可填写名称和可选链接；链接遵循与 CV 相同的安全协议和“有链接必须有名称”约束。公开角色 payload 会透传字段，由虚拟默认服装卡在衣柜详情显示；角色主详情不重复展示。
 - `enabled`: 是否启用。
 - `sortOrder`: 排序。
 - `skill`: 一对一 `CharacterSkill`。
@@ -233,6 +234,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 ### Costume、UserCostume 与 UserCostumeEquipment
 
 - `Costume` 是后台管理的服装目录，稳定 `id` 不能在创建后修改；字段包括名称、`characterSlug`、常态 `portraitUrl`、可选 `candyEffectPortraitUrl`、显示缩放 `portraitScalePercent`、横纵偏移 `portraitOffsetXPercent/portraitOffsetYPercent`、描述、illust 名称/链接、金币原价、折扣、商店展示、可购买、启用、排序和来源。缩放默认 100、允许 50–150，偏移默认 0、允许 -50–50；公开 payload 额外计算 `finalPrice`。
+- 默认服装仍是从角色目录构造的虚拟条目，不写入 `Costume`；其立绘取 `Character.portraitUrl`，署名取 `Character.illustName/illustUrl`，并复用同一个衣柜服装详情展示。
 - `UserCostume` 以唯一 `(userId, costumeId)` 保存永久所有权和获得来源。服装被后台停用时仍保留该行，因此重新启用后玩家不需再次购买。
 - `UserCostumeEquipment` 以唯一 `(userId, characterSlug)` 保存角色当前非默认服装。选择默认服装会删除该行；停用服装或把服装改到其他角色时也只删除相关装备行。
 - `resolveCharacterPortrait()` 是玩家角色立绘选择边界：房间 `costumeSnapshot` 优先于实时账号装备；达妮娅糖果效果优先于普通服装立绘，服装提供糖果特效立绘时使用该图，否则回退基础糖果图；没有糖果效果时使用服装常态立绘，最后才回退角色默认立绘。
@@ -255,7 +257,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
-- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines`、`shopMascotDialogues`、`irisGreeting`、`irisLinks`、`skillEffectsEnabled` 与 `ratingRules`；`preloadTips` 以换行文本存储加载页提示语集合。
+- `key`: 主键。当前使用 `homeTitle`、`homeVersion`、兼容保留的 `homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines`、`shopMascotDialogues`、`irisGreeting`、`irisLinks`、`skillEffectsEnabled` 与 `ratingRules`；`homeVersion` 最长 24 个字符并显示在首页标题旁，`preloadTips` 以换行文本存储加载页提示语集合。
 - `shopMascotDialogues`: 受限 JSON，保存扎希拉和娜波摩的进入/刷新随机池与目录、购买状态单句；共享规范化器限制每池最多 12 条、每句最多 120 字，并为缺失、空白或损坏字段回退代码默认值。
 - `irisGreeting`: 受限 JSON 数组，保存 IRIS 问候语随机池；共享规范化器限制最多 12 条、每条最多 80 字，并把旧数据库里的单条纯文本兼容为一项池。
 - `ratingRules`: JSON SiteSetting value for dynamic rating, rank-gap scaling, optional anti-boosting, rank-change rating delta, and friendly-match coin limits.
@@ -295,7 +297,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `UserAchievement` 记录用户已达成状态，包含 `achievedAt` 与 `rewardGrantedAt`，并以 `userId + achievementId` 保证幂等。`AchievementCounter` 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 `server/achievements.js` 实时聚合。
 - `UserAchievementEquipment` 保存用户当前装备的 `titleAssetId`、`badgeAssetId` 和 `nameplateAssetId`。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。
 - 用户资料与装备接口除返回 `achievementEquipment` id 外，还会返回当前槽位对应的 `achievementEquipmentAssets` / `equipmentAssets`，让前端无需再次查表即可渲染称号、徽章和用户名背景图片。`attachAchievementEquipmentAssetsToUsers` 用于批量装饰用户列表，socket 登录用户、排行榜用户和社交用户列表/资料都走这条路径，确保任何拿到完整用户对象的用户名展示点具备同一套个性化资产。
-- `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character` 添加 `source`、`cvName`、`cvUrl` 字段，为 `Decoration` 添加 `source` 字段，为 `ShopItem` 添加 `source`、`illustName`、`illustUrl` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少这些列时先读取这些模型。
+- `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character` 添加 `source`、`cvName`、`cvUrl`、`illustName`、`illustUrl` 字段，为 `Decoration` 添加 `source` 字段，为 `ShopItem` 添加 `source`、`illustName`、`illustUrl` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少这些列时先读取这些模型。
 
 ## Mailbox Data Model
 

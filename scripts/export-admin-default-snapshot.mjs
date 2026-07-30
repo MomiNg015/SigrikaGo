@@ -144,6 +144,8 @@ function characterSnapshot(row) {
     "acquisitionMethod",
     "cvName",
     "cvUrl",
+    "illustName",
+    "illustUrl",
     "source",
     "palette",
     "enabled",

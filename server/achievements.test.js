@@ -31,6 +31,8 @@ describe("achievements", () => {
       expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "source"'),
       expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "cvName"'),
       expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "cvUrl"'),
+      expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "illustName"'),
+      expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "illustUrl"'),
       expect.stringContaining('ALTER TABLE "ShopItem" ADD COLUMN "illustName"'),
       expect.stringContaining('ALTER TABLE "ShopItem" ADD COLUMN "illustUrl"'),
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "Achievement"'),

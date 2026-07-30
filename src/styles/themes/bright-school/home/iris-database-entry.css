@@ -13,7 +13,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry {
-  font-family: var(--font-iris-bitmap) !important;
+  font-family: var(--font-iris-dotted) !important;
   filter: drop-shadow(-7px 9px 0 rgba(2, 20, 32, 0.28)) !important;
   transform: translateY(-50%) !important;
 }
@@ -75,7 +75,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-data strong,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-data small,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-code {
-  font-family: var(--font-iris-bitmap) !important;
+  font-family: var(--font-iris-dotted) !important;
 }
 
 @media (max-width: 768px) {

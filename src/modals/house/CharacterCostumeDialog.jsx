@@ -89,23 +89,31 @@ export default function CharacterCostumeDialog({
   );
 
   const detailDialog = detailCostume ? (
-    <div className="modal-backdrop character-costume-detail-backdrop" onClick={() => setDetailCostume(null)}>
+    <div
+      className="nested-modal-backdrop shop-detail-backdrop character-costume-detail-backdrop"
+      onClick={() => setDetailCostume(null)}
+    >
       <ModalDialog
-        className="character-costume-detail"
+        className="nested-modal shop-item-detail-modal character-costume-detail"
         ariaLabel={`${detailCostume.name}详情`}
         onClose={() => setDetailCostume(null)}
         onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" type="button" aria-label="关闭服装详情" onClick={() => setDetailCostume(null)}><X size={18} /></button>
-        <img src={detailCostume.portraitUrl} alt="" />
-        <div>
-          <h4>{detailCostume.name}</h4>
+        <div className="shop-detail-art character-costume-detail-art" aria-hidden="true">
+          <img src={detailCostume.portraitUrl} alt="" loading="lazy" decoding="async" />
+        </div>
+        <div className="shop-detail-copy character-costume-detail-copy">
+          <span className="shop-detail-category character-costume-detail-category">{character.name}服装</span>
+          <div className="character-costume-detail-heading">
+            <h3>{detailCostume.name}</h3>
+            {detailCostume.illustName && (
+              detailCostume.illustUrl
+                ? <a className="shop-detail-illust-label character-costume-detail-credit" href={detailCostume.illustUrl} target="_blank" rel="noreferrer">illust：{detailCostume.illustName}</a>
+                : <span className="shop-detail-illust-label character-costume-detail-credit">illust：{detailCostume.illustName}</span>
+            )}
+          </div>
           <p>{detailCostume.description || "这套服装的介绍尚未填写。"}</p>
-          {detailCostume.illustName && (
-            detailCostume.illustUrl
-              ? <a href={detailCostume.illustUrl} target="_blank" rel="noreferrer">illust：{detailCostume.illustName}</a>
-              : <span>illust：{detailCostume.illustName}</span>
-          )}
         </div>
       </ModalDialog>
     </div>

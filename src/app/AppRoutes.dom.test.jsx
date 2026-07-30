@@ -24,6 +24,7 @@ function createBaseProps(overrides = {}) {
       footerText: "",
       homeSubtitle: "",
       homeTitle: "",
+      homeVersion: "",
       preloadTips: ""
     },
     user: { id: "user-1", role: "user", selectedCharacter: "sigrika" },

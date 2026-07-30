@@ -56,6 +56,45 @@ describe("CharacterCostumeDialog overlay", () => {
     expect(appShell?.contains(detailBackdrop)).toBe(true);
     expect(wardrobeDialog?.contains(detailBackdrop)).toBe(false);
     expect(detailBackdrop?.parentElement).toBe(appShell);
-    expect(screen.getByRole("dialog", { name: "舞台服详情" })).toBeTruthy();
+    const detailDialog = screen.getByRole("dialog", { name: "舞台服详情" });
+    expect(detailDialog.classList.contains("shop-item-detail-modal")).toBe(true);
+    expect(detailDialog.querySelector(".shop-detail-art.character-costume-detail-art")).toBeTruthy();
+    expect(detailDialog.querySelector(".shop-detail-copy.character-costume-detail-copy")).toBeTruthy();
+    expect(screen.getByText("达妮娅服装")).toBeTruthy();
+    expect(screen.queryByText("持有状态")).toBeNull();
+  });
+
+  it("shows character-managed illust credit in the virtual default-costume detail", () => {
+    render(
+      <main className="app-shell">
+        <CharacterCostumeDialog
+          character={{
+            id: "denia",
+            name: "达妮娅",
+            portrait: "/assets/characters/denia.webp",
+            illustName: "绘师",
+            illustUrl: "https://example.com/illustrator"
+          }}
+          characterOwned
+          costumes={[]}
+          loading={false}
+          equippingId=""
+          user={{ ownedCostumeIds: [], equippedCostumes: {} }}
+          onEquip={vi.fn()}
+          onClose={vi.fn()}
+        />
+      </main>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "查看默认服装详情，正在装扮" }));
+
+    const credit = screen.getByRole("link", { name: "illust：绘师" });
+    const heading = screen.getByRole("heading", { name: "默认服装" });
+    expect(credit.getAttribute("href")).toBe("https://example.com/illustrator");
+    expect(credit.parentElement).toBe(heading.parentElement);
+    expect(credit.parentElement?.classList.contains("character-costume-detail-heading")).toBe(true);
+    expect(credit.classList.contains("shop-detail-illust-label")).toBe(true);
+    expect(screen.queryByText("持有状态")).toBeNull();
+    expect(screen.getByRole("dialog", { name: "默认服装详情" })).toBeTruthy();
   });
 });

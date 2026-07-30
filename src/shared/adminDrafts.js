@@ -1,6 +1,7 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "./characterCv.js";
+import { normalizeCreditName, normalizeCreditUrl } from "./creditLink.js";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "./shopItemIllust.js";
 
 export function emptyCharacterDraft() {
@@ -12,6 +13,8 @@ export function emptyCharacterDraft() {
     description: "",
     cvName: "",
     cvUrl: "",
+    illustName: "",
+    illustUrl: "",
     portraitUrl: "",
     portraitSource: "url",
     acquisitionMethod: "",
@@ -48,6 +51,8 @@ export function buildCharacterDraft(character) {
     description: character.description ?? "",
     cvName: character.cvName ?? "",
     cvUrl: character.cvUrl ?? "",
+    illustName: character.illustName ?? "",
+    illustUrl: character.illustUrl ?? "",
     portraitUrl: character.portrait ?? "",
     portraitSource: character.portraitSource ?? "url",
     acquisitionMethod: character.acquisitionMethod ?? "",
@@ -85,12 +90,17 @@ export function characterDraftToBody(draft) {
   const cvName = normalizeCharacterCvName(draft.cvName);
   const cvUrl = normalizeCharacterCvUrl(draft.cvUrl);
   if (cvUrl == null || (cvUrl && !cvName)) return null;
+  const illustName = normalizeCreditName(draft.illustName);
+  const illustUrl = normalizeCreditUrl(draft.illustUrl);
+  if (illustUrl == null || (illustUrl && !illustName)) return null;
   return {
     slug: draft.slug.trim(),
     name: draft.name.trim(),
     description: String(draft.description ?? "").trim(),
     cvName,
     cvUrl,
+    illustName,
+    illustUrl,
     portraitUrl: draft.portraitUrl.trim(),
     portraitSource: draft.portraitSource,
     acquisitionMethod: String(draft.acquisitionMethod ?? "").trim(),

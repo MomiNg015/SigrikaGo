@@ -47,19 +47,21 @@ describe("IRIS Database production contract", () => {
     const linksBlock = modalCss.match(/\.iris-database-links\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(
-      existsSync(new URL("../../public/assets/fonts/VonwaonBitmap-16px.ttf", import.meta.url))
+      existsSync(new URL("../../public/assets/fonts/DottedSongtiCircleRegular.otf", import.meta.url))
     ).toBe(true);
-    expect(baseCss).toContain('font-family: "IRIS Vonwaon Bitmap"');
-    expect(baseCss).toContain('src: url("/assets/fonts/VonwaonBitmap-16px.ttf")');
-    expect(baseCss).toContain("--font-iris-bitmap:");
-    expect(baseCss).toContain("--font-iris-mixed: var(--font-display-accent), var(--font-iris-bitmap)");
+    expect(baseCss).toContain('font-family: "IRIS Dotted Songti Circle"');
+    expect(baseCss).toContain('src: url("/assets/fonts/DottedSongtiCircleRegular.otf") format("opentype")');
+    expect(baseCss).toContain("--font-iris-dotted:");
+    expect(baseCss).toContain("--font-iris-mixed: var(--font-display-accent), var(--font-iris-dotted)");
     expect(entryBlock).toContain("position: fixed");
     expect(entryBlock).toContain("env(safe-area-inset-right, 0px)");
     expect(entryBlock).toContain("z-index: var(--iris-entry-z)");
     expect(entryBlock).toContain("background: transparent");
-    expect(entryBlock).toContain("aspect-ratio: 0.78");
+    expect(entryBlock).toContain("aspect-ratio: 1.56");
+    expect(homeCss).toContain(".iris-entry-portrait-slot::before");
+    expect(homeCss).toContain("content: none");
     expect(entryBlock).toContain("font-family: var(--iris-data-font)");
-    expect(homeCss).toContain("--iris-data-font: var(--font-iris-bitmap)");
+    expect(homeCss).toContain("--iris-data-font: var(--font-iris-dotted)");
     expect(entryPortraitBlock).toContain("background: transparent");
     expect(entryPortraitBlock).toContain("border: 0");
     expect(homeCss).toContain("@media (max-width: 768px)");
@@ -71,9 +73,9 @@ describe("IRIS Database production contract", () => {
     expect(backdropBlock).toContain("--iris-data-font: var(--iris-mixed-font)");
     expect(backdropBlock).toContain("--iris-cn-font: var(--iris-mixed-font)");
     expect(backdropBlock).toContain("font-family: var(--iris-mixed-font)");
-    expect(linksBlock).toContain("--iris-data-font: var(--iris-bitmap-font)");
-    expect(linksBlock).toContain("--iris-cn-font: var(--iris-bitmap-font)");
-    expect(linksBlock).toContain("font-family: var(--iris-bitmap-font)");
+    expect(linksBlock).toContain("--iris-data-font: var(--iris-dotted-font)");
+    expect(linksBlock).toContain("--iris-cn-font: var(--iris-dotted-font)");
+    expect(linksBlock).toContain("font-family: var(--iris-dotted-font)");
     expect(modalCss).toContain("grid-template-rows: minmax(175px, 34%) minmax(0, 1fr)");
     expect(modalCss).toContain(".iris-database-links");
     expect(modalCss).toContain(".iris-database-greeting");
@@ -84,7 +86,7 @@ describe("IRIS Database production contract", () => {
     expect(modalCss).toContain("scrollbar-gutter: stable");
     expect(brightHomeCss).toContain(".iris-database-entry");
     expect(brightHomeCss).toContain("transform: translateY(-50%) !important");
-    expect(brightHomeCss).toContain("font-family: var(--font-iris-bitmap) !important");
+    expect(brightHomeCss).toContain("font-family: var(--font-iris-dotted) !important");
     expect(brightHomeCss).toMatch(/\.iris-entry-shard\s*\{[\s\S]*?clip-path:\s*polygon\([^}]+!important/);
     expect(brightHomeCss).toMatch(
       /\.iris-entry-data small\s*\{[\s\S]*?background:\s*transparent !important/
@@ -93,6 +95,6 @@ describe("IRIS Database production contract", () => {
     expect(brightModalCss).toContain(".iris-database-portrait-panel");
     expect(brightModalCss).toContain(".iris-database-greeting");
     expect(brightModalCss).toContain("font-family: var(--iris-mixed-font) !important");
-    expect(brightModalCss).toContain("font-family: var(--iris-bitmap-font) !important");
+    expect(brightModalCss).toContain("font-family: var(--iris-dotted-font) !important");
   });
 });

@@ -451,6 +451,7 @@ describe("admin site settings routes", () => {
       body: {
         homeTitle: "棋境大厅",
         homeSubtitle: "SigrikaGo 测试服",
+        homeVersion: "v2.4.1",
         aboutText: "关于测试文本",
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
         preloadTips: "第一句提示\n第二句提示",
@@ -475,6 +476,7 @@ describe("admin site settings routes", () => {
     expect(updateResponse.body.settings).toMatchObject({
       homeTitle: "棋境大厅",
       homeSubtitle: "SigrikaGo 测试服",
+      homeVersion: "v2.4.1",
       aboutText: "关于测试文本",
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
       preloadTips: "第一句提示\n第二句提示",
@@ -484,6 +486,7 @@ describe("admin site settings routes", () => {
       skillEffectsEnabled: false
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
+    expect(readResponse.body.settings.homeVersion).toBe("v2.4.1");
     expect(auditWrites[0].action).toBe("site-settings.update");
   });
 });
@@ -654,6 +657,24 @@ describe("admin character routes", () => {
     expect(response.body.error).toContain("cvUrl");
   });
 
+  it("round-trips default-costume illust metadata through admin character updates", async () => {
+    const { prisma, characterUpdates } = characterRoutePrisma();
+
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        illustName: "Illustrator",
+        illustUrl: "https://example.com/illustrator"
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.character.illustName).toBe("Illustrator");
+    expect(response.body.character.illustUrl).toBe("https://example.com/illustrator");
+    expect(characterUpdates[0].illustName).toBe("Illustrator");
+    expect(characterUpdates[0].illustUrl).toBe("https://example.com/illustrator");
+  });
+
   it("lists disabled character skills for admin editing", async () => {
     const fixture = characterFixture();
     const character = { ...fixture, skill: { ...fixture.skill, enabled: false } };
@@ -669,6 +690,8 @@ describe("admin character routes", () => {
     expect(response.body.characters[0].skill.params).toEqual({});
     expect(response.body.characters[0].cvName).toBe(character.cvName);
     expect(response.body.characters[0].cvUrl).toBe(character.cvUrl);
+    expect(response.body.characters[0].illustName).toBe(character.illustName);
+    expect(response.body.characters[0].illustUrl).toBe(character.illustUrl);
   });
 
   it("returns JSON for unsupported portrait upload types", async () => {
@@ -1413,6 +1436,8 @@ function characterFixture() {
     portraitSource: "url",
     cvName: "Old Voice Actor",
     cvUrl: "https://example.com/old-voice-actor",
+    illustName: "Old Illustrator",
+    illustUrl: "https://example.com/old-illustrator",
     palette: "#6ab7ff",
     enabled: true,
     sortOrder: 1,

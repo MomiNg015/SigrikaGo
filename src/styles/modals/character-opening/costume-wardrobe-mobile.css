@@ -58,14 +58,4 @@
     margin: 0 0 10px !important;
   }
 
-  .character-costume-detail {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: minmax(180px, 42dvh) auto !important;
-    gap: 10px !important;
-    padding: 16px !important;
-  }
-
-  .character-costume-detail > img {
-    max-height: 40dvh !important;
-  }
 }

@@ -90,6 +90,8 @@ describe("character fallback", () => {
     expect(merged.sigrika.description).toBe("API character description");
     expect(merged.sigrika.cvName).toBe("");
     expect(merged.sigrika.cvUrl).toBe("");
+    expect(merged.sigrika.illustName).toBe("");
+    expect(merged.sigrika.illustUrl).toBe("");
     expect(merged.sigrika.portrait).toBe(CHARACTERS.sigrika.portrait);
     expect(merged.sigrika.skill.name).toBe("API Skill");
     expect(merged.sigrika.skill.description).toBe(CHARACTERS.sigrika.skill.description);
@@ -104,6 +106,20 @@ describe("character fallback", () => {
 
     expect(merged.sigrika.cvName).toBe("Voice Actor");
     expect(merged.sigrika.cvUrl).toBe("https://example.com/cv");
+  });
+
+  it("merges optional default-costume illust metadata from API characters", () => {
+    const merged = mergeCharacters([
+      {
+        id: "sigrika",
+        name: "Sigrika",
+        illustName: "Illustrator",
+        illustUrl: "https://example.com/illustrator"
+      }
+    ]);
+
+    expect(merged.sigrika.illustName).toBe("Illustrator");
+    expect(merged.sigrika.illustUrl).toBe("https://example.com/illustrator");
   });
 
   it("falls back to built-in characters for empty or malformed API payloads", () => {

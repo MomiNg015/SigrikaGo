@@ -1308,7 +1308,7 @@ Correct:
 #### 3. Contracts
 
 - `HomeScreen` mounts exactly one `<IrisDatabase />`.
-- The edge entry keeps a transparent Q-version half-body hit area with the blue archive plaque at its lower-right. Blank art must not become a visible portrait card, fallback silhouette, or broken image.
+- The edge entry keeps the existing width but uses a compact `1.56` width/height ratio, halving its former height while preserving a transparent Q-version half-body hit area and the blue archive plaque. Blank art must not become a visible portrait card, fallback silhouette, placeholder copy, or broken image.
 - Both art slots remain image-free; runtime code must not reference or request candidate Iris character assets.
 - The entry uses viewport `position: fixed`, a safe-area-aware right offset, and no horizontal page overflow.
 - The modal reuses `ModalDialog`; desktop is left blank-art/right links, portrait mobile is top blank-art/bottom links. Intro and quote copy stay absent, while the link list is the independent vertical scroll owner.
@@ -1431,10 +1431,11 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - The Fractsidus costume shop follows the same two-source contract: `/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp` is 1586x992 and reserves the left 34% for Nivora plus the right 65% for products; `/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp` is an independently composed 941x1672 portrait scene with the upper 57% for products and lower 43% for reception. Both must use the Zahira background's rough wax-crayon grain, uneven outlines, simplified blocks, and deliberately low detail; polished concept-art metal, glass, and cinematic lighting are visual regressions even when the palette is correct.
 - Keep the two Fractsidus WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`, retain their same-name PNG sources, and disable the old `.costume-store-panel` curtain pseudo-elements. Under Bright School, the final mobile rule must use `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel` so its mobile asset wins against the equally important theme owner; an unscoped `.costume-store-panel` rule loses on specificity and silently crops the desktop image on phones.
 - Zahira-only header styling is selected by `.shop-header[data-store="zahira"]` and uses a simple low-detail blue-gray to muted-purple color band. Do not crop or imitate the body scene in this header: scene-like canopy, tassel, shelf, or tent details create a false expectation that header and body are one continuous illustration. Costume-store headers must not inherit this background.
+- Bright School shop dialogue uses two complete ImageGen transparent WebP frames instead of CSS-built pill/blob boxes: Zahira uses a berry-white hand-cut frame with an integrated lower-right tail, while Nivora uses a muted warm-gold ticket frame with an integrated lower-left tail. The paper texture, hand-drawn edge, hard offset shadow, and tail must all remain inside each asset canvas; CSS loads the versioned frame from `shopMascotAssets.js`, stretches it with `background-size: 100% 100%`, clears inherited border/radius/shadow/clip-path, and keeps live left-aligned DOM text inside frame-specific safe padding. Do not restore tail pseudo-elements outside the element box: the shop viewport, store page, panel, and modal deliberately clip overflow. Both frame assets participate in `RUNTIME_IMAGE_ASSETS.shop` login preloading. Final mobile owners may adjust frame width, position, font size, and safe padding, but not split the tail back out of the image. Both portrait frames use `22px` horizontal safe padding while keeping their existing top and tail padding. The portrait Nivora owner must repeat `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-bubble` so its right-aligned `54%` frame wins against the important desktop `80%` frame; an unscoped important rule leaves the desktop frame over the mascot's face.
 - In the final portrait layer, the Bright School-scoped shop close-button owner must beat the theme-wide important `.close-button` absolute-position rule, restore `position: static` / `inset: auto`, and align the 44px close and refresh buttons to the same grid center. A later but lower-specificity shop selector is insufficient.
-- Store-to-store navigation stays as native `.shop-switch-button` controls with visible copy `残星会` and `扎希拉商店`. Do not add `前往` or encode direction with a text arrow; `.zahira-to-costume` and `.costume-to-zahira` own mirrored `--shop-sign-clip` polygons so the board tip itself points toward the target store.
-- The shared signpost is CSS-only: the button supplies the dark outer silhouette, `::before` supplies one low-detail warm-brown board face, and `::after` supplies two simple nail dots. The Bright School owner must explicitly restore the clip path and zero radius with sufficient specificity because generic theme button rules otherwise turn the outer silhouette back into a rounded pill.
-- Signpost interaction is transform/filter-only: desktop stays at least 48px high, portrait mobile stays at least 44px high, hover/focus may lift by 1px, active may press by 2px, and reduced motion removes those transforms. The control must not add a continuous animation or new image asset.
+- Store-to-store navigation stays as native `.shop-switch-button` controls with visible DOM copy `残星会` and `扎希拉商店`. Do not add `前往`, encode direction with a text arrow, or bake either label into artwork. `.zahira-to-costume` and `.costume-to-zahira` own opposite `--shop-sign-image-scale-x` values so only the image layer points toward the target store.
+- The shared signpost uses `/assets/shop/shop-direction-sign-sticker-right-v2.webp`, a `1420x430` lossless transparent ImageGen sticker with a flat right-pointing board, tiny support tab, thick warm-white die-cut edge, dark burgundy outline, sparse crayon strokes, and exactly two simple nail dots; retain the same-name transparent PNG as the editable source and preload the WebP through `SHOP_DIRECTION_SIGN_IMAGE`. The button stays transparent, `::before` renders the whole asset with `background-size: contain` and mirrors through `scaleX()`, `::after` renders nothing, and the live `<span>` remains unmirrored above the image. Do not restore realistic timber grain, rope, cracks, bevels, CSS gradients, nail pseudo-elements, clip-path silhouettes, or mirroring on the whole button.
+- Signpost interaction is transform/filter-only: desktop and portrait mobile stay at least 48px high, hover/focus may lift by 1px, active may press by 2px, and reduced motion removes those transforms. The asset remains fully inside the button box, and the control must not add continuous animation.
 
 #### 4. Validation & Error Matrix
 - Unknown category -> category badge falls back to `商品`.
@@ -1452,9 +1453,10 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Both shop families -> computed float travel is 12–18px on desktop and 9–13.5px on portrait mobile, duration remains 4.2–6s, interaction states pause the current float, and reduced-motion removes it.
 - Fractsidus cards -> the scaled `.costume-shop-art` rectangles remain inside the product stage and do not overlap at 1440x900, 375x812, or 375x600; the trigger hit-area and algorithmic slot bounds remain unchanged.
 - Costume store active -> the computed header background does not contain either Zahira background asset.
+- Either store active -> the dialogue frame is the computed background image, `background-size` is `100% 100%`, both pseudo-elements compute to no content, and every visible non-transparent frame pixel remains inside the bubble element's border box.
 - 375x812 and 375x600 Zahira headers -> refresh and close controls are both 44x44, their computed top coordinates match, and the close button computes to `position: static`.
-- Either store active -> the visible switch computes to the matching left/right polygon, the board pseudo-elements are present, and the control has no rounded-pill outer radius.
-- 1440x900, 375x812, and 375x600 -> the visible signpost does not intersect product cards or the wallet, does not create horizontal overflow, and keeps the 48px desktop / 44px portrait minimum target.
+- Either store active -> the visible `::before` uses the generated signpost asset and the matching positive/negative horizontal image scale, `::after` has no content, and the DOM label remains normally oriented.
+- 1440x900, 375x812, and 375x600 -> the visible signpost does not intersect product cards or the wallet, does not create horizontal overflow, and keeps a 48px minimum target.
 
 #### 5. Good/Base/Bad Cases
 - Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
@@ -1467,7 +1469,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Bad: `.shop-item[role="button"]` with a nested purchase `<button>`.
 - Bad: a high-detail, glossy deep-red illustration that matches Fractsidus colors but not the existing Zahira crayon medium.
 - Bad: relying on an unscoped final-mobile `.costume-store-panel` rule when the Bright School theme owns the same background with higher specificity.
-- Bad: keeping `←` / `→` inside the label, adding a painted sign image, or letting a generic `border-radius: 14px !important` / `clip-path: none !important` rule flatten the owner-defined arrow silhouette.
+- Bad: keeping `←` / `→` inside the label, baking Chinese copy into the bitmap, mirroring the whole button and its label, replacing the sticker with a realistic timber/rope prop, or replacing the generated tab/arrow silhouette with a clipped gradient rectangle.
 
 #### 6. Tests Required
 - `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
@@ -1476,7 +1478,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
 - `src/modals/ShopModal.test.js` must lock the 6–9px / 4.2–6s seeded boundaries, the desktop 2x and portrait 1.5x travel multipliers, and the Fractsidus 1.14 / 1.18 visual-scale owners.
 - Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.
-- `src/modals/ShopModal.test.js` must assert both accessible switch labels, reject the old text-arrow labels, and lock the shared polygon/pseudo-element, Bright School clip/radius/press, reduced-motion, and portrait minimum-size hooks. Browser QA still verifies the rendered silhouette and non-overlap at the three target viewports.
+- `src/modals/ShopModal.test.js` must assert both accessible switch labels, reject the old text-arrow labels, lock the lossless signpost dimensions, asset URL, opposite image-scale values, absent nail pseudo-element, Bright School press/reduced-motion hooks, and portrait minimum-size owners. Preload tests must assert the WebP exists and is a critical shop image. Browser QA still verifies the rendered silhouette and non-overlap at the three target viewports.
+- `src/modals/ShopModal.test.js` must lock both dialogue surface variants, texture URLs, their double-layer tail polygons, left-aligned typography, and the final-mobile tail anchors; preload tests must assert both texture files exist and are critical shop images. Browser QA must confirm each tail points toward its mascot without covering products, wallets, or the store switch.
 
 #### 7. Wrong vs Correct
 
@@ -1565,6 +1568,60 @@ Correct:
   <span>扎希拉商店</span>
 </button>
 ```
+
+Wrong:
+
+```css
+.zahira-to-costume {
+  transform: scaleX(-1);
+}
+```
+
+Correct:
+
+```css
+.zahira-to-costume {
+  --shop-sign-image-scale-x: -1;
+}
+
+.shop-switch-button::before {
+  background: var(--shop-sign-image) center / contain no-repeat;
+  transform: scaleX(var(--shop-sign-image-scale-x));
+}
+```
+
+Wrong:
+
+```css
+.shop-mascot-bubble::after {
+  bottom: -18px;
+  clip-path: polygon(0 0, 100% 0, 72% 100%);
+}
+```
+
+Correct:
+
+```css
+.shop-mascot-bubble,
+.costume-shop-bubble {
+  aspect-ratio: var(--shop-dialogue-frame-aspect);
+  padding: var(--shop-dialogue-frame-padding);
+  background: transparent var(--shop-dialogue-frame-image) center / 100% 100% no-repeat;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
+}
+
+.shop-mascot-bubble::before,
+.shop-mascot-bubble::after,
+.costume-shop-bubble::before,
+.costume-shop-bubble::after {
+  content: none;
+}
+```
+
+Keep the full generated silhouette inside the dialogue element, then vary the frame asset and responsive safe padding for each mascot.
 
 ### Scenario: Shared Modal Dialog and Lint Boundary
 

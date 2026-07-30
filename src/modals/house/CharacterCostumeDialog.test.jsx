@@ -7,7 +7,9 @@ import CharacterCostumeDialog, { orderCostumeCards } from "./CharacterCostumeDia
 const character = {
   id: "denia",
   name: "达妮娅",
-  portrait: "/assets/characters/denia.webp"
+  portrait: "/assets/characters/denia.webp",
+  illustName: "绘师",
+  illustUrl: "https://example.com/illustrator"
 };
 
 const costumes = [
@@ -57,6 +59,10 @@ describe("CharacterCostumeDialog", () => {
       "denia-costume-owned",
       "denia-costume-unowned"
     ]);
+    expect(ordered[0]).toMatchObject({
+      illustName: "绘师",
+      illustUrl: "https://example.com/illustrator"
+    });
   });
 
   it("keeps unowned cards inspectable while disabling only their outfit button", () => {
@@ -105,10 +111,15 @@ describe("CharacterCostumeDialog", () => {
     expect(source).toContain('setPortalTarget(document.querySelector(".app-shell") ?? document.body)');
     expect(source).toContain("createPortal(dialogs, portalTarget)");
     expect(source).toContain('className="modal-backdrop character-costume-backdrop"');
-    expect(source).toContain('className="modal-backdrop character-costume-detail-backdrop"');
+    expect(source).toContain('className="nested-modal-backdrop shop-detail-backdrop character-costume-detail-backdrop"');
+    expect(source).toContain('className="nested-modal shop-item-detail-modal character-costume-detail"');
+    expect(source).toContain('className="shop-detail-art character-costume-detail-art"');
+    expect(source).toContain('className="shop-detail-copy character-costume-detail-copy"');
+    expect(source).not.toContain("shop-detail-stats");
+    expect(source).not.toContain("持有状态");
     expect(source).not.toContain("装扮中</span>");
     expect(css).toContain("background: #ddf7df;");
-    expect(css).toContain("position: fixed;");
+    expect(css).toContain(".nested-modal-backdrop.character-costume-detail-backdrop");
     expect(css).toContain("z-index: 162;");
     expect(themeCss).toContain(".character-costume-card .character-costume-detail-trigger:active");
     expect(themeCss).toContain("background: transparent !important;");
@@ -117,5 +128,6 @@ describe("CharacterCostumeDialog", () => {
     expect(mobileCss).toContain("grid-template-rows: minmax(0, 1fr) auto !important;");
     expect(mobileCss).toContain("justify-self: center !important;");
     expect(mobileCss).toContain("position: static !important;");
+    expect(mobileCss).not.toContain(".character-costume-detail {");
   });
 });

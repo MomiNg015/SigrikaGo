@@ -112,8 +112,9 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("home-terminal-status");
     expect(html).not.toContain("SYSTEM: ACTIVE // IN_LOBBY");
     expect(html).toContain("home-brand-title text-window-title");
-    expect(html).toContain("home-brand-subtitle text-display-accent");
-    expect(html).toContain("连罗伊人的都爱玩的智力游戏");
+    expect(html).toContain("home-brand-version home-brand-subtitle text-display-accent");
+    expect(html).toContain("v0.1.0");
+    expect(html).not.toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");
     expect(html).toContain("aria-label=\"在线人数 2\"");
     expect(html).toContain("<b>2</b>");
@@ -149,7 +150,7 @@ describe("HomeScreen", () => {
     expect(html).toContain("\u6253\u5f00\u516c\u544a");
   });
 
-  it("keeps the home header subtitle and online count scaled from the title", () => {
+  it("keeps the home header version and online count scaled from the title", () => {
     const terminalCss = readCssFixture("../styles/home-terminal.css");
     const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
     const brightSchoolMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
@@ -913,13 +914,15 @@ describe("HomeScreen", () => {
       siteSettings: {
         homeTitle: "棋境大厅",
         homeSubtitle: "测试服",
+        homeVersion: "v2.4.1",
         aboutText: "关于",
         footerText: "棋境大厅\n[备案链接](https://beian.miit.gov.cn/)\n<script>alert(1)</script>"
       }
     });
 
     expect(html).toContain('class="home-footer-line"');
-    expect(html).toContain("测试服");
+    expect(html).toContain("v2.4.1");
+    expect(html).not.toContain("测试服");
     expect(html).toContain('<a href="https://beian.miit.gov.cn/" rel="noreferrer" target="_blank">备案链接</a>');
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
   });

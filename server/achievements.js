@@ -137,6 +137,8 @@ export async function ensureAchievementSchema(client) {
   await addColumnIfMissing(client, "Character", "source", `TEXT NOT NULL DEFAULT 'default'`);
   await addColumnIfMissing(client, "Character", "cvName", `TEXT NOT NULL DEFAULT ''`);
   await addColumnIfMissing(client, "Character", "cvUrl", `TEXT NOT NULL DEFAULT ''`);
+  await addColumnIfMissing(client, "Character", "illustName", `TEXT NOT NULL DEFAULT ''`);
+  await addColumnIfMissing(client, "Character", "illustUrl", `TEXT NOT NULL DEFAULT ''`);
   await addColumnIfMissing(client, "Decoration", "source", `TEXT NOT NULL DEFAULT 'default'`);
   await addColumnIfMissing(client, "ShopItem", "source", `TEXT NOT NULL DEFAULT 'default'`);
   await addColumnIfMissing(client, "ShopItem", "illustName", `TEXT NOT NULL DEFAULT ''`);

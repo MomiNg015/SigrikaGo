@@ -339,6 +339,8 @@ CREATE TABLE "Character" (
     "acquisitionMethod" TEXT NOT NULL DEFAULT '',
     "cvName" TEXT NOT NULL DEFAULT '',
     "cvUrl" TEXT NOT NULL DEFAULT '',
+    "illustName" TEXT NOT NULL DEFAULT '',
+    "illustUrl" TEXT NOT NULL DEFAULT '',
     "source" TEXT NOT NULL DEFAULT 'default',
     "palette" TEXT NOT NULL DEFAULT '#5d7fe8',
     "enabled" BOOLEAN NOT NULL DEFAULT true,

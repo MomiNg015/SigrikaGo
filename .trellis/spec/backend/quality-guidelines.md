@@ -2216,3 +2216,57 @@ sudo ./deploy/update-production.sh
 ```
 
 The maintained command preserves the operation order, verified backup, staged bundle activation, configuration validation, recovery attempt, and readiness gate that the ad-hoc sequence omits.
+
+### Scenario: Public Site Identity Metadata
+
+#### 1. Scope / Trigger
+- Trigger: adding, renaming, removing, or changing validation for a public `SiteSetting` identity field consumed by the home header or edited in admin system settings.
+- Site identity settings cross shared defaults, server persistence, public/admin APIs, admin drafts, home props, deployment snapshots, and generated system-design documentation.
+
+#### 2. Signatures
+- Shared defaults: `DEFAULT_SITE_SETTINGS.homeTitle`, `homeVersion`, and legacy `homeSubtitle`.
+- Admin write: `PATCH /api/admin/site-settings` with `homeVersion: string`.
+- Public read: `GET /api/site-settings` returns `homeVersion: string`.
+- UI boundary: `HomeScreen` passes `siteSettings.homeVersion` to `HomeHeader` as `siteVersion`.
+
+#### 3. Contracts
+- `homeVersion` is an independent setting with default `v0.1.0`; do not derive it from or alias it to `homeSubtitle`.
+- Server sanitization trims `homeVersion`, limits it to 24 characters, and falls back to the shared default when input is blank.
+- Admin system settings expose one single-line “项目版本号” field and remove legacy `homeSubtitle` from the editable draft.
+- The home header renders only `homeTitle` plus `homeVersion`; stored `homeSubtitle` values remain readable for database and deployment compatibility but are not displayed.
+- The committed admin default snapshot must include `homeVersion` so production default synchronization creates it.
+
+#### 4. Validation & Error Matrix
+- Missing stored `homeVersion` -> public reads merge the shared `v0.1.0` default.
+- Blank admin `homeVersion` -> store the shared default rather than an empty visible label.
+- More than 24 characters -> trim after whitespace normalization.
+- Legacy database contains “测试服” in `homeSubtitle` -> preserve the row but never render or expose it in the admin system-settings draft.
+- Partial PATCH changes another site field -> merge over persisted settings before sanitizing so the configured version survives.
+
+#### 5. Good/Base/Bad Cases
+- Good: an admin saves `v2.4.1`, the PATCH response updates current client settings, reload returns the persisted value, and the home header shows only `v2.4.1`.
+- Base: a deployment without a stored version receives `v0.1.0` from shared defaults and default seeding.
+- Bad: renaming `homeSubtitle` to `homeVersion`, because stored server or campaign copy would become a fake version label.
+- Bad: hard-coding a version in `HomeHeader`, because the admin setting and public API would no longer be authoritative.
+
+#### 6. Tests Required
+- `server/siteSettings.test.js` asserts the shared default, default upsert, trim/length limit, and partial PATCH preservation.
+- `server/adminRoutes.test.js` asserts the configured version survives an admin write/read round trip.
+- `src/admin/AdminSiteSettings.test.jsx` asserts legacy subtitle data is absent from the editable draft while `homeVersion` remains.
+- `src/home/HomeScreen.test.jsx` asserts the configured version renders and legacy subtitle copy does not.
+- `server/adminDefaultSeed.test.js` asserts the deployment snapshot includes `homeVersion`.
+- Run `npm run docs:system-design`, targeted tests, browser checks for desktop and portrait mobile, and `npm run check` when unrelated snapshot drift does not block it.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<span>{siteSettings.homeSubtitle || "测试服"}</span>
+```
+
+Correct:
+
+```jsx
+<HomeHeader siteTitle={siteSettings.homeTitle} siteVersion={siteSettings.homeVersion} />
+```

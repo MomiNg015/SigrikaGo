@@ -4,6 +4,7 @@ import { isLegacyDeniaSlug } from "./legacyDeniaCleanup.js";
 import { isSkillEffectType, skillEffectTargetRule, skillEffectTypeMessage } from "../src/shared/skillEffectCatalog.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../src/shared/characterCv.js";
+import { normalizeCreditName, normalizeCreditUrl } from "../src/shared/creditLink.js";
 
 const COST_TYPES = new Set(["numeric", "special"]);
 
@@ -24,6 +25,8 @@ export function validateCharacterInput(input = {}) {
   const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
   const cvName = normalizeCharacterCvName(input.cvName);
   const cvUrl = normalizeCharacterCvUrl(input.cvUrl);
+  const illustName = normalizeCreditName(input.illustName);
+  const illustUrl = normalizeCreditUrl(input.illustUrl);
   const source = normalizeSource(input.source);
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
@@ -76,6 +79,8 @@ export function validateCharacterInput(input = {}) {
   if (!systemMessage) errors.push("systemMessage is required");
   if (cvUrl == null) errors.push("cvUrl must be an http(s) URL or root-relative path");
   if (cvUrl && !cvName) errors.push("cvName is required when cvUrl is set");
+  if (illustUrl == null) errors.push("illustUrl must be an http(s) URL or root-relative path");
+  if (illustUrl && !illustName) errors.push("illustName is required when illustUrl is set");
 
   try {
     params = JSON.parse(typeof paramsJson === "string" ? paramsJson : "{}");
@@ -96,6 +101,8 @@ export function validateCharacterInput(input = {}) {
       acquisitionMethod,
       cvName,
       cvUrl: cvUrl ?? "",
+      illustName,
+      illustUrl: illustUrl ?? "",
       source,
       palette,
       enabled,
@@ -147,6 +154,8 @@ export function toCharacterPayload(record) {
     acquisitionMethod: record.acquisitionMethod ?? "",
     cvName: record.cvName ?? "",
     cvUrl: record.cvUrl ?? "",
+    illustName: record.illustName ?? "",
+    illustUrl: record.illustUrl ?? "",
     source: record.source ?? "default",
     enabled: record.enabled,
     sortOrder: record.sortOrder ?? 0,

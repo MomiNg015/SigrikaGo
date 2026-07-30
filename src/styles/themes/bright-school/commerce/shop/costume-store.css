@@ -31,6 +31,17 @@
   box-shadow: 3px 4px 0 rgba(11, 2, 5, 0.64) !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-bubble {
+  --shop-dialogue-frame-image: url("/assets/shop/nivora-dialogue-frame-v2.webp");
+  --shop-dialogue-frame-aspect: 1060 / 470;
+  --shop-dialogue-frame-padding: 21px 27px 39px;
+  --shop-dialogue-ink: #401018;
+  top: 8% !important;
+  left: 11% !important;
+  width: 80% !important;
+  color: #401018 !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-wallet-wrap {
   top: auto !important;
   right: auto !important;

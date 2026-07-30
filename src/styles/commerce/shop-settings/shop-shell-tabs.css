@@ -93,30 +93,6 @@
   margin-top: 0;
 }
 
-.shop-mascot-bubble {
-  grid-area: bubble;
-  position: relative;
-  z-index: 1;
-  width: min(calc(100% - 16px), 166px);
-  min-height: 42px;
-  margin: 0 8px;
-  padding: 10px 13px;
-  border: 2px solid #34253c;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  color: #34253c;
-  font-weight: 900;
-  font-size: 13px;
-  line-height: 1.35;
-  text-align: center;
-  box-shadow: 0 10px 22px rgba(69, 48, 80, 0.12);
-}
-
-.shop-mascot-bubble::before,
-.shop-mascot-bubble::after {
-  display: none;
-}
-
 .shop-mascot-slot {
   grid-area: mascot;
   align-self: end;

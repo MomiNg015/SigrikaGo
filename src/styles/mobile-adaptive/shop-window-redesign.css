@@ -87,19 +87,15 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
     top: 57% !important;
     right: auto !important;
-    left: 5% !important;
-    width: 55% !important;
+    left: 3% !important;
+    width: 62% !important;
     max-width: none !important;
-    min-height: 10% !important;
+    min-height: 0 !important;
     margin: 0 !important;
-    padding: 8px 12px !important;
+    padding: 13px 22px 27px !important;
     font-size: clamp(13px, 3.3vw, 16px) !important;
     line-height: 1.3 !important;
-    transform: rotate(-1deg) !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble::after {
-    right: 34% !important;
+    transform: none !important;
   }
 
   .shop-mascot-slot,

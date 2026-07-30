@@ -473,6 +473,8 @@ model Character {
   acquisitionMethod String       @default("")
   cvName         String          @default("")
   cvUrl          String          @default("")
+  illustName     String          @default("")
+  illustUrl      String          @default("")
   source         String          @default("default")
   palette        String          @default("#5d7fe8")
   enabled        Boolean         @default(true)

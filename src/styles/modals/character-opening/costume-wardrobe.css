@@ -175,44 +175,23 @@
   font-weight: 900;
 }
 
-.character-costume-detail-backdrop {
-  position: fixed;
+.nested-modal-backdrop.character-costume-detail-backdrop {
   z-index: 162;
-  inset: 0;
+}
+
+.character-costume-detail-heading {
+  min-width: 0;
   display: grid;
-  place-items: center;
-  padding: 18px;
-  background: rgba(42, 31, 47, 0.48);
-  backdrop-filter: blur(2px);
+  justify-items: start;
+  gap: 4px;
 }
 
-.character-costume-detail {
-  position: relative;
-  width: min(680px, calc(100vw - 36px));
-  max-height: calc(100dvh - 36px);
-  display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr);
-  gap: 20px;
-  padding: 22px;
-  color: #33283a;
-  background: #fffaf0;
-  border: 3px solid #493950;
-  border-radius: 18px;
-  box-shadow: 6px 7px 0 rgba(44, 34, 48, 0.55);
-  overflow: auto;
+.shop-detail-art.character-costume-detail-art img {
+  filter: none;
 }
 
-.character-costume-detail > img {
-  width: 100%;
-  max-height: 340px;
-  object-fit: contain;
-}
-
-.character-costume-detail h4 {
-  margin: 22px 0 10px;
-  font-size: 26px;
-}
-
-.character-costume-detail p {
-  line-height: 1.65;
+.character-costume-detail-credit {
+  max-width: 100%;
+  justify-self: start;
+  text-align: left;
 }

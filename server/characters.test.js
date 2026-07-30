@@ -53,6 +53,8 @@ describe("character admin helpers", () => {
       description: "A moonlit tactician.",
       cvName: "Voice Actor",
       cvUrl: "https://example.com/cv",
+      illustName: "Illustrator",
+      illustUrl: "https://example.com/illustrator",
       portraitUrl: "/uploads/characters/danea.png",
       portraitSource: "upload",
       acquisitionMethod: "商城购买",
@@ -65,6 +67,8 @@ describe("character admin helpers", () => {
     expect(payload.description).toBe("A moonlit tactician.");
     expect(payload.cvName).toBe("Voice Actor");
     expect(payload.cvUrl).toBe("https://example.com/cv");
+    expect(payload.illustName).toBe("Illustrator");
+    expect(payload.illustUrl).toBe("https://example.com/illustrator");
     expect(payload.acquisitionMethod).toBe("商城购买");
   });
 
@@ -119,6 +123,8 @@ describe("character admin helpers", () => {
     expect(result.value.description).toBe("A precise rune caster.");
     expect(result.value.cvName).toBe("");
     expect(result.value.cvUrl).toBe("");
+    expect(result.value.illustName).toBe("");
+    expect(result.value.illustUrl).toBe("");
     expect(result.value.skill.effectType).toBe("erase-point");
     expect(result.value.skill.targetRule).toBe("empty-point");
     expect(result.value.skill.costType).toBe("numeric");
@@ -300,6 +306,36 @@ describe("character admin helpers", () => {
     expect(unsafe.error).toContain("cvUrl");
     expect(nameless.ok).toBe(false);
     expect(nameless.error).toContain("cvName");
+  });
+
+  it("accepts optional default-costume illust metadata with safe links", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      illustName: "绘师",
+      illustUrl: "/credits/illustrator"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.illustName).toBe("绘师");
+    expect(result.value.illustUrl).toBe("/credits/illustrator");
+  });
+
+  it("rejects unsafe or nameless default-costume illust links", () => {
+    const unsafe = validateCharacterInput({
+      ...validInput,
+      illustName: "绘师",
+      illustUrl: "javascript:alert(1)"
+    });
+    const nameless = validateCharacterInput({
+      ...validInput,
+      illustName: "",
+      illustUrl: "https://example.com/illustrator"
+    });
+
+    expect(unsafe.ok).toBe(false);
+    expect(unsafe.error).toContain("illustUrl");
+    expect(nameless.ok).toBe(false);
+    expect(nameless.error).toContain("illustName");
   });
 
   it("accepts numeric skill costs and preserves them in payloads", () => {

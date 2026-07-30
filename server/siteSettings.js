@@ -16,6 +16,7 @@ const SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS);
 let cachedPublicSiteSettings = { ...DEFAULT_SITE_SETTINGS };
 const SITE_SETTING_LIMITS = {
   homeTitle: 24,
+  homeVersion: 24,
   homeSubtitle: 80,
   aboutText: 3000,
   footerText: 3000,

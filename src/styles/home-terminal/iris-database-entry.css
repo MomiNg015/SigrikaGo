@@ -3,7 +3,7 @@
   --iris-blue-bright: #7ce9ff;
   --iris-green: #42f2a1;
   --iris-ink: #021420;
-  --iris-data-font: var(--font-iris-bitmap);
+  --iris-data-font: var(--font-iris-dotted);
   --iris-entry-z: 110;
   appearance: none;
   position: fixed;
@@ -14,7 +14,7 @@
   min-width: 0;
   height: auto;
   min-height: 0;
-  aspect-ratio: 0.78;
+  aspect-ratio: 1.56;
   padding: 0;
   overflow: visible;
   color: var(--iris-blue-bright);
@@ -61,7 +61,7 @@
 .iris-entry-shard::before {
   content: "";
   position: absolute;
-  inset: 8% 9% 36% 17%;
+  inset: 9% 9% 42% 17%;
   background:
     linear-gradient(90deg, transparent 49%, rgba(66, 242, 161, 0.12) 50%, transparent 51%),
     linear-gradient(transparent 49%, rgba(22, 184, 221, 0.12) 50%, transparent 51%);
@@ -78,13 +78,13 @@
   width: 88%;
   height: 2px;
   background: linear-gradient(90deg, transparent 0 5%, var(--iris-green) 5% 31%, transparent 31% 43%, var(--iris-blue) 43% 82%, transparent 82%);
-  box-shadow: 0 42px 0 rgba(22, 184, 221, 0.4);
+  box-shadow: 0 21px 0 rgba(22, 184, 221, 0.4);
   animation: iris-entry-scan 3.1s steps(7) infinite;
 }
 
 .iris-entry-portrait-slot {
   position: absolute;
-  inset: 7% 4% 36% 18%;
+  inset: 7% 4% 42% 18%;
   color: rgba(124, 233, 255, 0.48);
   background: transparent;
   border: 0;
@@ -92,39 +92,31 @@
 }
 
 .iris-entry-portrait-slot::before {
-  content: "PORTRAIT // RESERVED";
-  position: absolute;
-  top: 50%;
-  right: 4%;
-  font: 8px var(--iris-data-font);
-  letter-spacing: 0.18em;
-  white-space: nowrap;
-  transform: rotate(90deg) translateX(50%);
-  transform-origin: right center;
+  content: none;
 }
 
 .iris-entry-data {
   position: absolute;
   right: 5%;
-  bottom: 7%;
-  left: 20%;
+  bottom: 9%;
+  left: 18%;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
-  gap: 8px;
+  gap: 6px;
   text-align: left;
 }
 
 .iris-entry-data strong {
   display: block;
   color: #e0feff;
-  font: 700 clamp(14px, 1.25vw, 19px) var(--iris-data-font);
+  font: 700 clamp(12px, 1.05vw, 16px) var(--iris-data-font);
   letter-spacing: 0.12em;
 }
 
 .iris-entry-data small {
   display: block;
-  margin-top: 5px;
+  margin-top: 2px;
   color: var(--iris-green);
   font: 8px var(--iris-data-font);
   letter-spacing: 0.13em;
@@ -132,24 +124,24 @@
 
 .iris-entry-code {
   color: var(--iris-blue-bright);
-  font: 8px var(--iris-data-font);
+  font: 7px var(--iris-data-font);
   letter-spacing: 0.12em;
   writing-mode: vertical-rl;
 }
 
 .iris-entry-nodes {
   position: absolute;
-  top: 15%;
+  top: 16%;
   left: 5%;
   width: 26%;
-  height: 68%;
+  height: 62%;
   pointer-events: none;
 }
 
 .iris-entry-nodes i {
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background: var(--iris-green);
   box-shadow: 0 0 8px rgba(66, 242, 161, 0.6);
   animation: iris-node-pulse 1.9s steps(2) infinite;

@@ -30,12 +30,6 @@
     max-height: none !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-  }
-
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
     position: static !important;
     transform: none !important;

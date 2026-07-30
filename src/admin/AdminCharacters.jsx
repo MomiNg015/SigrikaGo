@@ -114,7 +114,7 @@ function CharacterEditor({ draft, setDraft, skillTraits, token, onCancel, onSave
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      onNotice?.("请检查排序、技能名称和超频内容；数值超频只能填数字，特殊超频不能为空；CV 链接需为 http(s) 或站内路径且必须有 CV 名称", "danger");
+      onNotice?.("请检查排序、技能名称和超频内容；数值超频只能填数字，特殊超频不能为空；CV/illust 链接需为 http(s) 或站内路径且必须填写对应名称", "danger");
       return;
     }
 
@@ -158,6 +158,12 @@ function CharacterEditor({ draft, setDraft, skillTraits, token, onCancel, onSave
         </label>
         <label><AdminFieldLabel text="CV 链接" tip="可选。支持 http(s) 链接或以 / 开头的站内路径；填写后详情里的 CV 标签会作为链接打开。" />
           <input value={draft.cvUrl} onChange={(event) => updateDraft("cvUrl", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="默认服装 illust 名称" tip="默认服装详情中显示的绘制人员名；留空则不展示 illust 标签。" />
+          <input value={draft.illustName} onChange={(event) => updateDraft("illustName", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="默认服装 illust 链接" tip="可选。支持 http(s) 链接或以 / 开头的站内路径；填写后默认服装详情中的 illust 标签会作为链接打开。" />
+          <input value={draft.illustUrl} onChange={(event) => updateDraft("illustUrl", event.target.value)} />
         </label>
         <label className="wide-field"><AdminFieldLabel text="角色描述" tip="展示在棋舍角色详情里，位于获得途径下方的角色介绍文本。" />
           <textarea value={draft.description} onChange={(event) => updateDraft("description", event.target.value)} />

@@ -16,6 +16,7 @@ import {
 import { layoutShopCards } from "./shop/shopLayout.js";
 import {
   COSTUME_SHOP_BACKGROUND_IMAGE,
+  COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
   COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE,
   buildShopCardPresentation,
   eligibleShopItems,
@@ -29,6 +30,8 @@ import {
   selectShopBatch,
   SHOP_BATCH_SIZE,
   SHOP_BACKGROUND_IMAGE,
+  SHOP_DIALOGUE_FRAME_IMAGE,
+  SHOP_DIRECTION_SIGN_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_EMPTY_LINE,
   SHOP_MASCOT_ERROR_LINE,
@@ -158,6 +161,27 @@ describe("Zahira shop window", () => {
     expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
     expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
     expect(webpInfo("../../public/assets/shop/zahira-wallet-v1.webp")).toEqual({ encoding: "VP8L", width: 1024, height: 768 });
+  });
+
+  it("keeps both complete dialogue frames lossless and wide enough for live copy", () => {
+    expect(webpInfo("../../public/assets/shop/zahira-dialogue-frame-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1060,
+      height: 465
+    });
+    expect(webpInfo("../../public/assets/shop/nivora-dialogue-frame-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1060,
+      height: 470
+    });
+  });
+
+  it("keeps the reusable generated shop signpost lossless with transparent-source proportions", () => {
+    expect(webpInfo("../../public/assets/shop/shop-direction-sign-sticker-right-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1420,
+      height: 430
+    });
   });
 
   it("ships alpha-trimmed costume art and square mascot art as lossless WebP assets", () => {
@@ -460,6 +484,22 @@ describe("Zahira shop window", () => {
       new URL("../styles/themes/bright-school/commerce/shop/window-redesign.css", import.meta.url),
       "utf8"
     );
+    const sidebarWalletSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/sidebar-wallet.css", import.meta.url),
+      "utf8"
+    );
+    const costumeThemeSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/costume-store.css", import.meta.url),
+      "utf8"
+    );
+    const signpostSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/signpost-switch.css", import.meta.url),
+      "utf8"
+    );
+    const shopMobileSource = readFileSync(
+      new URL("../styles/mobile-adaptive/shop-window-redesign.css", import.meta.url),
+      "utf8"
+    );
     const costumeMobileSource = readFileSync(
       new URL("../styles/mobile-adaptive/costume-store.css", import.meta.url),
       "utf8"
@@ -486,15 +526,44 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
-    expect(commerceCss).toContain("--shop-sign-clip");
+    expect(commerceCss).toContain("--shop-sign-image");
+    expect(commerceCss).toContain("--shop-sign-image-scale-x: -1");
     expect(commerceCss).toContain(".zahira-to-costume");
     expect(commerceCss).toContain(".costume-to-zahira");
-    expect(themeCss).toContain(".shop-switch-button::before");
-    expect(themeCss).toContain(".shop-switch-button::after");
-    expect(themeCss).toContain("filter: drop-shadow");
-    expect(themeCss).toContain(".shop-switch-button:active");
+    expect(signpostSource).toMatch(
+      /\.shop-switch-button::before\s*\{[^}]*background:\s*var\(--shop-sign-image\) center \/ contain no-repeat !important;[^}]*clip-path:\s*none !important;[^}]*transform:\s*scaleX\(var\(--shop-sign-image-scale-x\)\) !important;/s
+    );
+    expect(signpostSource).toMatch(/\.shop-switch-button::after\s*\{[^}]*content:\s*none !important;/s);
+    expect(signpostSource).not.toContain("linear-gradient");
+    expect(signpostSource).not.toContain("radial-gradient");
+    expect(commerceCss).toContain(SHOP_DIRECTION_SIGN_IMAGE);
+    expect(signpostSource).toContain("filter: drop-shadow");
+    expect(signpostSource).toContain(".shop-switch-button:active");
     expect(shopWindowSource).toContain("overflow: hidden !important");
     expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");
+    expect(sidebarWalletSource).toMatch(
+      /:is\(\.shop-mascot-bubble, \.costume-shop-bubble\)\s*\{[^}]*aspect-ratio:\s*var\(--shop-dialogue-frame-aspect\) !important;[^}]*background-image:\s*var\(--shop-dialogue-frame-image\) !important;[^}]*background-size:\s*100% 100% !important;[^}]*border:\s*0 !important;[^}]*font-weight:\s*800 !important;[^}]*text-align:\s*left !important;/s
+    );
+    expect(sidebarWalletSource).toContain(":is(.shop-mascot-bubble, .costume-shop-bubble)::before,");
+    expect(sidebarWalletSource).toContain("content: none !important");
+    expect(sidebarWalletSource).not.toContain("--shop-dialogue-tail-tip");
+    expect(sidebarWalletSource).not.toContain("clip-path: polygon");
+    expect(costumeThemeSource).toMatch(
+      /\.costume-shop-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/nivora-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*1060 \/ 470;/s
+    );
+    expect(costumeThemeSource).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(shopWindowSource).toMatch(
+      /\.shop-mascot-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/zahira-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*1060 \/ 465;/s
+    );
+    expect(shopWindowSource).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(shopMobileSource).toMatch(
+      /\.shop-mascot-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.shop-mascot-bubble\s*\{[^}]*width:\s*62% !important;[^}]*padding:\s*13px 22px 27px !important;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.costume-shop-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.costume-shop-bubble\s*\{[^}]*top:\s*35% !important;[^}]*right:\s*3% !important;[^}]*left:\s*auto !important;[^}]*width:\s*54% !important;[^}]*padding:\s*13px 22px 27px !important;/s
+    );
+    expect(shopMobileSource).not.toContain("--shop-dialogue-tail-right");
+    expect(costumeMobileSource).not.toContain("--shop-dialogue-tail-left");
     expect(themeCss).toContain('.shop-header[data-store="zahira"]');
     expect(shopBackgroundSource).toContain(
       "background: linear-gradient(90deg, rgb(211 215 217), rgb(154 139 166) 48%, rgb(215 204 194)) !important"
@@ -575,8 +644,8 @@ describe("Zahira shop window", () => {
     expect(mobileCss).not.toContain("margin-left: -16px !important");
     expect(mobileCss).toContain("width: 44px !important");
     expect(mobileCss).toContain("min-height: 44px !important");
-    expect(mobileCss).toContain("min-width: 126px !important");
-    expect(mobileCss).toContain("min-width: 148px !important");
+    expect(mobileCss).toContain("min-width: 146px !important");
+    expect(mobileCss).toContain("min-width: 164px !important");
     expect(mobileCss).toContain(".shop-header h2.is-costume-title");
     expect(mobileCss).toContain("font-size: clamp(17px, 4.9vw, 22px) !important");
     expect(mobileCss).toContain(".costume-shop-price");

@@ -44,6 +44,8 @@ export function mergeCharacters(apiCharacters = [], disabledSlugs = []) {
       acquisitionMethod: raw.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
       cvName: raw.cvName ?? fallback.cvName ?? "",
       cvUrl: raw.cvUrl ?? fallback.cvUrl ?? "",
+      illustName: raw.illustName ?? fallback.illustName ?? "",
+      illustUrl: raw.illustUrl ?? fallback.illustUrl ?? "",
       skill: {
         ...fallback.skill,
         ...(raw.skill ?? {})

@@ -25,6 +25,8 @@ describe("admin draft helpers", () => {
     expect(emptyCharacterDraft().skill.systemMessage).toBe(DEFAULT_SKILL_SYSTEM_MESSAGE);
     expect(emptyCharacterDraft().cvName).toBe("");
     expect(emptyCharacterDraft().cvUrl).toBe("");
+    expect(emptyCharacterDraft().illustName).toBe("");
+    expect(emptyCharacterDraft().illustUrl).toBe("");
     expect(targetRuleForEffect("flip-stone")).toBe("stone");
     expect(targetRuleForEffect("erase-point")).toBe("empty-point");
 
@@ -35,6 +37,8 @@ describe("admin draft helpers", () => {
       description: "Moonlit tactician",
       cvName: "Sample CV",
       cvUrl: "https://example.com/cv",
+      illustName: "Sample Illustrator",
+      illustUrl: "https://example.com/illustrator",
       portrait: "/assets/danea.png",
       acquisitionMethod: "商城购买",
       skill: { effectType: "flip-stone", params: { radius: 1 } }
@@ -44,6 +48,8 @@ describe("admin draft helpers", () => {
     expect(draft.description).toBe("Moonlit tactician");
     expect(draft.cvName).toBe("Sample CV");
     expect(draft.cvUrl).toBe("https://example.com/cv");
+    expect(draft.illustName).toBe("Sample Illustrator");
+    expect(draft.illustUrl).toBe("https://example.com/illustrator");
     expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
@@ -59,6 +65,8 @@ describe("admin draft helpers", () => {
       description: "New character description",
       cvName: "Voice Actor",
       cvUrl: "/voice/actor",
+      illustName: "Illustrator",
+      illustUrl: "/credits/illustrator",
       portraitUrl: "/assets/new.png",
       acquisitionMethod: "商城购买",
       sortOrder: "2",
@@ -76,11 +84,15 @@ describe("admin draft helpers", () => {
     expect(characterDraftToBody(draft).description).toBe("New character description");
     expect(characterDraftToBody(draft).cvName).toBe("Voice Actor");
     expect(characterDraftToBody(draft).cvUrl).toBe("/voice/actor");
+    expect(characterDraftToBody(draft).illustName).toBe("Illustrator");
+    expect(characterDraftToBody(draft).illustUrl).toBe("/credits/illustrator");
     expect(characterDraftToBody(draft).acquisitionMethod).toBe("商城购买");
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, uses: "10" } })).toBeNull();
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, costValue: "three" } })).toBeNull();
     expect(characterDraftToBody({ ...draft, cvUrl: "javascript:alert(1)" })).toBeNull();
     expect(characterDraftToBody({ ...draft, cvName: "", cvUrl: "https://example.com/cv" })).toBeNull();
+    expect(characterDraftToBody({ ...draft, illustUrl: "javascript:alert(1)" })).toBeNull();
+    expect(characterDraftToBody({ ...draft, illustName: "", illustUrl: "https://example.com/illustrator" })).toBeNull();
   });
 
   it("preserves the skill enabled flag in character drafts", () => {

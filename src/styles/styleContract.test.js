@@ -1402,6 +1402,36 @@ describe("root CSS entry contract", () => {
     expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
   });
 
+  it("keeps wardrobe costume detail as a left-aligned modifier of the shop detail template", () => {
+    const costumeWardrobeCss = readFileSync(
+      new URL("./modals/character-opening/costume-wardrobe.css", import.meta.url),
+      "utf8"
+    );
+    const handbookDecorationCss = readFileSync(
+      new URL("./themes/bright-school/modals/handbook-decoration.css", import.meta.url),
+      "utf8"
+    );
+    const shopDetailCss = readFileSync(
+      new URL("./commerce/shop-settings/shop-detail-pagination.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(costumeWardrobeCss).toMatch(
+      /\.character-costume-detail-heading\s*\{[^}]*display:\s*grid;[^}]*justify-items:\s*start;[^}]*gap:\s*4px;/s
+    );
+    expect(costumeWardrobeCss).toMatch(
+      /\.character-costume-detail-credit\s*\{[^}]*max-width:\s*100%;[^}]*justify-self:\s*start;[^}]*text-align:\s*left;/s
+    );
+    expect(costumeWardrobeCss).toMatch(
+      /\.shop-detail-art\.character-costume-detail-art img\s*\{[^}]*filter:\s*none;/s
+    );
+    expect(handbookDecorationCss).toMatch(
+      /\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.shop-detail-art\.character-costume-detail-art img\s*\{[^}]*filter:\s*none !important;/s
+    );
+    expect(shopDetailCss).toContain("filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.32));");
+    expect(costumeWardrobeCss).not.toContain(".character-costume-detail-title-row");
+  });
+
   it("keeps admin console full-width after theme and HUD layers", () => {
     const mobileAdaptiveEntry = readFileSync(new URL("./mobile-adaptive.css", import.meta.url), "utf8");
     const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));

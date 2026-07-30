@@ -7,7 +7,7 @@
   --iris-green: #42f2a1;
   --iris-green-dim: #18a96f;
   --iris-muted: #7fb8bd;
-  --iris-bitmap-font: var(--font-iris-bitmap);
+  --iris-dotted-font: var(--font-iris-dotted);
   --iris-mixed-font: var(--font-iris-mixed);
   --iris-data-font: var(--iris-mixed-font);
   --iris-cn-font: var(--iris-mixed-font);

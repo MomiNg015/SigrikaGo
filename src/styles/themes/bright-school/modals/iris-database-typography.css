@@ -29,5 +29,5 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-copy small,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-link-arrow,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-links-empty {
-  font-family: var(--iris-bitmap-font) !important;
+  font-family: var(--iris-dotted-font) !important;
 }

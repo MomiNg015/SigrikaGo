@@ -4,8 +4,8 @@ import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings,
 export default function HomeHeader({
   isAdmin,
   onlineCount,
-  siteSubtitle,
   siteTitle,
+  siteVersion,
   mailboxBadgeCount = 0,
   announcementUnread = false,
   onLogout,
@@ -28,7 +28,9 @@ export default function HomeHeader({
     <header className="home-top-strip home-terminal-header">
       <div className="home-top-brand">
         <span className="home-brand-title text-window-title">{siteTitle}</span>
-        <span className="home-brand-subtitle text-display-accent">{siteSubtitle}</span>
+        {siteVersion && (
+          <span className="home-brand-version home-brand-subtitle text-display-accent">{siteVersion}</span>
+        )}
       </div>
       <span className="home-online-tag" aria-label={`在线人数 ${onlineCount}`}>
         <UsersRound size={16} aria-hidden="true" />
