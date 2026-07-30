@@ -12,7 +12,7 @@
 - `room:resume` 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。
 - `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `initial-connect`、`patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
 - 对局开发测试 action 在所有非生产服务环境默认可用，不依赖 `ENABLE_TEST_ACTIONS`；Vite 开发构建显示对应按钮，生产构建隐藏入口，而 `NODE_ENV=production` 的服务端即使收到伪造 action 或遗留开关也始终拒绝执行。
-- `server/serverStartup.js` exports `SERVER_STARTUP_TASK_ORDER` as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.
+- `server/serverStartup.js` exports `SERVER_STARTUP_TASK_ORDER` as the auditable startup/schema/seed order and `SERVER_SCHEMA_TASK_ORDER` as its schema-only subset. `ensureServerSchema()` reuses the same injected guards without running any seed, while tests lock both orders so startup and deployment compatibility cannot drift through incidental function order.
 - 管理员权限只以数据库 `User.role` 为准。公开注册、登录、refresh 和启动初始化都不会根据用户名或环境变量改变角色；首个管理员需先正常注册，再由服务器操作员执行 `npm run admin:promote -- <username>` 提升已存在账号。该命令对已有管理员幂等，未知用户名会失败且不会创建账号。
 - `server/roomQueries.js` remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected `roomReadModel`, while the current single-process runtime continues to use in-memory rooms as the default fallback.
 
@@ -32,7 +32,8 @@
 - Runtime security helpers live in `server/security.js`.
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
 - `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 `dotenv/config` 加载当前工作目录的 `.env`，再由进程环境覆盖同名值，并默认按生产规则检查，因此一键更新脚本不会漏掉 systemd `EnvironmentFile` 中的真实配置，调用方忘记设置 `NODE_ENV=production` 时也不会按开发环境误通过。
-- `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- `npm run check` 是当前交付前的聚合质量入口，会顺序运行 ESLint、单元测试、资源/后台快照检查、Vite build、构建 CSS 合同检查、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- `npm run production:schema-compat` 只调用 `ensureServerSchema()`：正式更新在停服并完成 `prisma migrate deploy` 后、任何 `admin:sync-defaults` 读取之前执行它，幂等补齐早期 SQLite 部署中已被迁移历史遗漏的兼容表、列和索引。它不会 seed 后台数据，也不会写 `_prisma_migrations`；未来模型变化仍必须提交新的 Prisma migration。
 - 2026-07-20 依赖加固后，`npm audit --omit=dev` 已无 high/critical；Multer、Express/`qs`、Socket.IO/`ws` 与 Vite/Vitest/Babel 工具链使用当前主版本内的修复版本。保留的 ExcelJS/`uuid` moderate 传递告警仅位于管理员按需加载的剧情工作簿功能，项目不直接调用 `uuid`；上游 ExcelJS 尚无修复版，禁止用审计建议的降级或未经验证的跨主版本 override 替代回归验证。
 - `.github/workflows/ci.yml` 是仓库级远端质量门：pull request 和 `master` push 会在 Ubuntu 上执行 `npm ci`、`npm test`、`npm run build`、示例生产配置检查和 `npm run docs:system-design`。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。
 - `npm run verify:stability` 是本地准生产稳定性入口。它先构建 `dist/`，再用 `playwright.stability.config.js` 启动 `scripts/start-stability-server.mjs`，该启动脚本强制 `NODE_ENV=stability`、`LOCAL_PROD_STATIC=1`、`ENABLE_TEST_ACTIONS=true` 和默认端口 `4173`（可由 `STABILITY_PORT` 或 `PORT` 覆盖），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。

@@ -30,6 +30,8 @@ Bright School is the default player theme. Its entry map is:
 
 `surface-contracts.css` replaces the old broad fallback cleanup stack. It may reset inherited HUD effects only through explicit owner selectors and known surface contracts. It must not reintroduce purge/firewall naming, broad substring selectors, or all-element theme resets.
 
+When an owner must override `backdrop-filter`, declare `-webkit-backdrop-filter` first and the standard `backdrop-filter` second. Lightning CSS may collapse adjacent prefixed/unprefixed declarations during production minification; the standard declaration must be the retained winner so Chromium does not fall back to an earlier shared blur. Any such production-sensitive contract must be asserted against built `dist/assets/*.css` through `npm run check:built-css`, not only against source text.
+
 ## Selector Rules
 
 Allowed patterns:
@@ -99,6 +101,8 @@ After changing CSS architecture, run the focused static contracts:
 
 ```bash
 npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/styles/hudComponents.test.js
+npm run build
+npm run check:built-css
 ```
 
 For room, board, skill, mobile, or broad theme changes, also run:

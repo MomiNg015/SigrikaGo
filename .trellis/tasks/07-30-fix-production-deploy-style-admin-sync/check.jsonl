@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Repository frontend quality gate and regression-test expectations."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Backend lint, test, and sequencing verification expectations."}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Focused theme contract and built production CSS verification."}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Schema-only task order and deployment sync verification."}

@@ -21,6 +21,23 @@ import { ensureSkillTraitSchema, migrateBuiltinSkillDescriptions } from "./skill
 import { migrateLegacyAemeathOwnership } from "./aemeathAcquisition.js";
 import { migrateBuiltinPortraitAssets } from "./builtinPortraitAssetMigration.js";
 
+export const SERVER_SCHEMA_TASK_ORDER = Object.freeze([
+  "ensureAchievementSchema",
+  "ensureGachaSchema",
+  "ensureMusicTrackSettingsSchema",
+  "ensureRecruitmentSchema",
+  "ensureAnnouncementSchema",
+  "ensureStoryScriptSchema",
+  "ensureOnboardingStorySchema",
+  "ensureSkillTraitSchema",
+  "ensureCostumeSchema",
+  "ensureSocialSchema",
+  "ensureRoomPersistenceSchema",
+  "ensureLoginSessionSchema",
+  "ensureGameModeSchema",
+  "ensureMailboxSchema"
+]);
+
 export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureAchievementSchema",
   "ensureGachaSchema",
@@ -49,6 +66,83 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureGameModeSchema",
   "ensureMailboxSchema"
 ]);
+
+function createServerSchemaTasks({
+  ensureAchievementSchema: ensureAchievementSchemaTask,
+  ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
+  ensureCostumeSchema: ensureCostumeSchemaTask,
+  ensureGachaSchema: ensureGachaSchemaTask,
+  ensureGameModeSchema: ensureGameModeSchemaTask,
+  ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
+  ensureMailboxSchema: ensureMailboxSchemaTask,
+  ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
+  ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
+  ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
+  ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+  ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
+  ensureSocialSchema: ensureSocialSchemaTask,
+  ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+}) {
+  return {
+    ensureAchievementSchema: ensureAchievementSchemaTask,
+    ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
+    ensureCostumeSchema: ensureCostumeSchemaTask,
+    ensureGachaSchema: ensureGachaSchemaTask,
+    ensureGameModeSchema: ensureGameModeSchemaTask,
+    ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
+    ensureMailboxSchema: ensureMailboxSchemaTask,
+    ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
+    ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
+    ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
+    ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+    ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
+    ensureSocialSchema: ensureSocialSchemaTask,
+    ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+  };
+}
+
+async function runTasksInOrder({ order, prisma, tasks }) {
+  for (const taskName of order) {
+    await tasks[taskName](prisma);
+  }
+}
+
+export async function ensureServerSchema({
+  prisma,
+  ensureSocialSchema: ensureSocialSchemaTask = ensureSocialSchema,
+  ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask = ensureRoomPersistenceSchema,
+  ensureLoginSessionSchema: ensureLoginSessionSchemaTask = ensureLoginSessionSchema,
+  ensureGameModeSchema: ensureGameModeSchemaTask = ensureGameModeSchema,
+  ensureGachaSchema: ensureGachaSchemaTask = ensureGachaSchema,
+  ensureMailboxSchema: ensureMailboxSchemaTask = ensureMailboxSchema,
+  ensureRecruitmentSchema: ensureRecruitmentSchemaTask = ensureRecruitmentSchema,
+  ensureAnnouncementSchema: ensureAnnouncementSchemaTask = ensureAnnouncementSchema,
+  ensureStoryScriptSchema: ensureStoryScriptSchemaTask = ensureStoryScriptSchema,
+  ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask = ensureOnboardingStorySchema,
+  ensureSkillTraitSchema: ensureSkillTraitSchemaTask = ensureSkillTraitSchema,
+  ensureCostumeSchema: ensureCostumeSchemaTask = ensureCostumeSchema,
+  ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
+  ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema
+}) {
+  const tasks = createServerSchemaTasks({
+    ensureAchievementSchema: ensureAchievementSchemaTask,
+    ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
+    ensureCostumeSchema: ensureCostumeSchemaTask,
+    ensureGachaSchema: ensureGachaSchemaTask,
+    ensureGameModeSchema: ensureGameModeSchemaTask,
+    ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
+    ensureMailboxSchema: ensureMailboxSchemaTask,
+    ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
+    ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
+    ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
+    ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+    ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
+    ensureSocialSchema: ensureSocialSchemaTask,
+    ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+  });
+
+  await runTasksInOrder({ order: SERVER_SCHEMA_TASK_ORDER, prisma, tasks });
+}
 
 export async function initializeServerData({
   prisma,
@@ -83,21 +177,23 @@ export async function initializeServerData({
     cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
     cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask,
     cleanupLegacyUsernames: cleanupLegacyUsernamesTask,
-    ensureAchievementSchema: ensureAchievementSchemaTask,
-    ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
-    ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
-    ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
-    ensureCostumeSchema: ensureCostumeSchemaTask,
+    ...createServerSchemaTasks({
+      ensureAchievementSchema: ensureAchievementSchemaTask,
+      ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
+      ensureCostumeSchema: ensureCostumeSchemaTask,
+      ensureGachaSchema: ensureGachaSchemaTask,
+      ensureGameModeSchema: ensureGameModeSchemaTask,
+      ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
+      ensureMailboxSchema: ensureMailboxSchemaTask,
+      ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
+      ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
+      ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
+      ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+      ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
+      ensureSocialSchema: ensureSocialSchemaTask,
+      ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+    }),
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
-    ensureGachaSchema: ensureGachaSchemaTask,
-    ensureGameModeSchema: ensureGameModeSchemaTask,
-    ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
-    ensureMailboxSchema: ensureMailboxSchemaTask,
-    ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
-    ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
-    ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
-    ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
-    ensureSocialSchema: ensureSocialSchemaTask,
     seedAdminDefaultConfig: seedAdminDefaultConfigTask,
     seedBuiltinAchievements: seedBuiltinAchievementsTask,
     seedBuiltinShopItems: seedBuiltinShopItemsTask,
@@ -108,7 +204,5 @@ export async function initializeServerData({
     seedDefaultStoryScripts: seedDefaultStoryScriptsTask
   };
 
-  for (const taskName of SERVER_STARTUP_TASK_ORDER) {
-    await tasks[taskName](prisma);
-  }
+  await runTasksInOrder({ order: SERVER_STARTUP_TASK_ORDER, prisma, tasks });
 }

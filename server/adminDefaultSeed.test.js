@@ -55,6 +55,7 @@ describe("admin default config seed", () => {
       row.key === "shopMascotDialogues"
     ));
     const sigrika = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "sigrika");
+    const costumeNames = ADMIN_DEFAULT_CONFIG.costumes.map((costume) => costume.name);
     const papaganPeach = ADMIN_DEFAULT_CONFIG.shopItems.find((item) => (
       item.category === "decoration" && item.targetId === "papagan-peach-stone"
     ));
@@ -69,9 +70,16 @@ describe("admin default config seed", () => {
     expect(sigrika).toMatchObject({
       cvName: "璃音",
       cvUrl: "https://space.bilibili.com/68435776",
-      illustName: "",
+      illustName: "鸣潮-星弹奇游",
       illustUrl: ""
     });
+    expect(costumeNames).toEqual([
+      "HelloHello",
+      "睡眠不足",
+      "黯影形态",
+      "飞行卡戎",
+      "招募中"
+    ]);
     expect(papaganPeach).toMatchObject({
       illustName: "憨态喵",
       illustUrl: "https://space.bilibili.com/392815021"

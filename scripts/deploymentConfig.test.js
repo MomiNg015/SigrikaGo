@@ -80,17 +80,23 @@ describe("production deployment templates", () => {
     expect(script).toContain("npm ci --include=dev");
     expect(script).not.toMatch(/^npm ci$/m);
     expect(script).toContain('npm run build -- --outDir "${STAGED_DIST}"');
+    expect(script).toContain('npm run check:built-css -- --dist "${STAGED_DIST}"');
     expect(script).toContain("if ! nginx -t; then");
+    expect(script).toContain("npm run production:schema-compat");
     expect(script).toContain("npm run admin:sync-defaults");
     expect(script).toContain("npm run admin:sync-defaults -- --apply");
     expect(script).not.toContain("npm run admin:sync-onboarding");
     expect(script).toContain('curl --fail --silent --show-error "${HEALTH_URL}"');
 
     expect(script.indexOf("npm ci --include=dev")).toBeLessThan(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"'));
+    expect(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"')).toBeLessThan(script.indexOf('npm run check:built-css -- --dist "${STAGED_DIST}"'));
+    expect(script.indexOf('npm run check:built-css -- --dist "${STAGED_DIST}"')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf('npm run build -- --outDir "${STAGED_DIST}"')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf('[[ -d "${PROJECT_DIR}/dist" ]]')).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf("if ! nginx -t; then")).toBeLessThan(script.indexOf('systemctl stop "${SERVICE_NAME}"'));
     expect(script.indexOf('systemctl stop "${SERVICE_NAME}"')).toBeLessThan(script.indexOf("npx prisma migrate deploy"));
+    expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf("npm run production:schema-compat"));
+    expect(script.indexOf("npm run production:schema-compat")).toBeLessThan(script.indexOf("npm run admin:sync-defaults"));
     expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf('mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"'));
     expect(script.indexOf("npx prisma migrate deploy")).toBeLessThan(script.indexOf("npm run admin:sync-defaults -- --apply"));
     expect(script.indexOf("npm run admin:sync-defaults -- --apply")).toBeLessThan(script.indexOf('mv -- "${PROJECT_DIR}/dist" "${PREVIOUS_DIST}"'));

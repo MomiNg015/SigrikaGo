@@ -45,6 +45,7 @@ Questions to answer:
 - `npm run admin:snapshot` runs `scripts/export-admin-default-snapshot.mjs` to regenerate `server/adminDefaultSnapshot.js` from the local `prisma/dev.db` non-user admin rows.
 - `npm run check:admin-snapshot` compares the local allowed collections with the committed snapshot; `npm run admin:sync-defaults [-- --apply]` previews/applies the committed snapshot to the current database.
 - `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
+- `ensureServerSchema()` in `server/serverStartup.js` runs only the audited `SERVER_SCHEMA_TASK_ORDER`; `npm run production:schema-compat` invokes it during deployment without running any seed task.
 
 #### 3. Contracts
 - The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Costume`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
@@ -53,7 +54,7 @@ Questions to answer:
 - `npm run check` must run `check:admin-snapshot` so unexported local admin edits fail before commit/build handoff.
 - Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
 - `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
-- Formal deployment is a separate boundary: after the verified backup and migrations, preview then apply `admin:sync-defaults`. It updates matching snapshot rows and creates missing rows, but does not delete cloud-only rows or touch excluded user/history/runtime tables.
+- Formal deployment is a separate boundary: after the verified backup and migrations, run `production:schema-compat`, then preview and apply `admin:sync-defaults`. The compatibility step must finish before Prisma reads the full snapshot model; sync updates matching snapshot rows and creates missing rows, but does not delete cloud-only rows or touch excluded user/history/runtime tables.
 - When a built-in catalog resource has a code-owned current asset, API payload helpers should normalize that built-in row from the shared/static source of truth across every player-visible projection, including shop, inventory, and gacha reward/prize payloads. If an old default path must be cleaned up at startup, use a narrowly keyed `updateMany` for empty values or exact stale default paths only; do not overwrite arbitrary admin-managed custom image URLs.
 - Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
 - Startup order matters: schema guards for achievement, gacha, music track, recruitment, and costume tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
@@ -61,6 +62,7 @@ Questions to answer:
 #### 4. Validation & Error Matrix
 - Existing row found during startup by stable key/slug/id -> skip without changing admin-managed fields.
 - Existing row found during explicit deployment sync -> update from the committed snapshot.
+- Production migration history reports no pending migration but a known model column/table is absent -> the stopped-service compatibility task runs the shared schema guards before snapshot preview; a remaining Prisma `P2022` aborts deployment.
 - Cloud-only row absent from the committed snapshot -> report as preserved and do not delete it.
 - Existing built-in catalog row with an empty or exact stale default image path -> may be backfilled to the current code-owned asset path.
 - Missing row -> create from the committed snapshot.
@@ -119,11 +121,12 @@ The correct form creates missing bootstrap defaults without overwriting a value 
 Correct formal deployment:
 
 ```bash
+npm run production:schema-compat
 npm run admin:sync-defaults
 npm run admin:sync-defaults -- --apply
 ```
 
-The explicit apply path runs only after a verified backup and migrations, so deployment can make committed local admin configuration authoritative without turning every restart into an overwrite.
+The schema compatibility and explicit apply paths run only after a verified backup and migrations, so deployment can repair known historical SQLite drift and make committed local admin configuration authoritative without turning every restart into an overwrite.
 
 ### Scenario: Site Setting Public Configuration
 
@@ -985,12 +988,14 @@ await prisma.$executeRaw`
 - `prisma/migrations/0_init/migration.sql` is the complete SQLite schema baseline.
 - `prisma/migrations/migration_lock.toml` pins `provider = "sqlite"`.
 - `npm run verify:migrations` verifies fresh deployment and existing-database adoption using disposable files only.
+- `SERVER_SCHEMA_TASK_ORDER` and `ensureServerSchema()` expose the existing idempotent compatibility guards without seed work; `npm run production:schema-compat` is the stopped-service deployment entry.
 
 #### 3. Contracts
 - Fresh databases use `prisma migrate deploy`; never use `prisma db push` for production deployment.
 - Do not edit a migration that may already be deployed. While the repository is explicitly in prelaunch single-baseline mode and `migrationBaselineVerification.test.js` requires exactly `[0_init]`, fold new schema into the complete baseline and rerun `npm run verify:migrations`. After the first production baseline adoption, add a new ordered migration for every later schema change and update the active-history contract test deliberately.
 - An existing data-bearing database may adopt `0_init` only after service shutdown, a verified backup, confirmation that no conflicting migration history exists, and a zero schema diff against `prisma/schema.prisma`.
 - Existing-database adoption uses `prisma migrate resolve --applied 0_init`, then `prisma migrate deploy`; application startup must never write or infer `_prisma_migrations` rows.
+- A historically drifted production database that already records `0_init` may run `production:schema-compat` after `migrate deploy` to add structures covered by existing audited guards. This is a transitional repair layer: it never edits migration history and never authorizes future schema changes without a new migration.
 - Migration verification databases must resolve below `.tmp/migration-baseline/`; the verifier must reject `prisma/dev.db` and any caller-selected external path.
 
 #### 4. Validation & Error Matrix
@@ -1000,6 +1005,7 @@ await prisma.$executeRaw`
 - `_prisma_migrations` contains old or unknown rows -> stop for manual reconciliation.
 - Repository still enforces a single prelaunch baseline and no production database has adopted it -> update `0_init`, keep one active migration directory, and verify fresh/adoption fixtures.
 - Production has already adopted `0_init` -> never rewrite it; create a later migration and review the changed active-history expectation.
+- Production reports no pending migration but a known guarded table/column is missing -> stop service, keep the verified backup, run `production:schema-compat`, and abort before admin snapshot sync if Prisma still reports `P2022`.
 - Backup, database-path, or service-stop uncertainty -> stop before any migration-history write.
 
 #### 5. Good/Base/Bad Cases
@@ -1014,6 +1020,7 @@ await prisma.$executeRaw`
 - Assert every Prisma model has a matching baseline `CREATE TABLE` statement.
 - Run the disposable end-to-end verifier for fresh deploy, repeated deploy, existing-schema adoption, sentinel preservation, migration status, and zero schema diff.
 - Unit-test path guards so repository and external database paths are rejected.
+- Unit-test the schema-only task order and assert it cannot invoke seed tasks; deployment-script tests must lock `migrate deploy -> production:schema-compat -> admin:sync-defaults`.
 
 #### 7. Wrong vs Correct
 

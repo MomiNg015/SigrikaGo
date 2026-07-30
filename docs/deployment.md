@@ -28,7 +28,9 @@ npm run verify:release-candidate
 ```bash
 npm ci
 npx prisma migrate deploy
+npm run production:schema-compat
 npm run build
+npm run check:built-css
 npm run check:production
 npm test
 ```
@@ -36,6 +38,8 @@ npm test
 `npm ci` 的 `postinstall` 会生成 Prisma Client，`prestart` 仍会在启动前再次校验生成。仓库的 Prisma 迁移历史从 `0_init` 完整基线开始。可单独执行 `npm run verify:migrations`：该命令只会在 `.tmp/migration-baseline/` 创建并清理一次性 SQLite 数据库，同时验证空库部署和现有库接管。
 
 `npm run check:production` 会先按服务端相同规则加载当前工作目录的 `.env`，再检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
+
+`npm run production:schema-compat` 在迁移之后幂等执行现有 SQLite schema guard，用于修复早期部署中“迁移历史已标记完成、实际数据库却仍缺少后来加入的列或表”的历史漂移；它不写 `_prisma_migrations`，也不能替代以后新增并提交 Prisma migration。该命令必须在 `admin:sync-defaults` 之前成功，否则 Prisma 读取完整模型时仍可能报 `P2022`。`npm run check:built-css` 检查生产 `dist/assets/*.css` 的关键主题合同，当前会阻止 Bright School 弹窗遮罩在构建压缩后重新落回标准 `backdrop-filter: blur(...)`。
 
 依赖安全基线（2026-07-20）：`npm audit --omit=dev` 不再包含 high/critical；Multer、Socket.IO/`ws`、Express/`qs` 已升级到修复版本。仍有 2 条 moderate 记录，实际是 ExcelJS 4.4.0 经 `uuid` 8.3.2 形成的同一条传递依赖告警。项目不直接调用 `uuid`，ExcelJS 只在管理员剧情脚本工作簿导入/导出时按需加载；当前 ExcelJS 最新版尚未升级该依赖，而审计建议的 ExcelJS 3.4.0 是功能倒退，因此暂不使用 `npm audit fix --force` 或强制跨主版本 override。升级 ExcelJS 后应重新执行工作簿测试与审计并移除此例外。
 
@@ -315,7 +319,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ### 发布中
 
-1. 执行 `npm ci`、`npx prisma migrate deploy`、`npm run build`、`npm run check:production`。
+1. 优先执行 `sudo ./deploy/update-production.sh`；若只能手工更新，则依次完成 `npm ci`、`npm run build`、`npm run check:built-css`、`npm run check:production`，停服后执行 `npx prisma migrate deploy`、`npm run production:schema-compat` 和后台默认快照预览/应用。
 2. 重启单个 Node 实例，等待 `/health/live` 与 `/health/ready` 都为 200，再开放内测流量。
 3. 用两个普通账号完成注册/登录、匹配、落子 ack、重连、结算和刷新恢复；用管理员账号检查运行容量面板。
 
@@ -334,7 +338,7 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## 更新流程
 
-仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会先用 `set -a` 加载并导出项目 `.env`，保证生产检查、Prisma 和其他子命令拿到与 systemd 相同的配置，然后依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、通过 `npm ci --include=dev` 安装锁定依赖（即使 `NODE_ENV=production` 也保留 Vite 等构建工具）、暂存目录构建与生产配置检查、Nginx 备份和语法验证、停服、迁移、完整非用户后台快照预览与应用、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
+仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会先用 `set -a` 加载并导出项目 `.env`，保证生产检查、Prisma 和其他子命令拿到与 systemd 相同的配置，然后依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、通过 `npm ci --include=dev` 安装锁定依赖（即使 `NODE_ENV=production` 也保留 Vite 等构建工具）、暂存目录构建、生产配置检查与构建 CSS 合同检查、Nginx 备份和语法验证、停服、Prisma migration、历史 SQLite schema 兼容补齐、完整非用户后台快照预览与应用、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
 
 第一次使用时，服务器上的旧版本还没有该脚本，先手动拉取一次，然后运行：
 
@@ -366,6 +370,8 @@ npm run backup:sqlite -- \
   --source /var/lib/sigrikago/prod.db \
   --output "/var/backups/sigrikago/pre-onboarding-sync-$(date +%F-%H%M%S).db"
 
+npx prisma migrate deploy
+npm run production:schema-compat
 npm run admin:sync-defaults
 npm run admin:sync-defaults -- --apply
 
@@ -381,8 +387,8 @@ curl --fail http://127.0.0.1:3001/health/ready
 cd /opt/sigrikago
 git pull --ff-only
 npm ci
-npx prisma migrate deploy
 npm run build
+npm run check:built-css
 npm run check:production
 
 sudo cp /etc/nginx/sites-available/sigrikago \
@@ -390,9 +396,15 @@ sudo cp /etc/nginx/sites-available/sigrikago \
 sudo cp deploy/nginx/sigrikago-routes.conf /etc/nginx/snippets/sigrikago-routes.conf
 sudo cp deploy/nginx/sigrikago.conf /etc/nginx/sites-available/sigrikago
 sudo nginx -t
-sudo systemctl reload nginx
 
-sudo systemctl restart sigrikago
+sudo systemctl stop sigrikago
+npx prisma migrate deploy
+npm run production:schema-compat
+npm run admin:sync-defaults
+npm run admin:sync-defaults -- --apply
+
+sudo systemctl reload nginx
+sudo systemctl start sigrikago
 sudo systemctl status sigrikago
 curl --fail http://127.0.0.1:3001/health/ready
 curl --compressed -I https://sigrikago.com/assets/$(find dist/assets -maxdepth 1 -name '*.css' -printf '%f\n' | head -n 1)

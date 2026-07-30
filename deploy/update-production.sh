@@ -118,6 +118,7 @@ npm ci --include=dev
 [[ ! -e "${BUILD_ROOT}" ]] || fail "Build staging path already exists: ${BUILD_ROOT}"
 mkdir -p -- "${BUILD_ROOT}"
 npm run build -- --outDir "${STAGED_DIST}"
+npm run check:built-css -- --dist "${STAGED_DIST}"
 npm run check:production
 
 mkdir -p -- "$(dirname -- "${NGINX_ROUTES_PATH}")" "$(dirname -- "${NGINX_SITE_PATH}")" "$(dirname -- "${NGINX_SITE_LINK}")"
@@ -148,6 +149,7 @@ systemctl stop "${SERVICE_NAME}"
 SERVICE_STOPPED=1
 
 npx prisma migrate deploy
+npm run production:schema-compat
 npm run admin:sync-defaults
 npm run admin:sync-defaults -- --apply
 

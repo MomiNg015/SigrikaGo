@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { initializeServerData, SERVER_STARTUP_TASK_ORDER } from "./serverStartup.js";
+import {
+  ensureServerSchema,
+  initializeServerData,
+  SERVER_SCHEMA_TASK_ORDER,
+  SERVER_STARTUP_TASK_ORDER
+} from "./serverStartup.js";
 
 describe("server startup", () => {
   it("runs startup data and schema tasks in dependency order", async () => {
@@ -95,5 +100,23 @@ describe("server startup", () => {
       "ensureMailboxSchema"
     ]);
     expect(calls).toEqual(SERVER_STARTUP_TASK_ORDER);
+  });
+
+  it("runs the reusable schema-only compatibility sequence without seed tasks", async () => {
+    const calls = [];
+    const prisma = {};
+    const tasks = Object.fromEntries(SERVER_SCHEMA_TASK_ORDER.map((name) => [
+      name,
+      vi.fn(async (receivedPrisma) => {
+        expect(receivedPrisma).toBe(prisma);
+        calls.push(name);
+      })
+    ]));
+
+    await ensureServerSchema({ prisma, ...tasks });
+
+    expect(calls).toEqual(SERVER_SCHEMA_TASK_ORDER);
+    expect(calls).not.toContain("seedAdminDefaultConfig");
+    expect(calls).not.toContain("seedCharacters");
   });
 });
