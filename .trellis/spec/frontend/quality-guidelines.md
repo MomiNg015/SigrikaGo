@@ -1712,7 +1712,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
 - Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
 - Close and icon-only controls expose an accessible name.
-- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface, while profile `.character-record-row` cards use the pale wheat `#fff3c9` surface; both keep the shared dark-brown outline and hard shadow, and state meaning remains owned by the existing status labels rather than the card fill. Character-record positive values use the darker green `#466f54` so normal-size text keeps at least WCAG AA contrast on the wheat surface.
+- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Equivalent profile panels must not fork their palettes by markup: both `.profile-resume-stats > span` and `.profile-resume-stats > .stat` use the same summary-card treatment, while `.profile-character-row` and `.character-record-row` use the pale wheat `#fff3c9` surface with the shared dark-brown outline and hard shadow. State meaning remains owned by existing labels rather than card fill. Character-record positive values use the darker green `#466f54` so normal-size text keeps at least WCAG AA contrast on the wheat surface.
 - ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
 
 #### 4. Validation & Error Matrix
@@ -1769,7 +1769,7 @@ Card surface correct:
 
 ```css
 .friends-row { --bright-commerce-card-surface: #e7f5f8; }
-.character-record-row { --bright-commerce-card-surface: #fff3c9; }
+:is(.profile-character-row, .character-record-row) { --bright-commerce-card-surface: #fff3c9; }
 ```
 
 ### Scenario: Voice Playback and Scoped Background Music Control

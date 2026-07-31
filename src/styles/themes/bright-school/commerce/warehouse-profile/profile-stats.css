@@ -3,7 +3,7 @@
   gap: 14px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > :is(span, .stat) {
   min-height: 78px !important;
   padding: 14px 18px !important;
   display: flex !important;
@@ -22,7 +22,7 @@
   word-break: keep-all !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats small {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > :is(span, .stat) > :is(small, span) {
   color: #6a554d !important;
   opacity: 1 !important;
   font-weight: 900 !important;

@@ -219,9 +219,13 @@ describe("player theme CSS contract", () => {
     expect(surfaceContractsEntry).not.toContain("firewall");
   });
 
-  it("keeps Bright School social and character record rows on distinct paper tints", () => {
+  it("keeps equivalent Bright School profile panels on shared paper tints", () => {
     const commerceSocialCss = readFileSync(
       new URL("./themes/bright-school/surface-contracts/commerce-social-cleanup.css", import.meta.url),
+      "utf8"
+    );
+    const profileStatsCss = readFileSync(
+      new URL("./themes/bright-school/commerce/warehouse-profile/profile-stats.css", import.meta.url),
       "utf8"
     );
 
@@ -231,11 +235,13 @@ describe("player theme CSS contract", () => {
       ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: #e7f5f8;\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row {\n  --bright-commerce-card-surface: #fff3c9;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {\n  --bright-commerce-card-surface: #fff3c9;\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row b {\n  color: #466f54;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {\n  color: #466f54;\n}"
     );
+    expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) {");
+    expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) > :is(small, span) {");
   });
 
   it("keeps Bright School theme tokens available to the Tailwind semantic scaffold", () => {

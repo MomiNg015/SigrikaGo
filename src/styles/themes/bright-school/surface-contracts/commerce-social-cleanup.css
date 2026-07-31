@@ -20,11 +20,11 @@
   --bright-commerce-card-surface: #e7f5f8;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school .character-record-row {
+.app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {
   --bright-commerce-card-surface: #fff3c9;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school .character-record-row b {
+.app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {
   color: #466f54;
 }
 
