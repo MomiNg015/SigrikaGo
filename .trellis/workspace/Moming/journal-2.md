@@ -1062,3 +1062,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 93: 商店金币复用履历样式
+
+**Date**: 2026-07-31
+**Task**: 商店金币复用履历样式
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+商店页头金币余额改为复用履历的 shop-wallet 视觉契约与 CircleDollarSign 图标，移除独立纯色覆盖和可见单位；同步移动端规则、回归测试、前端规范及系统设计文档。定向 191 条与全量 2299 条测试通过，lint、构建、built CSS 和生产配置检查通过；仓库总检查仅被既有 siteSettings 后台快照过期拦住。按用户要求未做视觉检查。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `246271f5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
