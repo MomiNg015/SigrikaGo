@@ -1060,7 +1060,7 @@ Required assertion points:
 #### 3. Contracts
 - The shared window header renders only its title plus close/back controls; mailbox and announcement must not add an English/count subtitle under the title.
 - Mail detail order is title, sender/time metadata, independently scrolling prose, then an optional real-attachment shelf. Text-only mail renders no attachment placeholder.
-- The mail prose sits on an uninterrupted warm-white paper surface. Decorative horizontal rules must not run beneath scrolling text; the paper cue comes from the outer sheet, spacing, and one faint margin rule outside the text column.
+- The mail prose sits on a low-contrast natural-paper texture whose center remains calm enough for long-form text. Decorative rules, grids, stains, watermarks, and other authored marks must not run beneath scrolling prose.
 - A real attachment and its claim/claimed action share one footer shelf. Delete remains the secondary icon action beside the mail heading.
 - Announcement detail uses a quiet kind marker, article title, timestamps, solid divider, then the shared prose renderer.
 - `MarkdownLiteContent` never renders raw HTML. In-article `##`/`###` map below the detail title hierarchy, and all supported blocks remain semantic.
@@ -1079,7 +1079,7 @@ Required assertion points:
 
 #### 6. Tests Required
 - `MarkdownLiteContent.test.jsx` covers every supported block and raw-HTML escaping.
-- `MailboxModal.test.jsx` asserts title-first metadata, absent text-only placeholder, real attachment shelf, disabled claimed action, the line-free prose paper, no live blur, and mobile list-first behavior.
+- `MailboxModal.test.jsx` asserts title-first metadata, absent text-only placeholder, real attachment shelf, disabled claimed action, the low-contrast natural-paper asset, no live blur, and mobile list-first behavior.
 - `AnnouncementModal.test.jsx` asserts the subtitle-free `公告` dialog title, shared prose hooks, quiet kind marker, rich block CSS, and mobile list-first behavior.
 - Run CSS inventory/style/theme contracts, `npm run build`, and `npm run check:built-css`.
 

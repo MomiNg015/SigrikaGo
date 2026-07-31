@@ -163,8 +163,8 @@ describe("MailboxModal information center", () => {
     const themedCss = readCssWithImports(pathToFileURL(resolve("src/styles/themes.css")));
 
     expect(css).not.toContain('url("/assets/mailbox/mail-body-paper.png")');
-    expect(css).toContain("rgba(157, 44, 69, 0.13) 20px 21px");
-    expect(css).toContain("#fffaf2");
+    expect(css).toContain('url("/assets/mailbox/mail-body-paper-natural.webp")');
+    expect(css).toContain("#f7f3ef");
     expect(css).toContain(".mailbox-detail-header");
     expect(css).toContain(".mailbox-detail-meta");
     expect(css).toContain(".mailbox-attachment-shelf");

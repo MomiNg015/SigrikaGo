@@ -10,14 +10,7 @@
   border: 2px solid #6a4a3f;
   border-radius: 10px;
   overflow: hidden;
-  background:
-    linear-gradient(
-      90deg,
-      transparent 20px,
-      rgba(157, 44, 69, 0.13) 20px 21px,
-      transparent 21px
-    ),
-    #fffaf2;
+  background: #f7f3ef url("/assets/mailbox/mail-body-paper-natural.webp") center / cover no-repeat;
   box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.24);
 }
 
