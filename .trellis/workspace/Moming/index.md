@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 83
-- **Last Active**: 2026-07-30
+- **Total Sessions**: 84
+- **Last Active**: 2026-07-31
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~767 | Active |
+| `journal-2.md` | ~800 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 84 | 2026-07-31 | Polish spectator tabs and leaderboard ranks | `2013d1df` | `codex/frontend-work` |
 | 83 | 2026-07-30 | Loading and spectator polish | `c3ff926e` | `master` |
 | 82 | 2026-07-30 | 修复生产部署样式与后台同步 | `0fac40ff` | `master` |
 | 81 | 2026-07-29 | Restore beginner Zhunshibao practice heuristic | `2e523317` | `codex/zhunshibao-ai` |

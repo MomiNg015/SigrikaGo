@@ -765,3 +765,36 @@ Fixed tutorial loading progress initialization, removed Baconbits from shared lo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 84: Polish spectator tabs and leaderboard ranks
+
+**Date**: 2026-07-31
+**Task**: Polish spectator tabs and leaderboard ranks
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Made the watch-list mode wrapper transparent, centered tab contents, removed leaderboard rank-number fills across Bright School desktop/mobile winners, and added tests, browser QA, specs, and system-design updates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2013d1df` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
