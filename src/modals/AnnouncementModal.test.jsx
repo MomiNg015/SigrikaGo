@@ -57,9 +57,10 @@ describe("AnnouncementModal information center", () => {
 
   it("automatically opens and marks the newest announcement as read", async () => {
     const onSummaryChange = vi.fn();
-    render(<AnnouncementModal token="token" onClose={() => {}} onSummaryChange={onSummaryChange} />);
+    const { container } = render(<AnnouncementModal token="token" onClose={() => {}} onSummaryChange={onSummaryChange} />);
 
-    expect(screen.getByRole("dialog", { name: "公告中心" })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "公告" })).toBeTruthy();
+    expect(container.querySelector(".information-center-header p")).toBeNull();
     const row = await screen.findByRole("button", { name: /欢迎来到星炬学院/ });
     expect(row.closest("li")).toBeTruthy();
     expect(await screen.findByText("完整公告正文")).toBeTruthy();
@@ -75,7 +76,7 @@ describe("AnnouncementModal information center", () => {
     const user = userEvent.setup();
     render(<AnnouncementModal token="token" onClose={() => {}} />);
 
-    const tabs = await screen.findByRole("tablist", { name: "公告中心" });
+    const tabs = await screen.findByRole("tablist", { name: "公告" });
     const announcementTab = within(tabs).getByRole("tab", { name: "公告" });
     announcementTab.focus();
     await user.keyboard("{ArrowRight}");
@@ -128,6 +129,9 @@ describe("AnnouncementModal information center", () => {
     expect(themedCss).toContain("visibility: hidden !important");
     expect(themedCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(css).not.toContain(".announcement-detail-backdrop");
+    expect(css).toContain(".announcement-detail-kind::after");
+    expect(css).toContain(".announcement-detail-body blockquote");
+    expect(css).toContain(".information-center-prose :is(h4, h5)");
     expect(source).not.toContain('role: "listitem"');
   });
 });

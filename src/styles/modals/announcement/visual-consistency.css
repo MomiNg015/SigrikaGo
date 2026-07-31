@@ -34,16 +34,23 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-meta,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-header p,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-header p {
   color: #5a4740 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-meta b,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-meta b {
   border: 1px solid #c7b1a8 !important;
   background: #ffffff !important;
   color: #3d2b25 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #9d2c45 !important;
   box-shadow: none !important;
 }
 
@@ -63,6 +70,15 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body.markdown-lite-content,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body.markdown-lite-content * {
   color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body.markdown-lite-content a {
+  color: #315b89 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body.markdown-lite-content blockquote {
+  background: rgba(234, 243, 248, 0.72) !important;
+  color: #33434d !important;
 }
 
 @media (max-width: 768px) {

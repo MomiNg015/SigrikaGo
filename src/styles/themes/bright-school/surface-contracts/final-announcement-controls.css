@@ -39,8 +39,7 @@
   box-shadow: inset 4px 0 0 var(--bright-pink), 3px 4px 0 rgba(74, 55, 54, 0.2) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list-meta b,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-kind {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list-meta b {
   min-height: 24px !important;
   padding: 3px 8px !important;
   line-height: 1.2 !important;

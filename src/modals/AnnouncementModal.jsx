@@ -12,7 +12,7 @@ const KINDS = Object.freeze([
 const PAGE_SIZE = 20;
 
 const TEXT = Object.freeze({
-  title: "\u516c\u544a\u4e2d\u5fc3",
+  title: "\u516c\u544a",
   close: "\u5173\u95ed\u516c\u544a\u7a97\u53e3",
   loading: "\u6b63\u5728\u8bfb\u53d6...",
   loadMore: "\u52a0\u8f7d\u66f4\u591a",
@@ -316,7 +316,9 @@ export default function AnnouncementModal({
               </ModalActionButton>
             </div>
           )}
-          {detail.entry && <MarkdownLiteContent className="announcement-detail-body" value={detail.entry.body} />}
+          {detail.entry && (
+            <MarkdownLiteContent className="information-center-prose announcement-detail-body" value={detail.entry.body} />
+          )}
           {detail.readError && <p className="form-error announcement-read-error">{detail.readError}</p>}
         </article>
       ) : (

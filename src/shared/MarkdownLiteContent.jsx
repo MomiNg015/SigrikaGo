@@ -1,5 +1,9 @@
 const INLINE_TOKEN = /(\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))/g;
 const LIST_LINE = /^\s*[-*]\s+(.+)$/;
+const ORDERED_LIST_LINE = /^\s*\d+\.\s+(.+)$/;
+const HEADING_LINE = /^(#{2,3})\s+(.+)$/;
+const QUOTE_LINE = /^\s*>\s?(.+)$/;
+const DIVIDER_LINE = /^\s*(?:-{3,}|\*{3,})\s*$/;
 
 export default function MarkdownLiteContent({ value, className = "" }) {
   const blocks = markdownLiteBlocks(value);
@@ -15,6 +19,40 @@ export default function MarkdownLiteContent({ value, className = "" }) {
             </ul>
           );
         }
+        if (block.type === "ordered-list") {
+          return (
+            <ol key={`ordered-list-${blockIndex}`}>
+              {block.items.map((item, itemIndex) => (
+                <li key={`ordered-list-${blockIndex}-${itemIndex}`}>
+                  {renderInlineMarkdownLite(item, `ol-${blockIndex}-${itemIndex}`)}
+                </li>
+              ))}
+            </ol>
+          );
+        }
+        if (block.type === "heading") {
+          const HeadingTag = block.level === 2 ? "h4" : "h5";
+          return (
+            <HeadingTag key={`heading-${blockIndex}`}>
+              {renderInlineMarkdownLite(block.text, `heading-${blockIndex}`)}
+            </HeadingTag>
+          );
+        }
+        if (block.type === "quote") {
+          return (
+            <blockquote key={`quote-${blockIndex}`}>
+              <p>
+                {block.lines.map((line, lineIndex) => (
+                  <span key={`quote-${blockIndex}-${lineIndex}`}>
+                    {renderInlineMarkdownLite(line, `quote-${blockIndex}-${lineIndex}`)}
+                    {lineIndex < block.lines.length - 1 && <br />}
+                  </span>
+                ))}
+              </p>
+            </blockquote>
+          );
+        }
+        if (block.type === "divider") return <hr key={`divider-${blockIndex}`} />;
         return (
           <p key={`paragraph-${blockIndex}`}>
             {block.lines.map((line, lineIndex) => (
@@ -35,6 +73,8 @@ export function markdownLiteBlocks(value) {
   const blocks = [];
   let paragraph = [];
   let list = [];
+  let orderedList = [];
+  let quote = [];
 
   const flushParagraph = () => {
     if (!paragraph.length) return;
@@ -46,25 +86,70 @@ export function markdownLiteBlocks(value) {
     blocks.push({ type: "list", items: list });
     list = [];
   };
+  const flushOrderedList = () => {
+    if (!orderedList.length) return;
+    blocks.push({ type: "ordered-list", items: orderedList });
+    orderedList = [];
+  };
+  const flushQuote = () => {
+    if (!quote.length) return;
+    blocks.push({ type: "quote", lines: quote });
+    quote = [];
+  };
+  const flushOpenBlocks = () => {
+    flushParagraph();
+    flushList();
+    flushOrderedList();
+    flushQuote();
+  };
 
   for (const rawLine of lines) {
     const line = rawLine.trimEnd();
     const listMatch = line.match(LIST_LINE);
+    const orderedListMatch = line.match(ORDERED_LIST_LINE);
+    const headingMatch = line.match(HEADING_LINE);
+    const quoteMatch = line.match(QUOTE_LINE);
     if (!line.trim()) {
-      flushParagraph();
-      flushList();
+      flushOpenBlocks();
+      continue;
+    }
+    if (DIVIDER_LINE.test(line)) {
+      flushOpenBlocks();
+      blocks.push({ type: "divider" });
+      continue;
+    }
+    if (headingMatch) {
+      flushOpenBlocks();
+      blocks.push({ type: "heading", level: headingMatch[1].length, text: headingMatch[2].trim() });
       continue;
     }
     if (listMatch) {
       flushParagraph();
+      flushOrderedList();
+      flushQuote();
       list.push(listMatch[1].trim());
       continue;
     }
+    if (orderedListMatch) {
+      flushParagraph();
+      flushList();
+      flushQuote();
+      orderedList.push(orderedListMatch[1].trim());
+      continue;
+    }
+    if (quoteMatch) {
+      flushParagraph();
+      flushList();
+      flushOrderedList();
+      quote.push(quoteMatch[1].trim());
+      continue;
+    }
     flushList();
+    flushOrderedList();
+    flushQuote();
     paragraph.push(line);
   }
-  flushParagraph();
-  flushList();
+  flushOpenBlocks();
   return blocks;
 }
 

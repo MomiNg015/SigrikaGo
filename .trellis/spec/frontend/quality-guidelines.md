@@ -1048,6 +1048,57 @@ Required assertion points:
 }
 ```
 
+### Scenario: Information-Center Editorial Reader
+
+#### 1. Scope / Trigger
+- Trigger: changes to `InformationCenterLayout`, `MailboxModal`, `AnnouncementModal`, `MarkdownLiteContent`, or their mailbox/announcement/mobile CSS owners.
+
+#### 2. Signatures
+- Shared prose hook: `.information-center-prose`.
+- Safe authored blocks: paragraphs and line breaks, `-`/`*` lists, numeric lists, `##`/`###` headings, `>` quotes, `---`/`***` dividers, `**bold**`, and http(s) links.
+
+#### 3. Contracts
+- The shared window header renders only its title plus close/back controls; mailbox and announcement must not add an English/count subtitle under the title.
+- Mail detail order is title, sender/time metadata, independently scrolling prose, then an optional real-attachment shelf. Text-only mail renders no attachment placeholder.
+- The mail prose sits on an uninterrupted warm-white paper surface. Decorative horizontal rules must not run beneath scrolling text; the paper cue comes from the outer sheet, spacing, and one faint margin rule outside the text column.
+- A real attachment and its claim/claimed action share one footer shelf. Delete remains the secondary icon action beside the mail heading.
+- Announcement detail uses a quiet kind marker, article title, timestamps, solid divider, then the shared prose renderer.
+- `MarkdownLiteContent` never renders raw HTML. In-article `##`/`###` map below the detail title hierarchy, and all supported blocks remain semantic.
+- Desktop and portrait mobile share the same content order; mobile changes pane navigation and fitting only.
+
+#### 4. Validation & Error Matrix
+- Empty or plain text body -> render ordinary paragraphs without synthetic summary or attachment UI.
+- Body contains raw HTML -> escape it as text.
+- Long title/body or attachment name -> wrap or ellipsize inside the reader without horizontal overflow.
+- Claimed attachment -> keep its action disabled and visibly neutral after Bright School overrides.
+
+#### 5. Good/Base/Bad Cases
+- Good: reuse `MarkdownLiteContent` plus `.information-center-prose` for both domains and keep only domain-specific paper/callout styling in their owner files.
+- Base: legacy plain-text mail and announcements remain readable without authored Markdown-lite syntax.
+- Bad: render “纯文本邮件” as a fake attachment card, put timestamp above the mail title, or restore a category pill that competes with the announcement title.
+
+#### 6. Tests Required
+- `MarkdownLiteContent.test.jsx` covers every supported block and raw-HTML escaping.
+- `MailboxModal.test.jsx` asserts title-first metadata, absent text-only placeholder, real attachment shelf, disabled claimed action, the line-free prose paper, no live blur, and mobile list-first behavior.
+- `AnnouncementModal.test.jsx` asserts the subtitle-free `公告` dialog title, shared prose hooks, quiet kind marker, rich block CSS, and mobile list-first behavior.
+- Run CSS inventory/style/theme contracts, `npm run build`, and `npm run check:built-css`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<p>{message.body}</p>
+<div className="mailbox-attachment empty">纯文本邮件</div>
+```
+
+Correct:
+
+```jsx
+<MarkdownLiteContent className="information-center-prose mailbox-body" value={message.body} />
+{hasAttachment(message.attachment) && <footer className="mailbox-attachment-shelf">...</footer>}
+```
+
 ### Modal Close Button Contracts
 
 Window close buttons should share one relative size and top-right placement contract across desktop, mobile, base CSS, and Bright School overrides.

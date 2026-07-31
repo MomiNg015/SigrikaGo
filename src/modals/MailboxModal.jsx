@@ -2,6 +2,7 @@
 import { Archive, CheckCircle2, Coins, Gift, MailOpen, Ticket, Trash2 } from "lucide-react";
 import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
+import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
 import { ModalActionButton } from "./modalComponents.jsx";
 
@@ -147,8 +148,14 @@ export default function MailboxModal({
       )}
       detail={selected ? (
         <article className="mailbox-detail" aria-busy={busyId === selected.id || undefined}>
-          <div className="mailbox-detail-topline">
-            <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
+          <header className="mailbox-detail-header">
+            <div className="mailbox-detail-heading">
+              <h3 id="mailbox-detail-title">{selected.title}</h3>
+              <p className="mailbox-detail-meta">
+                <span>发件人：{displayMailboxSender(selected.sender)}</span>
+                <time dateTime={selected.createdAt}>{formatDateTime(selected.createdAt)}</time>
+              </p>
+            </div>
             <button
               className="mailbox-delete-button"
               type="button"
@@ -158,15 +165,15 @@ export default function MailboxModal({
             >
               <Trash2 size={19} />
             </button>
-          </div>
-          <h3 id="mailbox-detail-title">{selected.title}</h3>
-          <span className="mailbox-detail-time">发件人：{displayMailboxSender(selected.sender)}</span>
-          <p className="mailbox-body">{selected.body}</p>
-          <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
+          </header>
+          <MarkdownLiteContent className="information-center-prose mailbox-body" value={selected.body} />
           {hasAttachment(selected.attachment) && (
-            <div className="mailbox-actions">
+            <footer className="mailbox-attachment-shelf">
+              <span className="mailbox-attachment-label">附件</span>
+              <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
               <ModalActionButton
                 variant="primary"
+                className="mailbox-claim-button"
                 type="button"
                 disabled={!selected.claimable || busyId === selected.id}
                 onClick={() => claim(selected)}
@@ -174,7 +181,7 @@ export default function MailboxModal({
                 {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
                 {selected.claimable ? "领取附件" : "已领取"}
               </ModalActionButton>
-            </div>
+            </footer>
           )}
         </article>
       ) : (
@@ -198,14 +205,7 @@ function sortMailboxMessages(messages) {
 }
 
 function AttachmentView({ attachment, claimable }) {
-  if (!hasAttachment(attachment)) {
-    return (
-      <div className="mailbox-attachment empty">
-        <MailOpen size={18} />
-        纯文本邮件
-      </div>
-    );
-  }
+  if (!hasAttachment(attachment)) return null;
   const isCoins = attachment.type === "coins";
   const itemPresentation = isCoins ? null : mailboxAttachmentItemPresentation(attachment);
   return (

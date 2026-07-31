@@ -55,13 +55,15 @@ describe("MailboxModal information center", () => {
       if (path === "/api/mailbox") return Promise.resolve({ messages: [readMessage] });
       throw new Error(`Unexpected api call: ${path}`);
     });
-    render(<MailboxModal token="token" initialLoaded initialMessages={[giftMessage]} onClose={() => {}} />);
+    const { container } = render(<MailboxModal token="token" initialLoaded initialMessages={[giftMessage]} onClose={() => {}} />);
 
     expect(screen.getByRole("dialog", { name: "邮箱" })).toBeTruthy();
+    expect(container.querySelector(".information-center-header p")).toBeNull();
     const row = screen.getByRole("button", { name: /社团活动奖励/ });
     expect(row.closest("li")).toBeTruthy();
     expect(screen.getAllByText("发件人：学生会")).toHaveLength(2);
     expect(screen.getByText("请领取本周活动奖励。")).toBeTruthy();
+    expect(screen.queryByText("纯文本邮件")).toBeNull();
     await waitFor(() => expect(api).toHaveBeenCalledWith(
       "/api/mailbox/mail-1/read",
       { method: "POST", token: "token" }
@@ -138,7 +140,7 @@ describe("MailboxModal information center", () => {
     render(<MailboxModal token="token" initialLoaded initialMessages={[claimedMessage]} onClose={() => {}} />);
 
     expect(screen.getByRole("button", { name: "已领取" }).disabled).toBe(true);
-    expect(css).toContain(".mailbox-detail .mailbox-actions .primary-action:disabled");
+    expect(css).toContain(".mailbox-detail .mailbox-attachment-shelf .primary-action:disabled");
     expect(css).toContain("background: #d8d4d0 !important");
     expect(css).toContain("color: #756f6a !important");
   });
@@ -160,7 +162,13 @@ describe("MailboxModal information center", () => {
     const css = readCssWithImports(pathToFileURL(resolve("src/styles/modals/mailbox.css")));
     const themedCss = readCssWithImports(pathToFileURL(resolve("src/styles/themes.css")));
 
-    expect(css).toContain('background-image: url("/assets/mailbox/mail-body-paper.png")');
+    expect(css).not.toContain('url("/assets/mailbox/mail-body-paper.png")');
+    expect(css).toContain("rgba(157, 44, 69, 0.13) 20px 21px");
+    expect(css).toContain("#fffaf2");
+    expect(css).toContain(".mailbox-detail-header");
+    expect(css).toContain(".mailbox-detail-meta");
+    expect(css).toContain(".mailbox-attachment-shelf");
+    expect(css).not.toContain("backdrop-filter: blur(2px)");
     expect(css).toContain("box-shadow: inset 4px 0 0 #ff6f9f");
     expect(css).toContain("width: 44px");
     expect(css).toContain("height: 44px");

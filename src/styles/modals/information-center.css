@@ -118,6 +118,53 @@
   line-height: 1.6;
 }
 
+.information-center-prose {
+  width: 100%;
+  max-width: 68ch;
+  color: #3f2f2b;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.information-center-prose :is(p, ul, ol) {
+  margin: 0 0 1em;
+}
+
+.information-center-prose :is(ul, ol) {
+  padding-left: 1.4rem;
+}
+
+.information-center-prose :is(h4, h5) {
+  margin: 1.5em 0 0.6em;
+  color: #2d2430;
+  font-family: var(--font-window-title), var(--font-ui-default);
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.information-center-prose blockquote p {
+  margin: 0;
+}
+
+.information-center-prose hr {
+  margin: 1.45em 0;
+  border: 0;
+  border-top: 1px solid rgba(106, 74, 63, 0.23);
+}
+
+.information-center-prose a {
+  color: #315b89;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.information-center-prose a:focus-visible {
+  outline: 2px solid rgba(49, 91, 137, 0.5);
+  outline-offset: 2px;
+}
+
 .information-center-status {
   position: absolute;
   width: 1px;
