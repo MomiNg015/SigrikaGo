@@ -1029,3 +1029,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 92: 商店路牌固定到底角
+
+**Date**: 2026-07-31
+**Task**: 商店路牌固定到底角
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+将扎希拉页切换路牌固定在左下、残星会页路牌固定在右下，桌面使用14px统一边距、竖屏使用8px统一边距；同步CSS回归测试、Trellis契约与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5363ceb3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
