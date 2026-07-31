@@ -21,6 +21,12 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
+export function submitRoomResignation({ setPendingSkill, onGameAction, onBack }) {
+  setPendingSkill(false);
+  onGameAction({ type: "resign" });
+  onBack?.();
+}
+
 export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -105,9 +111,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       title: "确认认输",
       message: "是否认输？",
       confirmText: "认输",
-      onConfirm: () => onGameAction({ type: "resign" })
+      onConfirm: () => submitRoomResignation({ setPendingSkill, onGameAction })
     });
-  }, [displayRoom.game.phase, onGameAction]);
+  }, [displayRoom.game.phase, onGameAction, setPendingSkill]);
 
   const requestPassConfirm = useCallback(() => {
     if (displayRoom.game.phase !== "playing") return;
@@ -126,14 +132,13 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         message: "对局还没结束，是否认输并退出房间？",
         confirmText: "认输并退出",
         onConfirm: () => {
-          onGameAction({ type: "resign" });
-          onBack();
+          submitRoomResignation({ setPendingSkill, onGameAction, onBack });
         }
       });
       return;
     }
     onBack();
-  }, [displayRoom.game.phase, onBack, onGameAction, role]);
+  }, [displayRoom.game.phase, onBack, onGameAction, role, setPendingSkill]);
   useEffect(() => {
     if (mobileBackRequestId === handledMobileBackRequestIdRef.current) return;
     handledMobileBackRequestIdRef.current = mobileBackRequestId;

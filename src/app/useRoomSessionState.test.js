@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { initialRoomSessionState, roomSessionView } from "./useRoomSessionState.js";
+import {
+  initialRoomSessionState,
+  pendingSkillValueForRoom,
+  roomIdentityForLocalState,
+  roomSessionView,
+  updatePendingSkillDraft
+} from "./useRoomSessionState.js";
 
 describe("room session state", () => {
   it("starts without room, replay, pending skill, or dismissed result", () => {
@@ -53,5 +59,41 @@ describe("room session state", () => {
       room: finishedRoom,
       replayStep: 9
     }).resultModalOpen).toBe(false);
+  });
+
+  it("keeps pending skill selection in its owning room only", () => {
+    const roomA = { code: "11111", role: "player", revision: 1 };
+    const updatedRoomA = { ...roomA, revision: 2 };
+    const roomB = { code: "22222", role: "player", revision: 1 };
+    const roomAIdentity = roomIdentityForLocalState(roomA);
+    const selectedDraft = updatePendingSkillDraft(undefined, true, roomAIdentity);
+
+    expect(pendingSkillValueForRoom(selectedDraft, roomAIdentity)).toBe(true);
+    expect(pendingSkillValueForRoom(
+      selectedDraft,
+      roomIdentityForLocalState(updatedRoomA)
+    )).toBe(true);
+    expect(pendingSkillValueForRoom(
+      selectedDraft,
+      roomIdentityForLocalState(roomB)
+    )).toBe(false);
+    expect(pendingSkillValueForRoom(selectedDraft, "")).toBe(false);
+  });
+
+  it("supports the existing setter updater shape without reviving another room's draft", () => {
+    const roomAIdentity = roomIdentityForLocalState({ code: "11111", role: "player" });
+    const roomBIdentity = roomIdentityForLocalState({ code: "22222", role: "player" });
+    const selectedDraft = updatePendingSkillDraft(undefined, true, roomAIdentity);
+
+    const selectedInRoomB = updatePendingSkillDraft(
+      selectedDraft,
+      (current) => !current,
+      roomBIdentity
+    );
+    expect(pendingSkillValueForRoom(selectedInRoomB, roomAIdentity)).toBe(false);
+    expect(pendingSkillValueForRoom(selectedInRoomB, roomBIdentity)).toBe(true);
+
+    const cancelled = updatePendingSkillDraft(selectedInRoomB, false, roomBIdentity);
+    expect(pendingSkillValueForRoom(cancelled, roomBIdentity)).toBe(false);
   });
 });

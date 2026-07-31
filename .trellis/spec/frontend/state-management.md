@@ -628,11 +628,18 @@ showAchievementUnlocks(result.achievementUnlocks);
 - `useRoomSessionState()` returns `room`, `pendingSkill`, `replayStep`, `dismissedResultRoom`, `resultModalOpen`, and their existing setter callbacks.
 - `initialRoomSessionState()` returns the default room session fields.
 - `roomSessionView(state)` derives `resultModalOpen` through `shouldShowResultModal(room, dismissedResultRoom, replayStep)`.
+- `roomIdentityForLocalState(room)` returns an empty string without a room code, otherwise the stable client-local identity `<room.code>:<room.role>`.
+- `setPendingSkill(next)` preserves the React setter input shape: `next` may be a boolean or `(current: boolean) => boolean`.
+- `submitRoomResignation({ setPendingSkill, onGameAction, onBack? })` clears the local draft, emits `{ type: "resign" }`, then optionally navigates back.
 
 #### 3. Contracts
 - `App.jsx` should read room-session fields from `useRoomSessionState()` instead of adding separate top-level state for room, replay, pending skill, or result dismissal.
 - `resultModalOpen` is derived state and should not be stored separately.
 - `setRoom` remains the only React state entry point for full server room snapshots; socket handlers should still use `applyRoomSnapshot()` before writing same-room updates.
+- The local pending-skill targeting draft must be owned by the room identity in which the player selected it. Store the room and draft in one hook boundary so `setRoom` can preserve the draft for same-identity snapshots and atomically discard it for a different code or role.
+- A different room must derive `pendingSkill === false` in the same render that accepts the new room. Do not rely only on a post-render `useEffect` reset, because that permits one stale targeting frame in the new room.
+- Once a different room identity is accepted, discard the old draft rather than merely hiding it; returning to an older room code must not revive a previous selection.
+- Direct resignation and "resign and exit" must call `setPendingSkill(false)` before emitting the resign action. The exit variant navigates only after that action dispatch.
 - Result resume snapshots should keep using the existing resume-session helpers and setters from this hook.
 - Replay opening should update room, replay step, pending skill, and view together through the existing replay actions.
 
@@ -642,15 +649,24 @@ showAchievementUnlocks(result.achievementUnlocks);
 - Active replay step -> result modal closed even for a finished room.
 - Dismissed room code equals the finished room code -> result modal closed.
 - Invalid finished result -> result modal closed.
+- Same room code and role with a newer revision -> preserve the active local skill draft.
+- Different room code or role -> store the new room and expose `pendingSkill === false` immediately.
+- Return to a former room identity after visiting another room -> keep the old draft discarded.
+- Resign while skill targeting is active -> clear targeting, then emit resign; "resign and exit" then navigates home.
 
 #### 5. Good/Base/Bad Cases
 - Good: `const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSessionState();`
+- Good: a functional `setRoom((current) => applyRoomSnapshot(current, incoming))` preserves the draft only when `code + role` stays the same.
 - Base: `AppRoutes` and `AppOverlays` can continue receiving individual room-session props until those composition boundaries are intentionally narrowed.
 - Bad: `const [resultModalOpen, setResultModalOpen] = useState(false);`
 - Bad: recalculating result modal visibility differently in routes, overlays, and background music.
+- Bad: keeping `pendingSkill` as an unscoped app-level boolean that can stay `true` after the room object changes.
+- Bad: clearing the draft only in `useEffect([room.code])`, because the first render of the next room can still display the targeting state.
 
 #### 6. Tests Required
-- `src/app/useRoomSessionState.test.js` should cover default state and result modal derivation.
+- `src/app/useRoomSessionState.test.js` should cover default state, result modal derivation, room-keyed pending-skill draft updates, and setter updater compatibility.
+- `src/app/useRoomSessionState.dom.test.jsx` should exercise the real hook: same-room functional snapshot updates preserve the draft, another room clears it on first render, and returning to the old room does not revive it.
+- `src/room/RoomScreen.test.js` should assert resignation clears the draft before game-action dispatch and optional navigation.
 - `src/app/resumeSession.test.js` should cover that gomoku five-in-row results show immediately outside replay and stay closed during replay.
 - `src/app/resumeSession.test.js`, `src/app/replayOpening.test.js`, and `src/app/socketHandlers.test.js` should be run after changing room resume, replay, or socket room session behavior.
 
@@ -660,14 +676,26 @@ Wrong:
 
 ```js
 const [room, setRoom] = useState(null);
-const [replayStep, setReplayStep] = useState(null);
-const resultModalOpen = room?.game?.phase === "finished";
+const [pendingSkill, setPendingSkill] = useState(false);
 ```
 
 Correct:
 
 ```js
-const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSessionState();
+const [roomBoundary, setRoomBoundary] = useState({
+  room: null,
+  pendingSkillDraft: { active: false, roomIdentity: "" }
+});
+
+setRoomBoundary((current) => {
+  const nextRoom = applyRoomSnapshot(current.room, incomingRoom);
+  return {
+    room: nextRoom,
+    pendingSkillDraft: roomIdentityForLocalState(current.room) === roomIdentityForLocalState(nextRoom)
+      ? current.pendingSkillDraft
+      : { active: false, roomIdentity: "" }
+  };
+});
 ```
 
 ### Scenario: Match Session State

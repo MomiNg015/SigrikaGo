@@ -4,10 +4,43 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { CHARACTERS } from "../shared/characters.js";
 import { COLORS, createGameState } from "../shared/game.js";
-import { effectiveRoomRole, roomCloseCountdownText, roomGameInfoForPlayers, shouldPlayGameStartVoice, shouldShowRoomCloseCountdown } from "./RoomScreen.jsx";
+import {
+  effectiveRoomRole,
+  roomCloseCountdownText,
+  roomGameInfoForPlayers,
+  shouldPlayGameStartVoice,
+  shouldShowRoomCloseCountdown,
+  submitRoomResignation
+} from "./RoomScreen.jsx";
 import RoomScreen from "./RoomScreen.jsx";
 
 describe("RoomScreen helpers", () => {
+  it("cancels local skill confirmation before resigning and leaving", () => {
+    const steps = [];
+    const directSteps = [];
+
+    submitRoomResignation({
+      setPendingSkill: (value) => directSteps.push(["pending-skill", value]),
+      onGameAction: (action) => directSteps.push(["game-action", action])
+    });
+
+    submitRoomResignation({
+      setPendingSkill: (value) => steps.push(["pending-skill", value]),
+      onGameAction: (action) => steps.push(["game-action", action]),
+      onBack: () => steps.push(["navigation", "back"])
+    });
+
+    expect(directSteps).toEqual([
+      ["pending-skill", false],
+      ["game-action", { type: "resign" }]
+    ]);
+    expect(steps).toEqual([
+      ["pending-skill", false],
+      ["game-action", { type: "resign" }],
+      ["navigation", "back"]
+    ]);
+  });
+
   it("renders a replay room snapshot in spectator view", () => {
     const players = [
       {
@@ -312,6 +345,8 @@ describe("RoomScreen helpers", () => {
     expect(source).toContain("handledMobileBackRequestIdRef.current = mobileBackRequestId");
     expect(source).toContain("requestExitConfirm();");
     expect(source).toContain("对局还没结束，是否认输并退出房间？");
+    expect(source).toContain("submitRoomResignation({ setPendingSkill, onGameAction })");
+    expect(source).toContain("submitRoomResignation({ setPendingSkill, onGameAction, onBack })");
     expect(headerSource).toContain("room-mobile-menu");
     expect(headerSource).toContain("room-mobile-menu-toggle");
     expect(headerSource).toContain("room-mobile-menu-panel");
