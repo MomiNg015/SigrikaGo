@@ -963,3 +963,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 90: 修复积分说明气泡文字溢出
+
+**Date**: 2026-07-31
+**Task**: 修复积分说明气泡文字溢出
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+修复履历积分与段位问号气泡继承统计卡 word-break: keep-all 后中文整句越界的问题；气泡显式恢复正常换行并保留极端长串应急断行，补充同规则块回归断言、前端规范及系统设计。135 项聚焦测试和完整 2299 项测试通过，lint、生产构建、构建 CSS 合同、生产配置与文档生成通过；完整门禁仅被既有 siteSettings 管理快照漂移中断，未改动该无关快照。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e4f3e847` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
