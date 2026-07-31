@@ -5,6 +5,16 @@ import LeaderboardModal, { isLeaderboardCurrentUser, leaderboardRankClass } from
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
+  it("renders a text-only leaderboard header", () => {
+    const markup = renderToStaticMarkup(
+      <LeaderboardModal token="token" user={{ id: "u1" }} characters={{}} onClose={() => {}} />
+    );
+
+    expect(markup).toContain('<header class="leaderboard-header"><h2 id="leaderboard-modal-title">排行榜</h2></header>');
+    expect(markup).not.toContain("至少完成一盘对局的注册用户");
+    expect(markup).not.toContain("lucide-trophy");
+  });
+
   it("exposes tactical rank classes for top-three leaderboard badges", () => {
     expect(leaderboardRankClass(1)).toBe("top-rank rank-1");
     expect(leaderboardRankClass(2)).toBe("top-rank rank-2");
@@ -218,7 +228,7 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain("align-content: start");
     expect(phoneModalMedia).toContain("min-height: 72px");
     expect(phoneModalMedia).toContain(".friends-modal");
-    expect(phoneModalMedia).toContain("grid-template-rows: auto minmax(0, 1fr)");
+    expect(phoneModalMedia).toContain("grid-template-rows: auto auto minmax(0, 1fr)");
     expect(phoneModalMedia).toContain(".friends-list");
     expect(phoneModalMedia).toContain("overflow-y: auto");
     expect(phoneModalMedia).toContain(".friend-action-row");

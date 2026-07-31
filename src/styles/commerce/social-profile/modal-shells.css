@@ -21,3 +21,15 @@
   max-height: calc(100dvh - (var(--page-pad) * 2));
   overflow: auto;
 }
+
+.friends-modal-header {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-right: 44px;
+  margin-bottom: 16px;
+}
+
+.friends-modal-header h2 {
+  margin: 0;
+}

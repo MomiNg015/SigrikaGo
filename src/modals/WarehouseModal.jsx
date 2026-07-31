@@ -1,4 +1,4 @@
-import { Package, X } from "lucide-react";
+import { X } from "lucide-react";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseTargetState } from "./warehouse/WarehouseTargetModal.jsx";
 import { useWarehouseInventory } from "./warehouse/useWarehouseInventory.js";
@@ -19,13 +19,9 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section className="warehouse-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
+        <button className="close-button" type="button" aria-label="关闭仓库" onClick={onClose}><X size={20} /></button>
         <header className="warehouse-header">
-          <Package size={28} />
-          <div>
-            <h2>仓库</h2>
-            <p className="quiet-text">查看并使用已经购买的道具。</p>
-          </div>
+          <h2>仓库</h2>
         </header>
         {loading && <p className="quiet-text">加载中...</p>}
         {!loading && (

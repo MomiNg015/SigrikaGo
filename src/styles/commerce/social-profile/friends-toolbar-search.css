@@ -6,12 +6,6 @@
   margin-bottom: 16px;
 }
 
-@media (min-width: 769px) {
-  .friends-modal-toolbar {
-    padding-right: 64px;
-  }
-}
-
 .friends-tabs {
   display: inline-flex;
   gap: 6px;

@@ -2,14 +2,12 @@
 .leaderboard-header,
 .warehouse-header,
 .house-header,
-.friends-modal-toolbar,
+.friends-modal-header,
 .watch-list-header {
   border-bottom: 1px solid rgba(0, 255, 190, 0.24);
   padding-bottom: 12px;
 }
 
-.leaderboard-header svg,
-.warehouse-header > svg,
 .watch-list-header svg,
 .house-header svg {
   color: var(--terminal-cyan);

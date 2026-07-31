@@ -4,19 +4,6 @@
   padding-bottom: 22px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text {
-  width: fit-content !important;
-  margin: 4px 0 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  color: #6a554d !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  outline: 0 !important;
-  clip-path: none !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-grid {
   gap: 18px !important;
 }

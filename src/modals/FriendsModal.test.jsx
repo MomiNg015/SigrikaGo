@@ -15,7 +15,7 @@ describe("FriendsModal mobile layout", () => {
     expect(normalizeFriendSearchInput("bad<script>")).toBe("badscrip");
   });
 
-  it("renders an explicit close button in the main friends sheet", () => {
+  it("renders a social-system header and an explicit close button in the main friends sheet", () => {
     const html = renderToStaticMarkup(createElement(FriendsModal, {
       token: "token",
       socket: null,
@@ -27,6 +27,7 @@ describe("FriendsModal mobile layout", () => {
 
     expect(html).toContain("friends-modal-close");
     expect(html).toContain("aria-label=\"关闭好友窗口\"");
+    expect(html).toContain('<header class="friends-modal-header"><h2>社交系统</h2></header>');
   });
 
   it("omits rank and rating from friends and blacklist list rows", () => {
@@ -147,6 +148,7 @@ describe("FriendsModal mobile layout", () => {
     expect(phoneModalMedia).toContain("width: 100%");
     expect(phoneModalMedia).not.toContain(".friends-row,\n  .friend-action-row {\n    min-width: 560px;");
     expect(adaptivePhoneMedia).toContain(".friends-list");
+    expect(adaptivePhoneMedia).toContain("grid-template-rows: auto auto minmax(0, 1fr)");
     expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
     expect(adaptivePhoneMedia).toContain("padding-right: 6px");
     expect(adaptivePhoneMedia).toContain("padding-bottom: 6px");
@@ -164,16 +166,22 @@ describe("FriendsModal mobile layout", () => {
     expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
   });
 
-  it("keeps desktop friend search clear of the close button", () => {
+  it("keeps the friends title clear of the close button without shrinking the toolbar", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const brightSchoolRepairCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const desktopCommerceBlock = mediaBlock(commerceCss, "@media (min-width: 769px)");
     const desktopBrightSchoolBlock = mediaBlock(brightSchoolRepairCss, "@media (min-width: 769px)");
+    const headerBlock = commerceCss.match(/\.friends-modal-header\s*\{[^}]+\}/)?.[0] ?? "";
+    const tabsShellBlock = brightSchoolRepairCss.match(/\.friends-tabs\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(desktopCommerceBlock).toContain(".friends-modal-toolbar");
-    expect(desktopCommerceBlock).toContain("padding-right: 64px");
-    expect(desktopBrightSchoolBlock).toContain(".friends-modal .friends-modal-toolbar");
-    expect(desktopBrightSchoolBlock).toContain("padding-right: 68px !important");
+    expect(headerBlock).toContain("padding-right: 44px");
+    expect(headerBlock).toContain("margin-bottom: 16px");
+    expect(desktopCommerceBlock).not.toContain(".friends-modal-toolbar");
+    expect(desktopBrightSchoolBlock).not.toContain(".friends-modal .friends-modal-toolbar");
+    expect(tabsShellBlock).toContain("background: transparent !important");
+    expect(tabsShellBlock).toContain("border: 0 !important");
+    expect(tabsShellBlock).toContain("box-shadow: none !important");
+    expect(commerceCss).toContain(".friends-tabs button.active");
   });
 });
 

@@ -1,12 +1,16 @@
 /* Final phone/tablet leaderboard, friends, house, warehouse, and duel-request rules. */
 @media (max-width: 768px) {
   .leaderboard-modal,
-  .friends-modal,
   .house-modal,
   .warehouse-modal,
   .settings-modal {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .friends-modal {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
   }
 
   .leaderboard-table,

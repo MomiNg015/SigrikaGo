@@ -375,7 +375,8 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain('"Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span");
     expect(themesCss).toContain("clip-path: none !important");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header {");
+    expect(themesCss).not.toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");
     expect(themesCss).toContain("background: transparent !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item strong");
     expect(themesCss).toContain("background: linear-gradient(135deg, #ffdfeb, #fff8e5) !important");

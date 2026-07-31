@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Trophy, X } from "lucide-react";
+import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 import { modeOrderedEntries } from "../shared/gameModes.js";
@@ -38,11 +38,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
       <ModalDialog className="leaderboard-modal" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭排行榜" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header">
-          <Trophy size={26} />
-          <div>
-            <h2 id="leaderboard-modal-title">排行榜</h2>
-            <p className="quiet-text">至少完成一盘对局的注册用户</p>
-          </div>
+          <h2 id="leaderboard-modal-title">排行榜</h2>
         </header>
         <ModeTabs mode={mode} onModeChange={setMode} />
         {loading && <p className="quiet-text">加载中...</p>}

@@ -8,6 +8,20 @@ import { characterItemUseNotice, itemStoryLabels } from "./warehouse/useWarehous
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
+  it("renders a text-only warehouse header", () => {
+    const html = renderToStaticMarkup(createElement(WarehouseModal, {
+      token: "token",
+      user: { ownedCharacters: [] },
+      characters: {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain('<header class="warehouse-header"><h2>仓库</h2></header>');
+    expect(html).toContain('aria-label="关闭仓库"');
+    expect(html).not.toContain("查看并使用已经购买的道具。");
+    expect(html).not.toContain("lucide-package");
+  });
+
   it("uses rejection-specific toast and skip copy without claiming the item succeeded", () => {
     expect(characterItemUseNotice("达妮娅", "彩虹豆豆跳跳糖", "rejected")).toEqual({
       message: "达妮娅拒绝了彩虹豆豆跳跳糖，道具未消耗",

@@ -133,15 +133,15 @@
   padding: 0 !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-tabs {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-search input {
   border-width: 2px !important;
   border-radius: 999px !important;
   box-shadow: 2px 2px 0 var(--bright-border) !important;
   padding: 10px 16px !important;
-}
-
-@media (min-width: 769px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal .friends-modal-toolbar {
-    padding-right: 68px !important;
-  }
 }

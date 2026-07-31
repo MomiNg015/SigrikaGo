@@ -141,6 +141,9 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
           <button className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
             <X size={20} />
           </button>
+          <header className="friends-modal-header">
+            <h2>社交系统</h2>
+          </header>
           <FriendsToolbar
             activeTab={activeTab}
             searchUsername={searchUsername}
