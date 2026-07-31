@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 90
+- **Total Sessions**: 91
 - **Last Active**: 2026-07-31
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~998 | Active |
+| `journal-2.md` | ~1031 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 91 | 2026-07-31 | 商店金币移入页头 | `83c3205e` | `codex/frontend-work` |
 | 90 | 2026-07-31 | 修复积分说明气泡文字溢出 | `e4f3e847` | `codex/frontend-work` |
 | 89 | 2026-07-31 | 角色主题色战绩卡 | `9f8934c5` | `codex/frontend-work` |
 | 88 | 2026-07-31 | 统一履历与用户详情面板配色 | `aec73d4d` | `codex/frontend-work` |

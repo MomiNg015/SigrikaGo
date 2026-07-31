@@ -996,3 +996,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 91: 商店金币移入页头
+
+**Date**: 2026-07-31
+**Task**: 商店金币移入页头
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+移除扎希拉与残星会接待区的钱包图片和重复余额，将当前激活商店的实时金币统一放到页头关闭按钮左侧；同步桌面/竖屏样式、预加载契约、测试与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `83c3205e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
