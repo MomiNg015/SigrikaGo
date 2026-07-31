@@ -864,3 +864,36 @@ Removed warehouse and leaderboard header icon/subtitle chrome, added the Social 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 87: Tint Bright School social and record cards
+
+**Date**: 2026-07-31
+**Task**: Tint Bright School social and record cards
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Applied distinct mist-blue and wheat Bright School card surfaces for social users and character records, darkened positive record text for WCAG AA contrast, added theme contract coverage, and synchronized system design docs. Lint, 2298 tests, CSS inventory, portrait checks, build, built CSS contracts, and production config passed; the broad gate remains blocked only by an unrelated stale siteSettings admin snapshot.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6976a8b5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
