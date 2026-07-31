@@ -219,6 +219,25 @@ describe("player theme CSS contract", () => {
     expect(surfaceContractsEntry).not.toContain("firewall");
   });
 
+  it("keeps Bright School social and character record rows on distinct paper tints", () => {
+    const commerceSocialCss = readFileSync(
+      new URL("./themes/bright-school/surface-contracts/commerce-social-cleanup.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(commerceSocialCss).toContain("--bright-commerce-card-surface: var(--bright-sheet-clean)");
+    expect(commerceSocialCss).toContain("--bright-commerce-card-outline: #4a3736");
+    expect(commerceSocialCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: #e7f5f8;\n}"
+    );
+    expect(commerceSocialCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row {\n  --bright-commerce-card-surface: #fff3c9;\n}"
+    );
+    expect(commerceSocialCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row b {\n  color: #466f54;\n}"
+    );
+  });
+
   it("keeps Bright School theme tokens available to the Tailwind semantic scaffold", () => {
     const brightSchoolCss = readThemeCssTree("bright-school");
     const tailwindTokens = readFileSync(new URL("./tailwind/tokens.css", import.meta.url), "utf8");

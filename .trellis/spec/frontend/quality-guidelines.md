@@ -1712,7 +1712,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
 - Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
 - Close and icon-only controls expose an accessible name.
-- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback.
+- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface, while profile `.character-record-row` cards use the pale wheat `#fff3c9` surface; both keep the shared dark-brown outline and hard shadow, and state meaning remains owned by the existing status labels rather than the card fill. Character-record positive values use the darker green `#466f54` so normal-size text keeps at least WCAG AA contrast on the wheat surface.
 - ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
 
 #### 4. Validation & Error Matrix
@@ -1720,18 +1720,23 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - Escape in a nested picker -> close only the picker.
 - Tab from the last focusable item -> wrap to the first; Shift+Tab from the first -> wrap to the last.
 - Modal closes -> restore focus when the opener is still connected.
+- Bright School social and character-record rows collapse back to one white surface -> theme contract failure.
+- Character-record positive text falls below `4.5:1` against the wheat surface -> accessibility review failure.
 - Hooks dependency mismatch or undefined JSX identifier -> lint failure.
 
 #### 5. Good/Base/Bad Cases
 - Good: a leaderboard modal passes its title id to `labelledBy` and its close button has `aria-label="关闭"`.
+- Good: row-specific custom properties tint social and character-record cards while the shared selector continues to own border, radius, and shadow.
 - Base: a non-interactive visual wrapper remains a normal element and does not pretend to be a dialog.
 - Bad: a clickable `<div>` modal shell with no keyboard focus boundary.
+- Bad: using the whole card fill to encode online, win, or loss state instead of the existing labels and values.
 - Bad: adding a second document-level Escape handler inside each modal.
 
 #### 6. Tests Required
 - `src/modals/modalComponents.dom.test.jsx` asserts initial focus, forward/backward wrapping, Escape close, and opener focus restoration in jsdom.
 - Migrated modal tests assert the shared dialog shell and accessible title/controls.
 - `WarehouseModal.test.js`, `LeaderboardModal.test.jsx`, and `FriendsModal.test.jsx` assert the utility-window header content, the friends title/toolbar/list row contract, and the transparent `.friends-tabs` wrapper while individual tab buttons retain their active styling.
+- `src/styles/themeContract.test.js` locks the mist-blue social surface, wheat character-record surface, shared outline variable, and darker accessible positive-value green.
 - `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
 
 #### 7. Wrong vs Correct
@@ -1749,6 +1754,22 @@ Correct:
   <h2 id="modal-title">Title</h2>
   {children}
 </ModalDialog>
+```
+
+Card surface wrong:
+
+```css
+.friends-row,
+.character-record-row {
+  background: #ffffff;
+}
+```
+
+Card surface correct:
+
+```css
+.friends-row { --bright-commerce-card-surface: #e7f5f8; }
+.character-record-row { --bright-commerce-card-surface: #fff3c9; }
 ```
 
 ### Scenario: Voice Playback and Scoped Background Music Control
