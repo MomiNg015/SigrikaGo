@@ -78,8 +78,10 @@
 
 .zahira-to-costume {
   --shop-sign-image-scale-x: -1;
+  top: auto;
+  right: auto;
   left: 14px;
-  bottom: 96px;
+  bottom: 14px;
   padding-left: 31px;
 }
 
@@ -151,8 +153,10 @@
 
 .costume-to-zahira {
   --shop-sign-image-scale-x: 1;
+  top: auto;
   right: 14px;
   bottom: 14px;
+  left: auto;
   padding-right: 31px;
 }
 

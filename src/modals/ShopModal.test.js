@@ -504,6 +504,10 @@ describe("Zahira shop window", () => {
       new URL("../styles/mobile-adaptive/costume-store.css", import.meta.url),
       "utf8"
     );
+    const costumeStorefrontSource = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/storefront.css", import.meta.url),
+      "utf8"
+    );
 
     expect(commerceCss).toContain(".shop-product-stage");
     expect(commerceCss).toContain(".shop-header-balance");
@@ -533,6 +537,18 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("--shop-sign-image-scale-x: -1");
     expect(commerceCss).toContain(".zahira-to-costume");
     expect(commerceCss).toContain(".costume-to-zahira");
+    expect(costumeStorefrontSource).toMatch(
+      /\.zahira-to-costume\s*\{[^}]*top:\s*auto;[^}]*right:\s*auto;[^}]*left:\s*14px;[^}]*bottom:\s*14px;/s
+    );
+    expect(costumeStorefrontSource).toMatch(
+      /\.costume-to-zahira\s*\{[^}]*top:\s*auto;[^}]*right:\s*14px;[^}]*bottom:\s*14px;[^}]*left:\s*auto;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.zahira-to-costume\s*\{[^}]*right:\s*auto !important;[^}]*bottom:\s*8px !important;[^}]*left:\s*8px !important;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.costume-to-zahira\s*\{[^}]*top:\s*auto !important;[^}]*right:\s*8px !important;[^}]*bottom:\s*8px !important;[^}]*left:\s*auto !important;/s
+    );
     expect(signpostSource).toMatch(
       /\.shop-switch-button::before\s*\{[^}]*background:\s*var\(--shop-sign-image\) center \/ contain no-repeat !important;[^}]*clip-path:\s*none !important;[^}]*transform:\s*scaleX\(var\(--shop-sign-image-scale-x\)\) !important;/s
     );
