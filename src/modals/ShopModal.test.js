@@ -87,8 +87,11 @@ describe("Zahira shop window", () => {
     expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-header-balance"));
     expect(headerHtml.indexOf("shop-header-balance")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
     expect(headerHtml).toContain('aria-label="持有金币 90610"');
+    expect(headerHtml).toContain('class="shop-wallet shop-header-balance"');
+    expect(headerHtml).toContain("lucide-circle-dollar-sign");
     expect(headerHtml).toContain("90610");
     expect(headerHtml).toContain("金币");
+    expect(headerHtml).not.toContain("shop-header-balance-unit");
     expect(html).not.toContain("shop-wallet-image");
     expect(html).not.toContain("/assets/shop/zahira-wallet-v1.webp");
     expect(html).toContain("shop-product-stage");
@@ -532,7 +535,10 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
-    expect(themeCss).toContain(".shop-header-balance");
+    expect(sidebarWalletSource).toContain(
+      "background: linear-gradient(135deg, #fff8c7, #f6cf6a 42%, #d89b2b 100%) !important"
+    );
+    expect(shopWindowSource).not.toContain("background: #f6cf6a !important");
     expect(commerceCss).toContain("--shop-sign-image");
     expect(commerceCss).toContain("--shop-sign-image-scale-x: -1");
     expect(commerceCss).toContain(".zahira-to-costume");

@@ -94,6 +94,9 @@
 <li>商店双页的切换路牌使用镜像底角锚点：扎希拉页固定左下，残星会页固定右下，桌面统一内缩 <code>14px</code>，竖屏统一内缩 <code>8px</code>；两端都显式清除顶部和相反方向 inset，避免旧定位把路牌抬回接待区。</li>
 </ul>
 <ul>
+<li>商店页头金币复用履历的 <code>.shop-wallet</code> 视觉契约和 <code>CircleDollarSign</code> 图标，显示实时数字并继承同一黄金币渐变、深色描边与硬阴影；页头只负责紧凑尺寸，不再覆盖成独立纯色。</li>
+</ul>
+<ul>
 <li>后台角色管理响应以 <code>id</code> 暴露规范角色标识；服装编辑器用该 <code>id</code> 作为列表匹配、选项值和提交的 <code>characterSlug</code>，仅为旧响应形状保留 <code>slug</code> 回退，避免把角色显示名误提交为服装目标。</li>
 </ul>
 <ul>
@@ -4689,6 +4692,9 @@
 </ul>
 <ul>
 <li>商店双页的切换路牌在桌面和竖屏都使用镜像底角锚点：扎希拉页位于左下，残星会页位于右下；桌面统一使用 <code>14px</code> 边距，最终移动层统一使用 <code>8px</code> 边距，并显式清除顶部与相反方向的 inset。</li>
+</ul>
+<ul>
+<li>商店页头余额与履历金币共用 <code>.shop-wallet</code> 的黄金币渐变、深色描边、硬阴影和 <code>CircleDollarSign</code> 图标；商店 owner 只压缩竖屏尺寸，不再声明会覆盖共享渐变的纯色背景。</li>
 </ul>
 <ul>
 <li>IRIS Database 是首页自有的视口固定入口而不是舞台网格项。<code>src/home/IrisDatabase.jsx</code> 持有本地打开状态并复用共享 <code>ModalDialog</code>；入口和弹窗完整使用数据流原型 v2 的深蓝/绿色、切角、断线节点、点阵数据字与扫描语法，入口与窗口的立绘槽都不渲染 <code>&lt;img&gt;</code> 或请求候选人物资源。<code>src/styles/base/foundation.css</code> 将内置 <code>public/assets/fonts/DottedSongtiCircleRegular.otf</code> 注册为 IRIS 专用 <code>Dotted Songti Circle</code> 字体：入口整体只用该字体；窗口使用 WuWa 拉丁/数字字形在前、<code>Dotted Songti Circle</code> 字体在后的组合栈，因此英文和数字走 WuWa，中文与符号走<code>Dotted Songti Circle</code> 字体；友情链接索引列表在自身 owner 中覆盖为全 <code>Dotted Songti Circle</code> 字体，Bright School 的最终字体胜出规则独立放在 <code>themes/bright-school/modals/iris-database-typography.css</code>。桌面窗口采用左侧空立绘数据扇区/右侧编号链接记录，竖屏移动端采用上方立绘扇区/下方记录列表；不再由 Bright School 把右栏覆盖成米白纸面，也不使用圆角外壳、圆角资料行或围棋棋子列表。问候语绝对定位在立绘扇区顶部 8%（竖屏 13%），立绘扫描框从 20%（竖屏 34%）开始，二者测量不重叠；通讯条始终完整显示 <code>irisGreeting</code> 台词池中本次打开时随机选中的一条，不再自动收起、响应点击或显示收起态。资料列表自身使用 <code>overflow-y: auto</code>、<code>overscroll-behavior: contain</code> 和稳定滚动条槽，条目增加时不撑高窗口。问候语池由共享规范化器限制为最多 12 条、每条 80 字，并兼容旧数据库中的单条纯文本；链接限制为最多 30 条安全 HTTP(S) 地址，并在后台“看板娘管理”页的 IRIS 分区一起编辑。编辑页加载完成前不显示可编辑草稿，加载完成后仅 token 改变会重新取数，父层重渲染与字段换焦不会覆盖未保存输入。入口使用 safe-area 右偏移、保持现有宽度并以 1.56 宽高比把原高度减半，同时维持 44px 以上触控面，低于弹窗遮罩与手机菜单层；样式按 entry、shell、greeting、portrait、archive、records 与 Bright School winner 分开持有，扫描和边缘流动具备 reduced-motion 停止态。</li>

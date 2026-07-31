@@ -37,16 +37,10 @@
     min-height: 34px !important;
     gap: 3px !important;
     padding: 4px 8px !important;
-    border-width: 2px !important;
-    box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.66) !important;
   }
 
   .shop-header-balance-value {
     font-size: clamp(12px, 3.8vw, 16px) !important;
-  }
-
-  .shop-header-balance-unit {
-    font-size: 10px !important;
   }
 
   .shop-refresh-button,
