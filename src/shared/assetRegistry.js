@@ -30,8 +30,7 @@ import {
   SHOP_DIRECTION_SIGN_IMAGE,
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE,
-  SHOP_MOBILE_BACKGROUND_IMAGE,
-  SHOP_WALLET_IMAGE
+  SHOP_MOBILE_BACKGROUND_IMAGE
 } from "./shopMascotAssets.js";
 
 export const RUNTIME_IMAGE_ASSETS = Object.freeze({
@@ -57,7 +56,6 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     SHOP_DIRECTION_SIGN_IMAGE,
     SHOP_MASCOT_DEFAULT_IMAGE,
     SHOP_MASCOT_THANKS_IMAGE,
-    SHOP_WALLET_IMAGE,
     "/assets/costumes/nivora-greeting.webp",
     "/assets/costumes/nivora-thanks.webp",
     "/assets/costumes/nivora-empty.webp",

@@ -1,7 +1,6 @@
 import { COSTUME_MASCOT_IMAGES } from "../costumeShopHelpers.js";
-import ShopWallet from "./ShopWallet.jsx";
 
-export default function CostumeSidebar({ line, mood, user }) {
+export default function CostumeSidebar({ line, mood }) {
   return (
     <aside className="costume-shop-host" aria-label="娜波摩接待区">
       <div className="costume-shop-mascot-slot" role="img" aria-label="娜波摩立绘" data-mascot-mood={mood}>
@@ -19,7 +18,6 @@ export default function CostumeSidebar({ line, mood, user }) {
         ))}
       </div>
       <div className="costume-shop-bubble" aria-live="polite">{line}</div>
-      <ShopWallet className="costume-shop-wallet-wrap" user={user} />
     </aside>
   );
 }

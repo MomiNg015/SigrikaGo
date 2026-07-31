@@ -73,38 +73,6 @@
   filter: drop-shadow(14px 16px 0 rgba(61, 43, 37, 0.2)) drop-shadow(0 12px 18px rgba(255, 158, 187, 0.18)) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
-  grid-area: wallet !important;
-  position: absolute !important;
-  z-index: 2 !important;
-  top: 30% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: fit-content !important;
-  max-width: 100% !important;
-  margin: 0 auto 14px !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 6px !important;
-  background: transparent !important;
-  color: #3d2b25 !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap > span {
-  background: transparent !important;
-  color: #3d2b25 !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  font-weight: 900 !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet {
   min-height: 38px !important;
   margin: 0 !important;

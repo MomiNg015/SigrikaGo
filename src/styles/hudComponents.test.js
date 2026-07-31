@@ -334,8 +334,8 @@ describe("component-level HUD refinements", () => {
 
   it("keeps the Bright School shop modal centered and free from tactical bleed-through", () => {
     expect(themesCss).toContain("Bright School shop modal polish layer.");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap");
-    expect(themesCss).toContain("background: linear-gradient(135deg, #fff8c7, #f6cf6a 42%, #d89b2b 100%) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header-balance");
+    expect(themesCss).toContain("background: #f6cf6a !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img");
     expect(themesCss).toContain("background: transparent !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-decoration::after");

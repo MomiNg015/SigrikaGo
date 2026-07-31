@@ -30,14 +30,6 @@
     max-height: none !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
-    position: static !important;
-    transform: none !important;
-    align-self: end !important;
-    justify-self: start !important;
-    margin: 0 0 12px !important;
-  }
-
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item-detail-modal {
     grid-template-columns: minmax(0, 1fr) !important;
   }

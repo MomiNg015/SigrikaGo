@@ -8,17 +8,6 @@
     top: 59% !important;
   }
 
-  .shop-wallet-wrap,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
-    top: 58% !important;
-    width: 26% !important;
-  }
-
-  .shop-wallet-image,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-image {
-    width: min(56px, 15vw) !important;
-  }
-
   .shop-wallet,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet {
     min-height: 26px !important;

@@ -42,8 +42,7 @@ import {
   SHOP_MASCOT_THANKS_IMAGE,
   SHOP_MASCOT_THANKS_LINE,
   SHOP_MOBILE_BACKGROUND_IMAGE,
-  SHOP_REFRESH_COOLDOWN_MS,
-  SHOP_WALLET_IMAGE
+  SHOP_REFRESH_COOLDOWN_MS
 } from "./shopModalHelpers.js";
 import {
   getShopItemDetailOwned,
@@ -69,7 +68,7 @@ const sampleItem = {
 };
 
 describe("Zahira shop window", () => {
-  it("renders the semantic refresh-title-close header and the new single product stage", () => {
+  it("renders refresh, title, live coin balance, and close in one semantic header", () => {
     const html = renderToStaticMarkup(createElement(ShopModal, {
       token: "token",
       user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
@@ -85,7 +84,13 @@ describe("Zahira shop window", () => {
     expect(html).toContain("shop-close-button");
     const headerHtml = html.slice(html.indexOf("<header"), html.indexOf("</header>"));
     expect(headerHtml.indexOf("shop-refresh-button")).toBeLessThan(headerHtml.indexOf("shop-window-title"));
-    expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
+    expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-header-balance"));
+    expect(headerHtml.indexOf("shop-header-balance")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
+    expect(headerHtml).toContain('aria-label="持有金币 90610"');
+    expect(headerHtml).toContain("90610");
+    expect(headerHtml).toContain("金币");
+    expect(html).not.toContain("shop-wallet-image");
+    expect(html).not.toContain("/assets/shop/zahira-wallet-v1.webp");
     expect(html).toContain("shop-product-stage");
     expect(html).not.toContain("shop-tabs");
     expect(html).not.toContain("shop-pagination");
@@ -93,20 +98,17 @@ describe("Zahira shop window", () => {
     expect(html).toContain(SHOP_MASCOT_LOADING_LINE);
   });
 
-  it("renders both mascot layers and the replaceable wallet raster", () => {
+  it("renders both Zahira mascot layers without duplicating the header balance", () => {
     const html = renderToStaticMarkup(createElement(ShopSidebar, {
       mascotLine: SHOP_MASCOT_THANKS_LINE,
-      mascotMood: SHOP_MASCOT_MOODS.thanks,
-      user: { coins: 180 }
+      mascotMood: SHOP_MASCOT_MOODS.thanks
     }));
 
     expect(html).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
     expect(html).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
     expect(html).toContain('shop-mascot-image-thanks is-active');
-    expect(html).toContain(`src="${SHOP_WALLET_IMAGE}"`);
-    expect(html).toContain('width="1024"');
-    expect(html).toContain('height="768"');
-    expect(html).toContain('aria-label="持有金币 180"');
+    expect(html).not.toContain("shop-header-balance");
+    expect(html).not.toContain("shop-wallet");
   });
 
   it("uses configured mascot dialogue without changing the shop presentation", () => {
@@ -144,23 +146,21 @@ describe("Zahira shop window", () => {
     expect(html).toContain("costume-shop-stage");
   });
 
-  it("reuses the Zahira wallet component inside the clothing store", () => {
+  it("keeps the clothing reception free of duplicate balance UI", () => {
     const html = renderToStaticMarkup(createElement(CostumeSidebar, {
       line: "欢迎光临。",
-      mood: "greeting",
-      user: { coins: 460 }
+      mood: "greeting"
     }));
 
-    expect(html).toContain('class="shop-wallet-wrap costume-shop-wallet-wrap"');
-    expect(html).toContain(`src="${SHOP_WALLET_IMAGE}"`);
-    expect(html).toContain('aria-label="持有金币 460"');
+    expect(html).toContain('class="costume-shop-host"');
+    expect(html).not.toContain("shop-header-balance");
+    expect(html).not.toContain("shop-wallet");
     expect(html).not.toContain("✉️");
   });
 
-  it("keeps mascot and wallet WebP assets at their source dimensions", () => {
+  it("keeps both Zahira mascot WebP assets at their source dimensions", () => {
     expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
     expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
-    expect(webpInfo("../../public/assets/shop/zahira-wallet-v1.webp")).toEqual({ encoding: "VP8L", width: 1024, height: 768 });
   });
 
   it("keeps both complete dialogue frames lossless and wide enough for live copy", () => {
@@ -506,6 +506,8 @@ describe("Zahira shop window", () => {
     );
 
     expect(commerceCss).toContain(".shop-product-stage");
+    expect(commerceCss).toContain(".shop-header-balance");
+    expect(commerceCss).toContain("grid-template-columns: 52px minmax(0, 1fr) max-content 52px;");
     expect(commerceCss).toContain("white-space: nowrap;");
     expect(commerceCss).toContain("overflow: visible;");
     expect(commerceCss).toContain("text-overflow: clip;");
@@ -526,6 +528,7 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain("bottom: 4px;");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
     expect(themeCss).toContain(".shop-header h2");
+    expect(themeCss).toContain(".shop-header-balance");
     expect(commerceCss).toContain("--shop-sign-image");
     expect(commerceCss).toContain("--shop-sign-image-scale-x: -1");
     expect(commerceCss).toContain(".zahira-to-costume");
@@ -602,6 +605,10 @@ describe("Zahira shop window", () => {
     expect(mobileCss).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header .shop-close-button"
     );
+    expect(shopMobileSource).toContain(
+      "grid-template-columns: 44px minmax(0, 1fr) max-content 44px !important"
+    );
+    expect(shopMobileSource).toContain(".shop-header-balance-value");
     expect(mobileCss).toContain("position: static !important");
     expect(mobileCss).toContain("inset: auto !important");
     expect(themeCss).toContain(".costume-shop-card-trigger:hover");
@@ -642,10 +649,7 @@ describe("Zahira shop window", () => {
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item"
     ));
     expect(mobileCss).toContain("bottom: -2% !important");
-    expect(mobileCss).toContain("top: 57.5% !important");
-    expect(mobileCss).toContain("width: min(70px, 19vw) !important");
     expect(mobileCss).toContain("height: 30% !important");
-    expect(mobileCss).toContain("width: min(56px, 15vw) !important");
     expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
     expect(mobileCss).not.toContain("margin-left: -16px !important");
     expect(mobileCss).toContain("width: 44px !important");

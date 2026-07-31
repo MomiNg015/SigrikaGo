@@ -14,7 +14,6 @@ export default function CostumeStorePanel({
   batchVersion,
   mascotLine,
   mascotMood,
-  user,
   onShowDetail,
   onSwitchShop
 }) {
@@ -42,7 +41,7 @@ export default function CostumeStorePanel({
 
   return (
     <div className="costume-store-panel" data-batch-version={batchVersion}>
-      <CostumeSidebar line={mascotLine} mood={mascotMood} user={user} />
+      <CostumeSidebar line={mascotLine} mood={mascotMood} />
       <section
         className={`costume-shop-stage costume-shop-count-${batch.length}`}
         ref={stageRef}

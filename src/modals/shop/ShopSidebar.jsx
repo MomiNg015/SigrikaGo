@@ -3,9 +3,8 @@ import {
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_THANKS_IMAGE
 } from "../shopModalHelpers.js";
-import ShopWallet from "./ShopWallet.jsx";
 
-export default function ShopSidebar({ mascotLine, mascotMood = SHOP_MASCOT_MOODS.default, user }) {
+export default function ShopSidebar({ mascotLine, mascotMood = SHOP_MASCOT_MOODS.default }) {
   const thanksActive = mascotMood === SHOP_MASCOT_MOODS.thanks;
 
   return (
@@ -31,7 +30,6 @@ export default function ShopSidebar({ mascotLine, mascotMood = SHOP_MASCOT_MOODS
           aria-hidden="true"
         />
       </div>
-      <ShopWallet user={user} />
     </aside>
   );
 }

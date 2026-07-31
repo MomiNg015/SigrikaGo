@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { shopMascotDialoguesFromSettings } from "../shared/shopMascotDialogues.js";
 import { ModalDialog } from "./modalComponents.jsx";
+import ShopCoinBalance from "./shop/ShopCoinBalance.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import ShopProductStage from "./shop/ShopProductStage.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
@@ -91,6 +92,7 @@ export default function ShopModal({
           <h2 id="shop-window-title" className={activeStore === "costume" ? "is-costume-title" : undefined}>
             {activeStore === "costume" ? "残星会cosplay部" : "扎希拉商铺"}
           </h2>
+          <ShopCoinBalance coins={activeCatalog.effectiveUser?.coins ?? user?.coins ?? 0} />
           <button className="close-button shop-close-button" type="button" aria-label="关闭商店" onClick={onClose}>
             <X aria-hidden="true" />
           </button>
@@ -108,7 +110,7 @@ export default function ShopModal({
                   onBuy={buyItem}
                   onShowDetail={setDetailItem}
                 />
-                <ShopSidebar mascotLine={mascotLine} mascotMood={mascotMood} user={zahiraCatalog.effectiveUser} />
+                <ShopSidebar mascotLine={mascotLine} mascotMood={mascotMood} />
                 <button className="shop-switch-button zahira-to-costume" type="button" onClick={() => switchStore("costume")}>
                   <span>残星会</span>
                 </button>
@@ -120,7 +122,6 @@ export default function ShopModal({
                 batchVersion={costumeCatalog.batchVersion}
                 mascotLine={costumeCatalog.mascotLine}
                 mascotMood={costumeCatalog.mascotMood}
-                user={costumeCatalog.effectiveUser}
                 onShowDetail={setDetailCostume}
                 onSwitchShop={() => switchStore("zahira")}
               />

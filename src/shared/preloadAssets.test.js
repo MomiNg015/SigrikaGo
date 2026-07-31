@@ -142,6 +142,7 @@ describe("deployment preload asset helpers", () => {
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_DIRECTION_SIGN_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/shop/zahira-wallet-v1.webp");
     expect(fs.existsSync(path.resolve("public", SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(fs.existsSync(path.resolve("public", SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
     expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);

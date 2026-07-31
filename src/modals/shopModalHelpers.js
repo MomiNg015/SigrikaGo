@@ -34,8 +34,7 @@ export {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_THANKS_IMAGE,
-  SHOP_MOBILE_BACKGROUND_IMAGE,
-  SHOP_WALLET_IMAGE
+  SHOP_MOBILE_BACKGROUND_IMAGE
 } from "../shared/shopMascotAssets.js";
 
 export function pickShopMascotLine(random = Math.random, lines = SHOP_MASCOT_LINES) {
