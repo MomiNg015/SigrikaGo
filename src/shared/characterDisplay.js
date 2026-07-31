@@ -20,7 +20,14 @@ export function findCharacter(characters, characterOrId) {
       }
     });
   }
-  return withCharacterSystemVoices(characters[characterId] ?? fallback);
+  const catalogCharacter = Array.isArray(characters)
+    ? characters.find((character) => canonicalCharacterId(character?.id) === characterId)
+    : characters?.[characterId];
+  return withCharacterSystemVoices(catalogCharacter ?? fallback);
+}
+
+export function characterThemeStyle(character) {
+  return { "--character-theme-color": character?.palette || CHARACTERS.sigrika.palette };
 }
 
 export function withCharacterSystemVoices(character) {

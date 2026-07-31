@@ -5,7 +5,7 @@ import { CHARACTERS } from "../shared/characters.js";
 import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
-import { findCharacter } from "../shared/characterDisplay.js";
+import { characterThemeStyle, findCharacter } from "../shared/characterDisplay.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import { ModalActionButton } from "./modalComponents.jsx";
@@ -200,7 +200,7 @@ export function UserProfileCard({
             const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
             const record = characterRecordColumns(item);
             return (
-              <div className="profile-character-row" key={item.characterId}>
+              <div className="profile-character-row" style={characterThemeStyle(character)} key={item.characterId}>
                 <span className="profile-chain-portrait small">
                   <img {...characterPortraitImageProps(character, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={character.name} />
                   <CharacterChainBadge user={profileUser} characterId={character.id} />

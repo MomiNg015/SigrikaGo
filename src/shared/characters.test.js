@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { characterThemeStyle, findCharacter } from "./characterDisplay.js";
 import { CHARACTERS, characterList, characterListFromCatalog, mergeCharacters } from "./characters.js";
 
 describe("character fallback", () => {
@@ -27,6 +28,17 @@ describe("character fallback", () => {
         costValue: "4"
       }
     });
+  });
+
+  it("resolves list catalogs and exposes their current character theme color", () => {
+    const character = findCharacter([{
+      id: "sigrika",
+      name: "西格莉卡",
+      palette: "#67d9e8"
+    }], "sigrika");
+
+    expect(character.palette).toBe("#67d9e8");
+    expect(characterThemeStyle(character)).toEqual({ "--character-theme-color": "#67d9e8" });
   });
 
   it("includes Mornye as a built-in recruitable admin-open character", () => {

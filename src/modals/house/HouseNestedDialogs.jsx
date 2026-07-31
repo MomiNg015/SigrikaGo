@@ -1,5 +1,6 @@
 import { Shirt, X } from "lucide-react";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
+import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/characterCv.js";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
@@ -49,7 +50,7 @@ export function CharacterDetailDialog({
     <div className="nested-modal-backdrop" onClick={onClose}>
       <section
         className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`}
-        style={{ "--character-theme-color": character.palette || "#ff9b4d" }}
+        style={characterThemeStyle(character)}
         onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" onClick={onClose}><X size={18} /></button>
@@ -178,7 +179,7 @@ export function CharacterRecordsPanel({ characterRecords, itemEffects }) {
       {characterRecords.map((entry) => {
         const record = characterRecordColumns(entry);
         return (
-          <article className="character-record-row" key={entry.character.id}>
+          <article className="character-record-row" style={characterThemeStyle(entry.character)} key={entry.character.id}>
             <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
             <strong>{entry.character.name}</strong>
             <span className="character-record-total">{record.total}{"\u5c40"}</span>

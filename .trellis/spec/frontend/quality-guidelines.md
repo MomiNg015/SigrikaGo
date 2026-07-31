@@ -1712,7 +1712,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
 - Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
 - Close and icon-only controls expose an accessible name.
-- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Equivalent profile panels must not fork their palettes by markup: both `.profile-resume-stats > span` and `.profile-resume-stats > .stat` use the same summary-card treatment, while `.profile-character-row` and `.character-record-row` use the pale wheat `#fff3c9` surface with the shared dark-brown outline and hard shadow. State meaning remains owned by existing labels rather than card fill. Character-record positive values use the darker green `#466f54` so normal-size text keeps at least WCAG AA contrast on the wheat surface.
+- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Equivalent profile panels must not fork their palettes by markup: both `.profile-resume-stats > span` and `.profile-resume-stats > .stat` use the same summary-card treatment. Each `.profile-character-row` and `.character-record-row` receives the current catalog character `palette` through `--character-theme-color`, then uses an 18% theme-color mix against the clean white sheet for a restrained light surface while retaining the shared dark-brown outline and hard shadow. State meaning remains owned by existing labels rather than card fill. Character-record positive values use the darker green `#3b6048`; the light mix keeps normal-size text above WCAG AA even for the darkest configurable palette.
 - ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
 
 #### 4. Validation & Error Matrix
@@ -1720,8 +1720,8 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - Escape in a nested picker -> close only the picker.
 - Tab from the last focusable item -> wrap to the first; Shift+Tab from the first -> wrap to the last.
 - Modal closes -> restore focus when the opener is still connected.
-- Bright School social and character-record rows collapse back to one white surface -> theme contract failure.
-- Character-record positive text falls below `4.5:1` against the wheat surface -> accessibility review failure.
+- Bright School character-record rows collapse back to one fixed white/wheat surface or ignore the live character `palette` -> theme contract failure.
+- Character-record positive text falls below `4.5:1` against a generated light theme surface -> accessibility review failure.
 - Hooks dependency mismatch or undefined JSX identifier -> lint failure.
 
 #### 5. Good/Base/Bad Cases
@@ -1736,7 +1736,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - `src/modals/modalComponents.dom.test.jsx` asserts initial focus, forward/backward wrapping, Escape close, and opener focus restoration in jsdom.
 - Migrated modal tests assert the shared dialog shell and accessible title/controls.
 - `WarehouseModal.test.js`, `LeaderboardModal.test.jsx`, and `FriendsModal.test.jsx` assert the utility-window header content, the friends title/toolbar/list row contract, and the transparent `.friends-tabs` wrapper while individual tab buttons retain their active styling.
-- `src/styles/themeContract.test.js` locks the mist-blue social surface, wheat character-record surface, shared outline variable, and darker accessible positive-value green.
+- `src/styles/themeContract.test.js` locks the mist-blue social surface, character-palette light mix, shared outline variable, and darker accessible positive-value green; profile rendering tests assert both row variants expose `--character-theme-color`.
 - `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
 
 #### 7. Wrong vs Correct
@@ -1769,7 +1769,9 @@ Card surface correct:
 
 ```css
 .friends-row { --bright-commerce-card-surface: #e7f5f8; }
-:is(.profile-character-row, .character-record-row) { --bright-commerce-card-surface: #fff3c9; }
+:is(.profile-character-row, .character-record-row) {
+  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color) 18%, #ffffff);
+}
 ```
 
 ### Scenario: Voice Playback and Scoped Background Music Control

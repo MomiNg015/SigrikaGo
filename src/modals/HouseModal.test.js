@@ -78,18 +78,36 @@ describe("deriveCharacterRecordStats", () => {
         rating: 1160,
         record: "29局 · 15胜10负4和",
         characterId: "sigrika",
-        characterStats: [],
+        characterStats: [{
+          characterId: "sigrika",
+          total: 29,
+          wins: 15,
+          losses: 10,
+          draws: 4
+        }],
         likeCount: 3,
         achievementEquipmentAssets: {
           nameplate: { imageUrl: "/assets/nameplate.png", name: "用户名背景" }
         }
       },
-      characters: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }],
+      characters: {
+        sigrika: {
+          id: "sigrika",
+          name: "西格莉卡",
+          palette: "#67d9e8",
+          portrait: "/assets/sigrika_centered.webp"
+        }
+      },
       token: "token"
     }));
     const recordHtml = renderToStaticMarkup(createElement(CharacterRecordsDialog, {
       characterRecords: [{
-        character: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+        character: {
+          id: "sigrika",
+          name: "西格莉卡",
+          palette: "#f2a4d8",
+          portrait: "/assets/sigrika_centered.webp"
+        },
         total: 29,
         wins: 15,
         losses: 10,
@@ -113,6 +131,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
     expect(profileHtml).toContain("recent-result-label");
     expect(profileHtml).toContain("最近十盘的战绩");
+    expect(profileHtml).toContain("--character-theme-color:#67d9e8");
     expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-resume-stats"));
     expect(profileHtml).not.toContain("3段 · 1160分");
     expect(recordHtml).toContain("character-record-total");
@@ -120,6 +139,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(recordHtml).toContain("character-record-losses");
     expect(recordHtml).toContain("character-record-draws");
     expect(recordHtml).toContain("character-record-rate");
+    expect(recordHtml).toContain("--character-theme-color:#f2a4d8");
   });
 
   it("disables profile like and report actions for self and disables repeat daily likes", () => {

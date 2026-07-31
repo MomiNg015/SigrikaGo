@@ -21,11 +21,11 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {
-  --bright-commerce-card-surface: #fff3c9;
+  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));
 }
 
 .app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {
-  color: #466f54;
+  color: #3b6048;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .shop-item::after,

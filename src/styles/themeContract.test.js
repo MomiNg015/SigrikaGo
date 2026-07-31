@@ -235,10 +235,10 @@ describe("player theme CSS contract", () => {
       ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: #e7f5f8;\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {\n  --bright-commerce-card-surface: #fff3c9;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {\n  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {\n  color: #466f54;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {\n  color: #3b6048;\n}"
     );
     expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) {");
     expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) > :is(small, span) {");
