@@ -847,6 +847,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");
     expect(lobbyCss).toContain(".character-card .character-item-effect-icon");
+    expect(lobbyCss).toMatch(
+      /\.stat-tip\s*\{[^}]*white-space: normal;[^}]*word-break: normal;[^}]*overflow-wrap: anywhere;[^}]*\}/
+    );
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("width: 24px;");

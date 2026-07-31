@@ -1237,6 +1237,7 @@ Required assertion points:
 - Card-level selectors such as `.profile-resume-stats > span` must target direct stat cards only; do not use `.profile-resume-stats span` when nested record-line spans exist.
 - Recent rank result markers must render below the record/rating/rank stat row, not inside one stat card. On mobile profile and resume modals, the ten-result marker set must stay on one marker row; use a ten-column grid plus `clamp()` marker/font sizing instead of `flex-wrap` so wins/losses shrink before wrapping. Empty-state text such as `暂无` must span the marker grid, stay centered, and use a wider responsive chip than a single win/loss marker so the text cannot overflow its border.
 - In resume/profile modals, `.profile-grid.top-stats-bar` is the outer wrapper for stat cards plus recent-result markers and must stay `grid-template-columns: 1fr` in base, mobile, Bright School mobile, and final `mobile-adaptive.css` layers. On desktop resume modals, keep this wrapper `overflow: visible` so rating/rank `.stat-tip` popovers can escape the stat row; the embedded `.resume-character-records` section owns its own internal scroll/clip behavior. The inner `.profile-resume-stats` grid must keep all three stat cards on one row with `repeat(3, minmax(0, 1fr))`; on mobile, split only the record card value into total games and win/loss/draw lines.
+- Rating/rank `.stat-tip` prose must explicitly restore `white-space: normal`, `word-break: normal`, and `overflow-wrap: anywhere`; Bright School summary cards deliberately use `word-break: keep-all` for short labels, and allowing that inherited value into Chinese tooltip prose makes an entire sentence overflow the tooltip surface.
 - In the `履历` modal, character records for the selected mode are embedded below the recent-result marker row as `.resume-character-records`. Do not reopen the old nested `CharacterRecordsDialog` from the stat card; keep the stat cards as summary data and the character list as an internally scrolling section.
 
 Wrong:
@@ -1255,6 +1256,16 @@ Correct:
   <span className="profile-record-separator"> · </span>
   <span className="profile-record-breakdown">15胜10负4和</span>
 </b>
+```
+
+Tooltip inheritance boundary:
+
+```css
+.stat-tip {
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
 ```
 
 ### Bright School Home Responsive Contracts
