@@ -897,3 +897,36 @@ Applied distinct mist-blue and wheat Bright School card surfaces for social user
 ### Next Steps
 
 - None - task complete
+
+
+## Session 88: 统一履历与用户详情面板配色
+
+**Date**: 2026-07-31
+**Task**: 统一履历与用户详情面板配色
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Bright School 履历与用户详细信息共用统计卡配色，并统一两处角色战绩卡的浅麦黄与正向数值色；补充主题合同、前端规范和系统设计文档。自动化测试、lint、构建、产物 CSS 与生产配置通过；总门禁仅被既有 siteSettings 后台快照漂移截断。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aec73d4d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

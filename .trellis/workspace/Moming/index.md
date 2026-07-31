@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 87
+- **Total Sessions**: 88
 - **Last Active**: 2026-07-31
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~899 | Active |
+| `journal-2.md` | ~932 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 88 | 2026-07-31 | 统一履历与用户详情面板配色 | `aec73d4d` | `codex/frontend-work` |
 | 87 | 2026-07-31 | Tint Bright School social and record cards | `6976a8b5` | `codex/frontend-work` |
 | 86 | 2026-07-31 | Simplify utility window headers | `09e40462` | `codex/frontend-work` |
 | 85 | 2026-07-31 | Fix pending skill state leaking across rooms | `50f44288` | `codex/frontend-work` |
