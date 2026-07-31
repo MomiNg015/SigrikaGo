@@ -75,6 +75,20 @@ describe("LeaderboardModal layout", () => {
     );
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const rankBackgroundOwners = [
+      [
+        readFileSync(new URL("../styles/themes/bright-school/modals/leaderboard.css", import.meta.url), "utf8"),
+        ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank"
+      ],
+      [
+        readFileSync(new URL("../styles/themes/bright-school/component-repairs/lists-profile.css", import.meta.url), "utf8"),
+        ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank"
+      ],
+      [
+        readFileSync(new URL("../styles/mobile-adaptive/bright-school-overrides/leaderboard-cards/modal-list-shell.css", import.meta.url), "utf8"),
+        ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank"
+      ]
+    ];
 
     expect(markup).toContain("leaderboard-row");
     expect(markup).toContain("leaderboard-avatar");
@@ -84,10 +98,14 @@ describe("LeaderboardModal layout", () => {
     expect(brightSchoolCss).toContain(".leaderboard-row.current-user");
     expect(brightSchoolCss).toContain(".leaderboard-current .leaderboard-row");
     expect(brightSchoolCss).toContain("#73b79f");
-    expect(brightSchoolCss).toContain("#dff5df");
     expect(finalMobileCss).toContain(".leaderboard-row.current-user");
     expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
     expect(finalMobileCss).toContain("linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98))");
+    for (const [css, selector] of rankBackgroundOwners) {
+      const rankBlock = cssBlock(css, selector);
+      expect(rankBlock).toContain("background: transparent !important;");
+      expect(rankBlock).not.toContain("#dff5df");
+    }
   });
 
   it("keeps column headings aligned with scrollable player rows", () => {
@@ -287,6 +305,15 @@ function mediaBlock(css, marker) {
     start = css.indexOf(marker, start + marker.length);
   }
   return blocks.join("\n");
+}
+
+function cssBlock(css, selector) {
+  const source = css.replace(/\r\n/g, "\n");
+  const start = source.indexOf(selector);
+  if (start === -1) return "";
+  const bodyStart = source.indexOf("{", start);
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source.slice(bodyStart + 1, bodyEnd);
 }
 
 function readCssWithImports(url, seen = new Set()) {

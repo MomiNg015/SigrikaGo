@@ -39,7 +39,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
-    background: #dff5df !important;
+    background: transparent !important;
     border-color: #73b79f !important;
     color: #245b4f !important;
   }

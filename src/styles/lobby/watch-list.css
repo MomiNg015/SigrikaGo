@@ -48,14 +48,15 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   margin: 0;
-  padding: 3px;
-  border: 1px solid rgba(128, 102, 142, 0.18);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.62);
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .watch-list-modal .mode-tabs button {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
   padding: 0 16px;
   border-radius: 7px;

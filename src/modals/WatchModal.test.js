@@ -81,9 +81,15 @@ describe("WatchModal helpers", () => {
     expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("min-height: 44px;");
     expect(css).toContain("font-size: 16px;");
+    const modeTabsBlock = cssBlock(css, ".watch-list-modal .mode-tabs");
     const modeButtonBlock = cssBlock(css, ".watch-list-modal .mode-tabs button");
     const roomCountBlock = cssBlock(css, ".watch-list-modal .watch-mode-count");
+    expect(modeTabsBlock).toContain("padding: 0;");
+    expect(modeTabsBlock).toContain("border: 0;");
+    expect(modeTabsBlock).toContain("background: transparent;");
     expect(modeButtonBlock).toContain("display: inline-flex;");
+    expect(modeButtonBlock).toContain("align-items: center;");
+    expect(modeButtonBlock).toContain("justify-content: center;");
     expect(modeButtonBlock).toContain("gap: 1em;");
     expect(roomCountBlock).toContain("display: inline-grid;");
     expect(roomCountBlock).toContain("place-items: center;");

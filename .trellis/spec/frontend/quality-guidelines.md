@@ -1027,6 +1027,26 @@ Required assertion points:
 - Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
 - Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.
 - Home image entries should not expose rules or matchmaking status through hover/focus text popups. Keep those details in click-open modals or mode pickers so desktop hover and mobile touch behavior stay consistent.
+- The watch-list mode-tab wrapper is layout-only: `.watch-list-modal .mode-tabs` must remain transparent and borderless. Each child button owns its paper/selected surface, and must explicitly center its label and count with `align-items: center` and `justify-content: center`.
+- Leaderboard emphasis belongs to the row, not the rank-number capsule. Bright School desktop, component-repair, and final mobile winners must keep rank-position backgrounds transparent for ordinary, top-three, current-user, and pinned-current rows while preserving the existing row artwork or current-user fill.
+- Focused static tests should assert these owner declarations. Browser QA should also verify computed transparent rank-number backgrounds and preserved row-level emphasis at desktop and portrait-mobile widths so a late `!important` theme rule cannot silently restore the capsule fill.
+
+```css
+.watch-list-modal .mode-tabs {
+  border: 0;
+  background: transparent;
+}
+
+.watch-list-modal .mode-tabs button {
+  align-items: center;
+  justify-content: center;
+}
+
+.leaderboard-table .current-user .rank-position,
+.leaderboard-mobile-card.current-user .rank-position {
+  background: transparent !important;
+}
+```
 
 ### Modal Close Button Contracts
 
