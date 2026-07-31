@@ -21,14 +21,34 @@
   height: 100dvh;
   min-height: 100dvh;
   place-items: start center;
-  padding-block: clamp(128px, 17dvh, 166px) 32px;
+  padding-block: clamp(24px, 4dvh, 40px) 32px;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
+.auth-composition {
+  --auth-panel-width: 440px;
+  --auth-panel-padding: 26px;
+  --auth-panel-offset-x: 118px;
+  --auth-panel-offset-y: 117px;
+  --auth-mascot-size: 252px;
+  --auth-header-rule-space: 18px;
+  --auth-header-main-rule-bottom: 5px;
+  position: relative;
+  isolation: isolate;
+  width: min(calc(var(--auth-panel-width) + var(--auth-panel-offset-x)), 100%);
+  padding-top: var(--auth-panel-offset-y);
+  padding-left: var(--auth-panel-offset-x);
+}
+
+.auth-composition > .auth-panel {
+  width: min(var(--auth-panel-width), 100%);
+}
+
 .brand-lockup {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   min-height: 96px;
@@ -38,15 +58,14 @@
 
 .brand-lockup .login-title-mascot {
   position: absolute;
-  z-index: 1;
-  top: -128px;
-  left: -143px;
-  width: 240px;
-  height: 240px;
+  z-index: 2;
+  bottom: calc(var(--auth-header-main-rule-bottom) - var(--auth-header-rule-space));
+  left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
+  width: var(--auth-mascot-size);
+  height: var(--auth-mascot-size);
   max-width: none;
   object-fit: contain;
-  transform: rotate(-6deg);
-  transform-origin: 50% 82%;
+  object-position: center bottom;
   pointer-events: none;
   user-select: none;
 }

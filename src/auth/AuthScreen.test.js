@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import sharp from "sharp";
 import AuthScreen from "./AuthScreen.jsx";
 import { AUTH_REGISTER_LABEL_NOTES, authSubmitText, isAlreadyLoggedInError, usernameDisplayWidth, validateAuthField, validateAuthSubmit } from "./AuthScreen.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
@@ -82,7 +83,11 @@ describe("AuthScreen submit validation", () => {
     const html = renderToStaticMarkup(createElement(AuthScreen, { onAuth: () => {} }));
 
     expect(html).toContain("login-card-container");
+    expect(html).toContain('<main class="auth-screen"><div class="auth-composition">');
+    expect(html).toContain('<header class="auth-panel-header"><div class="brand-lockup">');
     expect(html).toContain('class="login-title-mascot"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).not.toContain('hidden=""');
     expect(html).toContain('class="login-title-text text-window-title"');
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
@@ -98,31 +103,57 @@ describe("AuthScreen submit validation", () => {
     expect(html).not.toContain("\\u897f\\u683c\\u8389\\u5361");
   });
 
-  it("ships the login-only mascot as a compressed WebP with its PNG source", () => {
+  it("ships the login-only mascot with calibrated shelf clearance and a compressed WebP runtime asset", async () => {
     const png = readFileSync(new URL("../../public/assets/login-sigrika-mascot.png", import.meta.url));
     const webp = readFileSync(new URL("../../public/assets/login-sigrika-mascot.webp", import.meta.url));
+    const decodedAssets = await Promise.all([png, webp].map((asset) => sharp(asset).ensureAlpha().raw().toBuffer({ resolveWithObject: true })));
 
     expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(webp.subarray(0, 4).toString("ascii")).toBe("RIFF");
     expect(webp.subarray(8, 12).toString("ascii")).toBe("WEBP");
+    expect(png.readUInt32BE(16)).toBe(640);
+    expect(png.readUInt32BE(20)).toBe(640);
     expect(webp.byteLength).toBeLessThan(png.byteLength);
+    for (const { data, info } of decodedAssets) {
+      let lastVisibleRow = -1;
+      for (let y = 0; y < info.height; y += 1) {
+        const rowStart = y * info.width * 4;
+        for (let x = 0; x < info.width; x += 1) {
+          if (data[rowStart + x * 4 + 3] > 16) lastVisibleRow = y;
+        }
+      }
+      expect(info.height - lastVisibleRow - 1).toBe(8);
+    }
   });
 
-  it("pins the login mascot above the card without stretching it and uses the window-title font", () => {
+  it("treats the visible mascot and panel as one responsive composition without stretching the art", () => {
     const baseCss = readCssWithImports(new URL("../styles/base.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const compositionBlock = baseCss.match(/\.auth-composition\s*\{[^}]+\}/)?.[0] ?? "";
     const desktopBrandBlock = baseCss.match(/\.brand-lockup\s*\{[^}]+\}/)?.[0] ?? "";
     const desktopMascotBlock = baseCss.match(/\.brand-lockup \.login-title-mascot\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileCompositionBlock = mobileCss.match(/\.theme-bright-school\.theme-bright-school \.auth-composition\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileMascotBlock = mobileCss.match(/\.theme-bright-school\.theme-bright-school \.auth-panel \.brand-lockup \.login-title-mascot\s*\{[^}]+\}/)?.[0] ?? "";
 
+    expect(compositionBlock).toContain("--auth-panel-offset-x: 118px");
+    expect(compositionBlock).toContain("--auth-panel-offset-y: 117px");
+    expect(compositionBlock).toContain("--auth-mascot-size: 252px");
+    expect(compositionBlock).toContain("padding-left: var(--auth-panel-offset-x)");
     expect(desktopBrandBlock).toContain("padding-left: 112px");
     expect(desktopMascotBlock).toContain("position: absolute");
-    expect(desktopMascotBlock).toContain("width: 240px");
-    expect(desktopMascotBlock).toContain("height: 240px");
-    expect(desktopMascotBlock).toContain("transform: rotate(-6deg)");
-    expect(mobileMascotBlock).toContain("width: clamp(140px, 39vw, 148px) !important");
-    expect(mobileMascotBlock).toContain("height: clamp(140px, 39vw, 148px) !important");
-    expect(mobileMascotBlock).toContain("transform: rotate(-6deg) !important");
+    expect(desktopMascotBlock).toContain("bottom: calc(var(--auth-header-main-rule-bottom) - var(--auth-header-rule-space))");
+    expect(desktopMascotBlock).toContain("left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding))");
+    expect(desktopMascotBlock).toContain("width: var(--auth-mascot-size)");
+    expect(desktopMascotBlock).toContain("height: var(--auth-mascot-size)");
+    expect(desktopMascotBlock).toContain("object-position: center bottom");
+    expect(mobileCompositionBlock).toContain("--auth-panel-offset-x: 0px");
+    expect(mobileCompositionBlock).toContain("--auth-panel-offset-y: clamp(36px, 13vw, 50px)");
+    expect(mobileCompositionBlock).toContain("--auth-mascot-size: clamp(148px, 42vw, 164px)");
+    expect(mobileCompositionBlock).toContain("width: min(100%, var(--auth-panel-width))");
+    expect(mobileCss).toContain("@media (max-width: 900px)");
+    expect(mobileMascotBlock).toContain("width: var(--auth-mascot-size) !important");
+    expect(mobileMascotBlock).toContain("height: var(--auth-mascot-size) !important");
+    expect(mobileMascotBlock).toContain("transform: none !important");
     expect(mobileCss).toContain(".text-window-title");
     expect(mobileCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
   });
@@ -186,5 +217,18 @@ describe("AuthScreen submit validation", () => {
     expect(segmentedBlock).toContain("background-image: none !important");
     expect(mobileBrandBlock).toContain("border: 0 !important");
     expect(mobilePanelBlock).toContain("box-shadow: 6px 6px 0 var(--bright-border) !important");
+  });
+
+  it("separates the Bright School auth header with a layered paper rule", () => {
+    const themeCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const dividerOwner = ".auth-panel .auth-panel-header";
+
+    expect(themeCss).toContain(`${dividerOwner}::before`);
+    expect(themeCss).toContain(`${dividerOwner}::after`);
+    expect(themeCss).toContain("background: var(--bright-border)");
+    expect(themeCss).toContain("background: var(--bright-blue)");
+    expect(themeCss).toContain("left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding))");
+    expect(themeCss).toContain("left: calc(18px - var(--auth-panel-offset-x) - var(--auth-panel-padding))");
+    expect(themeCss).toContain("pointer-events: none");
   });
 });

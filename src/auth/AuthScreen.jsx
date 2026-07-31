@@ -139,15 +139,18 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
   return (
     <>
       <main className="auth-screen">
-        <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
-          <div className="brand-lockup">
-            <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
-            <div>
-              <p className="text-display-accent">SigrikaGo</p>
-              <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
-            </div>
-          </div>
-          <form onSubmit={submit} className="auth-form" noValidate aria-busy={submitting || undefined}>
+        <div className="auth-composition">
+          <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
+            <header className="auth-panel-header">
+              <div className="brand-lockup">
+                <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
+                <div>
+                  <p className="text-display-accent">SigrikaGo</p>
+                  <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+                </div>
+              </div>
+            </header>
+            <form onSubmit={submit} className="auth-form" noValidate aria-busy={submitting || undefined}>
             <div className="segmented" role="group" aria-label="账号操作">
               <button
                 type="button"
@@ -261,8 +264,9 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
               disabled={submitting}
               aria-busy={submitting || undefined}
             >{submitting ? authPendingText(mode) : authSubmitText(mode)}</button>
-          </form>
-        </section>
+            </form>
+          </section>
+        </div>
       </main>
       {showSessionConflict && (
         <ConfirmModal

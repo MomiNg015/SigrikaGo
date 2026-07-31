@@ -45,6 +45,37 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: var(--auth-header-rule-space);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::before {
+  right: 0;
+  bottom: var(--auth-header-main-rule-bottom);
+  left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
+  height: 3px;
+  background: var(--bright-border);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::after {
+  right: 10px;
+  bottom: 0;
+  left: calc(18px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
+  height: 2px;
+  background: var(--bright-blue);
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
   background: transparent !important;
   background-image: none !important;

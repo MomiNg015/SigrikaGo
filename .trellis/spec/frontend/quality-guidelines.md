@@ -168,28 +168,41 @@ resolveSkillMusicTrack({ effectType: skillPreview.musicEffectType });
 }
 ```
 
-### Login mascot asset contract
+### Responsive login mascot composition contract
 
-The login title mascot is a login-owned presentation asset, not the shared character portrait consumed by profiles, loading screens, character lists, or battles.
+The login title mascot is a visible, login-owned presentation asset, not the shared character portrait consumed by profiles, loading screens, character lists, or battles. The panel, mascot overhang, and supporting divider are one responsive composition so centering and viewport adaptation use the complete silhouette rather than the card alone.
 
 Required assertion points:
 
-- `AuthScreen` must reference `/assets/login-sigrika-mascot.webp` directly and must not read `CHARACTERS.sigrika.portrait` for the title lockup.
-- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas. When artwork changes, measure non-zero-alpha bounds, crop transparent edges only, scale uniformly, and center the result; do not stretch width and height independently.
+- `AuthScreen` must wrap the login panel in `.auth-composition` and retain the visible `/assets/login-sigrika-mascot.webp` element with empty `alt` and `aria-hidden="true"`; it must not read `CHARACTERS.sigrika.portrait` for the title lockup.
+- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas. When artwork changes, measure non-zero-alpha bounds, remove export residue, crop transparent edges only, scale uniformly, and center the result; do not stretch width and height independently. Preserve exactly 8 transparent raster rows below visible alpha: at the 252px desktop display size this resolves to about the 3px structural-rule thickness, so the art meets the rule's top edge without covering it or floating above it.
 - The title `h1` must use the semantic `.text-window-title` hook so the final typography layer resolves it to `var(--font-window-title)` (霞鹜漫黑) even after Bright School owner overrides.
-- The mascot is a pointer-transparent absolute decoration over the card's top-left corner, while `.brand-lockup` keeps the title copy in its original column. Desktop uses an equal 240x240 CSS box rotated `-6deg`; the final `bright-school-overrides/auth-login-lockup.css` owner gives portrait phone equal `clamp(140px, 39vw, 148px)` dimensions and a contained left offset so it cannot create page-level horizontal overflow.
-- `AuthScreen.test.js` must assert the dedicated WebP URL, reject the shared portrait URL, verify the retained PNG/WebP signatures, keep the runtime WebP smaller than its PNG source, and cover the desktop/mobile equal-dimension and rotation contracts.
+- The title lockup is wrapped by semantic `.auth-panel-header`. Its Bright School owner separates the title from the form with a pointer-transparent, hard-edged two-layer paper rule: the structural stroke uses `--bright-border`, the offset stroke uses `--bright-blue`, and both extend left through composition variables so the rule becomes a shelf beneath the mascot. Do not replace it with a tinted header card, blur, motion, or an interactive divider element.
+- `.auth-composition` owns the panel width, panel padding, horizontal overhang, vertical reserve, mascot size, and rule offsets as shared custom properties. Desktop includes a 118px left overhang and 117px top reserve around a 440px panel; the existing `max-width: 900px` mobile-layout family collapses the left reserve to zero, scales the mascot with `clamp(148px, 42vw, 164px)`, and keeps page-level horizontal overflow at zero across portrait phones, common mobile landscape widths, and 768px previews.
+- The mascot is a pointer-transparent absolute decoration anchored by its bottom edge to the same header-rule spacing used by the divider. It uses equal width/height, `object-fit: contain`, `object-position: center bottom`, and no independent rotation, so the artwork and shelf remain aligned when the composition changes size.
+- `AuthScreen.test.js` must assert the composition wrapper, visible decorative-image semantics, dedicated WebP URL, shared-portrait rejection, PNG/WebP signatures and 640px PNG canvas, exactly 8 transparent rows below visible alpha in both assets, compressed runtime WebP, shared shelf/mascot variables, equal dimensions, bottom anchoring, and the desktop/mobile overhang contracts.
 
 Correct:
 
 ```jsx
-<img src="/assets/login-sigrika-mascot.webp" alt="西格莉卡" />
+<div className="auth-composition">
+  <section className="auth-panel login-card-container">
+    <header className="auth-panel-header">
+      <div className="brand-lockup">
+        <img src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
+        <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+      </div>
+    </header>
+  </section>
+</div>
 ```
 
 Wrong:
 
 ```jsx
-<img src={CHARACTERS.sigrika.portrait} alt="西格莉卡" />
+<section className="auth-panel">
+  <img className="floating-mascot" src="/assets/characters/portraits/sigrika.webp" alt="" />
+</section>
 ```
 
 ### Social action disabled-state contract
