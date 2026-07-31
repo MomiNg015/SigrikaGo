@@ -48,6 +48,26 @@ function isWebp(path) {
   return bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP";
 }
 
+function gifDimensions(path) {
+  const bytes = readFileSync(new URL(path, import.meta.url));
+  expect(bytes.toString("ascii", 0, 6)).toMatch(/^GIF8[79]a$/);
+  return {
+    width: bytes.readUInt16LE(6),
+    height: bytes.readUInt16LE(8)
+  };
+}
+
+function gifFrameDelays(path) {
+  const bytes = readFileSync(new URL(path, import.meta.url));
+  const delays = [];
+  for (let offset = 0; offset <= bytes.length - 8; offset += 1) {
+    if (bytes[offset] === 0x21 && bytes[offset + 1] === 0xf9 && bytes[offset + 2] === 0x04) {
+      delays.push(bytes.readUInt16LE(offset + 4) * 10);
+    }
+  }
+  return delays;
+}
+
 function pngDimensions(path) {
   const { width, height } = decodeRgbaPng(readFileSync(new URL(path, import.meta.url)));
   return { width, height };
@@ -115,10 +135,15 @@ describe("HomeScreen", () => {
     expect(html).toContain("home-brand-version home-brand-subtitle text-display-accent");
     expect(html).toContain("v0.1.0");
     expect(html).not.toContain("连罗伊人的都爱玩的智力游戏");
-    expect(html).toContain("home-online-tag");
-    expect(html).toContain("aria-label=\"在线人数 2\"");
-    expect(html).toContain("<b>2</b>");
+    expect(html).not.toContain("home-online-tag");
+    expect(html).not.toContain("在线人数");
     expect(html).not.toContain("在线人数：2");
+    expect(html).toContain('class="home-header-mascot"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).toContain('/assets/home/home-header-sigrika.gif?v=170ms');
+    expect(html).toContain('/assets/home/home-header-sigrika-still.webp');
+    expect(html).toContain('media="(prefers-reduced-motion: reduce)"');
+    expect(html).toContain('draggable="false"');
     expect(html).toContain("home-mobile-menu");
     expect(html).toContain("home-mobile-menu-toggle");
     expect(html).toContain("home-mobile-menu-panel");
@@ -150,23 +175,49 @@ describe("HomeScreen", () => {
     expect(html).toContain("\u6253\u5f00\u516c\u544a");
   });
 
-  it("keeps the home header version and online count scaled from the title", () => {
+  it("keeps the home header version scaled from the title and anchors the mascot by visible alpha bounds", () => {
     const terminalCss = readCssFixture("../styles/home-terminal.css");
     const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
     const brightSchoolMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
     const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
     const expectedSubtitleScale = "--home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3)";
-    const expectedOnlineSize = "font-size: var(--home-brand-subtitle-size)";
 
     for (const css of [terminalCss, brightSchoolCss, brightSchoolMobileCss, finalMobileCss]) {
       expect(css).toContain("--home-brand-title-size");
       expect(css).toContain(expectedSubtitleScale);
-      expect(css).toContain(expectedOnlineSize);
-      expect(css).toContain("align-self: flex-end");
-      expect(css).toContain(".home-online-tag svg");
-      expect(css).toContain("width: 1em");
-      expect(css).toContain("height: 1em");
+      expect(css).not.toContain(".home-online-tag");
     }
+
+    expect(terminalCss).toContain(".home-header-mascot");
+    expect(terminalCss).toContain("grid-area: mascot");
+    expect(terminalCss).toContain("left: -29.183%");
+    expect(terminalCss).toContain("width: 155.642%");
+    expect(terminalCss).toContain("transform: translateY(11.875%)");
+    expect(brightSchoolCss).toContain("--home-header-mascot-visible-width: clamp(82px, 7vw, 94px)");
+    expect(brightSchoolCss).toContain(".home-header-mascot img");
+    expect(brightSchoolCss).toContain("max-width: none !important");
+    expect(brightSchoolMobileCss).toContain('grid-template-areas: "brand mascot actions" !important');
+    expect(brightSchoolMobileCss).toContain("--home-header-mascot-visible-width: clamp(72px, 20vw, 92px)");
+    expect(brightSchoolMobileCss).toContain("grid-template-columns: minmax(0, 1fr) var(--home-header-mascot-visible-width) 44px !important");
+    expect(brightSchoolMobileCss).toContain("--home-header-mascot-drop: clamp(28px, calc(8.5vw - 2px), 34px)");
+    expect(brightSchoolMobileCss).toContain("gap: 12px !important");
+    expect(brightSchoolMobileCss).toContain("display: none !important");
+    expect(finalMobileCss).toContain(".home-screen .home-top-strip .topbar-actions");
+    expect(finalMobileCss).toContain("left: auto !important");
+    expect(finalMobileCss).toContain("min-width: min(148px, calc(100vw - 28px)) !important");
+    expect(finalMobileCss).toContain(".home-screen .home-mobile-menu-panel button");
+  });
+
+  it("ships the animated header mascot with an alpha-preserving reduced-motion still", () => {
+    const gifUrl = new URL("../../public/assets/home/home-header-sigrika.gif", import.meta.url);
+    const stillUrl = new URL("../../public/assets/home/home-header-sigrika-still.webp", import.meta.url);
+
+    expect(gifDimensions("../../public/assets/home/home-header-sigrika.gif")).toEqual({ width: 800, height: 800 });
+    expect(gifFrameDelays("../../public/assets/home/home-header-sigrika.gif")).toEqual([170, 170, 170, 170, 170]);
+    expect(isWebp("../../public/assets/home/home-header-sigrika-still.webp")).toBe(true);
+    expect(webpDimensions("../../public/assets/home/home-header-sigrika-still.webp")).toEqual({ width: 800, height: 800 });
+    expect(webpHasAlpha("../../public/assets/home/home-header-sigrika-still.webp")).toBe(true);
+    expect(statSync(stillUrl).size).toBeLessThan(statSync(gifUrl).size);
   });
 
   it("uses alpha-trimmed compact WebP home entry images instead of source PNGs", () => {
@@ -812,6 +863,7 @@ describe("HomeScreen", () => {
     const brightMobileManualImageBlock = brightMobileCss.match(/\.house-manual-entry\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileUtilityGridBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-area: utility")) ?? "";
     const brightMobileUtilityEntryBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileUtilityMotionBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileImageEntryBlock = brightMobileCss.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileImageBlock = brightMobileCss.match(/\.home-image-entry img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileMatchImageBlock = brightMobileCss.match(/\.match-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
@@ -830,7 +882,7 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain('"player"\n      "match"\n      "manual"\n      "utility" !important');
     expect(brightMobileStageBlock).toContain("grid-template-rows: auto clamp(176px, 52vw, 224px) clamp(148px, 42vw, 188px) auto !important");
     expect(brightMobileStageBlock).toContain("gap: 8px !important");
-    expect(brightMobileCss).toContain('grid-template-areas: "brand online actions" !important');
+    expect(brightMobileCss).toContain('grid-template-areas: "brand mascot actions" !important');
     expect(brightMobileMatchBlock).toContain("height: clamp(176px, 52vw, 224px) !important");
     expect(brightMobileMatchBlock).toContain("grid-template-rows: minmax(0, 1fr) !important");
     expect(brightMobileManualBlock).toContain("height: clamp(148px, 42vw, 188px) !important");
@@ -839,14 +891,19 @@ describe("HomeScreen", () => {
     expect(brightMobileImageEntryBlock).toContain("overflow: visible !important");
     expect(brightMobileImageBlock).toContain("filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
     expect(brightMobileMatchImageBlock).toContain("overflow: visible !important");
-    expect(brightMobileUtilityGridBlock).toContain("gap: 8px !important");
+    expect(brightMobileUtilityGridBlock).toContain("grid-template: repeat(3, max(52px, 18vw)) / repeat(2, minmax(0, 46%)) !important");
+    expect(brightMobileUtilityGridBlock).toContain("justify-content: center !important");
+    expect(brightMobileUtilityGridBlock).toContain("gap: 2px !important");
     expect(brightMobileUtilityEntryBlock).toContain("min-height: 52px !important");
     expect(brightMobileUtilityEntryBlock).toContain("overflow: visible !important");
+    expect(brightMobileUtilityMotionBlock).toContain("width: 132% !important");
     expect(brightMobileUtilityArtBlock).toContain("overflow: visible !important");
     expect(brightMobileUtilityArtBlock).toContain("padding: 0 6px 6px 0 !important");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
     expect(brightMobileCss).toContain("word-break: keep-all !important");
-    expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
+    expect(brightMobileTopStripBlock).toContain('grid-template-areas: "brand mascot actions" !important');
+    expect(brightMobileCss).toContain(".home-top-strip .topbar-actions");
+    expect(brightMobileCss).toContain("display: none !important");
     expect(brightMobileCss).toContain("padding: 12px !important");
     expect(brightMobileCss).toContain('content: "" !important');
     expect(brightMobileCss).toContain("bottom: -10px !important");
@@ -858,7 +915,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".home-mobile-menu-panel button");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain(".home-brand-title");
-    expect(finalMobileCss).toContain("--home-brand-title-size: clamp(22px, 6.7vw, 32px) !important");
+    expect(finalMobileCss).toContain("--home-brand-title-size: clamp(20px, 6vw, 30px) !important");
     expect(finalMobileCss).toContain("font-size: var(--home-brand-title-size) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
     expect(finalMobileCss).toContain("@media (min-width: 1181px) and (min-height: 960px)");

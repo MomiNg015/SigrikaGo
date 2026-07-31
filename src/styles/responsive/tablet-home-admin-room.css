@@ -34,9 +34,8 @@
 
   .home-top-strip {
     display: grid;
-    grid-template-areas:
-      "brand online actions";
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "brand mascot actions";
+    grid-template-columns: minmax(0, 1fr) var(--home-header-mascot-visible-width) auto;
     align-items: start;
     gap: 4px 8px;
     padding: 5px 8px;
@@ -64,15 +63,6 @@
   .home-brand-subtitle {
     grid-row: 2;
     font-size: 11px;
-  }
-
-  .home-online-tag {
-    grid-area: online;
-    align-self: start;
-    justify-self: start;
-    min-height: 26px;
-    padding: 4px 9px;
-    font-size: 12px;
   }
 
   .home-top-strip .topbar-actions {

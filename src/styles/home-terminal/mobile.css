@@ -8,23 +8,10 @@
   }
 
   .home-top-strip {
-    grid-template-areas:
-      "brand actions"
-      "status actions"
-      "online online";
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "brand mascot actions";
+    grid-template-columns: minmax(0, 1fr) var(--home-header-mascot-visible-width) auto;
     gap: 7px 10px;
     padding: 9px 10px;
-  }
-
-  .home-terminal-status {
-    grid-area: status;
-    justify-self: start;
-  }
-
-  .home-online-tag {
-    grid-area: online;
-    justify-self: start;
   }
 
   .home-main-panel {

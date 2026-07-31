@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings, UsersRound } from "lucide-react";
+import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings } from "lucide-react";
 
 export default function HomeHeader({
   isAdmin,
-  onlineCount,
   siteTitle,
   siteVersion,
   mailboxBadgeCount = 0,
@@ -32,10 +31,15 @@ export default function HomeHeader({
           <span className="home-brand-version home-brand-subtitle text-display-accent">{siteVersion}</span>
         )}
       </div>
-      <span className="home-online-tag" aria-label={`在线人数 ${onlineCount}`}>
-        <UsersRound size={16} aria-hidden="true" />
-        <b>{onlineCount}</b>
-      </span>
+      <picture className="home-header-mascot" aria-hidden="true">
+        <source media="(prefers-reduced-motion: reduce)" srcSet="/assets/home/home-header-sigrika-still.webp" />
+        <img
+        src="/assets/home/home-header-sigrika.gif?v=170ms"
+          alt=""
+          draggable="false"
+          decoding="async"
+        />
+      </picture>
       <div className="topbar-actions">
         <button
           className={`icon-button announcement-action ${announcementUnread ? "has-unread" : ""}`}

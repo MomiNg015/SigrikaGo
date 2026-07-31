@@ -32,6 +32,26 @@ Bright School is the default player theme. Its entry map is:
 
 When an owner must override `backdrop-filter`, declare `-webkit-backdrop-filter` first and the standard `backdrop-filter` second. Lightning CSS may collapse adjacent prefixed/unprefixed declarations during production minification; the standard declaration must be the retained winner so Chromium does not fall back to an earlier shared blur. Any such production-sensitive contract must be asserted against built `dist/assets/*.css` through `npm run check:built-css`, not only against source text.
 
+### Final mobile home Header/menu owner
+
+The portrait Bright School home Header has two structural owners: the theme-level composition in `themes/bright-school/mobile/home-shell/top-strip-menu.css`, followed by the final post-theme guard in `mobile-adaptive/bright-school-overrides/home-header-menu.css`. The final owner must repeat the `brand mascot actions` grid, hide the desktop `.topbar-actions`, preserve the independent 44px toggle column, and reset the expanded panel to `left: auto; right: 0` with its bounded full width. This prevents generic 44px touch-target rules from turning the expanded menu into an off-screen or single-column strip.
+
+```css
+/* Wrong: the panel can inherit the toggle's 44px geometry or expand off-screen. */
+.home-mobile-menu-panel { right: 0; }
+
+/* Correct: the final Bright School mobile owner clears the opposite inset and locks all width bounds. */
+.home-screen .home-mobile-menu-panel {
+  left: auto !important;
+  right: 0 !important;
+  width: min(148px, calc(100vw - 28px)) !important;
+  min-width: min(148px, calc(100vw - 28px)) !important;
+  max-width: min(148px, calc(100vw - 28px)) !important;
+}
+```
+
+Header browser QA must use the real `.home-screen` ancestor and the complete desktop action row plus all mobile-menu buttons. A reduced mock containing only one action button cannot reveal the cascade failure seen in the real page. Contract tests must assert the final owner import, hidden desktop action row, cleared left inset, right alignment, bounded panel width, and 44px toggle column.
+
 ## Selector Rules
 
 Allowed patterns:

@@ -25,17 +25,6 @@
   letter-spacing: 0.01em !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag {
-  flex: 0 0 auto !important;
-  min-height: 34px !important;
-  padding: 6px 8px !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  color: #3d2b25 !important;
-  clip-path: none !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tactical-id-card {
   overflow: hidden !important;

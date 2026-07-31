@@ -2,20 +2,23 @@
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
     --home-floating-z: 120;
-    --home-brand-title-size: clamp(26px, 9vw, 38px);
+    --home-brand-title-size: clamp(20px, 6vw, 30px);
     --home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3);
+    --home-header-mascot-visible-width: clamp(72px, 20vw, 92px);
+    --home-header-mascot-drop: clamp(28px, calc(8.5vw - 2px), 34px);
     position: relative !important;
     z-index: var(--home-floating-z) !important;
     width: 100% !important;
     min-width: 0 !important;
     display: grid !important;
-    grid-template-areas: "brand online actions" !important;
-    grid-template-columns: minmax(0, 1fr) auto auto !important;
-    gap: 8px !important;
+    grid-template-areas: "brand mascot actions" !important;
+    grid-template-columns: minmax(0, 1fr) var(--home-header-mascot-visible-width) 44px !important;
+    gap: 12px !important;
     align-items: end !important;
     padding: 10px 10px !important;
     border-radius: 18px !important;
     box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.64) !important;
+    overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-brand {
@@ -41,42 +44,15 @@
     text-overflow: clip !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag {
-    align-items: flex-end !important;
-    align-self: flex-end !important;
-    justify-self: start !important;
-    min-height: 32px !important;
-    padding: 6px 4px !important;
-    font-size: var(--home-brand-subtitle-size) !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag svg {
-    width: 1em;
-    height: 1em;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag b {
-    font-size: var(--home-brand-subtitle-size);
-    line-height: 1;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-header-mascot img {
+    max-width: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip .topbar-actions {
-    display: grid !important;
-    grid-template-columns: repeat(2, 44px) !important;
-    gap: 7px !important;
-    justify-content: end !important;
-    align-content: center !important;
-    margin: 0 !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-lobby-status {
     display: none !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip .topbar-actions > .icon-button,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip .topbar-actions > .admin-nav-action {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-lobby-status {
     display: none !important;
   }
 
@@ -102,7 +78,7 @@
     z-index: var(--home-floating-z) !important;
     top: calc(100% + 8px) !important;
     right: 0 !important;
-    width: min(178px, calc(100vw - 28px)) !important;
+    width: min(148px, calc(100vw - 28px)) !important;
     display: grid !important;
     gap: 6px !important;
     padding: 8px !important;

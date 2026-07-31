@@ -8,17 +8,6 @@
       "utility";
   }
 
-  .home-top-strip {
-    grid-template-areas:
-      "brand actions"
-      "online actions";
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .home-online-tag {
-    justify-self: start;
-  }
-
   .home-match-feature {
     max-width: min(100%, 430px);
   }

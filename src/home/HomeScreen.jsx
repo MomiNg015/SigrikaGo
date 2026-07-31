@@ -15,7 +15,6 @@ import MatchModeWatermark from "./MatchModeWatermark.jsx";
 
 export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
-  const onlineCount = Number(lobbyStats.onlineCount ?? 0);
   const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
     mode.id,
     Number(lobbyStats.matchmakingCounts?.[mode.id] ?? (mode.id === "spark" ? lobbyStats.matchmakingCount : 0) ?? 0)
@@ -26,7 +25,6 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
       <main className="home-screen home-terminal-screen">
         <HomeHeader
           isAdmin={user.role === "admin"}
-          onlineCount={onlineCount}
           siteTitle={siteSettings.homeTitle}
           siteVersion={siteSettings.homeVersion}
           mailboxBadgeCount={mailboxBadgeCount}

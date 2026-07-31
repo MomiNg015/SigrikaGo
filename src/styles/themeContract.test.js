@@ -599,21 +599,19 @@ describe("player theme CSS contract", () => {
     expect(qualityBaseEntry).not.toContain(".home-image-entry:hover");
   });
 
-  it("keeps the Bright School home online count transparent in final quality layers", () => {
-    const auditHomeCss = readFileSync(new URL("./themes/bright-school/quality-base/audit-home.css", import.meta.url), "utf8");
-    const refinementCss = readFileSync(
-      new URL("./themes/bright-school/quality-base/refinement-foundation.css", import.meta.url),
-      "utf8"
-    );
-    const onlineTagBlock = cssBlock(
-      auditHomeCss,
-      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag"
-    );
+  it("removes the retired home online-count selectors from Bright School owner layers", () => {
+    const ownerPaths = [
+      "./themes/bright-school/base/home-identity.css",
+      "./themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
+      "./themes/bright-school/quality-base/audit-home.css",
+      "./themes/bright-school/mobile/home-shell/top-strip-menu.css",
+      "./mobile-adaptive/bright-school-overrides/home-auth-header.css"
+    ];
 
-    expect(onlineTagBlock).toContain("background: transparent !important");
-    expect(onlineTagBlock).toContain("border: 0 !important");
-    expect(onlineTagBlock).toContain("box-shadow: none !important");
-    expect(refinementCss).not.toContain(".room-code-label,\n  .home-online-tag,");
+    for (const ownerPath of ownerPaths) {
+      const css = readFileSync(new URL(ownerPath, import.meta.url), "utf8");
+      expect(css).not.toContain(".home-online-tag");
+    }
   });
 
   it("keeps the Bright School generic touch target from shrinking message board textareas", () => {

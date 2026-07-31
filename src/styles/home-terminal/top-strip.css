@@ -1,6 +1,9 @@
 .home-top-strip {
   --home-brand-title-size: clamp(18px, 1.8vw, 25px);
   --home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3);
+  --home-header-mascot-visible-width: clamp(70px, 6vw, 82px);
+  --home-header-mascot-drop: clamp(28px, calc(2.7vw - 2px), 32px);
+  position: relative;
   min-height: 54px;
   padding: 10px clamp(12px, 2vw, 28px);
   border: 0;
@@ -12,6 +15,7 @@
   box-shadow:
     0 14px 34px rgba(0, 0, 0, 0.24),
     0 1px 0 rgba(0, 255, 190, 0.18);
+  overflow: visible;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -39,38 +43,28 @@
   font-size: var(--home-brand-subtitle-size);
 }
 
-.home-online-tag {
-  display: inline-flex;
-  align-items: flex-end;
-  align-self: flex-end;
-  gap: 6px;
-  min-height: 30px;
-  padding: 5px 6px;
-  border: 0;
-  border-radius: 0;
-  clip-path: none;
-  background: transparent;
-  color: var(--home-terminal-cyan);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: var(--home-brand-subtitle-size);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
+.home-header-mascot {
+  grid-area: mascot;
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  flex: 0 0 var(--home-header-mascot-visible-width);
+  width: var(--home-header-mascot-visible-width);
+  min-width: var(--home-header-mascot-visible-width);
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
-.home-online-tag svg {
-  width: 1em;
-  height: 1em;
-}
-
-.home-online-tag b {
-  font-size: var(--home-brand-subtitle-size);
-  line-height: 1;
-}
-
-.home-online-tag {
-  color: var(--home-terminal-blue);
+.home-header-mascot img {
+  position: absolute;
+  left: -29.183%;
+  bottom: calc(-1 * var(--home-header-mascot-drop));
+  width: 155.642%;
+  max-width: none;
+  height: auto;
+  display: block;
+  transform: translateY(11.875%);
 }
 
 .home-top-strip .topbar-actions {
