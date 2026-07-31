@@ -798,3 +798,36 @@ Made the watch-list mode wrapper transparent, centered tab contents, removed lea
 ### Next Steps
 
 - None - task complete
+
+
+## Session 85: Fix pending skill state leaking across rooms
+
+**Date**: 2026-07-31
+**Task**: Fix pending skill state leaking across rooms
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Scoped the client pending-skill targeting draft to room code and role, cleared it before resign actions, added hook and resignation regressions, and synchronized the state-management spec and system design.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `50f44288` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
