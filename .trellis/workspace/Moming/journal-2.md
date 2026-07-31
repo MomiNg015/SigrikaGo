@@ -930,3 +930,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 89: 角色主题色战绩卡
+
+**Date**: 2026-07-31
+**Task**: 角色主题色战绩卡
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+履历与用户详情的角色战绩卡统一读取当前角色目录 palette，以 18% 混白生成浅色卡面；补齐数组角色目录查找、可读性颜色、主题契约测试及系统设计文档。lint、构建、2299 项测试、构建 CSS 合同和生产配置检查均通过；完整门禁仅被既有 siteSettings 管理快照漂移中断，未改动该无关快照。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9f8934c5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
