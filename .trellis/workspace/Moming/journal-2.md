@@ -831,3 +831,36 @@ Scoped the client pending-skill targeting draft to room code and role, cleared i
 ### Next Steps
 
 - None - task complete
+
+
+## Session 86: Simplify utility window headers
+
+**Date**: 2026-07-31
+**Task**: Simplify utility window headers
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Removed warehouse and leaderboard header icon/subtitle chrome, added the Social System friends header, made the friends tab wrapper transparent and borderless, and updated responsive CSS, regression tests, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `09e40462` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
