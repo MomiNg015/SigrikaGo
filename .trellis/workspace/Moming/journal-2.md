@@ -1095,3 +1095,36 @@ Bright School 履历与用户详细信息共用统计卡配色，并统一两处
 ### Next Steps
 
 - None - task complete
+
+
+## Session 94: Refine responsive login mascot composition
+
+**Date**: 2026-07-31
+**Task**: Refine responsive login mascot composition
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Replaced the login mascot, grouped it with the auth panel as one responsive composition, added a layered divider shelf with calibrated alpha clearance, covered desktop/mobile contracts with tests, and synchronized frontend/system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9e08f4bc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
