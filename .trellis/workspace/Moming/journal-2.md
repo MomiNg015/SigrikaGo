@@ -1128,3 +1128,36 @@ Replaced the login mascot, grouped it with the auth panel as one responsive comp
 ### Next Steps
 
 - None - task complete
+
+
+## Session 95: 登录页角色立绘预热
+
+**Date**: 2026-08-01
+**Task**: 登录页角色立绘预热
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+登录页后台低并发预热基础角色立绘，登录后加载页优先使用已解码就绪角色；补充测试、系统设计和前端质量规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `304bde7d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
