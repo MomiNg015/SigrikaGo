@@ -11,7 +11,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 210px) !important;
     align-items: start !important;
     gap: 8px !important;
     padding-right: 0 !important;
@@ -39,18 +39,24 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
-    width: min(164px, 48vw) !important;
+    width: min(210px, 58vw) !important;
     max-width: 100% !important;
-    height: 46px !important;
-    min-height: 46px !important;
-    padding: 1px 5px 1px 1px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 1px 0 !important;
     justify-self: end !important;
     align-self: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+    margin-left: 4px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-trigger,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-static {
     gap: 3px !important;
+    margin-left: 24px !important;
+    margin-right: 58px !important;
     padding-inline: 3px !important;
   }
 

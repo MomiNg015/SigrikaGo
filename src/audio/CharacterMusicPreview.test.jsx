@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterMusicPreview, pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
 
 describe("character music preview scheduling", () => {
-  it("renders a stable Rough.js sketch layer and idle playback controls", () => {
+  it("renders idle playback controls without the retired Rough.js sketch layer", () => {
     const html = renderToStaticMarkup(createElement(CharacterMusicPreview, {
       characterId: "sigrika",
       slots: [{
@@ -19,11 +19,10 @@ describe("character music preview scheduling", () => {
 
     expect(html).toContain("character-music-player");
     expect(html).toContain("aria-busy=\"false\"");
-    expect(html).toContain("character-music-sketch");
-    expect(html).toContain("viewBox=\"0 0 188 44\"");
-    expect(html).toContain("aria-hidden=\"true\"");
+    expect(html).not.toContain("character-music-sketch");
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).toContain("aria-label=\"播放角色 BGM\"");
+    expect(html).toContain("aria-pressed=\"false\"");
     expect(html).toContain("character-music-glyph is-play");
     expect(html).not.toContain("character-music-slot-mark");
     expect(html).not.toContain("lucide-play");

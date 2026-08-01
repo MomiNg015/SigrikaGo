@@ -68,6 +68,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.images).toContain("/assets/home/home-utility-watch.webp");
     expect(assets.images).toContain("/assets/home/home-utility-friends.webp");
     expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.images).toContain("/assets/characters/bright-school-radio-player.png");
     expect(assets.criticalImages).toContain("/assets/home/fantasy-match-entry.webp");
     expect(assets.criticalImages).toContain("/assets/home/book-entry.webp");
     expect(assets.criticalImages).toContain("/assets/home/home-utility-recruitment.webp");
@@ -77,6 +78,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toContain("/assets/home/home-utility-watch.webp");
     expect(assets.criticalImages).toContain("/assets/home/home-utility-friends.webp");
     expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/bright-school-radio-player.png");
     for (const mode of modeOrderedEntries()) {
       expect(assets.images).toContain(mode.iconUrl);
       expect(assets.criticalImages).toContain(mode.iconUrl);

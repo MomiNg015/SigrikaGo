@@ -696,7 +696,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("character-detail-heading");
     expect(html).toContain("character-music-player");
-    expect(html).toContain("character-music-sketch");
+    expect(html).not.toContain("character-music-sketch");
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).not.toContain("character-music-select");
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
@@ -708,9 +708,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
     expect(css).toContain("width: 188px;");
     expect(css).toContain("height: 46px;");
-    expect(css).toContain(".character-music-sketch");
-    expect(css).toContain("pointer-events: none;");
-    expect(css).toContain("vector-effect: non-scaling-stroke;");
     expect(css).toContain("repeating-linear-gradient(0deg");
     expect(css).toMatch(/\.character-music-player\s*\{[^}]*border:\s*0;/s);
     expect(css).toMatch(/\.character-music-toggle\s*\{[^}]*border:\s*0;/s);
@@ -728,6 +725,9 @@ describe("deriveCharacterRecordStats", () => {
       new URL("../styles/themes/bright-school/component-repairs/character-music-player/player-shell.css", import.meta.url),
       "utf8"
     );
+    const brightSchoolRadioAsset = readFileSync(
+      new URL("../../public/assets/characters/bright-school-radio-player.png", import.meta.url)
+    );
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
@@ -735,19 +735,29 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolDesktopCss).toContain("border: 0 !important");
     expect(brightSchoolDesktopCss).toContain(".character-music-toggle::before");
     expect(brightSchoolPlayerShellCss).toContain("background-color: transparent !important");
-    expect(brightSchoolPlayerShellCss).toContain("background-image: none !important");
+    expect(brightSchoolPlayerShellCss).toContain("background-image: url(\"/assets/characters/bright-school-radio-player.png\") !important");
+    expect(brightSchoolPlayerShellCss).toContain("width: 230px !important");
+    expect(brightSchoolPlayerShellCss).toContain("height: 50px !important");
+    expect(brightSchoolPlayerShellCss).toContain("background-size: contain !important");
     expect(brightSchoolPlayerShellCss).toContain("box-shadow: none !important");
-    expect(brightSchoolPlayerShellCss).toContain("border: 1px solid rgba(61, 43, 37, 0.72)");
-    expect(brightSchoolPlayerShellCss).toContain("border-radius: 10px");
-    expect(brightSchoolPlayerShellCss).toContain("background: rgba(137, 211, 155, 0.84)");
-    expect(brightSchoolPlayerShellCss).toContain("background: rgba(239, 124, 134, 0.88)");
+    expect(brightSchoolPlayerShellCss).toContain("border-radius: 999px !important");
+    expect(brightSchoolPlayerShellCss).toContain("background: var(--bright-mint)");
+    expect(brightSchoolPlayerShellCss).toContain("background: var(--bright-pink)");
     expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\),[\s\S]*?\.character-music-toggle:active:not\(:disabled\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toContain("transform: translateY(2px) !important");
-    expect(brightSchoolPlayerShellCss).toContain("box-shadow: 0 1px 0 rgba(158, 56, 68, 0.45)");
+    expect(brightSchoolPlayerShellCss).toContain("box-shadow: 0 1px 0 color-mix(in srgb, var(--bright-border) 48%, transparent)");
     expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active[^}]*scale\(/s);
     expect(brightSchoolPlayerShellCss).toContain("font-family: var(--font-ui-default) !important");
     expect(brightSchoolPlayerShellCss).not.toContain("var(--font-window-title)");
     expect(brightSchoolPlayerShellCss).not.toContain(".character-music-slot-mark");
+    expect(brightSchoolPlayerShellCss).not.toContain(".character-music-sketch");
+    expect(brightSchoolPlayerShellCss).toContain("margin-left: 34px !important");
+    expect(brightSchoolPlayerShellCss).toContain("margin-right: 62px !important");
+    expect(brightSchoolPlayerShellCss).toContain("margin-left: 5px !important");
+    expect(brightSchoolPlayerShellCss).toContain("inset: 6px");
+    expect(brightSchoolPlayerShellCss).toContain("overflow: hidden !important");
+    expect(brightSchoolRadioAsset.readUInt32BE(16)).toBe(920);
+    expect(brightSchoolRadioAsset.readUInt32BE(20)).toBe(200);
     expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
     expect(phoneCss).toContain("flex-direction: column;");
     expect(phoneCss).toContain("width: min(164px, 48vw);");
@@ -763,6 +773,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolMobileCss).toContain(".character-cv-label");
     expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");
     expect(brightSchoolMobileCss).toContain("text-align: left !important");
+    expect(brightSchoolMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(180px, 210px) !important");
+    expect(brightSchoolMobileCss).toContain("width: min(210px, 58vw) !important");
+    expect(brightSchoolMobileCss).toContain("height: 50px !important");
+    expect(brightSchoolMobileCss).toContain("margin-left: 24px !important");
+    expect(brightSchoolMobileCss).toContain("margin-right: 58px !important");
   });
 
   it("keeps the Bright School mobile house manual internally scrollable", () => {

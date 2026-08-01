@@ -44,6 +44,7 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     "/assets/home/home-utility-watch.webp",
     "/assets/home/home-utility-friends.webp",
     "/assets/home/multipurpose-classroom-bg.webp",
+    "/assets/characters/bright-school-radio-player.png",
     ...modeOrderedEntries().map((mode) => mode.iconUrl)
   ]),
   shop: Object.freeze([

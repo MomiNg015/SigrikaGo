@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { CharacterMusicPreview } from "./CharacterMusicPreview.jsx";
+import { CharacterMusicPreview, MarqueeText } from "./CharacterMusicPreview.jsx";
 
 const baseTrack = track("base", "普通技能曲");
 const derivedTrack = track("derived-default", "远航星默认曲");
@@ -55,6 +55,97 @@ describe("CharacterMusicPreview interaction", () => {
     expect(await screen.findByRole("button", { name: "保存失败 · 点击重试" })).toBeTruthy();
     expect(screen.getByRole("option", { name: /远航星默认曲，已选择/ }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("region", { name: "角色技能曲目单" })).toBeTruthy();
+  });
+
+  it("switches the fixed playback control through loading, pause, and play states", async () => {
+    let resolveDecode;
+    const decodePromise = new Promise((resolve) => {
+      resolveDecode = resolve;
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8))
+    }));
+    vi.stubGlobal("AudioContext", class FakeAudioContext {
+      constructor() {
+        this.currentTime = 0;
+        this.destination = {};
+        this.state = "running";
+      }
+
+      createBufferSource() {
+        return {
+          connect() {},
+          start() {},
+          stop() {}
+        };
+      }
+
+      createGain() {
+        return {
+          connect() {},
+          disconnect() {},
+          gain: { setValueAtTime() {} }
+        };
+      }
+
+      decodeAudioData() {
+        return decodePromise;
+      }
+    });
+    renderPlayer(vi.fn().mockResolvedValue({}));
+
+    const playButton = screen.getByRole("button", { name: "播放角色 BGM" });
+    expect(playButton.getAttribute("aria-pressed")).toBe("false");
+    expect(playButton.querySelector(".character-music-glyph")?.classList.contains("is-play")).toBe(true);
+
+    fireEvent.click(playButton);
+    const loadingButton = screen.getByRole("button", { name: "角色 BGM 加载中" });
+    expect(loadingButton.querySelector(".character-music-glyph")?.classList.contains("is-loading")).toBe(true);
+    expect(loadingButton.getAttribute("aria-pressed")).toBe("false");
+
+    resolveDecode({ duration: 30 });
+    const pauseButton = await screen.findByRole("button", { name: "暂停角色 BGM" });
+    expect(pauseButton.querySelector(".character-music-glyph")?.classList.contains("is-pause")).toBe(true);
+    expect(pauseButton.getAttribute("aria-pressed")).toBe("true");
+
+    fireEvent.click(pauseButton);
+    const resumedPlayButton = screen.getByRole("button", { name: "播放角色 BGM" });
+    expect(resumedPlayButton.querySelector(".character-music-glyph")?.classList.contains("is-play")).toBe(true);
+    expect(resumedPlayButton.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("animates only overflowing titles by their measured clipped distance", async () => {
+    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function getClientWidth() {
+      return this.classList.contains("character-music-marquee-viewport") ? 80 : 0;
+    });
+    const scrollWidth = vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function getScrollWidth() {
+      if (!this.classList.contains("character-music-marquee-content")) return 0;
+      return this.textContent === "短曲" ? 40 : 160;
+    });
+    const originalAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
+    const cancel = vi.fn();
+    const animate = vi.fn(() => ({ cancel }));
+    Object.defineProperty(HTMLElement.prototype, "animate", {
+      configurable: true,
+      value: animate
+    });
+
+    try {
+      const { rerender } = render(<MarqueeText text="一首非常非常长的角色技能试听曲" active />);
+      await waitFor(() => expect(animate).toHaveBeenCalledTimes(1));
+      const [keyframes, timing] = animate.mock.calls[0];
+      expect(keyframes.at(-1).transform).toBe("translateX(-80px)");
+      expect(timing.iterations).toBe(Infinity);
+
+      animate.mockClear();
+      rerender(<MarqueeText text="短曲" active />);
+      await waitFor(() => expect(animate).not.toHaveBeenCalled());
+    } finally {
+      clientWidth.mockRestore();
+      scrollWidth.mockRestore();
+      if (originalAnimate) Object.defineProperty(HTMLElement.prototype, "animate", originalAnimate);
+      else delete HTMLElement.prototype.animate;
+    }
   });
 });
 

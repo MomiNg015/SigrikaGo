@@ -1,6 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import rough from "roughjs/bundled/rough.esm.js";
 import { BGM_START_DELAY_SECONDS } from "../shared/audioScheduling.js";
 import { audioVolume } from "./audioSettings.js";
 import { requestBackgroundMusicPause } from "./backgroundMusicPause.js";
@@ -322,11 +321,11 @@ export function CharacterMusicPreview({
       aria-label="角色 BGM 播放器"
       aria-busy={loading ? "true" : "false"}
     >
-      <CharacterMusicSketch />
       <button
         className="character-music-toggle"
         type="button"
         aria-label={label}
+        aria-pressed={playing}
         disabled={!track || loading}
         onClick={togglePlayback}
       >
@@ -496,6 +495,7 @@ export function MarqueeText({ text, active, className = "" }) {
       && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return undefined;
     const distance = Math.max(0, content.scrollWidth - viewport.clientWidth);
+    if (distance <= 1) return undefined;
     const travelMs = Math.max(650, distance / MARQUEE_SPEED_PX_PER_SECOND * 1000);
     const duration = MARQUEE_START_PAUSE_MS + travelMs + MARQUEE_END_PAUSE_MS;
     animationRef.current = content.animate([
@@ -566,34 +566,6 @@ function useFloatingSheetPosition({ open, anchorRef, sheetRef }) {
 function effectiveSlotTrack(slot, overrides) {
   if (!slot) return null;
   return overrides?.[slot.id] ?? slot.track ?? null;
-}
-
-export function CharacterMusicSketch() {
-  const svgRef = useRef(null);
-
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    svg.replaceChildren();
-    const rc = rough.svg(svg, { options: { seed: 27 } });
-    const titleRule = rc.line(52, 34, 178, 33, {
-      roughness: 0.7,
-      stroke: "#71a9bf",
-      strokeWidth: 1
-    });
-    svg.append(titleRule);
-  }, []);
-
-  return (
-    <svg
-      ref={svgRef}
-      className="character-music-sketch"
-      viewBox="0 0 188 44"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      focusable="false"
-    />
-  );
 }
 
 export function createPreviewState() {
