@@ -6,15 +6,36 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "../api/client.js";
 import AuthScreen from "./AuthScreen.jsx";
 
+const prewarmAuthPortraitsMock = vi.hoisted(() => vi.fn());
+
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
+vi.mock("../app/authPortraitPrewarm.js", () => ({
+  prewarmAuthPortraits: prewarmAuthPortraitsMock
+}));
 
 afterEach(() => {
   cleanup();
   api.mockReset();
+  prewarmAuthPortraitsMock.mockReset();
   vi.restoreAllMocks();
 });
 
 describe("AuthScreen DOM interaction", () => {
+  it("starts portrait prewarming without making authentication wait for it", async () => {
+    prewarmAuthPortraitsMock.mockReturnValue(new Promise(() => {}));
+    api.mockResolvedValue({ token: "token", user: { id: "user-1" } });
+    const onAuth = vi.fn();
+    const user = userEvent.setup();
+    render(<AuthScreen onAuth={onAuth} />);
+
+    expect(prewarmAuthPortraitsMock).toHaveBeenCalledTimes(1);
+    await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
+    await user.type(screen.getByLabelText("\u5bc6\u7801"), "secret1");
+    await user.click(screen.getByRole("button", { name: "开门！" }));
+
+    await waitFor(() => expect(onAuth).toHaveBeenCalledWith("token", { id: "user-1" }));
+  });
+
   it("focuses the first invalid field and does not duplicate field errors at form level", async () => {
     const user = userEvent.setup();
     const { container } = render(<AuthScreen initialMode="register" onAuth={() => {}} />);

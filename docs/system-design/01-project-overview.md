@@ -158,6 +158,10 @@ SigrikaGo/
   - Centralizes Socket.IO client creation for the game connection and binds the installed socket handlers with the room resume request builder. `src/app/App.jsx` still owns the React lifecycle boundary, but no longer wires the low-level `io(...)` call directly.
 - `src/app/AssetPreloadScreen.jsx`
   - Owns the login/startup asset preloading screen UI and progress-bar percentage formatting, keeping this transient screen out of `src/main.jsx` while preserving the same loading flow.
+- `src/app/authPortraitPrewarm.js`
+  - Coordinates the login-form portrait warmup batch, prioritizes Sigrika and Denia, deduplicates repeated auth mounts, and exposes a decoded-source ready store for the shared random loading screen without blocking authentication.
+- `src/app/preloadCharacterCatalog.js`
+  - Owns the shared portrait-bearing loading-character candidate filter so login warmup and `AssetPreloadScreen` apply the same Baconbits presentation exclusion.
 - `src/app/AppRoutes.jsx`
   - Owns top-level route rendering for login, preload, home, admin fallback, admin console, and room screens. `src/app/App.jsx` still owns state and side effects, while route-specific JSX and room back-navigation wiring live here.
 - `src/app/AppOverlays.jsx`

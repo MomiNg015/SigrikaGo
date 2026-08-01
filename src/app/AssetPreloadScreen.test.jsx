@@ -132,6 +132,38 @@ describe("AssetPreloadScreen", () => {
     }, () => 0.75).id).toBe("mornye");
   });
 
+  it("selects random loading characters only from decoded auth portraits when available", () => {
+    const characters = {
+      sigrika: { id: "sigrika", portrait: "/sigrika.webp" },
+      mornye: { id: "mornye", portrait: "/mornye.webp" }
+    };
+
+    expect(randomPreloadCharacter(
+      characters,
+      () => 0.99,
+      null,
+      new Set(["/sigrika.webp"])
+    ).id).toBe("sigrika");
+  });
+
+  it("uses the warmed base portrait for random startup loading instead of an equipped heavy portrait", () => {
+    const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      characters: {
+        sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" }
+      },
+      progress: 0.5,
+      showTips: false,
+      user: {
+        equippedCostumes: {
+          sigrika: { portraitUrl: "/sigrika-costume.webp" }
+        }
+      }
+    }));
+
+    expect(html).toContain("/sigrika.webp");
+    expect(html).not.toContain("/sigrika-costume.webp");
+  });
+
   it("excludes Baconbits from random and fixed-character loading screens", () => {
     const characters = {
       baconbits: { id: "baconbits", name: "猪小仙", portrait: "/baconbits.webp" },

@@ -403,6 +403,7 @@ describe("deployment preload asset helpers", () => {
     const OriginalImage = globalThis.Image;
     let releaseDecode;
     let imageInstance;
+    const onLoaded = vi.fn();
 
     class DecodingImage {
       constructor() {
@@ -424,7 +425,7 @@ describe("deployment preload asset helpers", () => {
     globalThis.Image = DecodingImage;
     try {
       let settled = false;
-      const preloadPromise = preloadImageAssets(["/assets/home/test.webp"], { taskTimeoutMs: 1000 })
+      const preloadPromise = preloadImageAssets(["/assets/home/test.webp"], { onLoaded, taskTimeoutMs: 1000 })
         .then(() => {
           settled = true;
         });
@@ -433,10 +434,12 @@ describe("deployment preload asset helpers", () => {
       expect(imageInstance.decoding).toBe("async");
       expect(imageInstance.currentSrc).toBe("/assets/home/test.webp");
       expect(settled).toBe(false);
+      expect(onLoaded).not.toHaveBeenCalled();
 
       releaseDecode();
       await preloadPromise;
       expect(settled).toBe(true);
+      expect(onLoaded).toHaveBeenCalledWith("/assets/home/test.webp");
     } finally {
       globalThis.Image = OriginalImage;
     }

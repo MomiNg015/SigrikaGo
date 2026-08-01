@@ -1,14 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
+import {
+  authPortraitReadySources,
+  authPortraitReadyVersion,
+  subscribeAuthPortraitReady
+} from "./authPortraitPrewarm.js";
+import { isExcludedPreloadCharacter, preloadCharacterCandidates } from "./preloadCharacterCatalog.js";
 
 const TIP_ROTATION_MS = 10000;
 const PRELOAD_PROGRESS_MASCOT = "/assets/preload/orange-mascot.png";
 const PRELOAD_PROGRESS_IDLE_MS = 600;
 const PRELOAD_PROGRESS_MIN_MOVEMENT = 1;
-const PRELOAD_EXCLUDED_CHARACTER_IDS = new Set(["baconbits"]);
 const EXCLUDED_CHARACTER_LOADING_LINE = "资源正在加载中";
 
 export function isMeaningfulPreloadProgressMovement(previousPercent, nextPercent) {
@@ -47,15 +52,23 @@ export function characterLoadingLineMap(linesText = DEFAULT_SITE_SETTINGS.charac
 }
 
 export function characterLoadingLine(character, linesText = DEFAULT_SITE_SETTINGS.characterLoadingLines) {
+  if (isExcludedPreloadCharacter(character)) return EXCLUDED_CHARACTER_LOADING_LINE;
   const characterId = canonicalCharacterId(character?.id);
-  if (PRELOAD_EXCLUDED_CHARACTER_IDS.has(characterId)) return EXCLUDED_CHARACTER_LOADING_LINE;
   const line = characterLoadingLineMap(linesText)[characterId];
   return line || `${character?.name || "角色"}正在加载中`;
 }
 
-export function randomPreloadCharacter(characters = CHARACTERS, random = Math.random, currentCharacter = null) {
-  const candidates = characterListFromCatalog(characters)
-    .filter((character) => character?.portrait && !isExcludedPreloadCharacter(character));
+export function randomPreloadCharacter(
+  characters = CHARACTERS,
+  random = Math.random,
+  currentCharacter = null,
+  readyPortraitSources = null
+) {
+  const allCandidates = preloadCharacterCandidates(characters);
+  const readyCandidates = readyPortraitSources?.size
+    ? allCandidates.filter((character) => readyPortraitSources.has(character.portrait))
+    : [];
+  const candidates = readyCandidates.length > 0 ? readyCandidates : allCandidates;
   if (candidates.length === 0) return CHARACTERS.sigrika;
   const index = Math.min(candidates.length - 1, Math.floor(random() * candidates.length));
   const nextCharacter = candidates[index];
@@ -70,13 +83,14 @@ function randomPreloadDisplayState({
   characters,
   fixedCharacter = null,
   currentTipIndex = -1,
-  currentCharacter = null
+  currentCharacter = null,
+  readyPortraitSources = null
 }) {
   return {
     tipIndex: randomTipIndex(tips, currentTipIndex),
     randomCharacter: fixedCharacter
       ? null
-      : randomPreloadCharacter(characters, Math.random, currentCharacter)
+      : randomPreloadCharacter(characters, Math.random, currentCharacter, readyPortraitSources)
   };
 }
 
@@ -85,10 +99,6 @@ function characterFromCatalogById(characters, characterId) {
   if (!canonicalId) return null;
   return characterListFromCatalog(characters)
     .find((catalogCharacter) => canonicalCharacterId(catalogCharacter?.id) === canonicalId) ?? null;
-}
-
-function isExcludedPreloadCharacter(character) {
-  return PRELOAD_EXCLUDED_CHARACTER_IDS.has(canonicalCharacterId(character?.id));
 }
 
 export default function AssetPreloadScreen({
@@ -102,6 +112,12 @@ export default function AssetPreloadScreen({
   tipsText,
   user = null
 }) {
+  const readyVersion = useSyncExternalStore(
+    subscribeAuthPortraitReady,
+    authPortraitReadyVersion,
+    authPortraitReadyVersion
+  );
+  const readyPortraitSources = useMemo(() => authPortraitReadySources(), [readyVersion]);
   const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
   const tips = useMemo(() => preloadTipList(tipsText), [tipsText]);
   const tipsSignature = tips.join("\n");
@@ -110,30 +126,49 @@ export default function AssetPreloadScreen({
   const [displayState, setDisplayState] = useState(() => randomPreloadDisplayState({
     tips,
     characters,
-    fixedCharacter
+    fixedCharacter,
+    readyPortraitSources: authPortraitReadySources()
   }));
   const [isProgressIdle, setIsProgressIdle] = useState(true);
   const didMountRef = useRef(false);
   const previousPercentRef = useRef(percent);
   const progressIdleTimerRef = useRef(null);
-  const latestInputsRef = useRef({ character: fixedCharacter, characters, tips });
+  const latestInputsRef = useRef({ character: fixedCharacter, characters, readyPortraitSources, tips });
   const { tipIndex, randomCharacter } = displayState;
-  const safeRandomCharacter = fixedCharacter ? null : randomCharacter ?? randomPreloadCharacter(characters);
+  const safeRandomCharacter = fixedCharacter
+    ? null
+    : randomCharacter ?? randomPreloadCharacter(characters, Math.random, null, readyPortraitSources);
   const randomCharacterId = canonicalCharacterId(safeRandomCharacter?.id);
   const displayCharacter = fixedCharacter
     ? characterFromCatalogById(characters, fixedCharacter.id) ?? fixedCharacter
     : characterFromCatalogById(characters, randomCharacterId) ?? safeRandomCharacter;
-  const displayPortrait = resolveCharacterPortraitPresentation(displayCharacter, {
+  const displayPortrait = resolveCharacterPortraitPresentation(displayCharacter, fixedCharacter ? {
     itemEffects: user?.itemEffects,
     user,
     costumeSnapshot: displayCharacter?.costumeSnapshot
-  });
+  } : {});
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
   const title = label || characterLoadingLine(displayCharacter, loadingLinesText);
 
   useEffect(() => {
-    latestInputsRef.current = { character: fixedCharacter, characters, tips };
-  }, [fixedCharacter, characters, tips]);
+    latestInputsRef.current = { character: fixedCharacter, characters, readyPortraitSources, tips };
+  }, [fixedCharacter, characters, readyPortraitSources, tips]);
+
+  useEffect(() => {
+    if (fixedCharacter || readyPortraitSources.size === 0) return;
+    setDisplayState((current) => {
+      if (readyPortraitSources.has(current.randomCharacter?.portrait)) return current;
+      return {
+        ...current,
+        randomCharacter: randomPreloadCharacter(
+          characters,
+          Math.random,
+          current.randomCharacter,
+          readyPortraitSources
+        )
+      };
+    });
+  }, [characters, fixedCharacter, readyPortraitSources]);
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -144,9 +179,14 @@ export default function AssetPreloadScreen({
       tipIndex: randomTipIndex(tips, current.tipIndex),
       randomCharacter: fixedCharacter
         ? null
-        : current.randomCharacter ?? randomPreloadCharacter(characters)
+        : current.randomCharacter ?? randomPreloadCharacter(
+          characters,
+          Math.random,
+          null,
+          readyPortraitSources
+        )
     }));
-  }, [fixedCharacterId, tipsSignature]);
+  }, [characters, fixedCharacterId, readyPortraitSources, tips, tipsSignature]);
 
   useEffect(() => {
     if (fixedCharacter && tips.length <= 1) return undefined;
@@ -157,7 +197,8 @@ export default function AssetPreloadScreen({
         characters: latestInputs.characters,
         fixedCharacter: latestInputs.character,
         currentTipIndex: current.tipIndex,
-        currentCharacter: current.randomCharacter
+        currentCharacter: current.randomCharacter,
+        readyPortraitSources: latestInputs.readyPortraitSources
       }));
     }, TIP_ROTATION_MS);
     return () => clearInterval(timer);

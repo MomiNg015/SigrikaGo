@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api/client.js";
+import { prewarmAuthPortraits } from "../app/authPortraitPrewarm.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 
 export default function AuthScreen({ onAuth, initialMode = "login" }) {
@@ -25,6 +26,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
 
   useEffect(() => {
     mountedRef.current = true;
+    void prewarmAuthPortraits();
     return () => {
       mountedRef.current = false;
       requestVersionRef.current += 1;
