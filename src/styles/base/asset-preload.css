@@ -30,9 +30,9 @@
 
 .preload-mascot-roll { display: block; transform: rotate(var(--preload-mascot-rotation)); transform-origin: 50% 50%; transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-.preload-mascot-motion { display: block; transform-origin: 50% 88%; }
+.preload-mascot-motion{display:block;transform-origin:50% 88%}
 
-.preload-progress-mascot { display: block; width: auto; height: var(--mascot-h); }
+.preload-progress-mascot{display:block;width:auto;max-width:none;height:var(--mascot-h)}
 
 .preload-progress.is-idle .preload-mascot-motion { animation: preload-mascot-breathe 1.2s ease-in-out infinite; }
 

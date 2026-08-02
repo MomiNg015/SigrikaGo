@@ -33,7 +33,12 @@
   border-radius: 999px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--bright-paper) !important;
+  color: var(--bright-blue) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle .character-music-glyph,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle .character-music-glyph span {
+  color: inherit !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle::before {
@@ -59,7 +64,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:hover:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:focus-visible {
-  color: var(--bright-ink) !important;
+  color: var(--bright-blue) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -69,19 +74,15 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:hover:not(:disabled)::before,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:focus-visible::before {
-  border-color: var(--bright-border);
-  background: var(--bright-mint);
-  box-shadow: 0 3px 0 color-mix(in srgb, var(--bright-border) 42%, transparent), 0 5px 8px color-mix(in srgb, var(--bright-border) 12%, transparent);
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:focus-visible::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled)::before {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled) { transform: translateY(2px) !important; }
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled)::before {
-  border-color: var(--bright-border);
-  background: var(--bright-pink);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--bright-border) 48%, transparent), 0 2px 4px color-mix(in srgb, var(--bright-border) 10%, transparent);
-}
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-playing .character-music-toggle { color: var(--bright-paper) !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-playing .character-music-toggle { color: var(--bright-pink) !important; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-loading .character-music-toggle { color: var(--bright-mint) !important; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-error .character-music-toggle { color: var(--bright-pink) !important; }
 

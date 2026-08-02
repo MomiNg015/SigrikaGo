@@ -741,11 +741,13 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolPlayerShellCss).toContain("background-size: contain !important");
     expect(brightSchoolPlayerShellCss).toContain("box-shadow: none !important");
     expect(brightSchoolPlayerShellCss).toContain("border-radius: 999px !important");
-    expect(brightSchoolPlayerShellCss).toContain("background: var(--bright-mint)");
-    expect(brightSchoolPlayerShellCss).toContain("background: var(--bright-pink)");
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-blue\)\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle \.character-music-glyph,[\s\S]*?\.character-music-toggle \.character-music-glyph span\s*\{[^}]*color:\s*inherit\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-player\.is-playing \.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-pink\)\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\),[\s\S]*?\.character-music-toggle:active:not\(:disabled\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toContain("transform: translateY(2px) !important");
-    expect(brightSchoolPlayerShellCss).toContain("box-shadow: 0 1px 0 color-mix(in srgb, var(--bright-border) 48%, transparent)");
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\)::before,[\s\S]*?\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*border-color:\s*transparent;[^}]*background:\s*transparent;[^}]*box-shadow:\s*none;/s);
+    expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*background:\s*var\(--bright-pink\)/s);
     expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active[^}]*scale\(/s);
     expect(brightSchoolPlayerShellCss).toContain("font-family: var(--font-ui-default) !important");
     expect(brightSchoolPlayerShellCss).not.toContain("var(--font-window-title)");

@@ -27,6 +27,11 @@ export function preloadTipList(tipsText = DEFAULT_SITE_SETTINGS.preloadTips) {
     .filter(Boolean);
 }
 
+export function preloadTipDisplayText(tip = "") {
+  const content = String(tip || "").trim().replace(/^Tip\s*[:：]\s*/i, "");
+  return content ? `Tip：${content}` : "";
+}
+
 function randomTipIndex(tips, currentIndex = -1) {
   if (tips.length <= 1) return 0;
   let nextIndex = Math.floor(Math.random() * tips.length);
@@ -148,6 +153,7 @@ export default function AssetPreloadScreen({
     costumeSnapshot: displayCharacter?.costumeSnapshot
   } : {});
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
+  const displayTip = preloadTipDisplayText(currentTip);
   const title = label || characterLoadingLine(displayCharacter, loadingLinesText);
 
   useEffect(() => {
@@ -268,7 +274,7 @@ export default function AssetPreloadScreen({
             </span>
           </div>
         </div>
-        {showTips && currentTip && <p className="preload-tip" aria-live="polite">{currentTip}</p>}
+        {showTips && displayTip && <p className="preload-tip" aria-live="polite">{displayTip}</p>}
       </section>
     </main>
   );

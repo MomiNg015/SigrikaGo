@@ -6,6 +6,7 @@ import AssetPreloadScreen, {
   characterLoadingLine,
   characterLoadingLineMap,
   isMeaningfulPreloadProgressMovement,
+  preloadTipDisplayText,
   preloadTipList,
   randomPreloadCharacter
 } from "./AssetPreloadScreen.jsx";
@@ -32,7 +33,7 @@ describe("AssetPreloadScreen", () => {
     expect(html).toContain("/assets/preload/orange-mascot.png");
     expect(html).toContain("role=\"progressbar\"");
     expect(html).toContain("aria-valuenow=\"100\"");
-    expect(html).toContain("加载提示");
+    expect(html).toContain("Tip：加载提示");
     expect(html).not.toContain("preload-mark");
   });
 
@@ -64,8 +65,9 @@ describe("AssetPreloadScreen", () => {
     expect(css).toContain("--bar-h: 20px");
     expect(css).toContain("--bar-h: 18px");
     expect(css).toContain("--mascot-h: calc(var(--bar-h) * 3)");
-    expect(css).toContain("height: var(--mascot-h)");
-    expect(css).toContain("width: auto");
+    expect(css).toContain("width:auto");
+    expect(css).toContain("max-width:none");
+    expect(css).toContain("height:var(--mascot-h)");
     expect(css).toContain("linear-gradient(90deg, rgb(255 214 109) 0%, rgb(247 169 61) 50%, rgb(233 120 39) 100%)");
     expect(css).toContain("-webkit-mask-size: var(--preload-mask-size) 100%");
     expect(css).toContain("mask-size: var(--preload-mask-size) 100%");
@@ -105,6 +107,13 @@ describe("AssetPreloadScreen", () => {
 
   it("parses admin-configured preload tips from newline text", () => {
     expect(preloadTipList("  第一句  \n\n第二句\r\n  ")).toEqual(["第一句", "第二句"]);
+  });
+
+  it("adds one consistent Tip prefix at the display boundary", () => {
+    expect(preloadTipDisplayText("加载提示")).toBe("Tip：加载提示");
+    expect(preloadTipDisplayText("Tip：已有前缀")).toBe("Tip：已有前缀");
+    expect(preloadTipDisplayText("tip: existing prefix")).toBe("Tip：existing prefix");
+    expect(preloadTipDisplayText("   ")).toBe("");
   });
 
   it("parses per-character loading lines from admin text", () => {
