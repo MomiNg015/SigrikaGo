@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 96
-- **Last Active**: 2026-08-01
+- **Total Sessions**: 97
+- **Last Active**: 2026-08-02
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1196 | Active |
+| `journal-2.md` | ~1229 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 97 | 2026-08-02 | 修复加载页与角色音乐按钮 | `d9484f1d` | `codex/frontend-work` |
 | 96 | 2026-08-01 | Hand-painted character music radio player | `031cfecd` | `codex/frontend-work` |
 | 95 | 2026-08-01 | 登录页角色立绘预热 | `304bde7d` | `codex/frontend-work` |
 | 94 | 2026-07-31 | Refine responsive login mascot composition | `9e08f4bc` | `codex/frontend-work` |
