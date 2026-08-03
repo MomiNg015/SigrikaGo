@@ -1260,3 +1260,36 @@ Corrected player music product category and ownership metadata, replaced corrupt
 ### Next Steps
 
 - None - task complete
+
+
+## Session 99: Add recruitment magic-clock booster
+
+**Date**: 2026-08-03
+**Task**: Add recruitment magic-clock booster
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Added the mail-distributable magic-clock item, server-authoritative one-time recruitment fast-forward transaction, 3-second motion plus 3-2-1 tail, stoppable 3-second SFX, warehouse/shop rules, persistence, docs, tests, and desktop/portrait visual QA.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a8b74b3f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
