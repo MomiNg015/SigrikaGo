@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">神奇小钟表占位图标</title>
+  <description id="description">粉色与薄荷绿色的闹钟图标</description>
+  <g fill="none" stroke="#3d2b25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M125 111 71 164" stroke-width="28"/>
+    <path d="m387 111 54 53" stroke-width="28"/>
+    <path d="m151 401-45 54" stroke-width="26"/>
+    <path d="m361 401 45 54" stroke-width="26"/>
+    <path d="M105 154c-25-25-24-65 1-90 25-25 65-26 90-1Z" fill="#9ad3de" stroke-width="22"/>
+    <path d="M407 154c25-25 24-65-1-90-25-25-65-26-90-1Z" fill="#9ad3de" stroke-width="22"/>
+    <circle cx="256" cy="282" r="154" fill="#fffaf0" stroke-width="26"/>
+    <circle cx="256" cy="282" r="126" fill="#ffb4ca" stroke-width="10"/>
+    <path d="M256 282V190" stroke="#3d2b25" stroke-width="24"/>
+    <path d="m256 282 72 43" stroke="#3d2b25" stroke-width="24"/>
+    <circle cx="256" cy="282" r="19" fill="#bfe8dd" stroke-width="10"/>
+    <path d="M256 143v25M395 282h-25M256 421v-25M117 282h25" stroke-width="16"/>
+    <path d="M207 105h98" stroke-width="24"/>
+  </g>
+</svg>

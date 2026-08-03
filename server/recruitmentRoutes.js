@@ -46,7 +46,12 @@ export function createRecruitmentRouteHandlers({
 
   async function fastForward(req, res) {
     try {
-      res.json(await fastForwardRecruitmentFn({ prisma, userId: req.user.id, now: new Date() }));
+      res.json(await fastForwardRecruitmentFn({
+        prisma,
+        userId: req.user.id,
+        itemType: req.body?.itemType,
+        now: new Date()
+      }));
     } catch (error) {
       res.status(error.status ?? 500).json({ error: error.message ?? "快速计时失败" });
     }

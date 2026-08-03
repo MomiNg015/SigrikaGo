@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ClipboardList, Clock, Radio, Ticket, X } from "lucide-react";
-import { playRecruitmentResultSound } from "../audio/playback.jsx";
-import { RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
+import { ClipboardList, Radio, Ticket, X } from "lucide-react";
+import { playRecruitmentMagicClockFastForwardSound, playRecruitmentResultSound } from "../audio/playback.jsx";
+import { RECRUITMENT_FAST_FORWARD_TIMING, RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
 import { ModalDialog } from "./modalComponents.jsx";
 import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import RecruitmentCinematicOverlay from "./recruitment/RecruitmentCinematicOverlay.jsx";
@@ -20,11 +20,11 @@ export default function RecruitmentModal({
 }) {
   const {
     busy,
-    canFastForward,
     cinematicPlaybackTaskId,
     clearResult,
     claim,
     fastForward,
+    fastForwardPresentation,
     finishCinematic,
     interruptCinematic,
     items,
@@ -35,17 +35,25 @@ export default function RecruitmentModal({
     selectedItemType,
     setSelectedItemType,
     start,
-    task
+    task,
+    utilities
   } = useRecruitmentCatalog({ token, user, onNotice, onUserChange, onStatusChange });
 
   const phase = result ? "result" : task?.status === "ready" ? "ready" : task?.status === "pending" ? "pending" : "idle";
   const canUse = phase === "idle" && selectedItem && selectedItem.quantity > 0 && !busy;
   const playedResultSoundRef = useRef(null);
+  const fastForwardSoundRef = useRef(null);
   const countdownRef = useRef(null);
   const [cinematicElapsedMs, setCinematicElapsedMs] = useState(null);
   const cinematicPlaying = phase === "pending"
     && Boolean(task?.cinematic)
     && cinematicPlaybackTaskId === task.id;
+  const magicClock = utilities.find((item) => item.itemType === RECRUITMENT_ITEM_TYPES.magicClock) ?? null;
+  const remainingMs = task?.readyAt ? Math.max(0, new Date(task.readyAt).getTime() - Date.now()) : 0;
+  const showMagicClock = phase === "pending"
+    && !task?.cinematic
+    && !task?.fastForwarded
+    && remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs;
 
   useEffect(() => {
     if (!result) {
@@ -61,6 +69,15 @@ export default function RecruitmentModal({
   useEffect(() => {
     if (!cinematicPlaying) setCinematicElapsedMs(null);
   }, [cinematicPlaying]);
+
+  useEffect(() => () => fastForwardSoundRef.current?.stop(), []);
+
+  async function useMagicClock() {
+    const applied = await fastForward();
+    if (!applied) return;
+    fastForwardSoundRef.current?.stop();
+    fastForwardSoundRef.current = playRecruitmentMagicClockFastForwardSound(audioSettings);
+  }
 
   const closeModal = cinematicPlaying ? undefined : onClose;
 
@@ -86,11 +103,12 @@ export default function RecruitmentModal({
             <PendingBoard
               task={task}
               busy={busy}
-              canFastForward={canFastForward && !task.cinematic}
+              magicClock={showMagicClock ? magicClock : null}
+              fastForwardPresentation={fastForwardPresentation}
               cinematicElapsedMs={cinematicPlaying ? cinematicElapsedMs : null}
               presentationReadyAt={presentationReadyAt}
               countdownRef={countdownRef}
-              onFastForward={fastForward}
+              onFastForward={useMagicClock}
             />
           )}
           {!loading && phase === "ready" && <ReadyBoard task={task} busy={busy} onClaim={claim} />}
@@ -167,24 +185,45 @@ function IdleBoard({ selectedItem }) {
   );
 }
 
-function PendingBoard({ task, busy, canFastForward, cinematicElapsedMs, presentationReadyAt, countdownRef, onFastForward }) {
+function PendingBoard({
+  task,
+  busy,
+  magicClock,
+  fastForwardPresentation,
+  cinematicElapsedMs,
+  presentationReadyAt,
+  countdownRef,
+  onFastForward
+}) {
+  const fastForwarding = Boolean(
+    fastForwardPresentation && Date.now() < fastForwardPresentation.animationEndsAt
+  );
+  const clockUnavailable = !magicClock || magicClock.quantity <= 0;
   return (
     <section className="recruitment-pending-panel">
       <RecruitmentItemWatermark item={task} />
       <div>
         <strong>{task.itemName}</strong>
-        <div className={`recruitment-countdown-row ${canFastForward ? "has-fast-forward" : ""}`}>
-          <b ref={countdownRef}>{formatRecruitmentCountdown(task, cinematicElapsedMs, presentationReadyAt)}</b>
-          {canFastForward && (
+        <div className={`recruitment-countdown-row ${magicClock ? "has-fast-forward" : ""} ${fastForwarding ? "is-fast-forwarding" : ""}`}>
+          <b ref={countdownRef} aria-live={fastForwarding ? "off" : "polite"}>
+            {formatRecruitmentCountdown(task, cinematicElapsedMs, presentationReadyAt, fastForwardPresentation)}
+          </b>
+          {fastForwarding && (
+            <span className="recruitment-time-warp-clock" aria-hidden="true">
+              <img src="/assets/items/magic-clock.svg" alt="" />
+            </span>
+          )}
+          {magicClock && (
             <button
               className="recruitment-fast-forward-button"
               type="button"
-              disabled={busy}
+              disabled={busy || clockUnavailable}
               onClick={onFastForward}
-              title="快速计时到 5 秒"
-              aria-label="快速计时到 5 秒"
+              title={clockUnavailable ? "神奇小钟表数量不足" : magicClock.description}
+              aria-label={`使用神奇小钟表，持有 ${magicClock.quantity} 个`}
             >
-              <Clock size={20} />
+              <img src="/assets/items/magic-clock.svg" alt="" />
+              <span className="recruitment-fast-forward-count" aria-hidden="true">{magicClock.quantity}</span>
             </button>
           )}
         </div>

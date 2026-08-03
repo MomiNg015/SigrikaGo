@@ -13,14 +13,18 @@ describe("recruitment route handlers", () => {
     });
     const response = fakeResponse();
 
-    await handlers.fastForward({ user: { id: "user-1" } }, response);
+    await handlers.fastForward({
+      user: { id: "user-1" },
+      body: { itemType: "magic-clock" }
+    }, response);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ task: { id: "task-1", status: "pending" } });
     expect(calls).toHaveLength(1);
     expect(calls[0]).toMatchObject({
       prisma: { tag: "prisma" },
-      userId: "user-1"
+      userId: "user-1",
+      itemType: "magic-clock"
     });
     expect(calls[0].now).toBeInstanceOf(Date);
   });

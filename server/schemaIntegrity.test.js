@@ -144,6 +144,15 @@ describe("Prisma schema integrity", () => {
     expect(migrationSql).toContain('"deletedAt" DATETIME');
   });
 
+  it("tracks one-time recruitment fast-forward use through schema, migration, and runtime guard", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const runtimeGuard = readFileSync(join(process.cwd(), "server", "recruitment.js"), "utf8");
+
+    expect(schema).toContain("fastForwardedAt    DateTime?");
+    expect(migrationSql).toContain('"fastForwardedAt" DATETIME');
+    expect(runtimeGuard).toContain('ALTER TABLE "RecruitmentTask" ADD COLUMN "fastForwardedAt" DATETIME');
+  });
+
   it("tracks announcements and read state through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   claimRecruitment,
+  ensureRecruitmentSchema,
   fastForwardRecruitment,
   getRecruitmentConfig,
   getRecruitmentStatus,
@@ -11,11 +12,23 @@ import {
 import {
   AEMEATH_RECRUITMENT_ASSET_SLOTS,
   AEMEATH_RECRUITMENT_TIMING,
+  RECRUITMENT_FAST_FORWARD_TIMING,
   RECRUITMENT_ITEM_TYPES,
   RECRUITMENT_NO_CANDIDATE_MESSAGE
 } from "../src/shared/recruitment.js";
 
 describe("recruitment", () => {
+  it("adds the persisted fast-forward marker to existing recruitment databases", async () => {
+    const executed = [];
+    await ensureRecruitmentSchema({
+      $executeRawUnsafe: async (sql) => executed.push(sql),
+      $queryRawUnsafe: async () => [{ name: "id" }, { name: "readyAt" }]
+    });
+
+    expect(executed).toContain('ALTER TABLE "RecruitmentTask" ADD COLUMN "fastForwardedAt" DATETIME');
+    expect(executed.join("\n")).toContain('"fastForwardedAt" DATETIME');
+  });
+
   it("inserts the owned memorial ticket between the two normal catalog items", async () => {
     const user = recruitmentUser({
       ownedItems: JSON.stringify({ [RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket]: 1 })
@@ -33,6 +46,14 @@ describe("recruitment", () => {
       RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket,
       RECRUITMENT_ITEM_TYPES.radioTicket
     ]);
+    expect(withTicket.items).not.toContainEqual(expect.objectContaining({
+      itemType: RECRUITMENT_ITEM_TYPES.magicClock
+    }));
+    expect(withTicket.utilities).toEqual([expect.objectContaining({
+      itemType: RECRUITMENT_ITEM_TYPES.magicClock,
+      name: "神奇小钟表",
+      quantity: 0
+    })]);
 
     user.ownedItems = "{}";
     const withoutTicket = await getRecruitmentStatus({ prisma, userId: user.id });
@@ -146,11 +167,14 @@ describe("recruitment", () => {
     expect(calls).toEqual([]);
   });
 
-  it("fast-forwards a pending recruitment to five seconds remaining", async () => {
+  it("consumes one magic clock and fast-forwards an ordinary recruitment through the six-second presentation", async () => {
     const now = new Date("2026-06-20T06:00:00.000Z");
+    const user = recruitmentUser({
+      ownedItems: JSON.stringify({ [RECRUITMENT_ITEM_TYPES.magicClock]: 2 })
+    });
     const task = {
       id: "task-1",
-      userId: "user-1",
+      userId: user.id,
       itemType: RECRUITMENT_ITEM_TYPES.radioTicket,
       status: "pending",
       resultType: "miss",
@@ -158,41 +182,142 @@ describe("recruitment", () => {
       responseText: "暂时没有回应。",
       startedAt: now,
       readyAt: new Date(now.getTime() + 5 * 60 * 1000),
+      fastForwardedAt: null,
       claimedAt: null
     };
     const updates = [];
     const prisma = {
       $transaction: async (callback) => callback(prisma),
+      user: {
+        findUnique: async () => user,
+        update: async (args) => {
+          updates.push(["user.update", args]);
+          Object.assign(user, args.data);
+          return user;
+        }
+      },
       recruitmentTask: {
         findFirst: async () => task,
-        update: async (args) => {
-          updates.push(args);
-          return { ...task, ...args.data };
+        updateMany: async (args) => {
+          updates.push(["recruitmentTask.updateMany", args]);
+          return { count: 1 };
         }
-      }
+      },
+      userCharacter: { deleteMany: async () => {} },
+      userDecoration: { deleteMany: async () => {} },
+      userItem: { deleteMany: async () => {}, upsert: async () => {} },
+      userItemEffect: { deleteMany: async () => {} }
     };
 
     const response = await fastForwardRecruitment({
       prisma,
-      userId: "user-1",
-      now,
-      env: { NODE_ENV: "development", ENABLE_TEST_ACTIONS: "true" }
+      userId: user.id,
+      itemType: RECRUITMENT_ITEM_TYPES.magicClock,
+      now
     });
 
-    expect(updates).toEqual([expect.objectContaining({
-      where: { id: task.id },
-      data: { readyAt: new Date(now.getTime() + 5000) }
+    expect(updates).toContainEqual(["recruitmentTask.updateMany", expect.objectContaining({
+      where: expect.objectContaining({
+        id: task.id,
+        fastForwardedAt: null,
+        readyAt: { gt: new Date(now.getTime() + RECRUITMENT_FAST_FORWARD_TIMING.totalMs) }
+      }),
+      data: {
+        readyAt: new Date(now.getTime() + RECRUITMENT_FAST_FORWARD_TIMING.totalMs),
+        fastForwardedAt: now
+      }
+    })]);
+    expect(updates).toContainEqual(["user.update", expect.objectContaining({
+      data: { ownedItems: JSON.stringify({ [RECRUITMENT_ITEM_TYPES.magicClock]: 1 }) }
     })]);
     expect(response.task.status).toBe("pending");
-    expect(response.task.remainingMs).toBe(5000);
+    expect(response.task.remainingMs).toBe(RECRUITMENT_FAST_FORWARD_TIMING.totalMs);
+    expect(response.task.fastForwarded).toBe(true);
+    expect(response.utilities[0].quantity).toBe(1);
   });
 
-  it("rejects fast-forward in production", async () => {
+  it.each([
+    ["special cinematic", {
+      task: { itemType: RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket },
+      message: "特殊招募演出期间不能使用神奇小钟表"
+    }],
+    ["already accelerated", {
+      task: { fastForwardedAt: new Date("2026-06-20T05:59:00.000Z") },
+      message: "本次招募已经使用过神奇小钟表"
+    }],
+    ["too close to completion", {
+      task: { readyAt: new Date("2026-06-20T06:00:06.000Z") },
+      message: "招募即将完成，无需使用神奇小钟表"
+    }]
+  ])("rejects magic-clock use for %s", async (_label, scenario) => {
+    const now = new Date("2026-06-20T06:00:00.000Z");
+    const user = recruitmentUser({
+      ownedItems: JSON.stringify({ [RECRUITMENT_ITEM_TYPES.magicClock]: 1 })
+    });
+    const task = {
+      id: "task-guard",
+      userId: user.id,
+      itemType: RECRUITMENT_ITEM_TYPES.radioTicket,
+      status: "pending",
+      readyAt: new Date(now.getTime() + 60_000),
+      fastForwardedAt: null,
+      claimedAt: null,
+      ...scenario.task
+    };
+    const prisma = {
+      $transaction: async (callback) => callback(prisma),
+      user: { findUnique: async () => user },
+      recruitmentTask: { findFirst: async () => task }
+    };
+
     await expect(fastForwardRecruitment({
+      prisma,
+      userId: user.id,
+      now
+    })).rejects.toThrow(scenario.message);
+  });
+
+  it("does not consume a magic clock when another request wins the same task", async () => {
+    const now = new Date("2026-06-20T06:00:00.000Z");
+    const user = recruitmentUser({
+      ownedItems: JSON.stringify({ [RECRUITMENT_ITEM_TYPES.magicClock]: 1 })
+    });
+    let userUpdated = false;
+    const prisma = {
+      $transaction: async (callback) => callback(prisma),
+      user: {
+        findUnique: async () => user,
+        update: async () => {
+          userUpdated = true;
+          return user;
+        }
+      },
+      recruitmentTask: {
+        findFirst: async () => ({
+          id: "task-race",
+          userId: user.id,
+          itemType: RECRUITMENT_ITEM_TYPES.radioTicket,
+          status: "pending",
+          readyAt: new Date(now.getTime() + 60_000),
+          fastForwardedAt: null,
+          claimedAt: null
+        }),
+        updateMany: async () => ({ count: 0 })
+      }
+    };
+
+    await expect(fastForwardRecruitment({ prisma, userId: user.id, now })).rejects.toMatchObject({
+      status: 409
+    });
+    expect(userUpdated).toBe(false);
+  });
+
+  it("rejects starting recruitment with the magic clock", async () => {
+    await expect(startRecruitment({
       prisma: {},
       userId: "user-1",
-      env: { NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" }
-    })).rejects.toThrow("测试工具仅开发环境可用");
+      itemType: RECRUITMENT_ITEM_TYPES.magicClock
+    })).rejects.toThrow("未知招募道具");
   });
 
   it("consumes the memorial ticket and fixes the result to Aemeath with the cinematic duration", async () => {

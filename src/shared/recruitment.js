@@ -4,7 +4,19 @@ import { CHARACTER_PORTRAIT_ASSETS } from "./characterPortraitAssetCatalog.js";
 export const RECRUITMENT_ITEM_TYPES = Object.freeze({
   campusPoster: "campus-recruitment-poster",
   aemeathMemorialTicket: "aemeath-flight-snow-memorial-ticket",
+  magicClock: "magic-clock",
   radioTicket: "radio-recruitment-ticket"
+});
+
+export const RECRUITMENT_ITEM_USAGE_TYPES = Object.freeze({
+  start: "start",
+  fastForward: "fast-forward"
+});
+
+export const RECRUITMENT_FAST_FORWARD_TIMING = Object.freeze({
+  animationMs: 3_000,
+  countdownMs: 3_000,
+  totalMs: 6_000
 });
 
 export const RECRUITMENT_NO_CANDIDATE_MESSAGE = "好像已经没有可以用该道具招募的角色了";
@@ -83,6 +95,22 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     resultText: "爱弥斯，回应粉丝的期待，闪亮登台！嗯？是想让我加入围棋部吗？哼哼哼，也好，就让你们见识一下我的实力吧！",
     assetSlots: AEMEATH_RECRUITMENT_ASSET_SLOTS
   }),
+  [RECRUITMENT_ITEM_TYPES.magicClock]: Object.freeze({
+    itemType: RECRUITMENT_ITEM_TYPES.magicClock,
+    name: "神奇小钟表",
+    scopeLabel: "拨动指针，让招募等待时间快速流逝",
+    description: "只要一拨指针就能加速现实时间流逝，很方便吧~",
+    imageUrl: "/assets/items/magic-clock.svg",
+    staleImageUrls: Object.freeze([]),
+    sortOrder: 123,
+    priceCoins: 0,
+    playerShopAvailability: "hidden",
+    catalogVisibility: "always",
+    usageType: RECRUITMENT_ITEM_USAGE_TYPES.fastForward,
+    warehouseActionVisibility: "hidden",
+    configurableProbability: false,
+    candidates: Object.freeze([])
+  }),
   [RECRUITMENT_ITEM_TYPES.radioTicket]: Object.freeze({
     itemType: RECRUITMENT_ITEM_TYPES.radioTicket,
     name: "先约电台广播券",
@@ -143,16 +171,30 @@ export function recruitmentItemForType(itemType) {
   return RECRUITMENT_ITEMS[String(itemType ?? "")] ?? null;
 }
 
+export function isRecruitmentStartItem(itemOrType) {
+  const item = typeof itemOrType === "string" ? recruitmentItemForType(itemOrType) : itemOrType;
+  return Boolean(item && (item.usageType ?? RECRUITMENT_ITEM_USAGE_TYPES.start) === RECRUITMENT_ITEM_USAGE_TYPES.start);
+}
+
+export function isRecruitmentFastForwardItem(itemOrType) {
+  const item = typeof itemOrType === "string" ? recruitmentItemForType(itemOrType) : itemOrType;
+  return Boolean(item?.usageType === RECRUITMENT_ITEM_USAGE_TYPES.fastForward);
+}
+
 export function recruitmentItemImageUrlForType(itemType, fallback = "") {
   return recruitmentItemForType(itemType)?.imageUrl ?? String(fallback ?? "");
 }
 
 export function probabilityRecruitmentItems() {
-  return Object.values(RECRUITMENT_ITEMS).filter((item) => item.configurableProbability !== false);
+  return Object.values(RECRUITMENT_ITEMS).filter((item) => (
+    isRecruitmentStartItem(item) && item.configurableProbability !== false
+  ));
 }
 
 export function fixedRecruitmentItems() {
-  return Object.values(RECRUITMENT_ITEMS).filter((item) => item.resultMode === "fixed");
+  return Object.values(RECRUITMENT_ITEMS).filter((item) => (
+    isRecruitmentStartItem(item) && item.resultMode === "fixed"
+  ));
 }
 
 export function isPlayerShopRecruitmentItem(itemType) {

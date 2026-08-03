@@ -1,10 +1,14 @@
 import { publicUser } from "./db.js";
 import {
   DEFAULT_RECRUITMENT_CONFIG,
+  RECRUITMENT_FAST_FORWARD_TIMING,
   RECRUITMENT_ITEMS,
+  RECRUITMENT_ITEM_TYPES,
   RECRUITMENT_NO_CANDIDATE_MESSAGE,
   fixedRecruitmentItems,
+  isRecruitmentFastForwardItem,
   isRecruitmentItemType,
+  isRecruitmentStartItem,
   probabilityRecruitmentItems,
   recruitmentItemForType
 } from "../src/shared/recruitment.js";
@@ -19,7 +23,6 @@ import {
 
 const RECRUITMENT_CONFIG_KEY = "recruitmentConfig";
 const ACTIVE_TASK_STATUSES = new Set(["pending"]);
-const RECRUITMENT_FAST_FORWARD_REMAINING_MS = 5000;
 
 export async function ensureRecruitmentSchema(client) {
   if (!client?.$executeRawUnsafe) return;
@@ -36,12 +39,19 @@ export async function ensureRecruitmentSchema(client) {
       "responseText" TEXT NOT NULL DEFAULT '',
       "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "readyAt" DATETIME NOT NULL,
+      "fastForwardedAt" DATETIME,
       "claimedAt" DATETIME,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "RecruitmentTask_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
+  if (client.$queryRawUnsafe) {
+    const columns = await client.$queryRawUnsafe(`PRAGMA table_info("RecruitmentTask")`);
+    if (!columns.some((column) => column.name === "fastForwardedAt")) {
+      await client.$executeRawUnsafe(`ALTER TABLE "RecruitmentTask" ADD COLUMN "fastForwardedAt" DATETIME`);
+    }
+  }
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "RecruitmentTask_userId_status_readyAt_idx" ON "RecruitmentTask"("userId", "status", "readyAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "RecruitmentTask_itemType_idx" ON "RecruitmentTask"("itemType")`);
   await client.$executeRawUnsafe(`
@@ -70,13 +80,14 @@ export async function getRecruitmentStatus({ prisma, userId, now = new Date() })
   return {
     config: publicRecruitmentConfig(config),
     items: recruitmentItemsPayload({ user, streaks, config }),
+    utilities: recruitmentUtilitiesPayload(user),
     task: task ? toRecruitmentTaskPayload(task, { now, reveal: Boolean(task.claimedAt) }) : null
   };
 }
 
 export async function startRecruitment({ prisma, userId, itemType, now = new Date(), random = Math.random }) {
   const item = recruitmentItemForType(itemType);
-  if (!item) throw routeError(400, "未知招募道具");
+  if (!item || !isRecruitmentStartItem(item)) throw routeError(400, "未知招募道具");
 
   return prisma.$transaction(async (tx) => {
     const [user, activeTask, config] = await Promise.all([
@@ -204,25 +215,63 @@ export async function interruptRecruitmentCinematic({ prisma, userId, now = new 
   });
 }
 
-export async function fastForwardRecruitment({ prisma, userId, now = new Date(), env = process.env }) {
-  if (env.NODE_ENV === "production") throw routeError(403, "测试工具仅开发环境可用");
-
+export async function fastForwardRecruitment({
+  prisma,
+  userId,
+  itemType = RECRUITMENT_ITEM_TYPES.magicClock,
+  now = new Date()
+}) {
+  const utility = recruitmentItemForType(itemType);
+  if (!utility || !isRecruitmentFastForwardItem(utility)) throw routeError(400, "未知招募加速道具");
   return prisma.$transaction(async (tx) => {
-    const task = await findActiveRecruitmentTask(tx, userId);
+    const [user, task] = await Promise.all([
+      findRecruitmentUser(tx, userId),
+      findActiveRecruitmentTask(tx, userId)
+    ]);
+    if (!user) throw routeError(404, "用户不存在");
     if (!task) throw routeError(404, "没有正在等待的招新回应");
+    if (recruitmentItemForType(task.itemType)?.cinematicId) {
+      throw routeError(400, "特殊招募演出期间不能使用神奇小钟表");
+    }
+    if (task.fastForwardedAt) throw routeError(400, "本次招募已经使用过神奇小钟表");
 
-    const targetReadyAt = new Date(new Date(now).getTime() + RECRUITMENT_FAST_FORWARD_REMAINING_MS);
-    const currentReadyAt = new Date(task.readyAt);
-    const nextReadyAt = currentReadyAt.getTime() > targetReadyAt.getTime() ? targetReadyAt : currentReadyAt;
-    const updatedTask = nextReadyAt.getTime() === currentReadyAt.getTime()
-      ? task
-      : await tx.recruitmentTask.update({
-        where: { id: task.id },
-        data: { readyAt: nextReadyAt }
-      });
+    const usedAt = new Date(now);
+    const targetReadyAt = new Date(usedAt.getTime() + RECRUITMENT_FAST_FORWARD_TIMING.totalMs);
+    if (new Date(task.readyAt).getTime() <= targetReadyAt.getTime()) {
+      throw routeError(400, "招募即将完成，无需使用神奇小钟表");
+    }
+    const ownedItems = parseOwnedItemCounts(user.ownedItems);
+    if ((ownedItems[utility.itemType] ?? 0) <= 0) throw routeError(400, "还没有神奇小钟表");
+
+    const wonUpdate = await tx.recruitmentTask.updateMany({
+      where: {
+        id: task.id,
+        status: "pending",
+        claimedAt: null,
+        fastForwardedAt: null,
+        readyAt: { gt: targetReadyAt }
+      },
+      data: { readyAt: targetReadyAt, fastForwardedAt: usedAt }
+    });
+    if (wonUpdate.count !== 1) throw routeError(409, "招募状态已变化，请刷新后重试");
+
+    ownedItems[utility.itemType] -= 1;
+    if (ownedItems[utility.itemType] <= 0) delete ownedItems[utility.itemType];
+    const updatedUser = await tx.user.update({
+      where: { id: user.id },
+      data: { ownedItems: serializeOwnedItemCounts(ownedItems) }
+    });
+    await syncStructuredUserAssets(tx, updatedUser);
+    const updatedTask = {
+      ...task,
+      readyAt: targetReadyAt,
+      fastForwardedAt: usedAt
+    };
 
     return {
-      task: toRecruitmentTaskPayload(updatedTask, { now, reveal: false })
+      user: publicUser(updatedUser),
+      task: toRecruitmentTaskPayload(updatedTask, { now: usedAt, reveal: false }),
+      utilities: recruitmentUtilitiesPayload(updatedUser)
     };
   });
 }
@@ -252,7 +301,7 @@ function publicRecruitmentConfig(config) {
 
 function recruitmentItemsPayload({ user, streaks, config }) {
   const ownedItems = parseOwnedItemCounts(user.ownedItems);
-  return Object.values(RECRUITMENT_ITEMS).flatMap((item) => {
+  return Object.values(RECRUITMENT_ITEMS).filter(isRecruitmentStartItem).flatMap((item) => {
     const quantity = ownedItems[item.itemType] ?? 0;
     if (item.catalogVisibility === "owned-only" && quantity <= 0) return [];
     const streak = streaks[item.itemType] ?? 0;
@@ -271,6 +320,17 @@ function recruitmentItemsPayload({ user, streaks, config }) {
       cinematicId: item.cinematicId ?? ""
     }];
   });
+}
+
+function recruitmentUtilitiesPayload(user) {
+  const ownedItems = parseOwnedItemCounts(user.ownedItems);
+  return Object.values(RECRUITMENT_ITEMS).filter(isRecruitmentFastForwardItem).map((item) => ({
+    itemType: item.itemType,
+    name: item.name,
+    description: item.description,
+    imageUrl: item.imageUrl,
+    quantity: ownedItems[item.itemType] ?? 0
+  }));
 }
 
 function normalizeRecruitmentConfig(value) {
@@ -339,6 +399,7 @@ function toRecruitmentTaskPayload(task, { now = new Date(), reveal = false } = {
     startedAt: task.startedAt,
     readyAt: task.readyAt,
     remainingMs: Math.max(0, new Date(task.readyAt).getTime() - new Date(now).getTime()),
+    fastForwarded: Boolean(task.fastForwardedAt),
     cinematic: item?.cinematicId ? {
       id: item.cinematicId,
       theatricalCountdownMs: item.theatricalCountdownMs,
@@ -424,4 +485,8 @@ export function routeError(status, message) {
 
 export function isRecruitmentInventoryItem(itemType) {
   return isRecruitmentItemType(itemType);
+}
+
+export function isRecruitmentInventoryActionVisible(itemType) {
+  return recruitmentItemForType(itemType)?.warehouseActionVisibility !== "hidden";
 }

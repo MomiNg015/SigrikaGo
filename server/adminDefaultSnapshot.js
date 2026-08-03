@@ -581,6 +581,23 @@ export const ADMIN_DEFAULT_CONFIG = {
       "source": "default"
     },
     {
+      "name": "神奇小钟表",
+      "category": "item",
+      "targetId": "magic-clock",
+      "itemTargetType": "self",
+      "stockQuantity": -1,
+      "priceCoins": 0,
+      "discountPercent": 0,
+      "purchasable": false,
+      "enabled": false,
+      "sortOrder": 123,
+      "description": "只要一拨指针就能加速现实时间流逝，很方便吧~",
+      "imageUrl": "/assets/items/magic-clock.svg",
+      "illustName": "",
+      "illustUrl": "",
+      "source": "default"
+    },
+    {
       "name": "彩虹豆豆跳跳糖",
       "category": "item",
       "targetId": "rainbow-bean-candy",

@@ -43,6 +43,7 @@ CREATE TABLE "RecruitmentTask" (
     "responseText" TEXT NOT NULL DEFAULT '',
     "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "readyAt" DATETIME NOT NULL,
+    "fastForwardedAt" DATETIME,
     "claimedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,

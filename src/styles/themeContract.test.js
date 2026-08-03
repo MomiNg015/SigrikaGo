@@ -76,10 +76,15 @@ describe("player theme CSS contract", () => {
   it("keeps Bright School commerce as an import-only domain entry", () => {
     const commerceEntry = readFileSync(new URL("./themes/bright-school/commerce.css", import.meta.url), "utf8");
     const recruitmentPolish = readFileSync(new URL("./themes/bright-school/commerce/recruitment.css", import.meta.url), "utf8");
+    const magicClockPolish = readFileSync(
+      new URL("./themes/bright-school/commerce/recruitment/magic-clock.css", import.meta.url),
+      "utf8"
+    );
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
       "./commerce/recruitment.css",
+      "./commerce/recruitment/magic-clock.css",
       "./commerce/shop.css",
       "./commerce/warehouse-profile.css"
     ]);
@@ -108,6 +113,8 @@ describe("player theme CSS contract", () => {
     expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button");
     expect(recruitmentPolish).toContain("background: #fffdf6 !important;");
     expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
+    expect(magicClockPolish).toContain(".recruitment-fast-forward-button:disabled");
+    expect(magicClockPolish).toContain("filter: grayscale(0.86) !important;");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {

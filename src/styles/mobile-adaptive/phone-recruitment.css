@@ -120,13 +120,17 @@
 
   .recruitment-countdown-row {
     width: fit-content !important;
-    max-width: min(100%, 230px) !important;
+    max-width: min(100%, 244px) !important;
     grid-template-columns: minmax(0, auto) !important;
     gap: 8px !important;
   }
 
   .recruitment-countdown-row.has-fast-forward {
-    grid-template-columns: minmax(0, auto) 40px !important;
+    grid-template-columns: minmax(0, auto) 44px !important;
+  }
+
+  .recruitment-countdown-row.is-fast-forwarding {
+    grid-template-columns: minmax(0, auto) 44px !important;
   }
 
   .recruitment-countdown-row b {
@@ -135,10 +139,10 @@
   }
 
   .recruitment-fast-forward-button {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 
   .recruitment-result-success > img {

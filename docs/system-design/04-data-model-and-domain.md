@@ -324,6 +324,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 ## Recruitment Data Model
 
 - `aemeath-flight-snow-memorial-ticket` reuses `RecruitmentTask` rather than introducing a presentation table. The task stores the already-decided Aemeath result and authoritative claim start/ready timestamps; cinematic id, authored 999-minute display value, replacement image/sprite-sheet/sound URLs, and the 7.05-second client timeline are code-owned shared metadata. The client keeps a non-persisted `presentationReadyAt` for a freshly created task, calculated from response receipt so transport latency cannot consume the visible five-second tail; at display zero only the local task view becomes ready. A normal completed presentation leaves server `readyAt` untouched; only a real refresh, hidden-page, offline, or unmount interruption shortens it. Claim status and the character grant retain the ordinary recruitment transaction boundary.
+- `RecruitmentTask.fastForwardedAt` is the persistent idempotency marker for auxiliary countdown items. It is nullable for untouched tasks and set in the same transaction that changes `readyAt` and consumes `magic-clock`; refresh/re-entry therefore cannot reuse the item on the same task. The baseline migration and `ensureRecruitmentSchema()` both own this column so fresh and older SQLite databases converge before recruitment routes run. The 3-second fast-forward animation state is deliberately client-only and is never reconstructed from `fastForwardedAt` after interruption.
 
 ## Source-Scoped Asset Sync
 

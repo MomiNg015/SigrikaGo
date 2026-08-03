@@ -2,16 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "../../api/client.js";
 import {
   AEMEATH_RECRUITMENT_TIMING,
+  RECRUITMENT_FAST_FORWARD_TIMING,
+  RECRUITMENT_ITEM_TYPES,
   cinematicPresentationReadyAt,
   recruitmentReadyDelayMs
 } from "../../shared/recruitment.js";
 
 export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onStatusChange }) {
-  const canFastForward =
-    import.meta.env.DEV ||
-    import.meta.env.MODE === "development" ||
-    import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
   const [items, setItems] = useState([]);
+  const [utilities, setUtilities] = useState([]);
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedItemType, setSelectedItemType] = useState("");
@@ -20,12 +19,14 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
   const [cinematicPlaybackTaskId, setCinematicPlaybackTaskId] = useState("");
   const [cinematicCompletedTaskId, setCinematicCompletedTaskId] = useState("");
   const [presentationReadyAt, setPresentationReadyAt] = useState("");
+  const [fastForwardPresentation, setFastForwardPresentation] = useState(null);
   const [, setTick] = useState(0);
 
   async function refresh() {
     if (!token || !user) return;
     const data = await api("/api/recruitment", { token });
     setItems(data.items ?? []);
+    setUtilities(data.utilities ?? []);
     let nextTask = data.task ?? null;
     if (nextTask?.status === "pending" && nextTask.cinematic) {
       try {
@@ -36,6 +37,7 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
       }
     }
     setTask(nextTask);
+    setFastForwardPresentation(null);
     setPresentationReadyAt((current) => nextTask?.status === "pending" ? current : "");
     onStatusChange?.(nextTask);
     if (!selectedItemType && data.items?.[0]) setSelectedItemType(data.items[0].itemType);
@@ -59,9 +61,12 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
 
   useEffect(() => {
     if (!task || task.status !== "pending") return undefined;
-    const timer = window.setInterval(() => setTick((value) => value + 1), 1000);
+    const timer = window.setInterval(
+      () => setTick((value) => value + 1),
+      fastForwardPresentation ? 50 : 1000
+    );
     return () => window.clearInterval(timer);
-  }, [task?.id, task?.status]);
+  }, [fastForwardPresentation, task?.id, task?.status]);
 
   useEffect(() => {
     if (!task || task.status !== "pending") return undefined;
@@ -71,6 +76,7 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
         const readyTask = presentationReadyRecruitmentTask(task);
         setTask(readyTask);
         setPresentationReadyAt("");
+        setFastForwardPresentation(null);
         onStatusChange?.(readyTask);
       }, remainingMs);
       return () => window.clearTimeout(timeout);
@@ -129,13 +135,36 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
   async function fastForward() {
     setBusy(true);
     try {
-      const data = await api("/api/recruitment/fast-forward", { method: "POST", token });
-      setTask(data.task ?? null);
-      onStatusChange?.(data.task ?? null);
-      onNotice?.("已将招新倒计时缩短到 5 秒", "success");
-      await refresh();
+      const initialRemainingMs = Math.max(
+        RECRUITMENT_FAST_FORWARD_TIMING.totalMs,
+        new Date(task?.readyAt ?? 0).getTime() - Date.now()
+      );
+      const data = await api("/api/recruitment/fast-forward", {
+        method: "POST",
+        token,
+        body: { itemType: RECRUITMENT_ITEM_TYPES.magicClock }
+      });
+      const startedAt = Date.now();
+      const animationEndsAt = startedAt + RECRUITMENT_FAST_FORWARD_TIMING.animationMs;
+      const localReadyAt = startedAt + RECRUITMENT_FAST_FORWARD_TIMING.totalMs;
+      const nextTask = data.task ?? null;
+      setTask(nextTask);
+      setUtilities(data.utilities ?? utilities);
+      setFastForwardPresentation({
+        taskId: nextTask?.id ?? "",
+        startedAt,
+        animationEndsAt,
+        readyAt: localReadyAt,
+        initialRemainingMs
+      });
+      setPresentationReadyAt(new Date(localReadyAt).toISOString());
+      onUserChange?.(data.user);
+      onStatusChange?.(nextTask);
+      onNotice?.("指针拨动，招新时间正在快速流逝", "success");
+      return data;
     } catch (error) {
       onNotice?.(error.message, "danger");
+      return null;
     } finally {
       setBusy(false);
     }
@@ -146,6 +175,7 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
     setTask(null);
     setCinematicCompletedTaskId("");
     setPresentationReadyAt("");
+    setFastForwardPresentation(null);
     refresh().catch(() => {});
   }
 
@@ -193,10 +223,10 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
 
   return {
     busy,
-    canFastForward,
     cinematicPlaybackTaskId,
     clearResult,
     fastForward,
+    fastForwardPresentation,
     finishCinematic,
     interruptCinematic,
     claim,
@@ -208,7 +238,8 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
     selectedItemType,
     setSelectedItemType,
     start,
-    task
+    task,
+    utilities
   };
 }
 
@@ -226,19 +257,41 @@ export function shouldRecoverInterruptedCinematic({
 }
 
 export function presentationReadyRecruitmentTask(task) {
-  if (!task?.cinematic || task.status !== "pending") return task;
+  if (!task || task.status !== "pending") return task;
   return { ...task, status: "ready", remainingMs: 0 };
 }
 
-export function formatRecruitmentCountdown(task, cinematicElapsedMs = null, presentationReadyAt = "") {
+export function formatRecruitmentCountdown(
+  task,
+  cinematicElapsedMs = null,
+  presentationReadyAt = "",
+  fastForwardPresentation = null
+) {
   const theatricalCountdownMs = Number(task?.cinematic?.theatricalCountdownMs ?? 0);
   const useTheatricalCountdown = Number.isFinite(cinematicElapsedMs)
     && cinematicElapsedMs < AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs
     && theatricalCountdownMs > 0;
-  const remaining = useTheatricalCountdown
+  const now = Date.now();
+  const fastForwardRemaining = fastForwardPresentation
+    ? fastForwardPresentationRemainingMs(fastForwardPresentation, now)
+    : null;
+  const remaining = fastForwardRemaining ?? (useTheatricalCountdown
     ? Math.max(0, theatricalCountdownMs - cinematicElapsedMs)
-    : Math.max(0, new Date(presentationReadyAt || task?.readyAt || 0).getTime() - Date.now());
+    : Math.max(0, new Date(presentationReadyAt || task?.readyAt || 0).getTime() - now));
   const minutes = Math.floor(remaining / 60000);
-  const seconds = Math.floor((remaining % 60000) / 1000);
+  const useFinalThreeCount = fastForwardPresentation && now >= fastForwardPresentation.animationEndsAt;
+  const seconds = useFinalThreeCount
+    ? Math.ceil((remaining % 60000) / 1000)
+    : Math.floor((remaining % 60000) / 1000);
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+export function fastForwardPresentationRemainingMs(presentation, now = Date.now()) {
+  if (!presentation) return null;
+  if (now >= presentation.animationEndsAt) return Math.max(0, presentation.readyAt - now);
+  const animationDurationMs = Math.max(1, presentation.animationEndsAt - presentation.startedAt);
+  const progress = Math.max(0, Math.min(1, (now - presentation.startedAt) / animationDurationMs));
+  const easedRemainder = (1 - progress) ** 3;
+  return RECRUITMENT_FAST_FORWARD_TIMING.countdownMs
+    + Math.max(0, presentation.initialRemainingMs - RECRUITMENT_FAST_FORWARD_TIMING.countdownMs) * easedRemainder;
 }

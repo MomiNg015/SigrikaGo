@@ -228,6 +228,25 @@ describe("mailbox domain", () => {
     });
   });
 
+  it("uses the built-in magic-clock copy and art for mail attachments", async () => {
+    const { prisma } = mailboxPrisma({
+      users: [userFixture("user-1")],
+      messages: [messageFixture("magic-clock-mail", {
+        attachmentType: MAILBOX_ATTACHMENT_TYPES.item,
+        attachmentItemId: "magic-clock",
+        attachmentQuantity: 2
+      })]
+    });
+
+    const result = await listMailboxMessages({ prisma, userId: "user-1" });
+
+    expect(result.messages[0].attachment).toMatchObject({
+      itemName: "神奇小钟表",
+      imageUrl: "/assets/items/magic-clock.svg",
+      quantity: 2
+    });
+  });
+
   it("does not redeliver a future-eligible global batch after the user deletes it", async () => {
     const { prisma, messages } = mailboxPrisma({
       users: [userFixture("future-user")],

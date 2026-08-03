@@ -25,15 +25,17 @@ export default function WarehouseItemGrid({ items, usingItemId, onSelectTargetIt
               <strong>{item.name}</strong>
               <p>{item.description || "效果待配置"}</p>
             </div>
-            <button
-              type="button"
-              className="primary-action"
-              disabled={disabled}
-              aria-label={`${actionLabel}：${item.name}`}
-              onClick={() => item.targetType === "character" ? onSelectTargetItem(item) : onUseItem(item)}
-            >
-              {actionLabel}
-            </button>
+            {item.actionVisible !== false ? (
+              <button
+                type="button"
+                className="primary-action"
+                disabled={disabled}
+                aria-label={`${actionLabel}：${item.name}`}
+                onClick={() => item.targetType === "character" ? onSelectTargetItem(item) : onUseItem(item)}
+              >
+                {actionLabel}
+              </button>
+            ) : null}
           </article>
         );
       })}

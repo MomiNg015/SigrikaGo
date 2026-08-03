@@ -49,6 +49,19 @@ describe("admin default config seed", () => {
     });
   });
 
+  it("keeps the magic clock mail-distributable but hidden from the player shop", () => {
+    const magicClock = ADMIN_DEFAULT_CONFIG.shopItems.find((item) => item.targetId === "magic-clock");
+
+    expect(magicClock).toMatchObject({
+      name: "神奇小钟表",
+      category: "item",
+      purchasable: false,
+      enabled: false,
+      sortOrder: 123,
+      imageUrl: "/assets/items/magic-clock.svg"
+    });
+  });
+
   it("keeps admin-saved public settings and catalog credits in the deployment snapshot", () => {
     const homeVersion = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => row.key === "homeVersion");
     const shopMascotDialogues = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => (

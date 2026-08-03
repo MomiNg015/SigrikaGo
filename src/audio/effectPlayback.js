@@ -2,6 +2,7 @@ import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
 import {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
   RECRUITMENT_MISS_SOUND,
   RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
@@ -26,6 +27,7 @@ import { browserAudioContextClass } from "./audioRuntime.js";
 export {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
   RECRUITMENT_MISS_SOUND,
   RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
@@ -51,17 +53,18 @@ const effectPromiseCache = new Map();
 let sharedEffectContext = null;
 
 export function playEffectSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  if (!String(src ?? "").trim()) return;
+  if (!String(src ?? "").trim()) return noopEffectPlayback();
   const volume = audioVolume(audioSettings, "sfx");
-  if (volume <= 0) return;
+  if (volume <= 0) return noopEffectPlayback();
   if (!effectBufferCache.has(src)) {
     preloadEffectSound(src);
-    playEffectSoundFallback(src, volume);
-    return;
+    return playEffectSoundFallback(src, volume);
   }
-  playEffectBuffer(src, volume).catch(() => {
-    playEffectSoundFallback(src, volume);
-  });
+  const deferred = deferredEffectPlayback();
+  playEffectBuffer(src, volume)
+    .then((playback) => deferred.attach(playback))
+    .catch(() => deferred.attach(playEffectSoundFallback(src, volume)));
+  return deferred.handle;
 }
 
 export function preloadEffectSound(src) {
@@ -97,12 +100,27 @@ async function playEffectBuffer(src, volume) {
   source.connect(gain);
   gain.connect(context.destination);
   source.start();
-  source.onended = () => {
+  let stopped = false;
+  const cleanup = () => {
+    if (stopped) return;
+    stopped = true;
     try {
       source.disconnect();
       gain.disconnect();
     } catch {
       // Audio nodes may already be disconnected by the browser.
+    }
+  };
+  source.onended = cleanup;
+  return {
+    stop() {
+      if (stopped) return;
+      try {
+        source.stop();
+      } catch {
+        // The source may already be stopped by the browser.
+      }
+      cleanup();
     }
   };
 }
@@ -121,11 +139,39 @@ function getEffectAudioContext() {
 }
 
 function playEffectSoundFallback(src, volume) {
-  if (typeof Audio === "undefined") return;
+  if (typeof Audio === "undefined") return noopEffectPlayback();
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = volume;
   audio.play().catch(() => {});
+  return {
+    stop() {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  };
+}
+
+function noopEffectPlayback() {
+  return { stop() {} };
+}
+
+function deferredEffectPlayback() {
+  let current = noopEffectPlayback();
+  let stopped = false;
+  return {
+    handle: {
+      stop() {
+        if (stopped) return;
+        stopped = true;
+        current.stop();
+      }
+    },
+    attach(playback) {
+      current = playback ?? noopEffectPlayback();
+      if (stopped) current.stop();
+    }
+  };
 }
 
 export function playStoneSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
@@ -207,4 +253,8 @@ export function playUiUnavailableSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
 
 export function playRecruitmentResultSound(resultType, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(resultType === "success" ? RECRUITMENT_SUCCESS_SOUND : RECRUITMENT_MISS_SOUND, audioSettings);
+}
+
+export function playRecruitmentMagicClockFastForwardSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  return playEffectSound(RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND, audioSettings);
 }

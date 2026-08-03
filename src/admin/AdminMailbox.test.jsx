@@ -31,7 +31,17 @@ describe("AdminMailbox", () => {
           attachmentItemId: "",
           attachmentQuantity: "1"
         }}
-        shopItems={[{ id: "shop-1", category: "item", targetId: "dream-ticket", name: "Dream Ticket" }]}
+        shopItems={[
+          { id: "shop-1", category: "item", targetId: "dream-ticket", name: "Dream Ticket" },
+          {
+            id: "shop-clock",
+            category: "item",
+            targetId: "magic-clock",
+            name: "神奇小钟表",
+            purchasable: false,
+            enabled: false
+          }
+        ]}
         onNotice={() => {}}
       />
     );
@@ -41,6 +51,7 @@ describe("AdminMailbox", () => {
     expect(html).toContain("当前全体");
     expect(html).toContain("包含未来用户");
     expect(html).toContain("Dream Ticket");
+    expect(html).toContain('<option value="magic-clock">神奇小钟表</option>');
     expect(html).toContain("发件人");
     expect(html).toContain("required");
     expect(html).toContain("学生会");

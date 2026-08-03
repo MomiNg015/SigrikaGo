@@ -216,6 +216,30 @@ describe("WarehouseModal candy feedback", () => {
     expect(brightSchoolCss).toContain("cursor: not-allowed !important");
   });
 
+  it("shows the magic clock details and quantity without a warehouse use button", () => {
+    const html = renderToStaticMarkup(createElement(WarehouseItemGrid, {
+      items: [{
+        itemId: "magic-clock",
+        name: "神奇小钟表",
+        description: "只要一拨指针就能加速现实时间流逝，很方便吧~",
+        imageUrl: "/assets/items/magic-clock.svg",
+        quantity: 2,
+        targetType: "self",
+        usable: false,
+        actionVisible: false
+      }],
+      usingItemId: "",
+      onSelectTargetItem: () => {},
+      onUseItem: () => {}
+    }));
+
+    expect(html).toContain("神奇小钟表");
+    expect(html).toContain("只要一拨指针就能加速现实时间流逝，很方便吧~");
+    expect(html).toContain("×2");
+    expect(html).toContain('/assets/items/magic-clock.svg');
+    expect(html).not.toContain('class="primary-action"');
+  });
+
   it("disables character targets that are already affected or have no item effect", () => {
     const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", targetType: "character" };
     const characters = {

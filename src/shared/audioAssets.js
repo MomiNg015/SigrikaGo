@@ -17,3 +17,4 @@ export const UI_SHOP_OPEN_SOUND = "/assets/music/ui_shop_open.ogg";
 export const UI_UNAVAILABLE_SOUND = "/assets/music/ui_unavailable.ogg";
 export const RECRUITMENT_SUCCESS_SOUND = "/assets/music/recruitment-success.ogg";
 export const RECRUITMENT_MISS_SOUND = "/assets/music/recruitment-miss.ogg";
+export const RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND = "/assets/music/recruitment-magic-clock-fast-forward.ogg";

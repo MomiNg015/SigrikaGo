@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  fastForwardPresentationRemainingMs,
   formatRecruitmentCountdown,
   presentationReadyRecruitmentTask,
   shouldRecoverInterruptedCinematic
@@ -8,6 +9,7 @@ import {
 import {
   AEMEATH_RECRUITMENT_ASSET_SLOTS,
   cinematicPresentationReadyAt,
+  RECRUITMENT_FAST_FORWARD_TIMING,
   RECRUITMENT_ITEMS,
   RECRUITMENT_ITEM_TYPES,
   recruitmentReadyDelayMs
@@ -43,7 +45,7 @@ describe("RecruitmentModal", () => {
     const modalSource = readFileSync(new URL("./RecruitmentModal.jsx", import.meta.url), "utf8");
     const hookSource = readFileSync(new URL("./recruitment/useRecruitmentCatalog.js", import.meta.url), "utf8");
 
-    expect(modalSource).toContain("Clock");
+    expect(modalSource).toContain("/assets/items/magic-clock.svg");
     expect(modalSource).toContain("playRecruitmentResultSound");
     expect(modalSource).toContain("playedResultSoundRef");
     expect(modalSource).toContain("audioSettings");
@@ -67,19 +69,57 @@ describe("RecruitmentModal", () => {
     expect(modalSource).not.toContain("查看招新回应");
     expect(modalSource).not.toContain("<strong>{task.itemName}</strong>\n        <button className=\"primary-action\" type=\"button\" disabled={busy} onClick={onClaim}>");
     expect(modalSource).toContain("recruitment-fast-forward-button");
-    expect(modalSource).toContain("canFastForward");
-    expect(modalSource).toContain("aria-label=\"快速计时到 5 秒\"");
-    expect(modalSource).toContain("onFastForward={fastForward}");
+    expect(modalSource).toContain("recruitment-fast-forward-count");
+    expect(modalSource).toContain("recruitment-time-warp-clock");
+    expect(modalSource).toContain("playRecruitmentMagicClockFastForwardSound");
+    expect(modalSource).toContain("magicClock.quantity <= 0");
+    expect(modalSource).toContain("remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs");
+    expect(modalSource).toContain("onFastForward={useMagicClock}");
     expect(modalSource).toContain("RecruitmentCinematicOverlay");
     expect(modalSource).toContain("RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket");
     expect(modalSource).toContain('style={{ "--recruitment-item-count": items.length }}');
-    expect(modalSource).toContain("canFastForward && !task.cinematic");
+    expect(modalSource).toContain("!task?.cinematic");
+    expect(modalSource).toContain("!task?.fastForwarded");
     expect(hookSource).toContain("/api/recruitment/fast-forward");
+    expect(hookSource).toContain("RECRUITMENT_ITEM_TYPES.magicClock");
+    expect(hookSource).toContain("fastForwardPresentation");
     expect(hookSource).toContain("/api/recruitment/interrupt-cinematic");
     expect(hookSource).toContain("theatricalCountdownMs");
-    expect(hookSource).toContain("import.meta.env.DEV");
-    expect(hookSource).toContain("import.meta.env.MODE === \"development\"");
-    expect(hookSource).toContain("import.meta.env.VITE_ENABLE_TEST_TOOLS === \"true\"");
+    expect(hookSource).not.toContain("import.meta.env.DEV");
+    expect(hookSource).not.toContain("VITE_ENABLE_TEST_TOOLS");
+  });
+
+  it("runs a three-second fast-forward animation before a full 3-2-1 countdown", () => {
+    const presentation = {
+      startedAt: 10_000,
+      animationEndsAt: 13_000,
+      readyAt: 16_000,
+      initialRemainingMs: 63_000
+    };
+    const task = { readyAt: new Date(16_000).toISOString() };
+
+    expect(RECRUITMENT_FAST_FORWARD_TIMING).toEqual({
+      animationMs: 3000,
+      countdownMs: 3000,
+      totalMs: 6000
+    });
+    expect(fastForwardPresentationRemainingMs(presentation, 10_000)).toBe(63_000);
+    expect(fastForwardPresentationRemainingMs(presentation, 13_000)).toBe(3_000);
+    vi.spyOn(Date, "now").mockReturnValue(13_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:03");
+    Date.now.mockReturnValue(14_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:02");
+    Date.now.mockReturnValue(15_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:01");
+  });
+
+  it("ships the magic clock placeholder and three-second fast-forward sound", () => {
+    const icon = readFileSync(new URL("../../public/assets/items/magic-clock.svg", import.meta.url), "utf8");
+    const sound = readFileSync(new URL("../../public/assets/music/recruitment-magic-clock-fast-forward.ogg", import.meta.url));
+
+    expect(icon).toContain("<svg");
+    expect(icon).toContain("神奇小钟表");
+    expect(sound.subarray(0, 4).toString("ascii")).toBe("OggS");
   });
 
   it("keeps the theatrical countdown moving until the concealed authoritative swap", () => {

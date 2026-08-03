@@ -554,10 +554,10 @@ await tx.gachaPool.update({
 
 #### 2. Signatures
 - `POST /api/recruitment/start` accepts `{ itemType }`.
-- `POST /api/recruitment/fast-forward` accepts no body and returns `{ task }`; it is a development test tool only.
-- `GET /api/recruitment` returns `{ items, task, config }`.
+- `POST /api/recruitment/fast-forward` accepts `{ itemType: "magic-clock" }` and returns `{ user, task, utilities }`.
+- `GET /api/recruitment` returns `{ items, utilities, task, config }`; starter items and auxiliary utilities are separate lists.
 - `task.status` is projected as `"pending"` before `readyAt`, `"ready"` after `readyAt`, and `"claimed"` only after claim.
-- `RecruitmentTask { userId, itemType, status, resultType, resultCharacterSlug?, responseText, startedAt, readyAt, claimedAt? }`.
+- `RecruitmentTask { userId, itemType, status, resultType, resultCharacterSlug?, responseText, startedAt, readyAt, fastForwardedAt?, claimedAt? }`.
 - `App.jsx` stores the current recruitment task for badge timing and receives updates through `onRecruitmentStatusChange(task)`.
 
 #### 3. Contracts
@@ -569,34 +569,38 @@ await tx.gachaPool.update({
 - A pending task's result is decided at start time, but result details remain hidden until claim.
 - The home recruitment entry pink ready background appears only when `task.status === "ready"`.
 - The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready pink background shortly after the countdown ends.
-- Fast-forward is a removable test tool: backend access must reject `NODE_ENV === "production"`, while the frontend clock icon may render in dev serving, `--mode development` builds, or explicit `VITE_ENABLE_TEST_TOOLS === "true"` builds.
-- Fast-forward must only shorten a pending task to five seconds remaining; it must not extend tasks that already have less time remaining.
+- `magic-clock` is a production auxiliary item distributed through admin mail, hidden from the player shop, visible without an action in Warehouse, and always projected in `utilities` even at quantity zero.
+- Fast-forward is restricted to ordinary pending recruitment. Cinematic tasks, tasks with `fastForwardedAt`, and tasks with no more than the complete six-second presentation window remaining must reject before inventory changes.
+- One transaction must atomically win `RecruitmentTask.fastForwardedAt: null`, set `readyAt = now + 6000ms`, decrement exactly one clock, and sync the structured item mirror. Concurrent losing requests must not consume inventory.
+- `fastForwardedAt` is the persisted no-replay/idempotency marker. Refresh or re-entry never restores the client animation and never permits a second use on the same task.
 
 #### 4. Validation & Error Matrix
 - Unknown `itemType` -> `400`.
 - Active pending recruitment exists -> `400`.
 - Selected item has zero remaining candidates, including candidates present only in `UserCharacter` rows -> `400` with the exact player-facing no-candidate message.
 - User has no selected item quantity -> `400`.
-- Fast-forward in production -> `403`.
+- Unknown or non-utility fast-forward `itemType` -> `400`.
+- Cinematic, repeated, near-ready, or missing-clock fast-forward -> `400` without writes.
+- Concurrent request loses the conditional task update -> `409` without inventory consumption.
 - Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home pink ready background.
 - Pending task is still before `readyAt` -> no pink ready background.
 
 #### 5. Good/Base/Bad Cases
 - Good: a player owns QiuYuan and ChangLi through structured `UserCharacter` rows, then using `radio-recruitment-ticket` shows the no-candidate message and keeps the item count unchanged.
 - Good: a player starts recruitment, closes the modal, waits until `readyAt`, and sees the home recruitment button pink ready background without waiting for the next long polling interval.
-- Good: in development with test tools enabled, a tester clicks the countdown clock icon and the task moves to five seconds remaining.
+- Good: an ordinary pending task with more than six seconds remaining consumes one `magic-clock`, persists `fastForwardedAt`, and moves to a six-second authoritative deadline.
 - Base: periodic `/api/recruitment` polling still repairs stale client state after tab sleep or missed timers.
 - Bad: checking only the legacy `ownedCharacters` string for recruitment candidates while public user payloads merge structured rows.
 - Bad: consuming the item first and refunding it only after discovering all candidates are owned.
-- Bad: exposing fast-forward in production or relying only on a 30-second polling interval for the ready background.
+- Bad: accepting a clock on a cinematic task, decrementing inventory before winning the conditional task update, or reconstructing the animation after refresh.
 
 #### 6. Tests Required
 - Backend recruitment tests assert the no-candidate start path rejects with the exact message and does not update the user or create a task.
 - Backend recruitment tests assert structured `UserCharacter` rows block recruitment for already-owned candidates.
-- Backend recruitment tests assert fast-forward is rejected in production and moves non-production pending tasks to five seconds remaining.
-- Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id.
+- Backend recruitment tests assert successful consumption, the six-second deadline, the persistent marker, guard failures, and concurrent-loser no-consumption.
+- Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id and requested utility item type.
 - App shell tests assert pending recruitment task state is stored and `readyAt` schedules a refresh that can set `recruitmentReady`.
-- Modal/source tests assert the countdown clock action is visible for dev serving, `--mode development`, or the explicit test-tool flag.
+- Modal/source tests assert the quantity badge/zero disabled state, eligibility guards, 3-second fast-forward presentation, full 3-2-1 tail, sound asset, and absence of development flags.
 - Home screen tests assert the recruitment entry renders a pink ready background only when `recruitmentReady` is true.
 
 #### 7. Wrong vs Correct
@@ -619,15 +623,22 @@ const candidateIds = item.candidates.filter((id) => !ownedCharacters.includes(id
 Wrong:
 
 ```jsx
-<button className="recruitment-fast-forward-button" onClick={fastForward} />
+{magicClock.quantity > 0 && (
+  <button className="recruitment-fast-forward-button" onClick={fastForward} />
+)}
+// This hides the required zero-inventory disabled state and ignores task eligibility.
 ```
 
 Correct:
 
 ```jsx
-{canFastForward && (
-  <button className="recruitment-fast-forward-button" onClick={fastForward} />
-)}
+const showMagicClock = phase === "pending"
+  && !task.cinematic
+  && !task.fastForwarded
+  && remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs;
+
+<PendingBoard magicClock={showMagicClock ? magicClock : null} />
+// PendingBoard keeps quantity zero visible and disables the action locally.
 ```
 
 Wrong:

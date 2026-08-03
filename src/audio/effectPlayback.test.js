@@ -5,6 +5,7 @@ import {
   HIDDEN_HAND_REVEAL_SOUND,
   playBoardSound,
   playEffectSound,
+  playRecruitmentMagicClockFastForwardSound,
   playRecruitmentResultSound,
   playUiFriendsOpenSound,
   playUiIrisDatabaseOpenSound,
@@ -14,6 +15,7 @@ import {
   playUiWarehouseOpenSound,
   playUiWatchOpenSound,
   RECRUITMENT_MISS_SOUND,
+  RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
   RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
   UI_CLOSE_WINDOW_SOUND,
@@ -137,15 +139,41 @@ describe("effect playback", () => {
 
     expect(RECRUITMENT_SUCCESS_SOUND).toBe("/assets/music/recruitment-success.ogg");
     expect(RECRUITMENT_MISS_SOUND).toBe("/assets/music/recruitment-miss.ogg");
+    expect(RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND).toBe(
+      "/assets/music/recruitment-magic-clock-fast-forward.ogg"
+    );
 
     playUiRecruitmentOpenSound();
+    playRecruitmentMagicClockFastForwardSound();
     playRecruitmentResultSound("success");
     playRecruitmentResultSound("miss");
 
     expect(played.map((audio) => audio.src)).toEqual([
       UI_RECRUITMENT_OPEN_SOUND,
+      RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
       RECRUITMENT_SUCCESS_SOUND,
       RECRUITMENT_MISS_SOUND
     ]);
+  });
+
+  it("returns a stoppable handle for interrupted magic-clock playback", () => {
+    const audio = {
+      play: vi.fn(() => Promise.resolve()),
+      pause: vi.fn(),
+      currentTime: 1
+    };
+    vi.stubGlobal("Audio", class FakeAudio {
+      constructor(src) {
+        audio.src = src;
+        return audio;
+      }
+    });
+
+    const playback = playRecruitmentMagicClockFastForwardSound();
+    playback.stop();
+
+    expect(audio.src).toBe(RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND);
+    expect(audio.pause).toHaveBeenCalledOnce();
+    expect(audio.currentTime).toBe(0);
   });
 });

@@ -16,6 +16,7 @@ export {
 export {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  playRecruitmentMagicClockFastForwardSound,
   playRecruitmentResultSound,
   playBoardSound,
   playCaptureSound,
@@ -37,6 +38,7 @@ export {
   playStoneSound,
   preloadEffectSound,
   RECRUITMENT_MISS_SOUND,
+  RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
   RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
   UI_CLOSE_WINDOW_SOUND,

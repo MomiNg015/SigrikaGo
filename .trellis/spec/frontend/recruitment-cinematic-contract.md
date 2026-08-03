@@ -32,6 +32,8 @@
 - A fixed-result item reads `scopeLabel` from the persisted recruitment config for its catalog/confidence copy and snapshots the configured `resultText` into `RecruitmentTask.responseText` when recruitment starts. Empty admin values normalize back to the shared defaults.
 - The idle selection card renders `scopeLabel` only when it differs from `confidenceText`; fixed-result items use the red confidence line as the single visible copy instead of duplicating the same sentence in black and red.
 - A quantity-zero recruitment action reads `数量不足`; it must not use the ambiguous generic label `不可用`.
+- The `magic-clock` auxiliary action belongs only to ordinary pending recruitment. Cinematic tasks must neither show it nor call the fast-forward endpoint; the server repeats this guard independently.
+- An ordinary successful clock response creates a non-persisted six-second display deadline at client receipt: three seconds of hand/number/time-wave fast-forward motion followed by a complete 3-2-1 tail. Refresh, remount, offline recovery, or modal close never reconstructs that presentation from `fastForwardedAt`.
 - The one-time welcome-mail toast uses the dedicated light-green `mail` tone. A claimed mailbox attachment action stays gray in default, hover, focus, and active states, including under Bright School late theme overrides.
 - Mailbox list projection resolves item names/images from the `ShopItem` catalog with built-in recruitment metadata as fallback. Missing metadata falls back to generic `道具`, never the internal English id. The Aemeath ticket uses `/assets/items/aemeath-flight-snow-memorial-ticket.webp`, a tightly cropped transparent `512×436` source whose colored bounds fill the shared item slots without non-uniform scaling.
 

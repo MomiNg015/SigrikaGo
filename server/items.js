@@ -17,7 +17,7 @@ import {
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
-import { isRecruitmentInventoryItem } from "./recruitment.js";
+import { isRecruitmentInventoryActionVisible, isRecruitmentInventoryItem } from "./recruitment.js";
 import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
 import { shopCatalogImageUrl } from "./itemImages.js";
 import {
@@ -133,7 +133,8 @@ export function toItemPayload(item, quantity = 0) {
     itemId: payload.targetId,
     quantity,
     targetType: normalizeItemTargetType(payload.itemTargetType),
-    usable: !isRecruitmentInventoryItem(payload.targetId)
+    usable: !isRecruitmentInventoryItem(payload.targetId),
+    actionVisible: isRecruitmentInventoryActionVisible(payload.targetId)
   };
 }
 

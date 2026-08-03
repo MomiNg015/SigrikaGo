@@ -71,6 +71,29 @@ describe("items", () => {
     })).rejects.toThrow("请在招募窗口使用这个道具");
   });
 
+  it("lists the magic clock in the warehouse without exposing an item action", async () => {
+    const response = await listItemInventory({
+      userId: "user-1",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "magic-clock": 2 }),
+        targetId: "magic-clock",
+        enabled: false,
+        name: "神奇小钟表",
+        description: "只要一拨指针就能加速现实时间流逝，很方便吧~",
+        imageUrl: "/assets/items/magic-clock.svg"
+      })
+    });
+
+    expect(response.items).toMatchObject([{
+      itemId: "magic-clock",
+      name: "神奇小钟表",
+      quantity: 2,
+      usable: false,
+      actionVisible: false,
+      imageUrl: "/assets/items/magic-clock.svg"
+    }]);
+  });
+
   it("normalizes the builtin campus recruitment poster inventory image from current shared config", async () => {
     const response = await listItemInventory({
       userId: "user-1",

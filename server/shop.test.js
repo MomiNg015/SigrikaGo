@@ -335,6 +335,30 @@ describe("shop", () => {
     expect(response.items).toEqual([]);
   });
 
+  it("never exposes the magic clock in the player shop even if a stale row is enabled", async () => {
+    const response = await listShopItems({
+      shopItem: {
+        findMany: async () => [{
+          id: "shop-magic-clock",
+          name: "神奇小钟表",
+          category: "item",
+          targetId: "magic-clock",
+          itemTargetType: "self",
+          stockQuantity: -1,
+          priceCoins: 0,
+          discountPercent: 0,
+          purchasable: true,
+          enabled: true,
+          sortOrder: 123,
+          description: "stale",
+          imageUrl: "/assets/items/magic-clock.svg"
+        }]
+      }
+    });
+
+    expect(response.items).toEqual([]);
+  });
+
   it("normalizes the builtin campus recruitment poster shop image from current shared config", async () => {
     const response = await listShopItems({
       shopItem: {
@@ -650,6 +674,36 @@ describe("shop", () => {
         priceCoins: 10,
         description: "产地不明的糖果，据说有神秘的效果",
         imageUrl: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+  });
+
+  it("seeds the magic clock as a hidden mail-distribution item", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls).toContainEqual([
+      "create",
+      expect.objectContaining({
+        name: "神奇小钟表",
+        category: "item",
+        targetId: "magic-clock",
+        priceCoins: 0,
+        purchasable: false,
+        enabled: false,
+        sortOrder: 123,
+        imageUrl: "/assets/items/magic-clock.svg"
       })
     ]);
   });
