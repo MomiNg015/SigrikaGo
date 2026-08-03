@@ -45,6 +45,7 @@ import {
   SHOP_REFRESH_COOLDOWN_MS
 } from "./shopModalHelpers.js";
 import {
+  getShopCategoryLabel,
   getShopItemDetailOwned,
   getShopItemDetailStatus,
   getShopOwnedItemQuantity
@@ -437,6 +438,38 @@ describe("Zahira shop window", () => {
     expect(getShopItemDescription({ description: "  sample desc  " })).toBe("sample desc");
     expect(html).toContain("illust：画师");
     expect(html).toContain('target="_blank"');
+  });
+
+  it("renders music detail category and known ownership states", () => {
+    const musicItem = {
+      ...sampleItem,
+      id: "qiuyuan-skill-zhouwo",
+      category: "music",
+      targetId: "qiuyuan-skill-zhouwo",
+      name: "肘我"
+    };
+    const ownedUser = { ownedMusicIds: [musicItem.targetId] };
+    const ownedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: musicItem,
+      user: ownedUser,
+      onClose: () => {}
+    }));
+    const unownedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: musicItem,
+      user: { ownedMusicIds: [] },
+      onClose: () => {}
+    }));
+
+    expect(getShopCategoryLabel("music")).toBe("音乐");
+    expect(getShopItemDetailOwned(musicItem, ownedUser)).toBe(true);
+    expect(getShopItemDetailStatus(musicItem, ownedUser)).toBe("已持有");
+    expect(getShopItemDetailOwned(musicItem, {})).toBe(false);
+    expect(getShopItemDetailStatus(musicItem, {})).toBe("尚未拥有该音乐");
+    expect(ownedHtml).toContain('<span class="shop-detail-category">音乐</span>');
+    expect(ownedHtml).toContain("已持有");
+    expect(unownedHtml).toContain("尚未拥有该音乐");
+    expect(ownedHtml).not.toContain("状态未知");
+    expect(unownedHtml).not.toContain("状态未知");
   });
 
   it("keeps opening, refresh, loading, empty, failure, and purchase dialogue contracts", () => {

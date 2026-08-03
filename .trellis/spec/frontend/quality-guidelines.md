@@ -1525,11 +1525,16 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 #### 2. Signatures
 - `getShopItemCategoryLabel(item)` returns the player-facing `部员 / 道具 / 棋子 / 音乐` label.
 - `getShopItemQuantityBadge(item)` returns `{ text, ariaLabel }` for eligible consumable badges or `null`.
+- `getShopCategoryLabel(category)` returns the detail-facing `角色 / 道具 / 装饰 / 音乐` label and falls back to `商品` only for unsupported categories.
+- `getShopItemDetailOwned(item, user)` and `getShopItemDetailStatus(item, user)` project the same one-time ownership sources used by `isShopItemOwned()`, including `ownedMusicIds` matched against a music item's `targetId`.
+- `ADMIN_SHOP_CATEGORY_LABELS` in `src/shared/adminDrafts.js` is the admin table/select source of truth for `character / item / decoration / music`; `music` renders as `音乐` while the submitted value stays `music`.
 - `layoutShopCards({ width, height, count, mobile, seed })` returns collision-free card rectangles and a uniform scale.
 - `ShopItemCard` renders `.shop-item-detail-trigger` as a native button for image/name/price and keeps `.primary-action` as its sibling purchase button.
 
 #### 3. Contracts
 - Every real product card renders a non-interactive category badge in the upper-left corner.
+- Detail metadata must stay in parity with every one-time category supported by `isShopItemOwned()`. Music details render category `音乐`; an owned track renders `已持有`, while an unowned track or a user payload without `ownedMusicIds` renders `尚未拥有该音乐` instead of the unknown-category fallback.
+- Admin shop category labels and `<option>` elements must be generated from the same shared mapping. Do not duplicate category copy in `AdminShopItems`, because a damaged option label can hide a valid persisted `music` value even when the database and server validation are correct.
 - The upper-right badge is consumable-only: finite stock above one shows remaining quantity, unlimited stock shows `∞`, and `stockQuantity === 1` or non-consumables render no quantity badge.
 - Desktop and mobile use the same count-aware topology: five offers use 2+3, four use 2+2, three use 2+1, and one or two stay centered on one row.
 - Mobile mode is selected from `window.matchMedia("(max-width: 768px)")`, not product-stage width. The desktop product lane can itself be narrower than 768px.
@@ -1556,6 +1561,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 
 #### 4. Validation & Error Matrix
 - Unknown category -> category badge falls back to `商品`.
+- Music detail with matching `ownedMusicIds` entry -> `音乐 / 已持有`; missing or non-matching ownership entry -> `音乐 / 尚未拥有该音乐`.
+- Admin music row -> table cell and selected option both display `音乐`; save request retains `category: "music"`.
 - Unlimited item (`stockQuantity < 0`) -> `∞` with accessible name `不限量`.
 - Limit-one item -> no quantity badge.
 - Three items in either layout family -> two top placements plus one centered lower placement.
@@ -1578,7 +1585,11 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 
 #### 5. Good/Base/Bad Cases
 - Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
+- Good: add a supported one-time category to the shared ownership helper and detail category/status mappings in the same change, with owned and unowned regression assertions.
+- Good: drive the admin table label and category options from `ADMIN_SHOP_CATEGORY_LABELS`, then assert a real edit/save round trip for `music`.
 - Base: one or two items remain centered on a single row while desktop cards keep only bounded slot jitter.
+- Bad: let a supported music item fall through detail-only helpers to `商品` or `状态未知` even though `isShopItemOwned()` already understands `ownedMusicIds`.
+- Bad: hard-code an independent admin option label such as `???` while the option value and database row remain `music`.
 - Bad: `size.width <= 760` selects mobile mode, because the normal desktop stage is commonly about 744px wide.
 - Bad: a generic mobile modal shell adds padding/gap back to `.shop-window`, or a `width: calc(100% + ...)` plus negative margin attempts to compensate for the lost card width.
 - Bad: allowing the generic modal `scrollbar-gutter: stable both-edges` rule to win on `.shop-window`, because it leaves a visible empty strip on both sides even when the shop never scrolls.
@@ -1590,7 +1601,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Bad: keeping `←` / `→` inside the label, baking Chinese copy into the bitmap, mirroring the whole button and its label, replacing the sticker with a realistic timber/rope prop, or replacing the generated tab/arrow silhouette with a clipped gradient rectangle.
 
 #### 6. Tests Required
-- `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
+- `src/modals/ShopModal.test.js` covers card and detail category labels, music detail owned/unowned status (including a missing `ownedMusicIds` field), finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
+- `src/shared/adminDrafts.test.js` locks the `music -> 音乐` label, and `src/admin/AdminShopItems.test.jsx` opens the real editor and asserts the selected option plus PATCH body both preserve `music`.
 - `src/modals/ShopModal.test.js` must assert refresh -> title -> balance -> close DOM order, the live accessible coin label, shared `.shop-wallet` class, `CircleDollarSign` icon, inherited resume gradient, absence of a flat header-only fill, absence of the wallet raster from both reception panels, and the four-column desktop/mobile header contracts. Preload tests must reject the retired wallet path from `RUNTIME_IMAGE_ASSETS.shop`.
 - The same CSS contract must assert the shop owner restores `overflow: hidden` and `scrollbar-gutter: auto`; browser QA must compare the shop shell padding-box edges with the header and active body edges at 1440x900, 375x812, and 375x600 for both stores.
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.

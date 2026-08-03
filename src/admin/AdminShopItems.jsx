@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { adminApi } from "../api/client.js";
 import {
+  ADMIN_SHOP_CATEGORY_LABELS,
   buildShopItemDraft,
   emptyShopItemDraft,
   shopCategoryLabel,
@@ -96,8 +97,8 @@ export default function AdminShopItems({ items, token, onSaved, onClearError, on
             </div>
             <div className="admin-character-form-grid">
               <label><AdminFieldLabel text={fixedCategory === "item" ? "道具名" : "商品名"} tip="商城中显示的商品名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
-              <label><AdminFieldLabel text="类别" tip="购买后获得角色、装饰或道具。" /><select value={draft.category} disabled={Boolean(fixedCategory)} onChange={(e) => setDraft({ ...draft, category: e.target.value })}><option value="character">角色</option><option value="item">道具</option><option value="decoration">装饰</option><option value="music">???</option></select></label>
-              <label><AdminFieldLabel text="目标标识" tip="角色 slug、装饰 slug 或道具 slug。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
+              <label><AdminFieldLabel text="类别" tip="购买后获得角色、装饰、道具或音乐。" /><select value={draft.category} disabled={Boolean(fixedCategory)} onChange={(e) => setDraft({ ...draft, category: e.target.value })}>{Object.entries(ADMIN_SHOP_CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+              <label><AdminFieldLabel text="目标标识" tip="角色 slug、装饰 slug、道具 slug 或音乐 track id。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
               <label><AdminFieldLabel text="道具目标" tip="自己类道具可直接使用；角色类道具使用时需要选择拥有的角色。" /><select value={draft.itemTargetType} disabled={(fixedCategory || draft.category) !== "item"} onChange={(e) => setDraft({ ...draft, itemTargetType: e.target.value })}><option value="self">用户自己</option><option value="character">拥有角色</option></select></label>
               <label><AdminFieldLabel text="商店库存" tip="-1 表示不限量，0 表示售罄，正整数表示每个用户可购买次数上限。" /><input type="number" min="-1" value={draft.stockQuantity} onChange={(e) => setDraft({ ...draft, stockQuantity: e.target.value })} /></label>
               <label><AdminFieldLabel text="金币价格" tip="购买所需原价金币。" /><input type="number" value={draft.priceCoins} onChange={(e) => setDraft({ ...draft, priceCoins: e.target.value })} /></label>

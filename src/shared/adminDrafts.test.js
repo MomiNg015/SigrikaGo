@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import {
+  ADMIN_SHOP_CATEGORY_LABELS,
   buildCharacterDraft,
   buildCostumeDraft,
   buildDecorationDraft,
@@ -303,6 +304,8 @@ describe("admin draft helpers", () => {
     expect(validated.value.illustUrl).toBe("/credits/artist");
     expect(shopCategoryLabel("decoration")).toBe("装饰");
     expect(shopCategoryLabel("item")).toBe("道具");
+    expect(shopCategoryLabel("music")).toBe("音乐");
+    expect(ADMIN_SHOP_CATEGORY_LABELS.music).toBe("音乐");
     expect(validateShopItemDraft({ ...shop, discountPercent: "101" }).ok).toBe(false);
     expect(validateShopItemDraft({ ...shop, illustUrl: "javascript:alert(1)" }).ok).toBe(false);
     expect(validateShopItemDraft({ ...shop, illustName: "", illustUrl: "https://example.com/artist" }).ok).toBe(false);

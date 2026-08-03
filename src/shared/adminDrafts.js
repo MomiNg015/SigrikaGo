@@ -124,6 +124,13 @@ export function characterDraftToBody(draft) {
   };
 }
 
+export const ADMIN_SHOP_CATEGORY_LABELS = Object.freeze({
+  character: "角色",
+  item: "道具",
+  decoration: "装饰",
+  music: "音乐"
+});
+
 export function emptyShopItemDraft() {
   return {
     id: "",
@@ -376,10 +383,7 @@ export function costumeDraftToBody(draft, { editing = false } = {}) {
 }
 
 export function shopCategoryLabel(category) {
-  if (category === "music") return "闊充箰";
-  if (category === "decoration") return "装饰";
-  if (category === "item") return "道具";
-  return "角色";
+  return ADMIN_SHOP_CATEGORY_LABELS[category] ?? ADMIN_SHOP_CATEGORY_LABELS.character;
 }
 
 export function targetRuleForEffect(effectType) {
