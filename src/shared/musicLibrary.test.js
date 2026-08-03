@@ -786,7 +786,7 @@ describe("background music library", () => {
     expect(CHARACTER_SYSTEM_VOICES.baconbits).not.toHaveProperty("timeout");
   });
 
-  it("includes Qiuyuan's fixed Kangkang system voice set", () => {
+  it("includes Qiuyuan's fixed system voice set", () => {
     expect(CHARACTER_SYSTEM_VOICES.qiuyuan).toMatchObject({
       "game-start": "/assets/voice/qiuyuan_match_start.ogg",
       sortie: "/assets/voice/qiuyuan_sortie.ogg",

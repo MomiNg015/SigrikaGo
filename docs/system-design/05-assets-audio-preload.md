@@ -165,7 +165,7 @@
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
 - 琳奈的 `lynaeContraryVoice` 由 resolver 在选取音频前做固定事件重映射：`countdown-N` 映射为 `countdown-(11-N)`，`byo-yomi-period-2` ↔ `byo-yomi-period-1`、`game-start` ↔ `byo-yomi-start`、`sortie` ↔ `skill-cast`、`result-victory` ↔ `result-defeat`；`result-draw`、`house-detail` 与超时静音保持原样。房间语音角色、技能横幅、棋舍出战和结果弹窗都必须显式携带对应的 `itemEffects`，不能修改静态角色目录或真实事件数据。
-- 当前未映射角色事件默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。仇远的 18 个标准系统事件已通过 `scripts/generate-qiuyuan-system-voices.ps1` 使用固定 `Microsoft Kangkang` 中文成年男声生成并映射为静态 Ogg，覆盖 `game-start`、`sortie`、读秒开始、剩余 2/1 次读秒、`countdown-10` 到 `countdown-1`、`result-victory`、`result-defeat` 与 `result-draw`，不再随浏览器 TTS 声线变化。
+- 当前未映射角色事件默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。仇远的 `game-start` 与 `sortie` 已分别替换为重新录制并统一响度校准的 `qiuyuan_match_start.ogg` 和 `qiuyuan_sortie.ogg`；读秒开始、剩余两次、剩余一次、`countdown-10` 到 `countdown-1`、`result-victory`、`result-defeat` 与 `result-draw` 使用以用户提供的仇远原声为参考、本地生成并统一校准的男声 Ogg。数字倒计时保持中性；已确认的角色化台词为“听风，入局。”、“还剩两次读秒”、“只剩一次读秒，抓紧脚步”、“落子声尽，胜负自明”、“一剑迟疑，满盘皆输……”与“下次再决胜负吧。”。剩余一次采用克制提醒的 D 版，整体放慢约 6%，两句间保留 600 ms 停顿。旧 `Microsoft Kangkang` 生成脚本已经移除，全部事件仍通过显式映射优先于浏览器 TTS 播放。
 - 已预留事件：`game-start`、`game-start:gomoku`、`skill-cast`、`sortie`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
 - `game-start:gomoku` 是 `game-start` 的模式化角色语音变体；当前长离在五子棋模式开局时优先播放 `changli_wuzi_match_start.ogg`，其它模式继续播放 `changli_match_start.ogg`；长离倒计时已覆盖 10 到 1 秒。
