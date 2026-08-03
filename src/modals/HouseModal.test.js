@@ -277,6 +277,94 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("character-chain-badge");
   });
 
+  it("renders unobtained and hidden-intel roster cards without the old unavailable copy", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: [],
+        selectedCharacter: "sigrika",
+        itemEffects: {}
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "qiuyuan", name: "仇远", portrait: "/assets/qiuyuan.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "baconbits", name: "隐藏角色", portrait: "/assets/hidden.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(html.match(/class="character-card portrait-card[^"]*unowned[^"]*"/g)).toHaveLength(2);
+    expect(html).toContain("hidden-intel-card");
+    expect(html).toContain("hidden-intel-visual");
+    expect(html).toContain("hidden-intel-brackets");
+    expect(html.match(/hidden-intel-fragment/g)).toHaveLength(6);
+    expect(html).toContain("hidden-intel-no-signal");
+    expect(html).toContain("NO SIGNAL");
+    expect(html).toContain("hidden-intel-label");
+    expect(html).toContain("aria-label=\"暂无情报\"");
+    expect(html).not.toContain("暂不可获取");
+    expect(html).not.toContain("隐藏角色");
+  });
+
+  it("keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted", () => {
+    const handbookCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-unobtained.css", import.meta.url),
+      "utf8"
+    );
+    const hiddenIntelCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-hidden-intel.css", import.meta.url),
+      "utf8"
+    );
+    const signalMotionCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-signal-motion.css", import.meta.url),
+      "utf8"
+    );
+    const mobileCss = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(handbookCss).toContain(".character-card.portrait-card.unowned {");
+    expect(handbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(handbookCss).toContain("padding-inline: clamp(10px, 1vw, 12px) !important");
+    expect(handbookCss).toContain("filter: grayscale(1) !important");
+    expect(handbookCss).toContain(".character-card.portrait-card.unowned::before");
+    expect(handbookCss).toContain("content: none !important");
+    expect(handbookCss).toContain("display: none !important");
+    expect(handbookCss).toContain(
+      "--handbook-signal-surface: color-mix(in srgb, var(--bright-ink) 10%, var(--bright-sheet-clean))"
+    );
+    expect(handbookCss).toContain(
+      "--handbook-signal-surface-edge: color-mix(in srgb, var(--bright-ink) 27%, var(--bright-sheet-clean))"
+    );
+    expect(handbookCss).toContain("brightness(0.9)");
+    expect(handbookCss).not.toContain("100% 4px");
+    expect(hiddenIntelCss).not.toContain("100% 4px");
+    expect(signalMotionCss).not.toContain("@keyframes bright-handbook-crt-static");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-sync-loss");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-image-fault");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-glyph-fault");
+    expect(hiddenIntelCss).toContain(".hidden-intel-no-signal");
+    expect(`${handbookCss}\n${hiddenIntelCss}\n${signalMotionCss}`).not.toMatch(/--bright-(?:blue|pink)/);
+    expect(signalMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(handbookCss).not.toContain("repeating-linear-gradient");
+    expect(mobileCss).toContain(
+      ".house-modal .character-card.portrait-card.hidden-intel-card > .hidden-intel-label"
+    );
+    expect(mobileCss).not.toContain("--handbook-scan-distance");
+    expect(mobileCss).toContain("width: 60px !important");
+    expect(mobileCss).toContain("height: 52px !important");
+  });
+
   it("plays the selected character sortie voice before selecting the character", () => {
     const calls = [];
     const character = {

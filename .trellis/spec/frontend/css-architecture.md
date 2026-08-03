@@ -52,6 +52,12 @@ The portrait Bright School home Header has two structural owners: the theme-leve
 
 Header browser QA must use the real `.home-screen` ancestor and the complete desktop action row plus all mobile-menu buttons. A reduced mock containing only one action button cannot reveal the cascade failure seen in the real page. Contract tests must assert the final owner import, hidden desktop action row, cleared left inset, right alignment, bounded panel width, and 44px toggle column.
 
+### Bright School handbook unobtained-roster contract
+
+Unobtained handbook cards use three explicit owners after `handbook-decoration.css`: `handbook-unobtained.css` centers the existing portrait/name content and owns the medium-light grayscale CRT surface, `handbook-hidden-intel.css` owns the square question-mark `NO SIGNAL` monitor, and `handbook-signal-motion.css` owns all fault keyframes plus the reduced-motion still. The state is strictly achromatic: do not use Bright School pink, blue, other chromatic accents, dark terminal-style fills, or persistent scanline/grid overlays. The resting surface uses a restrained 10%-to-27% ink mix and the portrait uses `brightness(0.9)`; sync tears and content displacement occur only in short stepped bursts. Keep the real hidden character name out of the DOM, expose the placeholder as one `role="img"` labelled `暂无情报`, and do not restore secondary availability copy.
+
+Portrait rules in `mobile/house-profile/character-grid-cards.css` must preserve the visible `暂无情报` label. Its selector must be at least as specific as the existing `.house-modal .character-card.portrait-card > strong` hide rule; a shorter `.house-modal .hidden-intel-card > .hidden-intel-label` selector loses even with `!important`. `HouseModal.test.js` must lock the accessible copy, absence of `暂不可获取`, all three owner imports, centered grid contract, achromatic token contract, reduced-motion coverage, and the specificity-bearing mobile selector. Browser QA at 390x844 must confirm equal card/monitor/label centers and zero document-level horizontal overflow.
+
 ## Selector Rules
 
 Allowed patterns:

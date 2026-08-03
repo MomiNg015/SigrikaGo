@@ -1,4 +1,7 @@
 @import "./modals/handbook-decoration.css";
+@import "./modals/handbook-unobtained.css";
+@import "./modals/handbook-hidden-intel.css";
+@import "./modals/handbook-signal-motion.css";
 @import "./modals/surface-cleanup.css";
 @import "./modals/settings-lobby-cleanup.css";
 @import "./modals/selected-actions.css";

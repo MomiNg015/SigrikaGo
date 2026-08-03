@@ -33,11 +33,18 @@ export default function HouseCharacterGrid({
             <div
               className="character-card portrait-card unowned hidden-intel-card"
               key={character.id}
+              role="img"
               aria-label="暂无情报"
             >
-              <span className="locked-portrait lock-text-title">?</span>
-              <strong>暂无情报</strong>
-              <small>暂不可获取</small>
+              <span className="hidden-intel-visual" aria-hidden="true">
+                <span className="hidden-intel-brackets" />
+                <span className="locked-portrait lock-text-title">?</span>
+                <span className="hidden-intel-fragment hidden-intel-fragment-a" />
+                <span className="hidden-intel-fragment hidden-intel-fragment-b" />
+                <span className="hidden-intel-fragment hidden-intel-fragment-c" />
+                <span className="hidden-intel-no-signal">NO SIGNAL</span>
+              </span>
+              <strong className="hidden-intel-label" aria-hidden="true">暂无情报</strong>
             </div>
           );
         }

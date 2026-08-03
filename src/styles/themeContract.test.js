@@ -513,6 +513,9 @@ describe("player theme CSS contract", () => {
 
     expect(cssImports(modalsEntry)).toEqual([
       "./modals/handbook-decoration.css",
+      "./modals/handbook-unobtained.css",
+      "./modals/handbook-hidden-intel.css",
+      "./modals/handbook-signal-motion.css",
       "./modals/surface-cleanup.css",
       "./modals/settings-lobby-cleanup.css",
       "./modals/selected-actions.css",
