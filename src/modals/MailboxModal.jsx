@@ -6,13 +6,11 @@ import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recrui
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
-import { getShopItemDetailStatus } from "./shop/shopItemDetail.js";
 
 const EMPTY_TEXT = "这里空空如也~";
 
 export default function MailboxModal({
   token,
-  user = {},
   initialLoaded = false,
   initialMessages = [],
   onClose,
@@ -157,7 +155,7 @@ export default function MailboxModal({
         </div>
       )}
       detail={selected ? (
-        <article className="mailbox-detail" aria-busy={busyId === selected.id || undefined}>
+        <article key={selected.id} className="mailbox-detail" aria-busy={busyId === selected.id || undefined}>
           <header className="mailbox-detail-header">
             <div className="mailbox-detail-heading">
               <h3 id="mailbox-detail-title">{selected.title}</h3>
@@ -199,8 +197,6 @@ export default function MailboxModal({
           {detailAttachment && (
             <MailboxItemDetailDialog
               attachment={detailAttachment}
-              claimable={selected.claimable}
-              user={user}
               onClose={() => setDetailAttachment(null)}
             />
           )}
@@ -286,11 +282,8 @@ function AttachmentTile({ attachment, claimable, onOpenDetail }) {
   );
 }
 
-function MailboxItemDetailDialog({ attachment, claimable, user, onClose }) {
+function MailboxItemDetailDialog({ attachment, onClose }) {
   const item = mailboxAttachmentItemPresentation(attachment);
-  const shopItem = { category: "item", targetId: item.itemId };
-  const ownedStatus = getShopItemDetailStatus(shopItem, user);
-  const quantity = Math.max(0, Number(attachment.quantity ?? 0) || 0);
 
   function handleBackdropClick(event) {
     event.stopPropagation();
@@ -322,20 +315,6 @@ function MailboxItemDetailDialog({ attachment, claimable, user, onClose }) {
           <span className="mailbox-item-detail-category">道具</span>
           <h3>{item.name}</h3>
           <p>{item.description || "暂无道具说明。"}</p>
-          <dl className="mailbox-item-detail-stats">
-            <div>
-              <dt>当前持有</dt>
-              <dd>{ownedStatus}</dd>
-            </div>
-            <div>
-              <dt>邮件附件</dt>
-              <dd>{`本封附件 ×${quantity}`}</dd>
-            </div>
-            <div>
-              <dt>领取状态</dt>
-              <dd>{claimable ? "待领取" : "已领取"}</dd>
-            </div>
-          </dl>
         </div>
       </ModalDialog>
     </div>

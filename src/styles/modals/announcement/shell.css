@@ -49,12 +49,24 @@
   gap: 10px;
 }
 
+.announcement-modal .information-center-layout {
+  gap: 14px;
+}
+
+.announcement-modal .information-center-master,
+.announcement-modal .information-center-reader {
+  border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent);
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
 .announcement-list {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: 0;
   margin: 0;
   padding: 0 4px 0 0;
   overflow: auto;
@@ -66,43 +78,42 @@
   min-width: 0;
 }
 
+.announcement-list > li + li {
+  border-top: 1px solid color-mix(in srgb, var(--theme-border) 12%, transparent);
+}
+
 .announcement-list-item {
+  position: relative;
   width: 100%;
+  min-height: 72px;
   display: grid;
   gap: 8px;
   padding: 13px 14px;
-  border: 1px solid rgba(82, 63, 80, 0.18);
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: #fffdf8;
-  color: #35283a;
+  background: transparent;
+  color: var(--theme-text);
   text-align: left;
-  box-shadow: 0 2px 0 rgba(63, 45, 54, 0.08);
+  box-shadow: none;
   transition:
     border-color 140ms ease,
-    box-shadow 140ms ease,
-    transform 140ms ease,
     background-color 140ms ease;
 }
 
 .announcement-list-item:hover,
 .announcement-list-item:focus-visible {
-  border-color: rgba(157, 44, 69, 0.46);
-  background: #fff8f1;
-  box-shadow: 0 7px 16px rgba(73, 60, 76, 0.13);
-}
-
-.announcement-list-item:active {
-  transform: translateY(1px);
+  background: color-mix(in srgb, var(--theme-panel-bg) 68%, transparent);
+  box-shadow: none;
 }
 
 .announcement-list-item.is-unread {
-  box-shadow: inset 4px 0 0 #ff6f9f, 0 2px 0 rgba(63, 45, 54, 0.08);
+  color: var(--theme-text);
 }
 
 .announcement-list-item.active {
-  border-color: #9d2c45;
-  background: #fff1f5;
-  box-shadow: inset 4px 0 0 #ff6f9f, 0 9px 20px rgba(157, 44, 69, 0.14);
+  border-color: color-mix(in srgb, var(--theme-border) 58%, transparent);
+  background: color-mix(in srgb, var(--theme-text) 8%, var(--theme-panel-bg));
+  box-shadow: none;
 }
 
 .announcement-list-title {
@@ -110,7 +121,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #241f31;
+  color: var(--theme-text);
+  font-size: 15px;
   font-weight: 900;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -121,7 +133,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  color: #7b7183;
+  color: var(--theme-muted);
   font-size: 12px;
   line-height: 1.25;
 }

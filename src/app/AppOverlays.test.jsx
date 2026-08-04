@@ -15,11 +15,11 @@ describe("AppOverlays", () => {
     expect(shopBlock).toContain("siteSettings={siteSettings}");
   });
 
-  it("passes the live user into the mailbox item-detail surface", () => {
+  it("keeps mailbox item detail independent from account inventory state", () => {
     const source = readFileSync(new URL("./AppOverlays.jsx", import.meta.url), "utf8");
     const mailboxBlock = source.slice(source.indexOf("{showMailbox &&"), source.indexOf("</Suspense>"));
 
-    expect(mailboxBlock).toContain("user={user}");
+    expect(mailboxBlock).not.toContain("user={user}");
   });
   it("keeps the match success countdown visible during battle asset preloading", () => {
     const markup = renderToStaticMarkup(createElement(AppOverlays, overlayProps({

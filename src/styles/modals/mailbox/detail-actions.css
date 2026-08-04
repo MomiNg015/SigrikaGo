@@ -81,7 +81,7 @@ button.mailbox-attachment-tile:focus-visible {
 
 .mailbox-attachment-quantity-badge {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: -7px;
   right: -7px;
   min-width: 24px;
@@ -99,16 +99,42 @@ button.mailbox-attachment-tile:focus-visible {
   line-height: 1;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .mailbox-detail .mailbox-attachment-quantity-badge {
+  border-color: var(--bright-sheet-clean) !important;
+  background: var(--bright-border) !important;
+  color: var(--bright-sheet-clean) !important;
+}
+
 .mailbox-attachment-claimed-mark {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inset: 4px;
   display: grid;
   place-items: center;
-  color: color-mix(in srgb, var(--theme-panel-strong) 96%, transparent);
-  filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--theme-border) 62%, transparent));
+  color: white;
+  filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--theme-border) 78%, transparent));
   pointer-events: none;
   transform: rotate(-8deg);
+}
+
+.mailbox-attachment-tile.claimed .mailbox-attachment-icon::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--theme-text) 54%, transparent);
+  pointer-events: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .mailbox-detail .mailbox-attachment-tile.claimed .mailbox-attachment-claimed-mark,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .mailbox-detail .mailbox-attachment-tile.claimed .mailbox-attachment-claimed-mark svg {
+  color: white !important;
+  stroke: white !important;
+  opacity: 1 !important;
 }
 
 .mailbox-attachment-caption {

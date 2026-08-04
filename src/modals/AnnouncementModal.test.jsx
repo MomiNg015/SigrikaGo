@@ -129,6 +129,18 @@ describe("AnnouncementModal information center", () => {
     expect(themedCss).toContain("visibility: hidden !important");
     expect(themedCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(css).not.toContain(".announcement-detail-backdrop");
+    expect(css).toContain(".information-center-modal:is(.mailbox-modal, .announcement-modal) .information-center-header");
+    expect(css).toContain("padding-bottom: 18px");
+    expect(css).toContain("border-bottom: 2px dashed");
+    expect(css).toContain(".announcement-modal .information-center-layout");
+    expect(css).toContain("gap: 14px");
+    expect(css).toContain("border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent)");
+    expect(css).toContain(".announcement-list > li + li");
+    expect(css).toContain("background: transparent");
+    expect(css).not.toContain("linear-gradient(90deg, transparent 20px");
+    expect(css).toContain(".announcement-modal .information-center-master");
+    expect(themedCss).toContain(".announcement-list-item.announcement-list-item.active");
+    expect(themedCss).toContain("box-shadow: none !important");
     expect(css).toContain(".announcement-detail-kind::after");
     expect(css).toContain(".announcement-detail-body blockquote");
     expect(css).toContain(".information-center-prose :is(h4, h5)");

@@ -277,7 +277,6 @@ export default function AppOverlays({
         {showMailbox && (
           <MailboxModal
             token={token}
-            user={user}
             onClose={() => setShowMailbox(false)}
             onNotice={showToast}
             onSummaryChange={onMailboxSummaryChange}

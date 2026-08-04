@@ -5,11 +5,9 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 30px 34px 28px 42px;
+  padding: 24px 28px 22px;
   overflow: hidden;
-  background:
-    linear-gradient(90deg, transparent 20px, rgba(157, 44, 69, 0.1) 20px 21px, transparent 21px),
-    #fffdf8;
+  background: transparent;
   animation: announcement-detail-enter 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 

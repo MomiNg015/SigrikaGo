@@ -10,12 +10,7 @@
   border: 0;
   border-radius: 0;
   overflow: hidden;
-  background:
-    linear-gradient(
-      color-mix(in srgb, var(--theme-bg) 90%, transparent),
-      color-mix(in srgb, var(--theme-bg) 90%, transparent)
-    ),
-    var(--theme-bg) url("/assets/mailbox/mail-body-paper-natural.webp") center / cover no-repeat;
+  background: transparent;
   box-shadow: none;
 }
 
@@ -164,8 +159,40 @@
   margin: 0;
 }
 
+@keyframes mailbox-detail-content-enter {
+  from {
+    opacity: 0.08;
+    transform: translate3d(44px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (min-width: 769px) {
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-detail-header,
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-body,
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-attachment-shelf {
+    animation: mailbox-detail-content-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-body {
+    animation-delay: 100ms;
+  }
+
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-attachment-shelf {
+    animation-delay: 200ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .mailbox-attachment-icon {
+  .mailbox-attachment-icon,
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-detail-header,
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-body,
+  .mailbox-detail:not(.mailbox-detail-empty) > .mailbox-attachment-shelf {
     transition: none;
+    animation: none;
   }
 }

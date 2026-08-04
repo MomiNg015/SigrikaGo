@@ -62,8 +62,10 @@ Current Phase 4 domain wrappers:
 - Desktop renders both panes with a 288–312px master column and flexible reader; mobile keeps one pane semantically active through `aria-hidden` and `inert`.
 - On desktop, announcement, changelog, and mailbox lists automatically open their newest first row after initial loading; switching announcement kind opens that kind's first row. The existing open/read path remains authoritative, so an automatically opened unread row is marked read exactly like a clicked row. Mobile remains list-first and mutates read state only after a row click. Feature rows use `ul > li > button`; never replace button semantics with `role="listitem"`.
 - Mobile header always reserves the 44px back-control column so list/detail changes do not reflow the title or close control. Detail reveals the enabled back control with the same transform/opacity timing, moves focus to it, and restores focus to the originating row on return.
+- Mailbox and announcement headers share an 18px desktop / 16px mobile gap below their 44px controls before the dashed divider; close/back button shadows must never touch that divider.
 - Desktop-only empty-reader guidance must be visually hidden on mobile, because replacing exiting detail content with that prompt exposes a one-frame text flash during the pane transition.
-- A feature reader that already renders its own framed surface, such as the mailbox paper article, must clear the shared `.information-center-reader` border, background, and shadow so the detail has one visual boundary rather than nested frames.
+- Mailbox and announcement use the same 14px desktop pane gap, 2px semantic master/reader frames, transparent reader articles, and separator-led low-chrome list rhythm. Announcement keeps its necessary kind tabs, pinned/unread labels, and unread dot; visual unification must not erase those semantics.
+- A feature reader may keep the shared information-center outer frame, but must still avoid a second nested border, fill, or shadow around the article itself.
 - `ModalDialog` owns dialog naming, focus containment, Escape dismissal, and opener focus restoration. `InformationCenterLayout` must not duplicate those behaviors.
 - Shared structure lives in `modals/information-center.css`; feature CSS owns content visuals, and `mobile-adaptive/information-center.css` owns final post-theme safe-area and pane-transition rules.
 
@@ -81,7 +83,7 @@ Current Phase 4 domain wrappers:
 #### 6. Tests Required
 - `InformationCenterLayout.dom.test.jsx` covers mobile semantic hiding, back focus, and trigger focus restoration.
 - Feature DOM tests cover desktop automatic first-row selection, mobile list-first behavior, read mutation, semantic list rows, and action/error behavior.
-- CSS contracts cover shared import order, 44px controls, zero mobile horizontal overflow, and reduced-motion coverage through existing theme/mobile families.
+- CSS contracts cover shared import order, 44px controls, dashed-divider clearance, the unified mailbox/announcement pane frames and transparent articles, zero mobile horizontal overflow, and reduced-motion coverage through existing theme/mobile families.
 
 #### 7. Wrong vs Correct
 
@@ -101,39 +103,43 @@ Correct:
 
 #### 1. Scope / Trigger
 - Trigger: changing mailbox list state, read/claim/delete actions, attachment payloads, attachment presentation, or the nested item-detail dialog.
-- This is a cross-layer contract: `server/mailbox.js` enriches the response from the shop catalog, `AppOverlays` supplies current ownership, and `MailboxModal` derives completion, controls actions, and renders the item detail.
+- This is a cross-layer contract: `server/mailbox.js` enriches the response from the shop catalog, while `MailboxModal` derives completion, controls actions, and renders the item detail without depending on account inventory state.
 
 #### 2. Signatures
 - `attachmentPayload(message, catalogEntry)` returns `{ itemId, amount, coins, claimedAt, itemName, itemDescription, itemImageUrl }`, with absent text normalized to an empty string.
 - `mailboxMessageIsDone(message)` returns `message.readAt != null && (!message.hasAttachment || message.claimedAt != null)`.
-- `MailboxModal({ api, user, onClose, onUnreadCountChange, onUserChange })` receives the current user so item detail can show owned quantity without another mailbox endpoint.
+- `MailboxModal({ api, onClose, onUnreadCountChange, onUserChange })` keeps claim settlement updates but does not receive the current user for item-detail presentation.
 
 #### 3. Contracts
 - The list is text-only: title, sender, and relative time. Do not add unread dots, attachment thumbnails, status chips, or an “all mail” filter/count row.
 - A plain message dims after it is read. A message with an attachment dims only after it is both read and no longer claimable; a read but unclaimed message stays bright.
-- Item and coin attachments render as independent tiles. Quantity above one uses a top-right badge; claimed attachments keep the tile and add the claimed overlay.
-- Item tiles open a portaled `ModalDialog` with image, safe catalog name/description, current owned quantity, mailed quantity, and claim status. Do not expose internal item ids or add purchase/use actions. Coin tiles remain non-interactive.
+- Every not-yet-completed row keeps the normal paper surface and uses only a slim semantic warm-accent inset line; do not fill the whole row with mint/green. Selection remains a separate neutral border, and the row text must keep normal ink contrast.
+- The mailbox header/main boundary uses the established dashed divider. The master and reader each use the announcement-style 2px solid outer frame with no hard shadow; the reader article itself stays borderless and transparent so the surface is not double-framed or filled.
+- Item and coin attachments render as independent tiles. Quantity above one uses a top-right badge; claimed attachments keep the tile, add a translucent dark-gray overlay, and place a white check above it without covering the quantity badge. In Bright School, lock both the claimed-mark wrapper color and the nested SVG `color`/`stroke`, because the late global `:where(svg)` ink rule otherwise repaints the Lucide check.
+- The quantity badge uses a dark semantic border surface with an explicit light-text Bright School winner so late modal typography rules cannot make the number unreadable.
+- Item tiles open a portaled `ModalDialog` with only the image, item category, safe catalog name, and description. Do not show current ownership, mailed quantity, claim status, internal item ids, or purchase/use actions. Coin tiles remain non-interactive.
 - The claim action remains separate from the attachment tile and uses the modal action wrapper. Delete keeps the existing eligibility and API behavior.
 - Item detail must portal outside the mailbox reader so clipping, stacking, Escape handling, and opener-focus restoration remain owned by the shared dialog contract.
+- On desktop, switching the selected message remounts the reader and stages header, body, then attachment/action shelf from 44px to the right over 420ms, with 100ms then 200ms delays so the flow remains visible through the bottom button. Mobile keeps its existing pane transition, and `prefers-reduced-motion` removes the staged reader animation.
 
 #### 4. Validation & Error Matrix
 - Unknown or removed catalog item -> return safe fallback name/description/image values and keep the mail readable and claimable.
 - Missing `readAt` -> message remains bright regardless of attachment state.
 - Read message with unclaimed attachment -> message remains bright and claim action remains enabled.
-- Claimed item attachment -> show the disabled `已领取` state and claimed overlay; item detail remains inspectable.
+- Claimed item attachment -> show the disabled `已领取` state and claimed overlay; item detail remains inspectable without repeating claim status inside the dialog.
 - Coin-only attachment -> render quantity and state without a detail trigger.
 - Claim/delete request failure -> keep the current mail selected and surface the existing mailbox error state without optimistic removal.
 
 #### 5. Good/Base/Bad Cases
-- Good: opening an item tile shows catalog copy and `user.items[itemId]` ownership in a nested accessible dialog, then Escape returns focus to that tile.
+- Good: opening an item tile shows concise catalog art and copy in a nested accessible dialog, then Escape returns focus to that tile.
 - Base: a text-only read message dims and retains the unchanged delete behavior.
 - Bad: deriving dimming from `readAt` alone, because a still-claimable reward becomes visually indistinguishable from completed mail.
 - Bad: putting the item tile and claim button in one button or one action row, because nested controls and attachment inspection become ambiguous.
 
 #### 6. Tests Required
 - `server/mailbox.test.js` asserts catalog name, description, and image enrichment plus safe fallback values.
-- `src/modals/MailboxModal.test.jsx` asserts completion truth-table behavior, relative-time boundaries, semantic list buttons, item/coin differences, quantity badge, claimed state, item-detail copy, Escape close, and focus restoration.
-- `src/app/AppOverlays.test.jsx` asserts the current user reaches `MailboxModal`.
+- `src/modals/MailboxModal.test.jsx` asserts completion truth-table behavior, relative-time boundaries, semantic list buttons, warm-accent pending state, item/coin differences, contrast-locked quantity badge, dark claimed overlay/white check, concise item-detail copy, reader remount, Escape close, and focus restoration.
+- `src/app/AppOverlays.test.jsx` asserts mailbox item detail remains independent from account inventory state.
 - CSS inventory and style/theme contract tests assert the bounded mailbox owner files, no new high-z-index debt, and portrait overflow/focus safety.
 
 #### 7. Wrong vs Correct

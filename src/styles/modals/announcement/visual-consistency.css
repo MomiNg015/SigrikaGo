@@ -27,6 +27,18 @@
   display: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .information-center-master,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .information-center-reader {
+  border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail {
+  background: transparent !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal h2,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-header h3 {
   color: #3d2b25 !important;

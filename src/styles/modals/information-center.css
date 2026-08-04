@@ -27,6 +27,11 @@
   gap: 12px;
 }
 
+.information-center-modal:is(.mailbox-modal, .announcement-modal) .information-center-header {
+  padding-bottom: 18px;
+  border-bottom: 2px dashed color-mix(in srgb, var(--theme-border) 34%, transparent);
+}
+
 .information-center-header h2 {
   min-width: 0;
   margin: 0;

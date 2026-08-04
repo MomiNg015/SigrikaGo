@@ -73,6 +73,21 @@
   box-shadow: none !important;
 }
 
+.mailbox-list-item.state-open,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open {
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-accent) 72%, transparent) !important;
+}
+
+.mailbox-list-item.state-open:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open:hover {
+  background: color-mix(in srgb, var(--theme-accent) 8%, transparent) !important;
+}
+
+.mailbox-list-item.state-open.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open.active {
+  background: color-mix(in srgb, var(--theme-text) 8%, var(--theme-panel-bg)) !important;
+}
+
 .mailbox-list-item.state-done,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-done {
   color: var(--theme-muted) !important;

@@ -30,6 +30,10 @@
     padding: 0 !important;
   }
 
+  .app-shell.player-theme-enabled .information-center-modal:is(.mailbox-modal, .announcement-modal) .information-center-header {
+    padding-bottom: 16px !important;
+  }
+
   .app-shell.player-theme-enabled .information-center-header h2 {
     font-size: 25px !important;
   }

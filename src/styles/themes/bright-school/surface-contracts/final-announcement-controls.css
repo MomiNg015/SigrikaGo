@@ -19,24 +19,24 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item {
-  min-height: 76px !important;
+  min-height: 72px !important;
   padding: 13px 14px !important;
-  border: 2px solid var(--bright-border) !important;
+  border: 1px solid transparent !important;
   border-radius: 8px !important;
-  background: #fffdf8 !important;
+  background: transparent !important;
   color: var(--bright-ink) !important;
   line-height: 1.32 !important;
-  box-shadow: 2px 3px 0 rgba(74, 55, 54, 0.16) !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item.is-unread {
-  box-shadow: inset 4px 0 0 var(--bright-pink), 2px 3px 0 rgba(74, 55, 54, 0.16) !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item.active {
-  border-color: #9d2c45 !important;
-  background: #fff1f5 !important;
-  box-shadow: inset 4px 0 0 var(--bright-pink), 3px 4px 0 rgba(74, 55, 54, 0.2) !important;
+  border-color: color-mix(in srgb, var(--theme-border) 58%, transparent) !important;
+  background: color-mix(in srgb, var(--theme-text) 8%, var(--theme-panel-bg)) !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list-meta b {
@@ -47,6 +47,6 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item:focus-visible {
-  background: #fff7eb !important;
-  box-shadow: 3px 4px 0 rgba(74, 55, 54, 0.22) !important;
+  background: color-mix(in srgb, var(--theme-panel-bg) 68%, transparent) !important;
+  box-shadow: none !important;
 }
