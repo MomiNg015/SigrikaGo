@@ -97,6 +97,75 @@ Correct:
 <li><button type="button" onClick={() => openDetail(item)}>{item.title}</button></li>
 ```
 
+### Scenario: Player Mailbox Reading And Attachment Presentation
+
+#### 1. Scope / Trigger
+- Trigger: changing mailbox list state, read/claim/delete actions, attachment payloads, attachment presentation, or the nested item-detail dialog.
+- This is a cross-layer contract: `server/mailbox.js` enriches the response from the shop catalog, `AppOverlays` supplies current ownership, and `MailboxModal` derives completion, controls actions, and renders the item detail.
+
+#### 2. Signatures
+- `attachmentPayload(message, catalogEntry)` returns `{ itemId, amount, coins, claimedAt, itemName, itemDescription, itemImageUrl }`, with absent text normalized to an empty string.
+- `mailboxMessageIsDone(message)` returns `message.readAt != null && (!message.hasAttachment || message.claimedAt != null)`.
+- `MailboxModal({ api, user, onClose, onUnreadCountChange, onUserChange })` receives the current user so item detail can show owned quantity without another mailbox endpoint.
+
+#### 3. Contracts
+- The list is text-only: title, sender, and relative time. Do not add unread dots, attachment thumbnails, status chips, or an “all mail” filter/count row.
+- A plain message dims after it is read. A message with an attachment dims only after it is both read and no longer claimable; a read but unclaimed message stays bright.
+- Item and coin attachments render as independent tiles. Quantity above one uses a top-right badge; claimed attachments keep the tile and add the claimed overlay.
+- Item tiles open a portaled `ModalDialog` with image, safe catalog name/description, current owned quantity, mailed quantity, and claim status. Do not expose internal item ids or add purchase/use actions. Coin tiles remain non-interactive.
+- The claim action remains separate from the attachment tile and uses the modal action wrapper. Delete keeps the existing eligibility and API behavior.
+- Item detail must portal outside the mailbox reader so clipping, stacking, Escape handling, and opener-focus restoration remain owned by the shared dialog contract.
+
+#### 4. Validation & Error Matrix
+- Unknown or removed catalog item -> return safe fallback name/description/image values and keep the mail readable and claimable.
+- Missing `readAt` -> message remains bright regardless of attachment state.
+- Read message with unclaimed attachment -> message remains bright and claim action remains enabled.
+- Claimed item attachment -> show the disabled `已领取` state and claimed overlay; item detail remains inspectable.
+- Coin-only attachment -> render quantity and state without a detail trigger.
+- Claim/delete request failure -> keep the current mail selected and surface the existing mailbox error state without optimistic removal.
+
+#### 5. Good/Base/Bad Cases
+- Good: opening an item tile shows catalog copy and `user.items[itemId]` ownership in a nested accessible dialog, then Escape returns focus to that tile.
+- Base: a text-only read message dims and retains the unchanged delete behavior.
+- Bad: deriving dimming from `readAt` alone, because a still-claimable reward becomes visually indistinguishable from completed mail.
+- Bad: putting the item tile and claim button in one button or one action row, because nested controls and attachment inspection become ambiguous.
+
+#### 6. Tests Required
+- `server/mailbox.test.js` asserts catalog name, description, and image enrichment plus safe fallback values.
+- `src/modals/MailboxModal.test.jsx` asserts completion truth-table behavior, relative-time boundaries, semantic list buttons, item/coin differences, quantity badge, claimed state, item-detail copy, Escape close, and focus restoration.
+- `src/app/AppOverlays.test.jsx` asserts the current user reaches `MailboxModal`.
+- CSS inventory and style/theme contract tests assert the bounded mailbox owner files, no new high-z-index debt, and portrait overflow/focus safety.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const done = Boolean(message.readAt);
+```
+
+Correct:
+
+```js
+const done = Boolean(message.readAt) && (!message.hasAttachment || Boolean(message.claimedAt));
+```
+
+Wrong:
+
+```jsx
+<button onClick={claimAttachment}>
+  <button onClick={openItemDetail}>Item</button>
+  Claim
+</button>
+```
+
+Correct:
+
+```jsx
+<button type="button" onClick={openItemDetail}>Item</button>
+<ModalActionButton onClick={claimAttachment}>领取</ModalActionButton>
+```
+
 Current Phase 5 domain wrappers:
 
 - `src/home/homeComponents.jsx` wraps `Button` as `HomeActionButton` for home-flow action rows. It maps semantic home variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumer is the match-mode picker cancel action in `src/home/HomeScreen.jsx`. Do not use this pilot as permission to migrate match-mode option buttons, home entry cards, home utility entries, player plaque art, shop/warehouse/recruitment cards, or gameplay controls without focused desktop/mobile tests and visual checks.

@@ -195,6 +195,7 @@ describe("mailbox domain", () => {
         category: "item",
         targetId: "dream-ticket",
         name: "梦境纪念券",
+        description: "来自梦境边缘的限定纪念券。",
         imageUrl: "/assets/items/dream-ticket.webp"
       }]
     });
@@ -205,6 +206,7 @@ describe("mailbox domain", () => {
       type: "item",
       itemId: "dream-ticket",
       itemName: "梦境纪念券",
+      itemDescription: "来自梦境边缘的限定纪念券。",
       imageUrl: "/assets/items/dream-ticket.webp",
       quantity: 1
     });
@@ -224,6 +226,7 @@ describe("mailbox domain", () => {
 
     expect(result.messages[0].attachment).toMatchObject({
       itemName: "飞行雪绒纪念券",
+      itemDescription: "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？",
       imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp"
     });
   });
@@ -242,6 +245,7 @@ describe("mailbox domain", () => {
 
     expect(result.messages[0].attachment).toMatchObject({
       itemName: "神奇小钟表",
+      itemDescription: "只要一拨指针就能加速现实时间流逝，很方便吧~",
       imageUrl: "/assets/items/magic-clock.svg",
       quantity: 2
     });

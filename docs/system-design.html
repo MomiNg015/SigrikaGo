@@ -666,6 +666,9 @@
 </ul>
 <h2>Mailbox System Summary</h2>
 <ul>
+<li>The 2026-08-04 mailbox visual delta keeps the existing six mailbox CSS owner files, holds every file below the 6000-byte guard, uses semantic theme tokens, removes 48 hardcoded hex matches, and records only the targeted Bright School button/modal cascade winners plus owner-local reduced-motion coverage required by the confirmed desktop/portrait redesign. It adds no CSS file, breakpoint family, or high-z-index debt; <code>CSS_DEBT_BASELINE</code> is refreshed explicitly for this bounded feature and remains the non-growth ceiling for later mailbox work.</li>
+</ul>
+<ul>
 <li>Mailbox is an authenticated player/admin HTTP feature. Players open it from the home top-right action area or the mobile menu, read admin-only text mail, manually claim one optional attachment, and can keep at most 20 messages.</li>
 </ul>
 <ul>
@@ -675,7 +678,10 @@
 <li>Player deletes are soft deletes on <code>MailboxMessage.deletedAt</code>; future-eligible global batches still see that delivery history, so a deleted mail is not recreated on the next mailbox summary or list refresh.</li>
 </ul>
 <ul>
-<li>The player mailbox keeps the same list/detail layout for empty inboxes; the left mail list shows the empty state while the detail pane remains reserved. Desktop uses a left-list/right-detail split, while mobile remains list-first and enters the selected detail with an explicit back control. Every mail row shows its sender below the title. The paper detail starts with the title, then combines sender and timestamp in one muted metadata row; its player modal title has no subtitle. Mail rows retain their unread/claimable/completed scan states. Item attachments render a 40px catalog image or built-in semantic icon beside the localized item name, quantity, and claim state; internal item ids are data only and never player copy. A text-only mail renders no attachment placeholder. A real attachment and its claim/claimed action share one compact footer shelf, while delete remains the icon-only secondary action beside the detail heading. Long mail prose scrolls independently through the shared safe Markdown-lite renderer. The detail pane uses <code>/assets/mailbox/mail-body-paper-natural.webp</code>, a crop-safe low-contrast natural-paper texture with calm central fibers and no rules, grid, stains, watermark, surrounding stationery, or runtime frosted/blur layer.</li>
+<li>The player mailbox keeps the same list/detail layout for empty inboxes; the left mail list shows the empty state while the detail pane remains reserved. Desktop uses a left-list/right-detail split, while mobile remains list-first and enters the selected detail with an explicit 44px back control. The unchanged player header has no subtitle or extra “全部邮件” filter/count row. Each list row is text-only and exposes title, sender, and compact time; times remain relative through six days and fall back to a local <code>YYYY/MM/DD</code> date, while unread/claimable/completed semantics stay in the accessible name rather than visible dots, icons, thumbnails, or status chips. Plain mail becomes visually completed when read; attachment mail becomes completed only after it is read and no longer claimable, so a read but unclaimed reward remains bright. Non-selected rows use separators instead of card borders, the selected row uses one restrained neutral full border, and keyboard focus remains a distinct blue outline.</li>
+</ul>
+<ul>
+<li>The paper detail starts with title, sender, and full local timestamp, keeps delete as the existing icon-only secondary action beside the heading, scrolls long Markdown-lite prose independently, and uses <code>/assets/mailbox/mail-body-paper-natural.webp</code> under a high-opacity semantic paper wash with no nested frame, hard shadow, runtime blur, rules, stains, or watermark. A real attachment sits independently at the lower left while the claim button remains at the lower right; claimed mail keeps a disabled neutral <code>已领取</code> action. Coins render as non-interactive icon tiles. Item attachments render a catalog/built-in icon tile, show quantities above one in a top-right badge, and overlay a large claimed check without hiding that badge. Clicking an item tile opens a focus-trapped, Escape-closeable detail dialog portaled to the application root; it shows localized image/name/description, current owned quantity, this mail's quantity, and pending/claimed state, but no purchase/use controls or internal item id. The existing mailbox payload now projects the safe catalog/built-in <code>itemDescription</code> through the current list response; no new endpoint, schema, multi-attachment contract, or shared shop/warehouse refactor is introduced.</li>
 </ul>
 <ul>
 <li>App-level overlays must keep <code>useOverlayState</code>, <code>App</code>, <code>useAppActions</code>, and <code>useOverlayActions</code> wiring in sync. <code>closeAllOverlays()</code> is reused by <code>match:found</code>, room resume, and replay entry flows, so a missing overlay setter can break matchmaking before the match-success/preload state is recorded.</li>
@@ -4716,6 +4722,9 @@
 </ul>
 <ul>
 <li>视觉合同应靠 CSS contract tests 锁定，避免后续主题覆盖把语义状态、关闭按钮、移动列表等打散。</li>
+</ul>
+<ul>
+<li>邮箱沿用 <code>InformationCenterLayout</code> 的桌面双栏与竖屏列表/正文切换，但内容层改为低装饰合同：列表只显示标题、发件人与紧凑时间，不渲染可见未读点、附件缩略图或状态 chip；纯文本已读、以及附件已读且不可再领取的行使用 muted ink 与较低字重，已读但仍待领取的行保持正常亮度。阅读区清除共享 reader/master 的内框和阴影，只在自然纸纹上保留高透明纸色覆盖；附件图块与右下领取按钮分离，Bright School 的全局 sticker-button 规则不得重新给附件图块加 3px 边框和硬阴影。道具详情通过 portal 挂到 <code>.app-shell</code>，位于邮箱遮罩之上，桌面限制为 620px 双栏，竖屏为单栏且按真实视口/遮罩内容区居中；内部继续使用 44px 关闭目标、焦点陷阱、Escape 单层关闭和焦点恢复。金币图块不可交互，道具图块才打开详情；数量角标和已领取勾选各自保留独立层级。</li>
 </ul>
 <ul>
 <li>衣柜服装详情保留共享 <code>.shop-detail-art</code> 图像框，但由 <code>.character-costume-detail-art</code> 在基础层和 Bright School 最终主题层共同清除立绘的 <code>drop-shadow</code>；该覆盖不作用于商店商品详情立绘，也不移除图像框或弹窗阴影。</li>

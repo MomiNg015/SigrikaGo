@@ -1,15 +1,18 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import { Archive, CheckCircle2, Coins, Gift, MailOpen, Ticket, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { Archive, Check, Coins, Gift, MailOpen, Ticket, Trash2, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
-import { ModalActionButton } from "./modalComponents.jsx";
+import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
+import { getShopItemDetailStatus } from "./shop/shopItemDetail.js";
 
 const EMPTY_TEXT = "这里空空如也~";
 
 export default function MailboxModal({
   token,
+  user = {},
   initialLoaded = false,
   initialMessages = [],
   onClose,
@@ -23,6 +26,7 @@ export default function MailboxModal({
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(() => isNarrow ? "" : sortMailboxMessages(initialMessages)[0]?.id ?? "");
   const [busyId, setBusyId] = useState("");
+  const [detailAttachment, setDetailAttachment] = useState(null);
   const selected = useMemo(
     () => messages.find((message) => message.id === selectedId) ?? null,
     [messages, selectedId]
@@ -91,6 +95,12 @@ export default function MailboxModal({
     });
   }
 
+  function selectMessage(message) {
+    setDetailAttachment(null);
+    setSelectedId(message.id);
+    markRead(message);
+  }
+
   return (
     <InformationCenterLayout
       backdropClassName="mailbox-backdrop"
@@ -100,7 +110,10 @@ export default function MailboxModal({
       closeLabel="关闭邮箱"
       backLabel="返回邮件列表"
       mobileView={selected ? "detail" : "list"}
-      onBack={selected ? () => setSelectedId("") : undefined}
+      onBack={selected ? () => {
+        setDetailAttachment(null);
+        setSelectedId("");
+      } : undefined}
       onClose={onClose}
       listLabel="邮件列表"
       detailLabelledBy={selected ? "mailbox-detail-title" : undefined}
@@ -109,31 +122,28 @@ export default function MailboxModal({
           {error && <p className="form-error mailbox-error" role="alert">{error}</p>}
           {messages.length > 0 && (
             <ul className="mailbox-list">
-              {messages.map((message) => (
-                <li key={message.id}>
-                  <button
-                    className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
-                    type="button"
-                    aria-current={selected?.id === message.id ? "true" : undefined}
-                    onClick={() => {
-                      setSelectedId(message.id);
-                      markRead(message);
-                    }}
-                  >
-                    <span className="mailbox-list-title">
-                      {!message.isRead && <i className="mailbox-unread-dot" aria-hidden="true" />}
-                      {message.title}
-                    </span>
-                    <span className="mailbox-list-time">发件人：{displayMailboxSender(message.sender)}</span>
-                    <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
-                    <span className="mailbox-list-status">
-                      {!message.isRead && <b>未读</b>}
-                      {message.claimable && <b>待领取</b>}
-                      {message.isRead && !message.claimable && <b>已完成</b>}
-                    </span>
-                  </button>
-                </li>
-              ))}
+              {messages.map((message) => {
+                const sender = displayMailboxSender(message.sender);
+                const listTime = formatMailboxListTime(message.createdAt);
+                const status = mailboxMessageStatusLabel(message);
+                return (
+                  <li key={message.id}>
+                    <button
+                      className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
+                      type="button"
+                      aria-label={`${message.title}，${sender}，${listTime}，${status}`}
+                      aria-current={selected?.id === message.id ? "true" : undefined}
+                      onClick={() => selectMessage(message)}
+                    >
+                      <span className="mailbox-list-title">{message.title}</span>
+                      <span className="mailbox-list-meta">
+                        <span className="mailbox-list-sender">{sender}</span>
+                        <time className="mailbox-list-time" dateTime={message.createdAt}>{listTime}</time>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
           {messages.length === 0 && (
@@ -152,7 +162,7 @@ export default function MailboxModal({
             <div className="mailbox-detail-heading">
               <h3 id="mailbox-detail-title">{selected.title}</h3>
               <p className="mailbox-detail-meta">
-                <span>发件人：{displayMailboxSender(selected.sender)}</span>
+                <span>{displayMailboxSender(selected.sender)}</span>
                 <time dateTime={selected.createdAt}>{formatDateTime(selected.createdAt)}</time>
               </p>
             </div>
@@ -169,8 +179,11 @@ export default function MailboxModal({
           <MarkdownLiteContent className="information-center-prose mailbox-body" value={selected.body} />
           {hasAttachment(selected.attachment) && (
             <footer className="mailbox-attachment-shelf">
-              <span className="mailbox-attachment-label">附件</span>
-              <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
+              <AttachmentTile
+                attachment={selected.attachment}
+                claimable={selected.claimable}
+                onOpenDetail={setDetailAttachment}
+              />
               <ModalActionButton
                 variant="primary"
                 className="mailbox-claim-button"
@@ -178,10 +191,18 @@ export default function MailboxModal({
                 disabled={!selected.claimable || busyId === selected.id}
                 onClick={() => claim(selected)}
               >
-                {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
+                {selected.claimable ? <Gift size={18} /> : <Check size={18} />}
                 {selected.claimable ? "领取附件" : "已领取"}
               </ModalActionButton>
             </footer>
+          )}
+          {detailAttachment && (
+            <MailboxItemDetailDialog
+              attachment={detailAttachment}
+              claimable={selected.claimable}
+              user={user}
+              onClose={() => setDetailAttachment(null)}
+            />
           )}
         </article>
       ) : (
@@ -194,42 +215,132 @@ export default function MailboxModal({
   );
 }
 
+export function mailboxMessageIsDone(message) {
+  if (!hasAttachment(message?.attachment)) return Boolean(message?.isRead);
+  return Boolean(message?.isRead && !message?.claimable);
+}
+
 function mailboxMessageStateClass(message) {
-  if (!message.isRead) return "state-new";
-  if (message.claimable) return "state-claimable";
-  return "state-done";
+  return mailboxMessageIsDone(message) ? "state-done" : "state-open";
+}
+
+function mailboxMessageStatusLabel(message) {
+  if (!message?.isRead) return message?.claimable ? "未读，待领取" : "未读";
+  return message?.claimable ? "待领取" : "已完成";
 }
 
 function sortMailboxMessages(messages) {
   return [...messages].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
 }
 
-function AttachmentView({ attachment, claimable }) {
+function AttachmentTile({ attachment, claimable, onOpenDetail }) {
   if (!hasAttachment(attachment)) return null;
   const isCoins = attachment.type === "coins";
   const itemPresentation = isCoins ? null : mailboxAttachmentItemPresentation(attachment);
-  return (
-    <div className={`mailbox-attachment ${claimable ? "claimable" : "claimed"}`}>
-      {isCoins ? (
-        <Coins size={18} />
-      ) : (
-        <span className="mailbox-attachment-item-art" aria-hidden="true">
-          {itemPresentation.imageUrl ? (
-            <img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" />
-          ) : itemPresentation.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
-            <Ticket size={30} />
-          ) : (
-            <Archive size={28} />
-          )}
-        </span>
-      )}
-      <span className="mailbox-attachment-name">
-        {isCoins ? `${attachment.quantity ?? 0} 金币` : itemPresentation.name}
+  const quantity = Math.max(0, Number(attachment.quantity ?? 0) || 0);
+  const stateLabel = claimable ? "待领取" : "已领取";
+  const content = (
+    <>
+      <span className="mailbox-attachment-icon" aria-hidden="true">
+        {isCoins ? (
+          <Coins size={44} />
+        ) : itemPresentation.imageUrl ? (
+          <img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" />
+        ) : itemPresentation.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
+          <Ticket size={42} />
+        ) : (
+          <Archive size={40} />
+        )}
+        {quantity > 1 && <span className="mailbox-attachment-quantity-badge">{quantity}</span>}
+        {!claimable && (
+          <span className="mailbox-attachment-claimed-mark">
+            <Check size={58} strokeWidth={3.4} />
+          </span>
+        )}
       </span>
-      {!isCoins && <span className="mailbox-attachment-quantity">x{attachment.quantity ?? 0}</span>}
-      <b>{claimable ? "待领取" : "已领取"}</b>
+      <span className="mailbox-attachment-caption">{isCoins ? "金币" : itemPresentation.name}</span>
+    </>
+  );
+
+  if (isCoins) {
+    return (
+      <div
+        className={`mailbox-attachment-tile ${claimable ? "claimable" : "claimed"}`}
+        role="img"
+        aria-label={`金币附件，数量 ${quantity}，${stateLabel}`}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      className={`mailbox-attachment-tile ${claimable ? "claimable" : "claimed"}`}
+      type="button"
+      aria-label={`查看道具详情：${itemPresentation.name}，数量 ${quantity}，${stateLabel}`}
+      onClick={() => onOpenDetail?.(attachment)}
+    >
+      {content}
+    </button>
+  );
+}
+
+function MailboxItemDetailDialog({ attachment, claimable, user, onClose }) {
+  const item = mailboxAttachmentItemPresentation(attachment);
+  const shopItem = { category: "item", targetId: item.itemId };
+  const ownedStatus = getShopItemDetailStatus(shopItem, user);
+  const quantity = Math.max(0, Number(attachment.quantity ?? 0) || 0);
+
+  function handleBackdropClick(event) {
+    event.stopPropagation();
+    if (event.target === event.currentTarget) onClose?.();
+  }
+
+  if (typeof document === "undefined") return null;
+  const dialog = (
+    <div className="nested-modal-backdrop mailbox-item-detail-backdrop" onClick={handleBackdropClick}>
+      <ModalDialog
+        className="nested-modal mailbox-item-detail-modal"
+        ariaLabel={`道具详情：${item.name}`}
+        onClose={onClose}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button className="nested-modal-close mailbox-item-detail-close" type="button" onClick={onClose} aria-label="关闭道具详情">
+          <X size={20} />
+        </button>
+        <div className="mailbox-item-detail-art" aria-hidden="true">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} alt="" decoding="async" />
+          ) : item.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
+            <Ticket size={64} />
+          ) : (
+            <Archive size={60} />
+          )}
+        </div>
+        <div className="mailbox-item-detail-copy">
+          <span className="mailbox-item-detail-category">道具</span>
+          <h3>{item.name}</h3>
+          <p>{item.description || "暂无道具说明。"}</p>
+          <dl className="mailbox-item-detail-stats">
+            <div>
+              <dt>当前持有</dt>
+              <dd>{ownedStatus}</dd>
+            </div>
+            <div>
+              <dt>邮件附件</dt>
+              <dd>{`本封附件 ×${quantity}`}</dd>
+            </div>
+            <div>
+              <dt>领取状态</dt>
+              <dd>{claimable ? "待领取" : "已领取"}</dd>
+            </div>
+          </dl>
+        </div>
+      </ModalDialog>
     </div>
   );
+  return createPortal(dialog, document.querySelector(".app-shell") ?? document.body);
 }
 
 function hasAttachment(attachment) {
@@ -242,8 +353,29 @@ export function mailboxAttachmentItemPresentation(attachment) {
   return {
     itemId,
     name: String(attachment?.itemName ?? builtinItem?.name ?? "").trim() || "道具",
+    description: String(attachment?.itemDescription ?? builtinItem?.description ?? "").trim(),
     imageUrl: String(attachment?.imageUrl ?? builtinItem?.imageUrl ?? "").trim()
   };
+}
+
+export function formatMailboxListTime(value, now = new Date()) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  const nowDate = now instanceof Date ? now : new Date(now);
+  const elapsedMs = Math.max(0, nowDate.getTime() - date.getTime());
+  const elapsedMinutes = Math.floor(elapsedMs / 60_000);
+  if (elapsedMinutes < 1) return "刚刚";
+  if (elapsedMinutes < 60) return `${elapsedMinutes}分钟前`;
+  const elapsedHours = Math.floor(elapsedMinutes / 60);
+  if (elapsedHours < 24) return `${elapsedHours}小时前`;
+  const elapsedDays = Math.floor(elapsedHours / 24);
+  if (elapsedDays < 7) return `${elapsedDays}天前`;
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(date).replaceAll("-", "/");
 }
 
 function formatDateTime(value) {

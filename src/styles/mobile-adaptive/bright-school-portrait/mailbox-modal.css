@@ -19,14 +19,16 @@
     display: grid !important;
     height: 100% !important;
     min-height: 0 !important;
+    align-content: start !important;
+    grid-auto-rows: minmax(72px, auto) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list-item {
     width: 100% !important;
-    min-height: 82px !important;
-    padding: 12px !important;
+    min-height: 72px !important;
+    padding: 12px 10px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-detail {

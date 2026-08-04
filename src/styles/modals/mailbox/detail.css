@@ -6,12 +6,17 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 28px 30px 24px 42px;
-  border: 2px solid #6a4a3f;
-  border-radius: 10px;
+  padding: 24px 28px 22px;
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
-  background: #f7f3ef url("/assets/mailbox/mail-body-paper-natural.webp") center / cover no-repeat;
-  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.24);
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--theme-bg) 90%, transparent),
+      color-mix(in srgb, var(--theme-bg) 90%, transparent)
+    ),
+    var(--theme-bg) url("/assets/mailbox/mail-body-paper-natural.webp") center / cover no-repeat;
+  box-shadow: none;
 }
 
 .mailbox-detail-header {
@@ -19,9 +24,9 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 44px;
   align-items: start;
-  gap: 14px;
+  gap: 16px;
   padding-bottom: 18px;
-  border-bottom: 1px solid rgba(106, 74, 63, 0.28);
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border) 20%, transparent);
 }
 
 .mailbox-detail-heading {
@@ -31,11 +36,11 @@
 .mailbox-detail-header h3,
 .mailbox-detail-empty h3 {
   margin: 0;
-  color: #2d2430;
+  color: var(--theme-text);
   font-family: var(--font-window-title), var(--font-ui-default);
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 1.28;
+  font-size: clamp(22px, 2.2vw, 27px);
+  font-weight: 500;
+  line-height: 1.3;
   overflow-wrap: anywhere;
   text-wrap: balance;
 }
@@ -45,7 +50,7 @@
   flex-wrap: wrap;
   gap: 4px 12px;
   margin: 10px 0 0;
-  color: #75686f;
+  color: var(--theme-muted);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.5;
@@ -54,7 +59,7 @@
 .mailbox-detail-meta time::before {
   content: "·";
   margin-right: 12px;
-  color: rgba(82, 63, 80, 0.46);
+  color: color-mix(in srgb, var(--theme-border) 46%, transparent);
 }
 
 .mailbox-delete-button {
@@ -66,10 +71,10 @@
   place-items: center;
   justify-self: end;
   padding: 0;
-  border: 1px solid rgba(157, 44, 69, 0.52);
+  border: 1px solid color-mix(in srgb, var(--theme-danger) 42%, transparent);
   border-radius: 999px;
-  background: rgba(255, 253, 248, 0.78);
-  color: #9d2c45;
+  background: color-mix(in srgb, var(--theme-panel-bg) 58%, transparent);
+  color: var(--theme-danger);
   box-shadow: none;
 }
 
@@ -80,20 +85,20 @@
 
 .mailbox-delete-button:hover:not(:disabled),
 .mailbox-delete-button:focus-visible:not(:disabled) {
-  border-color: #9d2c45;
-  background: #ffe8ef;
+  border-color: var(--theme-danger);
+  background: color-mix(in srgb, var(--theme-danger) 12%, var(--theme-panel-bg));
 }
 
-.mailbox-delete-button:active:not(:disabled) {
-  transform: translateY(1px);
+.mailbox-delete-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--theme-blue) 70%, transparent);
+  outline-offset: 2px;
 }
 
 .mailbox-delete-button:disabled {
-  border-color: #b9aaab;
-  background: rgba(230, 223, 223, 0.82);
-  color: #8e8585;
+  border-color: color-mix(in srgb, var(--theme-muted) 42%, transparent);
+  background: color-mix(in srgb, var(--theme-muted) 16%, var(--theme-panel-bg));
+  color: var(--theme-muted);
   cursor: not-allowed;
-  opacity: 0.76;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-detail .mailbox-delete-button,
@@ -104,10 +109,10 @@
   height: 44px !important;
   min-height: 44px !important;
   padding: 0 !important;
-  border: 1px solid rgba(157, 44, 69, 0.52) !important;
+  border: 1px solid color-mix(in srgb, var(--theme-danger) 42%, transparent) !important;
   border-radius: 999px !important;
-  background: rgba(255, 253, 248, 0.86) !important;
-  color: #9d2c45 !important;
+  background: color-mix(in srgb, var(--theme-panel-bg) 72%, transparent) !important;
+  color: var(--theme-danger) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -118,115 +123,49 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-detail .mailbox-delete-button:disabled {
-  border-color: #b9aaab !important;
-  background: rgba(230, 223, 223, 0.82) !important;
-  color: #8e8585 !important;
+  border-color: color-mix(in srgb, var(--theme-muted) 42%, transparent) !important;
+  background: color-mix(in srgb, var(--theme-muted) 16%, var(--theme-panel-bg)) !important;
+  color: var(--theme-muted) !important;
   cursor: not-allowed !important;
 }
 
 .mailbox-body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 22px 6px 24px 0;
+  padding: 22px 6px 26px 0;
   overflow-x: hidden;
   overflow-y: auto;
-  color: #43352f;
-  line-height: 1.82;
+  color: var(--theme-text);
+  font-size: 15px;
+  line-height: 1.85;
   text-wrap: pretty;
 }
 
 .mailbox-body blockquote {
   margin: 1.15em 0;
-  padding: 12px 14px;
-  border: 1px solid rgba(49, 91, 198, 0.22);
-  background: rgba(239, 246, 252, 0.64);
-}
-
-.mailbox-attachment-shelf {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px 14px;
-  min-height: 64px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(106, 74, 63, 0.28);
-}
-
-.mailbox-attachment-label {
-  color: #75686f;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-}
-
-.mailbox-attachment {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #314676;
-  font-weight: 800;
-}
-
-.mailbox-attachment.claimed {
-  color: #47724f;
-}
-
-.mailbox-attachment > svg {
-  flex: 0 0 auto;
-}
-
-.mailbox-attachment-item-art {
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  color: #9d2c68;
-}
-
-.mailbox-attachment-item-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.mailbox-attachment-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.mailbox-attachment-quantity,
-.mailbox-attachment b {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.mailbox-attachment b {
-  color: #75686f;
-  font-size: 12px;
-}
-
-.mailbox-claim-button {
-  min-width: 126px;
-  min-height: 44px;
+  padding: 10px 14px;
+  border-left: 2px solid color-mix(in srgb, var(--theme-blue) 58%, transparent);
+  background: color-mix(in srgb, var(--theme-blue) 18%, transparent);
 }
 
 .mailbox-detail-empty {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #7d6a82;
+  color: var(--theme-muted);
   text-align: center;
 }
 
 .mailbox-detail-empty svg {
-  color: #9d2c45;
+  color: var(--theme-danger);
 }
 
 .mailbox-error {
   margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mailbox-attachment-icon {
+    transition: none;
+  }
 }

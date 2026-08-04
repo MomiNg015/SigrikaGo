@@ -1,39 +1,36 @@
 @media (max-width: 768px) {
   .mailbox-list {
-    display: grid;
     height: 100%;
     min-height: 0;
+    align-content: start;
+    grid-auto-rows: minmax(72px, auto);
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0 3px 8px 0;
   }
 
   .mailbox-list-item {
-    gap: 4px;
-    min-height: 82px;
-    padding: 12px;
+    min-height: 72px;
+    padding: 12px 10px;
   }
 
   .mailbox-list-title {
     font-size: 15px;
   }
 
-  .mailbox-list-time {
-    font-size: 12px;
-    white-space: nowrap;
+  .mailbox-list-meta {
+    gap: 8px;
   }
 
-  .mailbox-list-status b {
-    padding: 2px 6px;
-    font-size: 11px;
+  .mailbox-list-time {
+    font-size: 12px;
   }
 
   .mailbox-detail {
     height: 100%;
     min-height: 0;
     max-height: 100%;
-    padding: 22px 18px 18px 30px;
-    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.22);
+    padding: 20px 16px 16px;
   }
 
   .mailbox-detail-header {
@@ -41,7 +38,7 @@
   }
 
   .mailbox-detail-header h3 {
-    font-size: 23px;
+    font-size: 22px;
   }
 
   .mailbox-detail-meta {
@@ -56,26 +53,50 @@
   .mailbox-body {
     min-height: 0;
     padding: 18px 3px 20px 0;
+    font-size: 14px;
   }
 
   .mailbox-attachment-shelf {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px 10px;
+    gap: 12px;
+    min-height: 108px;
   }
 
-  .mailbox-attachment-label {
-    grid-column: 1 / -1;
+  .mailbox-attachment-tile {
+    width: 82px;
+    min-width: 82px;
+  }
+
+  .mailbox-attachment-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .mailbox-attachment-icon img {
+    width: 60px;
+    height: 60px;
   }
 
   .mailbox-claim-button {
     min-width: 108px;
   }
 
-  .mailbox-attachment b {
-    display: none;
-  }
-
   .mailbox-list-empty {
     min-height: 76px;
+  }
+
+  .mailbox-item-detail-modal {
+    width: min(420px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 54px 20px 22px;
+  }
+
+  .mailbox-item-detail-art {
+    min-height: 140px;
+  }
+
+  .mailbox-item-detail-art img {
+    max-height: 126px;
   }
 }

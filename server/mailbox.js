@@ -423,6 +423,9 @@ function attachmentPayload(record, itemCatalog = null) {
     itemName: type === MAILBOX_ATTACHMENT_TYPES.item
       ? String(catalogItem?.name ?? builtinItem?.name ?? "").trim() || "道具"
       : "",
+    itemDescription: type === MAILBOX_ATTACHMENT_TYPES.item
+      ? String(catalogItem?.description ?? builtinItem?.description ?? "").trim()
+      : "",
     imageUrl: type === MAILBOX_ATTACHMENT_TYPES.item
       ? catalogItem ? shopCatalogImageUrl(catalogItem) : builtinItem?.imageUrl ?? ""
       : "",

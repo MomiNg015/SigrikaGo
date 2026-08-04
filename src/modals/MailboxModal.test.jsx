@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "../api/client.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
-import MailboxModal from "./MailboxModal.jsx";
+import MailboxModal, { formatMailboxListTime, mailboxMessageIsDone } from "./MailboxModal.jsx";
 
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
 
@@ -32,6 +32,7 @@ const memorialTicketMessage = {
     type: "item",
     itemId: "aemeath-flight-snow-memorial-ticket",
     itemName: "飞行雪绒纪念券",
+    itemDescription: "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？",
     imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
     quantity: 1,
     claimed: false
@@ -61,7 +62,7 @@ describe("MailboxModal information center", () => {
     expect(container.querySelector(".information-center-header p")).toBeNull();
     const row = screen.getByRole("button", { name: /社团活动奖励/ });
     expect(row.closest("li")).toBeTruthy();
-    expect(screen.getAllByText("发件人：学生会")).toHaveLength(2);
+    expect(screen.getAllByText("学生会")).toHaveLength(2);
     expect(screen.getByText("请领取本周活动奖励。")).toBeTruthy();
     expect(screen.queryByText("纯文本邮件")).toBeNull();
     await waitFor(() => expect(api).toHaveBeenCalledWith(
@@ -116,17 +117,89 @@ describe("MailboxModal information center", () => {
     await waitFor(() => expect(screen.getAllByText("这里空空如也~").length).toBeGreaterThan(0));
   });
 
-  it("renders item attachments as item art, a player-facing name, and quantity", () => {
+  it("keeps the list text-only and dims only messages that are fully handled", () => {
+    const plainRead = {
+      ...giftMessage,
+      id: "plain-read",
+      title: "已阅读通知",
+      createdAt: "2026-06-24T12:00:00.000Z",
+      isRead: true,
+      claimable: false,
+      deletable: true,
+      attachment: { type: "none" }
+    };
+    const readClaimable = {
+      ...giftMessage,
+      id: "read-claimable",
+      title: "仍待领取",
+      createdAt: "2026-06-23T12:00:00.000Z",
+      isRead: true
+    };
     const { container } = render(
-      <MailboxModal token="token" initialLoaded initialMessages={[memorialTicketMessage]} onClose={() => {}} />
+      <MailboxModal token="" initialLoaded initialMessages={[plainRead, readClaimable]} onClose={() => {}} />
     );
 
-    expect(screen.getByText("飞行雪绒纪念券")).toBeTruthy();
-    expect(screen.getByText("x1")).toBeTruthy();
+    expect(mailboxMessageIsDone(plainRead)).toBe(true);
+    expect(mailboxMessageIsDone(readClaimable)).toBe(false);
+    expect(screen.getByRole("button", { name: /已阅读通知.*已完成/ }).classList.contains("state-done")).toBe(true);
+    expect(screen.getByRole("button", { name: /仍待领取.*待领取/ }).classList.contains("state-done")).toBe(false);
+    expect(container.querySelector(".mailbox-unread-dot")).toBeNull();
+    expect(container.querySelector(".mailbox-list-status")).toBeNull();
+    expect(container.querySelector(".mailbox-list-item img")).toBeNull();
+  });
+
+  it("formats recent list dates relatively and older mail as a compact local date", () => {
+    const now = new Date("2026-08-04T12:00:00.000Z");
+
+    expect(formatMailboxListTime("2026-08-04T11:59:40.000Z", now)).toBe("刚刚");
+    expect(formatMailboxListTime("2026-08-04T11:42:00.000Z", now)).toBe("18分钟前");
+    expect(formatMailboxListTime("2026-08-04T08:00:00.000Z", now)).toBe("4小时前");
+    expect(formatMailboxListTime("2026-08-02T12:00:00.000Z", now)).toBe("2天前");
+    expect(formatMailboxListTime("2026-07-20T12:00:00.000Z", now)).toMatch(/^2026\/07\/20$/);
+    expect(formatMailboxListTime("not-a-date", now)).toBe("not-a-date");
+  });
+
+  it("opens a shop-style item detail dialog and restores focus after nested Escape", async () => {
+    const user = userEvent.setup();
+    const message = {
+      ...memorialTicketMessage,
+      attachment: { ...memorialTicketMessage.attachment, quantity: 2 }
+    };
+    const { container } = render(
+      <MailboxModal
+        token=""
+        user={{ ownedItems: [{ itemId: "aemeath-flight-snow-memorial-ticket", quantity: 4 }] }}
+        initialLoaded
+        initialMessages={[message]}
+        onClose={() => {}}
+      />
+    );
+
+    const attachmentButton = screen.getByRole("button", { name: /查看道具详情：飞行雪绒纪念券.*数量 2/ });
+    expect(container.querySelector(".mailbox-attachment-quantity-badge")?.textContent).toBe("2");
     expect(screen.queryByText(/aemeath-flight-snow-memorial-ticket/)).toBeNull();
-    expect(container.querySelector(".mailbox-attachment-item-art img")?.getAttribute("src")).toBe(
+    expect(container.querySelector(".mailbox-attachment-icon img")?.getAttribute("src")).toBe(
       "/assets/items/aemeath-flight-snow-memorial-ticket.webp"
     );
+
+    await user.click(attachmentButton);
+    expect(screen.getByRole("dialog", { name: "道具详情：飞行雪绒纪念券" })).toBeTruthy();
+    expect(screen.getByText("从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？")).toBeTruthy();
+    expect(screen.getByText("拥有 4")).toBeTruthy();
+    expect(screen.getByText("本封附件 ×2")).toBeTruthy();
+    expect(screen.getByText("待领取")).toBeTruthy();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "道具详情：飞行雪绒纪念券" })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "邮箱" })).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(attachmentButton));
+  });
+
+  it("renders coin attachments as non-interactive tiles", () => {
+    render(<MailboxModal token="" initialLoaded initialMessages={[giftMessage]} onClose={() => {}} />);
+
+    expect(screen.getByRole("img", { name: "金币附件，数量 30，待领取" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /金币附件/ })).toBeNull();
   });
 
   it("keeps a claimed attachment action visibly gray in every interaction state", () => {
@@ -140,9 +213,9 @@ describe("MailboxModal information center", () => {
     render(<MailboxModal token="token" initialLoaded initialMessages={[claimedMessage]} onClose={() => {}} />);
 
     expect(screen.getByRole("button", { name: "已领取" }).disabled).toBe(true);
-    expect(css).toContain(".mailbox-detail .mailbox-attachment-shelf .primary-action:disabled");
-    expect(css).toContain("background: #d8d4d0 !important");
-    expect(css).toContain("color: #756f6a !important");
+    expect(document.querySelector(".mailbox-attachment-claimed-mark")).toBeTruthy();
+    expect(css).toContain(".mailbox-detail .mailbox-claim-button:disabled");
+    expect(css).toContain("cursor: not-allowed");
   });
 
   it("keeps mobile list-first and does not auto-open or mark the newest mail read", () => {
@@ -158,18 +231,23 @@ describe("MailboxModal information center", () => {
     expect(api).not.toHaveBeenCalled();
   });
 
-  it("keeps the paper reader, compact status markers, 44px delete target, and vertical mobile list", () => {
+  it("keeps the quiet paper reader, text-only list, stable attachment stage, and mobile safety", () => {
     const css = readCssWithImports(pathToFileURL(resolve("src/styles/modals/mailbox.css")));
     const themedCss = readCssWithImports(pathToFileURL(resolve("src/styles/themes.css")));
 
     expect(css).not.toContain('url("/assets/mailbox/mail-body-paper.png")');
     expect(css).toContain('url("/assets/mailbox/mail-body-paper-natural.webp")');
-    expect(css).toContain("#f7f3ef");
+    expect(css).toContain("var(--theme-bg)");
     expect(css).toContain(".mailbox-detail-header");
     expect(css).toContain(".mailbox-detail-meta");
     expect(css).toContain(".mailbox-attachment-shelf");
     expect(css).not.toContain("backdrop-filter: blur(2px)");
-    expect(css).toContain("box-shadow: inset 4px 0 0 #ff6f9f");
+    expect(css).not.toContain("inset 4px 0 0");
+    expect(css).not.toContain(".mailbox-list-status");
+    expect(css).toContain(".mailbox-list-item.active");
+    expect(css).toContain("border: 1px solid");
+    expect(css).toContain(".mailbox-attachment-quantity-badge");
+    expect(css).toContain(".mailbox-attachment-claimed-mark");
     expect(css).toContain("width: 44px");
     expect(css).toContain("height: 44px");
     expect(css).toContain("overflow-x: hidden");
@@ -179,6 +257,7 @@ describe("MailboxModal information center", () => {
     expect(css).toContain(".mailbox-modal .information-center-reader");
     expect(css).toContain("border: 0 !important");
     expect(css).toContain("box-shadow: none !important");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
     expect(themedCss).toContain(".information-center-modal.mailbox-modal .information-center-header .information-center-close-button");
     expect(themedCss).toContain("position: static !important");
     expect(themedCss).toContain("inset: auto !important");
