@@ -767,7 +767,8 @@ describe("root CSS entry contract", () => {
       "./bright-school-portrait/settings-tabs.css",
       "./bright-school-portrait/mobile-room-chat.css",
       "./bright-school-portrait/mailbox-modal.css",
-      "./bright-school-portrait/character-detail.css"
+      "./bright-school-portrait/character-detail.css",
+      "./bright-school-portrait/house-character-cards.css"
     ]);
     expect(brightSchoolPortraitEntry).not.toContain(".resume-header-actions {");
     expect(brightSchoolPortraitEntry).not.toContain(".mobile-room-screen .chat-popover");

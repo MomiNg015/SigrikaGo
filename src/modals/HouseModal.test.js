@@ -365,6 +365,38 @@ describe("deriveCharacterRecordStats", () => {
     expect(mobileCss).toContain("height: 52px !important");
   });
 
+  it("keeps Bright School portrait handbook art centered with a compact bottom-right sortie action", () => {
+    const portraitEntryCss = readFileSync(
+      new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url),
+      "utf8"
+    );
+    const characterCardCss = readFileSync(
+      new URL("../styles/mobile-adaptive/bright-school-portrait/house-character-cards.css", import.meta.url),
+      "utf8"
+    );
+    const themeMobileCss = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(portraitEntryCss).toContain('@import "./bright-school-portrait/house-character-cards.css";');
+    expect(characterCardCss).toContain(".character-card.portrait-card > img");
+    expect(characterCardCss).not.toContain(".character-card.portrait-card img {");
+    expect(characterCardCss).toContain("width: 72px !important");
+    expect(characterCardCss).toContain("height: 72px !important");
+    expect(characterCardCss).toContain("justify-self: center !important");
+    expect(characterCardCss).toContain("object-position: center !important");
+    expect(characterCardCss).toContain("position: absolute !important");
+    expect(characterCardCss).toContain("right: 4px !important");
+    expect(characterCardCss).toContain("bottom: 4px !important");
+    expect(characterCardCss).toContain("width: 30px !important");
+    expect(characterCardCss).toContain("height: 30px !important");
+    expect(characterCardCss).toContain("box-shadow: 1px 1px 0");
+    expect(themeMobileCss).toContain(".house-modal .character-item-effect-icon");
+    expect(themeMobileCss).toContain("width: 24px !important");
+    expect(themeMobileCss).toContain("height: 24px !important");
+  });
+
   it("plays the selected character sortie voice before selecting the character", () => {
     const calls = [];
     const character = {

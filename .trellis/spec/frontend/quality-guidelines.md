@@ -1481,6 +1481,7 @@ Required assertion points:
 - Badge metadata must include the real item icon path, an accessible `alt`, and a `title` matching the item effect.
 - Badge CSS must use selectors specific enough to beat generic `.character-card img` portrait sizing and Bright School mobile portrait overrides.
 - Mobile badge dimensions should remain compact and stable; add assertions for the mobile selector and size when changing character-card layout.
+- Bright School portrait handbook layout must size the character art with the direct-child selector `.character-card.portrait-card > img`; the final mobile owner centers that art at `72px`, anchors the `30px` sortie action to the card's bottom-right corner, and keeps the action shadow to `1px` without changing the nested `24px` item badges.
 
 Wrong:
 

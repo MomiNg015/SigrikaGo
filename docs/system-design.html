@@ -295,7 +295,7 @@
 <li>Bright School modal cleanup now follows the import-only pattern through <code>src/styles/themes/bright-school/modals.css</code> and <code>src/styles/themes/bright-school/modals/</code>, keeping handbook, settings, selected-action, resume, result, popover, and stage-decoration repairs in focused files.</li>
 </ul>
 <ul>
-<li>Bright School 部员手册把未获得角色定义为“中浅灰坏屏”状态：隐藏出战按钮后，角色立绘和名称使用等距内边距在整张卡片内水平居中；<code>handbook-unobtained.css</code> 只使用现有主题中性色经整卡灰阶处理，在最初灰白版本上以 10%-27% 的墨色混合轻压卡面，并把立绘亮度收至 <code>0.9</code>，静止卡面不铺网格或扫描线，仅在少量故障帧显示硬切水平同步撕裂，并让立绘和名称短促错位、亮度跳变。隐藏情报角色只保留“暂无情报”，不再显示“暂不可获取”，由 <code>handbook-hidden-intel.css</code> 渲染同样无网格的方形 <code>NO SIGNAL</code> 坏屏；全部关键帧与 reduced-motion 停止态集中在 <code>handbook-signal-motion.css</code>。竖屏三列 88px 卡片由 <code>mobile/house-profile/character-grid-cards.css</code> 收束坏屏尺寸并保留标签，不出现粉、蓝等彩色故障光。</li>
+<li>Bright School 部员手册把未获得角色定义为“中浅灰坏屏”状态：隐藏出战按钮后，角色立绘和名称使用等距内边距在整张卡片内水平居中；<code>handbook-unobtained.css</code> 只使用现有主题中性色经整卡灰阶处理，在最初灰白版本上以 10%-27% 的墨色混合轻压卡面，并把立绘亮度收至 <code>0.9</code>，静止卡面不铺网格或扫描线，仅在少量故障帧显示硬切水平同步撕裂，并让立绘和名称短促错位、亮度跳变。隐藏情报角色只保留“暂无情报”，不再显示“暂不可获取”，由 <code>handbook-hidden-intel.css</code> 渲染同样无网格的方形 <code>NO SIGNAL</code> 坏屏；全部关键帧与 reduced-motion 停止态集中在 <code>handbook-signal-motion.css</code>。竖屏三列 88px 卡片由 <code>mobile/house-profile/character-grid-cards.css</code> 收束坏屏尺寸并保留标签，不出现粉、蓝等彩色故障光；最终 <code>mobile-adaptive/bright-school-portrait/house-character-cards.css</code> 仅放大并居中卡片直属角色立绘到 72px，把 30px 出战按钮锚定到右下角并将阴影收为 1px，同时保持嵌套道具角标为 24px。</li>
 </ul>
 <ul>
 <li>Bright School effects now follow the import-only pattern through <code>src/styles/themes/bright-school/effects.css</code> and <code>src/styles/themes/bright-school/effects/</code>, keeping selected controls, skill action glow/disabled state, board targeting, board marks, image-only home entry buttons, keyframes, and reduced-motion rules in focused files.</li>
@@ -5082,7 +5082,7 @@
 <li>个性化窗口桌面端使用预览区加三列装备面板，称号、徽章、用户名背景分别独立选择；预览区通过 <code>UserIdentity</code> 展示保存前试穿效果。装备按钮状态遵循成就 tab 的粉红选中视觉：粉红表示当前已保存并生效，浅绿色表示正在试穿但尚未保存。560px 以下改为单列面板，按钮保持 42px 以上高度和内部省略号，保证移动端可点选。</li>
 </ul>
 <ul>
-<li>部员手册的出战状态分两层表达：角色卡本体使用浅绿色表示当前出战角色，卡内出战按钮复用 tab/装备按钮的粉红选中视觉并保留 pressed depth；桌面和移动最终层都显式覆盖该状态，避免 disabled 或通用按钮样式把当前出战按钮洗回灰色。</li>
+<li>部员手册的出战状态分两层表达：角色卡本体使用浅绿色表示当前出战角色，卡内出战按钮复用 tab/装备按钮的粉红选中视觉；桌面层保留 pressed depth，竖屏最终层则把按钮收为 30px、绝对定位到卡片右下角并使用 1px 轻阴影，避免操作遮挡已放大到 72px 且水平居中的直属角色立绘。该直属图片选择器不能命中嵌套道具图标，后者继续保持 24px；桌面和移动最终层都显式覆盖出战状态，避免 disabled 或通用按钮样式把当前出战按钮洗回灰色。</li>
 </ul>
 <ul>
 <li><code>toast.achievement</code> 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。</li>
