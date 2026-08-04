@@ -181,6 +181,7 @@ Required assertion points:
 - `AuthScreen` must wrap the login panel in `.auth-composition` and retain the visible `/assets/login-sigrika-mascot.webp` element with empty `alt` and `aria-hidden="true"`; it must not read `CHARACTERS.sigrika.portrait` for the title lockup.
 - Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas. When artwork changes, measure non-zero-alpha bounds, remove export residue, crop transparent edges only, scale uniformly, and center the result; do not stretch width and height independently. Preserve exactly 8 transparent raster rows below visible alpha: at the 252px desktop display size this resolves to about the 3px structural-rule thickness, so the art meets the rule's top edge without covering it or floating above it.
 - The title `h1` must use the semantic `.text-window-title` hook so the final typography layer resolves it to `var(--font-window-title)` (霞鹜漫黑) even after Bright School owner overrides.
+- The login version reads the root `package.json` version, renders as `v{version}` directly below the title, and reuses the `SigrikaGo` subtitle's `.text-display-accent` typography. Its title gap matches the subtitle-to-title `4px` gap, then the label shifts `8px` beyond the title's right edge for a restrained stagger. Do not maintain a second handwritten version string or give the version its own decorative surface.
 - The title lockup is wrapped by semantic `.auth-panel-header`. Its Bright School owner separates the title from the form with a pointer-transparent, hard-edged two-layer paper rule: the structural stroke uses `--bright-border`, the offset stroke uses `--bright-blue`, and both extend left through composition variables so the rule becomes a shelf beneath the mascot. Do not replace it with a tinted header card, blur, motion, or an interactive divider element.
 - `.auth-composition` owns the panel width, panel padding, horizontal overhang, vertical reserve, mascot size, and rule offsets as shared custom properties. Desktop includes a 118px left overhang and 117px top reserve around a 440px panel; the existing `max-width: 900px` mobile-layout family collapses the left reserve to zero, scales the mascot with `clamp(148px, 42vw, 164px)`, and keeps page-level horizontal overflow at zero across portrait phones, common mobile landscape widths, and 768px previews.
 - The mascot is a pointer-transparent absolute decoration anchored by its bottom edge to the same header-rule spacing used by the divider. It uses equal width/height, `object-fit: contain`, `object-position: center bottom`, and no independent rotation, so the artwork and shelf remain aligned when the composition changes size.
@@ -195,6 +196,7 @@ Correct:
       <div className="brand-lockup">
         <img src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
         <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+        <p className="auth-version text-display-accent">{APP_VERSION_LABEL}</p>
       </div>
     </header>
   </section>

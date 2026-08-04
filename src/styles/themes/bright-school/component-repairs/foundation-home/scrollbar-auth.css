@@ -45,6 +45,16 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-version {
+  margin: 4px 0 0;
+  text-align: right;
+  transform: translateX(8px);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .login-title-text {
+  margin-bottom: 0;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header {
   position: relative;
   isolation: isolate;

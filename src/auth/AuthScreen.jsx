@@ -1,8 +1,11 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { version as packageVersion } from "../../package.json";
 import { api } from "../api/client.js";
 import { prewarmAuthPortraits } from "../app/authPortraitPrewarm.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
+
+export const APP_VERSION_LABEL = `v${packageVersion}`;
 
 export default function AuthScreen({ onAuth, initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode);
@@ -149,6 +152,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                 <div>
                   <p className="text-display-accent">SigrikaGo</p>
                   <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+                  <p className="auth-version text-display-accent">{APP_VERSION_LABEL}</p>
                 </div>
               </div>
             </header>

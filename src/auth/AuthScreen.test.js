@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import sharp from "sharp";
 import AuthScreen from "./AuthScreen.jsx";
-import { AUTH_REGISTER_LABEL_NOTES, authSubmitText, isAlreadyLoggedInError, usernameDisplayWidth, validateAuthField, validateAuthSubmit } from "./AuthScreen.jsx";
+import { APP_VERSION_LABEL, AUTH_REGISTER_LABEL_NOTES, authSubmitText, isAlreadyLoggedInError, usernameDisplayWidth, validateAuthField, validateAuthSubmit } from "./AuthScreen.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("AuthScreen submit validation", () => {
@@ -94,6 +94,8 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain('src="/assets/login-sigrika-mascot.webp"');
     expect(html).not.toContain('src="/assets/characters/portraits/sigrika.webp"');
     expect(html).toContain('<p class="text-display-accent">SigrikaGo</p>');
+    expect(APP_VERSION_LABEL).toBe("v0.1.0");
+    expect(html).toContain(`<p class="auth-version text-display-accent">${APP_VERSION_LABEL}</p>`);
     expect(html).toContain("autoComplete=\"username\"");
     expect(html).toContain("name=\"username\"");
     expect(html).toContain("type=\"password\"");
@@ -156,6 +158,17 @@ describe("AuthScreen submit validation", () => {
     expect(mobileMascotBlock).toContain("transform: none !important");
     expect(mobileCss).toContain(".text-window-title");
     expect(mobileCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
+  });
+
+  it("aligns the package version beneath the title with the subtitle typography", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const versionBlock = css.match(/\.auth-panel \.auth-version\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(versionBlock).toContain("margin: 4px 0 0");
+    expect(versionBlock).toContain("text-align: right");
+    expect(versionBlock).toContain("transform: translateX(8px)");
+    expect(versionBlock).not.toContain("font-size");
+    expect(css).toMatch(/\.auth-panel \.login-title-text\s*\{[^}]*margin-bottom: 0/);
   });
 
   it("keeps registration guidance short and outside placeholders", () => {
