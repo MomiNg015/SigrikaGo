@@ -99,20 +99,6 @@
   transform: rotate(-5deg);
 }
 
-.recruitment-result-miss::after {
-  content: "";
-  position: absolute;
-  right: clamp(12px, 4%, 28px);
-  bottom: clamp(10px, 4%, 22px);
-  width: clamp(104px, 20vw, 154px);
-  aspect-ratio: 420 / 248;
-  pointer-events: none;
-  opacity: 0.94;
-  background: url("/assets/recruitment/recruitment-envelope-flat.webp") center / contain no-repeat;
-  transform: rotate(4deg);
-  filter: drop-shadow(2px 3px 0 rgba(61, 43, 37, 0.2));
-}
-
 .recruitment-empty-board {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;

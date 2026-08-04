@@ -933,7 +933,8 @@ describe("root CSS entry contract", () => {
     expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
     expect(recruitmentBoard).toContain("/assets/recruitment/celebration-flat-candidate.webp");
     expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
-    expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(recruitmentBoard).not.toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(recruitmentBoard).not.toContain(".recruitment-result-miss::after");
     expect(cssBlocksContaining(recruitmentBoard, ".recruitment-empty-board").join("\n")).toContain(
       "var(--recruitment-paper-background-image)"
     );
@@ -962,7 +963,6 @@ describe("root CSS entry contract", () => {
     expect(statSync(new URL("../../public/assets/recruitment/celebration-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(statSync(new URL("../../public/assets/recruitment/stationery-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(statSync(new URL("../../public/assets/recruitment/recruitment-letter-paper-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
-    expect(statSync(new URL("../../public/assets/recruitment/recruitment-envelope-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(recruitmentCountdown).toContain(".recruitment-countdown-row");
     expect(recruitmentCountdown).toContain(".recruitment-pending-panel b");
     expect(recruitmentCountdown).toContain("background: transparent;");
@@ -978,6 +978,7 @@ describe("root CSS entry contract", () => {
     expect(phoneRecruitment).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
     expect(phoneRecruitment).toContain(".recruitment-status-card");
     expect(phoneRecruitment).toContain("grid-template-columns: minmax(0, 1fr) !important;");
+    expect(phoneRecruitment).not.toContain(".recruitment-result-miss::after");
     expect(phoneRecruitment).toContain(".recruitment-ready-card .primary-action");
     expect(phoneRecruitment).toContain(".recruitment-pending-panel");
     expect(phoneRecruitment).toContain("border: 0 !important;");

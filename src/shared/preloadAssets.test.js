@@ -69,6 +69,10 @@ describe("deployment preload asset helpers", () => {
     expect(assets.images).toContain("/assets/home/home-utility-friends.webp");
     expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.webp");
     expect(assets.images).toContain("/assets/characters/bright-school-radio-player.png");
+    expect(assets.criticalImages).toContain("/assets/recruitment/notice-board-flat-candidate.webp");
+    expect(assets.criticalImages).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
+    expect(assets.criticalImages).toContain("/assets/recruitment/celebration-flat-candidate.webp");
+    expect(assets.criticalImages).not.toContain("/assets/recruitment/recruitment-envelope-flat.webp");
     expect(assets.criticalImages).toContain("/assets/home/fantasy-match-entry.webp");
     expect(assets.criticalImages).toContain("/assets/home/book-entry.webp");
     expect(assets.criticalImages).toContain("/assets/home/home-utility-recruitment.webp");

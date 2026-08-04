@@ -335,7 +335,6 @@ function recruitmentSurfaceImages() {
   return [
     "/assets/recruitment/notice-board-flat-candidate.webp",
     "/assets/recruitment/recruitment-letter-paper-flat.webp",
-    "/assets/recruitment/recruitment-envelope-flat.webp",
     "/assets/recruitment/celebration-flat-candidate.webp"
   ];
 }
