@@ -1773,6 +1773,8 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
 - Close and icon-only controls expose an accessible name.
 - Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Equivalent profile panels must not fork their palettes by markup: both `.profile-resume-stats > span` and `.profile-resume-stats > .stat` use the same summary-card treatment. Each `.profile-character-row` and `.character-record-row` receives the current catalog character `palette` through `--character-theme-color`, then uses an 18% theme-color mix against the clean white sheet for a restrained light surface while retaining the shared dark-brown outline and hard shadow. State meaning remains owned by existing labels rather than card fill. Character-record positive values use the darker green `#3b6048`; the light mix keeps normal-size text above WCAG AA even for the darkest configurable palette.
+- At `max-width: 768px`, Bright School's dashed utility-window headers—`.leaderboard-header`, `.warehouse-header`, `.house-header`, `.friends-modal-header`, and `.watch-list-header`—share one final owner. Their title uses the `clamp(20px, 6vw, 28px)` window-title scale, the header centers its content on a 44px control row, and the dashed divider keeps at least 12px clearance below that row. Do not add narrower media rules that shrink or top-align one title independently.
+- Watch refresh and close buttons remain static inside `.watch-list-actions` and align to the same vertical center. Information center, shop, recruitment, settings, and IRIS headers keep their established dedicated layout owners; they are audited separately and must not be pulled into the dashed utility-header selector merely to share typography.
 - ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
 
 #### 4. Validation & Error Matrix
@@ -1786,16 +1788,19 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 
 #### 5. Good/Base/Bad Cases
 - Good: a leaderboard modal passes its title id to `labelledBy` and its close button has `aria-label="关闭"`.
+- Good: a narrow Watch header keeps “对局列表” at the shared mobile window-title size while refresh and close remain centered above the dashed divider.
 - Good: row-specific custom properties tint social and character-record cards while the shared selector continues to own border, radius, and shadow.
 - Base: a non-interactive visual wrapper remains a normal element and does not pretend to be a dialog.
 - Bad: a clickable `<div>` modal shell with no keyboard focus boundary.
 - Bad: using the whole card fill to encode online, win, or loss state instead of the existing labels and values.
 - Bad: adding a second document-level Escape handler inside each modal.
+- Bad: shrinking a single mobile window title to 18px or using `align-items: flex-start` while adjacent header controls remain 44px tall.
 
 #### 6. Tests Required
 - `src/modals/modalComponents.dom.test.jsx` asserts initial focus, forward/backward wrapping, Escape close, and opener focus restoration in jsdom.
 - Migrated modal tests assert the shared dialog shell and accessible title/controls.
 - `WarehouseModal.test.js`, `LeaderboardModal.test.jsx`, and `FriendsModal.test.jsx` assert the utility-window header content, the friends title/toolbar/list row contract, and the transparent `.friends-tabs` wrapper while individual tab buttons retain their active styling.
+- `WatchModal.test.js` asserts that the final mobile owner includes every dashed utility-header family, preserves the shared title scale and divider clearance, and keeps Watch actions statically centered.
 - `src/styles/themeContract.test.js` locks the mist-blue social surface, character-palette light mix, shared outline variable, and darker accessible positive-value green; profile rendering tests assert both row variants expose `--character-theme-color`.
 - `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
 

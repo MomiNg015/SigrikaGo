@@ -134,6 +134,25 @@ describe("WatchModal helpers", () => {
     expect(phoneModalMedia).toContain("width: var(--modal-close-size, 44px)");
     expect(phoneModalMedia).toContain("height: var(--modal-close-size, 44px)");
   });
+
+  it("keeps Bright School mobile window titles aligned above dashed dividers", () => {
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const headerCss = mediaBlock(css, "@media (max-width: 768px)");
+
+    expect(headerCss).toContain("--mobile-window-title-size: clamp(20px, 6vw, 28px)");
+    expect(headerCss).toContain("--mobile-window-header-clearance: 12px");
+    expect(headerCss).toContain(".leaderboard-header");
+    expect(headerCss).toContain(".warehouse-header");
+    expect(headerCss).toContain(".house-header");
+    expect(headerCss).toContain(".friends-modal-header");
+    expect(headerCss).toContain(".watch-list-header");
+    expect(headerCss).toContain("var(--modal-close-size, 44px)");
+    expect(headerCss).toContain("align-items: center !important");
+    expect(headerCss).toContain("font-size: var(--mobile-window-title-size) !important");
+    expect(headerCss).toContain(".watch-list-actions");
+    expect(headerCss).toContain("position: static !important");
+    expect(headerCss).toContain("inset: auto !important");
+  });
 });
 
 function mediaBlock(css, marker) {
