@@ -808,6 +808,7 @@ export default function TutorialBattleScreen({
             loading={loading}
             characters={characters}
             players={players}
+            user={user}
           />
         )}
       </div>
@@ -988,7 +989,7 @@ function TutorialActionPanel({
   return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
 }
 
-function TutorialBattleLoading({ loading, characters, players }) {
+function TutorialBattleLoading({ loading, characters, players, user }) {
   const characterId = loading.node?.npcCharacterId || loading.node?.characterId || playerByUserId(players, NPC_ID)?.characterId;
   const character = findCharacter(characters, characterId);
   const progress = useTimedLoadingProgress(loading.id);
@@ -1000,6 +1001,7 @@ function TutorialBattleLoading({ loading, characters, players }) {
         label={loading.text}
         progress={progress}
         showTips={false}
+        user={user}
       />
     </div>
   );

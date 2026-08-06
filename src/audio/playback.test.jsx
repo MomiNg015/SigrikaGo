@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import {
+  assignBackgroundTrack,
   installBackgroundResumeTriggers,
   loadBackgroundBuffer,
   pauseBackgroundPlayback,
@@ -161,6 +162,19 @@ describe("background music resume fallback", () => {
     expect(source).toContain("recoverBackgroundPlayback(playerRef.current)");
     expect(source).toContain("if (state.active.length > 0) return;");
     expect(source).toContain("}, [resumeSignal]);");
+  });
+
+  it("keeps a newly selected background track silent while a shared pause request is active", () => {
+    const nextTrack = { id: "corrupted-room", playback: { mode: "single", src: "/battle.ogg" } };
+    const state = {
+      currentTrack: { id: "home" },
+      offset: 18,
+      pauseRequested: true
+    };
+
+    expect(assignBackgroundTrack(state, nextTrack)).toBe(false);
+    expect(state.currentTrack).toBe(nextTrack);
+    expect(state.offset).toBe(0);
   });
 
   it("does not reschedule active background music on reconnect recovery", () => {

@@ -11,7 +11,10 @@ import {
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
-import { defaultRainbowBeanCandyStoryDraft } from "./rainbowBeanCandyStory.js";
+import {
+  RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS,
+  defaultRainbowBeanCandyStoryDraft
+} from "./rainbowBeanCandyStory.js";
 
 export const STORY_TRIGGER_TYPES = Object.freeze({
   onboarding: "onboarding",
@@ -20,6 +23,14 @@ export const STORY_TRIGGER_TYPES = Object.freeze({
 });
 
 export const ONBOARDING_STORY_KEY = "onboarding.default";
+
+const SIGRIKA_CANDY_STORY_KEY = "item.rainbow-bean-candy.sigrika";
+const LEGACY_SIGRIKA_CANDY_NODE_IDS = Object.freeze([
+  "accepted-admire",
+  "accepted-hiccup",
+  "rejected-admire",
+  "rejected-refuse"
+]);
 
 const EMPTY_SCRIPT = Object.freeze({
   startNodeId: "",
@@ -333,6 +344,7 @@ export async function seedDefaultStoryScripts(prisma) {
     if (existingKeys.has(seed.key)) continue;
     await prisma.storyScript.create({ data: storyScriptCreateData(seed) });
   }
+  await upgradeLegacySigrikaCandyStory(prisma);
 }
 
 async function defaultStoryScriptSeedsWithLegacy(prisma) {
@@ -391,6 +403,44 @@ export function defaultStoryScriptSeeds() {
       draft: defaultRainbowBeanCandyStoryDraft("lynae")
     }
   ];
+}
+
+async function upgradeLegacySigrikaCandyStory(prisma) {
+  if (!prisma?.storyScript?.findUnique || !prisma?.storyScript?.update) return;
+  const record = await prisma.storyScript.findUnique({ where: { key: SIGRIKA_CANDY_STORY_KEY } });
+  if (!record) return;
+
+  const draftIsLegacy = isLegacySigrikaCandyContent(
+    record.draftStartNodeId,
+    parseNodesJson(record.draftNodesJson)
+  );
+  const publishedIsLegacy = isLegacySigrikaCandyContent(
+    record.publishedStartNodeId,
+    parseNodesJson(record.publishedNodesJson)
+  );
+  if (!draftIsLegacy && !publishedIsLegacy) return;
+
+  const next = validateStoryContent(defaultRainbowBeanCandyStoryDraft("sigrika"), { publishing: true });
+  const data = {};
+  if (draftIsLegacy) {
+    data.draftStartNodeId = next.startNodeId;
+    data.draftNodesJson = JSON.stringify(next.nodes);
+  }
+  if (publishedIsLegacy) {
+    data.publishedStartNodeId = next.startNodeId;
+    data.publishedNodesJson = JSON.stringify(next.nodes);
+  }
+  await prisma.storyScript.update({
+    where: { key: SIGRIKA_CANDY_STORY_KEY },
+    data
+  });
+}
+
+function isLegacySigrikaCandyContent(startNodeId, nodes) {
+  if (startNodeId !== RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted) return false;
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  return LEGACY_SIGRIKA_CANDY_NODE_IDS.every((nodeId) => nodeIds.has(nodeId))
+    && !nodeIds.has("use-1-start");
 }
 
 export function toAdminStoryScriptPayload(record, fallback = {}) {

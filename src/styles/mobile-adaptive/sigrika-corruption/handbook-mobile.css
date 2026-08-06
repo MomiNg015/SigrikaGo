@@ -1,0 +1,22 @@
+@media (pointer: coarse) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-locked {
+    grid-template-rows: minmax(0, 1fr) !important;
+    padding: 6px !important;
+  }
+
+  .app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-data-fragments {
+    --corruption-fragment-limit: 3px;
+    inset: 50% auto auto 50% !important;
+    width: 72px;
+    height: 44px;
+    place-self: center !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-data-fragments {
+    width: 72px;
+    height: 72px;
+  }
+}

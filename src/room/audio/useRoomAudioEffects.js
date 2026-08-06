@@ -78,7 +78,7 @@ export function useRoomAudioEffects({
   }, [displayRoom.game.points, displayRoom.game.history, isReplay, audioSettings]);
 
   useEffect(() => {
-    if (isReplay || !activePlayer) return;
+    if (isReplay || !activePlayer || activePlayer.time?.unlimited) return;
     const timer = activePlayer.time;
     const periodKey = `${activePlayer.color}-periods`;
     const mainKey = `${activePlayer.color}-main`;
@@ -117,7 +117,7 @@ export function useRoomAudioEffects({
   }, [activePlayer, characters, displayRoom.game.history.length, isReplay, audioSettings]);
 
   useEffect(() => {
-    if (isReplay || !activePlayer || !(activePlayer.time?.main <= 0)) return;
+    if (isReplay || !activePlayer || activePlayer.time?.unlimited || !(activePlayer.time?.main <= 0)) return;
     const preloadSources = [];
     for (let seconds = 10; seconds >= 1; seconds -= 1) {
       const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {

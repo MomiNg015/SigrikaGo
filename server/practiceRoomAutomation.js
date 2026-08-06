@@ -14,6 +14,8 @@ import {
 } from "../src/shared/practiceMode.js";
 import { choosePracticeAction, obviousDeadBotGroups } from "./practiceBotDecision.js";
 import { practiceBotEngine } from "./practiceBotEngine.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { chooseSigrikaDuelAction } from "./sigrikaDuelEngine.js";
 
 export function createPracticeRoomAutomation({
   rooms,
@@ -33,7 +35,7 @@ export function createPracticeRoomAutomation({
   const inFlight = new Map();
 
   function schedule(room, io) {
-    if (!isPracticeRoom(room) || !room.practice) return false;
+    if ((!isPracticeRoom(room) && room.matchSource !== SIGRIKA_CANDY_DUEL.matchSource) || !room.practice) return false;
     if (inFlight.has(room.code)) return false;
     const instruction = nextInstruction(room);
     if (!instruction) {
@@ -65,7 +67,7 @@ export function createPracticeRoomAutomation({
     const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
     if (room.game.phase === GAME_PHASES.playing && room.game.turn === bot.color) {
       const human = humanPlayer(room);
-      if (Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
+      if (!room.sigrikaCandyDuel && Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
         return { type: "resign", delayMs: 120 };
       }
       return { type: "play", delayMs: randomDelay(difficulty.delayMs, random) };
@@ -73,7 +75,7 @@ export function createPracticeRoomAutomation({
     if (room.game.phase === GAME_PHASES.countingRequested && room.game.scoring?.requestedBy !== bot.user.id) {
       return { type: "accept-counting", delayMs: 700 };
     }
-    if (room.game.phase === GAME_PHASES.drawRequested && room.game.drawRequest?.requestedBy !== bot.user.id) {
+    if (!room.sigrikaCandyDuel && room.game.phase === GAME_PHASES.drawRequested && room.game.drawRequest?.requestedBy !== bot.user.id) {
       return { type: "accept-draw", delayMs: 900 };
     }
     if (room.game.phase === GAME_PHASES.markingDead && !(room.game.scoring?.confirmedBy ?? []).includes(bot.user.id)) {
@@ -93,7 +95,10 @@ export function createPracticeRoomAutomation({
     } else if (instruction.type === "play") {
       const view = gameViewForColor(room.game, bot.color);
       const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
-      const decision = await chooseBotAction(view, bot.color, difficulty);
+      if (room.sigrikaCandyDuel) appendSystem(room, "西格莉卡？正在思考。", { kind: "npc-thinking" });
+      const decision = room.sigrikaCandyDuel
+        ? await chooseSigrikaAction(room, view, bot.color)
+        : await chooseBotAction(view, bot.color, difficulty);
       const latest = rooms.get(room.code);
       if (!latest || instructionKey(latest, nextInstruction(latest)) !== key) return null;
       const latestBot = botPlayer(latest);
@@ -134,6 +139,20 @@ export function createPracticeRoomAutomation({
     } catch {
       return { ok: false, reason: "error" };
     }
+  }
+
+  async function chooseSigrikaAction(room, view, botColor) {
+    return chooseSigrikaDuelAction({
+      view,
+      botColor,
+      practiceEngine,
+      chooseHeuristicAction: (nextView, nextColor, difficulty) => choosePracticeAction(nextView, nextColor, difficulty, { random }),
+      isLegalAction: isLegalPracticeAction,
+      onFallback: (difficultyId) => {
+        const labels = { advanced: "高级 GNU Go", intermediate: "中级 GNU Go", beginner: "入门策略" };
+        appendSystem(room, `${labels[difficultyId] ?? difficultyId} 响应异常，正在切换后备计算。`, { kind: "engine-fallback" });
+      }
+    });
   }
 
   function handleEngineFailure(room, bot, reason, io) {

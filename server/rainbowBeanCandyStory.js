@@ -1,4 +1,8 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import {
+  SIGRIKA_CANDY_STORY_NODE_IDS,
+  sigrikaCandyUseStartNodeId
+} from "../src/shared/sigrikaCandyArc.js";
 
 export const RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35;
 
@@ -15,7 +19,8 @@ export const RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS = Object.freeze({
 const SUPPORTED_CHARACTER_IDS = new Set(["sigrika", "denia", "aemeath", "lynae"]);
 
 export function rollRainbowBeanCandyOutcome(characterId, random = Math.random) {
-  if (!SUPPORTED_CHARACTER_IDS.has(canonicalCharacterId(characterId))) {
+  const canonicalId = canonicalCharacterId(characterId);
+  if (canonicalId === "sigrika" || !SUPPORTED_CHARACTER_IDS.has(canonicalId)) {
     return RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
   }
   const value = Number(typeof random === "function" ? random() : random);
@@ -25,9 +30,11 @@ export function rollRainbowBeanCandyOutcome(characterId, random = Math.random) {
     : RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
 }
 
-export function selectRainbowBeanCandyStoryBranch(script, outcome) {
+export function selectRainbowBeanCandyStoryBranch(script, outcome, { characterId = "", useCount = 0 } = {}) {
   if (!script) return null;
-  const startNodeId = RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS[outcome];
+  const startNodeId = canonicalCharacterId(characterId) === "sigrika"
+    ? sigrikaCandyUseStartNodeId(useCount)
+    : RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS[outcome];
   if (!startNodeId || !(script.nodes ?? []).some((node) => node.id === startNodeId)) return script;
   return { ...script, startNodeId };
 }
@@ -43,29 +50,23 @@ export function defaultRainbowBeanCandyStoryDraft(characterId) {
 
 function sigrikaStoryDraft() {
   return {
-    startNodeId: RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted,
+    startNodeId: "use-1-start",
     nodes: [
-      choiceNode("accepted-start", "把彩虹豆豆跳跳糖递给西格莉卡", "accepted-admire"),
-      characterNode("accepted-admire", "西格莉卡", "sigrika", "哇，好漂亮的糖！这些颜色像揉在一起的星光一样。", "accepted-agree", [
-        option("要尝一颗吗？", "accepted-agree")
-      ]),
-      characterNode("accepted-agree", "西格莉卡", "sigrika", "嗯！闻起来甜甜的，那我就不客气啦。", "accepted-eat"),
-      narrationNode("accepted-eat", "西格莉卡把糖果放进口中，开心地嚼了几下。", "accepted-taste"),
-      characterNode("accepted-taste", "西格莉卡", "sigrika", "唔，味道还不错——嗝！", "accepted-hiccup"),
-      characterNode("accepted-hiccup", "西格莉卡", "sigrika", "诶？嗝！怎么回......嗝！为什么嗝不下来呀！", "accepted-doctor", [
-        option("你还好吗？", "accepted-doctor")
-      ]),
-      characterNode("accepted-doctor", "西格莉卡", "sigrika", "我、嗝没事！嗝！我先去找嗝医生看看！", "accepted-runs"),
-      narrationNode("accepted-runs", "西格莉卡红着脸跑远了。等你抬头想叫住她时，她早已不见踪影。", "accepted-unavailable"),
-      narrationNode("accepted-unavailable", "看来暂时不能找她下棋了。"),
-      choiceNode("rejected-start", "把彩虹豆豆跳跳糖递给西格莉卡", "rejected-admire"),
-      characterNode("rejected-admire", "西格莉卡", "sigrika", "哇，好漂亮的糖！是给我的吗？", "rejected-check"),
-      characterNode("rejected-check", "西格莉卡", "sigrika", "……等等，这个包装上怎么连生产日期都没有？", "rejected-refuse", [
-        option("吃一颗应该没关系吧？", "rejected-refuse")
-      ]),
-      characterNode("rejected-refuse", "西格莉卡", "sigrika", "不行不行！我今天还要陪大家下棋呢，万一又出现什么奇怪的副作用就糟了。", "rejected-doctor"),
-      characterNode("rejected-doctor", "西格莉卡", "sigrika", "等陆医生检查过再说吧。放心，如果确认没问题，我会认真考虑吃一颗的！", "rejected-return"),
-      narrationNode("rejected-return", "西格莉卡把糖果推了回来。看来今天没办法得逞了。")
+      ...Array.from({ length: 7 }, (_, index) => narrationNode(
+        `use-${index + 1}-start`,
+        `（西格莉卡第 ${index + 1} 次阅读《棋魂》的剧情占位，待后续编写。）`,
+        SIGRIKA_CANDY_STORY_NODE_IDS.sharedEffect
+      )),
+      choiceNode(SIGRIKA_CANDY_STORY_NODE_IDS.sharedEffect, "把彩虹豆豆跳跳糖递给西格莉卡", "shared-effect-eat"),
+      narrationNode("shared-effect-eat", "西格莉卡吃下了彩虹豆豆跳跳糖。熟悉的副作用很快出现，她暂时无法继续出战。", "shared-effect-unavailable"),
+      narrationNode("shared-effect-unavailable", "（通用糖果效果剧情占位，实际效果维持现有逻辑。）"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.corruptionStart, "（第 8 次使用：西格莉卡黑化剧情起始占位。）", SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax),
+      characterNode(SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax, "西格莉卡？", "sigrika", "（黑化高潮节点占位：进入此节点后，界面开始数据损坏。）", "corruption-end"),
+      narrationNode("corruption-end", "（黑化剧情结束占位。接下来只能打开部员手册或进入特殊匹配。）"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.recoveryWin, "（玩家获胜后的恢复剧情占位。）", "recovery-win-end"),
+      narrationNode("recovery-win-end", "西格莉卡恢复了原状。"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.recoveryLoss, "（玩家落败后的恢复剧情占位。）", "recovery-loss-end"),
+      narrationNode("recovery-loss-end", "西格莉卡恢复了原状。")
     ]
   };
 }

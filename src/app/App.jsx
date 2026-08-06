@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "../api/client.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
@@ -25,7 +26,11 @@ import {
   useModalDismissal,
   useRootBackExitGuard
 } from "./modalDismissal.js";
-import { dismissOverlayByKey, overlayPropsFromState } from "./overlayRegistry.js";
+import { APP_OVERLAYS, dismissOverlayByKey, overlayPropsFromState } from "./overlayRegistry.js";
+import {
+  SIGRIKA_CANDY_PHASES,
+  SIGRIKA_CANDY_STORY_NODE_IDS
+} from "../shared/sigrikaCandyArc.js";
 import { preloadPlayableReady } from "./playableReadyPreload.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
@@ -34,6 +39,7 @@ import { useMatchSessionState } from "./useMatchSessionState.js";
 import { useOverlayState } from "./useOverlayState.js";
 import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
 import { useRoomSessionState } from "./useRoomSessionState.js";
+import SigrikaCorruptionOverlay from "./SigrikaCorruptionOverlay.jsx";
 import { useRoomMemory } from "./useRoomMemory.js";
 import { useSiteSettingsState } from "./useSiteSettingsState.js";
 import { usePlayableReadyPreload } from "./usePlayableReadyPreload.js";
@@ -89,8 +95,12 @@ export default function App() {
     script: null,
     labels: null,
     onComplete: null,
-    onExit: null
+    onExit: null,
+    onNavigate: null,
+    dismissible: true
   });
+  const sigrikaClimaxRequestRef = useRef(false);
+  const sigrikaRecoveryRequestRef = useRef(false);
   const [tutorialBattleSession, setTutorialBattleSession] = useState(null);
   const openStoryPlayer = useCallback((script, labels = null, options = {}) => {
     overlaySetters.setShowOnboardingStory(false);
@@ -98,12 +108,14 @@ export default function App() {
       script,
       labels,
       onComplete: options.onComplete ?? null,
-      onExit: options.onExit ?? null
+      onExit: options.onExit ?? null,
+      onNavigate: options.onNavigate ?? null,
+      dismissible: options.dismissible ?? script?.startNodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionStart
     });
     overlaySetters.setShowStoryPlayer(true);
   }, [overlaySetters]);
   const clearStoryPlayer = useCallback(() => {
-    setActiveStoryPlayer({ script: null, labels: null, onComplete: null, onExit: null });
+    setActiveStoryPlayer({ script: null, labels: null, onComplete: null, onExit: null, onNavigate: null, dismissible: true });
   }, []);
   const closeStoryPlayerOverlay = useCallback(() => {
     const onExit = activeStoryPlayer.onExit;
@@ -151,6 +163,79 @@ export default function App() {
     }
   }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
+
+  const completeSigrikaCandyRecovery = useCallback(async () => {
+    if (sigrikaRecoveryRequestRef.current) return;
+    sigrikaRecoveryRequestRef.current = true;
+    try {
+      const data = await api("/api/items/rainbow-bean-candy/sigrika/recovery/complete", {
+        method: "POST",
+        token
+      });
+      updateUser(data.user);
+    } catch (error) {
+      sigrikaRecoveryRequestRef.current = false;
+      showToast(error.message, "danger");
+    }
+  }, [showToast, token, updateUser]);
+
+  const handleStoryNodeEnter = useCallback(async (nodeId) => {
+    if (nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
+      || user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.corruptionStory
+      || sigrikaClimaxRequestRef.current) return;
+    sigrikaClimaxRequestRef.current = true;
+    for (const overlay of APP_OVERLAYS) {
+      if (overlay.key !== "storyPlayer") overlaySetters[overlay.setterProp]?.(false);
+    }
+    try {
+      const data = await api("/api/items/rainbow-bean-candy/sigrika/climax", {
+        method: "POST",
+        token
+      });
+      updateUser(data.user);
+    } catch (error) {
+      sigrikaClimaxRequestRef.current = false;
+      showToast(error.message, "danger");
+    }
+  }, [overlaySetters, showToast, token, updateUser, user?.sigrikaCandyArc?.phase]);
+
+  useEffect(() => {
+    sigrikaClimaxRequestRef.current = false;
+    if (user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.recoveryStory) {
+      sigrikaRecoveryRequestRef.current = false;
+    }
+  }, [user?.sigrikaCandyArc?.phase]);
+
+  useEffect(() => {
+    const phase = user?.sigrikaCandyArc?.phase;
+    if (!token || overlayState.storyPlayer || activeStoryPlayer.script || sigrikaRecoveryRequestRef.current
+      || (phase !== SIGRIKA_CANDY_PHASES.corruptionStory && phase !== SIGRIKA_CANDY_PHASES.recoveryStory)) return undefined;
+    let alive = true;
+    api("/api/items/rainbow-bean-candy/sigrika/story", { token })
+      .then((data) => {
+        if (!alive || !data.storyScript) return;
+        updateUser(data.user);
+        openStoryPlayer(data.storyScript, { title: "西格莉卡的彩虹豆豆跳跳糖" }, {
+          dismissible: phase !== SIGRIKA_CANDY_PHASES.corruptionStory,
+          onExit: phase === SIGRIKA_CANDY_PHASES.recoveryStory ? completeSigrikaCandyRecovery : null
+        });
+      })
+      .catch((error) => {
+        if (alive) showToast(error.message, "danger");
+      });
+    return () => {
+      alive = false;
+    };
+  }, [
+    activeStoryPlayer.script,
+    completeSigrikaCandyRecovery,
+    openStoryPlayer,
+    overlayState.storyPlayer,
+    showToast,
+    token,
+    updateUser,
+    user?.sigrikaCandyArc?.phase
+  ]);
   const { mailboxSummary, refreshMailboxSummary } = useMailboxSummary({
     mailboxOpen: overlayState.mailbox,
     token,
@@ -264,7 +349,8 @@ export default function App() {
     selectCharacter,
     selectCharacterMusic,
     startMatch,
-    startPractice
+    startPractice,
+    startSigrikaDuel
   } = useAppActions({
     matchSuccess,
     matchSuccessRef,
@@ -288,6 +374,36 @@ export default function App() {
     setUser,
     setView
   });
+  const isSigrikaCorrupted = Boolean(user?.sigrikaCandyArc?.corrupted);
+
+  const continueSigrikaCandyResult = useCallback(async () => {
+    try {
+      let data = null;
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        try {
+          data = await api("/api/items/rainbow-bean-candy/sigrika/recovery/start", {
+            method: "POST",
+            token
+          });
+          break;
+        } catch (error) {
+          if (attempt === 3 || error.status !== 409) throw error;
+          await new Promise((resolve) => window.setTimeout(resolve, 250 * (attempt + 1)));
+        }
+      }
+      if (!data?.storyScript) throw new Error("恢复剧情尚未准备完成");
+      updateUser(data.user);
+      closeResultModal();
+      setRoom(null);
+      setView("home");
+      openStoryPlayer(data.storyScript, { title: "西格莉卡恢复剧情" }, {
+        dismissible: true,
+        onExit: completeSigrikaCandyRecovery
+      });
+    } catch (error) {
+      showToast(error.message, "danger");
+    }
+  }, [closeResultModal, completeSigrikaCandyRecovery, openStoryPlayer, setRoom, setView, showToast, token, updateUser]);
 
   async function refreshMusicTracks() {
     if (!token) return;
@@ -328,6 +444,8 @@ export default function App() {
   });
   const dismissTopModal = useCallback(() => {
     if (recruitmentInteractionLocked) return;
+    if (topModalKey === "result" && room?.sigrikaCandyDuel) return;
+    if ((topModalKey === "storyPlayer" || topModalKey === "onboardingStory") && activeStoryPlayer.dismissible === false) return;
     switch (topModalKey) {
       case "result":
         closeResultModal();
@@ -345,10 +463,12 @@ export default function App() {
     }
   }, [
     cancelMatch,
+    activeStoryPlayer.dismissible,
     closeStoryPlayerOverlay,
     closeResultModal,
     overlaySetters,
     recruitmentInteractionLocked,
+    room?.sigrikaCandyDuel,
     topModalKey
   ]);
   useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal });
@@ -400,6 +520,7 @@ export default function App() {
       setView,
       startMatch,
       startPractice,
+      startSigrikaDuel,
       updateUser
     },
     routeState: {
@@ -439,7 +560,9 @@ export default function App() {
       onRecruitmentStatusChange: handleRecruitmentStatusChange,
       onRemoveToast: removeToast,
       onResultClose: closeResultModal,
+      onSpecialResultContinue: continueSigrikaCandyResult,
       onStoryPlayerClose: closeStoryPlayerOverlay,
+      onStoryNodeEnter: handleStoryNodeEnter,
       openReplay,
       openStoryPlayer,
       selectCharacter,
@@ -474,9 +597,10 @@ export default function App() {
   });
 
   return (
-    <div className={appShellClassName}>
+    <div className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}>
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
       <InteractionFeedback audioSettings={audioSettings} />
+      {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
       {showExitConfirm && (
         <ConfirmModal
           title={EXIT_CONFIRM_TITLE}

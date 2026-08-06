@@ -38,12 +38,14 @@ export default function AppOverlays({
   onMailboxSummaryChange,
   onEnterTutorialBattle,
   onStoryPlayerClose,
+  onStoryNodeEnter,
   onboardingStoryScript,
   storyPlayerScript,
   onRemoveToast,
   onRecruitmentInteractionLockChange,
   onRecruitmentStatusChange,
   onResultClose,
+  onSpecialResultContinue,
   openReplay,
   resultModalOpen,
   room,
@@ -131,6 +133,7 @@ export default function AppOverlays({
           characters={characters}
           audioSettings={audioSettings}
           onClose={onResultClose}
+          onSpecialContinue={onSpecialResultContinue}
         />
       )}
       {matchStart && (
@@ -138,6 +141,7 @@ export default function AppOverlays({
           user={user}
           startedAt={matchStart.startedAt ?? matchStart}
           mode={matchStart.mode ?? "spark"}
+          specialDuel={Boolean(matchStart.specialDuel)}
           onCancel={onMatchCancel}
           characters={characters}
         />
@@ -145,6 +149,7 @@ export default function AppOverlays({
       {matchSuccess && !matchSuccess.countdownComplete && (
         <MatchSuccessModal
           startedAt={matchSuccess.startedAt}
+          specialDuel={Boolean(matchSuccess.room?.sigrikaCandyDuel)}
           audioSettings={audioSettings}
           onComplete={onMatchSuccessComplete}
         />
@@ -296,6 +301,7 @@ export default function AppOverlays({
           <TutorialSessionModal
             script={storyPlayerScript?.script}
             characters={characters}
+            user={user}
             labels={storyPlayerScript?.labels}
             onComplete={storyPlayerScript?.onComplete}
             onClose={closeStoryPlayer}
@@ -314,6 +320,9 @@ export default function AppOverlays({
             characters={characters}
             user={user}
             labels={storyPlayerScript?.labels}
+            dismissible={storyPlayerScript?.dismissible !== false}
+            onNodeEnter={onStoryNodeEnter}
+            onNavigate={storyPlayerScript?.onNavigate}
             onClose={closeStoryPlayer}
           />
         )

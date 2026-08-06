@@ -5,6 +5,7 @@ import PlayerPlaque from "./PlayerPlaque.jsx";
 export default function HomeStage({
   selectedCharacter,
   user,
+  sigrikaCorrupted = false,
   recruitmentReady,
   onOpenFriends,
   onOpenRecruitment,
@@ -19,10 +20,11 @@ export default function HomeStage({
 }) {
   return (
     <section className="home-grid-featured home-stage home-terminal-stage">
-      <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} />
-      <HouseManualEntry onOpenHouse={onOpenHouse} />
-      <MatchEntry onStartMatch={onStartMatch} onPreloadPlayableReady={onPreloadPlayableReady} />
+      <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} disabled={sigrikaCorrupted} />
+      <HouseManualEntry sigrikaCorrupted={sigrikaCorrupted} onOpenHouse={onOpenHouse} />
+      <MatchEntry sigrikaCorrupted={sigrikaCorrupted} onStartMatch={onStartMatch} onPreloadPlayableReady={onPreloadPlayableReady} />
       <HomeUtilityDock
+        disabled={sigrikaCorrupted}
         onOpenFriends={onOpenFriends}
         recruitmentReady={recruitmentReady}
         onOpenRecruitment={onOpenRecruitment}

@@ -12,9 +12,11 @@ import { HomeActionButton } from "./homeComponents.jsx";
 import IrisDatabase from "./IrisDatabase.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 import MatchModeWatermark from "./MatchModeWatermark.jsx";
+import { SIGRIKA_CANDY_PHASES } from "../shared/sigrikaCandyArc.js";
 
-export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
+  const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
   const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
     mode.id,
     Number(lobbyStats.matchmakingCounts?.[mode.id] ?? (mode.id === "spark" ? lobbyStats.matchmakingCount : 0) ?? 0)
@@ -22,9 +24,10 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 
   return (
     <>
-      <main className="home-screen home-terminal-screen">
+      <main className={`home-screen home-terminal-screen${sigrikaCorrupted ? " is-sigrika-corrupted-home" : ""}`}>
         <HomeHeader
           isAdmin={user.role === "admin"}
+          sigrikaCorrupted={sigrikaCorrupted}
           siteTitle={siteSettings.homeTitle}
           siteVersion={siteSettings.homeVersion}
           mailboxBadgeCount={mailboxBadgeCount}
@@ -40,6 +43,7 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 
         <section className="home-main-panel home-terminal-main">
           <HomeStage
+            sigrikaCorrupted={sigrikaCorrupted}
             selectedCharacter={selectedCharacter}
             user={user}
             onOpenFriends={onOpenFriends}
@@ -62,12 +66,18 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 
         {matchModePickerOpen && (
           <MatchModePicker
+            sigrikaCorrupted={sigrikaCorrupted}
+            sigrikaDuelActive={user.sigrikaCandyArc?.phase === SIGRIKA_CANDY_PHASES.duelActive}
             matchmakingCounts={matchmakingCounts}
             onClose={() => onMatchModePickerOpenChange?.(false)}
             onPreloadPlayableReady={onPreloadPlayableReady}
             onPracticeStart={(options) => {
               onMatchModePickerOpenChange?.(false);
               onStartPractice?.(options);
+            }}
+            onStartSigrikaDuel={() => {
+              onMatchModePickerOpenChange?.(false);
+              onStartSigrikaDuel?.();
             }}
             onSelect={(mode) => {
               onMatchModePickerOpenChange?.(false);
@@ -76,29 +86,30 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
           />
         )}
 
-        <IrisDatabase
+        {!sigrikaCorrupted && <IrisDatabase
           audioSettings={audioSettings}
           greeting={siteSettings.irisGreeting}
           links={siteSettings.irisLinks}
-        />
+        />}
       </main>
-      <HomeFooter footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
+      <HomeFooter disabled={sigrikaCorrupted} footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
     </>
   );
 }
 
-function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect }) {
+function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelActive = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
 
   return (
     <div className="modal-backdrop match-mode-backdrop" onClick={onClose}>
-      <section className="small-modal match-mode-modal" onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
+      <section className={`small-modal match-mode-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
         <h2>选择对弈模式</h2>
         <div className="match-mode-options">
           {modeOrderedEntries().map((mode) => (
             <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : ""}`} key={mode.id}>
               <button
                 className="match-mode-option"
+                disabled={sigrikaCorrupted}
                 type="button"
                 onFocus={() => onPreloadPlayableReady?.(mode.id)}
                 onPointerEnter={() => onPreloadPlayableReady?.(mode.id)}
@@ -119,6 +130,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                   aria-label="准时宝陪练"
                   className="practice-entry-button"
                   type="button"
+                  disabled={sigrikaCorrupted}
                   onClick={() => setPracticeDifficultyOpen(true)}
                 >
                   <img
@@ -132,6 +144,11 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
             </div>
           ))}
         </div>
+        {sigrikaCorrupted && (
+          <button className="sigrika-corruption-duel-button" type="button" onClick={onStartSigrikaDuel}>
+            {sigrikaDuelActive ? "继续与西格莉卡？决战" : "与西格莉卡？决战"}
+          </button>
+        )}
         <HomeActionButton variant="secondary" type="button" onClick={onClose}>取消</HomeActionButton>
         {practiceDifficultyOpen && (
           <PracticeDifficultyDialog

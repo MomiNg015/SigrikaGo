@@ -1,0 +1,55 @@
+/* Final Bright School portrait modal boundary contract.
+   Keep this after feature-specific modal sizing so viewport math cannot
+   consume the right and bottom shadow gutters. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+    .modal-backdrop,
+    .nested-modal-backdrop
+  ) {
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-right))
+      calc(14px + env(safe-area-inset-bottom))
+      calc(10px + env(safe-area-inset-left)) !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+    .small-modal,
+    .confirm-modal,
+    .result-modal,
+    .settings-modal,
+    .mailbox-modal,
+    .information-center-modal,
+    .nested-modal,
+    .character-target-modal,
+    .character-details-modal,
+    .room-floating-modal,
+    .shop-item-detail-modal,
+    .shop-modal,
+    .shop-window,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .message-board-modal,
+    .onboarding-story-modal,
+    .watch-list-modal,
+    .profile-replay-dialog,
+    .user-profile-modal
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-width: 0 !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+  }
+}

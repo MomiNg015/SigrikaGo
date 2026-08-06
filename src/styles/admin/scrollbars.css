@@ -1,0 +1,40 @@
+/* Admin-only neutral scrollbars. Keep these isolated from player HUD skins. */
+html:has(.admin-screen),
+body:has(.admin-screen),
+.admin-screen,
+.admin-screen * {
+  scrollbar-width: thin;
+  scrollbar-color: #8ca1b7 #edf2f7;
+}
+
+html:has(.admin-screen)::-webkit-scrollbar,
+body:has(.admin-screen)::-webkit-scrollbar,
+.admin-screen::-webkit-scrollbar,
+.admin-screen *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html:has(.admin-screen)::-webkit-scrollbar-track,
+body:has(.admin-screen)::-webkit-scrollbar-track,
+.admin-screen::-webkit-scrollbar-track,
+.admin-screen *::-webkit-scrollbar-track {
+  background: #edf2f7;
+}
+
+html:has(.admin-screen)::-webkit-scrollbar-thumb,
+body:has(.admin-screen)::-webkit-scrollbar-thumb,
+.admin-screen::-webkit-scrollbar-thumb,
+.admin-screen *::-webkit-scrollbar-thumb {
+  border: 2px solid #edf2f7;
+  border-radius: 999px;
+  background: #8ca1b7;
+  box-shadow: none;
+}
+
+html:has(.admin-screen)::-webkit-scrollbar-corner,
+body:has(.admin-screen)::-webkit-scrollbar-corner,
+.admin-screen::-webkit-scrollbar-corner,
+.admin-screen *::-webkit-scrollbar-corner {
+  background: #edf2f7;
+}

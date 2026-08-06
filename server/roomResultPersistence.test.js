@@ -6,6 +6,7 @@ import {
   modeStatsUpsertOperation,
   saveGameRecord
 } from "./roomResultPersistence.js";
+import { createSigrikaCandyDuelRoom } from "./roomFactory.js";
 
 function roomPlayer(color, overrides = {}) {
   return {
@@ -75,6 +76,55 @@ describe("roomResultPersistence", () => {
     expect(room.recordSaved).toBe(true);
     expect(prisma.gameRecord.create).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  test("saves a Sigrika duel replay and arc outcome without rewards or mode stats", async () => {
+    const prisma = fakePrisma();
+    const room = createSigrikaCandyDuelRoom({
+      user: {
+        id: "human",
+        username: "测试玩家",
+        rank: "3段",
+        rating: 1000,
+        selectedCharacter: "sigrika",
+        characterConfig: null,
+        modeStats: {}
+      },
+      socketId: "socket-human",
+      mode: "spark"
+    }, { random: () => 0.75 });
+    room.game.phase = GAME_PHASES.finished;
+    room.game.moveNumber = 42;
+    room.game.winner = { winnerColor: room.sigrikaCandyDuel.humanColor, reason: "score", text: "黑胜" };
+
+    await saveGameRecord({ prisma, room });
+
+    expect(room.recordSaved).toBe(true);
+    expect(room.game.resultRewards).toBeNull();
+    expect(room.sigrikaCandyDuel.resultOutcome).toBe("win");
+    expect(room.sigrikaCandyDuel.resultHook).toMatchObject({
+      event: "sigrika-candy-duel-win",
+      userId: "human"
+    });
+    expect(prisma.gameRecord.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        matchSource: "sigrika-corruption-duel",
+        rated: false,
+        blackRatingDelta: 0,
+        whiteRatingDelta: 0,
+        blackCoinsDelta: 0,
+        whiteCoinsDelta: 0
+      })
+    });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "human" },
+      data: expect.objectContaining({
+        sigrikaCandyPhase: "result-pending",
+        sigrikaCandyOutcome: "win"
+      })
+    });
+    expect(prisma.userModeStats.upsert).not.toHaveBeenCalled();
+    expect(prisma.userProgressLedger.create).not.toHaveBeenCalled();
   });
 
   test("applies draw results to in-room mode stats", () => {

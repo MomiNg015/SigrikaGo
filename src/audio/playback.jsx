@@ -4,6 +4,7 @@ import { browserAudioContextClass } from "./audioRuntime.js";
 
 export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioSettings.js";
 export {
+  assignBackgroundTrack,
   BackgroundMusic,
   installBackgroundResumeTriggers,
   loadBackgroundBuffer,

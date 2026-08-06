@@ -212,6 +212,52 @@ describe("AssetPreloadScreen", () => {
     expect(html).not.toContain("不应显示");
   });
 
+  it("removes character portraits and character loading copy during Sigrika corruption", () => {
+    const user = { sigrikaCandyArc: { corrupted: true } };
+    const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
+      loadingLinesText: "sigrika=西格莉卡正在戳棋盘",
+      progress: 0.5,
+      statusText: "资源加载中 1/2",
+      tipsText: "保持显示的通用提示",
+      user
+    }));
+    const labelledHtml = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
+      label: "正在恢复对局...",
+      progress: 0.5,
+      showTips: false,
+      user
+    }));
+
+    expect(html).not.toContain("preload-character");
+    expect(html).not.toContain("preload-mark");
+    expect(html).not.toContain("preload-title");
+    expect(html).not.toContain("/sigrika.webp");
+    expect(html).not.toContain("西格莉卡正在戳棋盘");
+    expect(html).toContain("资源加载中 1/2");
+    expect(html).toContain("Tip：保持显示的通用提示");
+    expect(html).toContain("preload-progress-mascot");
+    expect(labelledHtml).toContain("正在恢复对局...");
+    expect(labelledHtml).not.toContain("/sigrika.webp");
+  });
+
+  it("passes the current user into every production shared preload caller", () => {
+    const callerSources = [
+      "./AppRoutes.jsx",
+      "./BattleAssetPreloadScreen.jsx",
+      "../tutorial/TutorialSessionModal.jsx",
+      "../tutorial/TutorialBattleScreen.jsx"
+    ];
+
+    for (const sourcePath of callerSources) {
+      const source = readFileSync(new URL(sourcePath, import.meta.url), "utf8");
+      const calls = source.match(/<AssetPreloadScreen[\s\S]*?\/>/g) ?? [];
+      expect(calls.length, sourcePath).toBeGreaterThan(0);
+      for (const call of calls) expect(call, sourcePath).toContain("user={user}");
+    }
+  });
+
   it("advances to a different random character when rotating the login preload display", () => {
     expect(randomPreloadCharacter({
       sigrika: { id: "sigrika", portrait: "/sigrika.webp" },

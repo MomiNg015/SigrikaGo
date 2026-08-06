@@ -17,7 +17,7 @@ import {
 
 const RESULT_DEFEAT_WEATHER_GIF = "/assets/effects/result-defeat-rain.gif";
 
-export default function ResultModal({ room, user, characters, audioSettings, onClose }) {
+export default function ResultModal({ room, user, characters, audioSettings, onClose, onSpecialContinue }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
@@ -31,15 +31,16 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   } : null;
   const reward = resultRewardForRoom(room, user);
   const isPractice = isPracticeRoom(room);
+  const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
   const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
   const userLost = Boolean(winnerColor && currentPlayer && currentPlayer.color !== winnerColor);
   const outcome = isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
   const outcomeLabel = outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
-  const showPortrait = Boolean(displayPlayer && character);
+  const showPortrait = !isSigrikaCandyDuel && Boolean(displayPlayer && character);
   const resultClasses = [
-    "result-modal",
+    `result-modal${isSigrikaCandyDuel ? " sigrika-corruption-result-modal" : ""}`,
     winnerColor === COLORS.black ? "black-win" : "",
     isDraw ? "draw-result" : "",
     `result-outcome-${outcome}`,
@@ -68,7 +69,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   }, [room, user, voiceCharacter, audioSettings]);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className={`modal-backdrop ${isSigrikaCandyDuel ? "sigrika-corruption-result-backdrop" : ""}`} onClick={isSigrikaCandyDuel ? undefined : onClose}>
       <section className={resultClasses} onClick={(event) => event.stopPropagation()}>
         {showPortrait && (
           <div className="result-winner result-player-portrait">
@@ -100,15 +101,17 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         <div className="result-summary">
           <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
           <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
-          {!isPractice && isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
-          {reward && (
+          {isSigrikaCandyDuel
+            ? <p className="result-match-note">特殊对局 · 不计入任何成长、战绩或奖励</p>
+            : !isPractice && isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
+          {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>
               <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}
           {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}
-          <button onClick={onClose}>确认</button>
+          <button onClick={isSigrikaCandyDuel ? onSpecialContinue : onClose}>{isSigrikaCandyDuel ? "继续" : "确认"}</button>
         </div>
       </section>
     </div>

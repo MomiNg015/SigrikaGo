@@ -50,6 +50,23 @@ describe("StoryPlayerModal", () => {
     expect(html).toContain("收下反馈");
     expect(html).toContain("这是什么糖？");
   });
+
+  it("removes every skip affordance from a mandatory corruption story", () => {
+    const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
+      script: {
+        startNodeId: "corruption-start",
+        nodes: [{ id: "corruption-start", text: "异常开始", nextNodeId: "" }]
+      },
+      dismissible: false,
+      typewriterDisabled: true,
+      onClose: () => {}
+    }));
+
+    expect(html).not.toContain("onboarding-story-fast-forward");
+    expect(html).not.toContain("onboarding-story-skip-confirm");
+    expect(html).not.toContain("跳过剧情");
+    expect(html).toContain("异常开始");
+  });
   it("resolves the rainbow-glow Denia story portrait without requiring a normal character row", () => {
     const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
       script: {

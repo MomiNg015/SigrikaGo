@@ -1,15 +1,24 @@
 /* Bright School portrait mobile modal shell and shared surfaces. */
 @media (max-width: 760px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop {
-    width: 100vw !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+    .modal-backdrop,
+    .nested-modal-backdrop
+  ) {
+    --bright-mobile-modal-inline-start: calc(10px + env(safe-area-inset-left));
+    --bright-mobile-modal-inline-end: calc(12px + env(safe-area-inset-right));
+    --bright-mobile-modal-block-start: calc(10px + env(safe-area-inset-top));
+    --bright-mobile-modal-block-end: calc(14px + env(safe-area-inset-bottom));
+    inset: 0 !important;
+    width: auto !important;
     min-width: 0 !important;
-    height: 100dvh !important;
-    min-height: 100dvh !important;
+    height: auto !important;
+    min-height: 0 !important;
     padding:
-      calc(10px + env(safe-area-inset-top))
-      calc(10px + env(safe-area-inset-right))
-      calc(10px + env(safe-area-inset-bottom))
-      calc(10px + env(safe-area-inset-left)) !important;
+      var(--bright-mobile-modal-block-start)
+      var(--bright-mobile-modal-inline-end)
+      var(--bright-mobile-modal-block-end)
+      var(--bright-mobile-modal-inline-start) !important;
+    box-sizing: border-box !important;
     align-items: start !important;
     justify-items: center !important;
     overflow-x: hidden !important;
@@ -40,9 +49,9 @@
     .profile-replay-dialog,
     .user-profile-modal
   ) {
-    width: calc(100vw - 20px) !important;
-    max-width: calc(100vw - 20px) !important;
-    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     min-width: 0 !important;
     margin: 0 auto !important;
     padding: 14px !important;

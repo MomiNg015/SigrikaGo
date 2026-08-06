@@ -1,0 +1,132 @@
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted {
+  position: relative;
+  isolation: isolate;
+  color: #d0ccce;
+  border-color: #615d5f;
+  background: #777374;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted::before {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 30 !important;
+  display: block !important;
+  content: "" !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  background: rgb(54 52 53 / 0.14) !important;
+  -webkit-backdrop-filter: grayscale(1) brightness(0.82) contrast(0.98) !important;
+  backdrop-filter: grayscale(1) brightness(0.82) contrast(0.98) !important;
+  pointer-events: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > h2,
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .match-mode-options {
+  opacity: 0.3;
+  filter: grayscale(1) blur(2.8px) contrast(1.16);
+  pointer-events: none;
+  user-select: none;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted .match-mode-option:disabled {
+  position: relative;
+  overflow: hidden;
+  opacity: 0.62;
+  filter: grayscale(1) brightness(0.82) contrast(1.08);
+  text-decoration: none;
+  transform: none !important;
+  animation: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted .match-mode-option:disabled > * {
+  animation: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted .practice-entry-button:disabled {
+  opacity: 0.28;
+  filter: grayscale(1) brightness(0.8) contrast(1.12);
+  transform: none;
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 32;
+  display: grid;
+  place-items: center;
+  width: min(78%, 760px);
+  min-height: 86px;
+  margin: 0;
+  padding: 13px 18px;
+  overflow: hidden;
+  color: #fff7f8;
+  border: 2px solid #ec5262;
+  border-radius: 8px;
+  background: #8c1020;
+  box-shadow: 0 0 0 1px #42070f, 6px 7px 0 #31040a;
+  font: inherit;
+  font-size: clamp(1rem, 2vw, 1.22rem);
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 160ms ease-out, background-color 160ms ease-out, border-color 160ms ease-out, box-shadow 160ms ease-out;
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button::before,
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button::after {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  content: "";
+  pointer-events: none;
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button::before {
+  top: 7px;
+  left: 7px;
+  border-top: 2px solid rgb(255 225 228 / 0.82);
+  border-left: 2px solid rgb(255 225 228 / 0.82);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button::after {
+  right: 7px;
+  bottom: 7px;
+  border-right: 2px solid rgb(255 225 228 / 0.82);
+  border-bottom: 2px solid rgb(255 225 228 / 0.82);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button:is(:hover, :focus-visible) {
+  color: #fff;
+  border-color: #ff8591;
+  background: #a41224;
+  box-shadow: 0 0 0 1px #530812, 8px 9px 0 #31040a;
+  transform: translate(-50%, calc(-50% - 2px));
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button:active {
+  box-shadow: 0 0 0 1px #42070f, 3px 4px 0 #31040a;
+  transform: translate(-50%, calc(-50% + 1px));
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button:focus-visible {
+  outline: 3px solid #fff7f8;
+  outline-offset: 3px;
+}
+
+.app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .secondary-action {
+  position: relative;
+  z-index: 31;
+  justify-self: center;
+  min-width: 88px;
+  min-height: 44px;
+  margin-top: 12px;
+  color: #d0ccce !important;
+  border-color: #625e60 !important;
+  background: #5d5a5b !important;
+  box-shadow: 2px 2px 0 #3c393a !important;
+  opacity: 0.92 !important;
+  filter: grayscale(1) brightness(0.88) !important;
+}

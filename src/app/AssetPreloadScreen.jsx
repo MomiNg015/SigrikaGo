@@ -154,7 +154,8 @@ export default function AssetPreloadScreen({
   } : {});
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
   const displayTip = preloadTipDisplayText(currentTip);
-  const title = label || characterLoadingLine(displayCharacter, loadingLinesText);
+  const characterPresentationHidden = Boolean(user?.sigrikaCandyArc?.corrupted);
+  const title = label || (characterPresentationHidden ? "" : characterLoadingLine(displayCharacter, loadingLinesText));
 
   useEffect(() => {
     latestInputsRef.current = { character: fixedCharacter, characters, readyPortraitSources, tips };
@@ -231,14 +232,14 @@ export default function AssetPreloadScreen({
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
-        {displayPortrait.src ? (
+        {!characterPresentationHidden && (displayPortrait.src ? (
           <span className="preload-character" aria-label={displayCharacter.name ?? "当前角色"}>
             <img src={displayPortrait.src} style={displayPortrait.style} alt={displayCharacter.name ?? ""} />
           </span>
         ) : (
           <div className="preload-mark" />
-        )}
-        <p className="preload-title">{title}</p>
+        ))}
+        {title && <p className="preload-title">{title}</p>}
         {statusText && <p className="preload-status">{statusText}</p>}
         <div
           className={`preload-progress${isProgressIdle ? " is-idle" : ""}`}

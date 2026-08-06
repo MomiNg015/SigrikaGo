@@ -61,7 +61,8 @@ export default function RoomBattleStage({
   token,
   user,
   viewColor,
-  winnerColor
+  winnerColor,
+  sigrikaCandyDuel = false
 }) {
   const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
   const [floatingLayers, setFloatingLayers] = useState({});
@@ -115,9 +116,10 @@ export default function RoomBattleStage({
       floatingLayerId={`skill-${opponent?.color ?? "opponent"}`}
       floatingLayerZ={floatingLayers[`skill-${opponent?.color ?? "opponent"}`]}
       onFloatingLayerRequest={bringFloatingLayerToFront}
+      sigrikaCandyDuel={sigrikaCandyDuel}
     />
   );
-  const membersPanel = showPeoplePanel && !isReplay && (
+  const membersPanel = showPeoplePanel && !isReplay && !sigrikaCandyDuel && (
     <RoomPeopleList
       room={displayRoom}
       user={user}
@@ -165,7 +167,7 @@ export default function RoomBattleStage({
       skillLocked={Boolean(skillPreview)}
       skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
-      skillEnabled={selfSkillEnabled}
+      skillEnabled={!sigrikaCandyDuel && selfSkillEnabled}
       skillName={selfSkill?.name}
       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
@@ -176,7 +178,8 @@ export default function RoomBattleStage({
       replayMax={liveStep}
       replayMode={roomViewStatus?.controlMode ?? (isReplay ? "replay" : "spectator")}
       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
-      showTestTools={SHOW_TEST_TOOLS}
+      showTestTools={SHOW_TEST_TOOLS && !sigrikaCandyDuel}
+      drawEnabled={!sigrikaCandyDuel}
       onTestRandomLayout={handleTestRandomLayout}
       onTestRestoreSkill={handleTestRestoreSkill}
       onTestEnterByoYomi={handleTestEnterByoYomi}
@@ -205,15 +208,16 @@ export default function RoomBattleStage({
       floatingLayerId={`skill-${selfPlayer?.color ?? "self"}`}
       floatingLayerZ={floatingLayers[`skill-${selfPlayer?.color ?? "self"}`]}
       onFloatingLayerRequest={bringFloatingLayerToFront}
+      sigrikaCandyDuel={sigrikaCandyDuel}
     />
   );
-  const storyLogPanel = showTutorialLog && (
+  const storyLogPanel = (showTutorialLog || sigrikaCandyDuel) && (
     <ChatBox
       room={displayRoom}
       readonly
-      disabledInputMessage="剧情教学记录仅供查看"
+      disabledInputMessage={sigrikaCandyDuel ? "特殊对局仅显示系统记录" : "剧情教学记录仅供查看"}
       compactMessages
-      label="剧情记录"
+      label={sigrikaCandyDuel ? "系统记录" : "剧情记录"}
       mobileDockPopup={isMobileBattleLayout}
       floatingLayerZ={floatingLayers["story-log"]}
       onFloatingLayerRequest={handleStoryLogFloatingLayer}

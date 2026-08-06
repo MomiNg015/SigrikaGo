@@ -1,4 +1,5 @@
 import { Archive, CircleDotDashed, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
+import { CorruptionFragmentImage } from "../../ui/CorruptionMarks.jsx";
 
 const UTILITY_ITEMS = [
   {
@@ -58,6 +59,7 @@ const UTILITY_ITEMS = [
 ];
 
 export default function HomeUtilityDock({
+  disabled = false,
   recruitmentReady = false,
   onOpenFriends,
   onOpenRecruitment,
@@ -82,6 +84,7 @@ export default function HomeUtilityDock({
           aria-label={title}
           className={`home-entry utility-entry utility-image-entry ${className} utility-tone-${tone} ${key === "recruitment" && recruitmentReady ? "has-alert" : ""}`}
           data-ui-sound="none"
+          disabled={disabled}
           key={key}
           onClick={handlers[handler]}
           title={title}
@@ -89,6 +92,13 @@ export default function HomeUtilityDock({
         >
           <span className="utility-entry-motion" aria-hidden="true">
             <img className="utility-entry-art" src={image} alt="" decoding="async" />
+            {disabled && (
+              <CorruptionFragmentImage
+                className="utility-data-fragments"
+                seed={`home-utility-${key}`}
+                src={image}
+              />
+            )}
           </span>
           <i className="utility-entry-icon" aria-hidden="true">
             <Icon size={24} />

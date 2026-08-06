@@ -17,6 +17,11 @@ import { roomView } from "./roomBroadcasts.js";
 import { getCachedPublicSiteSettings } from "./siteSettings.js";
 import { structuredUserItemEffectSyncOperations } from "./userAssets.js";
 import {
+  SIGRIKA_CANDY_DUEL,
+  SIGRIKA_CANDY_OUTCOMES
+} from "../src/shared/sigrikaCandyArc.js";
+import { sigrikaCandyResultData } from "./sigrikaCandyArc.js";
+import {
   PROGRESS_METRICS,
   PROGRESS_REASONS,
   progressLedgerCreateOperations
@@ -27,6 +32,10 @@ export async function saveGameRecord({ prisma, room }) {
   if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === PRACTICE_MATCH_SOURCE) {
     room.recordSaved = true;
     room.game.resultRewards = null;
+    return;
+  }
+  if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
+    await saveSigrikaCandyDuelRecord({ prisma, room });
     return;
   }
   if (room.game.winner?.invalid) {
@@ -173,6 +182,83 @@ export async function saveGameRecord({ prisma, room }) {
     ...candyEffectAssetOperations()
   ]);
   if (rated) noteRatedPair({ black, white, mode });
+}
+
+async function saveSigrikaCandyDuelRecord({ prisma, room }) {
+  const black = room.players.find((player) => player.color === COLORS.black);
+  const white = room.players.find((player) => player.color === COLORS.white);
+  const human = room.players.find((player) => player.user.id === room.sigrikaCandyDuel?.ownerUserId);
+  if (!black || !white || !human || ![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) return;
+  const outcome = room.game.winner.winnerColor === human.color
+    ? SIGRIKA_CANDY_OUTCOMES.win
+    : SIGRIKA_CANDY_OUTCOMES.loss;
+  room.sigrikaCandyDuel.resultOutcome = outcome;
+  room.sigrikaCandyDuel.achievementHooks[outcome] = true;
+  room.sigrikaCandyDuel.resultHook = {
+    event: `sigrika-candy-duel-${outcome}`,
+    userId: human.user.id,
+    roomCode: room.code
+  };
+  room.recordSaved = true;
+  try {
+    await prisma.$transaction([
+      prisma.gameRecord.create({
+        data: {
+          roomCode: room.code,
+          blackUserId: black.user.id,
+          whiteUserId: white.user.id,
+          blackName: black.user.username,
+          whiteName: white.user.username,
+          blackCharacter: "",
+          whiteCharacter: "",
+          blackCostumeId: "",
+          whiteCostumeId: "",
+          blackCostumePortraitUrl: "",
+          whiteCostumePortraitUrl: "",
+          blackCostumePortraitScalePercent: 100,
+          whiteCostumePortraitScalePercent: 100,
+          blackCostumePortraitOffsetXPercent: 0,
+          whiteCostumePortraitOffsetXPercent: 0,
+          blackCostumePortraitOffsetYPercent: 0,
+          whiteCostumePortraitOffsetYPercent: 0,
+          resultText: room.game.winner.text ?? "对局结束",
+          winnerColor: room.game.winner.winnerColor,
+          resultReason: room.game.winner.reason ?? "",
+          rated: false,
+          matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+          blackRatingDelta: 0,
+          whiteRatingDelta: 0,
+          blackCoinsDelta: 0,
+          whiteCoinsDelta: 0,
+          blackRankDelta: 0,
+          whiteRankDelta: 0,
+          moveCount: room.game.moveNumber,
+          mode: "spark",
+          snapshot: JSON.stringify(roomView(room, human.user.id)),
+          snapshotVersion: 2
+        }
+      }),
+      prisma.user.update({
+        where: { id: human.user.id },
+        data: sigrikaCandyResultData(outcome)
+      })
+    ]);
+  } catch (error) {
+    room.recordSaved = false;
+    throw error;
+  }
+  human.user = {
+    ...human.user,
+    sigrikaCandyArc: {
+      ...(human.user.sigrikaCandyArc ?? {}),
+      phase: "result-pending",
+      outcome,
+      roomCode: room.code,
+      corrupted: true,
+      active: true
+    }
+  };
+  room.game.resultRewards = null;
 }
 
 function applyRatedRewards(entries, winnerColor, { mode, ratingRules, antiBoostMultiplier }) {

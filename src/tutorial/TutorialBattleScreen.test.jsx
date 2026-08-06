@@ -66,6 +66,7 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("useTimedLoadingProgress");
     expect(source).toContain("key={loading.id}");
     expect(source).toContain("showTips={false}");
+    expect(source).toContain("user={user}");
     expect(source).toContain("className=\"tutorial-battle-preload-overlay\"");
     expect(source).not.toContain("Loader2");
     expect(source).not.toContain("tutorial-battle-loading");

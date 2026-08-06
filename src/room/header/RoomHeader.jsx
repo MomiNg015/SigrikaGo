@@ -24,7 +24,7 @@ export default function RoomHeader({
     <header className="room-header">
       <div className="room-title-stack">
         <p className="room-title-line">
-          <span className="room-code-label">房间号{room.code}</span>
+          <span className="room-code-label">{room.sigrikaCandyDuel ? "PRIVATE // DATA CORRUPTED" : `房间号${room.code}`}</span>
           {roomGameInfo && (
             <>
               <span className="room-info-tag black-side">黑方：{roomGameInfo.black}</span>

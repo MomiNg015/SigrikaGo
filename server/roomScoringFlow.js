@@ -14,6 +14,7 @@ import {
   toggleNeutralPoint
 } from "../src/shared/game.js";
 import { isPracticeRoom } from "../src/shared/practiceMode.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 
 export function applyCountingRequest({ room, player, userId, now = Date.now(), appendSystem, scheduleCountingTimeout, io }) {
   room.game.phase = GAME_PHASES.countingRequested;
@@ -115,6 +116,10 @@ export function applyScoringAction({ room, player, userId, action, appendSystem,
     if (room.game.scoring.resultAcceptedBy.length === 2) {
       room.game.phase = GAME_PHASES.finished;
       room.game.winner = resultWithInvalidFlagForGame(room.game, room.game.scoring.result);
+      if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource && room.game.winner?.invalid) {
+        delete room.game.winner.invalid;
+        delete room.game.winner.invalidReason;
+      }
       if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
       appendNotices(room, exposeHiddenHands(room.game));
       appendSystem(room, `对局结束，${room.game.scoring.result.text}。`);

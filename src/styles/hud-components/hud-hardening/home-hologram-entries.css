@@ -40,7 +40,7 @@
   animation: none;
 }
 
-.home-image-entry.hologram-entry img {
+.home-image-entry.hologram-entry .home-entry-motion > img {
   position: relative;
   z-index: 1;
 }

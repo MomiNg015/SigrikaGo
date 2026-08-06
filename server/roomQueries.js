@@ -1,5 +1,6 @@
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
 import { PRACTICE_MATCH_SOURCE } from "../src/shared/practiceMode.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 import {
   onlineParticipantCount as defaultOnlineParticipantCount,
   watchPlayerSummary as defaultWatchPlayerSummary
@@ -19,9 +20,9 @@ export function createRoomQueries({
 
   function listWatchRooms() {
     if (roomReadModel?.listWatchRooms) {
-      return roomReadModel.listWatchRooms().filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE);
+      return roomReadModel.listWatchRooms().filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE && room.matchSource !== SIGRIKA_CANDY_DUEL.matchSource);
     }
-    return [...rooms.values()].filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE).map((room) => ({
+    return [...rooms.values()].filter((room) => room.matchSource !== PRACTICE_MATCH_SOURCE && room.matchSource !== SIGRIKA_CANDY_DUEL.matchSource).map((room) => ({
       code: room.code,
       mode: room.mode ?? room.game.mode ?? "spark",
       onlineCount: onlineParticipantCount(room),

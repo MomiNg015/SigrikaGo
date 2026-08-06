@@ -683,6 +683,76 @@ describe("story script domain", () => {
     expect(created.every((record) => record.isPublished)).toBe(true);
   });
 
+  it("upgrades only the legacy default Sigrika candy story to the multi-use framework", async () => {
+    const updates = [];
+    const legacyNodes = [
+      { id: "accepted-admire", text: "旧默认", nextNodeId: "accepted-hiccup" },
+      { id: "accepted-hiccup", text: "旧默认", nextNodeId: "rejected-admire" },
+      { id: "rejected-admire", text: "旧默认", nextNodeId: "rejected-refuse" },
+      { id: "rejected-refuse", text: "旧默认", nextNodeId: "" }
+    ];
+    const record = {
+      key: "item.rainbow-bean-candy.sigrika",
+      draftStartNodeId: "accepted-start",
+      draftNodesJson: JSON.stringify(legacyNodes),
+      publishedStartNodeId: "accepted-start",
+      publishedNodesJson: JSON.stringify(legacyNodes)
+    };
+    const prisma = {
+      storyScript: {
+        findMany: async () => defaultStoryScriptSeeds().map(({ key }) => ({ key })),
+        findUnique: async () => record,
+        create: async () => {
+          throw new Error("all seed keys already exist");
+        },
+        update: async (args) => {
+          updates.push(args);
+          return { ...record, ...args.data };
+        }
+      }
+    };
+
+    await seedDefaultStoryScripts(prisma);
+
+    expect(updates).toHaveLength(1);
+    expect(updates[0]).toMatchObject({
+      where: { key: "item.rainbow-bean-candy.sigrika" },
+      data: {
+        draftStartNodeId: "use-1-start",
+        publishedStartNodeId: "use-1-start"
+      }
+    });
+    expect(JSON.parse(updates[0].data.publishedNodesJson).map((node) => node.id)).toEqual(
+      expect.arrayContaining(["use-1-start", "use-7-start", "corruption-start", "corruption-climax", "recovery-win-start", "recovery-loss-start"])
+    );
+  });
+
+  it("preserves an existing customized Sigrika candy story during seeding", async () => {
+    let updated = false;
+    const prisma = {
+      storyScript: {
+        findMany: async () => defaultStoryScriptSeeds().map(({ key }) => ({ key })),
+        findUnique: async () => ({
+          key: "item.rainbow-bean-candy.sigrika",
+          draftStartNodeId: "custom-start",
+          draftNodesJson: JSON.stringify([{ id: "custom-start", text: "自定义剧情" }]),
+          publishedStartNodeId: "custom-start",
+          publishedNodesJson: JSON.stringify([{ id: "custom-start", text: "自定义剧情" }])
+        }),
+        create: async () => {
+          throw new Error("all seed keys already exist");
+        },
+        update: async () => {
+          updated = true;
+        }
+      }
+    };
+
+    await seedDefaultStoryScripts(prisma);
+
+    expect(updated).toBe(false);
+  });
+
   it("seeds onboarding from the legacy singleton when the generic onboarding key is missing", async () => {
     const created = [];
     const prisma = {

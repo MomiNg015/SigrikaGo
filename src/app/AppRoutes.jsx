@@ -77,6 +77,7 @@ export default function AppRoutes({
   socket,
   startMatch,
   startPractice,
+  startSigrikaDuel,
   token,
   tutorialBattleSession,
   onTutorialBattleClose,
@@ -98,6 +99,7 @@ export default function AppRoutes({
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
       onStartPractice={startPractice}
+      onStartSigrikaDuel={startSigrikaDuel}
       onPreloadPlayableReady={onPreloadPlayableReady}
       matchModePickerOpen={showMatchModePicker}
       onMatchModePickerOpenChange={setShowMatchModePicker}
@@ -272,6 +274,7 @@ const HomeRoute = memo(function HomeRoute({
   onSelectCharacter,
   onStartMatch,
   onStartPractice,
+  onStartSigrikaDuel,
   recruitmentReady,
   setShowAnnouncements,
   setShowFriends,
@@ -300,6 +303,7 @@ const HomeRoute = memo(function HomeRoute({
       onSelectCharacter={onSelectCharacter}
       onStartMatch={onStartMatch}
       onStartPractice={onStartPractice}
+      onStartSigrikaDuel={onStartSigrikaDuel}
       onPreloadPlayableReady={onPreloadPlayableReady}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={matchModePickerOpen}

@@ -52,11 +52,45 @@ The portrait Bright School home Header has two structural owners: the theme-leve
 
 Header browser QA must use the real `.home-screen` ancestor and the complete desktop action row plus all mobile-menu buttons. A reduced mock containing only one action button cannot reveal the cascade failure seen in the real page. Contract tests must assert the final owner import, hidden desktop action row, cleared left inset, right alignment, bounded panel width, and 44px toggle column.
 
+### Mobile modal shadow and clipping contract
+
+Portrait modal backdrops are the containing block for both the dialog and its visible shadow. Use `inset: 0` plus safe-area-aware backdrop padding, size the dialog to `width: 100%` of that padded content box, and subtract the same vertical padding from its `max-height`. The right and bottom padding must reserve the largest owned hard-shadow bleed; do not use `100vw` for the child because a root scrollbar can make viewport width wider than the actual content box.
+
+```css
+/* Wrong: the dialog can include the root scrollbar width and place its shadow outside the viewport. */
+.modal-backdrop { padding: 10px; }
+.modal { width: calc(100vw - 20px); }
+
+/* Correct: the padded backdrop owns safe areas and asymmetric shadow clearance. */
+.modal-backdrop {
+  inset: 0;
+  padding: calc(10px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(14px + env(safe-area-inset-bottom))
+    calc(10px + env(safe-area-inset-left));
+}
+.modal {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+```
+
+The final post-theme owner is `src/styles/mobile-adaptive/modal-shadow-gutters.css`. New ordinary or nested player dialogs with an exterior shadow must join this explicit selector family or prove that their component owner reserves equivalent bleed. Contract tests must lock the final import, `inset: 0`, percentage child sizing, safe-area padding, height subtraction, and the absence of viewport-width child sizing. Browser QA must cover 360x800, 390x844, and 412x915 with zero document-level horizontal overflow and a still-scrollable over-height dialog.
+
 ### Bright School handbook unobtained-roster contract
 
 Unobtained handbook cards use three explicit owners after `handbook-decoration.css`: `handbook-unobtained.css` centers the existing portrait/name content and owns the medium-light grayscale CRT surface, `handbook-hidden-intel.css` owns the square question-mark `NO SIGNAL` monitor, and `handbook-signal-motion.css` owns all fault keyframes plus the reduced-motion still. The state is strictly achromatic: do not use Bright School pink, blue, other chromatic accents, dark terminal-style fills, or persistent scanline/grid overlays. The resting surface uses a restrained 10%-to-27% ink mix and the portrait uses `brightness(0.9)`; sync tears and content displacement occur only in short stepped bursts. Keep the real hidden character name out of the DOM, expose the placeholder as one `role="img"` labelled `暂无情报`, and do not restore secondary availability copy.
 
 Portrait rules in `mobile/house-profile/character-grid-cards.css` must preserve the visible `暂无情报` label. Its selector must be at least as specific as the existing `.house-modal .character-card.portrait-card > strong` hide rule; a shorter `.house-modal .hidden-intel-card > .hidden-intel-label` selector loses even with `!important`. `HouseModal.test.js` must lock the accessible copy, absence of `暂不可获取`, all three owner imports, centered grid contract, achromatic token contract, reduced-motion coverage, and the specificity-bearing mobile selector. Browser QA at 390x844 must confirm equal card/monitor/label centers and zero document-level horizontal overflow.
+
+### Visual mask, shadow, and scrollbar ownership
+
+When an image needs rounded cropping plus an exterior shadow, the crop belongs to an inner mask and the shadow belongs to that mask or an unclipped outer compositor. Badges and other decorations remain siblings of the mask so they are not clipped. Do not put `overflow: hidden`, the image, and external decorations on the same owner.
+
+Scrollbar styling must be attached to a semantic shell and, where necessary, its root `html`/`body` state. Never style scrollbars through a bare global `*` selector: terminal/HUD cyan, Bright School paper pink/blue, and admin neutral gray-blue are independent visual contracts. An outer panel with `overflow: hidden` must also reserve explicit right/bottom shadow gutter and subtract that gutter from its scrollable children rather than removing or weakening the shadow.
+
+CSS/DOM contract tests must assert the avatar mask structure, visible outer overflow, themed scrollbar scope, absence of a bare universal scrollbar rule, and the admin panel gutter/max-height relationship.
 
 ## Selector Rules
 
@@ -93,7 +127,7 @@ Do not migrate or restyle these surfaces unless the task explicitly targets them
 
 `src/styles/cssLayerInventory.js` owns the current CSS cleanup contracts.
 
-- `CSS_DEBT_BASELINE` is the current all-`src/styles` non-growth baseline for CSS file count, bytes, `!important`, hardcoded hex values, media-query files, reduced-motion files, and high z-index files. It includes the current hidden player-window scrollbar, mobile music shop card, left-aligned replay-time, story-player padding, the theme-owned desktop Zahira raster/header treatment and final-mobile portrait raster selector, the final `bright-school-overrides/auth-login-lockup.css` split, the exact-asset citrus-sun Semantic Ignition owner, the costume system's import-only shared entry with separate storefront/detail/motion files plus wardrobe/Bright School/final-mobile owners, and the six-file mailbox owner set for its text-only list, completion dimming, independent attachment stage, portaled item detail, and desktop/portrait safety. These bounded splits keep presentation ownership explicit; later cleanup should reduce these counts or document why another contract update is necessary. Do not treat the baseline as permission to add visual drift.
+- `CSS_DEBT_BASELINE` is the current all-`src/styles` non-growth baseline for CSS file count, bytes, `!important`, hardcoded hex values, media-query files, reduced-motion files, and high z-index files. It includes the current hidden player-window scrollbar, mobile music shop card, left-aligned replay-time, story-player padding, the theme-owned desktop Zahira raster/header treatment and final-mobile portrait raster selector, the final `bright-school-overrides/auth-login-lockup.css` split, the exact-asset citrus-sun Semantic Ignition owner, the costume system's import-only shared entry with separate storefront/detail/motion files plus wardrobe/Bright School/final-mobile owners, the six-file mailbox owner set for its text-only list, completion dimming, independent attachment stage, portaled item detail, and desktop/portrait safety, plus Sigrika's bounded corruption-completion owners for deterministic static marks, the home/handbook surfaces, the isolated desktop/portrait duel action, and its Bright School late-theme guard. These bounded splits keep presentation ownership explicit; later cleanup should reduce these counts or document why another contract update is necessary. Do not treat the baseline as permission to add visual drift.
 - `CSS_Z_INDEX_CONTRACT` registers the existing high z-index overlays. New values at or above `1000` must be registered there or replaced by an existing named layer, preferably a local token such as `--room-floating-z`.
 - `CSS_MOTION_CONTRACT` records the current timing token sources and reduced-motion families. Motion-heavy CSS should animate `transform` and `opacity` where possible and keep `prefers-reduced-motion` coverage beside the owning family.
 - `CSS_BREAKPOINT_CONTRACT` registers the current responsive media-query families. New breakpoint families need a desktop and mobile rationale plus contract-test registration.

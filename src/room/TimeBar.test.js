@@ -16,6 +16,15 @@ describe("TimeBar", () => {
     expect(renderTimeBar({ main: 0, byoYomi: 30, periodRemaining: 24, periods: 1 }))
       .toContain("final-byo-yomi");
   });
+
+  it("renders the special duel as an unlimited corrupted digital clock", () => {
+    const html = renderTimeBar({ unlimited: true });
+
+    expect(html).toContain("unlimited-corrupted-timer");
+    expect(html).toContain("时间数据损坏");
+    expect(html).toContain("8?:?8");
+    expect(html).toContain("本局不限时");
+  });
 });
 
 function renderTimeBar(time) {

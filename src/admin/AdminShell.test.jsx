@@ -35,6 +35,17 @@ describe("AdminShell", () => {
     expect(adminCss).toContain(".admin-screen select");
   });
 
+  it("reserves panel shadow gutters and owns a neutral scrollbar palette", () => {
+    expect(adminCss).toContain("--admin-panel-shadow-gutter: 16px");
+    expect(adminCss).toContain("calc(var(--admin-screen-pad) + var(--admin-panel-shadow-gutter))");
+    expect(adminCss).toContain("max-height: calc(100dvh - (var(--admin-screen-pad) * 2) - var(--admin-panel-shadow-gutter))");
+    expect(adminCss).toContain("html:has(.admin-screen)");
+    expect(adminCss).toContain("scrollbar-color: #8ca1b7 #edf2f7");
+    expect(adminCss).toContain(".admin-screen *::-webkit-scrollbar-thumb");
+    expect(adminCss).toContain("background: #8ca1b7");
+    expect(adminCss).not.toContain("background: var(--hud-cyan)");
+  });
+
   it("renders all admin tabs with the active tab title", () => {
     const html = renderToStaticMarkup(
       <AdminShell user={{ username: "admin" }} tab="shop" setTab={vi.fn()} onBack={vi.fn()}>

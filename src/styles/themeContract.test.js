@@ -414,6 +414,43 @@ describe("player theme CSS contract", () => {
     expect(brightSchoolCss).toContain("height: 0 !important");
   });
 
+  it("sizes Bright School portrait dialogs from their padded containing block", () => {
+    const shellCss = readFileSync(
+      new URL("./themes/bright-school/mobile/modal-shell/shell-surfaces.css", import.meta.url),
+      "utf8"
+    ).replace(/\r\n/g, "\n");
+    const finalBoundaryCss = readFileSync(
+      new URL("./mobile-adaptive/modal-shadow-gutters.css", import.meta.url),
+      "utf8"
+    ).replace(/\r\n/g, "\n");
+
+    expect(shellCss).toContain(".modal-backdrop,\n    .nested-modal-backdrop");
+    expect(shellCss).toContain("inset: 0 !important");
+    expect(shellCss).toContain("width: auto !important");
+    expect(shellCss).toContain("--bright-mobile-modal-inline-end: calc(12px + env(safe-area-inset-right))");
+    expect(shellCss).toContain("--bright-mobile-modal-block-end: calc(14px + env(safe-area-inset-bottom))");
+    expect(shellCss).toContain("width: 100% !important");
+    expect(shellCss).toContain("max-width: 100% !important");
+    expect(shellCss).toContain("max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important");
+    expect(shellCss).not.toContain("width: 100vw !important");
+    expect(finalBoundaryCss).toContain(".information-center-modal");
+    expect(finalBoundaryCss).toContain(".shop-window");
+    expect(finalBoundaryCss).toContain("width: 100% !important");
+    expect(finalBoundaryCss).not.toContain("calc(100vw");
+  });
+
+  it("gives the Bright School document scrollbar the paper palette", () => {
+    const scrollbarCss = readFileSync(
+      new URL("./themes/bright-school/component-repairs/foundation-home/root-scrollbars.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(scrollbarCss).toContain("html:has(.app-shell.player-theme-enabled.theme-bright-school)");
+    expect(scrollbarCss).toContain("body:has(.app-shell.player-theme-enabled.theme-bright-school)");
+    expect(scrollbarCss).toContain("scrollbar-color: #d58cab #fff6dd !important");
+    expect(scrollbarCss).toContain("background: linear-gradient(180deg, #ff9ebb, #9ad3de) !important");
+  });
+
   it("keeps Bright School mobile home shell as an import-only portrait home entry", () => {
     const mobileHomeShellEntry = readFileSync(
       new URL("./themes/bright-school/mobile/home-shell.css", import.meta.url),

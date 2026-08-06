@@ -118,6 +118,33 @@ describe("ReplayList", () => {
     expect(html).toContain("aria-label=\"友谊对局\"");
   });
 
+  it("keeps the Sigrika duel in the normal replay list with its special title and red tag", () => {
+    const html = renderToStaticMarkup(createElement(ReplayList, {
+      characters,
+      currentUser: { id: "user-1", username: "moming" },
+      records: [{
+        id: "record-sigrika-duel",
+        createdAt: "2026-08-05T00:31:00.000Z",
+        blackUserId: "user-1",
+        whiteUserId: "bot:sigrika",
+        blackName: "moming",
+        whiteName: "西格莉卡？",
+        blackCharacter: "",
+        whiteCharacter: "",
+        winnerColor: "black",
+        resultText: "黑胜",
+        moveCount: 88,
+        rated: false,
+        matchSource: "sigrika-corruption-duel"
+      }]
+    }));
+
+    expect(html).toContain("is-sigrika-candy-duel-replay");
+    expect(html).toContain("和西格莉卡？决战");
+    expect(html).toContain("特殊对局");
+    expect(html).not.toContain("replay-friendly-icon");
+  });
+
   it("does not render an end-of-history status after the last replay page", () => {
     const html = renderToStaticMarkup(createElement(PaginatedReplayList, {
       characters,

@@ -54,6 +54,7 @@ import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 import { roomSpectatorAdmission, runtimeCapacityLimits } from "./runtimeServiceState.js";
 import { PRACTICE_RECORD_POLICY } from "../src/shared/practiceMode.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 
 export { roomView };
 export { clearRoomTimers };
@@ -107,7 +108,7 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
   unregisterRoom: roomMembershipIndex.unregisterRoom,
   prepareCloseState: (room) => {
-    if (room.recordPolicy === PRACTICE_RECORD_POLICY) {
+    if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
       room.candyEffectUpdates ??= [];
       return room.candyEffectUpdates;
     }
@@ -255,7 +256,8 @@ const roomCreationLifecycle = createRoomCreationLifecycle({
 export const {
   joinMatchmaking,
   createDirectRoom,
-  createPracticeRoom
+  createPracticeRoom,
+  createSigrikaCandyDuelRoom
 } = roomCreationLifecycle;
 export { markRoomPreloadReady };
 const roomActionLifecycle = createRoomActionLifecycle({

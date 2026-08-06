@@ -1,16 +1,21 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { playUiIrisDatabaseOpenSound } from "../audio/playback.jsx";
 import { ModalDialog } from "../modals/modalComponents.jsx";
 import { pickIrisGreeting } from "../shared/irisGreeting.js";
 import { normalizeIrisLinks } from "../shared/irisLinks.js";
 
-export default function IrisDatabase({ audioSettings, greeting, links }) {
+export default function IrisDatabase({ audioSettings, disabled = false, greeting, links }) {
   const [open, setOpen] = useState(false);
   const [activeGreeting, setActiveGreeting] = useState("");
   const titleId = useId();
   const friendlyLinks = normalizeIrisLinks(links);
 
+  useEffect(() => {
+    if (disabled) setOpen(false);
+  }, [disabled]);
+
   function openDatabase() {
+    if (disabled) return;
     playUiIrisDatabaseOpenSound(audioSettings);
     setActiveGreeting(pickIrisGreeting(greeting));
     setOpen(true);
@@ -24,6 +29,7 @@ export default function IrisDatabase({ audioSettings, greeting, links }) {
         aria-label="打开 IRIS 数据库"
         className="iris-database-entry"
         data-ui-sound="none"
+        disabled={disabled}
         type="button"
         onClick={openDatabase}
       >

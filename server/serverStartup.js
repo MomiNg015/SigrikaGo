@@ -20,6 +20,7 @@ import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 import { ensureSkillTraitSchema, migrateBuiltinSkillDescriptions } from "./skillTraits.js";
 import { migrateLegacyAemeathOwnership } from "./aemeathAcquisition.js";
 import { migrateBuiltinPortraitAssets } from "./builtinPortraitAssetMigration.js";
+import { ensureSigrikaCandyArcSchema } from "./sigrikaCandyArc.js";
 
 export const SERVER_SCHEMA_TASK_ORDER = Object.freeze([
   "ensureAchievementSchema",
@@ -35,7 +36,8 @@ export const SERVER_SCHEMA_TASK_ORDER = Object.freeze([
   "ensureRoomPersistenceSchema",
   "ensureLoginSessionSchema",
   "ensureGameModeSchema",
-  "ensureMailboxSchema"
+  "ensureMailboxSchema",
+  "ensureSigrikaCandyArcSchema"
 ]);
 
 export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
@@ -64,7 +66,8 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureRoomPersistenceSchema",
   "ensureLoginSessionSchema",
   "ensureGameModeSchema",
-  "ensureMailboxSchema"
+  "ensureMailboxSchema",
+  "ensureSigrikaCandyArcSchema"
 ]);
 
 function createServerSchemaTasks({
@@ -81,7 +84,8 @@ function createServerSchemaTasks({
   ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
   ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
   ensureSocialSchema: ensureSocialSchemaTask,
-  ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+  ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+  ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
 }) {
   return {
     ensureAchievementSchema: ensureAchievementSchemaTask,
@@ -97,7 +101,8 @@ function createServerSchemaTasks({
     ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
     ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
-    ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+    ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+    ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
   };
 }
 
@@ -122,7 +127,8 @@ export async function ensureServerSchema({
   ensureSkillTraitSchema: ensureSkillTraitSchemaTask = ensureSkillTraitSchema,
   ensureCostumeSchema: ensureCostumeSchemaTask = ensureCostumeSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
-  ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema
+  ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask = ensureSigrikaCandyArcSchema
 }) {
   const tasks = createServerSchemaTasks({
     ensureAchievementSchema: ensureAchievementSchemaTask,
@@ -138,7 +144,8 @@ export async function ensureServerSchema({
     ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
     ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
-    ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+    ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+    ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
   });
 
   await runTasksInOrder({ order: SERVER_SCHEMA_TASK_ORDER, prisma, tasks });
@@ -164,6 +171,7 @@ export async function initializeServerData({
   seedDefaultStoryScripts: seedDefaultStoryScriptsTask = seedDefaultStoryScripts,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask = ensureSigrikaCandyArcSchema,
   seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
   migrateBuiltinPortraitAssets: migrateBuiltinPortraitAssetsTask = migrateBuiltinPortraitAssets,
   migrateLegacyAemeathOwnership: migrateLegacyAemeathOwnershipTask = migrateLegacyAemeathOwnership,
@@ -191,7 +199,8 @@ export async function initializeServerData({
       ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
       ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
       ensureSocialSchema: ensureSocialSchemaTask,
-      ensureStoryScriptSchema: ensureStoryScriptSchemaTask
+      ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+      ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
     }),
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
     seedAdminDefaultConfig: seedAdminDefaultConfigTask,

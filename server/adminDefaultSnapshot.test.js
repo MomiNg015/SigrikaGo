@@ -48,8 +48,8 @@ const BOARD_EXPECTATIONS = Object.freeze({
 });
 
 describe("admin default onboarding story snapshot", () => {
-  it("publishes both Word-authored candy outcomes with blank narration identity", () => {
-    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
+  it("publishes ordinary candy outcomes and the Sigrika arc framework with blank narration identity", () => {
+    for (const characterId of ["denia", "aemeath", "lynae"]) {
       const script = ADMIN_DEFAULT_CONFIG.storyScripts.find((entry) => entry.key === `item.rainbow-bean-candy.${characterId}`);
       const expected = defaultRainbowBeanCandyStoryDraft(characterId);
       const draftNodes = JSON.parse(script.draftNodesJson);
@@ -69,6 +69,34 @@ describe("admin default onboarding story snapshot", () => {
         ]));
       expect(publishedNodes.some((node) => node.speakerName === "旁白")).toBe(false);
     }
+
+    const sigrikaScript = ADMIN_DEFAULT_CONFIG.storyScripts.find(
+      (entry) => entry.key === "item.rainbow-bean-candy.sigrika"
+    );
+    const sigrikaExpected = defaultRainbowBeanCandyStoryDraft("sigrika");
+    const sigrikaDraftNodes = JSON.parse(sigrikaScript.draftNodesJson);
+    const sigrikaPublishedNodes = JSON.parse(sigrikaScript.publishedNodesJson);
+    const expectedSigrikaNodes = validateStoryContent(sigrikaExpected, { publishing: true }).nodes;
+
+    expect(sigrikaScript.draftStartNodeId).toBe("use-1-start");
+    expect(sigrikaScript.publishedStartNodeId).toBe("use-1-start");
+    expect(validateStoryContent(
+      { startNodeId: sigrikaScript.draftStartNodeId, nodes: sigrikaDraftNodes },
+      { publishing: true }
+    ).nodes).toEqual(expectedSigrikaNodes);
+    expect(validateStoryContent(
+      { startNodeId: sigrikaScript.publishedStartNodeId, nodes: sigrikaPublishedNodes },
+      { publishing: true }
+    ).nodes).toEqual(expectedSigrikaNodes);
+    expect(sigrikaPublishedNodes.some((node) => node.id === "rejected-start")).toBe(false);
+    expect(sigrikaPublishedNodes.map((node) => node.id)).toEqual(expect.arrayContaining([
+      "use-1-start",
+      "use-7-start",
+      "corruption-start",
+      "recovery-win-start",
+      "recovery-loss-start"
+    ]));
+    expect(sigrikaPublishedNodes.some((node) => node.speakerName === "旁白")).toBe(false);
   });
 
   it("ships the Danya 100 spark wins nameplate reward and achievement", () => {

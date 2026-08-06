@@ -28,6 +28,7 @@ function ActionBar({
   skillName = "技能",
   skillUses,
   skillAvailable = true,
+  drawEnabled = true,
   hasAnyStones = true,
   opponentConnected = true,
   scoring,
@@ -90,10 +91,10 @@ function ActionBar({
         <span className="action-label mobile-action-button-label">{skillName} · {skillUses}</span>
       </button>
       )}
-      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
+      {drawEnabled && <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
-      </button>
+      </button>}
       <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
       {showTestTools && (
         <TestTools
@@ -130,6 +131,7 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.skillName === next.skillName
     && previous.skillUses === next.skillUses
     && previous.skillAvailable === next.skillAvailable
+    && previous.drawEnabled === next.drawEnabled
     && previous.hasAnyStones === next.hasAnyStones
     && previous.opponentConnected === next.opponentConnected
     && previous.scoring === next.scoring

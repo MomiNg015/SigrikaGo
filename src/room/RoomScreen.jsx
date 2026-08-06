@@ -59,6 +59,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     winnerColor
   } = useRoomBoardView({ room, user, replayStep });
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
+  const isSigrikaCandyDuel = Boolean(displayRoom.sigrikaCandyDuel);
   const skillBanner = skillPreview
     ? {
         ...skillPreview,
@@ -126,6 +127,10 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   }, [displayRoom.game.phase, onGameAction]);
 
   const requestExitConfirm = useCallback(() => {
+    if (isSigrikaCandyDuel && displayRoom.game.phase !== "finished") {
+      onBack();
+      return;
+    }
     if (displayRoom.game.phase !== "finished" && role === "player") {
       setConfirmAction({
         title: "退出房间",
@@ -138,7 +143,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       return;
     }
     onBack();
-  }, [displayRoom.game.phase, onBack, onGameAction, role, setPendingSkill]);
+  }, [displayRoom.game.phase, isSigrikaCandyDuel, onBack, onGameAction, role, setPendingSkill]);
   useEffect(() => {
     if (mobileBackRequestId === handledMobileBackRequestIdRef.current) return;
     handledMobileBackRequestIdRef.current = mobileBackRequestId;
@@ -155,7 +160,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     <Layout>
       <RoomHeader
         room={displayRoom}
-        roomGameInfo={roomGameInfo}
+        roomGameInfo={isSigrikaCandyDuel ? specialDuelRoomGameInfo(displayRoom) : roomGameInfo}
         showCloseCountdown={showCloseCountdown}
         showCoords={showCoords}
         onOpenMessageBoard={onOpenMessageBoard}
@@ -209,6 +214,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         user={user}
         viewColor={viewColor}
         winnerColor={winnerColor}
+        sigrikaCandyDuel={isSigrikaCandyDuel}
       />
       {roomRequestToast && (
         <TimedRoomRequestToast
@@ -235,6 +241,16 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       {skillBanner && <SkillBanner banner={skillBanner} characters={characters} audioSettings={audioSettings} />}
     </Layout>
   );
+}
+
+function specialDuelRoomGameInfo(room) {
+  const black = room.players.find((player) => player.color === "black");
+  const white = room.players.find((player) => player.color === "white");
+  return {
+    black: black?.user?.username ?? "数据损坏",
+    white: white?.user?.username ?? "数据损坏",
+    moves: `${room.game.moveNumber}手`
+  };
 }
 
 function useDoubleMoveToast({ room, showToast, isReplay }) {

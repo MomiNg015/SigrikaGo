@@ -1,5 +1,5 @@
 import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
-import { createPracticeRoom as buildPracticeRoom, createRoom } from "./roomFactory.js";
+import { createPracticeRoom as buildPracticeRoom, createRoom, createSigrikaCandyDuelRoom as buildSigrikaCandyDuelRoom } from "./roomFactory.js";
 
 export function createRoomCreationLifecycle({
   rooms,
@@ -58,6 +58,16 @@ export function createRoomCreationLifecycle({
     return room;
   }
 
+  function createSigrikaCandyDuelRoom(player, io) {
+    matchmakingQueue.removeUser(player.user.id);
+    const room = buildSigrikaCandyDuelRoom(player, { isCodeTaken: isRoomCodeTaken });
+    appendSystem(room, "匹配数据损坏。已锁定特殊对局。", { kind: "special-match" });
+    appendSystem(room, "本局为 13 路围棋，贴 2.75 目，双方不限时且不使用技能。", { kind: "special-rule" });
+    registerCreatedRoom(room, io);
+    io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
+    return room;
+  }
+
   function registerCreatedRoom(room, io) {
     rooms.set(room.code, room);
     registerRoom(room);
@@ -83,6 +93,7 @@ export function createRoomCreationLifecycle({
   return {
     joinMatchmaking,
     createDirectRoom,
-    createPracticeRoom
+    createPracticeRoom,
+    createSigrikaCandyDuelRoom
   };
 }

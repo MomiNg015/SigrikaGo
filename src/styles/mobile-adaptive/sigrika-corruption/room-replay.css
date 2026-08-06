@@ -1,0 +1,100 @@
+.app-shell.is-sigrika-corrupted .sigrika-corrupted-npc-portrait {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #f4f4f5;
+  background: repeating-linear-gradient(90deg, #121418 0 7px, #d4d4d8 8px 10px, #25282e 11px 18px);
+  font-size: clamp(2.4rem, 8vw, 5rem);
+  font-weight: 900;
+  text-shadow: 7px 0 0 #111318, -5px 0 0 #a1a1aa;
+  animation: sigrika-corruption-avatar 5.7s steps(1, end) infinite;
+}
+
+.app-shell.is-sigrika-corrupted .unlimited-corrupted-timer {
+  position: relative;
+  overflow: hidden;
+  filter: grayscale(1) contrast(1.3);
+}
+
+.app-shell.is-sigrika-corrupted .unlimited-corrupted-timer .timer-label {
+  letter-spacing: 0.08em;
+  text-decoration: line-through;
+}
+
+.app-shell.is-sigrika-corrupted .unlimited-clock-glitch {
+  position: absolute;
+  inset-inline: 0;
+  opacity: 0;
+  text-shadow: 4px 0 0 #f4f4f5, -3px 0 0 #18181b;
+  animation: sigrika-corruption-clock 7s steps(1, end) infinite;
+}
+
+.app-shell.is-sigrika-corrupted .unlimited-clock-normal {
+  animation: sigrika-corruption-clock-normal 7s steps(1, end) infinite;
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-result-modal {
+  filter: grayscale(1) contrast(1.22);
+  box-shadow: 10px 0 0 rgb(255 255 255 / 0.12), -14px 0 0 rgb(0 0 0 / 0.64);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-result-modal .result-summary > button {
+  border-color: #d4d4d8;
+  color: #f4f4f5;
+  background: #18181b;
+  text-transform: uppercase;
+}
+
+.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels em {
+  justify-self: start;
+  padding: 2px 7px;
+  border: 1px solid #ef5965;
+  border-radius: 999px;
+  color: #fff;
+  background: #a40d1b;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted > :not(.character-grid-container, .close-button) {
+  filter: grayscale(1) contrast(1.12);
+}
+
+.app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .close-button {
+  filter: grayscale(1);
+}
+
+@keyframes sigrika-corruption-avatar {
+  0%, 86%, 90%, 100% { transform: translateX(0); clip-path: inset(0); }
+  87% { transform: translateX(7px); clip-path: inset(18% 0 47%); }
+  88% { transform: translateX(-5px); clip-path: inset(58% 0 14%); }
+  89% { transform: translateX(2px); clip-path: inset(0); }
+}
+
+@keyframes sigrika-corruption-clock {
+  0%, 88%, 92%, 100% { opacity: 0; transform: translateX(0); }
+  89% { opacity: 1; transform: translateX(3px); }
+  90% { opacity: 1; transform: translateX(-2px); }
+  91% { opacity: 0.6; transform: translateX(0); }
+}
+
+@keyframes sigrika-corruption-clock-normal {
+  0%, 88%, 92%, 100% { opacity: 1; }
+  89%, 91% { opacity: 0.12; }
+  90% { opacity: 0; }
+}

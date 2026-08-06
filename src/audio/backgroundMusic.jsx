@@ -73,11 +73,14 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
       return () => {};
     }
 
+    state.baseVolume = volume;
+    if (!assignBackgroundTrack(state, track)) {
+      stopBackgroundHtmlFallback(state);
+      fadeOutBackgroundPlayers(state);
+      return () => {};
+    }
     const context = getBackgroundAudioContext(state);
     primeBackgroundAudioRuntime(state);
-    state.baseVolume = volume;
-    state.currentTrack = track;
-    state.offset = 0;
     scheduleBackgroundTrack({ state, context, track, generation }).catch((error) => {
       startBackgroundHtmlFallback(state, track, error);
     });
@@ -86,6 +89,12 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
   }, [trackKey]);
 
   return null;
+}
+
+export function assignBackgroundTrack(state, track) {
+  state.currentTrack = track;
+  state.offset = 0;
+  return !state.pauseRequested;
 }
 
 export function recoverBackgroundPlayback(state) {

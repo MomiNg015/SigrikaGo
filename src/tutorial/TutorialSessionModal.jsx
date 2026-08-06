@@ -16,6 +16,7 @@ const BOARD_SETUP_ENTRY_LOADING_TEXT = "正在激烈对局中...";
 export default function TutorialSessionModal({
   script,
   characters = {},
+  user = null,
   labels = {},
   onClose,
   onComplete,
@@ -179,6 +180,7 @@ export default function TutorialSessionModal({
             label={BOARD_SETUP_ENTRY_LOADING_TEXT}
             progress={0}
             showTips={false}
+            user={user}
           />
         </div>
       );

@@ -54,6 +54,10 @@
   pointer-events: none;
 }
 
+.character-item-effect-badges.is-interactive {
+  pointer-events: auto;
+}
+
 .character-item-effect-icon {
   width: 30px;
   height: 30px;
@@ -63,6 +67,51 @@
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 248, 199, 0.96), rgba(246, 207, 106, 0.92));
   box-shadow: 0 7px 14px rgba(173, 128, 28, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.character-item-effect-cancel {
+  display: inline-grid;
+  place-items: center;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  appearance: none;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.character-item-effect-cancel:focus-visible {
+  outline: 3px solid var(--focus-ring, #f7c84b);
+  outline-offset: 2px;
+}
+
+.character-item-effect-cancel:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.house-modal.is-sigrika-corrupted .character-card.is-corruption-locked {
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.house-modal.is-sigrika-corrupted .character-card.is-corruption-obscured {
+  filter: grayscale(1) blur(6px);
+  opacity: 0.34;
+  pointer-events: none;
+  user-select: none;
+}
+
+.house-modal.is-sigrika-corrupted .character-card.is-corruption-locked:not(.is-corruption-obscured) {
+  filter: none;
+  pointer-events: none;
 }
 
 .character-card img {

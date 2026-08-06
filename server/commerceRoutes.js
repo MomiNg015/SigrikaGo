@@ -7,6 +7,14 @@ import {
 import { listItemInventory, useInventoryItem } from "./items.js";
 import { purchaseShopItem } from "./shop.js";
 import { equipCostume, purchaseCostume } from "./costumes.js";
+import {
+  cancelRainbowBeanCandyEffect,
+  completeSigrikaCandyRecovery,
+  debugJumpSigrikaCandyToUseEight,
+  getSigrikaCandyArcStory,
+  markSigrikaCandyClimax,
+  startSigrikaCandyRecovery
+} from "./sigrikaCandyArc.js";
 
 export function createCommerceRouteHandlers({
   prisma,
@@ -16,7 +24,13 @@ export function createCommerceRouteHandlers({
   listItemInventoryFn = listItemInventory,
   purchaseCostumeFn = purchaseCostume,
   purchaseShopItemFn = purchaseShopItem,
-  useInventoryItemFn = useInventoryItem
+  useInventoryItemFn = useInventoryItem,
+  cancelRainbowBeanCandyEffectFn = cancelRainbowBeanCandyEffect,
+  completeSigrikaCandyRecoveryFn = completeSigrikaCandyRecovery,
+  debugJumpSigrikaCandyToUseEightFn = debugJumpSigrikaCandyToUseEight,
+  getSigrikaCandyArcStoryFn = getSigrikaCandyArcStory,
+  markSigrikaCandyClimaxFn = markSigrikaCandyClimax,
+  startSigrikaCandyRecoveryFn = startSigrikaCandyRecovery
 }) {
   async function purchase(req, res) {
     try {
@@ -89,13 +103,55 @@ export function createCommerceRouteHandlers({
     }
   }
 
+  async function sigrikaCandyStory(req, res) {
+    await respond(res, () => getSigrikaCandyArcStoryFn({ prisma, userId: req.user.id }), "读取西格莉卡剧情失败");
+  }
+
+  async function sigrikaCandyClimax(req, res) {
+    await respond(res, async () => ({ user: await markSigrikaCandyClimaxFn({ prisma, userId: req.user.id }) }), "触发异常剧情失败");
+  }
+
+  async function sigrikaCandyDebugJump(req, res) {
+    await respond(res, async () => ({ user: await debugJumpSigrikaCandyToUseEightFn({ prisma, userId: req.user.id }) }), "跳转第八次剧情失败");
+  }
+
+  async function sigrikaCandyRecoveryStart(req, res) {
+    await respond(res, () => startSigrikaCandyRecoveryFn({ prisma, userId: req.user.id }), "读取恢复剧情失败");
+  }
+
+  async function sigrikaCandyRecoveryComplete(req, res) {
+    await respond(res, async () => ({ user: await completeSigrikaCandyRecoveryFn({ prisma, userId: req.user.id }) }), "结束恢复剧情失败");
+  }
+
+  async function cancelCandyEffect(req, res) {
+    await respond(res, () => cancelRainbowBeanCandyEffectFn({
+      prisma,
+      userId: req.user.id,
+      characterId: req.params.characterId
+    }), "取消糖果效果失败");
+  }
+
   return {
     purchase,
     costumePurchase,
     costumeEquip,
     inventory,
-    useItem
+    useItem,
+    sigrikaCandyStory,
+    sigrikaCandyClimax,
+    sigrikaCandyDebugJump,
+    sigrikaCandyRecoveryStart,
+    sigrikaCandyRecoveryComplete,
+    cancelCandyEffect
   };
+}
+
+async function respond(res, action, fallbackMessage) {
+  try {
+    res.json(await action());
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? fallbackMessage });
+  }
 }
 
 function withAchievementUnlocks(result, achievementUnlocks = []) {
@@ -109,6 +165,12 @@ export function createCommerceRouter(deps) {
   router.post("/costumes/:id/purchase", handlers.costumePurchase);
   router.post("/costumes/equip", handlers.costumeEquip);
   router.get("/items/inventory", handlers.inventory);
+  router.get("/items/rainbow-bean-candy/sigrika/story", handlers.sigrikaCandyStory);
+  router.post("/items/rainbow-bean-candy/sigrika/climax", handlers.sigrikaCandyClimax);
+  router.post("/items/rainbow-bean-candy/sigrika/debug/jump-to-eight", handlers.sigrikaCandyDebugJump);
+  router.post("/items/rainbow-bean-candy/sigrika/recovery/start", handlers.sigrikaCandyRecoveryStart);
+  router.post("/items/rainbow-bean-candy/sigrika/recovery/complete", handlers.sigrikaCandyRecoveryComplete);
+  router.post("/items/rainbow-bean-candy/effects/:characterId/cancel", handlers.cancelCandyEffect);
   router.post("/items/:itemId/use", handlers.useItem);
   return router;
 }

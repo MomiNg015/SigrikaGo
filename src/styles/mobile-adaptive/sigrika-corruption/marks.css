@@ -1,0 +1,135 @@
+.corruption-noise {
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  pointer-events: none;
+  user-select: none;
+  contain: paint;
+}
+
+.corruption-fragment-image {
+  --corruption-fragment-limit: 7px;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+  contain: layout style;
+}
+
+.corruption-fragment-piece {
+  position: absolute;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: contain;
+  clip-path: var(--corruption-fragment-clip);
+  opacity: var(--corruption-fragment-opacity);
+  transform: translate3d(
+    clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-x), var(--corruption-fragment-limit)),
+    clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-y), var(--corruption-fragment-limit)),
+    0
+  );
+  pointer-events: none;
+}
+
+.corruption-fragment-piece:nth-child(4n + 1) {
+  animation: corruption-fragment-desync 5.4s steps(1, end) var(--corruption-fragment-delay) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes corruption-fragment-desync {
+  0%, 80%, 86%, 100% {
+    opacity: var(--corruption-fragment-opacity);
+  }
+
+  81% {
+    opacity: 0.18;
+    transform: translate3d(
+      calc(clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-x), var(--corruption-fragment-limit)) + 2px),
+      calc(clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-y), var(--corruption-fragment-limit)) - 1px),
+      0
+    );
+  }
+
+  83% {
+    opacity: 0.96;
+    transform: translate3d(
+      calc(clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-x), var(--corruption-fragment-limit)) - 1px),
+      clamp(calc(var(--corruption-fragment-limit) * -1), var(--corruption-fragment-y), var(--corruption-fragment-limit)),
+      0
+    );
+  }
+}
+
+@keyframes sigrika-handbook-card-data-break {
+  0%, 79%, 84%, 100% {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  80%, 82% {
+    -webkit-mask-image: linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0);
+    -webkit-mask-position: 0 0, var(--corruption-slice-forward, 5px) var(--corruption-slice-y, 54%), 0 100%;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% var(--corruption-slice-top, 48%), 100% var(--corruption-slice-band, 13%), 100% var(--corruption-slice-bottom, 32%);
+    mask-image: linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0);
+    mask-position: 0 0, var(--corruption-slice-forward, 5px) var(--corruption-slice-y, 54%), 0 100%;
+    mask-repeat: no-repeat;
+    mask-size: 100% var(--corruption-slice-top, 48%), 100% var(--corruption-slice-band, 13%), 100% var(--corruption-slice-bottom, 32%);
+  }
+
+  81%, 83% {
+    -webkit-mask-image: linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0);
+    -webkit-mask-position: 0 0, var(--corruption-slice-back, -4px) calc(var(--corruption-slice-y, 54%) - 7%), 0 100%;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% calc(var(--corruption-slice-top, 48%) - 7%), 100% calc(var(--corruption-slice-band, 13%) + 6%), 100% calc(var(--corruption-slice-bottom, 32%) + 2%);
+    mask-image: linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0), linear-gradient(rgb(0 0 0) 0 0);
+    mask-position: 0 0, var(--corruption-slice-back, -4px) calc(var(--corruption-slice-y, 54%) - 7%), 0 100%;
+    mask-repeat: no-repeat;
+    mask-size: 100% calc(var(--corruption-slice-top, 48%) - 7%), 100% calc(var(--corruption-slice-band, 13%) + 6%), 100% calc(var(--corruption-slice-bottom, 32%) + 2%);
+  }
+}
+
+@keyframes sigrika-handbook-noise-fault {
+  0%, 18%, 23%, 57%, 61%, 84%, 88%, 100% { opacity: 0.1; clip-path: none; }
+  19% { opacity: 0.22; clip-path: polygon(0 0, 100% 0, 100% 17%, 0 22%, 0 49%, 100% 43%, 100% 71%, 0 77%); }
+  21% { opacity: 0.07; clip-path: inset(31% 0 18%); }
+  58% { opacity: 0.18; clip-path: polygon(0 8%, 100% 0, 100% 36%, 0 41%, 0 68%, 100% 61%, 100% 100%, 0 92%); }
+  60% { opacity: 0.05; clip-path: inset(7% 0 63%); }
+  85% { opacity: 0.16; clip-path: inset(52% 0 9%); }
+  87% { opacity: 0.08; clip-path: none; }
+}
+
+@keyframes sigrika-handbook-card-fragment-flash {
+  0%, 79%, 84%, 100% { opacity: 0; transform: translateX(0); }
+  80% { opacity: 0.78; transform: translateX(5px); }
+  81% { opacity: 0.34; transform: translateX(-3px); }
+  82% { opacity: 0.66; transform: translateX(2px); }
+  83% { opacity: 0.18; transform: translateX(-1px); }
+}
+
+@keyframes sigrika-handbook-error-scan {
+  0%, 61%, 66%, 88%, 92%, 100% { opacity: 0; transform: translateX(0); }
+  62% { opacity: 0.72; transform: translateX(5px); }
+  63% { opacity: 0.28; transform: translateX(-4px); }
+  64% { opacity: 0.86; transform: translateX(2px); }
+  65% { opacity: 0.2; transform: translateX(0); }
+  89% { opacity: 0.52; transform: translateX(-3px); }
+  90% { opacity: 0.84; transform: translateX(3px); }
+  91% { opacity: 0.16; transform: translateX(0); }
+}

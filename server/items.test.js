@@ -1,6 +1,29 @@
 import { describe, expect, it } from "vitest";
 import { listItemInventory, parseItemEffects, parseOwnedItems, useInventoryItem } from "./items.js";
 
+const EQUIPPED_COSTUME_FIXTURE = [
+  {
+    characterSlug: "sigrika",
+    costume: {
+      id: "sigrika-costume-01",
+      name: "西格莉卡测试服装",
+      characterSlug: "sigrika",
+      portraitUrl: "/assets/costumes/portraits/sigrika-costume-01.webp",
+      enabled: true
+    }
+  },
+  {
+    characterSlug: "denia",
+    costume: {
+      id: "denia-costume-01",
+      name: "达妮娅测试服装",
+      characterSlug: "denia",
+      portraitUrl: "/assets/costumes/portraits/denia-costume-01.webp",
+      enabled: true
+    }
+  }
+];
+
 describe("items", () => {
   it("parses legacy csv inventory and json quantity inventory", () => {
     expect(parseOwnedItems("a,b,a")).toEqual({ a: 2, b: 1 });
@@ -362,7 +385,6 @@ describe("items", () => {
   });
 
   it.each([
-    ["sigrika", "sigrikaCandyDisabled"],
     ["denia", "deniaRainbowGlow"],
     ["aemeath", "aemeathRainbowMove"],
     ["lynae", "lynaeContraryVoice"]
@@ -380,6 +402,7 @@ describe("items", () => {
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character",
+        costumeEquipment: EQUIPPED_COSTUME_FIXTURE,
         updates,
         structuredWrites,
         storyScripts: [{
@@ -404,8 +427,38 @@ describe("items", () => {
     expect(response.user.coins).toBe(100);
     expect(response.user.selectedCharacter).toBe("sigrika");
     expect(response.user.itemEffects?.[effectKey]).not.toBe(true);
+    expect(response.user.equippedCostumes).toMatchObject({
+      sigrika: { portraitUrl: "/assets/costumes/portraits/sigrika-costume-01.webp" },
+      denia: { portraitUrl: "/assets/costumes/portraits/denia-costume-01.webp" }
+    });
     expect(updates).toEqual([]);
     expect(structuredWrites).toEqual([]);
+  });
+
+  it("always consumes Sigrika candy and advances its persistent story count", async () => {
+    const updates = [];
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "sigrika",
+      random: () => 0,
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,denia",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        costumeEquipment: EQUIPPED_COSTUME_FIXTURE,
+        updates
+      })
+    });
+
+    expect(response.itemUseOutcome).toBe("accepted");
+    expect(response.user.sigrikaCandyArc).toMatchObject({ useCount: 1, phase: "normal" });
+    expect(response.user.equippedCostumes).toMatchObject({
+      sigrika: { portraitUrl: "/assets/costumes/portraits/sigrika-costume-01.webp" },
+      denia: { portraitUrl: "/assets/costumes/portraits/denia-costume-01.webp" }
+    });
+    expect(updates[0]).toMatchObject({ sigrikaCandyUseCount: 1, sigrikaCandyPhase: "normal" });
   });
 
   it("rejects repeating an active rainbow candy effect without consuming the item", async () => {
@@ -451,6 +504,7 @@ function inventoryPrisma({
   itemEffects = "{}",
   ownedCharacters = "sigrika",
   userCharacters = [],
+  costumeEquipment = [],
   selectedCharacter = "sigrika",
   targetId = "dream-ticket",
   itemTargetType = "self",
@@ -462,7 +516,7 @@ function inventoryPrisma({
   structuredWrites = []
   , storyScripts = []
 } = {}) {
-  const user = {
+  let user = {
     id: "user-1",
     username: "moming",
     role: "player",
@@ -497,11 +551,21 @@ function inventoryPrisma({
   };
   const tx = {
     user: {
-      findUnique: async () => user,
+      findUnique: async ({ include } = {}) => ({
+        ...user,
+        ...(include?.userCharacters ? { userCharacters } : {}),
+        ...(include?.userDecorations ? { userDecorations: [] } : {}),
+        ...(include?.userItems ? { userItems: [] } : {}),
+        ...(include?.userItemEffects ? { userItemEffects: [] } : {}),
+        ...(include?.userCostumes ? { userCostumes: [] } : {}),
+        ...(include?.costumeEquipment ? { costumeEquipment } : {}),
+        ...(include?.modeStats ? { modeStats: [] } : {})
+      }),
       update: async ({ data }) => {
         updates.push(data);
         const nextUser = { ...user, ...data };
         if (data.coins?.increment) nextUser.coins = user.coins + data.coins.increment;
+        user = nextUser;
         return nextUser;
       }
     },

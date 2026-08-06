@@ -120,6 +120,55 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("iris-modal-portrait-v1");
   });
 
+  it("locks non-whitelisted home actions and exposes only the corrupted Sigrika duel entry", () => {
+    const html = renderHome({
+      matchModePickerOpen: true,
+      siteSettings: {
+        homeTitle: "星炬学院围棋部",
+        homeVersion: "v0.1.0",
+        irisGreeting: "",
+        irisLinks: "[]",
+        footerText: "[外部资料](https://example.com)"
+      },
+      user: {
+        sigrikaCandyArc: {
+          phase: "awaiting-duel",
+          corrupted: true
+        }
+      }
+    });
+    const corruptionCss = readCssFixture("../styles/mobile-adaptive/sigrika-corruption.css");
+
+    expect(html).toContain("is-sigrika-corrupted-home");
+    expect(html).toContain("sigrika-corruption-duel-button");
+    expect(html).not.toContain("sigrika-corruption-duel-zone");
+    expect(html).toContain("选择对弈模式");
+    expect(html).not.toContain("匹配协议已损坏");
+    expect(html).not.toContain("不限时 · 自动匹配");
+    expect(html).not.toContain("sigrika-corruption-duel-sigil");
+    expect(html).toContain("与西格莉卡？决战");
+    expect(html).toContain('class="home-player-plaque tactical-id-card"');
+    expect(html).not.toContain('class="iris-database-entry"');
+    expect(html).not.toContain('class="home-header-mascot"');
+    expect(html).not.toContain("home-brand-corruption-marks");
+    expect(html).not.toContain("house-manual-corruption-noise");
+    expect(html).toContain("house-manual-corruption-source");
+    expect(html).toContain('data-corruption-seed="home-house-access"');
+    expect(html).toContain('data-corruption-columns="10"');
+    expect(html).toContain('data-corruption-rows="12"');
+    expect(html).toContain('class="corruption-fragment-image house-manual-data-fragments"');
+    expect(html.match(/data-corruption-seed="home-utility-/g)).toHaveLength(6);
+    expect(html.match(/class="corruption-fragment-image utility-data-fragments"/g)).toHaveLength(6);
+    expect(html).not.toContain("corruption-scribble");
+    expect(html.match(/class="home-onboarding-corruption-lock"/g)).toHaveLength(2);
+    expect(html.match(/class="(?:icon-button onboarding-action|home-mobile-onboarding-action)"[^>]*disabled=""/g)).toHaveLength(2);
+    expect(corruptionCss).toContain(".home-onboarding-corruption-lock::before");
+    expect(corruptionCss).toContain(".home-onboarding-corruption-lock::after");
+    expect(corruptionCss).toContain("background: rgb(190 24 46)");
+    expect(html.match(/disabled=""/g)?.length ?? 0).toBeGreaterThanOrEqual(10);
+    expect(html).toContain("home-footer-disabled-link");
+  });
+
   it("renders the lobby as a Startorch tactical terminal shell", () => {
     const html = renderHome();
     const css = readCssFixture("../styles/home-terminal.css");
@@ -358,9 +407,11 @@ describe("HomeScreen", () => {
     const brightMobilePlaqueBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitPlaqueBlock = finalPortraitPlayerCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitAvatarBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar\s*\{[^}]+\}/)?.[0] ?? "";
+    const finalPortraitAvatarMaskBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar-mask\s*\{[^}]+\}/)?.[0] ?? "";
     const brightRowClipBlocks = brightHomeCss.match(/\.home-player-row\.tactical-id-row::before,[\s\S]+?\.home-player-row\.tactical-id-row::after\s*\{[^}]+\}/g) ?? [];
     const brightDisabledRowClipBlock = brightRowClipBlocks.find((block) => block.includes("content: none !important")) ?? "";
     const brightAvatarBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightAvatarMaskBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar-mask\s*\{[^}]+\}/)?.[0] ?? "";
     const brightAvatarImgBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongClipBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
@@ -420,6 +471,7 @@ describe("HomeScreen", () => {
     expect(gradeRankHtml).not.toContain(">5级</span>");
     expect(html).not.toContain("plaque-mode-name");
     expect(html).not.toContain("plaque-mode-rating");
+    expect(html).toContain('<span class="plaque-avatar"><span class="plaque-avatar-mask"><img');
     expect(html).not.toContain("1260分");
     expect(html).not.toContain("920分");
     expect(html).not.toContain("1010分");
@@ -522,7 +574,13 @@ describe("HomeScreen", () => {
     expect(brightAvatarBlock).toContain("height: var(--home-student-id-avatar-size) !important");
     expect(brightAvatarBlock).toContain("display: grid !important");
     expect(brightAvatarBlock).toContain("place-items: center !important");
+    expect(brightAvatarBlock).toContain("padding: 0 !important");
+    expect(brightAvatarBlock).toContain("overflow: visible !important");
     expect(brightAvatarBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(brightAvatarMaskBlock).toContain("padding: 4px !important");
+    expect(brightAvatarMaskBlock).toContain("border-radius: 12px !important");
+    expect(brightAvatarMaskBlock).toContain("overflow: hidden !important");
+    expect(brightAvatarMaskBlock).toContain("filter: drop-shadow(0 4px 4px rgba(61, 43, 37, 0.12)) !important");
     expect(narrowDesktopAvatarBlock).toContain("background: transparent");
     expect(narrowDesktopAvatarBlock).toContain("border: 0");
     expect(narrowDesktopAvatarBlock).toContain("box-shadow: none");
@@ -542,13 +600,16 @@ describe("HomeScreen", () => {
     expect(finalPortraitAvatarBlock).toContain("height: var(--home-student-id-avatar-size) !important");
     expect(finalPortraitAvatarBlock).toContain("display: grid");
     expect(finalPortraitAvatarBlock).toContain("place-items: center");
+    expect(finalPortraitAvatarBlock).toContain("padding: 0 !important");
     expect(finalPortraitAvatarBlock).toContain("transform: translate(-50%, -50%)");
+    expect(finalPortraitAvatarMaskBlock).toContain("padding: 3px !important");
     expect(brightAvatarImgBlock).toContain("width: auto !important");
     expect(brightAvatarImgBlock).toContain("height: auto !important");
     expect(brightAvatarImgBlock).toContain("max-width: 100% !important");
     expect(brightAvatarImgBlock).toContain("max-height: 100% !important");
     expect(brightAvatarImgBlock).toContain("margin: auto !important");
     expect(brightAvatarImgBlock).toContain("object-position: center center !important");
+    expect(brightAvatarImgBlock).toContain("filter: none !important");
     expect(brightPlaqueStrongBlock).toContain("padding-right: 6px");
     expect(brightPlaqueStrongBlock).toContain("grid-column: 2");
     expect(brightPlaqueStrongClipBlock).toContain("overflow: hidden");
@@ -865,7 +926,7 @@ describe("HomeScreen", () => {
     const brightMobileUtilityEntryBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileUtilityMotionBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileImageEntryBlock = brightMobileCss.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightMobileImageBlock = brightMobileCss.match(/\.home-image-entry img\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileImageBlock = brightMobileCss.match(/\.home-image-entry \.home-entry-motion > img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileMatchImageBlock = brightMobileCss.match(/\.match-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileUtilityArtBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     expect(brightMobileCss).toContain(".home-mobile-menu");

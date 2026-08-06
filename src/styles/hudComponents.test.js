@@ -75,14 +75,16 @@ describe("component-level HUD refinements", () => {
     );
   });
 
-  it("rewrites native scrollbars and input surfaces globally", () => {
-    expect(hudCss).toContain("*::-webkit-scrollbar");
+  it("scopes native scrollbars to terminal HUD surfaces and hardens input surfaces", () => {
+    expect(hudCss).toContain(".app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar");
     expect(hudCss).toContain("width: 4px");
-    expect(hudCss).toContain("*::-webkit-scrollbar-track");
+    expect(hudCss).toContain(".app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar-track");
     expect(hudCss).toContain("background: rgba(0, 0, 0, 0.3)");
-    expect(hudCss).toContain("*::-webkit-scrollbar-thumb");
+    expect(hudCss).toContain(".app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar-thumb");
     expect(hudCss).toContain("background: var(--hud-cyan)");
     expect(hudCss).toContain("box-shadow: 0 0 8px var(--hud-cyan)");
+    expect(hudCss).not.toMatch(/(?:^|\n)\*\s*\{[^}]*scrollbar-color:/);
+    expect(hudCss).not.toMatch(/(?:^|\n)\*::\-webkit-scrollbar/);
     expect(hudCss).toContain("textarea");
     expect(hudCss).toContain(".message-board-modal textarea");
     expect(hudCss).toContain("background: var(--hud-bg-deep) !important");

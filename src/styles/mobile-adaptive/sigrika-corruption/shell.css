@@ -1,0 +1,166 @@
+.app-shell.is-sigrika-corrupted {
+  --sigrika-corruption-overlay-z: 2000;
+  --sigrika-corruption-action-z: 2001;
+  position: relative;
+  isolation: isolate;
+  background: #050506;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.home-screen.is-sigrika-corrupted-home) {
+  background-color: rgb(214 214 211) !important;
+  background-blend-mode: luminosity !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .home-screen.is-sigrika-corrupted-home {
+  background-color: rgb(238 238 235) !important;
+  background-blend-mode: luminosity !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted main.home-screen.is-sigrika-corrupted-home > section.home-main-panel.home-terminal-main {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted > .home-footer-strip {
+  color: rgb(72 72 72) !important;
+  filter: grayscale(1) saturate(0) contrast(1.12) brightness(0.82) !important;
+  opacity: 0.5 !important;
+}
+
+.app-shell.is-sigrika-corrupted > :is(.match-mode-backdrop, .sigrika-corruption-house-backdrop) {
+  z-index: var(--sigrika-corruption-action-z);
+}
+
+.app-shell.is-sigrika-corrupted > :not(.home-screen, .match-mode-backdrop, .sigrika-corruption-house-backdrop, .sigrika-corruption-field),
+.app-shell.is-sigrika-corrupted > .modal-backdrop:not(.match-mode-backdrop, .sigrika-corruption-house-backdrop) > * {
+  filter: grayscale(1) contrast(1.24) brightness(0.78);
+}
+
+.app-shell.is-sigrika-corrupted::before,
+.app-shell.is-sigrika-corrupted::after {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sigrika-corruption-overlay-z);
+  pointer-events: none;
+  content: "";
+}
+
+.app-shell.is-sigrika-corrupted::before {
+  opacity: 0.88;
+  background: radial-gradient(ellipse at 50% 46%, transparent 0 32%, rgb(0 0 0 / 0.16) 52%, rgb(0 0 0 / 0.7) 82%, rgb(0 0 0 / 0.96) 100%);
+  animation: sigrika-corruption-blackout 5.2s steps(1, end) infinite;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted:has(.home-screen)::before {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: var(--sigrika-corruption-overlay-z) !important;
+  display: block !important;
+  content: "" !important;
+  opacity: 0.9 !important;
+  background: radial-gradient(ellipse at 50% 46%, transparent 0 32%, rgb(0 0 0 / 0.16) 52%, rgb(0 0 0 / 0.7) 82%, rgb(0 0 0 / 0.96) 100%) !important;
+  pointer-events: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted:has(.home-screen)::after {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: var(--sigrika-corruption-overlay-z) !important;
+  display: block !important;
+  content: "" !important;
+  background: rgb(255 255 255 / 0.08) !important;
+  -webkit-backdrop-filter: invert(1) grayscale(1) contrast(2.8) !important;
+  backdrop-filter: invert(1) grayscale(1) contrast(2.8) !important;
+  clip-path: polygon(0 13%, 100% 13%, 100% 18%, 0 18%, 0 48%, 100% 48%, 100% 51%, 0 51%, 0 79%, 100% 79%, 100% 87%, 0 87%) !important;
+  pointer-events: none !important;
+}
+
+.app-shell.is-sigrika-corrupted::after {
+  background: rgb(255 255 255 / 0.08);
+  -webkit-backdrop-filter: invert(1) grayscale(1) contrast(2.8);
+  backdrop-filter: invert(1) grayscale(1) contrast(2.8);
+  clip-path: polygon(0 13%, 100% 13%, 100% 18%, 0 18%, 0 48%, 100% 48%, 100% 51%, 0 51%, 0 79%, 100% 79%, 100% 87%, 0 87%);
+  opacity: 0;
+  animation: sigrika-corruption-frame-slice 5.2s steps(1, end) infinite;
+}
+
+.app-shell.is-sigrika-corrupted :where(button:disabled, [aria-disabled="true"]) {
+  cursor: not-allowed;
+}
+
+.app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header :is(.topbar-actions, .home-mobile-menu) {
+  filter: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header :is(
+  .topbar-actions > button,
+  .topbar-actions .onboarding-action,
+  .home-mobile-menu-toggle,
+  .home-mobile-menu-panel > button,
+  .home-mobile-onboarding-action
+) {
+  filter: grayscale(1) contrast(1.12) !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-mobile-menu-panel {
+  border-color: rgb(62 62 62) !important;
+  background: rgb(226 226 222) !important;
+  box-shadow: 3px 4px 0 rgb(62 62 62 / 0.58) !important;
+}
+
+.home-onboarding-corruption-lock {
+  position: relative;
+  display: inline-grid;
+}
+
+.home-mobile-menu-panel > .home-onboarding-corruption-lock {
+  width: 100%;
+}
+
+.home-onboarding-corruption-lock::before,
+.home-onboarding-corruption-lock::after {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: min(68%, 34px);
+  height: 3px;
+  background: rgb(190 24 46);
+  pointer-events: none;
+  content: "";
+}
+
+.home-onboarding-corruption-lock::before {
+  transform: translate(-50%, -50%) rotate(43deg);
+}
+
+.home-onboarding-corruption-lock::after {
+  transform: translate(-50%, -50%) rotate(-47deg);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-house-backdrop > .house-modal {
+  filter: none;
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-match-modal {
+  filter: none;
+  text-shadow: 3px 0 0 rgb(255 255 255 / 0.18), -2px 0 0 rgb(0 0 0 / 0.8);
+  box-shadow: 12px 0 0 rgb(255 255 255 / 0.13), -16px 0 0 rgb(0 0 0 / 0.72);
+}
+
+@keyframes sigrika-corruption-blackout {
+  0%, 66%, 70%, 89%, 92%, 100% { opacity: 0.88; }
+  67% { opacity: 0.98; }
+  68% { opacity: 0.68; }
+  90% { opacity: 1; }
+  91% { opacity: 0.76; }
+}
+
+@keyframes sigrika-corruption-frame-slice {
+  0%, 71%, 76%, 94%, 97%, 100% { opacity: 0; transform: translateX(0); }
+  72% { opacity: 0.9; transform: translateX(18px); }
+  73% { opacity: 0.52; transform: translateX(-13px); }
+  74% { opacity: 0.76; transform: translateX(7px); }
+  95% { opacity: 0.7; transform: translateX(-8px); }
+  96% { opacity: 0.28; transform: translateX(4px); }
+}

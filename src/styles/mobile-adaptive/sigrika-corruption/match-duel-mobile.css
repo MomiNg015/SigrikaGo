@@ -1,0 +1,35 @@
+@media (max-width: 768px) {
+  .app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > h2,
+  .app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .match-mode-options {
+    opacity: 0.24;
+    filter: grayscale(1) blur(2.2px) contrast(1.12);
+  }
+
+  .app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button {
+    top: 50%;
+    width: calc(100% - 40px);
+    min-height: 74px;
+    padding: 10px 12px;
+    box-shadow: 0 0 0 1px #42070f, 4px 5px 0 #31040a;
+  }
+
+  .app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button:is(:hover, :focus-visible) {
+    box-shadow: 0 0 0 1px #530812, 5px 6px 0 #31040a;
+    transform: translate(-50%, calc(-50% - 1px));
+  }
+
+  .app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button {
+    font-size: clamp(0.88rem, 4.2vw, 1rem);
+  }
+
+  .app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .secondary-action {
+    min-width: 96px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button {
+    width: calc(100% - 28px);
+  }
+}

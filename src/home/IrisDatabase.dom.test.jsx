@@ -109,4 +109,15 @@ describe("IRIS Database home interaction", () => {
 
     expect(screen.queryByRole("dialog")).toBeNull();
   });
+
+  it("cannot be opened while the Sigrika corruption state is active", async () => {
+    const user = userEvent.setup();
+    render(<IrisDatabase disabled />);
+    const entry = screen.getByRole("button", { name: "打开 IRIS 数据库" });
+
+    expect(entry.disabled).toBe(true);
+    await user.click(entry);
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(playUiIrisDatabaseOpenSound).not.toHaveBeenCalled();
+  });
 });

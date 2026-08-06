@@ -1,6 +1,7 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
+import { CorruptionFragmentImage, CorruptionNoise, createCorruptionCadence } from "../../ui/CorruptionMarks.jsx";
 import {
   activeCharacterItemEffects,
   characterCandyPortraitProps,
@@ -15,6 +16,10 @@ export default function HouseCharacterGrid({
   owned,
   selectedCharacter,
   user,
+  candyEffectCancellationEnabled = false,
+  cancellingCandyEffect = "",
+  sigrikaCorrupted = false,
+  onCancelCandyEffect,
   onOpenCharacterDetail,
   onSelectCharacter
 }) {
@@ -48,39 +53,96 @@ export default function HouseCharacterGrid({
             </div>
           );
         }
+        const corruptionFocused = sigrikaCorrupted && characterId === "sigrika";
+        const displayName = corruptionFocused ? "西格莉卡？" : character.name;
+        const portraitProps = characterCandyPortraitProps(character, itemEffects, user);
+        const portraitSrc = portraitProps.src ?? character.portrait;
+        const corruptionCadence = sigrikaCorrupted && !corruptionFocused
+          ? createCorruptionCadence(`house-card-${characterId}`)
+          : null;
         return (
           <div
-            className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"}`}
+            className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
             key={character.id}
-            onClick={() => onOpenCharacterDetail(character)}
-            role="button"
-            tabIndex={0}
+            onClick={() => {
+              if (!sigrikaCorrupted) onOpenCharacterDetail(character);
+            }}
+            role={sigrikaCorrupted ? "img" : "button"}
+            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : undefined}
+            tabIndex={sigrikaCorrupted ? -1 : 0}
             data-ui-sound="none"
+            style={corruptionCadence ? {
+              "--corruption-card-delay": corruptionCadence.cardDelay,
+              "--corruption-card-direction": corruptionCadence.cardDirection,
+              "--corruption-card-duration": corruptionCadence.cardDuration,
+              "--corruption-flash-first-end": corruptionCadence.flashFirstEnd,
+              "--corruption-flash-first-start": corruptionCadence.flashFirstStart,
+              "--corruption-flash-second-end": corruptionCadence.flashSecondEnd,
+              "--corruption-flash-second-start": corruptionCadence.flashSecondStart,
+              "--corruption-flash-third-end": corruptionCadence.flashThirdEnd,
+              "--corruption-flash-third-start": corruptionCadence.flashThirdStart,
+              "--corruption-flash-y-first": corruptionCadence.flashYFirst,
+              "--corruption-flash-y-second": corruptionCadence.flashYSecond,
+              "--corruption-flash-y-third": corruptionCadence.flashYThird,
+              "--corruption-noise-delay": corruptionCadence.noiseDelay,
+              "--corruption-noise-direction": corruptionCadence.noiseDirection,
+              "--corruption-noise-duration": corruptionCadence.noiseDuration,
+              "--corruption-slice-back": corruptionCadence.sliceBack,
+              "--corruption-slice-band": corruptionCadence.sliceBand,
+              "--corruption-slice-bottom": corruptionCadence.sliceBottom,
+              "--corruption-slice-forward": corruptionCadence.sliceForward,
+              "--corruption-slice-top": corruptionCadence.sliceTop,
+              "--corruption-slice-y": corruptionCadence.sliceY
+            } : undefined}
             onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") onOpenCharacterDetail(character);
+              if (!sigrikaCorrupted && (event.key === "Enter" || event.key === " ")) onOpenCharacterDetail(character);
             }}
           >
-            <button
-              className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
-              title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
-              data-ui-sound="confirm"
-              disabled={sortieDisabled}
-              onClick={(event) => {
-                event.stopPropagation();
-                selectSortieCharacter({
-                  character,
-                  disabled: sortieDisabled,
-                  itemEffects,
-                  audioSettings,
-                  onSelectCharacter
-                });
-              }}
-            >
-              <Flag size={18} />
-            </button>
+            {!sigrikaCorrupted && (
+              <button
+                className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
+                title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
+                data-ui-sound="confirm"
+                disabled={sortieDisabled}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  selectSortieCharacter({
+                    character,
+                    disabled: sortieDisabled,
+                    itemEffects,
+                    audioSettings,
+                    onSelectCharacter
+                  });
+                }}
+              >
+                <Flag size={18} />
+              </button>
+            )}
             {itemEffectBadges.length > 0 && (
-              <div className="character-item-effect-badges" aria-label={`${character.name}道具效果`}>
-                {itemEffectBadges.map((effect) => (
+              <div
+                className={`character-item-effect-badges${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
+                aria-label={`${character.name}道具效果`}
+              >
+                {itemEffectBadges.map((effect) => candyEffectCancellationEnabled ? (
+                  <button
+                    key={`${characterId}-${effect.effectKey}`}
+                    type="button"
+                    className="character-item-effect-cancel"
+                    aria-label={`取消${character.name}的${effect.label}`}
+                    title="点击取消效果（仅开发环境）"
+                    disabled={cancellingCandyEffect === characterId}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onCancelCandyEffect?.(characterId);
+                    }}
+                  >
+                    <img className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} loading="lazy" decoding="async" />
+                  </button>
+                ) : (
                   <img
                     key={`${characterId}-${effect.effectKey}`}
                     className="character-item-effect-icon"
@@ -93,9 +155,28 @@ export default function HouseCharacterGrid({
                 ))}
               </div>
             )}
-            <img {...characterCandyPortraitProps(character, itemEffects, user)} alt={character.name} />
+            <img
+              {...portraitProps}
+              alt={displayName}
+              className={sigrikaCorrupted && !corruptionFocused ? "character-corruption-source" : undefined}
+              src={portraitSrc}
+            />
+            {sigrikaCorrupted && !corruptionFocused && (
+              <>
+                <CorruptionNoise
+                  className="character-card-corruption-noise"
+                  count={47}
+                  seed={`house-card-${characterId}`}
+                />
+                <CorruptionFragmentImage
+                  className="character-data-fragments"
+                  seed={`house-${characterId}`}
+                  src={portraitSrc}
+                />
+              </>
+            )}
             <CharacterChainBadge user={user} characterId={characterId} />
-            <strong>{character.name}</strong>
+            <strong>{displayName}</strong>
           </div>
         );
       })}

@@ -4,7 +4,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
-import { characterItemUseNotice, itemStoryLabels } from "./warehouse/useWarehouseInventory.js";
+import {
+  characterItemUseNotice,
+  itemStoryLabels,
+  withSigrikaCandyDebugJumpOption
+} from "./warehouse/useWarehouseInventory.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
@@ -214,6 +218,25 @@ describe("WarehouseModal candy feedback", () => {
     expect(brightSchoolCss).toContain(".warehouse-item .primary-action:disabled");
     expect(brightSchoolCss).toContain("background: #d8d4cc !important");
     expect(brightSchoolCss).toContain("cursor: not-allowed !important");
+  });
+
+  it("adds a development-only eighth-use shortcut without removing the normal story path", () => {
+    const script = {
+      startNodeId: "use-3-start",
+      nodes: [
+        { id: "use-3-start", text: "第三次阅读。", nextNodeId: "shared-effect-start", options: [] },
+        { id: "shared-effect-start", text: "通用剧情。", nextNodeId: "" }
+      ]
+    };
+
+    const development = withSigrikaCandyDebugJumpOption(script, { characterId: "sigrika", enabled: true });
+    expect(development.nodes[0].options).toEqual([
+      { label: "继续当前剧情", nextNodeId: "shared-effect-start" },
+      { label: "【测试】直接跳到第 8 次（黑化剧情）", nextNodeId: "debug-jump-to-sigrika-candy-use-8" }
+    ]);
+    expect(script.nodes[0].options).toEqual([]);
+    expect(withSigrikaCandyDebugJumpOption(script, { characterId: "sigrika", enabled: false })).toBe(script);
+    expect(withSigrikaCandyDebugJumpOption(script, { characterId: "denia", enabled: true })).toBe(script);
   });
 
   it("shows the magic clock details and quantity without a warehouse use button", () => {

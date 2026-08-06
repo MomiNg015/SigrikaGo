@@ -14,6 +14,7 @@ export function createRoomChatLifecycle({
 
     const room = rooms.get(validatedRoomCode.value);
     if (!room) return null;
+    if (room.sigrikaCandyDuel) return null;
 
     const message = {
       id: randomUUID(),

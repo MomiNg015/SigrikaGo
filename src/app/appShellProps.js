@@ -19,7 +19,7 @@ export function buildAppOverlayProps({
   overlayState = {}
 }) {
   const {
-    activeStoryPlayer = { script: null, labels: null, onComplete: null }
+    activeStoryPlayer = { script: null, labels: null, onComplete: null, onNavigate: null }
   } = overlayState;
   const {
     clearStoryPlayer,

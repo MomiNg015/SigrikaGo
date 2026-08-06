@@ -61,7 +61,7 @@
     z-index: 1;
     width: var(--home-student-id-avatar-size) !important;
     height: var(--home-student-id-avatar-size) !important;
-    padding: 3px !important;
+    padding: 0 !important;
     display: grid;
     place-items: center;
     box-sizing: border-box;
@@ -69,6 +69,10 @@
     border: 0;
     box-shadow: none;
     transform: translate(-50%, -50%);
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar-mask {
+    padding: 3px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar .character-chain-badge {

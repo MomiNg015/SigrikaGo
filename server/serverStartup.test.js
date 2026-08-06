@@ -32,6 +32,7 @@ describe("server startup", () => {
     const seedDefaultStoryScripts = task("seedDefaultStoryScripts");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
+    const ensureSigrikaCandyArcSchema = task("ensureSigrikaCandyArcSchema");
     const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
     const migrateBuiltinPortraitAssets = task("migrateBuiltinPortraitAssets");
     const migrateLegacyAemeathOwnership = task("migrateLegacyAemeathOwnership");
@@ -61,6 +62,7 @@ describe("server startup", () => {
       seedDefaultStoryScripts,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
+      ensureSigrikaCandyArcSchema,
       seedAdminDefaultConfig,
       migrateBuiltinPortraitAssets,
       migrateLegacyAemeathOwnership,
@@ -97,7 +99,8 @@ describe("server startup", () => {
       "ensureRoomPersistenceSchema",
       "ensureLoginSessionSchema",
       "ensureGameModeSchema",
-      "ensureMailboxSchema"
+      "ensureMailboxSchema",
+      "ensureSigrikaCandyArcSchema"
     ]);
     expect(calls).toEqual(SERVER_STARTUP_TASK_ORDER);
   });

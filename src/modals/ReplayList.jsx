@@ -3,6 +3,7 @@ import { findCharacter } from "../shared/characterDisplay.js";
 import { COLORS } from "../shared/game.js";
 import { recordWinnerColor } from "../shared/gameRecords.js";
 import { costumePortraitFrameStyle } from "../shared/costumes.js";
+import { SIGRIKA_CANDY_DUEL } from "../shared/sigrikaCandyArc.js";
 
 export function ReplayList({ records = [], characters, onOpenReplay, compact = false, currentUser = null }) {
   if (records.length === 0) return <p className="quiet-text">暂无已结束的对局记录。</p>;
@@ -19,12 +20,19 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
       {records.map((record) => {
         const outcome = replayOutcomeForUser(record, currentUser);
         const friendly = record.rated === false;
+        const isSigrikaCandyDuel = record.matchSource === SIGRIKA_CANDY_DUEL.matchSource;
         return (
-        <button className={`replay-table-row ${outcome ? `outcome-${outcome}` : ""}`} key={record.id} type="button" onClick={() => onOpenReplay?.(record.id)}>
+        <button className={`replay-table-row ${outcome ? `outcome-${outcome}` : ""} ${isSigrikaCandyDuel ? "is-sigrika-candy-duel-replay" : ""}`} key={record.id} type="button" onClick={() => onOpenReplay?.(record.id)}>
           <span className="replay-time-cell">
-            {friendly && (
+            {friendly && !isSigrikaCandyDuel && (
               <span className="replay-friendly-icon" title="友谊对局" aria-label="友谊对局">
                 <Handshake size={16} aria-hidden="true" />
+              </span>
+            )}
+            {isSigrikaCandyDuel && (
+              <span className="sigrika-duel-replay-labels">
+                <strong>{SIGRIKA_CANDY_DUEL.replayTitle}</strong>
+                <em>{SIGRIKA_CANDY_DUEL.replayTag}</em>
               </span>
             )}
             <span>{formatReplayTime(record.createdAt)}</span>

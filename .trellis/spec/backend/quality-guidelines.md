@@ -227,26 +227,30 @@ Correct:
 - This is a cross-layer contract because one server-side random result controls transaction writes, API response fields, published-story entry, frontend toast/skip copy, achievement evaluation, Aemeath's room-board feedback, and Lynae's room/house/result voice routing.
 
 #### 2. Signatures
-- `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `itemUseOutcome: "accepted" | "rejected"`.
-- `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`.
+- `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `{ user, items, item, effectText, storyScript, target, itemUseOutcome }`; Sigrika always returns `accepted`, while the other supported characters retain the random outcome. The returned `user` is a complete `publicUser()` projection because the warehouse passes it directly to `onUserChange`.
+- `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the ordinary stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`. Sigrika instead uses `use-1-start` through `use-7-start` plus `corruption-start`.
 - Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
 - Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, `aemeathRainbowMove`, and `lynaeContraryVoice`.
 - `src/shared/rainbowBeanCandy.js` is the shared frontend/backend registry for the candy item id, supported character ids, effect keys, and active-state labels. Warehouse target availability must consume this registry instead of maintaining a local character whitelist.
+- `POST /api/items/rainbow-bean-candy/effects/:characterId/cancel` returns `{ user }`; because the frontend passes that value to `onUserChange`, this must be a complete `publicUser()` projection with `equippedCostumes`, not a relation-free partial user.
 - `aemeathRainbowMoveEffectForRoom(room)` returns `{ pointId, key }` only when the latest history action is a move by an Aemeath player whose public user has `aemeathRainbowMove === true`; otherwise it returns `null`.
 - `contraryLynaeVoiceEvent(event, { character, params })` remaps an event only when `canonicalCharacterId(character.id) === "lynae"` and `character.itemEffects.lynaeContraryVoice === true`.
 - Finished room player payloads may expose `completedItemEffects: object | null`; this is a result-presentation snapshot, not the user's current persistent effect state.
 
 #### 3. Contracts
 - Resolve ownership, target validity, an already-active effect, and Sigrika fallback-character availability before rolling. Invalid use remains an HTTP error and never turns into a narrative rejection.
-- For Sigrika, Denia, Aemeath, and Lynae, rolls `< 0.35` reject and rolls `>= 0.35` accept. Inject `random` in domain tests; production uses `Math.random`.
+- Sigrika never rolls or rejects: every otherwise-valid use is accepted and consumed. Denia, Aemeath, and Lynae retain rolls `< 0.35` as rejection and `>= 0.35` as acceptance. Inject `random` in domain tests; production uses `Math.random`.
 - Rejection performs no user/structured-asset write, does not decrement inventory, does not switch Sigrika, does not trigger the Denia candy achievement, and selects `rejected-start` in the returned published script.
-- Acceptance consumes one candy, applies the character's temporary effect, selects `accepted-start`, and may trigger the Denia candy achievement. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules. Lynae acceptance applies `lynaeContraryVoice` without changing UI text, clock state, skill behavior, winner data, rewards, or result SFX.
+- Acceptance consumes one candy, applies the character's temporary effect, and may trigger the Denia candy achievement. Ordinary characters select `accepted-start`; Sigrika increments the persisted arc count and selects the matching numbered/corruption entry. Sigrika acceptance does not award coins. Aemeath acceptance applies `aemeathRainbowMove` without changing stones, move legality, skills, scoring, or other game rules. Lynae acceptance applies `lynaeContraryVoice` without changing UI text, clock state, skill behavior, winner data, rewards, or result SFX.
 - Aemeath's board marker is presentation-only: it is attached to the exact latest move point, is pointer-transparent, keeps the underlying black/white stone unchanged, and has a `prefers-reduced-motion` fallback. Its source must inherit the rendered stone's deterministic jitter offset so the two visual centers stay within 1 CSS pixel. Four traces follow the real horizontal/vertical axes to their corresponding board edges, fade from opaque at the source to transparent outward, and light each crossed intersection with distance-attenuated nodes. The Bright School portrait-mobile global `max-width` guard must be cleared only on owned trace elements so multi-cell rays are not capped to one point. Seven discrete frequency echoes replace a generic conic-gradient circle. Opponent moves, passes, skills, and inactive Aemeath users must not show it.
 - A valid finished game clears `aemeathRainbowMove` only when that user played Aemeath; playing another character must preserve it for a later Aemeath game.
 - Lynae voice remapping is fixed, not random: countdown `N` maps to `11-N`; period 2 ↔ period 1, game start ↔ byo-yomi start, sortie ↔ skill cast, and victory ↔ defeat. Draw, house detail, and timeout silence stay unchanged.
 - A valid finished game clears `lynaeContraryVoice` only when that user played Lynae. Before mutating `player.user.itemEffects`, `prepareCandyEffectUpdates()` copies the pre-clear effects to `player.completedItemEffects`; `buildRoomView()` exposes that snapshot so `ResultModal` can still swap the current game's victory/defeat voice after persistent cleanup. No other next-game voice path may consume `completedItemEffects`.
 - Warehouse feedback must not say “成功使用” on rejection, and rejection skip confirmation must state that the item was not consumed and the effect did not apply.
 - Every server-supported candy target must be selectable in the warehouse while its effect is inactive and disabled as “效果中” while its registered effect key is active.
+- Development-only candy-effect cancellation must reuse `canUseDebugTestActions({ NODE_ENV: nodeEnv })` rather than require the literal `development` string. Local `npm run dev` may leave `NODE_ENV` unset and Vitest uses `test`; both are non-production debug runtimes, while `production` must continue returning HTTP 404.
+- Candy-effect cancellation must use `USER_ASSET_RELATION_INCLUDE` on the initial query and on a fresh query after structured-asset synchronization before calling `publicUser()`. Removing one `itemEffects` key must preserve every unrelated user projection field, especially `equippedCostumes`, without letting a pre-sync `userItemEffects` relation reintroduce the canceled effect.
+- Every item-use outcome must preserve the same complete-user contract. The initial `useInventoryItem()` lookup uses `USER_ASSET_RELATION_INCLUDE` so rejection can return a complete user without writing; acceptance updates legacy fields, synchronizes structured assets, then re-queries with the full include before calling `publicUser()`, preventing stale relations and preserving all equipped-costume portraits.
 
 #### 4. Validation & Error Matrix
 - Unsupported candy character -> existing HTTP 400 no-effect error, no random narrative branch.
@@ -258,12 +262,19 @@ Correct:
 - Lynae effect is absent or the voice belongs to another character -> resolve the original event.
 - Invalid or practice game -> do not clear `lynaeContraryVoice` and do not create a completion snapshot.
 - Valid Lynae game -> persistent `itemEffects` no longer contains `lynaeContraryVoice`, while the finished room player exposes it in `completedItemEffects` for result voice only.
+- Candy-effect cancellation with missing, `development`, or `test` `NODE_ENV` -> allow the authenticated debug action; `production` -> HTTP 404 `接口不存在`.
+- Candy-effect cancellation for a user with equipped costumes -> response removes only the targeted effect and preserves each equipped costume id, portrait URL, candy portrait URL, and framing metadata; an already-absent effect follows the same complete-user response contract.
+- Accepted or rejected item use for a user with multiple equipped costumes -> response keeps every `equippedCostumes` entry and its portrait/framing metadata while changing only the outcome-owned inventory/effect fields.
 
 #### 5. Good/Base/Bad Cases
 - Good: an injected `0.349999` rejects Denia, keeps the candy, leaves `deniaRainbowGlow` unset, and suppresses `denia-rainbow-bean-candy`.
 - Good: an accepted Aemeath move renders one short, stone-centered rainbow grid pulse whose four rays fade toward the board edges while the ordinary stone remains present.
 - Good: Lynae reaches 10 seconds and plays `lynae_countdown_1.ogg`; the timer still displays 10, then the final win UI/SFX remain a win while her result voice uses the loss line.
 - Base: an injected `0.35` accepts, proving the exact 35% boundary without an off-by-one gap.
+- Base: Sigrika accepts even when the injected random source returns `0`, proving that her branch bypasses rejection rather than relying on a favorable roll.
+- Good: cancelling Sigrika's effect for a user wearing Denia's costume returns the same `equippedCostumes.denia` payload, so every handbook portrait remains stable after `onUserChange`.
+- Good: accepted Sigrika use and rejected Denia/Aemeath/Lynae use both return the user's Sigrika and Denia equipped portraits unchanged, while only accepted use consumes inventory or mutates effects.
+- Bad: returning `publicUser(await tx.user.update({ data }))` without asset relation includes, because `equippedCostumes` becomes `{}` until a later full-user request repairs client state.
 - Bad: decrementing inventory before the roll and trying to restore it on rejection, because structured sync and achievement side effects can already have escaped.
 - Bad: setting narrator `speakerName: "旁白"`, because the player window must leave the character region blank.
 - Bad: tinting or replacing every Aemeath stone, because the agreed effect is a transient move-contact ripple and not a stone decoration or game rule.
@@ -271,7 +282,8 @@ Correct:
 
 #### 6. Tests Required
 - `server/rainbowBeanCandyStory.test.js` locks the probability boundary, stable start ids, Word-authored lines, and blank narrator identity.
-- `server/items.test.js` asserts accepted writes and rejected zero-write behavior for all four characters.
+- `server/items.test.js` asserts accepted Sigrika writes, accepted/rejected settlement for Denia, Aemeath, and Lynae, and multi-character equipped-costume preservation on both accepted and rejected responses.
+- `server/sigrikaCandyArc.test.js` asserts Sigrika's persistent count/phase transitions, mandatory corruption boundary, result-specific recovery, reset, the candy cancellation guard for missing/development versus production `NODE_ENV`, and equipped-costume preservation in the returned user projection.
 - `server/roomItemEffects.test.js` asserts Aemeath and Lynae effects clear after a valid matching-character game, survive a valid game played as another character, and preserve Lynae's result-only completion snapshot.
 - `server/commerceRoutes.test.js` asserts only accepted Denia use supplies the achievement trigger.
 - `server/adminDefaultSnapshot.test.js` asserts draft/published snapshot parity, both branch entries, publish validation, and no `旁白` speaker.
@@ -356,6 +368,104 @@ return latestAction?.type === "move"
   && player?.user?.itemEffects?.aemeathRainbowMove
     ? { pointId: latestAction.id, key: `${latestAction.moveNumber}:${latestAction.color}:${latestAction.id}` }
     : null;
+```
+
+Wrong:
+
+```js
+if (nodeEnv !== "development") throw routeError(404, "接口不存在");
+```
+
+Correct:
+
+```js
+if (!canUseDebugTestActions({ NODE_ENV: nodeEnv })) {
+  throw routeError(404, "接口不存在");
+}
+```
+
+Wrong:
+
+```js
+const updated = await tx.user.update({
+  where: { id: userId },
+  data: { itemEffects }
+});
+return { user: publicUser(updated) };
+```
+
+Correct:
+
+```js
+const updated = await tx.user.update({
+  where: { id: userId },
+  data: { itemEffects }
+});
+await syncStructuredUserAssets(tx, updated);
+const projectedUser = await tx.user.findUnique({
+  where: { id: userId },
+  include: USER_ASSET_RELATION_INCLUDE
+});
+return { user: publicUser(projectedUser) };
+```
+
+### Scenario: Sigrika Candy Corruption Arc And Recovery Duel
+
+#### 1. Scope / Trigger
+- Trigger: changing Sigrika rainbow-bean-candy use counting, corruption story progression, corrupted home restrictions, the special NPC duel, recovery, or development-only candy cancellation.
+- This is a persisted cross-layer state machine. Item settlement, story entry nodes, account state, Socket.IO room creation, room snapshots, result persistence, replay projection, and global UI restrictions must move together.
+
+#### 2. Signatures
+- Persisted user fields: `sigrikaCandyUseCount`, `sigrikaCandyPhase`, `sigrikaCandyOutcome`, and `sigrikaCandyRoomCode`.
+- Phases: `normal`, `corruption-story`, `awaiting-duel`, `duel-active`, `result-pending`, and `recovery-story`.
+- Special room identity: `matchSource: "sigrika-corruption-duel"`, `rated: false`, `recordPolicy: "replay-only"`, and persisted `sigrikaCandyDuel` metadata.
+- Socket entry: `sigrika-candy:duel-start`; recovery endpoints live below `/api/items/rainbow-bean-candy/sigrika/*`.
+
+#### 3. Contracts
+- The count starts at zero and increments only inside a successful Sigrika candy transaction. Uses 1–7 enter `use-N-start` and converge on the existing common effect tail; use 8 enters `corruption-start`. Further uses are rejected until recovery resets the arc.
+- Entering the corruption climax moves the account to `awaiting-duel`. Refresh/login must reconstruct the active phase; no client-only flag may be authoritative.
+- Corruption story is mandatory and non-skippable. Recovery story is result-specific and skippable, but completing or skipping it must call the same recovery completion boundary.
+- The special duel is an immediate private 13x13 Spark room with komi 2.75, random player color, Sigrika NPC, no character/skill for the player, no skills for either side, no draw request, no capture auto-resign, unlimited damaged-clock presentation, system-only logs, and no public watch/join/chat path.
+- The special bot uses advanced GNU Go level 10, then intermediate level 5, then the beginner heuristic in the same turn when a tier cannot return a usable action. This fallback is exclusive to `sigrikaCandyDuel`; ordinary practice rooms retain their no-fallback failure policy. The engine boundary remains replaceable by a future high-compute KataGo adapter.
+- Result persistence writes one replay-only record and the account arc outcome, but no rating, statistics, coins, growth, achievements, rewards, or task progress. Concurrent result persistence must remain idempotent.
+- The result modal exposes only the recovery continuation path. Win/loss selects the matching recovery start node; recovery completion removes `sigrikaCandyDisabled`, resets count/phase/outcome/room code, and restores all ordinary UI.
+- Development builds may cancel an ordinary active candy effect by clicking its character-card candy badge. Cancellation never refunds inventory, decrements the count, replays story, or bypasses any non-`normal` corruption phase; production does not expose the action.
+
+#### 4. Validation & Error Matrix
+- Use count 1–7 in `normal` -> consume, increment, preserve ordinary phase, and select the matching numbered start.
+- Use count 7 in `normal` -> consume, set count 8 and phase `corruption-story`, select `corruption-start`.
+- Climax repeated after `awaiting-duel` -> idempotent success; climax in any unrelated phase -> HTTP 409.
+- Duel start while an owned special room exists -> resume it; start outside `awaiting-duel`/`duel-active` -> reject.
+- Process restart during the duel -> hydrate `unlimitedTime`, owner id, and special metadata, then re-arm only the valid NPC turn.
+- Special result repeats -> one replay record and one arc transition.
+- Development cancellation during corruption -> HTTP 409 without changing effect or arc state.
+
+#### 5. Good/Base/Bad Cases
+- Good: refresh during `awaiting-duel` returns to the corrupted home, and the red decision button creates or resumes exactly one private special room.
+- Good: GNU Go level 10 fails, level 5 fails, and the legal beginner heuristic supplies an action without waiting for another scheduler turn.
+- Base: a normal practice advanced GNU Go failure still follows the existing retry/resign contract and never falls back to the heuristic.
+- Bad: resetting the count when the player exits the room, recording the duel as rated/friendly progression, or allowing badge cancellation to escape corruption.
+
+#### 6. Tests Required
+- Arc domain/schema tests cover every phase transition, invalid transition, reset, and development cancellation boundary.
+- Item/story tests cover entries 1–8, common-tail convergence, mandatory corruption routing, and preservation of customized scripts outside the exact legacy default upgrade.
+- Room factory, persistence, view, clock, request, chat, query, automation, and result tests cover every special-room exclusion and restart field.
+- Frontend tests cover global corruption class/state, home/handbook/match locks, the red decision button, unlimited damaged clock, result continuation, replay tag/title, and development-only badge cancellation.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+if (engineLevel10Failed) return; // retry on a later turn
+```
+
+Correct:
+
+```js
+const decision = room.sigrikaCandyDuel
+  ? await chooseSigrikaDuelActionWithFallbacks(room)
+  : await chooseOrdinaryPracticeAction(room);
 ```
 
 Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
@@ -467,9 +577,14 @@ Tests touching auth route status codes, cookie rotation/clearing, forced login, 
 
 - `POST /api/shop/:id/purchase`
 - `GET /api/items/inventory`
+- `GET /api/items/rainbow-bean-candy/sigrika/story`
+- `POST /api/items/rainbow-bean-candy/sigrika/climax`
+- `POST /api/items/rainbow-bean-candy/sigrika/recovery/start`
+- `POST /api/items/rainbow-bean-candy/sigrika/recovery/complete`
+- `POST /api/items/rainbow-bean-candy/effects/:characterId/cancel`
 - `POST /api/items/:itemId/use`
 
-`server/index.js` should mount this router behind `authHttp`. It should not duplicate purchase, inventory, or item-use handler bodies, route-level user id binding, request param forwarding, or route error response shaping.
+`server/index.js` should mount this router behind `authHttp`. It should not duplicate purchase, inventory, item-use, Sigrika arc, or development cancellation handler bodies, route-level user id binding, request param forwarding, or route error response shaping.
 
 Wrong:
 

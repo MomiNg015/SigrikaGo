@@ -2,11 +2,17 @@
 
 .admin-screen {
   --admin-screen-pad: clamp(12px, 1.1vw, 20px);
+  --admin-panel-shadow-gutter: 16px;
   min-height: 100dvh;
   width: 100vw;
   max-width: none;
   margin: 0;
-  padding: var(--admin-screen-pad);
+  padding:
+    var(--admin-screen-pad)
+    calc(var(--admin-screen-pad) + var(--admin-panel-shadow-gutter))
+    calc(var(--admin-screen-pad) + var(--admin-panel-shadow-gutter))
+    var(--admin-screen-pad);
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   gap: 16px;
@@ -26,7 +32,7 @@
   align-content: start;
   gap: 8px;
   padding: 16px;
-  max-height: calc(100dvh - (var(--admin-screen-pad) * 2));
+  max-height: calc(100dvh - (var(--admin-screen-pad) * 2) - var(--admin-panel-shadow-gutter));
   overflow: auto;
 }
 
@@ -55,7 +61,7 @@
 .admin-main {
   min-width: 0;
   min-height: 0;
-  max-height: calc(100dvh - (var(--admin-screen-pad) * 2));
+  max-height: calc(100dvh - (var(--admin-screen-pad) * 2) - var(--admin-panel-shadow-gutter));
   overflow: auto;
   padding: 18px;
 }

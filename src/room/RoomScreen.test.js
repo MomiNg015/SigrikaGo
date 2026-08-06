@@ -718,9 +718,9 @@ describe("RoomScreen helpers", () => {
     expect(roomScreenSource).not.toContain("onChat");
     expect(appRoutesSource).not.toContain("chat:send");
     expect(battleSource).toContain("showTutorialLog = false");
-    expect(battleSource).toContain("const storyLogPanel = showTutorialLog && (");
-    expect(battleSource).toContain("label=\"剧情记录\"");
-    expect(battleSource).toContain("disabledInputMessage=\"剧情教学记录仅供查看\"");
+    expect(battleSource).toContain("const storyLogPanel = (showTutorialLog || sigrikaCandyDuel) && (");
+    expect(battleSource).toContain("label={sigrikaCandyDuel ? \"系统记录\" : \"剧情记录\"}");
+    expect(battleSource).toContain("disabledInputMessage={sigrikaCandyDuel ? \"特殊对局仅显示系统记录\" : \"剧情教学记录仅供查看\"}");
     expect(battleSource).toContain("readonly");
     expect(tutorialSource).toContain("showTutorialLog");
     expect(battleSource).toContain("mobileDockPopup={isMobileBattleLayout}");

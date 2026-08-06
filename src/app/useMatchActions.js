@@ -36,6 +36,16 @@ export function useMatchActions({
     });
   }, [setMatchStart, setMatchSuccess, showToast, socket]);
 
+  const startSigrikaDuel = useCallback(() => {
+    startSigrikaDuelTransition({
+      preloadPlayableReady: defaultPreloadPlayableReady,
+      setMatchStart,
+      setMatchSuccess,
+      showToast,
+      socket
+    });
+  }, [setMatchStart, setMatchSuccess, showToast, socket]);
+
   const cancelMatch = useCallback(() => {
     socket?.emit("match:leave");
     setMatchStart(null);
@@ -95,8 +105,31 @@ export function useMatchActions({
     requestDraw,
     respondDraw,
     startMatch,
-    startPractice
+    startPractice,
+    startSigrikaDuel
   };
+}
+
+export function startSigrikaDuelTransition({
+  now = Date.now,
+  preloadPlayableReady = defaultPreloadPlayableReady,
+  setMatchStart,
+  setMatchSuccess,
+  showToast = () => {},
+  socket
+}) {
+  try {
+    void preloadPlayableReady({ includePixi: true, mode: "spark", reason: "sigrika-candy-duel-start" });
+  } catch {
+    // Prewarm is opportunistic; the special room remains authoritative on the server.
+  }
+  setMatchSuccess(null);
+  setMatchStart({ startedAt: now(), mode: "spark", specialDuel: true });
+  socket?.emit("sigrika-candy:duel-start", {}, (ack = {}) => {
+    if (ack.ok) return;
+    setMatchStart(null);
+    showToast(ack.error || "暂时无法进入特殊对局", "error");
+  });
 }
 
 export function startPracticeTransition({

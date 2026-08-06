@@ -1,0 +1,67 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted {
+  color: #d0ccce !important;
+  border-color: #615d5f !important;
+  background: linear-gradient(145deg, #858183, #615e60) !important;
+  box-shadow: 4px 4px 0 #403d3e !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted .match-mode-option:disabled {
+  opacity: 0.58 !important;
+  color: #cbc7c9 !important;
+  border-color: #625e60 !important;
+  background: #6f6b6d !important;
+  filter: grayscale(1) brightness(0.82) contrast(1.08) !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted .practice-entry-button:disabled {
+  opacity: 0.3 !important;
+  color: #bdb9bb !important;
+  border-color: #5f5b5d !important;
+  background: #666264 !important;
+  filter: grayscale(1) brightness(0.8) contrast(1.12) !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .secondary-action {
+  color: #d0ccce !important;
+  border-color: #625e60 !important;
+  background: #5d5a5b !important;
+  box-shadow: 2px 2px 0 #3c393a !important;
+  opacity: 0.92 !important;
+  filter: grayscale(1) brightness(0.88) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button {
+  color: #fff7f8 !important;
+  min-height: 86px !important;
+  border-color: #ec5262 !important;
+  background: #8c1020 !important;
+  box-shadow: 0 0 0 1px #42070f, 6px 7px 0 #31040a !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button:is(:hover, :focus-visible) {
+  color: #fff !important;
+  border-color: #ff8591 !important;
+  background: #a41224 !important;
+  box-shadow: 0 0 0 1px #530812, 8px 9px 0 #31040a !important;
+  transform: translate(-50%, calc(-50% - 2px)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button:active {
+  transform: translate(-50%, calc(-50% + 1px)) !important;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button {
+    min-height: 74px !important;
+    box-shadow: 0 0 0 1px #42070f, 4px 5px 0 #31040a !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button:is(:hover, :focus-visible) {
+    box-shadow: 0 0 0 1px #530812, 5px 6px 0 #31040a !important;
+    transform: translate(-50%, calc(-50% - 1px)) !important;
+  }
+}

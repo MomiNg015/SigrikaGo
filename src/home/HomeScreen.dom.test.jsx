@@ -55,6 +55,35 @@ describe("HomeScreen practice difficulty picker", () => {
     });
   });
 
+  it("keeps both onboarding actions inert during Sigrika corruption", async () => {
+    const onOpenOnboardingStory = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <HomeScreen
+        user={{
+          username: "corruption-test",
+          selectedCharacter: "sigrika",
+          role: "player",
+          modeStats: {},
+          sigrikaCandyArc: { phase: "awaiting-duel", corrupted: true }
+        }}
+        characters={CHARACTERS}
+        onOpenOnboardingStory={onOpenOnboardingStory}
+      />
+    );
+
+    const onboardingActions = screen.getAllByRole("button", { name: "打开新手引导", hidden: true });
+    expect(onboardingActions).toHaveLength(2);
+
+    for (const action of onboardingActions) {
+      expect(action.disabled).toBe(true);
+      await user.click(action);
+    }
+
+    expect(onOpenOnboardingStory).not.toHaveBeenCalled();
+  });
+
   it("closes only the nested picker on Escape and restores focus to the practice entry", async () => {
     const onMatchModePickerOpenChange = vi.fn();
     const user = userEvent.setup();

@@ -45,26 +45,41 @@ body {
   z-index: 1;
 }
 
-* {
+html:has(.app-shell.player-theme-enabled:not(.theme-bright-school)),
+body:has(.app-shell.player-theme-enabled:not(.theme-bright-school)),
+.app-shell.player-theme-enabled:not(.theme-bright-school),
+.app-shell.player-theme-enabled:not(.theme-bright-school) * {
   scrollbar-width: thin;
   scrollbar-color: var(--hud-cyan) rgba(0, 0, 0, 0.3);
 }
 
-*::-webkit-scrollbar {
+html:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar,
+body:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar,
+.app-shell.player-theme-enabled:not(.theme-bright-school)::-webkit-scrollbar,
+.app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-*::-webkit-scrollbar-track {
+html:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-track,
+body:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-track,
+.app-shell.player-theme-enabled:not(.theme-bright-school)::-webkit-scrollbar-track,
+.app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.3);
 }
 
-*::-webkit-scrollbar-thumb {
+html:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-thumb,
+body:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-thumb,
+.app-shell.player-theme-enabled:not(.theme-bright-school)::-webkit-scrollbar-thumb,
+.app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar-thumb {
   border-radius: 2px;
   background: var(--hud-cyan);
   box-shadow: 0 0 8px var(--hud-cyan);
 }
 
-*::-webkit-scrollbar-corner {
+html:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-corner,
+body:has(.app-shell.player-theme-enabled:not(.theme-bright-school))::-webkit-scrollbar-corner,
+.app-shell.player-theme-enabled:not(.theme-bright-school)::-webkit-scrollbar-corner,
+.app-shell.player-theme-enabled:not(.theme-bright-school) *::-webkit-scrollbar-corner {
   background: rgba(0, 0, 0, 0.3);
 }

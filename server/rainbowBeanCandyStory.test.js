@@ -7,9 +7,10 @@ import {
 } from "./rainbowBeanCandyStory.js";
 
 describe("rainbow bean candy story", () => {
-  it("uses a strict 35 percent rejection boundary for every supported character", () => {
+  it("always accepts for Sigrika and keeps a strict 35 percent rejection boundary for the other supported characters", () => {
     expect(RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY).toBe(0.35);
-    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
+    expect(rollRainbowBeanCandyOutcome("sigrika", () => 0)).toBe("accepted");
+    for (const characterId of ["denia", "aemeath", "lynae"]) {
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.349999)).toBe("rejected");
       expect(rollRainbowBeanCandyOutcome(characterId, () => 0.35)).toBe("accepted");
@@ -35,15 +36,18 @@ describe("rainbow bean candy story", () => {
     }
   });
 
-  it("ships the Word-authored candy outcomes", () => {
+  it("ships Sigrika framework slots and the existing authored outcomes for other characters", () => {
     const sigrika = defaultRainbowBeanCandyStoryDraft("sigrika").nodes;
     const denia = defaultRainbowBeanCandyStoryDraft("denia").nodes;
     const aemeath = defaultRainbowBeanCandyStoryDraft("aemeath").nodes;
     const lynae = defaultRainbowBeanCandyStoryDraft("lynae").nodes;
 
     expect(sigrika).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: "accepted-unavailable", text: "看来暂时不能找她下棋了。" }),
-      expect.objectContaining({ id: "rejected-return", text: "西格莉卡把糖果推了回来。看来今天没办法得逞了。" })
+      expect.objectContaining({ id: "use-1-start", nextNodeId: "shared-effect-start" }),
+      expect.objectContaining({ id: "use-7-start", nextNodeId: "shared-effect-start" }),
+      expect.objectContaining({ id: "corruption-climax" }),
+      expect.objectContaining({ id: "recovery-win-start" }),
+      expect.objectContaining({ id: "recovery-loss-start" })
     ]));
     expect(denia).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "accepted-rays", text: expect.stringContaining("双眼和嘴巴里喷射而出") }),

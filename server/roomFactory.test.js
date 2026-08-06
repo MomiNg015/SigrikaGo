@@ -4,6 +4,7 @@ import {
   MATCH_PRELOAD_TIMEOUT_MS,
   createPracticeRoom,
   createRoom,
+  createSigrikaCandyDuelRoom,
   modeStatsForUser,
   randomRoomCode,
   toRoomPlayer,
@@ -170,6 +171,37 @@ describe("roomFactory", () => {
     expect(room.preload.readyUserIds).toEqual([bot.user.id]);
     expect(room.game.skillUses[COLORS.black]).toBe(0);
     expect(room.players.find((player) => !player.isBot).color).toBe(COLORS.white);
+  });
+
+  test("creates a private unlimited 13x13 no-skill Sigrika corruption duel", () => {
+    const room = createSigrikaCandyDuelRoom(queuePlayer("human", "socket-human"), {
+      now: () => 1000,
+      random: () => 0.75
+    });
+    const human = room.players.find((player) => !player.isBot);
+    const bot = room.players.find((player) => player.isBot);
+
+    expect(room).toMatchObject({
+      mode: "spark",
+      rated: false,
+      matchSource: "sigrika-corruption-duel",
+      recordPolicy: "replay-only",
+      unlimitedTime: true,
+      privateOwnerUserId: "human",
+      sigrikaCandyDuel: {
+        ownerUserId: "human",
+        humanColor: COLORS.black,
+        botColor: COLORS.white,
+        resultOutcome: ""
+      }
+    });
+    expect(room.game).toMatchObject({ size: 13, komi: 2.75, skillEnabled: false });
+    expect(human).toMatchObject({ characterId: null, character: null, time: { unlimited: true } });
+    expect(bot).toMatchObject({
+      user: { username: "西格莉卡？", rank: "数据损坏" },
+      botProfile: { portraitUrl: "", dataCorrupted: true },
+      time: { unlimited: true }
+    });
   });
 
   test("projects mode stats onto room users", () => {

@@ -65,6 +65,7 @@ describe("AppOverlays", () => {
   });
 
   it("keeps item-character choice nodes in the generic story player", () => {
+    const onNavigate = vi.fn();
     const tree = AppOverlays(overlayProps({
       showStoryPlayer: true,
       storyPlayerScript: {
@@ -82,12 +83,13 @@ describe("AppOverlays", () => {
           }]
         },
         labels: { title: "彩虹豆豆跳跳糖" },
+        onNavigate,
         clear: vi.fn(),
         open: vi.fn()
       }
     }));
 
-    expect(findElementByType(tree, StoryPlayerModal)).not.toBeNull();
+    expect(findElementByType(tree, StoryPlayerModal).props.onNavigate).toBe(onNavigate);
     expect(findElementByType(tree, TutorialSessionModal)).toBeNull();
   });
 
@@ -114,6 +116,7 @@ describe("AppOverlays", () => {
     const tutorial = findElementByType(tree, TutorialSessionModal);
     expect(tutorial.props.onComplete).toBe(onComplete);
     expect(tutorial.props.onClose).toBeDefined();
+    expect(tutorial.props.user).toBeDefined();
     tutorial.props.onEnterBattle({ script: { startNodeId: "battle" } });
     expect(onEnterTutorialBattle).toHaveBeenCalledWith(expect.objectContaining({ onComplete, onExit }));
     expect(findElementByType(tree, StoryPlayerModal)).toBeNull();

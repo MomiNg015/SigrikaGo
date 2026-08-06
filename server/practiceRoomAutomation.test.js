@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
-import { createPracticeRoom } from "./roomFactory.js";
+import { createPracticeRoom, createSigrikaCandyDuelRoom } from "./roomFactory.js";
 import { createPracticeRoomAutomation } from "./practiceRoomAutomation.js";
 
 function player() {
@@ -104,6 +104,32 @@ describe("practice room automation", () => {
 
     expect(room.game.phase).toBe(GAME_PHASES.playing);
     expect(harness.handleGameAction).toHaveBeenCalledWith(room.code, room.practice.botActorId, expect.objectContaining({ type: "move" }), {});
+  });
+
+  it("never capture-resigns the Sigrika duel and falls back from level 10 to level 5 in the same turn", async () => {
+    const room = createSigrikaCandyDuelRoom(player(), { random: () => 0 });
+    room.game.phase = GAME_PHASES.playing;
+    room.game.turn = room.sigrikaCandyDuel.botColor;
+    room.game.captures[room.sigrikaCandyDuel.humanColor] = 99;
+    const practiceEngine = {
+      search: vi.fn()
+        .mockResolvedValueOnce({ ok: false, reason: "timeout" })
+        .mockResolvedValueOnce({ ok: true, action: { type: "move", pointId: "3,3" } })
+    };
+    const harness = automationHarness(room, { practiceEngine });
+
+    harness.automation.schedule(room, {});
+    await harness.run();
+
+    expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(practiceEngine.search.mock.calls.map((call) => call[2].engine.level)).toEqual([10, 5]);
+    expect(harness.handleGameAction).toHaveBeenCalledWith(
+      room.code,
+      room.practice.botActorId,
+      { type: "move", pointId: "3,3" },
+      {}
+    );
+    expect(harness.appendSystem).toHaveBeenCalledWith(room, "高级 GNU Go 响应异常，正在切换后备计算。", { kind: "engine-fallback" });
   });
 
   it("uses the local heuristic for beginner without calling GNU Go", async () => {

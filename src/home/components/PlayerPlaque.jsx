@@ -3,15 +3,17 @@ import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
 
-export default function PlayerPlaque({ character, user, onOpenResume }) {
+export default function PlayerPlaque({ character, user, onOpenResume, disabled = false }) {
   const plaqueStyle = { "--plaque-color": character.palette ?? "#5d7fe8" };
 
   return (
     <section className="home-player-zone" aria-label="当前用户与在线状态">
       <div className="home-player-row tactical-id-row" style={plaqueStyle}>
-        <button className="home-player-plaque tactical-id-card" data-ui-sound="none" type="button" onClick={onOpenResume} aria-label="打开履历">
+        <button className="home-player-plaque tactical-id-card" data-ui-sound="none" type="button" onClick={onOpenResume} aria-label="打开履历" disabled={disabled}>
           <span className="plaque-avatar">
-            <img {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })} alt="当前出战角色" />
+            <span className="plaque-avatar-mask">
+              <img {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })} alt="当前出战角色" />
+            </span>
             <CharacterChainBadge user={user} characterId={character.id} />
           </span>
           <strong>

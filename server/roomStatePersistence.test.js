@@ -223,6 +223,42 @@ describe("room state persistence", () => {
     expect(hydrated.players[0].disconnectedAt).toBeNull();
   });
 
+  it("retains the private unlimited Sigrika duel contract across restoration", () => {
+    const snapshot = roomPersistenceSnapshot({
+      code: "SIG01",
+      mode: "spark",
+      rated: false,
+      matchSource: "sigrika-corruption-duel",
+      recordPolicy: "replay-only",
+      unlimitedTime: true,
+      privateOwnerUserId: "human",
+      sigrikaCandyDuel: {
+        ownerUserId: "human",
+        humanColor: "black",
+        botColor: "white",
+        resultOutcome: ""
+      },
+      practice: { specialDuel: true, difficulty: "advanced" },
+      players: [{ user: { id: "bot", isBot: true }, isBot: true, socketId: null }],
+      spectators: [],
+      game: { phase: GAME_PHASES.playing },
+      chat: []
+    });
+    const hydrated = hydratePersistedRoom(snapshot, { now: () => 12345 });
+
+    expect(hydrated).toMatchObject({
+      matchSource: "sigrika-corruption-duel",
+      recordPolicy: "replay-only",
+      unlimitedTime: true,
+      privateOwnerUserId: "human",
+      sigrikaCandyDuel: {
+        ownerUserId: "human",
+        humanColor: "black",
+        botColor: "white"
+      }
+    });
+  });
+
   it("reports pending persistence rooms for runtime capacity telemetry", async () => {
     const write = deferred();
     persistRoomState({

@@ -17,6 +17,16 @@ export function buildRoomView(room, viewerId, options = {}) {
     rated: room.rated !== false,
     matchSource: room.matchSource ?? (room.rated === false ? "private" : "matchmaking"),
     recordPolicy: room.recordPolicy ?? "full",
+    unlimitedTime: Boolean(room.unlimitedTime),
+    sigrikaCandyDuel: room.sigrikaCandyDuel
+      ? {
+          humanColor: room.sigrikaCandyDuel.humanColor,
+          botColor: room.sigrikaCandyDuel.botColor,
+          resultOutcome: room.sigrikaCandyDuel.resultOutcome ?? "",
+          replayTitle: "和西格莉卡？决战",
+          replayTag: "特殊对局"
+        }
+      : null,
     practice: room.practice
       ? {
           botId: room.practice.botId,

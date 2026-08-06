@@ -276,6 +276,7 @@ describe("root CSS entry contract", () => {
       "utf8"
     );
     expect(cssImports(foundationHomeEntry)).toEqual([
+      "./foundation-home/root-scrollbars.css",
       "./foundation-home/scrollbar-auth.css",
       "./foundation-home/home-brand-status.css",
       "./foundation-home/home-image-entry.css"
@@ -524,7 +525,8 @@ describe("root CSS entry contract", () => {
       "./admin/onboarding-board-editor.css",
       "./admin/mailbox.css",
       "./admin/responsive.css",
-      "./admin/polish.css"
+      "./admin/polish.css",
+      "./admin/scrollbars.css"
     ]);
     expect(adminEntry).not.toContain(".admin-screen {");
     expect(adminEntry).not.toContain(".admin-table {");
@@ -616,15 +618,126 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/shop-window-compact.css",
       "./mobile-adaptive/shop-card-badges.css",
       "./mobile-adaptive/costume-store.css",
+      "./mobile-adaptive/modal-shadow-gutters.css",
       "./mobile-adaptive/mobile-window-headers.css",
-      "./mobile-adaptive/user-nameplate-final.css"
+      "./mobile-adaptive/user-nameplate-final.css",
+      "./mobile-adaptive/sigrika-corruption.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/user-nameplate-final.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/sigrika-corruption.css");
+    const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
+    const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
+    const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");
+    const hologramEntryCss = readFileSync(new URL("./hud-components/hud-hardening/home-hologram-entries.css", import.meta.url), "utf8");
+    const brightMobileEntryCss = readFileSync(new URL("./themes/bright-school/mobile/home-shell/entries-utility-footer.css", import.meta.url), "utf8");
+    expect(cssImports(corruptionEntry)).toEqual([
+      "./sigrika-corruption/shell.css",
+      "./sigrika-corruption/damage-field.css",
+      "./sigrika-corruption/room-replay.css",
+      "./sigrika-corruption/marks.css",
+      "./sigrika-corruption/home-contamination.css",
+      "./sigrika-corruption/handbook-contamination.css",
+      "./sigrika-corruption/handbook-cards.css",
+      "./sigrika-corruption/handbook-mobile.css",
+      "./sigrika-corruption/match-duel.css",
+      "./sigrika-corruption/match-duel-mobile.css",
+      "./sigrika-corruption/match-duel-theme-guard.css"
+    ]);
+    expect(corruptionShellCss).toContain("backdrop-filter: invert(1) grayscale(1) contrast(2.8)");
+    expect(corruptionShellCss).toContain("> :is(.match-mode-backdrop, .sigrika-corruption-house-backdrop)");
+    expect(corruptionShellCss).toContain("z-index: var(--sigrika-corruption-action-z)");
+    expect(corruptionShellCss).toContain(":has(.home-screen.is-sigrika-corrupted-home)");
+    expect(corruptionShellCss).toContain("background-blend-mode: luminosity !important");
+    expect(corruptionShellCss).toMatch(/main\.home-screen\.is-sigrika-corrupted-home > section\.home-main-panel\.home-terminal-main\s*\{[^}]*background-image: none !important;/);
+    expect(corruptionShellCss).toMatch(/is-sigrika-corrupted > \.home-footer-strip\s*\{[^}]*filter: grayscale\(1\) saturate\(0\)/);
+    expect(corruptionShellCss).not.toContain("overflow: hidden");
+    expect(corruptionShellCss).not.toContain("repeating-linear-gradient");
+    expect(corruptionShellCss).not.toContain(".utility-entry:disabled,");
+    const corruptionHomeCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/home-contamination.css", import.meta.url), "utf8");
+    const corruptionHandbookCss = [
+      "./mobile-adaptive/sigrika-corruption/handbook-contamination.css",
+      "./mobile-adaptive/sigrika-corruption/handbook-cards.css",
+      "./mobile-adaptive/sigrika-corruption/handbook-mobile.css"
+    ].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+    const corruptionMatchCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel.css", import.meta.url), "utf8");
+    const corruptionMatchThemeGuardCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-theme-guard.css", import.meta.url), "utf8");
+    expect(corruptionHomeCss).toContain("background: transparent !important");
+    expect(corruptionHomeCss).toContain("filter: none !important");
+    expect(corruptionHomeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(corruptionHomeCss).toContain(".utility-data-fragments {");
+    expect(corruptionHomeCss).toContain(".house-manual-data-fragments {");
+    expect(corruptionHomeCss).toContain("display: block !important");
+    expect(hologramEntryCss).toContain(".home-image-entry.hologram-entry .home-entry-motion > img {");
+    expect(hologramEntryCss).not.toContain(".home-image-entry.hologram-entry img {");
+    expect(brightMobileEntryCss).toContain(".home-image-entry .home-entry-motion > img {");
+    expect(corruptionHomeCss).toContain(".is-corruption-access-point .home-entry-motion > img {");
+    expect(corruptionHomeCss).toMatch(/\.house-manual-data-fragments \.corruption-fragment-piece\s*\{[^}]*height: 100% !important;/);
+    expect(corruptionHomeCss).toMatch(/\.utility-entry:disabled \.utility-entry-art\s*\{[^}]*opacity: 0;/);
+    expect(corruptionHomeCss).toMatch(/\.house-manual-entry\.is-corruption-access-point \.house-manual-corruption-source\s*\{[^}]*opacity: 0 !important;/);
+    expect(corruptionHomeCss).not.toContain("house-manual-corruption-noise");
+    expect(corruptionHomeCss).not.toContain('mask: url("/assets/home/book-entry.webp")');
+    expect(corruptionHomeCss).not.toContain("background: #d6d1cd");
+    expect(corruptionHomeCss).not.toContain("home-brand-corruption-marks");
+    expect(corruptionHomeCss).not.toContain("corruption-scribble");
+    expect(corruptionHandbookCss).toContain(".character-card.is-corruption-focus");
+    expect(corruptionHandbookCss).toContain("linear-gradient(135deg, #f3c1c7 0%, #dc8e99 31%, #efb2bb 57%, #c96876 100%)");
+    expect(corruptionHandbookCss).toContain(".character-card-corruption-noise");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-noise-fault");
+    expect(corruptionHandbookCss).toContain("var(--corruption-card-duration, 7s)");
+    expect(corruptionHandbookCss).not.toContain("background-size: 7px 7px, 9px 9px");
+    expect(corruptionHandbookCss).toContain("backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important");
+    expect(corruptionHandbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(corruptionHandbookCss).toContain("inset: 50% auto auto 50% !important");
+    expect(corruptionHandbookCss).toContain(".character-data-fragments");
+    expect(corruptionHandbookCss).toMatch(/\.character-card\.is-corruption-obscured > img\.character-corruption-source\s*\{[^}]*opacity: 0 !important;/);
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-data-break");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-fragment-flash");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-error-scan");
+    expect(corruptionHandbookCss).toContain("filter: grayscale(1) contrast(1.06) !important");
+    expect(corruptionHandbookCss).not.toContain("padding-right: 10px");
+    expect(corruptionHandbookCss).not.toContain("border-radius: 6px");
+    expect(corruptionHandbookCss).not.toContain("max-height: min(88dvh, 720px)");
+    expect(corruptionHandbookCss).not.toContain("house-corruption-integrity");
+    expect(corruptionHandbookCss).not.toContain("ARCHIVE CHECK");
+    expect(corruptionHandbookCss).not.toContain("SUBJECT 08");
+    expect(corruptionHandbookCss).not.toContain("animation: none !important");
+    expect(corruptionMatchCss).not.toContain(".sigrika-corruption-duel-zone");
+    expect(corruptionMatchCss).not.toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(corruptionMatchCss).toContain(".sigrika-corruption-duel-button");
+    expect(corruptionMatchCss).toContain("position: absolute");
+    expect(corruptionMatchCss).toContain("blur(2.8px)");
+    expect(corruptionMatchCss).toContain(".match-mode-modal.is-sigrika-corrupted::before");
+    expect(corruptionMatchCss).toContain("background: rgb(54 52 53 / 0.14) !important");
+    expect(corruptionMatchCss).toContain("backdrop-filter: grayscale(1) brightness(0.82) contrast(0.98) !important");
+    expect(corruptionMatchCss).toContain("background: #5d5a5b !important");
+    expect(corruptionMatchCss).not.toContain("sigrika-corruption-duel-copy");
+    expect(corruptionMatchThemeGuardCss).not.toContain("sigrika-corruption-duel-copy");
+    expect(corruptionMatchThemeGuardCss).not.toContain("sigrika-corruption-duel-sigil");
+    expect(corruptionMatchThemeGuardCss).toContain("background: linear-gradient(145deg, #858183, #615e60) !important");
+    expect(corruptionMatchThemeGuardCss).toContain(".match-mode-modal.is-sigrika-corrupted > .secondary-action");
+    expect(corruptionHomeCss).toContain("background-image: var(--home-main-panel-bg) !important");
+    expect(corruptionHomeCss).toContain(".home-player-zone {");
+    expect(corruptionHomeCss).toContain("width: auto !important");
+    expect(corruptionHomeCss).toContain("height: auto !important");
+    const corruptionMarksCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/marks.css", import.meta.url), "utf8");
+    expect(corruptionMarksCss).toContain("contain: paint");
+    expect(corruptionMarksCss).toContain("corruption-fragment-desync");
+    expect(corruptionMarksCss).toContain("var(--corruption-slice-forward, 5px)");
+    expect(corruptionMarksCss).not.toContain("corruption-scribble");
+    const corruptionMatchMobileCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-mobile.css", import.meta.url), "utf8");
+    expect(corruptionMatchMobileCss).toContain("@media (max-width: 768px)");
+    expect(corruptionMatchMobileCss).toContain("min-height: 74px");
+    const corruptionMatchGuardCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-theme-guard.css", import.meta.url), "utf8");
+    expect(corruptionMatchGuardCss).toContain("theme-bright-school.theme-bright-school.is-sigrika-corrupted");
+    expect(corruptionMatchGuardCss).toContain("background: #8c1020 !important");
+    expect(corruptionMatchGuardCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(corruptionDamageCss).toContain("pointer-events: none");
+    expect(corruptionDamageCss).toContain("sigrika-corruption-tear-middle");
+    expect(corruptionDamageCss).toContain("sigrika-corruption-fragment");
     expect(finalNameplateCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
     expect(finalNameplateCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
     expect(finalNameplateCss).toContain("color: #fffdf4 !important");

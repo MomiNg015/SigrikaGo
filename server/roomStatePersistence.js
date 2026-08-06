@@ -2,7 +2,7 @@ import { GAME_PHASES } from "../src/shared/game.js";
 import { normalizeRoomActionReceipts } from "./roomActionReceipts.js";
 import { upsertPersistedRoom } from "./roomPersistence.js";
 
-export const CURRENT_ROOM_SNAPSHOT_VERSION = 1;
+export const CURRENT_ROOM_SNAPSHOT_VERSION = 2;
 const pendingRoomPersistence = new Map();
 
 export function persistRoomState({
@@ -70,6 +70,9 @@ export function roomPersistenceSnapshot(room) {
     rated: room.rated !== false,
     matchSource: room.matchSource ?? null,
     recordPolicy: room.recordPolicy ?? "full",
+    unlimitedTime: Boolean(room.unlimitedTime),
+    privateOwnerUserId: room.privateOwnerUserId ?? null,
+    sigrikaCandyDuel: room.sigrikaCandyDuel ?? null,
     practice: room.practice ?? null,
     players: room.players.map((player) => ({
       ...player,

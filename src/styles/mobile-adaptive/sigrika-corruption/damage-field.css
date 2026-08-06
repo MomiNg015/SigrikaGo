@@ -1,0 +1,108 @@
+.sigrika-corruption-field {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sigrika-corruption-overlay-z);
+  overflow: hidden;
+  pointer-events: none;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  contain: strict;
+}
+
+.sigrika-corruption-field__scan,
+.sigrika-corruption-field__tear,
+.sigrika-corruption-field__block,
+.sigrika-corruption-field__fragment {
+  position: absolute;
+  opacity: 0;
+}
+
+.sigrika-corruption-field__scan {
+  inset: -8vh 0 auto;
+  height: 9vh;
+  background: linear-gradient(180deg, transparent 0, rgb(255 255 255 / 0.05) 62%, rgb(255 255 255 / 0.46) 94%, transparent 100%);
+  animation: sigrika-corruption-scan-drop 6.1s steps(8, end) infinite;
+  will-change: transform, opacity;
+}
+
+.sigrika-corruption-field__tear {
+  left: -8vw;
+  width: 116vw;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.92) 0 7%, rgb(255 255 255 / 0.78) 7% 9%, transparent 9% 19%, rgb(0 0 0 / 0.76) 19% 43%, rgb(255 255 255 / 0.54) 43% 47%, transparent 47% 72%, rgb(0 0 0 / 0.9) 72% 100%);
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
+}
+
+.sigrika-corruption-field__tear--high { top: 17%; height: 13px; animation: sigrika-corruption-tear-high 4.7s steps(1, end) infinite; }
+.sigrika-corruption-field__tear--middle { top: 54%; height: 27px; animation: sigrika-corruption-tear-middle 6.3s steps(1, end) -2.1s infinite; }
+.sigrika-corruption-field__tear--low { top: 82%; height: 8px; animation: sigrika-corruption-tear-low 5.5s steps(1, end) -3.4s infinite; }
+
+.sigrika-corruption-field__fragment {
+  padding: 2px 6px;
+  color: #fff;
+  background: #050506;
+  font-size: clamp(10px, 1.15vw, 14px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-shadow: 5px 0 0 rgb(255 255 255 / 0.34);
+  animation: sigrika-corruption-fragment 6.8s steps(1, end) infinite;
+}
+
+.sigrika-corruption-field__fragment--archive { top: 11%; left: 4%; }
+.sigrika-corruption-field__fragment--subject { right: 7%; bottom: 19%; animation-delay: -2.7s; }
+.sigrika-corruption-field__fragment--sync { top: 63%; left: 38%; animation-delay: -4.6s; }
+
+.sigrika-corruption-field__block {
+  background: #f4f4f5;
+  mix-blend-mode: difference;
+  animation: sigrika-corruption-block-drop 5.9s steps(1, end) infinite;
+}
+
+.sigrika-corruption-field__block--a { top: 8%; left: 21%; width: 14vw; height: 4px; }
+.sigrika-corruption-field__block--b { top: 31%; right: 3%; width: 8vw; height: 18px; animation-delay: -1.1s; }
+.sigrika-corruption-field__block--c { top: 44%; left: 9%; width: 3vw; height: 9vh; animation-delay: -2.4s; }
+.sigrika-corruption-field__block--d { right: 24%; bottom: 34%; width: 17vw; height: 5px; animation-delay: -3.3s; }
+.sigrika-corruption-field__block--e { right: 8%; bottom: 8%; width: 5vw; height: 12px; animation-delay: -4.2s; }
+.sigrika-corruption-field__block--f { left: 29%; bottom: 3%; width: 11vw; height: 3px; animation-delay: -5s; }
+
+@keyframes sigrika-corruption-scan-drop {
+  0%, 12% { opacity: 0; transform: translateY(0); }
+  13% { opacity: 0.5; }
+  28% { opacity: 0.22; transform: translateY(116vh); }
+  29%, 100% { opacity: 0; transform: translateY(116vh); }
+}
+
+@keyframes sigrika-corruption-tear-high {
+  0%, 79%, 84%, 100% { opacity: 0; transform: translateX(0); }
+  80% { opacity: 0.92; transform: translateX(26px) scaleX(0.96); }
+  81% { opacity: 0.54; transform: translateX(-18px) scaleX(1.03); }
+  82% { opacity: 0.8; transform: translateX(9px); }
+}
+
+@keyframes sigrika-corruption-tear-middle {
+  0%, 61%, 67%, 100% { opacity: 0; transform: translateX(0); }
+  62% { opacity: 0.84; transform: translateX(-31px); }
+  63% { opacity: 0.42; transform: translateX(22px); }
+  65% { opacity: 0.72; transform: translateX(-7px); }
+}
+
+@keyframes sigrika-corruption-tear-low {
+  0%, 88%, 93%, 100% { opacity: 0; transform: translateX(0); }
+  89% { opacity: 0.96; transform: translateX(35px); }
+  90% { opacity: 0.48; transform: translateX(-20px); }
+  91% { opacity: 0.8; transform: translateX(11px); }
+}
+
+@keyframes sigrika-corruption-fragment {
+  0%, 82%, 88%, 100% { opacity: 0; transform: translateX(0); }
+  83% { opacity: 0.94; transform: translateX(12px); }
+  84% { opacity: 0.4; transform: translateX(-7px); }
+  86% { opacity: 0.82; transform: translateX(3px); }
+}
+
+@keyframes sigrika-corruption-block-drop {
+  0%, 73%, 78%, 91%, 95%, 100% { opacity: 0; transform: translateX(0); }
+  74% { opacity: 0.88; transform: translateX(17px); }
+  75% { opacity: 0.36; transform: translateX(-9px); }
+  92% { opacity: 0.72; transform: translateX(-14px); }
+  93% { opacity: 0.42; transform: translateX(6px); }
+}

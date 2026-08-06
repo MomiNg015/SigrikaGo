@@ -1,4 +1,4 @@
-import { publicUser } from "./db.js";
+import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
@@ -25,6 +25,7 @@ import {
   rollRainbowBeanCandyOutcome,
   selectRainbowBeanCandyStoryBranch
 } from "./rainbowBeanCandyStory.js";
+import { sigrikaCandyUseProgressData } from "./sigrikaCandyArc.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -47,7 +48,7 @@ export async function listItemInventory({ prisma, userId }) {
 export async function useInventoryItem({ prisma, userId, itemId, characterId = "", random = Math.random }) {
   return prisma.$transaction(async (tx) => {
     const [user, item] = await Promise.all([
-      tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } }),
+      tx.user.findUnique({ where: { id: userId }, include: USER_ASSET_RELATION_INCLUDE }),
       tx.shopItem.findFirst({
         where: { category: "item", targetId: itemId }
       })
@@ -88,8 +89,14 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     const itemUseOutcome = item.targetId === RAINBOW_BEAN_CANDY_ID
       ? rollRainbowBeanCandyOutcome(targetCharacter, random)
       : RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
+    const sigrikaProgressData = item.targetId === RAINBOW_BEAN_CANDY_ID && canonicalCharacterId(targetCharacter) === "sigrika"
+      ? sigrikaCandyUseProgressData(user)
+      : {};
     const selectedStoryScript = item.targetId === RAINBOW_BEAN_CANDY_ID
-      ? selectRainbowBeanCandyStoryBranch(storyScript, itemUseOutcome)
+      ? selectRainbowBeanCandyStoryBranch(storyScript, itemUseOutcome, {
+        characterId: targetCharacter,
+        useCount: sigrikaProgressData.sigrikaCandyUseCount
+      })
       : storyScript;
 
     if (itemUseOutcome === RAINBOW_BEAN_CANDY_OUTCOMES.rejected) {
@@ -110,13 +117,19 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
       where: { id: user.id },
       data: {
         ownedItems: serializeOwnedItems(ownedItems),
-        ...effect.data
+        ...effect.data,
+        ...sigrikaProgressData
       }
     });
     await syncStructuredUserAssets(tx, updated);
+    const projectedUser = await tx.user.findUnique({
+      where: { id: user.id },
+      include: USER_ASSET_RELATION_INCLUDE
+    });
+    if (!projectedUser) throw routeError(404, "用户不存在");
     return {
-      user: publicUser(updated),
-      items: await inventoryPayload(tx, updated),
+      user: publicUser(projectedUser),
+      items: await inventoryPayload(tx, projectedUser),
       item: publicItem,
       effectText: effect.effectText,
       storyScript: selectedStoryScript,

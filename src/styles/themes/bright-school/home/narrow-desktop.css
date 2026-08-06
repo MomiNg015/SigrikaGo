@@ -29,6 +29,11 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
     width: var(--home-student-id-avatar-size) !important;
     height: var(--home-student-id-avatar-size) !important;
+    padding: 0 !important;
+    border-radius: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar-mask {
     padding: 5px !important;
     border-radius: 14px !important;
   }

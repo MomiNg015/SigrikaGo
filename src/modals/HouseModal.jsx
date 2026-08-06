@@ -18,10 +18,12 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   const [equippingCostumeId, setEquippingCostumeId] = useState("");
   const [applyingDecoration, setApplyingDecoration] = useState("");
   const [decorationError, setDecorationError] = useState("");
+  const [cancellingCandyEffect, setCancellingCandyEffect] = useState("");
   const owned = new Set((user.ownedCharacters ?? []).map(canonicalCharacterId));
   const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
   const itemEffects = user.itemEffects ?? {};
   const detailOwned = detailCharacter ? owned.has(canonicalCharacterId(detailCharacter.id)) : false;
+  const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
 
   useEffect(() => {
     let alive = true;
@@ -102,9 +104,26 @@ export default function HouseModal({ token, user, characterListView, audioSettin
     }
   }
 
+  async function cancelCandyEffect(characterId) {
+    if (!import.meta.env.DEV || sigrikaCorrupted || cancellingCandyEffect) return;
+    setCancellingCandyEffect(characterId);
+    try {
+      const data = await api(`/api/items/rainbow-bean-candy/effects/${characterId}/cancel`, {
+        method: "POST",
+        token
+      });
+      onUserChange?.(data.user);
+      onNotice?.("已取消该角色的糖果效果（仅开发环境）", "success");
+    } catch (error) {
+      onNotice?.(error.message, "danger");
+    } finally {
+      setCancellingCandyEffect("");
+    }
+  }
+
   return (
-    <div className="modal-backdrop" onClick={closeHouseModal}>
-      <section className="house-modal" onClick={(event) => event.stopPropagation()}>
+    <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
+      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={closeHouseModal}><X size={20} /></button>
         <header className="house-header">
           <h2>部员手册</h2>
@@ -116,16 +135,20 @@ export default function HouseModal({ token, user, characterListView, audioSettin
           owned={owned}
           selectedCharacter={selectedCharacter}
           user={user}
+          candyEffectCancellationEnabled={import.meta.env.DEV && !sigrikaCorrupted}
+          cancellingCandyEffect={cancellingCandyEffect}
+          sigrikaCorrupted={sigrikaCorrupted}
+          onCancelCandyEffect={cancelCandyEffect}
           onOpenCharacterDetail={openCharacterDetail}
           onSelectCharacter={onSelectCharacter}
         />
-        <HouseDecorationPicker
+        {!sigrikaCorrupted && <HouseDecorationPicker
           applyingDecoration={applyingDecoration}
           decorationError={decorationError}
           ownedDecorations={user.ownedDecorations ?? []}
           selectedStoneDecoration={user.selectedStoneDecoration}
           onApplyDecoration={applyDecoration}
-        />
+        />}
         {detailCharacter && (
           <CharacterDetailDialog
             character={detailCharacter}

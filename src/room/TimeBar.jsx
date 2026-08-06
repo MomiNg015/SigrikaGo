@@ -1,6 +1,19 @@
 import { formatClock } from "./roomView.js";
 
 export default function TimeBar({ time }) {
+  if (time?.unlimited) {
+    return (
+      <div className="timer digital-timer unlimited-corrupted-timer" aria-label="本局不限时">
+        <div className="timer-label" aria-hidden="true">时间数据损坏</div>
+        <div className="timer-digits text-clock-value" aria-hidden="true">
+          <span className="timer-primary unlimited-clock-normal">--:--</span>
+          <span className="timer-primary unlimited-clock-glitch">8?:?8</span>
+        </div>
+        <span className="sr-only">本局不限时</span>
+        <div className="timer-track" aria-hidden="true"><span style={{ width: "100%" }} /></div>
+      </div>
+    );
+  }
   const inMain = time.main > 0;
   const periods = time.periods ?? 0;
   const isFinalByoYomi = !inMain && periods <= 1;

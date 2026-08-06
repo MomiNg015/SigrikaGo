@@ -20,6 +20,7 @@ export function createRoomClockLifecycle({
 }) {
   function startGameClock(room, io) {
     room.lastTick = Date.now();
+    if (room.unlimitedTime) return;
     scheduleRoomInterval(room, () => {
       if (!rooms.has(room.code)) {
         clearRoomInterval(room);

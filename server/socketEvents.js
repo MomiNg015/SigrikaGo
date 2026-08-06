@@ -6,6 +6,7 @@ import { installSocketRateGuard } from "./socketGuards.js";
 import { registerMatchSocketEvents } from "./socketMatchEvents.js";
 import { registerRoomSocketEvents } from "./socketRoomEvents.js";
 import { registerPracticeSocketEvents } from "./socketPracticeEvents.js";
+import { registerSigrikaCandySocketEvents } from "./socketSigrikaCandyEvents.js";
 
 export function registerSocketEvents(socket, deps) {
   installSocketRateGuard(socket, {
@@ -66,6 +67,20 @@ export function registerSocketEvents(socket, deps) {
     leaveMatchmaking: deps.leaveMatchmaking,
     broadcastLobbyStats: deps.broadcastLobbyStats,
     practiceEngineReady: deps.practiceEngineReady,
+    runtimeServiceState: deps.runtimeServiceState,
+    metrics: deps.metrics
+  });
+
+  registerSigrikaCandySocketEvents(socket, {
+    io: deps.io,
+    prisma: deps.prisma,
+    refreshSocketUser: deps.refreshSocketUser,
+    createSigrikaCandyDuelRoom: deps.createSigrikaCandyDuelRoom,
+    findRoomForUser: deps.findRoomForUser,
+    attachSocketToRoom: deps.attachSocketToRoom,
+    roomView: deps.roomView,
+    leaveMatchmaking: deps.leaveMatchmaking,
+    broadcastLobbyStats: deps.broadcastLobbyStats,
     runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });

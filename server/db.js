@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/rankProgression.js";
 import { GAME_MODE_IDS, normalizeGameModeId } from "../src/shared/gameModes.js";
+import { normalizeSigrikaCandyArc } from "../src/shared/sigrikaCandyArc.js";
 import { publicUserAssets } from "./userAssets.js";
 import { ownedMusicIdsWithDefaults, parseMusicSelections } from "../src/shared/musicLibrary.js";
 
@@ -258,6 +259,7 @@ export function publicUser(user) {
     modeStats: publicModeStats(user),
     coins: user.coins,
     blueGems: Number(user.blueGems ?? 0),
+    sigrikaCandyArc: normalizeSigrikaCandyArc(user),
     ...assets,
     ownedMusicIds: ownedMusicIdsWithDefaults(user.ownedMusicIds),
     musicSelections: parseMusicSelections(user.musicSelections)

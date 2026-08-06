@@ -148,6 +148,32 @@ describe("GameLifecycleModals helpers", () => {
     expect(friendlyMarkup).toContain("友谊对局 · 不计入积分与段位");
   });
 
+  it("locks the Sigrika duel result to a continuation action without portraits or rewards", () => {
+    const markup = renderToStaticMarkup(createElement(ResultModal, {
+      room: {
+        rated: false,
+        matchSource: "sigrika-corruption-duel",
+        sigrikaCandyDuel: { ownerUserId: "u1" },
+        players: [
+          { user: { id: "u1", username: "moming" }, color: COLORS.black, characterId: null },
+          { user: { id: "bot", username: "西格莉卡？", isBot: true }, color: COLORS.white, characterId: null }
+        ],
+        game: { winner: { winnerColor: COLORS.black, text: "黑胜" } }
+      },
+      user: { id: "u1" },
+      characters: {},
+      audioSettings: {},
+      onClose: () => {},
+      onSpecialContinue: () => {}
+    }));
+
+    expect(markup).toContain("sigrika-corruption-result-modal");
+    expect(markup).toContain("特殊对局 · 不计入任何成长、战绩或奖励");
+    expect(markup).toContain(">继续</button>");
+    expect(markup).not.toContain("result-player-portrait");
+    expect(markup).not.toContain("result-rewards");
+  });
+
   it("prefers settled result rewards from the room snapshot", () => {
     const room = {
       rated: false,

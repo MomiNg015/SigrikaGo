@@ -7,6 +7,7 @@ import {
   playMove,
   resignGame
 } from "../src/shared/game.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 
 export function applyStandardGameAction({
   room,
@@ -29,6 +30,10 @@ export function applyStandardGameAction({
   if (!result.ok) return result;
 
   room.game = result.state;
+  if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource && room.game.winner?.invalid) {
+    delete room.game.winner.invalid;
+    delete room.game.winner.invalidReason;
+  }
   appendNotices(room, result.notices);
   if (action.type === "resign" && room.game.winner?.invalid) {
     broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);

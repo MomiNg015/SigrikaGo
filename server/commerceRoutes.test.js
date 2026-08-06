@@ -163,6 +163,54 @@ describe("commerce route handlers", () => {
     expect(res.body.achievementUnlocks).toBeUndefined();
   });
 
+  it("routes the Sigrika arc transitions and development candy cancellation for the authenticated user", async () => {
+    const calls = [];
+    const handlers = createCommerceRouteHandlers({
+      prisma: { marker: "prisma" },
+      getSigrikaCandyArcStoryFn: async (args) => {
+        calls.push(["story", args]);
+        return { storyScript: { startNodeId: "corruption-start" } };
+      },
+      markSigrikaCandyClimaxFn: async (args) => {
+        calls.push(["climax", args]);
+        return { id: args.userId, sigrikaCandyArc: { phase: "awaiting-duel" } };
+      },
+      startSigrikaCandyRecoveryFn: async (args) => {
+        calls.push(["recovery-start", args]);
+        return { storyScript: { startNodeId: "recovery-win-start" } };
+      },
+      completeSigrikaCandyRecoveryFn: async (args) => {
+        calls.push(["recovery-complete", args]);
+        return { id: args.userId, sigrikaCandyArc: { phase: "normal" } };
+      },
+      debugJumpSigrikaCandyToUseEightFn: async (args) => {
+        calls.push(["debug-jump", args]);
+        return { id: args.userId, sigrikaCandyArc: { useCount: 8, phase: "corruption-story" } };
+      },
+      cancelRainbowBeanCandyEffectFn: async (args) => {
+        calls.push(["cancel", args]);
+        return { user: { id: args.userId } };
+      }
+    });
+    const request = { user: { id: "user-1" }, params: { characterId: "sigrika" } };
+
+    await handlers.sigrikaCandyStory(request, createResponse());
+    await handlers.sigrikaCandyClimax(request, createResponse());
+    await handlers.sigrikaCandyDebugJump(request, createResponse());
+    await handlers.sigrikaCandyRecoveryStart(request, createResponse());
+    await handlers.sigrikaCandyRecoveryComplete(request, createResponse());
+    await handlers.cancelCandyEffect(request, createResponse());
+
+    expect(calls).toEqual([
+      ["story", { prisma: { marker: "prisma" }, userId: "user-1" }],
+      ["climax", { prisma: { marker: "prisma" }, userId: "user-1" }],
+      ["debug-jump", { prisma: { marker: "prisma" }, userId: "user-1" }],
+      ["recovery-start", { prisma: { marker: "prisma" }, userId: "user-1" }],
+      ["recovery-complete", { prisma: { marker: "prisma" }, userId: "user-1" }],
+      ["cancel", { prisma: { marker: "prisma" }, userId: "user-1", characterId: "sigrika" }]
+    ]);
+  });
+
   it("mounts all commerce routes behind the index-level auth middleware", () => {
     const router = createCommerceRouter({ prisma: {} });
     const routes = router.stack
@@ -174,6 +222,12 @@ describe("commerce route handlers", () => {
       ["/costumes/:id/purchase", ["post"]],
       ["/costumes/equip", ["post"]],
       ["/items/inventory", ["get"]],
+      ["/items/rainbow-bean-candy/sigrika/story", ["get"]],
+      ["/items/rainbow-bean-candy/sigrika/climax", ["post"]],
+      ["/items/rainbow-bean-candy/sigrika/debug/jump-to-eight", ["post"]],
+      ["/items/rainbow-bean-candy/sigrika/recovery/start", ["post"]],
+      ["/items/rainbow-bean-candy/sigrika/recovery/complete", ["post"]],
+      ["/items/rainbow-bean-candy/effects/:characterId/cancel", ["post"]],
       ["/items/:itemId/use", ["post"]]
     ]);
   });

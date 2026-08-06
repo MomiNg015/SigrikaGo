@@ -521,6 +521,45 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("LOCK / LOADING... (x_x)");
   });
 
+  it("turns the corrupted house manual into a Sigrika-only readable archive", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        ownedCharacters: ["sigrika", "denia"],
+        selectedCharacter: "sigrika",
+        sigrikaCandyArc: { corrupted: true }
+      },
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+        { id: "denia", name: "丹雅", portrait: "/assets/Danea_centered.webp" }
+      ],
+      audioSettings: {},
+      onApplyDecoration: () => {},
+      onClose: () => {},
+      onSelectCharacter: () => {}
+    }));
+
+    expect(html).toContain("sigrika-corruption-house-backdrop");
+    expect(html).toContain("is-corruption-focus");
+    expect(html).toContain("西格莉卡？");
+    expect(html).toContain('alt="西格莉卡？"');
+    expect(html).not.toContain("档案校验异常");
+    expect(html).not.toContain("house-corruption-integrity");
+    expect(html).toContain("is-corruption-obscured");
+    expect(html).toContain('data-corruption-seed="house-denia"');
+    expect(html).toContain('data-corruption-seed="house-card-denia"');
+    expect(html).toContain("character-card-corruption-noise");
+    expect(html).toContain("--corruption-card-duration:");
+    expect(html).toContain("--corruption-noise-duration:");
+    expect(html).toContain("character-data-fragments");
+    expect(html).toContain("character-corruption-source");
+    expect(html).not.toContain('data-corruption-seed="house-sigrika"');
+    expect(html).not.toContain("corruption-scribble");
+    expect(html).not.toContain("sortie-button");
+    expect(html).not.toContain("decorations-section");
+  });
+
   it("renders replay access and profile stats in the resume modal", () => {
     const html = renderToStaticMarkup(createElement(ResumeModal, {
       user: {
@@ -982,7 +1021,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalThemeCss).toContain("scroll-padding: 0 6px 6px 0 !important");
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
+    expect(lobbyCss).toContain(".character-item-effect-badges.is-interactive");
+    expect(lobbyCss).toContain("pointer-events: auto;");
     expect(lobbyCss).toContain(".character-item-effect-icon");
+    expect(lobbyCss).toContain(".character-item-effect-cancel");
     expect(lobbyCss).toContain(".character-card .character-item-effect-icon");
     expect(lobbyCss).toMatch(
       /\.stat-tip\s*\{[^}]*white-space: normal;[^}]*word-break: normal;[^}]*overflow-wrap: anywhere;[^}]*\}/
@@ -990,7 +1032,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("width: 24px;");
-    expect(readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url))).toContain(".character-item-effect-icon");
+    expect(brightSchoolComponentCss).toContain(".character-item-effect-icon");
+    expect(brightSchoolComponentCss).toContain(".character-item-effect-cancel:hover");
+    expect(brightSchoolComponentCss).toContain("background: transparent !important;");
+    expect(brightSchoolComponentCss).toContain("border: 0 !important;");
+    expect(brightSchoolComponentCss).toContain("box-shadow: none !important;");
     expect(css).toContain(".house-modal .character-item-effect-icon");
     expect(css).toContain(".house-modal .stat strong");
     expect(css).toContain("white-space: nowrap !important");

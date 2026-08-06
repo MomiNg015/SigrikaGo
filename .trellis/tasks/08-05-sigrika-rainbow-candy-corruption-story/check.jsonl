@@ -1,0 +1,4 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"西格莉卡糖果状态机、剧情入口、决战结算与开发取消接口合同"}
+{"file":".trellis/spec/backend/practice-room-contract.md","reason":"专属决战的 GNU Go 降级例外与普通陪练边界"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"全局黑化门禁、部员手册和匹配入口交互合同"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"黑化样式 owner 与移动端级联边界"}

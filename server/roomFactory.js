@@ -13,6 +13,7 @@ import {
   PRACTICE_RECORD_POLICY,
   practiceDifficulty
 } from "../src/shared/practiceMode.js";
+import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 
 export const MATCH_SUCCESS_DELAY_MS = 3000;
 export const OPENING_NOTICE_DELAY_MS = 3000;
@@ -160,6 +161,69 @@ export function createPracticeRoom(player, {
     lastTick: now(),
     recordSaved: false
   };
+}
+
+export function createSigrikaCandyDuelRoom(player, options = {}) {
+  const room = createPracticeRoom(player, {
+    ...options,
+    difficulty: "advanced",
+    playerColor: "random"
+  });
+  const human = room.players.find((entry) => !entry.isBot && !entry.user?.isBot);
+  const bot = room.players.find((entry) => entry.isBot || entry.user?.isBot);
+  room.matchSource = SIGRIKA_CANDY_DUEL.matchSource;
+  room.recordPolicy = "replay-only";
+  room.rated = false;
+  room.unlimitedTime = true;
+  room.privateOwnerUserId = player.user.id;
+  room.sigrikaCandyDuel = {
+    ownerUserId: player.user.id,
+    humanColor: human.color,
+    botColor: bot.color,
+    resultOutcome: "",
+    achievementHooks: { win: false, loss: false }
+  };
+  room.practice = {
+    ...room.practice,
+    specialDuel: true,
+    captureResignThreshold: null,
+    fallbackDifficulties: ["advanced", "intermediate", "beginner"]
+  };
+  human.characterId = null;
+  human.character = null;
+  human.costumeSnapshot = null;
+  human.user = {
+    ...human.user,
+    selectedCharacter: null,
+    characterConfig: null
+  };
+  bot.user = {
+    ...bot.user,
+    username: "西格莉卡？",
+    rank: "数据损坏",
+    selectedCharacter: null
+  };
+  bot.botProfile = {
+    id: "sigrika-corrupted",
+    name: "西格莉卡？",
+    portraitUrl: "",
+    dataCorrupted: true
+  };
+  for (const entry of room.players) {
+    entry.time = { unlimited: true, main: null, byoYomi: null, periodRemaining: null, periods: null };
+    room.game.skillUses[entry.color] = 0;
+    delete room.game.passives?.[entry.color];
+  }
+  room.game.players = room.game.players.map((entry) => ({
+    ...entry,
+    characterId: null,
+    character: null
+  }));
+  room.game.size = SIGRIKA_CANDY_DUEL.boardSize;
+  room.game.komi = SIGRIKA_CANDY_DUEL.komi;
+  room.game.skillEnabled = false;
+  room.game.pendingSkill = null;
+  return room;
 }
 
 export function toRoomPlayer(player, color, mode = "spark") {

@@ -83,6 +83,7 @@ After implementation:
 - [ ] Verified error handling at each boundary
 - [ ] Checked data survives round-trip
 - [ ] If the backend returns both domain metadata and low-level node/type fields, verified that frontend surface routing honors the domain metadata before using structural heuristics
+- [ ] If a mutation response replaces the frontend's complete user/account state, verified the backend projection includes every required relation and tested that unrelated presentation fields (such as equipped costume portraits) survive the mutation
 
 ---
 

@@ -53,7 +53,7 @@ describe("App startup preload wiring", () => {
   it("keeps the achievement unlock callback stable for home refresh", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("useCallback, useState");
+    expect(source).toMatch(/import \{[^}]*useCallback[^}]*useState[^}]*\} from "react"/);
     expect(source).toContain("const showAchievementUnlocks = useCallback(");
     expect(source).toContain("}, [showToast]);");
   });

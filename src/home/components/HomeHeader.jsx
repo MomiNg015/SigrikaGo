@@ -3,6 +3,7 @@ import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings 
 
 export default function HomeHeader({
   isAdmin,
+  sigrikaCorrupted = false,
   siteTitle,
   siteVersion,
   mailboxBadgeCount = 0,
@@ -22,16 +23,42 @@ export default function HomeHeader({
     setMobileMenuOpen(false);
     action?.();
   };
+  const desktopOnboardingAction = (
+    <button
+      className="icon-button onboarding-action"
+      type="button"
+      aria-label="打开新手引导"
+      title="引导"
+      disabled={sigrikaCorrupted}
+      onClick={onOpenOnboardingStory}
+    >
+      <CircleHelp size={20} />
+    </button>
+  );
+  const mobileOnboardingAction = (
+    <button
+      className="home-mobile-onboarding-action"
+      type="button"
+      aria-label="打开新手引导"
+      disabled={sigrikaCorrupted}
+      onClick={closeMobileMenu(onOpenOnboardingStory)}
+    >
+      <CircleHelp size={18} />
+      引导
+    </button>
+  );
 
   return (
-    <header className="home-top-strip home-terminal-header">
+    <header className={`home-top-strip home-terminal-header${sigrikaCorrupted ? " is-sigrika-corrupted-header" : ""}`}>
       <div className="home-top-brand">
-        <span className="home-brand-title text-window-title">{siteTitle}</span>
+        <span className="home-brand-title-wrap">
+          <span className="home-brand-title text-window-title">{siteTitle}</span>
+        </span>
         {siteVersion && (
           <span className="home-brand-version home-brand-subtitle text-display-accent">{siteVersion}</span>
         )}
       </div>
-      <picture className="home-header-mascot" aria-hidden="true">
+      {!sigrikaCorrupted && <picture className="home-header-mascot" aria-hidden="true">
         <source media="(prefers-reduced-motion: reduce)" srcSet="/assets/home/home-header-sigrika-still.webp" />
         <img
         src="/assets/home/home-header-sigrika.gif?v=170ms"
@@ -39,7 +66,7 @@ export default function HomeHeader({
           draggable="false"
           decoding="async"
         />
-      </picture>
+      </picture>}
       <div className="topbar-actions">
         <button
           className={`icon-button announcement-action ${announcementUnread ? "has-unread" : ""}`}
@@ -55,9 +82,9 @@ export default function HomeHeader({
           <Mail size={20} />
           {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
         </button>
-        <button className="icon-button onboarding-action" type="button" aria-label="打开新手引导" title="引导" onClick={onOpenOnboardingStory}>
-          <CircleHelp size={20} />
-        </button>
+        {sigrikaCorrupted
+          ? <span className="home-onboarding-corruption-lock">{desktopOnboardingAction}</span>
+          : desktopOnboardingAction}
         <button className="icon-button" type="button" aria-label="打开留言板" title="留言板" onClick={onOpenMessageBoard}><MessageSquareText size={20} /></button>
         <button className="icon-button" type="button" aria-label="打开设置" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
         {isAdmin && (
@@ -91,10 +118,9 @@ export default function HomeHeader({
             邮箱
             {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
           </button>
-          <button className="home-mobile-onboarding-action" type="button" aria-label="打开新手引导" onClick={closeMobileMenu(onOpenOnboardingStory)}>
-            <CircleHelp size={18} />
-            引导
-          </button>
+          {sigrikaCorrupted
+            ? <span className="home-onboarding-corruption-lock">{mobileOnboardingAction}</span>
+            : mobileOnboardingAction}
           <button type="button" onClick={closeMobileMenu(onOpenMessageBoard)}>
             <MessageSquareText size={18} />
             留言

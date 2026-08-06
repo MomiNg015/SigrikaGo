@@ -24,7 +24,7 @@ function defaultFooterText(siteTitle) {
   return `${siteTitle}\nCopyright ©KURO GAMES. ALL RIGHTS RESERVED.\n浙ICP备2026035038号`;
 }
 
-export default function HomeFooter({ footerText, siteTitle }) {
+export default function HomeFooter({ disabled = false, footerText, siteTitle }) {
   const lines = String(footerText || defaultFooterText(siteTitle)).split(/\r?\n/);
 
   return (
@@ -32,13 +32,13 @@ export default function HomeFooter({ footerText, siteTitle }) {
       {lines.map((line, lineIndex) => (
         <span className="home-footer-line" key={`${line}-${lineIndex}`}>
           {parseFooterLine(line).map((part, partIndex) => (
-            part.type === "link"
+            part.type === "link" && !disabled
               ? (
                 <a href={part.href} key={`${part.href}-${partIndex}`} rel="noreferrer" target="_blank">
                   {part.text}
                 </a>
               )
-              : <span key={`${part.text}-${partIndex}`}>{part.text}</span>
+              : <span className={part.type === "link" ? "home-footer-disabled-link" : undefined} key={`${part.text}-${partIndex}`}>{part.text}</span>
           ))}
         </span>
       ))}

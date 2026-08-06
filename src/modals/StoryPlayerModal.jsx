@@ -34,10 +34,12 @@ export default function StoryPlayerModal({
   labels = {},
   user = null,
   onClose,
+  onNodeEnter,
   onNavigate,
   portraitNodes,
   typewriterDisabled = false,
-  previewControlsEnabled = false
+  previewControlsEnabled = false,
+  dismissible = true
 }) {
   const textLabels = { ...STORY_PLAYER_DEFAULT_TEXT, ...labels };
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
@@ -84,6 +86,10 @@ export default function StoryPlayerModal({
   }, [activeNodeId, text.length, typewriterDisabled]);
 
   useEffect(() => () => clearPendingWait(), []);
+
+  useEffect(() => {
+    if (activeNodeId) onNodeEnter?.(activeNodeId, { node, script });
+  }, [activeNodeId, node, onNodeEnter, script]);
 
   useEffect(() => {
     if (portraitUrls.length === 0) return;
@@ -166,6 +172,7 @@ export default function StoryPlayerModal({
   }
 
   function requestCloseConfirmation() {
+    if (!dismissible) return;
     setSkipConfirmOpen(true);
   }
 
@@ -189,7 +196,7 @@ export default function StoryPlayerModal({
     return (
       <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
         <section className="modal-panel onboarding-story-modal empty" onClick={(event) => event.stopPropagation()}>
-          <button className="close-button" type="button" aria-label={textLabels.close} onClick={requestCloseConfirmation}><X size={20} /></button>
+          {dismissible && <button className="close-button" type="button" aria-label={textLabels.close} onClick={requestCloseConfirmation}><X size={20} /></button>}
           <p>{textLabels.noScript}</p>
           {renderSkipConfirm()}
         </section>
@@ -200,9 +207,9 @@ export default function StoryPlayerModal({
   return (
     <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
       <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
-        <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
+        {dismissible && <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
           <FastForward size={22} />
-        </button>
+        </button>}
 
         <div
           className="onboarding-story-portrait"

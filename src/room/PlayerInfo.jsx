@@ -35,7 +35,8 @@ function PlayerInfo({
   isSkillTargeting = false,
   floatingLayerId,
   floatingLayerZ,
-  onFloatingLayerRequest
+  onFloatingLayerRequest,
+  sigrikaCandyDuel = false
 }) {
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
   const [tapTooltip, setTapTooltip] = useState(null);
@@ -68,7 +69,7 @@ function PlayerInfo({
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
-  const keepNoCharacterCardSlots = isNoCharacter && (player.isTutorialPlayer || isPracticeBot);
+  const keepNoCharacterCardSlots = !sigrikaCandyDuel && isNoCharacter && (player.isTutorialPlayer || isPracticeBot);
   const showNoCharacterSkillPlaceholder = skillEnabled && keepNoCharacterCardSlots;
   const showNoCharacterRankPlaceholder = keepNoCharacterCardSlots && !player.user.rank;
   const showNoCharacterRatingPlaceholder = keepNoCharacterCardSlots
@@ -80,10 +81,14 @@ function PlayerInfo({
   const isSelectedView = canSwitchView && viewColor === player.color;
   const viewpointLabel = player.color === COLORS.black ? "黑方" : "白方";
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
+  const isCorruptedBot = sigrikaCandyDuel && isBot;
+  const showPortrait = !sigrikaCandyDuel || isCorruptedBot;
   const portraitContent = (
     <>
       {hasCharacter && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
-      {isBot && isNoCharacter && (botPortraitUrl
+      {isCorruptedBot
+        ? <span className="sigrika-corrupted-npc-portrait" aria-label="西格莉卡？数据损坏">?</span>
+        : isBot && isNoCharacter && (botPortraitUrl
         ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
         : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
       {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
@@ -100,7 +105,7 @@ function PlayerInfo({
       className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${isPracticeBot ? "practice-bot-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
       style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
     >
-      {canSwitchView ? (
+      {showPortrait && (canSwitchView ? (
         <button
           type="button"
           className={`portrait-wrap portrait-viewpoint-button ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${useNoCharacterPortraitLayout ? "no-character" : ""} ${isPracticeBot ? "practice-bot-portrait-wrap" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}
@@ -114,15 +119,15 @@ function PlayerInfo({
         <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${useNoCharacterPortraitLayout ? "no-character" : ""} ${isPracticeBot ? "practice-bot-portrait-wrap" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
           {portraitContent}
         </div>
-      )}
+      ))}
       <div className="player-meta">
         <div className="name-button player-name">
           <UserIdentity user={player.user} compact />
         </div>
-        {(hasCharacter || isBot) && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
+        {!sigrikaCandyDuel && (hasCharacter || isBot) && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
         {showNoCharacterRankPlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
-        {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
+        {!sigrikaCandyDuel && player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
         {showNoCharacterRatingPlaceholder && <span className="meta-tag rating-tag meta-placeholder" aria-hidden="true" />}
       </div>
       <TimeBar time={player.time} />
@@ -249,6 +254,7 @@ export function arePlayerInfoPropsEqual(previous, next) {
     && previous.floatingLayerId === next.floatingLayerId
     && previous.floatingLayerZ === next.floatingLayerZ
     && previous.onFloatingLayerRequest === next.onFloatingLayerRequest
+    && previous.sigrikaCandyDuel === next.sigrikaCandyDuel
     && gamePlayerSliceEqual(previous.game, next.game, color);
 }
 

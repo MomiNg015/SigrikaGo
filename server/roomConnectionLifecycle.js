@@ -23,6 +23,7 @@ export function createRoomConnectionLifecycle({
     if (player) {
       attachPlayerSocket(room, player, socket);
     } else {
+      if (room.privateOwnerUserId || room.sigrikaCandyDuel) return null;
       if (admitSpectator(room, user)?.ok === false) return null;
       attachSpectatorSocket(room, socket, user);
     }

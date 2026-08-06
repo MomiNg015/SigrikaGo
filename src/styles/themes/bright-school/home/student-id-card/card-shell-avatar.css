@@ -72,7 +72,7 @@
   z-index: 1 !important;
   width: var(--home-student-id-avatar-size) !important;
   height: var(--home-student-id-avatar-size) !important;
-  padding: 4px !important;
+  padding: 0 !important;
   display: grid !important;
   place-items: center !important;
   box-sizing: border-box !important;
@@ -80,8 +80,20 @@
   border: 0 !important;
   border-radius: 12px !important;
   box-shadow: none !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   transform: translate(-50%, -50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar-mask {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 4px !important;
+  display: grid !important;
+  place-items: center !important;
+  box-sizing: border-box !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  filter: drop-shadow(0 4px 4px rgba(61, 43, 37, 0.12)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar img {
@@ -93,5 +105,5 @@
   margin: auto !important;
   object-fit: contain !important;
   object-position: center center !important;
-  filter: drop-shadow(0 4px 4px rgba(61, 43, 37, 0.12)) !important;
+  filter: none !important;
 }
