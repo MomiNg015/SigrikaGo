@@ -1,5 +1,6 @@
 import { canonicalCharacterId } from "./characterAliases.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
 import {
   costumePortraitFrameStyle,
   normalizeCostumePortraitFraming
@@ -16,6 +17,10 @@ export function resolveCharacterPortraitPresentation(character = {}, {
     ?? equippedCostumes?.[characterId]
     ?? user?.equippedCostumes?.[characterId]
     ?? null;
+
+  if (characterId === "sigrika" && user?.sigrikaCandyArc?.corrupted === true) {
+    return portraitPresentation(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+  }
 
   if (characterId === "denia" && itemEffects?.deniaRainbowGlow) {
     if (costume?.candyEffectPortraitUrl) {

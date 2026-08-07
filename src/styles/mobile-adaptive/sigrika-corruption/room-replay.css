@@ -1,81 +1,98 @@
-.app-shell.is-sigrika-corrupted .sigrika-corrupted-npc-portrait {
-  display: grid;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corrupted-npc-portrait {
+  display: block;
   width: 100%;
   height: 100%;
-  place-items: center;
-  color: #f4f4f5;
-  background: repeating-linear-gradient(90deg, #121418 0 7px, #d4d4d8 8px 10px, #25282e 11px 18px);
-  font-size: clamp(2.4rem, 8vw, 5rem);
-  font-weight: 900;
-  text-shadow: 7px 0 0 #111318, -5px 0 0 #a1a1aa;
+  object-fit: contain;
+  object-position: center;
+  background: var(--sigrika-duel-ink);
   animation: sigrika-corruption-avatar 5.7s steps(1, end) infinite;
 }
 
-.app-shell.is-sigrika-corrupted .unlimited-corrupted-timer {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .unlimited-corrupted-timer {
   position: relative;
   overflow: hidden;
-  filter: grayscale(1) contrast(1.3);
+  filter: none;
 }
 
-.app-shell.is-sigrika-corrupted .unlimited-corrupted-timer .timer-label {
-  letter-spacing: 0.08em;
-  text-decoration: line-through;
-}
-
-.app-shell.is-sigrika-corrupted .unlimited-clock-glitch {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .unlimited-clock-glitch {
   position: absolute;
   inset-inline: 0;
+  color: var(--sigrika-duel-hot);
   opacity: 0;
-  text-shadow: 4px 0 0 #f4f4f5, -3px 0 0 #18181b;
+  text-shadow: 2px 0 0 var(--sigrika-duel-line-strong), -2px 0 0 var(--sigrika-duel-shadow);
   animation: sigrika-corruption-clock 7s steps(1, end) infinite;
 }
 
-.app-shell.is-sigrika-corrupted .unlimited-clock-normal {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .unlimited-clock-normal {
+  color: var(--sigrika-duel-text);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .unlimited-clock-normal {
   animation: sigrika-corruption-clock-normal 7s steps(1, end) infinite;
 }
 
-.app-shell.is-sigrika-corrupted .sigrika-corruption-result-modal {
-  filter: grayscale(1) contrast(1.22);
-  box-shadow: 10px 0 0 rgb(255 255 255 / 0.12), -14px 0 0 rgb(0 0 0 / 0.64);
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-backdrop {
+  background: color-mix(in srgb, var(--sigrika-duel-void) 68%, transparent) !important;
 }
 
-.app-shell.is-sigrika-corrupted .sigrika-corruption-result-modal .result-summary > button {
-  border-color: #d4d4d8;
-  color: #f4f4f5;
-  background: #18181b;
-  text-transform: uppercase;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-modal {
+  border: 1px solid var(--sigrika-duel-line-strong) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: linear-gradient(145deg, var(--sigrika-duel-surface-raised), var(--sigrika-duel-ink)) !important;
+  filter: none !important;
+  box-shadow: 0 6px 8px var(--sigrika-duel-shadow-soft) !important;
 }
 
-.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-backdrop .sigrika-corruption-result-modal .result-summary .result-outcome-label {
+  color: var(--sigrika-duel-hot) !important;
 }
 
-.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels strong {
-  overflow: hidden;
-  font-size: 0.78rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-backdrop .sigrika-corruption-result-modal .result-summary .result-detail-text {
+  color: var(--sigrika-duel-text) !important;
 }
 
-.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-labels em {
-  justify-self: start;
-  padding: 2px 7px;
-  border: 1px solid #ef5965;
-  border-radius: 999px;
-  color: #fff;
-  background: #a40d1b;
-  font-size: 0.68rem;
-  font-style: normal;
-  font-weight: 800;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-modal .result-summary > button {
+  border-color: var(--sigrika-duel-hot) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-interactive) !important;
+  box-shadow: 0 2px 4px var(--sigrika-duel-shadow-soft) !important;
+  text-transform: none;
 }
 
-.app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted > :not(.character-grid-container, .close-button) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.is-sigrika-candy-duel-replay,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.is-sigrika-candy-duel-replay:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.is-sigrika-candy-duel-replay:focus-visible {
+  --sigrika-replay-surface: color-mix(in srgb, var(--bright-pink) 30%, var(--bright-sheet-clean));
+  --sigrika-replay-surface-strong: color-mix(in srgb, var(--bright-pink) 48%, var(--bright-sheet-clean));
+  --sigrika-replay-border: color-mix(in srgb, var(--bright-pink) 56%, var(--bright-border));
+  --sigrika-replay-ink: color-mix(in srgb, var(--bright-ink) 82%, var(--bright-pink));
+  --sigrika-replay-boss: color-mix(in srgb, var(--bright-pink) 62%, var(--bright-ink));
+  position: relative;
+  border-color: var(--sigrika-replay-border) !important;
+  color: var(--sigrika-replay-ink) !important;
+  background: linear-gradient(135deg, var(--sigrika-replay-surface), var(--sigrika-replay-surface-strong)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.is-sigrika-candy-duel-replay :is(span, b) {
+  color: var(--sigrika-replay-ink) !important;
+}
+
+.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-boss-icon {
+  border: 1px solid var(--sigrika-replay-surface);
+  color: var(--bright-sheet-clean) !important;
+  background: var(--sigrika-replay-boss);
+}
+
+.replay-table-row.is-sigrika-candy-duel-replay .sigrika-duel-replay-portrait {
+  background: transparent;
+  filter: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted > :not(.character-grid-container, .close-button) {
   filter: grayscale(1) contrast(1.12);
 }
 
-.app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .close-button {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .close-button {
   filter: grayscale(1);
 }
 

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { limitToastQueue, duelProgressPercent, secondsUntilDuelRequestExpires } from "./FeedbackModals.jsx";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ConfirmModal, limitToastQueue, duelProgressPercent, secondsUntilDuelRequestExpires } from "./FeedbackModals.jsx";
 
 describe("FeedbackModals helpers", () => {
   it("clamps duel request countdown seconds", () => {
@@ -33,6 +35,26 @@ describe("FeedbackModals helpers", () => {
       { id: 3, text: "third" },
       { id: 2, text: "second" }
     ]);
+  });
+
+  it("adds the corrupted duel atmosphere layer only when explicitly requested", () => {
+    const props = {
+      title: "退出房间",
+      message: "是否认输并退出房间？",
+      confirmText: "认输并退出",
+      onConfirm: () => {},
+      onCancel: () => {}
+    };
+    const specialMarkup = renderToStaticMarkup(createElement(ConfirmModal, {
+      ...props,
+      atmosphere: "sigrika-duel"
+    }));
+    const ordinaryMarkup = renderToStaticMarkup(createElement(ConfirmModal, props));
+
+    expect(specialMarkup).toContain("sigrika-duel-confirm-modal");
+    expect(specialMarkup).toContain("sigrika-duel-modal-atmosphere");
+    expect(ordinaryMarkup).not.toContain("sigrika-duel-confirm-modal");
+    expect(ordinaryMarkup).not.toContain("sigrika-duel-modal-atmosphere");
   });
 
   it("keeps toast styling focused on general notices and success feedback", () => {

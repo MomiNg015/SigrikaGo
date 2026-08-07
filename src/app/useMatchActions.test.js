@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { matchSuccessCountdownCompletedTransition, startMatchTransition, startPracticeTransition } from "./useMatchActions.js";
+import {
+  matchSuccessCountdownCompletedTransition,
+  startMatchTransition,
+  startPracticeTransition,
+  startSigrikaDuelTransition
+} from "./useMatchActions.js";
 
 describe("match success action helpers", () => {
   it("preloads playable resources for the selected mode before joining matchmaking", () => {
@@ -63,5 +68,44 @@ describe("match success action helpers", () => {
       { difficulty: "beginner", playerColor: "random" },
       expect.any(Function)
     );
+  });
+
+  it("applies a stale special-duel rollback before asking the player to retry", () => {
+    const resetArc = {
+      useCount: 8,
+      phase: "awaiting-duel",
+      outcome: "",
+      roomCode: "",
+      corrupted: true,
+      active: true
+    };
+    const setMatchStart = vi.fn();
+    const showToast = vi.fn();
+    const updateUser = vi.fn();
+    const socket = {
+      emit: vi.fn((_event, _payload, acknowledge) => acknowledge({
+        ok: false,
+        error: "上次特殊对局已失效，状态已恢复，请再次点击开始决战",
+        code: "special_room_reset",
+        sigrikaCandyArc: resetArc
+      }))
+    };
+
+    startSigrikaDuelTransition({
+      preloadPlayableReady: vi.fn(),
+      setMatchStart,
+      setMatchSuccess: vi.fn(),
+      showToast,
+      socket,
+      updateUser
+    });
+
+    const updater = updateUser.mock.calls[0][0];
+    expect(updater({ id: "user-1", sigrikaCandyArc: { phase: "duel-active" } })).toMatchObject({
+      id: "user-1",
+      sigrikaCandyArc: resetArc
+    });
+    expect(setMatchStart).toHaveBeenLastCalledWith(null);
+    expect(showToast).toHaveBeenCalledWith("上次特殊对局已失效，状态已恢复，请再次点击开始决战", "error");
   });
 });

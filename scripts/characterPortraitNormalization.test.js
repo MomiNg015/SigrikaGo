@@ -6,7 +6,9 @@ import { describe, expect, it } from "vitest";
 import {
   CHARACTER_PORTRAIT_ASSETS,
   COSTUME_PORTRAIT_ASSETS,
-  DENIA_CANDY_PORTRAIT_ASSET
+  DENIA_CANDY_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
 } from "../src/shared/characterPortraitAssetCatalog.js";
 import {
   PORTRAIT_CANVAS_SIZE,
@@ -121,7 +123,8 @@ describe("character portrait normalization", () => {
         portraitUrl: "/assets/costumes/one.webp",
         candyEffectPortraitUrl: "/assets/costumes/one-candy.webp"
       }],
-      baseCandyPortraitUrl: "/assets/characters/base-candy.webp"
+      baseCandyPortraitUrl: "/assets/characters/base-candy.webp",
+      specialPortraitAssets: []
     });
 
     expect(assets.map((asset) => asset.url)).toEqual([
@@ -140,7 +143,9 @@ describe("character portrait normalization", () => {
     const expectedUrls = [
       ...Object.values(CHARACTER_PORTRAIT_ASSETS).map((asset) => asset.url),
       ...Object.values(COSTUME_PORTRAIT_ASSETS).map((asset) => asset.url),
-      DENIA_CANDY_PORTRAIT_ASSET.url
+      DENIA_CANDY_PORTRAIT_ASSET.url,
+      SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
     ];
 
     expect(assets).toHaveLength(expectedUrls.length);
@@ -148,6 +153,10 @@ describe("character portrait normalization", () => {
     expect(expectedUrls.every((url) => url.endsWith(".webp"))).toBe(true);
     expect(assets.find((asset) => asset.url === DENIA_CANDY_PORTRAIT_ASSET.url))
       .toMatchObject({ requiresAnimation: true });
+    expect(assets.find((asset) => asset.url === SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url))
+      .toMatchObject({ legacySourceUrl: SIGRIKA_CORRUPTED_PORTRAIT_ASSET.legacyUrl });
+    expect(assets.find((asset) => asset.url === SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url))
+      .toMatchObject({ legacySourceUrl: SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.legacyUrl });
   });
 
   it("keeps the committed Denia candy portrait at its authored animation timing", async () => {

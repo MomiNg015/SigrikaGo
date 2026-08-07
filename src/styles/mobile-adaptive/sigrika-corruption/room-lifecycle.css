@@ -1,0 +1,60 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.sigrika-duel-opening-modal, .sigrika-duel-confirm-modal) {
+  width: 100% !important;
+  overflow: hidden !important;
+  scrollbar-gutter: auto !important;
+  color: var(--sigrika-duel-text) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-opening-modal {
+  max-width: 460px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-confirm-modal {
+  max-width: 420px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-modal-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 1px solid var(--sigrika-duel-hot);
+  border-radius: 8px;
+  pointer-events: none;
+  background: linear-gradient(145deg, var(--sigrika-duel-surface-accent), var(--sigrika-duel-surface) 56%, var(--sigrika-duel-ink));
+  box-shadow: 0 6px 8px var(--sigrika-duel-shadow-soft), inset 0 0 0 1px color-mix(in srgb, var(--sigrika-duel-text) 10%, transparent);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.sigrika-duel-opening-modal, .sigrika-duel-confirm-modal) :is(h2, p) {
+  color: var(--sigrika-duel-text) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-opening-modal > svg {
+  color: var(--sigrika-duel-hot);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-confirm-modal .danger-action {
+  --bright-sheet: var(--sigrika-duel-line-strong);
+  --bright-pink: var(--sigrika-duel-hot);
+  --bright-ink: var(--sigrika-duel-text);
+  --bright-border: var(--sigrika-duel-hot);
+  border-color: var(--sigrika-duel-hot) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-line-strong) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-confirm-modal .secondary-action {
+  --bright-sheet: var(--sigrika-duel-surface-raised);
+  --bright-pink: var(--sigrika-duel-surface-accent);
+  --bright-ink: var(--sigrika-duel-text);
+  --bright-border: var(--sigrika-duel-line);
+  border-color: var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-raised) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-confirm-modal .danger-action:is(:hover, :focus-visible),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .sigrika-duel-confirm-modal .secondary-action:is(:hover, :focus-visible) {
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-interactive) !important;
+}

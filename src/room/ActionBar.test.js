@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { areActionBarPropsEqual, canRequestOpponentDecision } from "./ActionBar.jsx";
+import ActionBar, { areActionBarPropsEqual, canRequestOpponentDecision } from "./ActionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
 
 describe("ActionBar helpers", () => {
@@ -100,6 +100,17 @@ describe("ActionBar helpers", () => {
     expect(source).toContain("gameModeFamily(mode) === \"gomoku\"");
     expect(source).toContain("showGoControls");
     expect(battleStageSource).toContain("mode={displayRoom.game.mode}");
+  });
+
+  it("keeps the Sigrika duel counting control visible but natively disabled", () => {
+    const markup = renderToStaticMarkup(createElement(ActionBar, actionBarProps({ countingEnabled: false })));
+    const battleStageSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(markup).toMatch(/<button class="counting-action" disabled="" title="该对局无法数子">/);
+    expect(markup).toContain('<button class="pass-action">');
+    expect(markup).toContain('<button class="resign-action">');
+    expect(markup).toContain(">数子</span>");
+    expect(battleStageSource).toContain("countingEnabled={!sigrikaCandyDuel}");
   });
 
   it("keeps Bright School skill targeting visibly active", () => {
@@ -242,6 +253,7 @@ function actionBarProps(overrides = {}) {
     skillEnabled: true,
     skillUses: 1,
     skillAvailable: true,
+    countingEnabled: true,
     hasAnyStones: true,
     opponentConnected: true,
     scoring: null,

@@ -3,6 +3,10 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { PaginatedReplayList, ReplayList, replayOutcomeForUser } from "./ReplayList.jsx";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "../shared/characterPortraitAssetCatalog.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ReplayList", () => {
@@ -115,10 +119,32 @@ describe("ReplayList", () => {
     }));
 
     expect(html).toContain("replay-friendly-icon");
+    expect(html).toContain('class="replay-time-cell"><span class="replay-corner-icon replay-friendly-icon"');
+    expect(html).toContain('role="img"');
     expect(html).toContain("aria-label=\"友谊对局\"");
   });
 
-  it("keeps the Sigrika duel in the normal replay list with its special title and red tag", () => {
+  it("anchors the friendly replay icon to the card corner without changing the five-column grid", () => {
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const rowRule = css.slice(
+      css.indexOf(".replay-table-row {"),
+      css.indexOf(".replay-time-cell")
+    );
+    const friendlyBadgeRule = css.slice(
+      css.indexOf(".replay-corner-icon {"),
+      css.indexOf(".replay-corner-icon svg")
+    );
+
+    expect(rowRule).toContain("position: relative;");
+    expect(friendlyBadgeRule).toContain("position: absolute;");
+    expect(friendlyBadgeRule).toContain("top: -7px;");
+    expect(friendlyBadgeRule).toContain("left: -7px;");
+    expect(friendlyBadgeRule).toContain("width: 22px;");
+    expect(friendlyBadgeRule).toContain("height: 22px;");
+    expect(friendlyBadgeRule).toContain("pointer-events: none;");
+  });
+
+  it("keeps the Sigrika duel row aligned while using the boss badge and canonical portraits", () => {
     const html = renderToStaticMarkup(createElement(ReplayList, {
       characters,
       currentUser: { id: "user-1", username: "moming" },
@@ -140,9 +166,42 @@ describe("ReplayList", () => {
     }));
 
     expect(html).toContain("is-sigrika-candy-duel-replay");
-    expect(html).toContain("和西格莉卡？决战");
-    expect(html).toContain("特殊对局");
+    expect(html).toContain("sigrika-duel-boss-icon");
+    expect(html).toContain("lucide-crown");
+    expect(html).toContain('class="replay-time-cell"><span class="replay-corner-icon sigrika-duel-boss-icon"');
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}"`);
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(html).toContain("sigrika-duel-replay-portrait is-player");
+    expect(html).toContain("sigrika-duel-replay-portrait is-npc");
+    expect(html).not.toContain("和西格莉卡？决战");
+    expect(html).not.toContain("特殊对局");
     expect(html).not.toContain("replay-friendly-icon");
+  });
+
+  it("keeps the NPC and anonymous-player portraits correct when the user played white", () => {
+    const html = renderToStaticMarkup(createElement(ReplayList, {
+      characters,
+      currentUser: { id: "user-1", username: "moming" },
+      records: [{
+        id: "record-sigrika-duel-white-user",
+        createdAt: "2026-08-05T00:31:00.000Z",
+        blackUserId: "bot:sigrika",
+        whiteUserId: "user-1",
+        blackName: "西格莉卡？",
+        whiteName: "moming",
+        winnerColor: "black",
+        resultText: "黑胜",
+        moveCount: 64,
+        rated: false,
+        matchSource: "sigrika-corruption-duel"
+      }]
+    }));
+
+    expect(html.indexOf("sigrika-duel-replay-portrait is-npc")).toBeLessThan(
+      html.indexOf("sigrika-duel-replay-portrait is-player")
+    );
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}"`);
   });
 
   it("does not render an end-of-history status after the last replay page", () => {
@@ -242,6 +301,7 @@ describe("ReplayList", () => {
     expect(phoneModalMedia).toContain("overflow-x: hidden");
     expect(phoneModalMedia).toContain("grid-auto-rows: auto");
     expect(phoneModalMedia).toContain("align-content: start");
+    expect(phoneModalMedia).toMatch(/\.replay-table\s*\{[^}]*padding: 7px;[^}]*overflow-x: hidden;/);
     expect(phoneModalMedia).toContain(".replay-table-heading");
     expect(phoneModalMedia).toContain("display: none");
     expect(phoneModalMedia).toContain("min-width: 0");
@@ -268,11 +328,13 @@ describe("ReplayList", () => {
     expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row");
     expect(finalMobileCss).toContain("min-height: 94px !important");
+    expect(finalMobileCss).toMatch(/\.nested-modal\.replay-dialog \.replay-table\.compact \.replay-table-row\s*\{[^}]*overflow: visible !important;/);
     expect(finalMobileCss).toContain('"time moves result"');
     expect(finalMobileCss).toContain('"black black white" !important');
     expect(finalMobileCss).toContain("grid-template-rows: auto minmax(26px, auto) !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row > span:nth-child(1)");
     expect(finalMobileCss).toContain("justify-self: start !important");
+    expect(finalMobileCss).toMatch(/\.nested-modal\.replay-dialog \.replay-table-row > span:nth-child\(1\)\s*\{[^}]*overflow: visible !important;/);
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row .replay-time-cell");
     expect(finalMobileCss).toContain("justify-content: flex-start !important");
     expect(finalMobileCss).toContain("justify-self: center !important");

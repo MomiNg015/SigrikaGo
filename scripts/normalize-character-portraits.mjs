@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import { ADMIN_DEFAULT_CONFIG } from "../server/adminDefaultSnapshot.js";
 import {
   builtinPortraitLegacySource,
-  DENIA_CANDY_PORTRAIT_ASSET
+  DENIA_CANDY_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
 } from "../src/shared/characterPortraitAssetCatalog.js";
 import { FALLBACK_CHARACTERS } from "../src/shared/characterFallback.js";
 import {
@@ -23,7 +25,11 @@ export function discoverConfiguredPortraitAssets({
   characters = ADMIN_DEFAULT_CONFIG.characters,
   costumes = ADMIN_DEFAULT_CONFIG.costumes,
   fallbackCharacters = FALLBACK_CHARACTERS,
-  baseCandyPortraitUrl = DENIA_CANDY_PORTRAIT_ASSET.url
+  baseCandyPortraitUrl = DENIA_CANDY_PORTRAIT_ASSET.url,
+  specialPortraitAssets = [
+    SIGRIKA_CORRUPTED_PORTRAIT_ASSET,
+    SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET
+  ]
 } = {}) {
   const discovered = new Map();
   const add = (url, owner, contract = {}) => {
@@ -57,6 +63,9 @@ export function discoverConfiguredPortraitAssets({
     requiresAnimation: baseCandyPortraitUrl === DENIA_CANDY_PORTRAIT_ASSET.url
       && DENIA_CANDY_PORTRAIT_ASSET.requiresAnimation
   });
+  for (const asset of specialPortraitAssets ?? []) {
+    add(asset?.url, `special portrait:${asset?.url?.split("/").at(-1) ?? "unknown"}`);
+  }
 
   return [...discovered.values()].sort((left, right) => left.url.localeCompare(right.url));
 }

@@ -1,0 +1,87 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted {
+  --sigrika-duel-void: rgb(40 31 34);
+  --sigrika-duel-ink: rgb(50 35 41);
+  --sigrika-duel-surface: rgb(67 43 51);
+  --sigrika-duel-surface-raised: rgb(82 49 59);
+  --sigrika-duel-surface-accent: rgb(105 51 64);
+  --sigrika-duel-interactive: rgb(121 48 65);
+  --sigrika-duel-line: rgb(135 67 82);
+  --sigrika-duel-line-strong: rgb(176 58 78);
+  --sigrika-duel-hot: rgb(236 94 115);
+  --sigrika-duel-text: rgb(255 248 247);
+  --sigrika-duel-muted: rgb(244 204 210);
+  --sigrika-duel-inverse-ink: rgb(63 8 18);
+  --sigrika-duel-inverse-surface: rgb(255 214 219);
+  --sigrika-duel-disabled-border: rgb(105 80 86);
+  --sigrika-duel-disabled-text: rgb(190 169 173);
+  --sigrika-duel-disabled-surface: rgb(61 49 53);
+  --sigrika-duel-shadow: rgb(23 14 17);
+  --sigrika-duel-shadow-soft: rgb(17 9 12 / 0.24);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) {
+  background-color: var(--sigrika-duel-void) !important;
+  background-image:
+    radial-gradient(circle at 50% 34%, color-mix(in srgb, var(--sigrika-duel-line-strong) 16%, transparent), transparent 52%),
+    linear-gradient(color-mix(in srgb, var(--sigrika-duel-hot) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--sigrika-duel-hot) 4%, transparent) 1px, transparent 1px) !important;
+  background-size: auto, 24px 24px, 24px 24px !important;
+  color: var(--sigrika-duel-text) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop)::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  animation: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted > .room-screen.sigrika-candy-duel-room,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted > .sigrika-corruption-result-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted > .sigrika-duel-presentation {
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room) .sigrika-corruption-field__scan,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) .sigrika-corruption-field__scan {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--sigrika-duel-hot) 5%, transparent) 62%, color-mix(in srgb, var(--sigrika-duel-hot) 20%, transparent) 94%, transparent);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room) .sigrika-corruption-field__tear,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) .sigrika-corruption-field__tear {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--sigrika-duel-void) 72%, transparent) 0 14%, color-mix(in srgb, var(--sigrika-duel-hot) 46%, transparent) 14% 17%, transparent 17% 43%, color-mix(in srgb, var(--sigrika-duel-line-strong) 42%, transparent) 43% 62%, transparent 62% 78%, color-mix(in srgb, var(--sigrika-duel-void) 72%, transparent) 78%);
+  mix-blend-mode: screen;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room) .sigrika-corruption-field__fragment,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) .sigrika-corruption-field__fragment {
+  color: var(--sigrika-duel-text);
+  background: var(--sigrika-duel-line-strong);
+  text-shadow: 2px 0 0 var(--sigrika-duel-shadow);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room) .sigrika-corruption-field__block,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) .sigrika-corruption-field__block {
+  background: var(--sigrika-duel-hot);
+  mix-blend-mode: screen;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .room-screen.sigrika-candy-duel-room {
+  position: relative;
+  z-index: 1;
+  color: var(--sigrika-duel-text) !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.room-screen.sigrika-candy-duel-room) .sigrika-corruption-field,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted:has(.sigrika-corruption-result-backdrop) .sigrika-corruption-field {
+  z-index: 0;
+  opacity: 0.3;
+}

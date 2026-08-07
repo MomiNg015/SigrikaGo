@@ -26,6 +26,7 @@ function ChatBox({
   const logRef = useRef(null);
   const [popupAnchor, setPopupAnchor] = useState(null);
   const chatCount = playerChatCount(room.chat);
+  const visibleMessages = visibleRoomChatMessages(room);
 
   const positionPopupAboveTrigger = useCallback(() => {
     if (!mobileDockPopup || !toggleRef.current || typeof window === "undefined") return;
@@ -133,7 +134,7 @@ function ChatBox({
         </button>
       </header>
       <div className="chat-log" ref={logRef}>
-        {room.chat.map((message) => (
+        {visibleMessages.map((message) => (
           <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
             {chatMessageMetaLabel(message, { compactMessages }) && (
               <span>{chatMessageMetaLabel(message, { compactMessages })}</span>
@@ -212,6 +213,7 @@ function ChatBox({
 export function areChatBoxPropsEqual(previous, next) {
   return previous.room?.code === next.room?.code
     && previous.room?.chat === next.room?.chat
+    && Boolean(previous.room?.sigrikaCandyDuel) === Boolean(next.room?.sigrikaCandyDuel)
     && sameChatPlayers(previous.room?.players, next.room?.players)
     && previous.onChat === next.onChat
     && previous.readonly === next.readonly
@@ -226,6 +228,12 @@ export function areChatBoxPropsEqual(previous, next) {
 
 export function playerChatCount(messages = []) {
   return messages.filter((message) => message?.type === "chat").length;
+}
+
+export function visibleRoomChatMessages(room = {}) {
+  const messages = room.chat ?? [];
+  if (!room.sigrikaCandyDuel) return messages;
+  return messages.filter((message) => message?.kind !== "npc-thinking");
 }
 
 function sameChatPlayers(previous = [], next = []) {

@@ -3,8 +3,13 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "./characterPortraitAssetCatalog.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { modeOrderedEntries } from "./gameModes.js";
+import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 import {
   COSTUME_SHOP_BACKGROUND_IMAGE,
   COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
@@ -159,7 +164,21 @@ describe("deployment preload asset helpers", () => {
     expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(RUNTIME_IMAGE_ASSETS.corruption).toEqual([
+      SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
+    ]);
     expect(assets.deferredImages).toEqual([]);
+  });
+
+  it("preloads the corrupted Sigrika portrait only for a corrupted login user", () => {
+    const normalAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: false } } });
+    const corruptedAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: true } } });
+
+    expect(normalAssets.criticalImages).not.toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(normalAssets.criticalImages).not.toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+    expect(corruptedAssets.criticalImages).toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(corruptedAssets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
   });
 
   it("blocks on every owned character portrait", () => {
@@ -231,6 +250,23 @@ describe("deployment preload asset helpers", () => {
     });
 
     expect(assets.criticalImages).toContain("/assets/characters/zhunshibao.png");
+  });
+
+  it("preloads the corrupted Sigrika portrait for the special duel even with skills disabled", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        mode: "gomoku",
+        matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+        players: [{ characterId: null, isBot: true }]
+      },
+      characters: {},
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+    expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
   });
 
   it("preloads only the battle track selected for the current user", () => {

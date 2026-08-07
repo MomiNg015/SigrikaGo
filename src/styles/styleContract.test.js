@@ -632,12 +632,27 @@ describe("root CSS entry contract", () => {
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");
+    const corruptionRoomAtmosphereCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-atmosphere.css", import.meta.url), "utf8");
+    const corruptionRoomPanelsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-panels.css", import.meta.url), "utf8");
+    const corruptionRoomControlsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-controls.css", import.meta.url), "utf8");
+    const corruptionRoomSecondarySurfacesCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-secondary-surfaces.css", import.meta.url), "utf8");
+    const corruptionRoomLifecycleCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-lifecycle.css", import.meta.url), "utf8");
+    const corruptionRoomReplayCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-replay.css", import.meta.url), "utf8");
+    const corruptionRoomPresentationCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-presentation.css", import.meta.url), "utf8");
+    const corruptionRoomIconsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-icons.css", import.meta.url), "utf8");
     const hologramEntryCss = readFileSync(new URL("./hud-components/hud-hardening/home-hologram-entries.css", import.meta.url), "utf8");
     const brightMobileEntryCss = readFileSync(new URL("./themes/bright-school/mobile/home-shell/entries-utility-footer.css", import.meta.url), "utf8");
     expect(cssImports(corruptionEntry)).toEqual([
       "./sigrika-corruption/shell.css",
       "./sigrika-corruption/damage-field.css",
+      "./sigrika-corruption/room-atmosphere.css",
+      "./sigrika-corruption/room-panels.css",
+      "./sigrika-corruption/room-controls.css",
+      "./sigrika-corruption/room-icons.css",
+      "./sigrika-corruption/room-secondary-surfaces.css",
+      "./sigrika-corruption/room-lifecycle.css",
       "./sigrika-corruption/room-replay.css",
+      "./sigrika-corruption/room-presentation.css",
       "./sigrika-corruption/marks.css",
       "./sigrika-corruption/home-contamination.css",
       "./sigrika-corruption/handbook-contamination.css",
@@ -657,6 +672,71 @@ describe("root CSS entry contract", () => {
     expect(corruptionShellCss).not.toContain("overflow: hidden");
     expect(corruptionShellCss).not.toContain("repeating-linear-gradient");
     expect(corruptionShellCss).not.toContain(".utility-entry:disabled,");
+    expect(corruptionRoomPanelsCss).toContain(".sigrika-corrupted-skill-chip");
+    expect(corruptionRoomPanelsCss).toMatch(/\.sigrika-corrupted-skill-chip\s*\{[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
+    expect(corruptionRoomLifecycleCss).toContain(".sigrika-duel-modal-atmosphere");
+    expect(corruptionRoomLifecycleCss).toContain(".sigrika-duel-confirm-modal .danger-action");
+    expect(corruptionRoomLifecycleCss).toContain("--bright-sheet: var(--sigrika-duel-line-strong)");
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.danger-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-line-strong\) !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.secondary-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).not.toMatch(/\.portrait-wrap\s*\{[^}]*background:/);
+    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.white-portrait\s*\{[^}]*background: var\(--sigrika-duel-inverse-surface\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.black-portrait\s*\{[^}]*background: var\(--sigrika-duel-ink\) !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-opening-modal\s*\{[^}]*max-width: 460px !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal\s*\{[^}]*max-width: 420px !important;/);
+    expect(corruptionRoomLifecycleCss).toContain("overflow: hidden !important");
+    expect(corruptionRoomLifecycleCss).toContain("inset: 0;");
+    expect(corruptionRoomSecondarySurfacesCss).toContain("(max-height: 820px)");
+    expect(corruptionRoomSecondarySurfacesCss).toContain("--board-size: clamp(430px, calc(100dvh - 205px), 560px)");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue > img");
+    expect(corruptionRoomPresentationCss).toContain("grid-template-columns: auto minmax(0, 1fr)");
+    expect(corruptionRoomPresentationCss).toContain("linear-gradient(105deg, var(--sigrika-duel-surface-accent) 0%, var(--sigrika-duel-interactive) 48%, var(--sigrika-duel-ink) 100%)");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-skill-burst");
+    expect(corruptionRoomPresentationCss).toContain("linear-gradient(105deg");
+    expect(corruptionRoomPresentationCss).toContain("var(--sigrika-duel-hot) 28%");
+    expect(corruptionRoomPresentationCss).toContain("var(--sigrika-duel-line-strong) 52%");
+    expect(corruptionRoomPresentationCss).toContain("z-index: var(--sigrika-corruption-action-z)");
+    expect(corruptionRoomPresentationCss).not.toContain("box-shadow: inset 3px 0 0");
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-dialogue-copy").join("\n")).not.toMatch(/(?:border|background):/);
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-skill-portrait").join("\n")).toMatch(/border: 0;[\s\S]*background: transparent;/);
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-skill-copy").join("\n")).toMatch(/border: 0;[\s\S]*background: transparent;/);
+    expect(corruptionRoomPresentationCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(corruptionRoomPresentationCss).not.toMatch(/z-index:\s*\d{4,}/);
+    expect(corruptionRoomAtmosphereCss).toContain(".room-screen.sigrika-candy-duel-room");
+    expect(corruptionRoomAtmosphereCss).toContain("filter: none !important");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-void: rgb(40 31 34)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-surface: rgb(67 43 51)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-hot: rgb(236 94 115)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-shadow-soft: rgb(17 9 12 / 0.24)");
+    expect(corruptionRoomAtmosphereCss).not.toContain("--sigrika-duel-void: rgb(7 2 4)");
+    expect(corruptionRoomAtmosphereCss).toMatch(/> \.sigrika-duel-presentation\s*\{[^}]*filter: none !important;/);
+    expect(corruptionRoomPanelsCss).toContain(".sigrika-candy-duel-room .player-info");
+    expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-border");
+    expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-surface");
+    expect(corruptionRoomControlsCss).toContain(".action-bar .resign-action:not(:disabled)");
+    expect(corruptionRoomControlsCss).toContain(".action-bar .counting-action:disabled");
+    expect(corruptionRoomIconsCss).toContain(".room-mobile-menu-panel button,");
+    expect(corruptionRoomIconsCss).toContain(".action-bar button,");
+    expect(corruptionRoomIconsCss).toContain(".chat-toggle-button");
+    expect(corruptionRoomIconsCss).toMatch(/stroke: var\(--sigrika-duel-text\) !important;[\s\S]*stroke-width: 2\.4 !important;/);
+    expect(corruptionRoomIconsCss).toMatch(/\.counting-action:disabled svg\s*\{[^}]*stroke: var\(--sigrika-duel-disabled-text\) !important;/);
+    expect(corruptionRoomControlsCss).toMatch(/\.digital-timer\s*\{[^}]*min-height: 66px;[^}]*grid-template-columns: minmax\(0, 1fr\) !important;[^}]*background: var\(--sigrika-duel-surface\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).toContain(".mobile-tab-button.active");
+    expect(corruptionRoomReplayCss).toContain(".sigrika-corruption-result-backdrop");
+    expect(corruptionRoomReplayCss).toContain(".is-sigrika-candy-duel-replay");
+    expect(corruptionRoomReplayCss).toContain("--sigrika-replay-surface: color-mix");
+    expect(corruptionRoomReplayCss).toContain("background: linear-gradient(135deg, var(--sigrika-replay-surface), var(--sigrika-replay-surface-strong)) !important");
+    expect(corruptionRoomReplayCss).toMatch(/\.sigrika-duel-boss-icon\s*\{[^}]*border: 1px solid var\(--sigrika-replay-surface\);[^}]*background: var\(--sigrika-replay-boss\);/);
+    expect(corruptionRoomReplayCss).not.toContain(".sigrika-duel-replay-label");
+    expect([
+      corruptionRoomAtmosphereCss,
+      corruptionRoomPanelsCss,
+      corruptionRoomControlsCss,
+      corruptionRoomSecondarySurfacesCss,
+      corruptionRoomLifecycleCss,
+      corruptionRoomReplayCss,
+    ].join("\n")).not.toContain("repeating-linear-gradient");
     const corruptionHomeCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/home-contamination.css", import.meta.url), "utf8");
     const corruptionHandbookCss = [
       "./mobile-adaptive/sigrika-corruption/handbook-contamination.css",

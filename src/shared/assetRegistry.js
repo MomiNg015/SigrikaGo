@@ -21,6 +21,10 @@ import {
   UI_UNAVAILABLE_SOUND
 } from "./audioAssets.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "./characterPortraitAssetCatalog.js";
 import { modeOrderedEntries } from "./gameModes.js";
 import {
   COSTUME_SHOP_BACKGROUND_IMAGE,
@@ -63,6 +67,10 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     "/assets/costumes/nivora-empty.webp",
     "/assets/items/qiuyuan-zhouwo.webp",
     "/assets/items/rainbow-bean-candy.webp"
+  ]),
+  corruption: Object.freeze([
+    SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+    SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
   ]),
   effects: Object.freeze([
     DENIA_CANDY_PORTRAIT,

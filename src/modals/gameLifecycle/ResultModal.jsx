@@ -101,9 +101,9 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         <div className="result-summary">
           <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
           <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
-          {isSigrikaCandyDuel
-            ? <p className="result-match-note">特殊对局 · 不计入任何成长、战绩或奖励</p>
-            : !isPractice && isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
+          {!isSigrikaCandyDuel && !isPractice && isFriendlyMatch && (
+            <p className="result-match-note">友谊对局 · 不计入积分与段位</p>
+          )}
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>

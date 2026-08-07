@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
 import {
   authPortraitReadySources,
@@ -156,6 +157,10 @@ export default function AssetPreloadScreen({
   const displayTip = preloadTipDisplayText(currentTip);
   const characterPresentationHidden = Boolean(user?.sigrikaCandyArc?.corrupted);
   const title = label || (characterPresentationHidden ? "" : characterLoadingLine(displayCharacter, loadingLinesText));
+  const portraitSource = characterPresentationHidden
+    ? SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
+    : displayPortrait.src;
+  const portraitLabel = characterPresentationHidden ? "玩家" : (displayCharacter.name ?? "当前角色");
 
   useEffect(() => {
     latestInputsRef.current = { character: fixedCharacter, characters, readyPortraitSources, tips };
@@ -232,13 +237,17 @@ export default function AssetPreloadScreen({
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
-        {!characterPresentationHidden && (displayPortrait.src ? (
-          <span className="preload-character" aria-label={displayCharacter.name ?? "当前角色"}>
-            <img src={displayPortrait.src} style={displayPortrait.style} alt={displayCharacter.name ?? ""} />
+        {portraitSource ? (
+          <span className="preload-character" aria-label={portraitLabel}>
+            <img
+              src={portraitSource}
+              style={characterPresentationHidden ? undefined : displayPortrait.style}
+              alt={portraitLabel}
+            />
           </span>
         ) : (
           <div className="preload-mark" />
-        ))}
+        )}
         {title && <p className="preload-title">{title}</p>}
         {statusText && <p className="preload-status">{statusText}</p>}
         <div

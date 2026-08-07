@@ -49,6 +49,7 @@
 }
 
 .replay-table-row {
+  position: relative;
   min-height: 54px;
   width: 100%;
   padding: 8px 10px;
@@ -77,13 +78,25 @@
   font-variant-numeric: tabular-nums;
 }
 
-.replay-friendly-icon {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
+.replay-corner-icon {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
   display: inline-grid;
   place-items: center;
   border-radius: 999px;
+  pointer-events: none;
+}
+
+.replay-corner-icon svg {
+  display: block;
+  stroke-width: 2.4;
+}
+
+.replay-friendly-icon {
   background: rgba(93, 127, 232, 0.12);
   color: #3454b8;
 }

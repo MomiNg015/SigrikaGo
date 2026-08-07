@@ -3,6 +3,10 @@ import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "../shared/characterPortraitAssetCatalog.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import {
   characterPortraitImageProps,
@@ -12,6 +16,7 @@ import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 import { gameModeFamily } from "../shared/gameModes.js";
+import { SIGRIKA_CANDY_DUEL_PRESENTATION } from "../shared/sigrikaCandyArc.js";
 import SkillDescription from "../shared/SkillDescription.jsx";
 import { formatSkillOverclock } from "../shared/skillTraits.js";
 import TimeBar from "./TimeBar.jsx";
@@ -59,7 +64,7 @@ function PlayerInfo({
   const isBot = Boolean(player.isBot || player.user?.isBot);
   const isPracticeBot = isBot && isNoCharacter;
   const botPortraitUrl = isBot ? player.botProfile?.portraitUrl : "";
-  const useNoCharacterPortraitLayout = isNoCharacter && !botPortraitUrl;
+  const useNoCharacterPortraitLayout = !sigrikaCandyDuel && isNoCharacter && !botPortraitUrl;
   const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
@@ -69,6 +74,7 @@ function PlayerInfo({
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
+  const showSkillStats = skillEnabled || sigrikaCandyDuel;
   const keepNoCharacterCardSlots = !sigrikaCandyDuel && isNoCharacter && (player.isTutorialPlayer || isPracticeBot);
   const showNoCharacterSkillPlaceholder = skillEnabled && keepNoCharacterCardSlots;
   const showNoCharacterRankPlaceholder = keepNoCharacterCardSlots && !player.user.rank;
@@ -82,16 +88,24 @@ function PlayerInfo({
   const viewpointLabel = player.color === COLORS.black ? "黑方" : "白方";
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
   const isCorruptedBot = sigrikaCandyDuel && isBot;
-  const showPortrait = !sigrikaCandyDuel || isCorruptedBot;
+  const isCorruptedPlayer = sigrikaCandyDuel && !isBot;
+  const showPortrait = !sigrikaCandyDuel || isCorruptedBot || isCorruptedPlayer;
   const portraitContent = (
     <>
-      {hasCharacter && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
+      {hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
+      {isCorruptedPlayer && (
+        <img
+          className="sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"
+          src={SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}
+          alt="玩家"
+        />
+      )}
       {isCorruptedBot
-        ? <span className="sigrika-corrupted-npc-portrait" aria-label="西格莉卡？数据损坏">?</span>
+        ? <img className="sigrika-corrupted-npc-portrait" src={SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url} alt="西格莉卡？" />
         : isBot && isNoCharacter && (botPortraitUrl
         ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
         : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
-      {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
+      {hasCharacter && !sigrikaCandyDuel && <CharacterChainBadge user={player.user} characterId={character.id} />}
       {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       {canSwitchView && (
         <span className="viewpoint-indicator" aria-hidden="true">
@@ -133,7 +147,7 @@ function PlayerInfo({
       <TimeBar time={player.time} />
       {showGoStats && <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
-        {skillEnabled && <button
+        {showSkillStats && <button
           type="button"
           className="info-stat removal-stat capture-control"
           data-mobile-tooltip-trigger
@@ -146,7 +160,7 @@ function PlayerInfo({
             openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
           }}
         ><strong>除子</strong>{skillRemovals}</button>}
-        {skillEnabled && <button
+        {showSkillStats && <button
           type="button"
           className="info-stat cost-stat capture-control"
           data-mobile-tooltip-trigger
@@ -207,6 +221,14 @@ function PlayerInfo({
           />
         </div>
       </div>}
+      {isCorruptedBot && (
+        <div className="skill-chip-wrap sigrika-corrupted-skill-wrap">
+          <span className="skill-chip sigrika-corrupted-skill-chip" aria-label="技能未知，剩余次数未知">
+            <Sparkles size={16} />
+            {SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillName} · {SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillUses}
+          </span>
+        </div>
+      )}
       {showNoCharacterSkillPlaceholder && (
         <div className="skill-chip-wrap skill-chip-placeholder-wrap" aria-hidden="true">
           <span className="skill-chip skill-chip-placeholder" />

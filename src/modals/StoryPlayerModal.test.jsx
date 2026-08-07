@@ -11,6 +11,7 @@ import StoryPlayerModal, {
   visibleStoryOptions
 } from "./StoryPlayerModal.jsx";
 import { DENIA_RAINBOW_GLOW_STORY_PORTRAIT_ID } from "../shared/storyPortraits.js";
+import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 
 describe("StoryPlayerModal", () => {
@@ -119,6 +120,7 @@ describe("StoryPlayerModal", () => {
       characters: {
         sigrika: { name: "Sigrika", portraitUrl: "/assets/characters/sigrika.webp" }
       },
+      user: { sigrikaCandyArc: { corrupted: true } },
       typewriterDisabled: true,
       onClose: () => {}
     }));
@@ -132,6 +134,7 @@ describe("StoryPlayerModal", () => {
     expect(html).toContain('loading="eager"');
     expect(html).toContain('decoding="sync"');
     expect(html).toContain('fetchPriority="high"');
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
     expect(storyPortraitUrls([
       { characterId: "sigrika" },
       { characterId: "sigrika" },
@@ -139,7 +142,10 @@ describe("StoryPlayerModal", () => {
     ], {
       sigrika: { portraitUrl: "/sigrika.webp" },
       denia: { portrait: "/denia.webp" }
-    })).toEqual(["/sigrika.webp", "/denia.webp"]);
+    }, { sigrikaCandyArc: { corrupted: true } })).toEqual([
+      SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      "/denia.webp"
+    ]);
   });
 
   it("finishes typewriter text from a click anywhere inside the story panel", () => {

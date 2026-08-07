@@ -46,6 +46,7 @@ export function resultPlayerForRoom(room, user) {
 }
 
 export function resultVoiceEventForRoom(room, user) {
+  if (room.sigrikaCandyDuel) return null;
   if (room.game.winner?.invalid) return null;
   const currentPlayer = resultPlayerForRoom(room, user);
   if (!currentPlayer) return null;

@@ -13,11 +13,13 @@ import {
   submitRoomResignation
 } from "./RoomScreen.jsx";
 import RoomScreen from "./RoomScreen.jsx";
+import RoomHeader from "./header/RoomHeader.jsx";
 
 describe("RoomScreen helpers", () => {
-  it("cancels local skill confirmation before resigning and leaving", () => {
+  it("cancels local skill confirmation before resigning and only leaves ordinary rooms", () => {
     const steps = [];
     const directSteps = [];
+    const specialSteps = [];
 
     submitRoomResignation({
       setPendingSkill: (value) => directSteps.push(["pending-skill", value]),
@@ -30,6 +32,13 @@ describe("RoomScreen helpers", () => {
       onBack: () => steps.push(["navigation", "back"])
     });
 
+    submitRoomResignation({
+      setPendingSkill: (value) => specialSteps.push(["pending-skill", value]),
+      onGameAction: (action) => specialSteps.push(["game-action", action]),
+      onBack: () => specialSteps.push(["navigation", "back"]),
+      remainForResult: true
+    });
+
     expect(directSteps).toEqual([
       ["pending-skill", false],
       ["game-action", { type: "resign" }]
@@ -38,6 +47,10 @@ describe("RoomScreen helpers", () => {
       ["pending-skill", false],
       ["game-action", { type: "resign" }],
       ["navigation", "back"]
+    ]);
+    expect(specialSteps).toEqual([
+      ["pending-skill", false],
+      ["game-action", { type: "resign" }]
     ]);
   });
 
@@ -225,6 +238,32 @@ describe("RoomScreen helpers", () => {
     expect(shouldPlayGameStartVoice({ role: "player", phase: "playing", isReplay: true })).toBe(false);
   });
 
+  it("mounts the sanitized corrupted-duel presentation only for a live room", () => {
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("import SigrikaDuelPresentation");
+    expect(source).toContain("!isReplay && displayRoom.sigrikaCandyDuel?.presentation");
+    expect(source).toContain("key={displayRoom.sigrikaCandyDuel.presentation.sequence}");
+    expect(source).toContain("presentation={displayRoom.sigrikaCandyDuel.presentation}");
+  });
+
+  it("keeps the ordinary room-code label while replacing the special duel value with ERROR", () => {
+    const specialMarkup = renderToStaticMarkup(createElement(RoomHeader, {
+      room: { code: "SIG01", sigrikaCandyDuel: { ownerUserId: "u1" } },
+      showUtilityControls: false
+    }));
+    const ordinaryMarkup = renderToStaticMarkup(createElement(RoomHeader, {
+      room: { code: "AB123" },
+      showUtilityControls: false
+    }));
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+
+    expect(specialMarkup).toContain("房间号ERROR");
+    expect(specialMarkup).not.toContain("PRIVATE // DATA CORRUPTED");
+    expect(ordinaryMarkup).toContain("房间号AB123");
+    expect(source).toContain('className={isSigrikaCandyDuel ? "sigrika-candy-duel-room" : ""}');
+  });
+
   it("routes pass through a confirmation dialog before sending the game action", () => {
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
@@ -346,7 +385,9 @@ describe("RoomScreen helpers", () => {
     expect(source).toContain("requestExitConfirm();");
     expect(source).toContain("对局还没结束，是否认输并退出房间？");
     expect(source).toContain("submitRoomResignation({ setPendingSkill, onGameAction })");
-    expect(source).toContain("submitRoomResignation({ setPendingSkill, onGameAction, onBack })");
+    expect(source).toContain("remainForResult: isSigrikaCandyDuel");
+    expect(source).toContain('atmosphere={isSigrikaCandyDuel ? "sigrika-duel" : undefined}');
+    expect(source).not.toContain("if (isSigrikaCandyDuel && displayRoom.game.phase !== \"finished\")");
     expect(headerSource).toContain("room-mobile-menu");
     expect(headerSource).toContain("room-mobile-menu-toggle");
     expect(headerSource).toContain("room-mobile-menu-panel");

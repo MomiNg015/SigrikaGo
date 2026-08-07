@@ -55,6 +55,7 @@ export function useAppActions({
     room,
     socket,
     showToast,
+    updateUser,
     setMatchStart,
     setMatchSuccess,
     setRoom,

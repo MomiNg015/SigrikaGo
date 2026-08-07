@@ -5,6 +5,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import PlayerInfo, { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, playerCharacterForDisplay, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "../shared/characterPortraitAssetCatalog.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { decodeRgbaPng } from "../../scripts/pngTrim.mjs";
 
@@ -168,6 +172,51 @@ describe("PlayerInfo labels", () => {
     })));
     expect(fallbackMarkup).toContain("portrait-wrap black-portrait no-character practice-bot-portrait-wrap");
     expect(fallbackMarkup).toContain('aria-label="准时宝">准</span>');
+  });
+
+  it("keeps the corrupted Sigrika skill name and uses hidden even while formal skills stay disabled", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      sigrikaCandyDuel: true,
+      player: {
+        ...playerInfoProps().player,
+        characterId: null,
+        character: null,
+        isBot: true,
+        botProfile: { id: "sigrika-corrupted", name: "西格莉卡？", portraitUrl: "", dataCorrupted: true },
+        user: { id: "bot:sigrika", username: "西格莉卡？", isBot: true }
+      },
+      game: {
+        ...playerInfoProps().game,
+        skillEnabled: false,
+        skillUses: { black: 0, white: 0 }
+      }
+    })));
+
+    expect(markup).toContain("sigrika-corrupted-skill-chip");
+    expect(markup).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(markup).toContain('alt="西格莉卡？"');
+    expect(markup).toContain("？？？ · ？");
+    expect(markup).toContain('aria-label="技能未知，剩余次数未知"');
+    expect(markup).toContain("<strong>提子</strong>");
+    expect(markup).toContain("<strong>除子</strong>");
+    expect(markup).toContain("<strong>超频</strong>");
+    expect(markup).not.toContain("秘日六席");
+    expect(markup).not.toContain("七宗罪");
+    expect(markup).not.toContain('aria-label="西格莉卡？数据损坏">?</span>');
+  });
+
+  it("uses the anonymous corrupted player portrait in special duel and replay player cards", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      sigrikaCandyDuel: true,
+      canSwitchView: true
+    })));
+
+    expect(markup).toContain("portrait-viewpoint-button");
+    expect(markup).toContain("sigrika-corrupted-player-portrait");
+    expect(markup).toContain(`src="${SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}"`);
+    expect(markup).toContain('alt="玩家"');
+    expect(markup).not.toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(markup).not.toContain("character-chain-badge");
   });
 
   it("keeps mobile battle usernames complete and passive, including equipped nameplates", () => {

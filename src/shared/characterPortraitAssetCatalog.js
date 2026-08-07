@@ -75,6 +75,16 @@ export const DENIA_CANDY_PORTRAIT_ASSET = Object.freeze({
   requiresAnimation: true
 });
 
+export const SIGRIKA_CORRUPTED_PORTRAIT_ASSET = Object.freeze({
+  url: "/assets/characters/portraits/sigrika-corrupted.webp",
+  legacyUrl: "/assets/characters/sigrika-corrupted.png"
+});
+
+export const SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET = Object.freeze({
+  url: "/assets/characters/portraits/sigrika-corrupted-player.webp",
+  legacyUrl: "/assets/characters/sigrika-corrupted-player.png"
+});
+
 export function builtinPortraitLegacySource(url) {
   for (const asset of Object.values(CHARACTER_PORTRAIT_ASSETS)) {
     if (asset.url === url) return asset.legacyUrl;
@@ -83,6 +93,8 @@ export function builtinPortraitLegacySource(url) {
     if (asset.url === url) return asset.legacyUrl;
   }
   if (DENIA_CANDY_PORTRAIT_ASSET.url === url) return DENIA_CANDY_PORTRAIT_ASSET.legacyUrl;
+  if (SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url === url) return SIGRIKA_CORRUPTED_PORTRAIT_ASSET.legacyUrl;
+  if (SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url === url) return SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.legacyUrl;
   return "";
 }
 

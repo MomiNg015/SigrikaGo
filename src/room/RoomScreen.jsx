@@ -6,6 +6,7 @@ import SkillBanner from "../modals/SkillBanner.jsx";
 import { useRoomPointActions } from "./actions/useRoomPointActions.js";
 import { useRoomAudioEffects } from "./audio/useRoomAudioEffects.js";
 import RoomBattleStage from "./RoomBattleStage.jsx";
+import SigrikaDuelPresentation from "./SigrikaDuelPresentation.jsx";
 import RoomHeader from "./header/RoomHeader.jsx";
 import { DesktopRoomLayout, MOBILE_ROOM_MEDIA_QUERY, MobileRoomLayout, useMobileRoomLayout } from "./layout/RoomLayouts.jsx";
 import TimedRoomRequestToast from "./requestToasts/TimedRoomRequestToast.jsx";
@@ -21,10 +22,10 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
-export function submitRoomResignation({ setPendingSkill, onGameAction, onBack }) {
+export function submitRoomResignation({ setPendingSkill, onGameAction, onBack, remainForResult = false }) {
   setPendingSkill(false);
   onGameAction({ type: "resign" });
-  onBack?.();
+  if (!remainForResult) onBack?.();
 }
 
 export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onOpenReplay, onToast }) {
@@ -127,17 +128,18 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   }, [displayRoom.game.phase, onGameAction]);
 
   const requestExitConfirm = useCallback(() => {
-    if (isSigrikaCandyDuel && displayRoom.game.phase !== "finished") {
-      onBack();
-      return;
-    }
     if (displayRoom.game.phase !== "finished" && role === "player") {
       setConfirmAction({
         title: "退出房间",
         message: "对局还没结束，是否认输并退出房间？",
         confirmText: "认输并退出",
         onConfirm: () => {
-          submitRoomResignation({ setPendingSkill, onGameAction, onBack });
+          submitRoomResignation({
+            setPendingSkill,
+            onGameAction,
+            onBack,
+            remainForResult: isSigrikaCandyDuel
+          });
         }
       });
       return;
@@ -157,7 +159,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const battleLayoutClassName = useMobileLayout ? "mobile-battle-layout" : "battle-layout";
 
   return (
-    <Layout>
+    <Layout className={isSigrikaCandyDuel ? "sigrika-candy-duel-room" : ""}>
       <RoomHeader
         room={displayRoom}
         roomGameInfo={isSigrikaCandyDuel ? specialDuelRoomGameInfo(displayRoom) : roomGameInfo}
@@ -227,6 +229,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
           title={confirmAction.title}
           message={confirmAction.message}
           confirmText={confirmAction.confirmText}
+          atmosphere={isSigrikaCandyDuel ? "sigrika-duel" : undefined}
           onCancel={() => setConfirmAction(null)}
           onConfirm={() => {
             const action = confirmAction.onConfirm;
@@ -239,6 +242,12 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         <OpeningModal room={displayRoom} player={me} />
       )}
       {skillBanner && <SkillBanner banner={skillBanner} characters={characters} audioSettings={audioSettings} />}
+      {!isReplay && displayRoom.sigrikaCandyDuel?.presentation && (
+        <SigrikaDuelPresentation
+          key={displayRoom.sigrikaCandyDuel.presentation.sequence}
+          presentation={displayRoom.sigrikaCandyDuel.presentation}
+        />
+      )}
     </Layout>
   );
 }

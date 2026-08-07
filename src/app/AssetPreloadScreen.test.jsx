@@ -10,6 +10,7 @@ import AssetPreloadScreen, {
   preloadTipList,
   randomPreloadCharacter
 } from "./AssetPreloadScreen.jsx";
+import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 
 describe("AssetPreloadScreen", () => {
   it("clamps progress and exposes the displayed percent to assistive labels", () => {
@@ -212,7 +213,7 @@ describe("AssetPreloadScreen", () => {
     expect(html).not.toContain("不应显示");
   });
 
-  it("removes character portraits and character loading copy during Sigrika corruption", () => {
+  it("uses the anonymous player portrait and removes character loading copy during Sigrika corruption", () => {
     const user = { sigrikaCandyArc: { corrupted: true } };
     const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
       character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
@@ -230,15 +231,19 @@ describe("AssetPreloadScreen", () => {
       user
     }));
 
-    expect(html).not.toContain("preload-character");
+    expect(html).toContain("preload-character");
     expect(html).not.toContain("preload-mark");
     expect(html).not.toContain("preload-title");
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}"`);
+    expect(html).toContain('aria-label="玩家"');
+    expect(html).toContain('alt="玩家"');
     expect(html).not.toContain("/sigrika.webp");
     expect(html).not.toContain("西格莉卡正在戳棋盘");
     expect(html).toContain("资源加载中 1/2");
     expect(html).toContain("Tip：保持显示的通用提示");
     expect(html).toContain("preload-progress-mascot");
     expect(labelledHtml).toContain("正在恢复对局...");
+    expect(labelledHtml).toContain(`src="${SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}"`);
     expect(labelledHtml).not.toContain("/sigrika.webp");
   });
 

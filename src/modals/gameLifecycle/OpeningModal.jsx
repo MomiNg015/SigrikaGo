@@ -18,7 +18,8 @@ export default function OpeningModal({ room, player }) {
 
   return (
     <div className="modal-backdrop opening-backdrop">
-      <section className="small-modal opening-modal">
+      <section className={`small-modal opening-modal ${room.sigrikaCandyDuel ? "sigrika-duel-opening-modal" : ""}`.trim()}>
+        {room.sigrikaCandyDuel && <span className="sigrika-duel-modal-atmosphere" aria-hidden="true" />}
         <Swords size={34} />
         <h2>{colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
         {practiceCaptureTarget != null && (

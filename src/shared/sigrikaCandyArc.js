@@ -32,6 +32,20 @@ export const SIGRIKA_CANDY_DUEL = Object.freeze({
   komi: 2.75
 });
 
+export const SIGRIKA_CANDY_DUEL_PRESENTATION = Object.freeze({
+  speaker: "西格莉卡？",
+  hiddenSkillName: "？？？",
+  hiddenSkillUses: "？",
+  openingDialogue: "那么，让你看看才能的差距吧。",
+  openingSkillName: "秘日六席",
+  aiReactionDialogues: Object.freeze([
+    "为什么你所展示的力量，和那个禁忌的来源这么像...",
+    "我懂了......我懂了！那么你也是恶啊！",
+    "行吧，那就用恶的方式来结束这令人失望的一局吧。"
+  ]),
+  aiReactionSkillName: "七宗罪"
+});
+
 const VALID_PHASES = new Set(Object.values(SIGRIKA_CANDY_PHASES));
 const VALID_OUTCOMES = new Set(Object.values(SIGRIKA_CANDY_OUTCOMES));
 

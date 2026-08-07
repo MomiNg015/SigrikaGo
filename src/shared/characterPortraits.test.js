@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
 import {
   resolveCharacterPortrait,
   resolveCharacterPortraitPresentation
@@ -84,5 +85,36 @@ describe("resolveCharacterPortrait", () => {
       scalePercent: 100,
       style: undefined
     });
+  });
+
+  it("uses the corrupted Sigrika portrait above costumes and removes costume framing", () => {
+    expect(resolveCharacterPortraitPresentation({
+      id: "sigrika",
+      portrait: "/assets/characters/portraits/sigrika.webp"
+    }, {
+      user: {
+        sigrikaCandyArc: { corrupted: true },
+        equippedCostumes: {
+          sigrika: {
+            portraitUrl: "/assets/costumes/portraits/sigrika-costume-01.webp",
+            portraitScalePercent: 83
+          }
+        }
+      }
+    })).toMatchObject({
+      src: SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      scalePercent: 100,
+      style: undefined
+    });
+  });
+
+  it("does not change normal Sigrika or unrelated characters", () => {
+    expect(resolveCharacterPortrait({
+      id: "sigrika",
+      portrait: "/assets/characters/portraits/sigrika.webp"
+    })).toBe("/assets/characters/portraits/sigrika.webp");
+    expect(resolveCharacterPortrait(character, {
+      user: { sigrikaCandyArc: { corrupted: true } }
+    })).toBe(character.portrait);
   });
 });

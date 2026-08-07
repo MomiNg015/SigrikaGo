@@ -18,6 +18,7 @@ import { CHARACTERS } from "./characters.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 import { RECRUITMENT_ITEMS } from "./recruitment.js";
 import { gameModeSkillEnabled } from "./gameModes.js";
+import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 import { voiceSourceCandidates } from "./systemVoices.js";
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
@@ -73,6 +74,7 @@ export function loginPreloadAssets({
     ...equippedCostumes.flatMap((costume) => [costume?.portraitUrl, costume?.candyEffectPortraitUrl]),
     ...RUNTIME_IMAGE_ASSETS.home,
     ...RUNTIME_IMAGE_ASSETS.shop,
+    ...(user?.sigrikaCandyArc?.corrupted === true ? RUNTIME_IMAGE_ASSETS.corruption : []),
     ...Object.values(RECRUITMENT_ITEMS).map((item) => item?.imageUrl),
     ...recruitmentSurfaceImages(),
     ...shopItems.map((item) => item?.imageUrl),
@@ -148,6 +150,7 @@ export function battlePreloadAssets({
       player.costumeSnapshot?.candyEffectPortraitUrl
     ]),
     ...players.map((player) => player.botProfile?.portraitUrl),
+    ...(room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource ? RUNTIME_IMAGE_ASSETS.corruption : []),
     ...(skillEnabled ? RUNTIME_IMAGE_ASSETS.effects : [])
   ]);
   const criticalAudio = compactUnique([

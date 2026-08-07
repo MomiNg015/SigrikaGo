@@ -27,6 +27,7 @@ export function useRoomAudioEffects({
   const preloadedCountdownRef = useRef("");
   const systemVoiceRef = useRef({});
   const seededAudioBaselineRef = useRef("");
+  const suppressRoomVoices = shouldSuppressRoomVoices(displayRoom);
 
   useLayoutEffect(() => {
     if (!shouldSeedRoomAudioBaseline(room)) return;
@@ -78,7 +79,7 @@ export function useRoomAudioEffects({
   }, [displayRoom.game.points, displayRoom.game.history, isReplay, audioSettings]);
 
   useEffect(() => {
-    if (isReplay || !activePlayer || activePlayer.time?.unlimited) return;
+    if (suppressRoomVoices || isReplay || !activePlayer || activePlayer.time?.unlimited) return;
     const timer = activePlayer.time;
     const periodKey = `${activePlayer.color}-periods`;
     const mainKey = `${activePlayer.color}-main`;
@@ -114,10 +115,10 @@ export function useRoomAudioEffects({
     }
     voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
-  }, [activePlayer, characters, displayRoom.game.history.length, isReplay, audioSettings]);
+  }, [activePlayer, characters, displayRoom.game.history.length, isReplay, audioSettings, suppressRoomVoices]);
 
   useEffect(() => {
-    if (isReplay || !activePlayer || activePlayer.time?.unlimited || !(activePlayer.time?.main <= 0)) return;
+    if (suppressRoomVoices || isReplay || !activePlayer || activePlayer.time?.unlimited || !(activePlayer.time?.main <= 0)) return;
     const preloadSources = [];
     for (let seconds = 10; seconds >= 1; seconds -= 1) {
       const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {
@@ -132,9 +133,10 @@ export function useRoomAudioEffects({
     for (const src of preloadSources) {
       preloadVoiceSound(src);
     }
-  }, [activePlayer, characters, isReplay]);
+  }, [activePlayer, characters, isReplay, suppressRoomVoices]);
 
   useEffect(() => {
+    if (suppressRoomVoices) return;
     if (!shouldPlayGameStartVoice({ isReplay, role, phase: displayRoom.game.phase })) return;
     const gameStartMessage = displayRoom.chat.findLast?.((message) => message.kind === "game-start");
     if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
@@ -144,5 +146,9 @@ export function useRoomAudioEffects({
       params: { mode: displayRoom.mode },
       audioSettings
     });
-  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, isReplay, role, me, characters, audioSettings]);
+  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, isReplay, role, me, characters, audioSettings, suppressRoomVoices]);
+}
+
+export function shouldSuppressRoomVoices(room) {
+  return Boolean(room?.sigrikaCandyDuel);
 }

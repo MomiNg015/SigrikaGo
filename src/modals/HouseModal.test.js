@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
+import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
 import { characterMusicSlots, CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
@@ -544,6 +545,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("is-corruption-focus");
     expect(html).toContain("西格莉卡？");
     expect(html).toContain('alt="西格莉卡？"');
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
     expect(html).not.toContain("档案校验异常");
     expect(html).not.toContain("house-corruption-integrity");
     expect(html).toContain("is-corruption-obscured");

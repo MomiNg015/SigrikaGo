@@ -11,9 +11,9 @@
     grid-auto-rows: auto;
     gap: 8px;
     align-content: start;
+    padding: 7px;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-bottom: 0;
   }
 
   .replay-table-heading {

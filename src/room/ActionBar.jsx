@@ -28,6 +28,7 @@ function ActionBar({
   skillName = "技能",
   skillUses,
   skillAvailable = true,
+  countingEnabled = true,
   drawEnabled = true,
   hasAnyStones = true,
   opponentConnected = true,
@@ -73,11 +74,16 @@ function ActionBar({
   const showGoControls = !isGomoku;
   return (
     <nav className="action-bar">
-      {showGoControls && <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>
+      {showGoControls && <button className="pass-action" onClick={onPass} disabled={phase !== "playing" || skillLocked}>
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
       </button>}
-      {showGoControls && <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}>
+      {showGoControls && <button
+        className="counting-action"
+        onClick={onCountingRequest}
+        disabled={!countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}
+        title={!countingEnabled ? "该对局无法数子" : undefined}
+      >
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
       </button>}
@@ -95,7 +101,7 @@ function ActionBar({
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </button>}
-      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
+      <button className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
       {showTestTools && (
         <TestTools
           disabled={phase !== "playing" || skillLocked || !me}
@@ -131,6 +137,7 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.skillName === next.skillName
     && previous.skillUses === next.skillUses
     && previous.skillAvailable === next.skillAvailable
+    && previous.countingEnabled === next.countingEnabled
     && previous.drawEnabled === next.drawEnabled
     && previous.hasAnyStones === next.hasAnyStones
     && previous.opponentConnected === next.opponentConnected

@@ -28,7 +28,7 @@ export default function MatchSuccessModal({ startedAt, audioSettings, onComplete
     <div className={`modal-backdrop ${specialDuel ? "sigrika-corruption-match-backdrop" : ""}`}>
       <section className={`small-modal match-success-modal ${specialDuel ? "sigrika-corruption-match-modal" : ""}`}>
         <MonitorPlay size={34} />
-        <h2>{specialDuel ? "匹配成功 // 数据损坏" : "匹配成功"}</h2>
+        <h2>{specialDuel ? "正在踏入深渊。。。" : "匹配成功"}</h2>
         <p>{remaining} 秒后进入{specialDuel ? "决战" : "对弈"}</p>
       </section>
     </div>

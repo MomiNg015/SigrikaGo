@@ -171,6 +171,7 @@ export default function RoomBattleStage({
       skillName={selfSkill?.name}
       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
+      countingEnabled={!sigrikaCandyDuel}
       hasAnyStones={hasAnyStones}
       opponentConnected={opponentConnected}
       scoring={scoring}

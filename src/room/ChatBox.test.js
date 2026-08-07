@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import ChatBox, { areChatBoxPropsEqual, chatDisplayName, chatMessageMetaLabel, playerChatCount } from "./ChatBox.jsx";
+import ChatBox, {
+  areChatBoxPropsEqual,
+  chatDisplayName,
+  chatMessageMetaLabel,
+  playerChatCount,
+  visibleRoomChatMessages
+} from "./ChatBox.jsx";
 
 describe("ChatBox", () => {
   it("counts only player chat messages for the collapsed badge", () => {
@@ -13,6 +19,20 @@ describe("ChatBox", () => {
       { type: "chat", text: "again" },
       { type: "system", kind: "disconnect" }
     ])).toBe(2);
+  });
+
+  it("hides legacy NPC thinking records only in the Sigrika duel", () => {
+    const messages = [
+      { id: "start", type: "system", kind: "game-start", text: "对局开始" },
+      { id: "thinking", type: "system", kind: "npc-thinking", text: "西格莉卡？正在思考。" },
+      { id: "skill", type: "system", kind: "skill", text: "技能发动" }
+    ];
+
+    expect(visibleRoomChatMessages({ chat: messages, sigrikaCandyDuel: {} })).toEqual([
+      messages[0],
+      messages[2]
+    ]);
+    expect(visibleRoomChatMessages({ chat: messages })).toBe(messages);
   });
 
   it("stays memoized when room clock ticks only replace player time", () => {
@@ -60,6 +80,13 @@ describe("ChatBox", () => {
         players: [{ color: "black", user: { id: "black-user" }, character: "denia" }]
       }
     }))).toBe(false);
+  });
+
+  it("rerenders when the room enters or leaves the Sigrika duel presentation", () => {
+    const previous = chatProps();
+    const next = chatProps({ room: { ...previous.room, sigrikaCandyDuel: {} } });
+
+    expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
   it("can render tutorial records without move time or character suffix metadata", () => {

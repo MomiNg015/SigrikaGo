@@ -10,6 +10,7 @@ export function useMatchActions({
   room,
   socket,
   showToast = () => {},
+  updateUser = () => {},
   setMatchStart,
   setMatchSuccess,
   setRoom,
@@ -32,9 +33,10 @@ export function useMatchActions({
       setMatchStart,
       setMatchSuccess,
       showToast,
-      socket
+      socket,
+      updateUser
     });
-  }, [setMatchStart, setMatchSuccess, showToast, socket]);
+  }, [setMatchStart, setMatchSuccess, showToast, socket, updateUser]);
 
   const startSigrikaDuel = useCallback(() => {
     startSigrikaDuelTransition({
@@ -116,7 +118,8 @@ export function startSigrikaDuelTransition({
   setMatchStart,
   setMatchSuccess,
   showToast = () => {},
-  socket
+  socket,
+  updateUser = () => {}
 }) {
   try {
     void preloadPlayableReady({ includePixi: true, mode: "spark", reason: "sigrika-candy-duel-start" });
@@ -127,6 +130,9 @@ export function startSigrikaDuelTransition({
   setMatchStart({ startedAt: now(), mode: "spark", specialDuel: true });
   socket?.emit("sigrika-candy:duel-start", {}, (ack = {}) => {
     if (ack.ok) return;
+    if (ack.sigrikaCandyArc) {
+      updateUser((current) => current ? { ...current, sigrikaCandyArc: ack.sigrikaCandyArc } : current);
+    }
     setMatchStart(null);
     showToast(ack.error || "暂时无法进入特殊对局", "error");
   });

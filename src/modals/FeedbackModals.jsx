@@ -3,18 +3,20 @@ import { gameModeById } from "../shared/gameModes.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
-export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
+export function ConfirmModal({ title, message, confirmText, atmosphere, onConfirm, onCancel }) {
   const titleId = useId();
   const messageId = useId();
+  const isSigrikaDuel = atmosphere === "sigrika-duel";
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <ModalDialog
-        className="confirm-modal"
+        className={`confirm-modal ${isSigrikaDuel ? "sigrika-duel-confirm-modal" : ""}`.trim()}
         ariaLabelledBy={titleId}
         aria-describedby={messageId}
         onClose={onCancel}
         onClick={(event) => event.stopPropagation()}
       >
+        {isSigrikaDuel && <span className="sigrika-duel-modal-atmosphere" aria-hidden="true" />}
         <h2 id={titleId}>{title}</h2>
         <p id={messageId}>{message}</p>
         <div className="inline-actions confirm-actions">

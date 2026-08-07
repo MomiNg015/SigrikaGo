@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { colorTextForPlayer, formatSignedDelta, OpeningModal, ResultModal, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
+import { colorTextForPlayer, formatSignedDelta, MatchSuccessModal, OpeningModal, ResultModal, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
 import { COLORS } from "../shared/game.js";
 
 describe("GameLifecycleModals helpers", () => {
@@ -64,6 +64,46 @@ describe("GameLifecycleModals helpers", () => {
     expect(restoredBeginnerMarkup).toContain("吃掉准时宝11颗棋子就算胜利！");
     expect(openingCss).toContain(".opening-modal .practice-opening-rule");
     expect(openingCss).toContain("color: #c62828");
+  });
+
+  it("adds the corrupted duel atmosphere layer to the color assignment window", () => {
+    const specialMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: {
+        sigrikaCandyDuel: { ownerUserId: "u1" },
+        openingEndsAt: Date.now() + 3_000
+      },
+      player: { color: COLORS.black }
+    }));
+    const ordinaryMarkup = renderToStaticMarkup(createElement(OpeningModal, {
+      room: { openingEndsAt: Date.now() + 3_000 },
+      player: { color: COLORS.white }
+    }));
+
+    expect(specialMarkup).toContain("sigrika-duel-opening-modal");
+    expect(specialMarkup).toContain("sigrika-duel-modal-atmosphere");
+    expect(ordinaryMarkup).not.toContain("sigrika-duel-opening-modal");
+    expect(ordinaryMarkup).not.toContain("sigrika-duel-modal-atmosphere");
+  });
+
+  it("uses the abyss entry copy only for the corrupted duel match-success window", () => {
+    const specialMarkup = renderToStaticMarkup(createElement(MatchSuccessModal, {
+      startedAt: Date.now(),
+      audioSettings: {},
+      onComplete: () => {},
+      specialDuel: true
+    }));
+    const ordinaryMarkup = renderToStaticMarkup(createElement(MatchSuccessModal, {
+      startedAt: Date.now(),
+      audioSettings: {},
+      onComplete: () => {}
+    }));
+
+    expect(specialMarkup).toContain("正在踏入深渊。。。");
+    expect(specialMarkup).not.toContain("匹配成功 // 数据损坏");
+    expect(specialMarkup).toContain("秒后进入决战");
+    expect(ordinaryMarkup).toContain("匹配成功");
+    expect(ordinaryMarkup).not.toContain("正在踏入深渊");
+    expect(ordinaryMarkup).toContain("秒后进入对弈");
   });
 
   it("uses semantic rating typography only for rating reward values", () => {
@@ -168,7 +208,8 @@ describe("GameLifecycleModals helpers", () => {
     }));
 
     expect(markup).toContain("sigrika-corruption-result-modal");
-    expect(markup).toContain("特殊对局 · 不计入任何成长、战绩或奖励");
+    expect(markup).not.toContain("特殊对局 · 不计入任何成长、战绩或奖励");
+    expect(markup).not.toContain("不计入");
     expect(markup).toContain(">继续</button>");
     expect(markup).not.toContain("result-player-portrait");
     expect(markup).not.toContain("result-rewards");
@@ -216,6 +257,10 @@ describe("GameLifecycleModals helpers", () => {
 
     expect(resultVoiceEventForRoom(room, { id: "u1" })).toBe("result-victory");
     expect(resultVoiceEventForRoom(room, { id: "u2" })).toBe("result-defeat");
+    expect(resultVoiceEventForRoom({
+      ...room,
+      sigrikaCandyDuel: { ownerUserId: "u1" }
+    }, { id: "u1" })).toBeNull();
   });
 
   it("selects draw result voice events but skips invalid early resigns", () => {
