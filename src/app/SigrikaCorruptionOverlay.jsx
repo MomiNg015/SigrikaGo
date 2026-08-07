@@ -1,11 +1,6 @@
-import { useEffect } from "react";
-import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
-
 const DAMAGE_BLOCKS = ["a", "b", "c", "d", "e", "f"];
 
 export default function SigrikaCorruptionOverlay() {
-  useEffect(() => requestBackgroundMusicPause(), []);
-
   return (
     <div className="sigrika-corruption-field" aria-hidden="true">
       <span className="sigrika-corruption-field__scan" />

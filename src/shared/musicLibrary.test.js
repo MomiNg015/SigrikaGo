@@ -13,12 +13,14 @@ import {
   latestSkillCharacterId,
   ownedMusicIdsWithDefaults,
   parseMusicSelections,
+  SIGRIKA_CORRUPTION_MUSIC,
   resolveSkillMusicTrack,
   resolveBackgroundMusic,
   resolveResultSound,
   resolveSkillVoice,
   skillMusicOptionsForCharacter
 } from "./musicLibrary.js";
+import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 
 describe("background music library", () => {
   it("uses the configured loop file for the default home music", () => {
@@ -47,6 +49,21 @@ describe("background music library", () => {
         loopSrc: "/assets/music/main_bgm_1_loop.ogg",
         loop: true
       }
+    });
+  });
+
+  it("uses the dedicated corrupted home loop instead of the random home pool", () => {
+    const track = resolveBackgroundMusic({
+      view: "home",
+      sigrikaCorrupted: true,
+      random: () => 0.99
+    });
+
+    expect(track).toBe(SIGRIKA_CORRUPTION_MUSIC.home);
+    expect(track.playback).toEqual({
+      mode: "single-loop",
+      src: "/assets/music/sigrika_corruption_home_loop.ogg",
+      loop: true
     });
   });
 
@@ -96,6 +113,22 @@ describe("background music library", () => {
         loopSrc: "/assets/music/shanjifu_loop.ogg",
         loop: true
       }
+    });
+  });
+
+  it("prioritizes the corrupted Sigrika duel intro-loop over ordinary room and skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+      skillPreview: { characterId: "denia" }
+    });
+
+    expect(track).toBe(SIGRIKA_CORRUPTION_MUSIC.duel);
+    expect(track.playback).toEqual({
+      mode: "intro-loop",
+      introSrc: "/assets/music/sigrika_corruption_duel_once.ogg",
+      loopSrc: "/assets/music/sigrika_corruption_duel_loop.ogg",
+      loop: true
     });
   });
 

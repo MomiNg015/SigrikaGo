@@ -5,6 +5,7 @@ import {
   MATCH_SUCCESS_SOUND,
   MUSIC_TYPES,
   MUSIC_TRACKS,
+  SIGRIKA_CORRUPTION_MUSIC,
   VICTORY_SOUND,
   DEFEAT_SOUND,
   ownedMusicIdsWithDefaults,
@@ -68,6 +69,9 @@ export function loginPreloadAssets({
   });
   const equipmentAssets = Object.values(achievementEquipmentAssets ?? {});
   const equippedCostumes = Object.values(user?.equippedCostumes ?? {});
+  const corruptionHomeTrack = user?.sigrikaCandyArc?.corrupted === true
+    ? SIGRIKA_CORRUPTION_MUSIC.home
+    : null;
 
   const criticalImages = compactUnique([
     ...visibleCharacters.map((character) => character?.portrait),
@@ -94,6 +98,7 @@ export function loginPreloadAssets({
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
+    ...playbackAssetSources(corruptionHomeTrack?.playback),
     ...visibleTracks.flatMap((track) => playbackAssetSources(track?.playback)),
     ...visibleCharacterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])),
     ...visibleCharacterIds.flatMap((characterId) => Object.values(systemVoices?.[characterId] ?? {}).flatMap(voiceSourceCandidates))
@@ -138,6 +143,7 @@ export function battlePreloadAssets({
   const battleTrack = resolveBackgroundMusic({
     view: "room",
     gamePhase: room?.game?.phase ?? room?.phase ?? "preloading",
+    matchSource: room?.matchSource,
     selections: user?.musicSelections,
     ownedMusicIds: user?.ownedMusicIds,
     tracks

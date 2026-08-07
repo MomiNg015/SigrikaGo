@@ -1,5 +1,6 @@
 import { SYSTEM_VOICE_EVENTS, SYSTEM_VOICE_MODE_EVENTS, SYSTEM_VOICE_SKILL_EVENTS, resolveVoiceSource } from "./systemVoices.js";
 import { canonicalCharacterId } from "./characterAliases.js";
+import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 
 export const MUSIC_TYPES = {
   home: "home",
@@ -229,6 +230,28 @@ function introLoop(introSrc, loopSrc) {
     loop: true
   };
 }
+
+export const SIGRIKA_CORRUPTION_MUSIC = Object.freeze({
+  home: Object.freeze({
+    id: "sigrika-corruption-home",
+    name: "Sigrika Corruption Home BGM",
+    type: MUSIC_TYPES.home,
+    playback: Object.freeze({
+      mode: "single-loop",
+      src: "/assets/music/sigrika_corruption_home_loop.ogg",
+      loop: true
+    })
+  }),
+  duel: Object.freeze({
+    id: "sigrika-corruption-duel",
+    name: "Sigrika Corruption Duel BGM",
+    type: MUSIC_TYPES.battle,
+    playback: Object.freeze(introLoop(
+      "/assets/music/sigrika_corruption_duel_once.ogg",
+      "/assets/music/sigrika_corruption_duel_loop.ogg"
+    ))
+  })
+});
 
 export const MUSIC_TRACKS = {
   "home-default": {
@@ -502,6 +525,8 @@ export function resolveBackgroundMusic({
   gamePhase = null,
   matchSuccess = false,
   resultModalOpen = false,
+  sigrikaCorrupted = false,
+  matchSource = null,
   selections = {},
   ownedMusicIds = null,
   random = Math.random,
@@ -509,6 +534,14 @@ export function resolveBackgroundMusic({
   defaults = DEFAULT_MUSIC_SELECTIONS
 } = {}) {
   if (matchSuccess || resultModalOpen || (view === "room" && gamePhase === "finished")) return null;
+
+  if (view === "room" && matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
+    return SIGRIKA_CORRUPTION_MUSIC.duel;
+  }
+
+  if (view === "home" && sigrikaCorrupted === true) {
+    return SIGRIKA_CORRUPTION_MUSIC.home;
+  }
 
   if (view === "room" && skillPreview) {
     const skillTrack = findSkillTrack(skillPreview, tracks, selections, ownedMusicIds);

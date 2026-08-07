@@ -2,21 +2,19 @@
 
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { subscribeBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
+import { isBackgroundMusicPauseRequested } from "../audio/backgroundMusicPause.js";
 import SigrikaCorruptionOverlay from "./SigrikaCorruptionOverlay.jsx";
 
 describe("Sigrika corruption presentation boundary", () => {
-  it("pauses BGM while mounted and releases the pause when corruption ends", () => {
-    const pauseStates = [];
-    const unsubscribe = subscribeBackgroundMusicPause((paused) => pauseStates.push(paused));
+  it("renders the damage field without suppressing the dedicated corruption BGM", () => {
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
     const view = render(<SigrikaCorruptionOverlay />);
 
-    expect(pauseStates.at(-1)).toBe(true);
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
     expect(view.container.querySelectorAll(".sigrika-corruption-field__tear")).toHaveLength(3);
     expect(view.container.querySelectorAll(".sigrika-corruption-field__block")).toHaveLength(6);
 
     view.unmount();
-    expect(pauseStates.at(-1)).toBe(false);
-    unsubscribe();
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
   });
 });

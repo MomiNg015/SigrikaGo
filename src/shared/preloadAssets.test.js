@@ -181,6 +181,14 @@ describe("deployment preload asset helpers", () => {
     expect(corruptedAssets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
   });
 
+  it("preloads the dedicated corrupted home BGM only for a corrupted login user", () => {
+    const normalAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: false } } });
+    const corruptedAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: true } } });
+
+    expect(normalAssets.criticalAudio).not.toContain("/assets/music/sigrika_corruption_home_loop.ogg");
+    expect(corruptedAssets.criticalAudio).toContain("/assets/music/sigrika_corruption_home_loop.ogg");
+  });
+
   it("blocks on every owned character portrait", () => {
     const assets = loginPreloadAssets({
       characters: {
@@ -267,6 +275,9 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
     expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
     expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_corruption_duel_once.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_corruption_duel_loop.ogg");
+    expect(assets.criticalAudio).not.toContain("/assets/music/shanjifu_loop.ogg");
   });
 
   it("preloads only the battle track selected for the current user", () => {
