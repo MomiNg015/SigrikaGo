@@ -53,6 +53,7 @@ function createLifecycle(overrides = {}) {
     scheduleRoomPreloadTimeout: vi.fn(),
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     appendSystem: vi.fn(),
+    prewarmSigrikaEngine: vi.fn(),
     ...overrides
   };
 
@@ -127,6 +128,7 @@ describe("room creation lifecycle", () => {
     expect(room.game.mode).toBe("standard");
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("alice");
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("bob");
+    expect(deps.prewarmSigrikaEngine).not.toHaveBeenCalled();
     expect(deps.rooms.get(room.code)).toBe(room);
     expect(deps.registerRoom).toHaveBeenCalledWith(room);
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
@@ -152,5 +154,36 @@ describe("room creation lifecycle", () => {
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("五子棋"));
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("自动猜先"));
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("执黑先行"));
+  });
+
+  test("starts special-duel engine prewarm without waiting for it", () => {
+    const player = queuedPlayer("alice", "socket-a");
+    const io = fakeIo();
+    const neverSettles = new Promise(() => {});
+    const prewarmSigrikaEngine = vi.fn(() => neverSettles);
+    const { lifecycle, deps } = createLifecycle({ prewarmSigrikaEngine });
+
+    const room = lifecycle.createSigrikaCandyDuelRoom(player, io);
+
+    expect(room).toMatchObject({ matchSource: "sigrika-corruption-duel" });
+    expect(prewarmSigrikaEngine).toHaveBeenCalledTimes(1);
+    expect(deps.rooms.get(room.code)).toBe(room);
+    expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
+    expect(io.messages).toEqual([
+      { socketId: "socket-a", event: "match:found", payload: { code: room.code, viewerId: "alice" } }
+    ]);
+  });
+
+  test("keeps special-duel creation successful when prewarm throws synchronously", () => {
+    const player = queuedPlayer("alice", "socket-a");
+    const io = fakeIo();
+    const { lifecycle } = createLifecycle({
+      prewarmSigrikaEngine: vi.fn(() => {
+        throw new Error("warmup failed");
+      })
+    });
+
+    expect(() => lifecycle.createSigrikaCandyDuelRoom(player, io)).not.toThrow();
+    expect(io.messages).toHaveLength(1);
   });
 });

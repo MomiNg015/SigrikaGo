@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/index.md","reason":"Backend spec routing and project contract index"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verification expectations and forbidden backend patterns"}
+{"file":".trellis/spec/backend/practice-room-contract.md","reason":"Regression contract for ordinary practice and special fallback behavior"}
+{"file":".trellis/spec/backend/sigrika-candy-duel-recovery-contract.md","reason":"Regression contract for special-duel persistence and recovery"}
+{"file":".trellis/tasks/08-06-sigrika-zhizi-katago-integration/research/zhizi-katago-integration.md","reason":"Expected third-party protocol and capability behavior to verify"}

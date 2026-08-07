@@ -1,5 +1,7 @@
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
+import { zhiziKataGoConfigErrors } from "./zhiziKataGoConfig.js";
+
 export const PASSWORD_MIN_LENGTH = 6;
 export const NEW_PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
@@ -130,6 +132,7 @@ export function validateProductionDeployment(env = process.env) {
   if (multiInstanceDeploymentRequested(env)) {
     errors.push("Production must run a single Node instance until room state and Socket.IO are shared");
   }
+  errors.push(...zhiziKataGoConfigErrors(env));
 
   const origins = [...buildAllowedOrigins(env)];
   if (origins.length === 0) {

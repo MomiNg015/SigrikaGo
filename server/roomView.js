@@ -23,6 +23,9 @@ export function buildRoomView(room, viewerId, options = {}) {
           humanColor: room.sigrikaCandyDuel.humanColor,
           botColor: room.sigrikaCandyDuel.botColor,
           resultOutcome: room.sigrikaCandyDuel.resultOutcome ?? "",
+          aiAgreementTriggered: Boolean(room.sigrikaCandyDuel.aiAgreementTriggered),
+          aiAgreementEventSeq: Number(room.sigrikaCandyDuel.aiAgreementEventSeq ?? 0),
+          presentation: publicSigrikaDuelPresentation(room.sigrikaCandyDuel.presentation),
           replayTitle: "和西格莉卡？决战",
           replayTag: "特殊对局"
         }
@@ -74,4 +77,26 @@ export function buildRoomView(room, viewerId, options = {}) {
     drawDeadline: room.drawDeadline,
     resultDeadline: room.game.scoring?.resultDeadline ?? null
   };
+}
+
+function publicSigrikaDuelPresentation(presentation) {
+  const sequence = Number(presentation?.sequence ?? 0);
+  if (!Number.isSafeInteger(sequence) || sequence <= 0) return null;
+  if (presentation.type === "dialogue" && typeof presentation.text === "string") {
+    return {
+      sequence,
+      type: "dialogue",
+      speaker: "西格莉卡？",
+      text: presentation.text
+    };
+  }
+  if (presentation.type === "skill" && typeof presentation.skillName === "string") {
+    return {
+      sequence,
+      type: "skill",
+      speaker: "西格莉卡？",
+      skillName: presentation.skillName
+    };
+  }
+  return null;
 }

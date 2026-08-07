@@ -236,7 +236,19 @@ describe("room state persistence", () => {
         ownerUserId: "human",
         humanColor: "black",
         botColor: "white",
-        resultOutcome: ""
+        resultOutcome: "",
+        aiAgreementAudit: {
+          eligibleMoves: 12,
+          pending: {
+            positionMoveNumber: 44,
+            expectedMoveNumber: 45,
+            candidates: [{ pointId: "3,3", order: 0 }]
+          }
+        },
+        presentationSequence: 4,
+        openingPresentationStage: "done",
+        aiReactionPresentationStage: "skill",
+        presentation: { sequence: 4, type: "skill", speaker: "西格莉卡？", skillName: "七宗罪" }
       },
       practice: { specialDuel: true, difficulty: "advanced" },
       players: [{ user: { id: "bot", isBot: true }, isBot: true, socketId: null }],
@@ -254,7 +266,15 @@ describe("room state persistence", () => {
       sigrikaCandyDuel: {
         ownerUserId: "human",
         humanColor: "black",
-        botColor: "white"
+        botColor: "white",
+        aiAgreementAudit: {
+          eligibleMoves: 12,
+          pending: { expectedMoveNumber: 45 }
+        },
+        presentationSequence: 4,
+        openingPresentationStage: "done",
+        aiReactionPresentationStage: "skill",
+        presentation: { sequence: 4, type: "skill", skillName: "七宗罪" }
       }
     });
   });

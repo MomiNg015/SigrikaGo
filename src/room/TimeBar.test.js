@@ -21,9 +21,10 @@ describe("TimeBar", () => {
     const html = renderTimeBar({ unlimited: true });
 
     expect(html).toContain("unlimited-corrupted-timer");
-    expect(html).toContain("时间数据损坏");
     expect(html).toContain("8?:?8");
-    expect(html).toContain("本局不限时");
+    expect(html).toContain('aria-label="本局不限时"');
+    expect(html).not.toContain("时间数据损坏");
+    expect(html).not.toContain(">本局不限时<");
   });
 });
 

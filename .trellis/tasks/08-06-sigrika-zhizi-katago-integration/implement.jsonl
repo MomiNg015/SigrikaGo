@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/index.md","reason":"Backend spec routing and project contract index"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Backend implementation and test quality constraints"}
+{"file":".trellis/spec/backend/practice-room-contract.md","reason":"Authoritative bot scheduling, visibility, fallback, persistence, and GNU Go boundaries"}
+{"file":".trellis/spec/backend/sigrika-candy-duel-recovery-contract.md","reason":"Special-duel persistence, restore, and account-to-room recovery contract"}
+{"file":".trellis/tasks/08-06-sigrika-zhizi-katago-integration/research/zhizi-katago-integration.md","reason":"Zhizi protocol, live capability, komi conversion, and chosen integration design"}

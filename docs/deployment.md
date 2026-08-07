@@ -2,7 +2,7 @@
 
 本文档面向单台云服务器部署。当前项目的实时房间、匹配队列和 Socket 在线状态仍以单 Node.js 进程内存为核心，因此生产环境应先使用单实例运行，不要使用 PM2 cluster、多进程负载均衡或多台机器横向扩容。
 
-准时宝入门陪练使用 Node.js 进程内的本地启发式策略；中级与高级使用服务器本机的 GNU Go 3.8。两类策略都不访问外部围棋服务，也不需要 GPU。Ubuntu 24.04 可直接安装 GNU Go 官方仓库包：
+公开准时宝入门陪练使用 Node.js 进程内的本地启发式策略；中级与高级使用服务器本机的 GNU Go 3.8，这三档都不访问外部围棋服务，也不需要 GPU。西格莉卡黑化专属决战可由服务端额外连接智子云 KataGo `vip-share`，远端不可用时仍回退本机引擎。Ubuntu 24.04 可直接安装 GNU Go 官方仓库包：
 
 ```bash
 sudo apt update
@@ -37,7 +37,7 @@ npm test
 
 `npm ci` 的 `postinstall` 会生成 Prisma Client，`prestart` 仍会在启动前再次校验生成。仓库的 Prisma 迁移历史从 `0_init` 完整基线开始。可单独执行 `npm run verify:migrations`：该命令只会在 `.tmp/migration-baseline/` 创建并清理一次性 SQLite 数据库，同时验证空库部署和现有库接管。
 
-`npm run check:production` 会先按服务端相同规则加载当前工作目录的 `.env`，再检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
+`npm run check:production` 会先按服务端相同规则加载当前工作目录的 `.env`，再检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关、智子云启用凭据和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
 
 `npm run production:schema-compat` 在迁移之后幂等执行现有 SQLite schema guard，用于修复早期部署中“迁移历史已标记完成、实际数据库却仍缺少后来加入的列或表”的历史漂移；它不写 `_prisma_migrations`，也不能替代以后新增并提交 Prisma migration。该命令必须在 `admin:sync-defaults` 之前成功，否则 Prisma 读取完整模型时仍可能报 `P2022`。`npm run check:built-css` 检查生产 `dist/assets/*.css` 的关键主题合同，当前会阻止 Bright School 弹窗遮罩在构建压缩后重新落回标准 `backdrop-filter: blur(...)`。
 
@@ -55,6 +55,13 @@ JWT_SECRET="replace-with-at-least-32-random-characters"
 PUBLIC_ORIGIN="https://go.example.com"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
 PRACTICE_ENGINE_PATH="/usr/games/gnugo"
+ZHIZI_ENABLED="true"
+ZHIZI_ACCOUNT_PHONE="replace-with-phone"
+ZHIZI_ACCOUNT_EMAIL=""
+ZHIZI_ACCOUNT_PASSWORD="replace-with-secret"
+ZHIZI_NPC_MIN_VISITS="400"
+ZHIZI_AUDIT_MIN_VISITS="200"
+ZHIZI_SEARCH_TIMEOUT_MS="5000"
 ENABLE_TEST_ACTIONS="false"
 MAX_ONLINE_USERS="500"
 MAX_ACTIVE_ROOMS="100"
@@ -68,12 +75,19 @@ MAX_SPECTATORS_PER_ROOM="20"
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
 - `PRACTICE_ENGINE_PATH`: GNU Go 可执行文件的绝对路径。Ubuntu `gnugo` 包默认安装到 `/usr/games/gnugo`；Windows 本地开发可设置为自行安装的 `gnugo.exe` 绝对路径。
+- `ZHIZI_ENABLED`: 是否为黑化西格莉卡专属决战启用智子云。未启用时不会发出任何智子 REST/Socket.IO 请求，NPC 使用本地回退链且不执行吻合度审计。
+- `ZHIZI_ACCOUNT_PHONE` / `ZHIZI_ACCOUNT_EMAIL`: 启用时必须且只能填写一个登录标识；手机号填写纯号码，不加 `zz-` 用户名前缀。
+- `ZHIZI_ACCOUNT_PASSWORD`: 智子账号密码，只能保存在目标机权限受限的环境文件或 secret manager 中，不得提交 Git、写入客户端变量或日志。
+- `ZHIZI_NPC_MIN_VISITS` / `ZHIZI_AUDIT_MIN_VISITS`: NPC 决策与玩家吻合度分析的最小 visits，默认分别 400 / 200；不要为了减少延迟把审计门槛降到失去统计意义。
+- `ZHIZI_SEARCH_TIMEOUT_MS`: 单次智子 KataGo 搜索时限，默认且硬上限为 5000ms，可配置为 1000–5000ms。新会话会向 KataGo 下发同值 `maxTime`；持续 `kata-analyze` 到点后发送 `stop`，只要已有候选就继续使用智子 Top-1，不切本机引擎。整个窗口没有收到候选时才按远端失败边界处理，且不会再启动第二个完整搜索窗口。
 - `ENABLE_TEST_ACTIONS`: 仅保留为旧部署配置的生产安全检查项，本地开发无需设置；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 - `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
 - `MAX_ACTIVE_ROOMS`: 新匹配/约战/观战接入的活跃房间软上限，默认 100。达到后已有对局和玩家恢复不受影响。
 - `MAX_SPECTATORS_PER_ROOM`: 单个房间首次加入的观战者软上限，默认 20；已有观战者更换连接时仍可恢复。
 
 本地运行 `npm run dev` 时，对局测试按钮会默认显示并可用，无需增加客户端或服务端环境变量。生产构建不会渲染这些按钮，生产服务端也会拒绝测试 action；不要把 `ENABLE_TEST_ACTIONS=true` 带到生产 `.env`。
+
+配置智子凭据后可在启动服务前运行 `npm run verify:zhizi`。该冒烟检查会实际登录、申请固定 `vip-share` TensorRT/28bnbt 会话、分析一个 13 路空棋盘并输出落子、visits、胜率与目差，不输出密码或 token。一个 Node 进程只串行使用一个智子分析请求；当前单实例部署合同与此一致。
 
 ## 服务器目录
 

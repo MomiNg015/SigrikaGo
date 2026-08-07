@@ -1,5 +1,8 @@
 import { SIGRIKA_CANDY_PHASES } from "../src/shared/sigrikaCandyArc.js";
-import { markSigrikaCandyDuelStarted } from "./sigrikaCandyArc.js";
+import {
+  markSigrikaCandyDuelStarted,
+  recoverMissingSigrikaCandyDuel
+} from "./sigrikaCandyArc.js";
 
 export function registerSigrikaCandySocketEvents(socket, {
   io,
@@ -27,7 +30,28 @@ export function registerSigrikaCandySocketEvents(socket, {
       if (phase === SIGRIKA_CANDY_PHASES.duelActive) {
         const existing = findRoomForUser(socket.user.id, socket.user.sigrikaCandyArc?.roomCode);
         if (!existing?.sigrikaCandyDuel) {
-          acknowledge?.({ ok: false, error: "特殊对局数据暂时无法恢复", code: "special_room_missing" });
+          const updatedUser = await recoverMissingSigrikaCandyDuel({
+            prisma,
+            userId: socket.user.id,
+            roomCode: socket.user.sigrikaCandyArc?.roomCode
+          });
+          const recoveredArc = updatedUser.sigrikaCandyArc;
+          socket.user = { ...socket.user, sigrikaCandyArc: recoveredArc };
+          if (recoveredArc?.phase !== SIGRIKA_CANDY_PHASES.awaitingDuel) {
+            acknowledge?.({
+              ok: false,
+              error: "特殊对局状态已更新，请重试",
+              code: "special_phase_changed",
+              sigrikaCandyArc: recoveredArc
+            });
+            return;
+          }
+          acknowledge?.({
+            ok: false,
+            error: "上次特殊对局已失效，状态已恢复，请再次点击开始决战",
+            code: "special_room_reset",
+            sigrikaCandyArc: recoveredArc
+          });
           return;
         }
         attachSocketToRoom(existing.code, socket, socket.user);

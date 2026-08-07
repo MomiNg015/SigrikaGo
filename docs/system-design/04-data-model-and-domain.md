@@ -53,7 +53,7 @@ Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js
 - `ownedItems`: JSON 数量表字符串，例如 `{"dream-ticket":2}`；兼容旧逗号分隔字符串读取，API 对外返回 `{ itemId, quantity }` 数组。
 - `itemPurchaseCounts`: JSON 数量表字符串，例如 `{"rainbow-bean-candy":3}`；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。
 - `itemEffects`: JSON 状态字符串，当前支持 `sigrikaCandyDisabled`、`deniaRainbowGlow`、`aemeathRainbowMove` 与 `lynaeContraryVoice` 四个彩虹豆豆跳跳糖临时效果。
-- `sigrikaCandyUseCount` / `sigrikaCandyPhase` / `sigrikaCandyOutcome` / `sigrikaCandyRoomCode`: 西格莉卡糖果黑化篇章的账号级状态机。计数从 0 开始，合法使用 1–7 保持 `normal`，第 8 次进入 `corruption-story`，随后依次经过 `awaiting-duel`、`duel-active`、`result-pending` 与 `recovery-story`；恢复完成后与 `sigrikaCandyDisabled` 一起复位。房间号只用于断线/刷新后续接专属决战，不能代替房间快照本身。
+- `sigrikaCandyUseCount` / `sigrikaCandyPhase` / `sigrikaCandyOutcome` / `sigrikaCandyRoomCode`: 西格莉卡糖果黑化篇章的账号级状态机。计数从 0 开始，合法使用 1–7 保持 `normal`，第 8 次进入 `corruption-story`，随后依次经过 `awaiting-duel`、`duel-active`、`result-pending` 与 `recovery-story`；恢复完成后与 `sigrikaCandyDisabled` 一起复位。房间号只用于断线/刷新后续接专属决战，不能代替房间快照本身；若 `duel-active` 的房间号已无法映射到权威特殊房间，下一次开始请求会条件回退到 `awaiting-duel` 并清空该房间号，之后由玩家显式再次开始新局。
 - `ownedDecorations`: 逗号分隔装饰 slug。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
@@ -130,6 +130,10 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `blackCoinsDelta`, `whiteCoinsDelta`: settled coin audit deltas for both sides; friendly games respect the server-day reward limit.
 - `blackRankDelta`, `whiteRankDelta`: rank movement audit value, where promotion is 1, demotion is -1, and no movement is 0.
 - 后台分析第一版使用 `createdAt`、`mode`、`moveCount`、`resultText` 和 `resultReason` 统计今日完成对局、分模式完成数、平均手数和粗略无效局。房间创建数、中断率、预加载超时、重连恢复等实时事件尚无完整持久化事件源时必须标为 `待接入`。
+
+### PersistedRoom
+
+活动房间以版本化 JSON 快照保存，不新增智子账号或分析数据库表。西格莉卡黑化决战的 `sigrikaCandyDuel.aiAgreementAudit` 保存累计有效手数、Top-1/Top-3/困难手计数、目损/胜率损失、最近 24 手、独立 6 手复核阶段，以及下一手待比较的服务端候选快照；这保证刷新、断线和 Node 进程恢复后不会把同一手重复统计，也不会通过重启清零 35 手极端阈值。`openingPresentationStage`、`aiReactionPresentationStage`、`presentationSequence` 与当前 `presentation` 同样随房间保存，使台词/假技能序列从下一步继续。审计对象和内部演出阶段不得进入 `roomView` 或最终 `GameRecord.snapshot` 的公开回放视图；安全投影只允许 `aiAgreementTriggered`、单调递增的 `aiAgreementEventSeq` 和经过类型/字段白名单处理的当前 `presentation`，服务端内部触发原因也不公开。智子手机号/邮箱、密码、Bearer token 与 Socket.IO token 从不进入任何房间快照。
 
 ### Gomoku Domain
 

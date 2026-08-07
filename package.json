@@ -18,6 +18,7 @@
     "test:e2e": "node scripts/run-playwright-suite.mjs e2e",
     "test:stability": "node scripts/run-playwright-suite.mjs stability",
     "verify:battle-fixes": "node scripts/verify-battle-fixes.mjs",
+    "verify:zhizi": "node scripts/verify-zhizi-katago.mjs",
     "verify:stability": "node scripts/verify-stability.mjs",
     "verify:capacity": "node scripts/verify-capacity.mjs",
     "verify:migrations": "node scripts/verify-migration-baseline.mjs",

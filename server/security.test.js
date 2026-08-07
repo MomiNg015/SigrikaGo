@@ -105,6 +105,30 @@ describe("deployment security helpers", () => {
     })).toEqual({ ok: true, errors: [] });
   });
 
+  it("requires server-side Zhizi credentials when the integration is enabled", () => {
+    const result = validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "0123456789abcdef0123456789abcdef",
+      PUBLIC_ORIGIN: "https://sigrika.fun",
+      ZHIZI_ENABLED: "true"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toContain("ZHIZI_ENABLED requires exactly one of ZHIZI_ACCOUNT_PHONE or ZHIZI_ACCOUNT_EMAIL");
+    expect(result.errors).toContain("ZHIZI_ENABLED requires ZHIZI_ACCOUNT_PASSWORD");
+  });
+
+  it("accepts a phone-only Zhizi account configuration", () => {
+    expect(validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "0123456789abcdef0123456789abcdef",
+      PUBLIC_ORIGIN: "https://sigrika.fun",
+      ZHIZI_ENABLED: "true",
+      ZHIZI_ACCOUNT_PHONE: "13800000000",
+      ZHIZI_ACCOUNT_PASSWORD: "secret"
+    })).toEqual({ ok: true, errors: [] });
+  });
+
   it("rejects production deployment config with weak secrets or missing origins", () => {
     const result = validateProductionDeployment({
       NODE_ENV: "production",

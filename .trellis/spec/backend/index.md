@@ -22,6 +22,8 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Structured Skill Descriptions](./skill-description-contract.md) | Persisted trait glossary, reference safety, and overclock display contract | Filled |
 | [Practice Room Contract](./practice-room-contract.md) | Practice socket, bot authority, persistence, visibility, and no-progression boundaries | Filled |
+| [Sigrika Zhizi KataGo Contract](./sigrika-zhizi-katago-contract.md) | VIP-share adapter, NPC fallback, hidden 35-move audit, persisted fake-skill narrative, and safe projection | Filled |
+| [Sigrika Candy Duel Recovery Contract](./sigrika-candy-duel-recovery-contract.md) | Special-duel resume, stale-room rollback ack, client arc sync, and retry boundaries | Filled |
 | [Costume System Contract](./costume-system-contract.md) | Catalog, purchase, equipment, portrait precedence, match snapshots, and admin lifecycle | Filled |
 
 ---

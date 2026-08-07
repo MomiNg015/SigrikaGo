@@ -10,6 +10,7 @@ import {
   debugJumpSigrikaCandyToUseEight,
   sigrikaCandyClimaxData,
   sigrikaCandyDebugJumpData,
+  sigrikaCandyMissingDuelRecoveryData,
   sigrikaCandyRecoveryCompletedData,
   sigrikaCandyRecoveryStartedData,
   sigrikaCandyResultData,
@@ -101,6 +102,24 @@ describe("Sigrika rainbow candy arc", () => {
       sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.resultPending,
       sigrikaCandyOutcome: SIGRIKA_CANDY_OUTCOMES.loss
     })).toEqual({ sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.recoveryStory });
+  });
+
+  test("rolls a missing active duel back only when the expected room still owns the arc", () => {
+    const activeUser = {
+      sigrikaCandyUseCount: 8,
+      sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.duelActive,
+      sigrikaCandyRoomCode: "67975"
+    };
+    expect(sigrikaCandyMissingDuelRecoveryData(activeUser, "67975")).toEqual({
+      sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.awaitingDuel,
+      sigrikaCandyRoomCode: "",
+      sigrikaCandyOutcome: ""
+    });
+    expect(sigrikaCandyMissingDuelRecoveryData(activeUser, "OTHER")).toEqual({});
+    expect(sigrikaCandyMissingDuelRecoveryData({
+      ...activeUser,
+      sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.resultPending
+    }, "67975")).toEqual({});
   });
 
   test("recovery clears only Sigrika's ordinary candy effect and resets the persistent arc", () => {

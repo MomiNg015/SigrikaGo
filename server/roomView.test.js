@@ -144,6 +144,52 @@ describe("room view serialization", () => {
     });
   });
 
+  it("exposes only the Sigrika trigger signal and keeps agreement metrics server-side", () => {
+    const room = testRoom();
+    room.sigrikaCandyDuel = {
+      humanColor: COLORS.black,
+      botColor: COLORS.white,
+      resultOutcome: "",
+      aiAgreementTriggered: true,
+      aiAgreementEventSeq: 1,
+      presentationSequence: 7,
+      openingPresentationStage: "done",
+      aiReactionPresentationStage: "dialogue-2",
+      presentation: {
+        sequence: 7,
+        type: "dialogue",
+        speaker: "untrusted",
+        text: "我懂了......我懂了！那么你也是恶啊！",
+        privateValue: "hidden"
+      },
+      aiAgreementTrigger: { reason: "extreme-35", moveNumber: 55 },
+      aiAgreementAudit: {
+        eligibleMoves: 35,
+        top1Hits: 33,
+        pending: { candidates: [{ pointId: "3,3", winrate: 0.7 }] }
+      }
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.sigrikaCandyDuel).toMatchObject({
+      aiAgreementTriggered: true,
+      aiAgreementEventSeq: 1,
+      presentation: {
+        sequence: 7,
+        type: "dialogue",
+        speaker: "西格莉卡？",
+        text: "我懂了......我懂了！那么你也是恶啊！"
+      }
+    });
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiAgreementAudit");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiAgreementTrigger");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("openingPresentationStage");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiReactionPresentationStage");
+    expect(view.sigrikaCandyDuel.presentation).not.toHaveProperty("privateValue");
+    expect(JSON.stringify(view)).not.toContain("top1Hits");
+  });
+
   it("treats finished room players as spectator viewers", () => {
     const room = testRoom();
     room.game.phase = GAME_PHASES.finished;

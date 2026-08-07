@@ -10,6 +10,7 @@ export function createRoomCreationLifecycle({
   scheduleRoomPreloadTimeout = () => {},
   roomView,
   appendSystem,
+  prewarmSigrikaEngine = () => {},
   registerRoom = () => {}
 }) {
   function joinMatchmaking(player, io, { canPair = () => true } = {}) {
@@ -64,8 +65,15 @@ export function createRoomCreationLifecycle({
     appendSystem(room, "匹配数据损坏。已锁定特殊对局。", { kind: "special-match" });
     appendSystem(room, "本局为 13 路围棋，贴 2.75 目，双方不限时且不使用技能。", { kind: "special-rule" });
     registerCreatedRoom(room, io);
+    startSigrikaEnginePrewarm();
     io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
     return room;
+  }
+
+  function startSigrikaEnginePrewarm() {
+    try {
+      void Promise.resolve(prewarmSigrikaEngine()).catch(() => {});
+    } catch {}
   }
 
   function registerCreatedRoom(room, io) {

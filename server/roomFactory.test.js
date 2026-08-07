@@ -192,7 +192,11 @@ describe("roomFactory", () => {
         ownerUserId: "human",
         humanColor: COLORS.black,
         botColor: COLORS.white,
-        resultOutcome: ""
+        resultOutcome: "",
+        presentation: null,
+        presentationSequence: 0,
+        openingPresentationStage: "pending",
+        aiReactionPresentationStage: "idle"
       }
     });
     expect(room.game).toMatchObject({ size: 13, komi: 2.75, skillEnabled: false });

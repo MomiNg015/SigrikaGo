@@ -87,6 +87,17 @@ export function sigrikaCandyDuelStartedData(roomCode) {
   };
 }
 
+export function sigrikaCandyMissingDuelRecoveryData(user = {}, expectedRoomCode = "") {
+  const arc = normalizeSigrikaCandyArc(user);
+  if (arc.phase !== SIGRIKA_CANDY_PHASES.duelActive) return {};
+  if (arc.roomCode !== String(expectedRoomCode ?? "").trim()) return {};
+  return {
+    sigrikaCandyPhase: SIGRIKA_CANDY_PHASES.awaitingDuel,
+    sigrikaCandyRoomCode: "",
+    sigrikaCandyOutcome: ""
+  };
+}
+
 export function sigrikaCandyResultData(outcome) {
   if (!Object.values(SIGRIKA_CANDY_OUTCOMES).includes(outcome)) {
     throw routeError(400, "特殊对局结果无效");
@@ -166,6 +177,14 @@ export async function markSigrikaCandyDuelStarted({ prisma, userId, roomCode }) 
     data: sigrikaCandyDuelStartedData(roomCode)
   });
   return publicUser(updated);
+}
+
+export async function recoverMissingSigrikaCandyDuel({ prisma, userId, roomCode }) {
+  return updateArcUser(
+    prisma,
+    userId,
+    (user) => sigrikaCandyMissingDuelRecoveryData(user, roomCode)
+  );
 }
 
 export async function startSigrikaCandyRecovery({ prisma, userId }) {

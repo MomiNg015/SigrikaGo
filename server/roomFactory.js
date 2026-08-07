@@ -14,6 +14,7 @@ import {
   practiceDifficulty
 } from "../src/shared/practiceMode.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { createSigrikaAiAgreementAudit } from "./sigrikaAiAgreement.js";
 
 export const MATCH_SUCCESS_DELAY_MS = 3000;
 export const OPENING_NOTICE_DELAY_MS = 3000;
@@ -181,7 +182,14 @@ export function createSigrikaCandyDuelRoom(player, options = {}) {
     humanColor: human.color,
     botColor: bot.color,
     resultOutcome: "",
-    achievementHooks: { win: false, loss: false }
+    achievementHooks: { win: false, loss: false },
+    aiAgreementAudit: createSigrikaAiAgreementAudit(),
+    aiAgreementTriggered: false,
+    aiAgreementEventSeq: 0,
+    presentation: null,
+    presentationSequence: 0,
+    openingPresentationStage: "pending",
+    aiReactionPresentationStage: "idle"
   };
   room.practice = {
     ...room.practice,

@@ -13,9 +13,24 @@ import {
   PRACTICE_DIFFICULTIES
 } from "../src/shared/practiceMode.js";
 import { choosePracticeAction, obviousDeadBotGroups } from "./practiceBotDecision.js";
-import { practiceBotEngine } from "./practiceBotEngine.js";
-import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { legalPracticeGtpVertices, practiceBotEngine } from "./practiceBotEngine.js";
+import {
+  SIGRIKA_CANDY_DUEL,
+  SIGRIKA_CANDY_DUEL_PRESENTATION
+} from "../src/shared/sigrikaCandyArc.js";
 import { chooseSigrikaDuelAction } from "./sigrikaDuelEngine.js";
+import {
+  createSigrikaAiAgreementAudit,
+  createSigrikaAiAgreementSnapshot,
+  evaluateSigrikaAiAgreementMove,
+  markSigrikaAiAnalysisAttempt,
+  shouldAnalyzeSigrikaHumanTurn
+} from "./sigrikaAiAgreement.js";
+import { zhiziKataGoEngine } from "./zhiziKataGoEngine.js";
+
+const SIGRIKA_DIALOGUE_HOLD_MS = 1800;
+const SIGRIKA_SKILL_HOLD_MS = 2100;
+const SIGRIKA_PRESENTATION_START_DELAY_MS = 120;
 
 export function createPracticeRoomAutomation({
   rooms,
@@ -28,14 +43,17 @@ export function createPracticeRoomAutomation({
   appendNotices,
   scheduleRoomClose,
   broadcastRoom,
+  persistRoom = () => {},
   random = Math.random,
-  practiceEngine = practiceBotEngine
+  practiceEngine = practiceBotEngine,
+  zhiziEngine = zhiziKataGoEngine
 }) {
   const scheduled = new Map();
   const inFlight = new Map();
 
   function schedule(room, io) {
     if ((!isPracticeRoom(room) && room.matchSource !== SIGRIKA_CANDY_DUEL.matchSource) || !room.practice) return false;
+    reconcileSigrikaHumanAudit(room);
     if (inFlight.has(room.code)) return false;
     const instruction = nextInstruction(room);
     if (!instruction) {
@@ -64,8 +82,14 @@ export function createPracticeRoomAutomation({
     if (!humanPlayer(room)?.socketId || room.game.pendingSkill) return null;
     const bot = botPlayer(room);
     if (!bot) return null;
+    normalizeSigrikaDuelPresentationState(room);
     const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
+    if (zhiziEngine?.isEnabled?.() && shouldAnalyzeSigrikaHumanTurn(room)) {
+      return { type: "analyze-human", delayMs: 0 };
+    }
     if (room.game.phase === GAME_PHASES.playing && room.game.turn === bot.color) {
+      const presentationInstruction = nextSigrikaPresentationInstruction(room);
+      if (presentationInstruction) return presentationInstruction;
       const human = humanPlayer(room);
       if (!room.sigrikaCandyDuel && Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
         return { type: "resign", delayMs: 120 };
@@ -90,12 +114,15 @@ export function createPracticeRoomAutomation({
   async function execute(room, instruction, io, key) {
     const bot = botPlayer(room);
     let result = null;
-    if (instruction.type === "resign") {
+    if (instruction.type === "analyze-human") {
+      await analyzeHumanTurn(room, key);
+    } else if (isSigrikaPresentationInstruction(instruction)) {
+      result = applySigrikaPresentationInstruction(room, instruction);
+    } else if (instruction.type === "resign") {
       result = resignForCaptureThreshold(room, bot, io);
     } else if (instruction.type === "play") {
       const view = gameViewForColor(room.game, bot.color);
       const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
-      if (room.sigrikaCandyDuel) appendSystem(room, "西格莉卡？正在思考。", { kind: "npc-thinking" });
       const decision = room.sigrikaCandyDuel
         ? await chooseSigrikaAction(room, view, bot.color)
         : await chooseBotAction(view, bot.color, difficulty);
@@ -145,14 +172,127 @@ export function createPracticeRoomAutomation({
     return chooseSigrikaDuelAction({
       view,
       botColor,
+      zhiziEngine,
       practiceEngine,
       chooseHeuristicAction: (nextView, nextColor, difficulty) => choosePracticeAction(nextView, nextColor, difficulty, { random }),
       isLegalAction: isLegalPracticeAction,
       onFallback: (difficultyId) => {
-        const labels = { advanced: "高级 GNU Go", intermediate: "中级 GNU Go", beginner: "入门策略" };
+        const labels = { zhizi: "智子云 KataGo", advanced: "高级 GNU Go", intermediate: "中级 GNU Go", beginner: "入门策略" };
         appendSystem(room, `${labels[difficultyId] ?? difficultyId} 响应异常，正在切换后备计算。`, { kind: "engine-fallback" });
       }
     });
+  }
+
+  async function analyzeHumanTurn(room, key) {
+    const human = humanPlayer(room);
+    if (!human) return;
+    const positionMoveNumber = Number(room.game.moveNumber ?? 0);
+    const view = gameViewForColor(room.game, human.color);
+    const legalMoveCount = legalPracticeGtpVertices(view, human.color).length;
+    let analysis = null;
+    try {
+      analysis = await zhiziEngine.analyze(view, human.color, { purpose: "audit" });
+    } catch {
+      analysis = { ok: false, reason: "error" };
+    }
+    const latest = rooms.get(room.code);
+    if (!latest || instructionKey(latest, nextInstruction(latest)) !== key) return;
+    const snapshot = createSigrikaAiAgreementSnapshot({
+      analysis,
+      boardSize: latest.game.size,
+      playerColor: human.color,
+      positionMoveNumber,
+      legalMoveCount,
+      minVisits: analysis?.minVisits ?? 1
+    });
+    const currentAudit = createSigrikaAiAgreementAudit(latest.sigrikaCandyDuel?.aiAgreementAudit);
+    latest.sigrikaCandyDuel.aiAgreementAudit = markSigrikaAiAnalysisAttempt(
+      currentAudit,
+      positionMoveNumber,
+      snapshot.ok ? snapshot.snapshot : null
+    );
+    persistRoom(latest, { force: true });
+  }
+
+  function reconcileSigrikaHumanAudit(room) {
+    const duel = room.sigrikaCandyDuel;
+    if (!duel) return false;
+    const audit = createSigrikaAiAgreementAudit(duel.aiAgreementAudit);
+    const pending = audit.pending;
+    if (!pending || Number(room.game.moveNumber ?? 0) < pending.expectedMoveNumber) {
+      duel.aiAgreementAudit = audit;
+      return false;
+    }
+    const historyEntry = findHistoryMove(room.game.history, pending.expectedMoveNumber, pending.playerColor);
+    const evaluation = evaluateSigrikaAiAgreementMove(audit, historyEntry);
+    duel.aiAgreementAudit = evaluation.audit;
+    if (evaluation.trigger && !duel.aiAgreementTriggered) {
+      duel.aiAgreementTriggered = true;
+      duel.aiAgreementEventSeq = Number(duel.aiAgreementEventSeq ?? 0) + 1;
+      duel.aiAgreementTrigger = evaluation.trigger;
+      duel.aiReactionPresentationStage = "pending";
+    }
+    persistRoom(room, { force: true });
+    return evaluation.evaluated;
+  }
+
+  function applySigrikaPresentationInstruction(room, instruction) {
+    const duel = room.sigrikaCandyDuel;
+    if (!duel) return null;
+    if (instruction.type === "sigrika-opening-dialogue") {
+      duel.openingPresentationStage = "dialogue";
+      publishSigrikaDialogue(room, SIGRIKA_CANDY_DUEL_PRESENTATION.openingDialogue, "sigrika-opening-dialogue");
+    } else if (instruction.type === "sigrika-opening-skill") {
+      duel.openingPresentationStage = "skill";
+      publishSigrikaSkill(room, SIGRIKA_CANDY_DUEL_PRESENTATION.openingSkillName, "sigrika-opening-skill");
+    } else if (instruction.type === "sigrika-opening-finish") {
+      duel.openingPresentationStage = "done";
+      duel.presentation = null;
+    } else if (instruction.type === "sigrika-ai-reaction-dialogue-1") {
+      duel.aiReactionPresentationStage = "dialogue-1";
+      publishSigrikaDialogue(room, SIGRIKA_CANDY_DUEL_PRESENTATION.aiReactionDialogues[0], "sigrika-ai-reaction-dialogue");
+    } else if (instruction.type === "sigrika-ai-reaction-dialogue-2") {
+      duel.aiReactionPresentationStage = "dialogue-2";
+      publishSigrikaDialogue(room, SIGRIKA_CANDY_DUEL_PRESENTATION.aiReactionDialogues[1], "sigrika-ai-reaction-dialogue");
+    } else if (instruction.type === "sigrika-ai-reaction-dialogue-3") {
+      duel.aiReactionPresentationStage = "dialogue-3";
+      publishSigrikaDialogue(room, SIGRIKA_CANDY_DUEL_PRESENTATION.aiReactionDialogues[2], "sigrika-ai-reaction-dialogue");
+    } else if (instruction.type === "sigrika-ai-reaction-skill") {
+      duel.aiReactionPresentationStage = "skill";
+      publishSigrikaSkill(room, SIGRIKA_CANDY_DUEL_PRESENTATION.aiReactionSkillName, "sigrika-ai-reaction-skill");
+    } else if (instruction.type === "sigrika-ai-reaction-finish") {
+      duel.aiReactionPresentationStage = "done";
+      duel.presentation = null;
+    } else {
+      return null;
+    }
+    return { ok: true, room };
+  }
+
+  function publishSigrikaDialogue(room, text, kind) {
+    const duel = room.sigrikaCandyDuel;
+    const sequence = Number(duel.presentationSequence ?? 0) + 1;
+    duel.presentationSequence = sequence;
+    duel.presentation = {
+      sequence,
+      type: "dialogue",
+      speaker: SIGRIKA_CANDY_DUEL_PRESENTATION.speaker,
+      text
+    };
+    appendSystem(room, text, { kind });
+  }
+
+  function publishSigrikaSkill(room, skillName, kind) {
+    const duel = room.sigrikaCandyDuel;
+    const sequence = Number(duel.presentationSequence ?? 0) + 1;
+    duel.presentationSequence = sequence;
+    duel.presentation = {
+      sequence,
+      type: "skill",
+      speaker: SIGRIKA_CANDY_DUEL_PRESENTATION.speaker,
+      skillName
+    };
+    appendSystem(room, `${SIGRIKA_CANDY_DUEL_PRESENTATION.speaker}发动了“${skillName}”。`, { kind });
   }
 
   function handleEngineFailure(room, bot, reason, io) {
@@ -188,7 +328,10 @@ export function createPracticeRoomAutomation({
     }
   }
 
-  return { schedule };
+  return {
+    schedule,
+    close: () => zhiziEngine?.close?.()
+  };
 }
 
 function botPlayer(room) {
@@ -197,6 +340,62 @@ function botPlayer(room) {
 
 function humanPlayer(room) {
   return room.players.find((player) => !player.isBot && !player.user?.isBot) ?? null;
+}
+
+function findHistoryMove(history, moveNumber, color) {
+  for (let index = (history?.length ?? 0) - 1; index >= 0; index -= 1) {
+    const entry = history[index];
+    if (Number(entry?.moveNumber) === moveNumber && entry?.color === color) return entry;
+  }
+  return null;
+}
+
+function nextSigrikaPresentationInstruction(room) {
+  const duel = room.sigrikaCandyDuel;
+  if (!duel) return null;
+  if (duel.openingPresentationStage === "pending") {
+    return { type: "sigrika-opening-dialogue", delayMs: SIGRIKA_PRESENTATION_START_DELAY_MS };
+  }
+  if (duel.openingPresentationStage === "dialogue") {
+    return { type: "sigrika-opening-skill", delayMs: SIGRIKA_DIALOGUE_HOLD_MS };
+  }
+  if (duel.openingPresentationStage === "skill") {
+    return { type: "sigrika-opening-finish", delayMs: SIGRIKA_SKILL_HOLD_MS };
+  }
+  if (duel.aiReactionPresentationStage === "pending") {
+    return { type: "sigrika-ai-reaction-dialogue-1", delayMs: SIGRIKA_PRESENTATION_START_DELAY_MS };
+  }
+  if (duel.aiReactionPresentationStage === "dialogue-1") {
+    return { type: "sigrika-ai-reaction-dialogue-2", delayMs: SIGRIKA_DIALOGUE_HOLD_MS };
+  }
+  if (duel.aiReactionPresentationStage === "dialogue-2") {
+    return { type: "sigrika-ai-reaction-dialogue-3", delayMs: SIGRIKA_DIALOGUE_HOLD_MS };
+  }
+  if (duel.aiReactionPresentationStage === "dialogue-3") {
+    return { type: "sigrika-ai-reaction-skill", delayMs: SIGRIKA_DIALOGUE_HOLD_MS };
+  }
+  if (duel.aiReactionPresentationStage === "skill") {
+    return { type: "sigrika-ai-reaction-finish", delayMs: SIGRIKA_SKILL_HOLD_MS };
+  }
+  return null;
+}
+
+function normalizeSigrikaDuelPresentationState(room) {
+  const duel = room.sigrikaCandyDuel;
+  if (!duel) return;
+  if (!["pending", "dialogue", "skill", "done"].includes(duel.openingPresentationStage)) {
+    duel.openingPresentationStage = Number(room.game.moveNumber ?? 0) <= 1 ? "pending" : "done";
+  }
+  if (!["idle", "pending", "dialogue-1", "dialogue-2", "dialogue-3", "skill", "done"].includes(duel.aiReactionPresentationStage)) {
+    duel.aiReactionPresentationStage = duel.aiAgreementTriggered ? "pending" : "idle";
+  }
+  if (!Number.isSafeInteger(duel.presentationSequence) || duel.presentationSequence < 0) {
+    duel.presentationSequence = 0;
+  }
+}
+
+function isSigrikaPresentationInstruction(instruction) {
+  return instruction?.type?.startsWith("sigrika-") ?? false;
 }
 
 function instructionKey(room, instruction) {
@@ -208,7 +407,12 @@ function instructionKey(room, instruction) {
     room.game.moveNumber,
     room.game.pendingSkill?.id ?? "",
     room.game.scoring?.confirmedBy?.join(",") ?? "",
-    room.game.scoring?.resultAcceptedBy?.join(",") ?? ""
+    room.game.scoring?.resultAcceptedBy?.join(",") ?? "",
+    room.sigrikaCandyDuel?.aiAgreementAudit?.lastAnalysisAttemptMoveNumber ?? "",
+    room.sigrikaCandyDuel?.aiAgreementAudit?.pending?.expectedMoveNumber ?? "",
+    room.sigrikaCandyDuel?.openingPresentationStage ?? "",
+    room.sigrikaCandyDuel?.aiReactionPresentationStage ?? "",
+    room.sigrikaCandyDuel?.presentationSequence ?? ""
   ].join(":");
 }
 

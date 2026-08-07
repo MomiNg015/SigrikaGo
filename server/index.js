@@ -53,6 +53,7 @@ import {
   broadcastRoom,
   broadcastRoomPatch,
   broadcastRoomPresencePatch,
+  closePracticeRoomAutomation,
   createDirectRoom,
   createPracticeRoom,
   createSigrikaCandyDuelRoom,
@@ -336,7 +337,7 @@ installServerLifecycle(server, {
     });
   }],
   closeRealtime: () => closeRealtimeServer(io),
-  beforeShutdown: [flushRoomPersistence, () => runtimeServiceState.close()],
+  beforeShutdown: [closePracticeRoomAutomation, flushRoomPersistence, () => runtimeServiceState.close()],
   dependencies: [prisma]
 });
 startHttpServer(server, { port: PORT });

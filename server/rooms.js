@@ -50,6 +50,7 @@ import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
 import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
 import { createPracticeRoomAutomation } from "./practiceRoomAutomation.js";
+import { zhiziKataGoEngine } from "./zhiziKataGoEngine.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 import { roomSpectatorAdmission, runtimeCapacityLimits } from "./runtimeServiceState.js";
@@ -251,6 +252,7 @@ const roomCreationLifecycle = createRoomCreationLifecycle({
   scheduleRoomPreloadTimeout,
   roomView,
   appendSystem,
+  prewarmSigrikaEngine: () => zhiziKataGoEngine.ensureAvailable(),
   registerRoom: roomMembershipIndex.registerRoom
 });
 export const {
@@ -283,9 +285,11 @@ const practiceRoomAutomation = createPracticeRoomAutomation({
   appendSystem,
   appendNotices,
   scheduleRoomClose,
-  broadcastRoom
+  broadcastRoom,
+  persistRoom
 });
 schedulePracticeRoomUpdate = practiceRoomAutomation.schedule;
+export const closePracticeRoomAutomation = practiceRoomAutomation.close;
 const roomChatLifecycle = createRoomChatLifecycle({
   rooms,
   validateRoomCode,
