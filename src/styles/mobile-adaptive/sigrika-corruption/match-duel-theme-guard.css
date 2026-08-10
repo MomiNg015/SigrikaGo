@@ -34,19 +34,19 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button {
-  color: #fff7f8 !important;
+  color: var(--sigrika-corruption-duel-color, #fff7f8) !important;
   min-height: 86px !important;
-  border-color: #ec5262 !important;
-  background: #8c1020 !important;
-  box-shadow: 0 0 0 1px #42070f, 6px 7px 0 #31040a !important;
+  border-color: var(--sigrika-corruption-duel-border, #ec5262) !important;
+  background: var(--sigrika-corruption-duel-background, #8c1020) !important;
+  box-shadow: var(--sigrika-corruption-duel-shadow, 0 0 0 1px #42070f, 6px 7px 0 #31040a) !important;
   transform: translate(-50%, -50%) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-duel-button:is(:hover, :focus-visible) {
-  color: #fff !important;
-  border-color: #ff8591 !important;
-  background: #a41224 !important;
-  box-shadow: 0 0 0 1px #530812, 8px 9px 0 #31040a !important;
+  color: var(--sigrika-corruption-duel-hover-color, #fff) !important;
+  border-color: var(--sigrika-corruption-duel-hover-border, #ff8591) !important;
+  background: var(--sigrika-corruption-duel-hover-background, #a41224) !important;
+  box-shadow: var(--sigrika-corruption-duel-hover-shadow, 0 0 0 1px #530812, 8px 9px 0 #31040a) !important;
   transform: translate(-50%, calc(-50% - 2px)) !important;
 }
 

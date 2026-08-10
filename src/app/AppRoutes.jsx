@@ -100,6 +100,8 @@ export default function AppRoutes({
       onStartMatch={startMatch}
       onStartPractice={startPractice}
       onStartSigrikaDuel={startSigrikaDuel}
+      socket={socket}
+      onNotice={onToast}
       onPreloadPlayableReady={onPreloadPlayableReady}
       matchModePickerOpen={showMatchModePicker}
       onMatchModePickerOpenChange={setShowMatchModePicker}
@@ -275,6 +277,7 @@ const HomeRoute = memo(function HomeRoute({
   onStartMatch,
   onStartPractice,
   onStartSigrikaDuel,
+  onNotice,
   recruitmentReady,
   setShowAnnouncements,
   setShowFriends,
@@ -290,6 +293,7 @@ const HomeRoute = memo(function HomeRoute({
   setShowWatch,
   setView,
   siteSettings,
+  socket,
   user
 }) {
   return (
@@ -304,6 +308,8 @@ const HomeRoute = memo(function HomeRoute({
       onStartMatch={onStartMatch}
       onStartPractice={onStartPractice}
       onStartSigrikaDuel={onStartSigrikaDuel}
+      socket={socket}
+      onNotice={onNotice}
       onPreloadPlayableReady={onPreloadPlayableReady}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={matchModePickerOpen}

@@ -47,10 +47,19 @@ export function createRoomQueries({
       ?? null;
   }
 
+  function findActiveSigrikaCandyDuel() {
+    return [...rooms.values()].find((room) => (
+      room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource
+      && Boolean(room.sigrikaCandyDuel)
+      && room.game?.phase !== GAME_PHASES.finished
+    )) ?? null;
+  }
+
   return {
     listActiveRooms,
     listWatchRooms,
     isUserInActiveRoom,
-    findRoomForUser
+    findRoomForUser,
+    findActiveSigrikaCandyDuel
   };
 }

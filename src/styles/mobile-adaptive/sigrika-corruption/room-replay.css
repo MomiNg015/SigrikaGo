@@ -35,7 +35,15 @@
   background: color-mix(in srgb, var(--sigrika-duel-void) 68%, transparent) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-modal {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-backdrop .sigrika-corruption-result-modal {
+  width: min(360px, 100%) !important;
+  min-width: 0 !important;
+  max-width: 360px !important;
+  height: auto !important;
+  max-height: calc(100dvh - 32px) !important;
+  grid-template-columns: 1fr !important;
+  padding: clamp(16px, 4vw, 20px) !important;
+  overflow: hidden !important;
   border: 1px solid var(--sigrika-duel-line-strong) !important;
   color: var(--sigrika-duel-text) !important;
   background: linear-gradient(145deg, var(--sigrika-duel-surface-raised), var(--sigrika-duel-ink)) !important;
@@ -52,6 +60,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-corruption-result-modal .result-summary > button {
+  min-height: 44px;
   border-color: var(--sigrika-duel-hot) !important;
   color: var(--sigrika-duel-text) !important;
   background: var(--sigrika-duel-interactive) !important;

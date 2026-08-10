@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { GAME_PHASES } from "../shared/game.js";
+import { SIGRIKA_CANDY_DUEL_AVAILABILITY } from "../shared/sigrikaCandyArc.js";
 import { emitGameActionWithAck } from "./gameActionDelivery.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
 import { preloadPlayableReady as defaultPreloadPlayableReady } from "./playableReadyPreload.js";
@@ -38,8 +39,9 @@ export function useMatchActions({
     });
   }, [setMatchStart, setMatchSuccess, showToast, socket, updateUser]);
 
-  const startSigrikaDuel = useCallback(() => {
+  const startSigrikaDuel = useCallback((options = {}) => {
     startSigrikaDuelTransition({
+      ...options,
       preloadPlayableReady: defaultPreloadPlayableReady,
       setMatchStart,
       setMatchSuccess,
@@ -118,6 +120,7 @@ export function startSigrikaDuelTransition({
   setMatchStart,
   setMatchSuccess,
   showToast = () => {},
+  onStatusChange = () => {},
   socket,
   updateUser = () => {}
 }) {
@@ -130,6 +133,11 @@ export function startSigrikaDuelTransition({
   setMatchStart({ startedAt: now(), mode: "spark", specialDuel: true });
   socket?.emit("sigrika-candy:duel-start", {}, (ack = {}) => {
     if (ack.ok) return;
+    if (ack.status) {
+      onStatusChange(ack.status);
+    } else if (ack.code === "special_room_reset") {
+      onStatusChange(SIGRIKA_CANDY_DUEL_AVAILABILITY.available);
+    }
     if (ack.sigrikaCandyArc) {
       updateUser((current) => current ? { ...current, sigrikaCandyArc: ack.sigrikaCandyArc } : current);
     }

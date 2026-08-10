@@ -116,13 +116,20 @@ describe("background music library", () => {
     });
   });
 
-  it("prioritizes the corrupted Sigrika duel intro-loop over ordinary room and skill music", () => {
-    const track = resolveBackgroundMusic({
+  it("starts the corrupted Sigrika duel intro-loop only after the opening skill", () => {
+    const silentTrack = resolveBackgroundMusic({
       view: "room",
       matchSource: SIGRIKA_CANDY_DUEL.matchSource,
       skillPreview: { characterId: "denia" }
     });
+    const track = resolveBackgroundMusic({
+      view: "room",
+      matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+      sigrikaDuelMusicStarted: true,
+      skillPreview: { characterId: "denia" }
+    });
 
+    expect(silentTrack).toBeNull();
     expect(track).toBe(SIGRIKA_CORRUPTION_MUSIC.duel);
     expect(track.playback).toEqual({
       mode: "intro-loop",

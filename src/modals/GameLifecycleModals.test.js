@@ -81,8 +81,10 @@ describe("GameLifecycleModals helpers", () => {
 
     expect(specialMarkup).toContain("sigrika-duel-opening-modal");
     expect(specialMarkup).toContain("sigrika-duel-modal-atmosphere");
+    expect(specialMarkup).toContain("sigrika-duel-opening-icon");
     expect(ordinaryMarkup).not.toContain("sigrika-duel-opening-modal");
     expect(ordinaryMarkup).not.toContain("sigrika-duel-modal-atmosphere");
+    expect(ordinaryMarkup).not.toContain("sigrika-duel-opening-icon");
   });
 
   it("uses the abyss entry copy only for the corrupted duel match-success window", () => {
@@ -213,6 +215,29 @@ describe("GameLifecycleModals helpers", () => {
     expect(markup).toContain(">继续</button>");
     expect(markup).not.toContain("result-player-portrait");
     expect(markup).not.toContain("result-rewards");
+  });
+
+  it("shows a confirmation action instead of owner recovery to a Sigrika duel spectator", () => {
+    const markup = renderToStaticMarkup(createElement(ResultModal, {
+      room: {
+        rated: false,
+        matchSource: "sigrika-corruption-duel",
+        sigrikaCandyDuel: { ownerUserId: "owner" },
+        players: [
+          { user: { id: "owner", username: "owner" }, color: COLORS.black, characterId: null },
+          { user: { id: "bot", username: "西格莉卡？", isBot: true }, color: COLORS.white, characterId: null }
+        ],
+        game: { winner: { winnerColor: COLORS.black, text: "黑胜" } }
+      },
+      user: { id: "watcher" },
+      characters: {},
+      audioSettings: {},
+      onClose: () => {},
+      onSpecialContinue: () => {}
+    }));
+
+    expect(markup).toContain(">确认</button>");
+    expect(markup).not.toContain(">继续</button>");
   });
 
   it("prefers settled result rewards from the room snapshot", () => {

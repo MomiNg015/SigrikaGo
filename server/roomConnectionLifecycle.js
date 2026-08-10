@@ -1,4 +1,5 @@
 import { GAME_PHASES } from "../src/shared/game.js";
+import { isSigrikaCandyCorruptedPhase } from "../src/shared/sigrikaCandyArc.js";
 
 export function createRoomConnectionLifecycle({
   rooms,
@@ -14,7 +15,7 @@ export function createRoomConnectionLifecycle({
   admitSpectator = () => ({ ok: true }),
   now = Date.now
 }) {
-  function attachSocketToRoom(roomCode, socket, user) {
+  function attachSocketToRoom(roomCode, socket, user, options = {}) {
     const validatedRoomCode = validateRoomCode(roomCode);
     if (!validatedRoomCode.ok) return null;
     const room = rooms.get(validatedRoomCode.value);
@@ -23,7 +24,7 @@ export function createRoomConnectionLifecycle({
     if (player) {
       attachPlayerSocket(room, player, socket);
     } else {
-      if (room.privateOwnerUserId || room.sigrikaCandyDuel) return null;
+      if (!canAttachSpectator(room, user, options)) return null;
       if (admitSpectator(room, user)?.ok === false) return null;
       attachSpectatorSocket(room, socket, user);
     }
@@ -31,6 +32,14 @@ export function createRoomConnectionLifecycle({
     socket.join(validatedRoomCode.value);
     persistRoom(room, { force: true });
     return room;
+  }
+
+  function canAttachSpectator(room, user, options) {
+    if (room.sigrikaCandyDuel) {
+      return options.allowSigrikaCandySpectator === true
+        && isSigrikaCandyCorruptedPhase(user?.sigrikaCandyArc?.phase);
+    }
+    return !room.privateOwnerUserId;
   }
 
   function attachPlayerSocket(room, player, socket) {

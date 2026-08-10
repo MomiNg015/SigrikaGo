@@ -7,6 +7,7 @@ export default function OpeningModal({ room, player }) {
   const [now, setNow] = useState(Date.now());
   const remaining = secondsUntilTimestamp(room.openingEndsAt ?? now, now);
   const colorText = colorTextForPlayer(player);
+  const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
   const practiceCaptureTarget = isPracticeRoom(room)
     ? practiceCaptureResignThreshold(room.practice)
     : null;
@@ -18,9 +19,14 @@ export default function OpeningModal({ room, player }) {
 
   return (
     <div className="modal-backdrop opening-backdrop">
-      <section className={`small-modal opening-modal ${room.sigrikaCandyDuel ? "sigrika-duel-opening-modal" : ""}`.trim()}>
-        {room.sigrikaCandyDuel && <span className="sigrika-duel-modal-atmosphere" aria-hidden="true" />}
-        <Swords size={34} />
+      <section className={`small-modal opening-modal ${isSigrikaCandyDuel ? "sigrika-duel-opening-modal" : ""}`.trim()}>
+        {isSigrikaCandyDuel && <span className="sigrika-duel-modal-atmosphere" aria-hidden="true" />}
+        <Swords
+          className={isSigrikaCandyDuel ? "sigrika-duel-opening-icon" : undefined}
+          size={isSigrikaCandyDuel ? 44 : 34}
+          strokeWidth={isSigrikaCandyDuel ? 2.6 : 2}
+          aria-hidden="true"
+        />
         <h2>{colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
         {practiceCaptureTarget != null && (
           <p className="practice-opening-rule">吃掉准时宝{practiceCaptureTarget}颗棋子就算胜利！</p>

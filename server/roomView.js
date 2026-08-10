@@ -25,6 +25,7 @@ export function buildRoomView(room, viewerId, options = {}) {
           resultOutcome: room.sigrikaCandyDuel.resultOutcome ?? "",
           aiAgreementTriggered: Boolean(room.sigrikaCandyDuel.aiAgreementTriggered),
           aiAgreementEventSeq: Number(room.sigrikaCandyDuel.aiAgreementEventSeq ?? 0),
+          musicStarted: sigrikaDuelMusicStarted(room),
           presentation: publicSigrikaDuelPresentation(room.sigrikaCandyDuel.presentation),
           replayTitle: "和西格莉卡？决战",
           replayTag: "特殊对局"
@@ -77,6 +78,14 @@ export function buildRoomView(room, viewerId, options = {}) {
     drawDeadline: room.drawDeadline,
     resultDeadline: room.game.scoring?.resultDeadline ?? null
   };
+}
+
+function sigrikaDuelMusicStarted(room) {
+  const stage = room.sigrikaCandyDuel?.openingPresentationStage;
+  if (stage === "skill" || stage === "done") return true;
+  if (stage === "pending" || stage === "dialogue") return false;
+  return room.sigrikaCandyDuel?.presentation?.type === "skill"
+    || Number(room.game?.moveNumber ?? 0) > 1;
 }
 
 function publicSigrikaDuelPresentation(presentation) {

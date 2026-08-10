@@ -116,6 +116,33 @@
   outline-offset: 3px;
 }
 
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button.is-spectate {
+  --sigrika-corruption-duel-color: var(--bright-ink);
+  --sigrika-corruption-duel-border: var(--bright-border);
+  --sigrika-corruption-duel-background: var(--bright-cream, var(--bright-sheet));
+  --sigrika-corruption-duel-shadow: 0 0 0 1px var(--bright-border), 6px 7px 0 var(--bright-border);
+  --sigrika-corruption-duel-hover-color: var(--bright-ink);
+  --sigrika-corruption-duel-hover-border: var(--bright-border);
+  --sigrika-corruption-duel-hover-background: var(--bright-paper);
+  --sigrika-corruption-duel-hover-shadow: 0 0 0 1px var(--bright-border), 8px 9px 0 var(--bright-border);
+  color: var(--sigrika-corruption-duel-color);
+  border-color: var(--sigrika-corruption-duel-border);
+  background: var(--sigrika-corruption-duel-background);
+  box-shadow: var(--sigrika-corruption-duel-shadow);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button.is-spectate:is(:hover, :focus-visible) {
+  color: var(--sigrika-corruption-duel-hover-color);
+  border-color: var(--sigrika-corruption-duel-hover-border);
+  background: var(--sigrika-corruption-duel-hover-background);
+  box-shadow: var(--sigrika-corruption-duel-hover-shadow);
+}
+
+.app-shell.is-sigrika-corrupted .sigrika-corruption-duel-button:disabled {
+  cursor: wait;
+  opacity: 0.78;
+}
+
 .app-shell.is-sigrika-corrupted .match-mode-modal.is-sigrika-corrupted > .secondary-action {
   position: relative;
   z-index: 31;

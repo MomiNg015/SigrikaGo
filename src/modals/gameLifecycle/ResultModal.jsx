@@ -32,6 +32,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const reward = resultRewardForRoom(room, user);
   const isPractice = isPracticeRoom(room);
   const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
+  const isSigrikaCandyDuelOwner = isSigrikaCandyDuel && Boolean(currentPlayer);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
   const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
@@ -111,7 +112,13 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
             </div>
           )}
           {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}
-          <button onClick={isSigrikaCandyDuel ? onSpecialContinue : onClose}>{isSigrikaCandyDuel ? "继续" : "确认"}</button>
+          <button
+            onClick={isSigrikaCandyDuel
+              ? () => onSpecialContinue?.({ owner: isSigrikaCandyDuelOwner })
+              : onClose}
+          >
+            {isSigrikaCandyDuel && isSigrikaCandyDuelOwner ? "继续" : "确认"}
+          </button>
         </div>
       </section>
     </div>

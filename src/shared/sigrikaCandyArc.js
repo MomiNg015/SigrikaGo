@@ -29,7 +29,14 @@ export const SIGRIKA_CANDY_DUEL = Object.freeze({
   replayTitle: "和西格莉卡？决战",
   replayTag: "特殊对局",
   boardSize: 13,
-  komi: 2.75
+  komi: 2.75,
+  mainTimeSeconds: 30 * 60
+});
+
+export const SIGRIKA_CANDY_DUEL_AVAILABILITY = Object.freeze({
+  available: "available",
+  owned: "owned",
+  occupied: "occupied"
 });
 
 export const SIGRIKA_CANDY_DUEL_PRESENTATION = Object.freeze({

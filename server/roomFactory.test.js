@@ -173,7 +173,7 @@ describe("roomFactory", () => {
     expect(room.players.find((player) => !player.isBot).color).toBe(COLORS.white);
   });
 
-  test("creates a private unlimited 13x13 no-skill Sigrika corruption duel", () => {
+  test("creates a private 13x13 no-skill Sigrika duel with 30-minute clocks for both players", () => {
     const room = createSigrikaCandyDuelRoom(queuePlayer("human", "socket-human"), {
       now: () => 1000,
       random: () => 0.75
@@ -186,7 +186,7 @@ describe("roomFactory", () => {
       rated: false,
       matchSource: "sigrika-corruption-duel",
       recordPolicy: "replay-only",
-      unlimitedTime: true,
+      unlimitedTime: false,
       privateOwnerUserId: "human",
       sigrikaCandyDuel: {
         ownerUserId: "human",
@@ -200,11 +200,29 @@ describe("roomFactory", () => {
       }
     });
     expect(room.game).toMatchObject({ size: 13, komi: 2.75, skillEnabled: false });
-    expect(human).toMatchObject({ characterId: null, character: null, time: { unlimited: true } });
+    expect(human).toMatchObject({
+      characterId: null,
+      character: null,
+      time: {
+        unlimited: false,
+        main: 30 * 60,
+        mainTotal: 30 * 60,
+        byoYomi: 0,
+        periodRemaining: 0,
+        periods: 0
+      }
+    });
     expect(bot).toMatchObject({
       user: { username: "西格莉卡？", rank: "数据损坏" },
       botProfile: { portraitUrl: "", dataCorrupted: true },
-      time: { unlimited: true }
+      time: {
+        unlimited: false,
+        main: 30 * 60,
+        mainTotal: 30 * 60,
+        byoYomi: 0,
+        periodRemaining: 0,
+        periods: 0
+      }
     });
   });
 

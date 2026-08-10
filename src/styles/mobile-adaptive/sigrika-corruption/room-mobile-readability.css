@@ -1,0 +1,59 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .replay-step-indicator {
+  color: var(--sigrika-duel-text) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .room-mobile-menu-panel button > span {
+  color: inherit !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .room-mobile-menu-panel button.active {
+  color: var(--sigrika-duel-text) !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .chat-toggle-button > strong {
+  border: 1px solid var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-raised) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .captures > * strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .captures .cost-stat strong {
+  color: var(--sigrika-duel-muted) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .viewpoint-indicator {
+  border-color: var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-accent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .view-selected .viewpoint-indicator {
+  border-color: var(--sigrika-duel-hot) !important;
+  color: var(--sigrika-duel-inverse-ink) !important;
+  background: var(--sigrika-duel-inverse-surface) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .viewpoint-indicator svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .result-badge {
+  border-color: var(--sigrika-duel-hot) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-raised) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tap-tooltip {
+  border-color: var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-raised) !important;
+  box-shadow: 0 3px 6px var(--sigrika-duel-shadow-soft) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tap-tooltip :is(p, span, strong) {
+  color: inherit !important;
+}

@@ -175,6 +175,7 @@ describe("room view serialization", () => {
     expect(view.sigrikaCandyDuel).toMatchObject({
       aiAgreementTriggered: true,
       aiAgreementEventSeq: 1,
+      musicStarted: true,
       presentation: {
         sequence: 7,
         type: "dialogue",
@@ -188,6 +189,26 @@ describe("room view serialization", () => {
     expect(view.sigrikaCandyDuel).not.toHaveProperty("aiReactionPresentationStage");
     expect(view.sigrikaCandyDuel.presentation).not.toHaveProperty("privateValue");
     expect(JSON.stringify(view)).not.toContain("top1Hits");
+  });
+
+  it("keeps the Sigrika duel music silent until the opening skill stage", () => {
+    const room = testRoom();
+    room.sigrikaCandyDuel = {
+      humanColor: COLORS.black,
+      botColor: COLORS.white,
+      openingPresentationStage: "dialogue",
+      presentation: { sequence: 1, type: "dialogue", text: "那么，让你看看才能的差距吧。" }
+    };
+
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(false);
+
+    room.sigrikaCandyDuel.openingPresentationStage = "skill";
+    room.sigrikaCandyDuel.presentation = { sequence: 2, type: "skill", skillName: "秘日六席" };
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(true);
+
+    room.sigrikaCandyDuel.openingPresentationStage = "done";
+    room.sigrikaCandyDuel.presentation = null;
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(true);
   });
 
   it("treats finished room players as spectator viewers", () => {

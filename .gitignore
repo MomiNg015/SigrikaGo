@@ -20,3 +20,4 @@ outputs/
 prototypes/
 .codex-dev*.log
 .trellis/workspace/*.log
+~$*.docx

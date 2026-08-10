@@ -14,6 +14,7 @@ export function useBackgroundMusicTrack({ matchSuccess, musicTracks, resultModal
     resultModalOpen,
     sigrikaCorrupted: user?.sigrikaCandyArc?.corrupted === true,
     matchSource: room?.matchSource,
+    sigrikaDuelMusicStarted: room?.sigrikaCandyDuel?.musicStarted === true,
     selections: user?.musicSelections,
     ownedMusicIds: user?.ownedMusicIds,
     random: () => homeEntryRandomStateRef.current.random ?? Math.random(),

@@ -159,4 +159,15 @@ describe("App startup preload wiring", () => {
       /overlayActions:\s*\{[\s\S]*?onRecruitmentInteractionLockChange: setRecruitmentInteractionLocked/
     );
   });
+
+  it("coordinates persistent Sigrika state changes through the one-shot full-screen transition", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("useSigrikaCorruptionTransition()");
+    expect(source).toContain("SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter");
+    expect(source).toContain("SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.exit");
+    expect(source).toContain("commit: (data) => updateUser(data.user)");
+    expect(source).toContain("aria-busy={sigrikaCorruptionTransitioning || undefined}");
+    expect(source).toContain("<SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />");
+  });
 });

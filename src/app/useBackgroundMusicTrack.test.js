@@ -42,6 +42,19 @@ describe("background music track hook helpers", () => {
     rerender({
       room: {
         matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+        sigrikaCandyDuel: { musicStarted: false },
+        game: { phase: "active" }
+      },
+      user: corruptedUser,
+      view: "room"
+    });
+
+    expect(result.current).toBeNull();
+
+    rerender({
+      room: {
+        matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+        sigrikaCandyDuel: { musicStarted: true },
         game: { phase: "active" }
       },
       user: corruptedUser,

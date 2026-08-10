@@ -25,7 +25,7 @@ export function registerRoomSocketEvents(socket, {
     }
     const existingPlayerRoom = findRoomForUser?.(socket.user.id, validatedRoomCode.value);
     const candidateRoom = getRoom(validatedRoomCode.value);
-    if (!existingPlayerRoom && candidateRoom) {
+    if (!existingPlayerRoom && candidateRoom && !candidateRoom.sigrikaCandyDuel) {
       const admission = runtimeServiceState?.admission?.("spectator", {
         room: candidateRoom,
         userId: socket.user.id

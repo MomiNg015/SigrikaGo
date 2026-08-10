@@ -31,6 +31,8 @@ sigrikaCandyDuel.presentation = null | {
   text?: string,
   skillName?: string
 }
+
+buildRoomView(room, viewerId).sigrikaCandyDuel.musicStarted -> boolean
 ```
 
 - Login: `POST https://www.zhizigo.com/api/cluster/account/login` with exactly one of `phone` or `email`, plus `password`.
@@ -47,10 +49,12 @@ sigrikaCandyDuel.presentation = null | {
   - Optional bounded controls: `ZHIZI_NPC_MIN_VISITS`, `ZHIZI_AUDIT_MIN_VISITS`, `ZHIZI_SEARCH_TIMEOUT_MS` and the adapter's other timeout/interval keys. `ZHIZI_SEARCH_TIMEOUT_MS` defaults to and is hard-capped at 5000ms; lower values down to 1000ms remain valid.
 - Credentials and tokens stay in server process memory or ignored deployment environment files. Never place them in source, tests, logs, client bundles, room views, chat metadata, or persisted room snapshots.
 - One Zhizi GTP session, one in-flight session-opening promise, and one active analysis are allowed per Node process. Reconnect allocates a fresh Socket.IO token and replays the complete legal `move` / `pass` history.
+- Because that Zhizi session is the scarce authority, the current single-process server permits only one unfinished `sigrika-corruption-duel` room across all users. A restored unfinished room continues to occupy the slot; `finished` or cleanup releases it. This process-local invariant must be replaced with shared coordination before multi-process or multi-replica deployment.
 - Creating a `sigrika-corruption-duel` room starts `ensureAvailable()` without awaiting it. Prewarm must complete login, VIP-share allocation, Socket.IO `ready`, and `kata-set-param maxTime`; it must not synchronize a board or start `kata-analyze`.
 - Room registration, persistence, the `match:found` event, and entry into the duel never wait for prewarm. Synchronous throws and rejected prewarm promises are contained; the first ordinary search retries or follows the documented fallback chain.
 - If the first search overlaps prewarm, both callers await the same session-opening promise. They must not log in twice, allocate two Socket.IO tokens, or open two VIP-share sessions. A warmed but unused session uses the normal configurable idle timeout (default 90 seconds) and is then closed.
 - Internal komi is stored in half-point stone units, so special-duel `2.75` is sent to GTP as `komi 5.5`. Use Chinese rules and `boardsize 13`.
+- The human challenger and corrupted NPC each have 1800 seconds of main time, `mainTotal=1800`, zero byo-yomi seconds, and zero periods; either side reaching zero loses by timeout. Zhizi analysis remains independently capped at five seconds per move. The room itself must keep `unlimitedTime=false` so the active side's clock continues to tick.
 - A physical stdout line can contain multiple `info move` blocks. Parse every block and keep `move`, `order`, `visits`, `winrate`, `scoreLead`, `prior`, and `pv`; never assume one candidate per line.
 - Each fresh KataGo session receives `kata-set-param maxTime <seconds>` using the bounded search duration. The client keeps a matching watchdog for continuous `kata-analyze`, sends `stop` at the limit, and treats already-streamed candidates as a successful Zhizi result with `partial=true`; reaching the limit is not itself a local-engine fallback condition.
 - If the full search window ends before any candidate arrives, return the public `timeout` reason without opening a second five-second search. Connection failures may still use the existing one-time fresh-session recovery before a search result exists.
@@ -60,7 +64,7 @@ sigrikaCandyDuel.presentation = null | {
 - Regular suspicion requires a rolling 24 eligible moves with Top-1 >= 75%, Top-3 >= 92%, average score loss <= 0.8, at most one score loss over 2.5, and at least five hard-AI hits; then require a separate six eligible moves with at least five Top-3 hits, average loss <= 1.0, and no loss over 3.0.
 - Extreme suspicion uses the user-approved boundary of 35 eligible moves, cumulative Top-1 >= 90%, and at least six hard-AI hits. It may trigger without the six-move confirmation.
 - A hard-AI hit is a Top-1 match whose policy-prior rank is at least four and whose score lead over Top-2 is at least 1.0.
-- Persist `sigrikaCandyDuel.aiAgreementAudit` and any pending pre-move snapshot so restart/resume does not erase or double-count evidence. Public `roomView` exposes only `aiAgreementTriggered`, monotonic `aiAgreementEventSeq`, and the current sanitized `presentation`; raw metrics/candidates/reason and internal presentation stages remain server-only.
+- Persist `sigrikaCandyDuel.aiAgreementAudit` and any pending pre-move snapshot so restart/resume does not erase or double-count evidence. Public `roomView` exposes only `aiAgreementTriggered`, monotonic `aiAgreementEventSeq`, derived `musicStarted`, and the current sanitized `presentation`; raw metrics/candidates/reason and internal presentation stages remain server-only. `musicStarted` is false during opening `pending`/`dialogue`, becomes true when `openingPresentationStage` reaches `skill`, and remains true at `done` after the presentation clears. Legacy snapshots without the stage may infer true only from a current skill presentation or `game.moveNumber > 1`; clients must not reconstruct the hidden stage themselves.
 - Triggering is a narrative signal, not proof or punishment. It may start Sigrika's loss-of-control story but must not ban, rate-limit, alter rewards, or publicly accuse the player.
 - Formal room skills stay disabled. The corrupted NPC player card always displays `？？？ · ？`; it must never reveal `秘日六席` or `七宗罪` as the persistent skill identity.
 - On the first corrupted-NPC turn, automation must publish `那么，让你看看才能的差距吧。`, then the visual-only skill `秘日六席`, clear the presentation, and only then enter the ordinary NPC move chain.
@@ -89,14 +93,17 @@ sigrikaCandyDuel.presentation = null | {
 | Audit result below visit floor / forced / equivalent | excluded | Mark the position attempted, persist no pending evidence, continue play |
 | Pending audit survives restart | restored snapshot | Evaluate exactly the expected next human move once, then clear pending |
 | Opening/reaction presentation survives restart | restored presentation stage | Continue from the next stage, never replay a completed line or execute an extra move |
+| Opening stage is `pending` / `dialogue` | public `musicStarted=false` | Keep the dedicated duel BGM silent and do not fall through to ordinary room/skill music |
+| Opening stage is `skill` / `done` | public `musicStarted=true` | Start the dedicated duel intro-loop at `秘日六席` and keep it eligible after presentation clear/refresh |
 | Unknown/malformed public presentation | invalid projection | Project `null`; never expose internal stages or arbitrary private metadata |
 | Fake skill presentation is active | dialogue/skill metadata only | Keep the formal game state byte-for-byte equivalent until the normal move action runs |
 
 ## 5. Good / Base / Bad Cases
 
 - Good: special-room creation starts one non-blocking ready/configured session; the first search reuses it, replays the 13x13 position, and Sigrika uses a legal Top-1 action.
+- Good: the public room view changes `musicStarted` from false to true exactly when the persisted opening stage enters `skill`, then keeps true at `done` without exposing that stage.
 - Base: Zhizi is disabled or temporarily unreachable; room creation still succeeds and the same bot turn proceeds through GNU Go/heuristic fallback, while ordinary practice semantics remain unchanged.
-- Bad: awaiting prewarm before emitting the room, allocating a second VIP-share session when first search overlaps warmup, exposing the password/token/raw candidates/internal stage, starting two concurrent analyses, sending internal `2.75` directly as GTP komi, parsing only the first `info` block, judging passes/forced choices, counting fewer than 35 moves for the extreme path, treating the trigger as enforcement, putting fake skills into `game.pendingSkill`, or letting the NPC move before its active sequence finishes violates this contract.
+- Bad: awaiting prewarm before emitting the room, allocating a second VIP-share session when first search overlaps warmup, exposing the password/token/raw candidates/internal stage, deriving BGM start only from transient client presentation, starting two concurrent analyses, sending internal `2.75` directly as GTP komi, parsing only the first `info` block, judging passes/forced choices, counting fewer than 35 moves for the extreme path, treating the trigger as enforcement, putting fake skills into `game.pendingSkill`, or letting the NPC move before its active sequence finishes violates this contract.
 
 ## 6. Tests Required
 
@@ -106,7 +113,7 @@ sigrikaCandyDuel.presentation = null | {
 - Audit tests: opening gate, forced/equivalent/low-visit exclusions, stale/pass exclusion, 24+6 confirmation, exact 35-move extreme threshold, hard-AI definition, no double evaluation after restore.
 - Room/automation tests: only special-room creation fires non-blocking prewarm; warmup failure does not block room creation; Zhizi-first NPC choice, same-turn local fallback, pre-move audit persistence, post-move reconciliation, one in-flight operation, and shutdown close.
 - Presentation automation tests: exact line/skill order, opening once-only gate, real extreme-35 trigger routing, no `npc-thinking` system append, no game-state mutation during presentation, ordinary move only after clear, and restored-stage continuation.
-- View/persistence tests: hidden metrics, candidates, and presentation stages survive `PersistedRoom` round-trip but never appear in `buildRoomView`; only trigger boolean/event sequence plus the sanitized current presentation are public.
+- View/persistence tests: hidden metrics, candidates, and presentation stages survive `PersistedRoom` round-trip but never appear in `buildRoomView`; only trigger boolean/event sequence, derived `musicStarted`, and the sanitized current presentation are public. Assert false at opening dialogue, true at opening skill, and still true at done with `presentation=null`.
 - Frontend tests: corrupted player card remains `？？？ · ？` with formal skills disabled; dialogue/skill components contain exact copy, have no voice dependency, portal to the corruption action layer, fit portrait phones, and provide reduced-motion behavior.
 - Live smoke: `npm run verify:zhizi` must authenticate with deployment env, allocate `vip-share`, return one legal 13x13 action, and print no secret/token.
 
@@ -135,7 +142,8 @@ const result = await zhiziEngine.analyze(gameViewForColor(room.game, human.color
 room.sigrikaCandyDuel.aiAgreementAudit = markSigrikaAiAnalysisAttempt(audit, moveNumber, snapshot);
 // The server advances persisted presentation stages; game.pendingSkill and game state stay untouched.
 room.sigrikaCandyDuel.aiReactionPresentationStage = "pending";
-// The safe room projection exposes only trigger signals and the sanitized current presentation.
+// The safe room projection derives musicStarted from the persisted opening stage;
+// the browser does not receive or reconstruct that internal stage.
 
 await session.setSearchTimeLimit(5_000); // kata-set-param maxTime 5
 const analysis = await session.analyze(playerColor, { timeoutMs: 5_000 });

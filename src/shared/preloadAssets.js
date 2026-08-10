@@ -140,14 +140,16 @@ export function battlePreloadAssets({
       ownedMusicIds: user?.ownedMusicIds,
       tracks
     }));
-  const battleTrack = resolveBackgroundMusic({
-    view: "room",
-    gamePhase: room?.game?.phase ?? room?.phase ?? "preloading",
-    matchSource: room?.matchSource,
-    selections: user?.musicSelections,
-    ownedMusicIds: user?.ownedMusicIds,
-    tracks
-  });
+  const battleTrack = room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource
+    ? SIGRIKA_CORRUPTION_MUSIC.duel
+    : resolveBackgroundMusic({
+        view: "room",
+        gamePhase: room?.game?.phase ?? room?.phase ?? "preloading",
+        matchSource: room?.matchSource,
+        selections: user?.musicSelections,
+        ownedMusicIds: user?.ownedMusicIds,
+        tracks
+      });
 
   const criticalImages = compactUnique([
     ...roomCharacters.map((character) => character?.portrait),

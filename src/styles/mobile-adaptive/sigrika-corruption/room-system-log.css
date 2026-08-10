@@ -1,0 +1,62 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted > .sigrika-duel-system-log,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log {
+  border: 1px solid var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background-color: var(--sigrika-duel-surface) !important;
+  background-image: none !important;
+  filter: none !important;
+  box-shadow: 0 6px 12px var(--sigrika-duel-shadow-soft) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log header > span {
+  color: var(--sigrika-duel-text) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log header svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-close-button {
+  border-color: var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-raised) !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-log {
+  border: 1px solid color-mix(in srgb, var(--sigrika-duel-line) 68%, transparent) !important;
+  color: var(--sigrika-duel-text) !important;
+  background-color: var(--sigrika-duel-ink) !important;
+  background-image: none !important;
+  scrollbar-color: var(--sigrika-duel-line) var(--sigrika-duel-ink);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-log :is(p, span, strong) {
+  color: var(--sigrika-duel-text) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-log .system.skill {
+  border: 1px solid var(--sigrika-duel-line) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-surface-accent) !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-form-disabled :is(input:disabled, button:disabled) {
+  border-color: var(--sigrika-duel-disabled-border) !important;
+  color: var(--sigrika-duel-disabled-text) !important;
+  background-color: var(--sigrika-duel-disabled-surface) !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-form-disabled input:disabled {
+  -webkit-text-fill-color: var(--sigrika-duel-disabled-text) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log .chat-form-disabled button svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}

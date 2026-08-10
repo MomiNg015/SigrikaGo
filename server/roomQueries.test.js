@@ -175,4 +175,23 @@ describe("room queries", () => {
     expect(queries.findRoomForUser("alice")).toBe(active);
     expect(queries.findRoomForUser("alice", "finished")).toBe(finished);
   });
+
+  test("finds only the unfinished server-wide Sigrika corruption duel", () => {
+    const finished = room("finished-special", { game: { phase: GAME_PHASES.finished } });
+    finished.matchSource = "sigrika-corruption-duel";
+    finished.sigrikaCandyDuel = { ownerUserId: "old-owner" };
+    const active = room("active-special");
+    active.matchSource = "sigrika-corruption-duel";
+    active.sigrikaCandyDuel = { ownerUserId: "current-owner" };
+    const ordinary = room("ordinary");
+    const { queries } = createQueries({
+      rooms: new Map([
+        [finished.code, finished],
+        [ordinary.code, ordinary],
+        [active.code, active]
+      ])
+    });
+
+    expect(queries.findActiveSigrikaCandyDuel()).toBe(active);
+  });
 });

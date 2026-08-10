@@ -97,6 +97,26 @@ describe("room clock lifecycle", () => {
     expect(scheduleRoomClose).toHaveBeenCalledWith(room.code, {});
     expect(broadcastRoom).toHaveBeenCalledWith({}, room);
   });
+
+  test("keeps an unlimited active player unchanged inside an otherwise timed room", () => {
+    const room = playableRoom({ unlimited: true, main: null, periods: null });
+    const scheduled = [];
+    const broadcastRoomClock = vi.fn();
+    vi.spyOn(Date, "now").mockReturnValue(1000);
+    const lifecycle = createLifecycle({
+      rooms: new Map([[room.code, room]]),
+      scheduleRoomInterval: (_targetRoom, callback) => scheduled.push(callback),
+      broadcastRoomClock
+    });
+
+    lifecycle.startGameClock(room, {});
+    vi.mocked(Date.now).mockReturnValue(4000);
+    scheduled[0]();
+
+    expect(room.players[0].time).toMatchObject({ unlimited: true, main: null, periods: null });
+    expect(room.lastTick).toBe(4000);
+    expect(broadcastRoomClock).not.toHaveBeenCalled();
+  });
 });
 
 function createLifecycle(overrides = {}) {

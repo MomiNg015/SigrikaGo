@@ -79,6 +79,8 @@ describe("socket event registration", () => {
       "draw:respond",
       "scoring:action",
       "practice:start",
+      "sigrika-candy:duel-status",
+      "sigrika-candy:duel-watch",
       "sigrika-candy:duel-start",
       "chat:send",
       "duel:request",

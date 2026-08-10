@@ -75,6 +75,32 @@ describe("room connection lifecycle", () => {
     expect(persistRoom).not.toHaveBeenCalled();
   });
 
+  test("admits special-duel spectators only through the corrupted-arc authority path", () => {
+    const room = testRoom({
+      privateOwnerUserId: "owner",
+      sigrikaCandyDuel: { ownerUserId: "owner" }
+    });
+    const lifecycle = createLifecycle({ rooms: new Map([[room.code, room]]) });
+    const watcher = {
+      ...user("watcher"),
+      sigrikaCandyArc: { phase: "awaiting-duel", corrupted: true }
+    };
+
+    expect(lifecycle.attachSocketToRoom(room.code, { id: "generic", join: vi.fn() }, watcher)).toBeNull();
+    expect(lifecycle.attachSocketToRoom(
+      room.code,
+      { id: "authorized", join: vi.fn() },
+      watcher,
+      { allowSigrikaCandySpectator: true }
+    )).toBe(room);
+    expect(lifecycle.attachSocketToRoom(
+      room.code,
+      { id: "ordinary", join: vi.fn() },
+      user("ordinary"),
+      { allowSigrikaCandySpectator: true }
+    )).toBeNull();
+  });
+
   test("detaches player and spectator sockets, schedules empty-room close, and persists changed rooms", () => {
     const room = testRoom({
       players: [player("alice", { socketId: "socket-a" })],

@@ -527,6 +527,7 @@ export function resolveBackgroundMusic({
   resultModalOpen = false,
   sigrikaCorrupted = false,
   matchSource = null,
+  sigrikaDuelMusicStarted = false,
   selections = {},
   ownedMusicIds = null,
   random = Math.random,
@@ -536,7 +537,7 @@ export function resolveBackgroundMusic({
   if (matchSuccess || resultModalOpen || (view === "room" && gamePhase === "finished")) return null;
 
   if (view === "room" && matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
-    return SIGRIKA_CORRUPTION_MUSIC.duel;
+    return sigrikaDuelMusicStarted ? SIGRIKA_CORRUPTION_MUSIC.duel : null;
   }
 
   if (view === "home" && sigrikaCorrupted === true) {

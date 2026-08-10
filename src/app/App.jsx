@@ -40,12 +40,18 @@ import { useOverlayState } from "./useOverlayState.js";
 import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
 import { useRoomSessionState } from "./useRoomSessionState.js";
 import SigrikaCorruptionOverlay from "./SigrikaCorruptionOverlay.jsx";
+import SigrikaCorruptionTransition from "./SigrikaCorruptionTransition.jsx";
+import {
+  SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS,
+  useSigrikaCorruptionTransition
+} from "./useSigrikaCorruptionTransition.js";
 import { useRoomMemory } from "./useRoomMemory.js";
 import { useSiteSettingsState } from "./useSiteSettingsState.js";
 import { usePlayableReadyPreload } from "./usePlayableReadyPreload.js";
 import { useStartupPreload } from "./useStartupPreload.js";
 import { useSyncedRefs } from "./useSyncedRefs.js";
 import { useToastQueue } from "./useToastQueue.js";
+import { exitSigrikaCandySpectatorResult } from "./sigrikaCandyResultNavigation.js";
 
 const SOCKET_BASE = deploymentSocketBase();
 const EXIT_CONFIRM_TITLE = "\u786e\u5b9a\u8981\u9000\u51fa\u6e38\u620f\u5417\uff1f";
@@ -90,6 +96,11 @@ export default function App() {
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
+  const {
+    runTransition: runSigrikaCorruptionTransition,
+    transition: sigrikaCorruptionTransition,
+    transitioning: sigrikaCorruptionTransitioning
+  } = useSigrikaCorruptionTransition();
   const [recruitmentInteractionLocked, setRecruitmentInteractionLocked] = useState(false);
   const [activeStoryPlayer, setActiveStoryPlayer] = useState({
     script: null,
@@ -168,16 +179,19 @@ export default function App() {
     if (sigrikaRecoveryRequestRef.current) return;
     sigrikaRecoveryRequestRef.current = true;
     try {
-      const data = await api("/api/items/rainbow-bean-candy/sigrika/recovery/complete", {
-        method: "POST",
-        token
+      await runSigrikaCorruptionTransition({
+        direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.exit,
+        request: () => api("/api/items/rainbow-bean-candy/sigrika/recovery/complete", {
+          method: "POST",
+          token
+        }),
+        commit: (data) => updateUser(data.user)
       });
-      updateUser(data.user);
     } catch (error) {
       sigrikaRecoveryRequestRef.current = false;
       showToast(error.message, "danger");
     }
-  }, [showToast, token, updateUser]);
+  }, [runSigrikaCorruptionTransition, showToast, token, updateUser]);
 
   const handleStoryNodeEnter = useCallback(async (nodeId) => {
     if (nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
@@ -188,16 +202,26 @@ export default function App() {
       if (overlay.key !== "storyPlayer") overlaySetters[overlay.setterProp]?.(false);
     }
     try {
-      const data = await api("/api/items/rainbow-bean-candy/sigrika/climax", {
-        method: "POST",
-        token
+      await runSigrikaCorruptionTransition({
+        direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter,
+        request: () => api("/api/items/rainbow-bean-candy/sigrika/climax", {
+          method: "POST",
+          token
+        }),
+        commit: (data) => updateUser(data.user)
       });
-      updateUser(data.user);
     } catch (error) {
       sigrikaClimaxRequestRef.current = false;
       showToast(error.message, "danger");
     }
-  }, [overlaySetters, showToast, token, updateUser, user?.sigrikaCandyArc?.phase]);
+  }, [
+    overlaySetters,
+    runSigrikaCorruptionTransition,
+    showToast,
+    token,
+    updateUser,
+    user?.sigrikaCandyArc?.phase
+  ]);
 
   useEffect(() => {
     sigrikaClimaxRequestRef.current = false;
@@ -376,7 +400,17 @@ export default function App() {
   });
   const isSigrikaCorrupted = Boolean(user?.sigrikaCandyArc?.corrupted);
 
-  const continueSigrikaCandyResult = useCallback(async () => {
+  const continueSigrikaCandyResult = useCallback(async ({ owner = true } = {}) => {
+    if (!owner) {
+      exitSigrikaCandySpectatorResult({
+        roomCode: room?.code,
+        socket,
+        closeResultModal,
+        setRoom,
+        setView
+      });
+      return;
+    }
     try {
       let data = null;
       for (let attempt = 0; attempt < 4; attempt += 1) {
@@ -403,7 +437,7 @@ export default function App() {
     } catch (error) {
       showToast(error.message, "danger");
     }
-  }, [closeResultModal, completeSigrikaCandyRecovery, openStoryPlayer, setRoom, setView, showToast, token, updateUser]);
+  }, [closeResultModal, completeSigrikaCandyRecovery, openStoryPlayer, room?.code, setRoom, setView, showToast, socket, token, updateUser]);
 
   async function refreshMusicTracks() {
     if (!token) return;
@@ -597,7 +631,10 @@ export default function App() {
   });
 
   return (
-    <div className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}>
+    <div
+      aria-busy={sigrikaCorruptionTransitioning || undefined}
+      className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}
+    >
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
       <InteractionFeedback audioSettings={audioSettings} />
       {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
@@ -615,6 +652,7 @@ export default function App() {
       )}
       <AppRoutes {...routeProps} />
       <AppOverlays {...appOverlayProps} />
+      <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
     </div>
   );
 }

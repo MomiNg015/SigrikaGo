@@ -223,14 +223,14 @@ describe("room state persistence", () => {
     expect(hydrated.players[0].disconnectedAt).toBeNull();
   });
 
-  it("retains the private unlimited Sigrika duel contract across restoration", () => {
+  it("retains both 30-minute Sigrika duel clocks across restoration", () => {
     const snapshot = roomPersistenceSnapshot({
       code: "SIG01",
       mode: "spark",
       rated: false,
       matchSource: "sigrika-corruption-duel",
       recordPolicy: "replay-only",
-      unlimitedTime: true,
+      unlimitedTime: false,
       privateOwnerUserId: "human",
       sigrikaCandyDuel: {
         ownerUserId: "human",
@@ -251,7 +251,21 @@ describe("room state persistence", () => {
         presentation: { sequence: 4, type: "skill", speaker: "西格莉卡？", skillName: "七宗罪" }
       },
       practice: { specialDuel: true, difficulty: "advanced" },
-      players: [{ user: { id: "bot", isBot: true }, isBot: true, socketId: null }],
+      players: [
+        {
+          user: { id: "human" },
+          color: "black",
+          socketId: null,
+          time: { unlimited: false, main: 1740, mainTotal: 1800, byoYomi: 0, periodRemaining: 0, periods: 0 }
+        },
+        {
+          user: { id: "bot", isBot: true },
+          color: "white",
+          isBot: true,
+          socketId: null,
+          time: { unlimited: false, main: 1680, mainTotal: 1800, byoYomi: 0, periodRemaining: 0, periods: 0 }
+        }
+      ],
       spectators: [],
       game: { phase: GAME_PHASES.playing },
       chat: []
@@ -261,7 +275,7 @@ describe("room state persistence", () => {
     expect(hydrated).toMatchObject({
       matchSource: "sigrika-corruption-duel",
       recordPolicy: "replay-only",
-      unlimitedTime: true,
+      unlimitedTime: false,
       privateOwnerUserId: "human",
       sigrikaCandyDuel: {
         ownerUserId: "human",
@@ -277,6 +291,16 @@ describe("room state persistence", () => {
         presentation: { sequence: 4, type: "skill", skillName: "七宗罪" }
       }
     });
+    expect(hydrated.players).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        user: expect.objectContaining({ id: "human" }),
+        time: expect.objectContaining({ main: 1740, mainTotal: 1800, periods: 0 })
+      }),
+      expect.objectContaining({
+        user: expect.objectContaining({ id: "bot" }),
+        time: expect.objectContaining({ unlimited: false, main: 1680, mainTotal: 1800, periods: 0 })
+      })
+    ]));
   });
 
   it("reports pending persistence rooms for runtime capacity telemetry", async () => {

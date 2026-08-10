@@ -425,8 +425,8 @@ return { user: publicUser(projectedUser) };
 - The count starts at zero and increments only inside a successful Sigrika candy transaction. Uses 1–7 enter `use-N-start` and converge on the existing common effect tail; use 8 enters `corruption-start`. Further uses are rejected until recovery resets the arc.
 - Entering the corruption climax moves the account to `awaiting-duel`. Refresh/login must reconstruct the active phase; no client-only flag may be authoritative.
 - Corruption story is mandatory and non-skippable. Recovery story is result-specific and skippable, but completing or skipping it must call the same recovery completion boundary.
-- The special duel is an immediate private 13x13 Spark room with komi 2.75, random player color, Sigrika NPC, no character/skill for the player, no skills for either side, no draw request, no capture auto-resign, unlimited damaged-clock presentation, system-only logs, and no public watch/join/chat path.
-- The special bot uses advanced GNU Go level 10, then intermediate level 5, then the beginner heuristic in the same turn when a tier cannot return a usable action. This fallback is exclusive to `sigrikaCandyDuel`; ordinary practice rooms retain their no-fallback failure policy. The engine boundary remains replaceable by a future high-compute KataGo adapter.
+- The special duel is a private 13x13 Spark room with komi 2.75, random player color, no formal skills, no draw request, no capture auto-resign, independent 30-minute no-byo-yomi clocks for both sides, and system-only logs. It stays hidden from generic watch/join/chat paths; only corrupted-phase users may observe through the dedicated occupied-state action.
+- A fresh challenge requires the exact high-difficulty confirmation before room creation. The special bot uses Zhizi KataGo first, then advanced GNU Go level 10, intermediate level 5, the beginner heuristic, and safe pass in the same turn when a tier cannot return a usable action. This fallback is exclusive to `sigrikaCandyDuel`; ordinary practice rooms retain their no-fallback failure policy.
 - Result persistence writes one replay-only record and the account arc outcome, but no rating, statistics, coins, growth, achievements, rewards, or task progress. Concurrent result persistence must remain idempotent.
 - The result modal exposes only the recovery continuation path. Win/loss selects the matching recovery start node; recovery completion removes `sigrikaCandyDisabled`, resets count/phase/outcome/room code, and restores all ordinary UI.
 - Development builds may cancel an ordinary active candy effect by clicking its character-card candy badge. Cancellation never refunds inventory, decrements the count, replays story, or bypasses any non-`normal` corruption phase; production does not expose the action.
@@ -450,7 +450,7 @@ return { user: publicUser(projectedUser) };
 - Arc domain/schema tests cover every phase transition, invalid transition, reset, and development cancellation boundary.
 - Item/story tests cover entries 1–8, common-tail convergence, mandatory corruption routing, and preservation of customized scripts outside the exact legacy default upgrade.
 - Room factory, persistence, view, clock, request, chat, query, automation, and result tests cover every special-room exclusion and restart field.
-- Frontend tests cover global corruption class/state, home/handbook/match locks, the red decision button, unlimited damaged clock, result continuation, replay tag/title, and development-only badge cancellation.
+- Frontend tests cover global corruption class/state, home/handbook/match locks, red/occupied decision states, the high-difficulty confirmation, high-contrast desktop and filled portrait timer layouts, result owner/spectator continuation, replay tag/title, and development-only badge cancellation.
 
 #### 7. Wrong vs Correct
 

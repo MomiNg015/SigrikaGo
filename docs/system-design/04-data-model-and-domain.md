@@ -133,7 +133,9 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 ### PersistedRoom
 
-活动房间以版本化 JSON 快照保存，不新增智子账号或分析数据库表。西格莉卡黑化决战的 `sigrikaCandyDuel.aiAgreementAudit` 保存累计有效手数、Top-1/Top-3/困难手计数、目损/胜率损失、最近 24 手、独立 6 手复核阶段，以及下一手待比较的服务端候选快照；这保证刷新、断线和 Node 进程恢复后不会把同一手重复统计，也不会通过重启清零 35 手极端阈值。`openingPresentationStage`、`aiReactionPresentationStage`、`presentationSequence` 与当前 `presentation` 同样随房间保存，使台词/假技能序列从下一步继续。审计对象和内部演出阶段不得进入 `roomView` 或最终 `GameRecord.snapshot` 的公开回放视图；安全投影只允许 `aiAgreementTriggered`、单调递增的 `aiAgreementEventSeq` 和经过类型/字段白名单处理的当前 `presentation`，服务端内部触发原因也不公开。智子手机号/邮箱、密码、Bearer token 与 Socket.IO token 从不进入任何房间快照。
+活动房间以版本化 JSON 快照保存，不新增智子账号或分析数据库表。西格莉卡黑化决战的 `sigrikaCandyDuel.aiAgreementAudit` 保存累计有效手数、Top-1/Top-3/困难手计数、目损/胜率损失、最近 24 手、独立 6 手复核阶段，以及下一手待比较的服务端候选快照；这保证刷新、断线和 Node 进程恢复后不会把同一手重复统计，也不会通过重启清零 35 手极端阈值。`openingPresentationStage`、`aiReactionPresentationStage`、`presentationSequence` 与当前 `presentation` 同样随房间保存，使台词/假技能序列从下一步继续。审计对象和内部演出阶段不得进入 `roomView` 或最终 `GameRecord.snapshot` 的公开回放视图；安全投影只允许 `aiAgreementTriggered`、单调递增的 `aiAgreementEventSeq`、由开场阶段派生的 `musicStarted` 和经过类型/字段白名单处理的当前 `presentation`，服务端内部触发原因也不公开。`musicStarted` 在开场台词阶段为 false，从 `秘日六席` 技能阶段起为 true，并在演出清空、刷新或断线恢复后保持 true；前端不能据临时演出节点自行猜测内部阶段。智子手机号/邮箱、密码、Bearer token 与 Socket.IO token 从不进入任何房间快照。
+
+同一房间表也是黑化决战单局占用的权威来源：`findActiveSigrikaCandyDuel()` 只返回 `matchSource="sigrika-corruption-duel"`、带 `sigrikaCandyDuel` 元数据且尚未 `finished` 的房间，因此启动恢复进内存的 `PersistedRoom` 会自然继续占位，结果结算则在实际延迟删除前就释放名额。当前支持拓扑是单 Node 进程，检查占用与同步注册新房之间不得加入 `await`。特殊房快照把 `unlimitedTime` 设为 false，并为挑战者与 NPC 分别保存 `{ main: 1800, mainTotal: 1800, byoYomi: 0, periodRemaining: 0, periods: 0 }`；当前行动方的主时间正常递减，任一方归零即按普通超时结果结束。专用状态接口只返回 `available` / `owned` / `occupied`，且先校验刷新后的账号仍在黑化篇章；专用观战入口仍经过每房观战人数门禁和 `roomView` 安全投影。通用房间码加入即使猜中特殊房也只返回统一“房间不存在或已经关闭”，不得先暴露观战容量。
 
 ### Gomoku Domain
 

@@ -6,6 +6,7 @@ import ChatBox, {
   areChatBoxPropsEqual,
   chatDisplayName,
   chatMessageMetaLabel,
+  chatPopoverClassName,
   playerChatCount,
   visibleRoomChatMessages
 } from "./ChatBox.jsx";
@@ -163,6 +164,14 @@ describe("ChatBox", () => {
     expect(markup).toContain("chat-toggle-button mobile-tab-button");
     expect(markup).toContain("role=\"tab\"");
     expect(markup).toContain("aria-selected=\"false\"");
+  });
+
+  it("marks the Sigrika duel system log for portal-safe corrupted styling", () => {
+    expect(chatPopoverClassName({
+      mobileDockPopup: true,
+      isSigrikaDuelSystemLog: true
+    })).toBe("chat-box chat-popover tutorial-story-log-popover sigrika-duel-system-log");
+    expect(chatPopoverClassName({ mobileDockPopup: true })).not.toContain("sigrika-duel-system-log");
   });
 
   it("allows chat messages and names to wrap inside the battle chat log", () => {

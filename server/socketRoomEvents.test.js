@@ -77,6 +77,27 @@ describe("socket room events", () => {
     expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
   });
 
+  it("does not expose special-duel spectator capacity through generic room-code join", () => {
+    const socket = createSocket({ id: "ordinary-user" });
+    const admission = vi.fn(() => ({ ok: false, error: "当前房间观战席已满，请稍后再试" }));
+    const deps = createDeps({
+      getRoom: vi.fn(() => ({
+        code: "SIG88",
+        spectators: [],
+        sigrikaCandyDuel: { ownerUserId: "owner" }
+      })),
+      attachSocketToRoom: vi.fn(() => null),
+      runtimeServiceState: { admission }
+    });
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:join", { roomCode: "SIG88" });
+
+    expect(admission).not.toHaveBeenCalled();
+    expect(deps.attachSocketToRoom).toHaveBeenCalledWith("SIG88", socket, socket.user);
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "房间不存在或已经关闭");
+  });
+
   it("emits the viewer room update and broadcasts a presence patch after a successful join", () => {
     const socket = createSocket({ id: "viewer-a" });
     const room = { code: "12345" };

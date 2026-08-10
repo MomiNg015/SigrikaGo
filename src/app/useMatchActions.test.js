@@ -108,4 +108,32 @@ describe("match success action helpers", () => {
     expect(setMatchStart).toHaveBeenLastCalledWith(null);
     expect(showToast).toHaveBeenCalledWith("上次特殊对局已失效，状态已恢复，请再次点击开始决战", "error");
   });
+
+  it("returns the occupied state and exact race toast without joining as a spectator", () => {
+    const setMatchStart = vi.fn();
+    const onStatusChange = vi.fn();
+    const showToast = vi.fn();
+    const socket = {
+      emit: vi.fn((_event, _payload, acknowledge) => acknowledge({
+        ok: false,
+        error: "西格莉卡？已经开始和别人对局了。",
+        code: "special_duel_occupied",
+        status: "occupied"
+      }))
+    };
+
+    startSigrikaDuelTransition({
+      preloadPlayableReady: vi.fn(),
+      setMatchStart,
+      setMatchSuccess: vi.fn(),
+      showToast,
+      onStatusChange,
+      socket
+    });
+
+    expect(onStatusChange).toHaveBeenCalledWith("occupied");
+    expect(setMatchStart).toHaveBeenLastCalledWith(null);
+    expect(showToast).toHaveBeenCalledWith("西格莉卡？已经开始和别人对局了。", "error");
+    expect(socket.emit).toHaveBeenCalledTimes(1);
+  });
 });

@@ -1,10 +1,15 @@
 @import "./sigrika-corruption/shell.css";
 @import "./sigrika-corruption/damage-field.css";
+@import "./sigrika-corruption/transition.css";
+@import "./sigrika-corruption/transition-motion.css";
 @import "./sigrika-corruption/room-atmosphere.css";
 @import "./sigrika-corruption/room-panels.css";
+@import "./sigrika-corruption/room-timers.css";
 @import "./sigrika-corruption/room-controls.css";
 @import "./sigrika-corruption/room-icons.css";
 @import "./sigrika-corruption/room-secondary-surfaces.css";
+@import "./sigrika-corruption/room-mobile-readability.css";
+@import "./sigrika-corruption/room-system-log.css";
 @import "./sigrika-corruption/room-lifecycle.css";
 @import "./sigrika-corruption/room-replay.css";
 @import "./sigrika-corruption/room-presentation.css";

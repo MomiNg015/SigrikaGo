@@ -175,7 +175,7 @@ export function createSigrikaCandyDuelRoom(player, options = {}) {
   room.matchSource = SIGRIKA_CANDY_DUEL.matchSource;
   room.recordPolicy = "replay-only";
   room.rated = false;
-  room.unlimitedTime = true;
+  room.unlimitedTime = false;
   room.privateOwnerUserId = player.user.id;
   room.sigrikaCandyDuel = {
     ownerUserId: player.user.id,
@@ -218,7 +218,14 @@ export function createSigrikaCandyDuelRoom(player, options = {}) {
     dataCorrupted: true
   };
   for (const entry of room.players) {
-    entry.time = { unlimited: true, main: null, byoYomi: null, periodRemaining: null, periods: null };
+    entry.time = {
+      unlimited: false,
+      main: SIGRIKA_CANDY_DUEL.mainTimeSeconds,
+      mainTotal: SIGRIKA_CANDY_DUEL.mainTimeSeconds,
+      byoYomi: 0,
+      periodRemaining: 0,
+      periods: 0
+    };
     room.game.skillUses[entry.color] = 0;
     delete room.game.passives?.[entry.color];
   }
@@ -259,6 +266,7 @@ export function toRoomPlayer(player, color, mode = "spark") {
 function createPlayerClock() {
   return {
     main: 5 * 60,
+    mainTotal: 5 * 60,
     byoYomi: 30,
     periodRemaining: 30,
     periods: 3

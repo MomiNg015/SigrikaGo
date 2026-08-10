@@ -31,7 +31,7 @@
   z-index: var(--sigrika-corruption-action-z);
 }
 
-.app-shell.is-sigrika-corrupted > :not(.home-screen, .match-mode-backdrop, .sigrika-corruption-house-backdrop, .sigrika-corruption-field),
+.app-shell.is-sigrika-corrupted > :not(.home-screen, .match-mode-backdrop, .sigrika-corruption-house-backdrop, .sigrika-corruption-field, .sigrika-theme-transition),
 .app-shell.is-sigrika-corrupted > .modal-backdrop:not(.match-mode-backdrop, .sigrika-corruption-house-backdrop) > * {
   filter: grayscale(1) contrast(1.24) brightness(0.78);
 }

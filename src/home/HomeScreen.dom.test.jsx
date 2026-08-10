@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
@@ -112,4 +112,151 @@ describe("HomeScreen practice difficulty picker", () => {
     expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(practiceEntry);
   });
+
+  it("requires an explicit high-difficulty confirmation before starting the Sigrika duel", async () => {
+    const onMatchModePickerOpenChange = vi.fn();
+    const onStartSigrikaDuel = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <HomeScreen
+        user={corruptedUser()}
+        characters={CHARACTERS}
+        matchModePickerOpen
+        socket={duelSocket({ status: "available" })}
+        onMatchModePickerOpenChange={onMatchModePickerOpenChange}
+        onStartMatch={vi.fn()}
+        onStartPractice={vi.fn()}
+        onStartSigrikaDuel={onStartSigrikaDuel}
+      />
+    );
+
+    await user.click(await screen.findByRole("button", { name: "与西格莉卡？决战" }));
+
+    const confirmDialog = screen.getByRole("dialog", { name: "确认参与决战" });
+    expect(within(confirmDialog).getByText("本对局为高难度对局，用时为30分钟包干制，确定参与吗？")).toBeTruthy();
+    expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
+    expect(onStartSigrikaDuel).not.toHaveBeenCalled();
+
+    await user.click(within(confirmDialog).getByRole("button", { name: "取消" }));
+    expect(screen.queryByRole("dialog", { name: "确认参与决战" })).toBeNull();
+    expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
+    expect(onStartSigrikaDuel).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "与西格莉卡？决战" }));
+    await user.click(within(screen.getByRole("dialog", { name: "确认参与决战" })).getByRole("button", { name: "确定" }));
+
+    expect(onMatchModePickerOpenChange).toHaveBeenCalledOnce();
+    expect(onMatchModePickerOpenChange).toHaveBeenCalledWith(false);
+    expect(onStartSigrikaDuel).toHaveBeenCalledOnce();
+  });
+
+  it("turns the occupied duel entry pale yellow and watches directly without closing the picker", async () => {
+    const onMatchModePickerOpenChange = vi.fn();
+    const onStartSigrikaDuel = vi.fn();
+    const socket = duelSocket({ status: "occupied" });
+    const user = userEvent.setup();
+
+    render(
+      <HomeScreen
+        user={corruptedUser()}
+        characters={CHARACTERS}
+        matchModePickerOpen
+        socket={socket}
+        onMatchModePickerOpenChange={onMatchModePickerOpenChange}
+        onStartMatch={vi.fn()}
+        onStartPractice={vi.fn()}
+        onStartSigrikaDuel={onStartSigrikaDuel}
+      />
+    );
+
+    const watchButton = await screen.findByRole("button", { name: "西格莉卡？正在对局中。。。" });
+    expect(watchButton.classList.contains("is-spectate")).toBe(true);
+    await user.click(watchButton);
+
+    expect(socket.emit).toHaveBeenCalledWith("sigrika-candy:duel-watch", {}, expect.any(Function));
+    expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
+    expect(onStartSigrikaDuel).not.toHaveBeenCalled();
+  });
+
+  it("returns the button to challenge state when the watched duel has just ended", async () => {
+    const onNotice = vi.fn();
+    const socket = duelSocket({
+      status: "occupied",
+      watchAck: {
+        ok: false,
+        error: "这盘决战已经结束了。",
+        code: "special_watch_ended",
+        status: "available"
+      }
+    });
+    const user = userEvent.setup();
+
+    render(
+      <HomeScreen
+        user={corruptedUser()}
+        characters={CHARACTERS}
+        matchModePickerOpen
+        socket={socket}
+        onNotice={onNotice}
+        onMatchModePickerOpenChange={vi.fn()}
+        onStartMatch={vi.fn()}
+        onStartPractice={vi.fn()}
+      />
+    );
+
+    await user.click(await screen.findByRole("button", { name: "西格莉卡？正在对局中。。。" }));
+
+    expect(await screen.findByRole("button", { name: "与西格莉卡？决战" })).toBeTruthy();
+    expect(onNotice).toHaveBeenCalledWith("这盘决战已经结束了。", "warning");
+  });
+
+  it("reopens the picker in occupied state when a challenge loses the creation race", async () => {
+    const onMatchModePickerOpenChange = vi.fn();
+    const onStartSigrikaDuel = vi.fn();
+    const socket = duelSocket({ status: "available" });
+    const user = userEvent.setup();
+
+    render(
+      <HomeScreen
+        user={corruptedUser()}
+        characters={CHARACTERS}
+        matchModePickerOpen
+        socket={socket}
+        onMatchModePickerOpenChange={onMatchModePickerOpenChange}
+        onStartMatch={vi.fn()}
+        onStartPractice={vi.fn()}
+        onStartSigrikaDuel={onStartSigrikaDuel}
+      />
+    );
+
+    await user.click(await screen.findByRole("button", { name: "与西格莉卡？决战" }));
+    await user.click(within(screen.getByRole("dialog", { name: "确认参与决战" })).getByRole("button", { name: "确定" }));
+    const [{ onStatusChange }] = onStartSigrikaDuel.mock.calls[0];
+    act(() => onStatusChange("occupied"));
+
+    expect(onMatchModePickerOpenChange).toHaveBeenNthCalledWith(1, false);
+    expect(onMatchModePickerOpenChange).toHaveBeenNthCalledWith(2, true);
+    expect(await screen.findByRole("button", { name: "西格莉卡？正在对局中。。。" })).toBeTruthy();
+  });
 });
+
+function corruptedUser() {
+  return {
+    id: "user-1",
+    username: "corruption-test",
+    selectedCharacter: "sigrika",
+    role: "player",
+    modeStats: {},
+    sigrikaCandyArc: { phase: "awaiting-duel", corrupted: true }
+  };
+}
+
+function duelSocket({ status, watchAck = { ok: true, roomCode: "SIG88" } }) {
+  return {
+    emit: vi.fn((event, _payload, acknowledge) => {
+      if (event === "sigrika-candy:duel-status") acknowledge({ ok: true, status });
+      if (event === "sigrika-candy:duel-watch") acknowledge(watchAck);
+    })
+  };
+}

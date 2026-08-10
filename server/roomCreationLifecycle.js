@@ -63,7 +63,7 @@ export function createRoomCreationLifecycle({
     matchmakingQueue.removeUser(player.user.id);
     const room = buildSigrikaCandyDuelRoom(player, { isCodeTaken: isRoomCodeTaken });
     appendSystem(room, "匹配数据损坏。已锁定特殊对局。", { kind: "special-match" });
-    appendSystem(room, "本局为 13 路围棋，贴 2.75 目，双方不限时且不使用技能。", { kind: "special-rule" });
+    appendSystem(room, "本局为 13 路围棋，贴 2.75 目；双方各有 30 分钟包干用时、没有读秒，双方不使用技能。", { kind: "special-rule" });
     registerCreatedRoom(room, io);
     startSigrikaEnginePrewarm();
     io.to(player.socketId).emit("match:found", roomView(room, player.user.id));

@@ -149,6 +149,10 @@ describe("CSS layer inventory", () => {
       "modal",
       "system"
     ]);
+    expect(CSS_Z_INDEX_CONTRACT.namedHighLayers).toContainEqual(expect.objectContaining({
+      value: 100300,
+      variable: "--sigrika-theme-transition-z"
+    }));
     expect(CSS_Z_INDEX_CONTRACT.guidance).toContain("--room-floating-z");
     expect(unregistered).toEqual([]);
   });

@@ -26,6 +26,20 @@ describe("TimeBar", () => {
     expect(html).not.toContain("时间数据损坏");
     expect(html).not.toContain(">本局不限时<");
   });
+
+  it("keeps a zero-period 30-minute clock in main-time mode without byo-yomi", () => {
+    const html = renderTimeBar({
+      main: 0,
+      mainTotal: 30 * 60,
+      byoYomi: 0,
+      periodRemaining: 0,
+      periods: 0
+    });
+
+    expect(html).toContain("主时间");
+    expect(html).toContain("0:00");
+    expect(html).not.toContain("读秒");
+  });
 });
 
 function renderTimeBar(time) {

@@ -41,6 +41,7 @@ export function createRoomClockLifecycle({
       room.lastTick = now;
       const active = room.players.find((player) => player.color === room.game.turn);
       if (!active) return;
+      if (active.time?.unlimited) return;
       tickPlayerClock(active, elapsed);
       if (active.time.main <= 0 && active.time.periods <= 0) {
         room.game.phase = GAME_PHASES.finished;

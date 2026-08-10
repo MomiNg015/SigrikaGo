@@ -27,6 +27,7 @@ function ChatBox({
   const [popupAnchor, setPopupAnchor] = useState(null);
   const chatCount = playerChatCount(room.chat);
   const visibleMessages = visibleRoomChatMessages(room);
+  const isSigrikaDuelSystemLog = Boolean(room.sigrikaCandyDuel);
 
   const positionPopupAboveTrigger = useCallback(() => {
     if (!mobileDockPopup || !toggleRef.current || typeof window === "undefined") return;
@@ -119,7 +120,7 @@ function ChatBox({
       : undefined;
   const popup = isOpen && (
     <section
-      className={mobileDockPopup ? "chat-box chat-popover tutorial-story-log-popover" : "chat-box chat-popover"}
+      className={chatPopoverClassName({ mobileDockPopup, isSigrikaDuelSystemLog })}
       id={panelId}
       ref={panelRef}
       role={mobileDockPopup ? "tabpanel" : undefined}
@@ -261,6 +262,13 @@ export function chatDisplayName(message, room, { compactMessages = false } = {})
   if (!player) return username;
   const character = findCharacter(CHARACTERS, player.character ?? player.characterId);
   return `${username}[${character.name}]`;
+}
+
+export function chatPopoverClassName({ mobileDockPopup = false, isSigrikaDuelSystemLog = false } = {}) {
+  const baseClassName = mobileDockPopup
+    ? "chat-box chat-popover tutorial-story-log-popover"
+    : "chat-box chat-popover";
+  return `${baseClassName}${isSigrikaDuelSystemLog ? " sigrika-duel-system-log" : ""}`;
 }
 
 export default memo(ChatBox, areChatBoxPropsEqual);

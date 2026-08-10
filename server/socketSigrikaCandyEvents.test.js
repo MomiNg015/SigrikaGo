@@ -4,6 +4,7 @@ import { registerSigrikaCandySocketEvents } from "./socketSigrikaCandyEvents.js"
 function setup({
   phase = "awaiting-duel",
   room = null,
+  activeDuel = null,
   roomCode = room?.code ?? "",
   persistedRoomCode = roomCode
 } = {}) {
@@ -25,7 +26,8 @@ function setup({
     },
     on: vi.fn((event, handler) => {
       handlers[event] = handler;
-    })
+    }),
+    emit: vi.fn()
   };
   const emit = vi.fn();
   const userDelegate = {
@@ -47,11 +49,16 @@ function setup({
       sigrikaCandyDuel: { ownerUserId: "user-1" },
       players: [{ user: { id: "user-1" } }]
     })),
+    findActiveSigrikaCandyDuel: vi.fn(() => activeDuel),
     findRoomForUser: vi.fn(() => room),
-    attachSocketToRoom: vi.fn(),
+    attachSocketToRoom: vi.fn((roomCodeInput) => (
+      [room, activeDuel].find((candidate) => candidate?.code === roomCodeInput) ?? null
+    )),
     roomView: vi.fn((value) => ({ code: value.code, sigrikaCandyDuel: value.sigrikaCandyDuel })),
+    broadcastRoomPresencePatch: vi.fn(),
     leaveMatchmaking: vi.fn(),
-    broadcastLobbyStats: vi.fn()
+    broadcastLobbyStats: vi.fn(),
+    runtimeServiceState: { admission: vi.fn(() => ({ ok: true })) }
   };
   registerSigrikaCandySocketEvents(socket, deps);
   return { deps, emit, handlers, socket };
@@ -90,6 +97,7 @@ describe("Sigrika candy socket events", () => {
     await handlers["sigrika-candy:duel-start"]({}, acknowledge);
 
     expect(deps.createSigrikaCandyDuelRoom).not.toHaveBeenCalled();
+    expect(deps.runtimeServiceState.admission).not.toHaveBeenCalled();
     expect(deps.attachSocketToRoom).toHaveBeenCalledWith("SIG02", expect.anything(), expect.objectContaining({ id: "user-1" }));
     expect(emit).toHaveBeenCalledWith("match:found", expect.objectContaining({ code: "SIG02" }));
     expect(acknowledge).toHaveBeenCalledWith({ ok: true, roomCode: "SIG02", resumed: true });
@@ -154,5 +162,93 @@ describe("Sigrika candy socket events", () => {
       ok: false,
       code: "invalid_special_phase"
     }));
+  });
+
+  test("reports another player's active duel without exposing it to ordinary users", async () => {
+    const activeDuel = {
+      code: "SIG88",
+      game: { phase: "playing" },
+      sigrikaCandyDuel: { ownerUserId: "other-user" }
+    };
+    const authorized = setup({ activeDuel });
+    const authorizedAck = vi.fn();
+
+    await authorized.handlers["sigrika-candy:duel-status"]({}, authorizedAck);
+
+    expect(authorizedAck).toHaveBeenCalledWith({ ok: true, status: "occupied" });
+
+    const ordinary = setup({ phase: "normal", activeDuel });
+    const ordinaryAck = vi.fn();
+    await ordinary.handlers["sigrika-candy:duel-status"]({}, ordinaryAck);
+
+    expect(ordinaryAck).toHaveBeenCalledWith(expect.objectContaining({
+      ok: false,
+      code: "invalid_special_phase"
+    }));
+    expect(ordinary.deps.findActiveSigrikaCandyDuel).not.toHaveBeenCalled();
+  });
+
+  test("preserves challenge intent when another duel wins the creation race", async () => {
+    const activeDuel = {
+      code: "SIG88",
+      game: { phase: "preloading" },
+      sigrikaCandyDuel: { ownerUserId: "other-user" }
+    };
+    const { deps, handlers } = setup({ activeDuel });
+    const acknowledge = vi.fn();
+
+    await handlers["sigrika-candy:duel-start"]({}, acknowledge);
+
+    expect(deps.createSigrikaCandyDuelRoom).not.toHaveBeenCalled();
+    expect(deps.attachSocketToRoom).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith({
+      ok: false,
+      error: "西格莉卡？已经开始和别人对局了。",
+      code: "special_duel_occupied",
+      status: "occupied"
+    });
+  });
+
+  test("attaches an authorized corrupted user directly as a special-duel spectator", async () => {
+    const activeDuel = {
+      code: "SIG88",
+      game: { phase: "playing" },
+      players: [],
+      spectators: [],
+      sigrikaCandyDuel: { ownerUserId: "other-user" }
+    };
+    const { deps, handlers, socket } = setup({ activeDuel });
+    const acknowledge = vi.fn();
+
+    await handlers["sigrika-candy:duel-watch"]({}, acknowledge);
+
+    expect(deps.runtimeServiceState.admission).toHaveBeenCalledWith("spectator", {
+      room: activeDuel,
+      userId: "user-1"
+    });
+    expect(deps.attachSocketToRoom).toHaveBeenCalledWith(
+      "SIG88",
+      socket,
+      expect.objectContaining({ id: "user-1" }),
+      { allowSigrikaCandySpectator: true }
+    );
+    expect(socket.emit).toHaveBeenCalledWith("room:update", expect.objectContaining({ code: "SIG88" }));
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, activeDuel);
+    expect(acknowledge).toHaveBeenCalledWith({ ok: true, roomCode: "SIG88" });
+  });
+
+  test("preserves watch intent when the active duel has just ended", async () => {
+    const { deps, handlers } = setup();
+    const acknowledge = vi.fn();
+
+    await handlers["sigrika-candy:duel-watch"]({}, acknowledge);
+
+    expect(deps.createSigrikaCandyDuelRoom).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith({
+      ok: false,
+      error: "这盘决战已经结束了。",
+      code: "special_watch_ended",
+      status: "available"
+    });
   });
 });

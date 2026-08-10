@@ -1,0 +1,137 @@
+.app-shell {
+  --sigrika-theme-transition-z: 100300;
+  --sigrika-theme-transition-dark: color-mix(in srgb, var(--theme-border) 24%, black);
+  --sigrika-theme-transition-deep: color-mix(in srgb, var(--theme-danger) 24%, var(--sigrika-theme-transition-dark));
+  --sigrika-theme-transition-red: color-mix(in srgb, var(--theme-danger) 62%, var(--theme-border));
+  --sigrika-theme-transition-hot: color-mix(in srgb, var(--theme-danger) 82%, var(--theme-panel-bg));
+}
+
+.sigrika-theme-transition {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sigrika-theme-transition-z);
+  overflow: hidden;
+  pointer-events: auto;
+  touch-action: none;
+  isolation: isolate;
+  contain: strict;
+  cursor: wait;
+  filter: none !important;
+}
+
+.sigrika-theme-transition > span,
+.sigrika-theme-transition__slices,
+.sigrika-theme-transition__slice {
+  position: absolute;
+  pointer-events: none;
+}
+
+.sigrika-theme-transition__veil,
+.sigrika-theme-transition__pulse,
+.sigrika-theme-transition__slices {
+  inset: 0;
+}
+
+.sigrika-theme-transition__veil {
+  z-index: 1;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.sigrika-theme-transition[data-direction="enter"] .sigrika-theme-transition__veil {
+  background:
+    radial-gradient(ellipse at 50% 47%, var(--sigrika-theme-transition-red) 0 9%, var(--sigrika-theme-transition-deep) 44%, var(--sigrika-theme-transition-dark) 100%);
+}
+
+.sigrika-theme-transition[data-direction="exit"] .sigrika-theme-transition__veil {
+  background:
+    radial-gradient(ellipse at 50% 46%, var(--theme-panel-bg) 0 18%, var(--theme-bg) 52%, color-mix(in srgb, var(--theme-danger) 10%, var(--theme-bg)) 100%);
+}
+
+.sigrika-theme-transition[data-phase="covering"] .sigrika-theme-transition__veil {
+  animation: sigrika-theme-veil-cover var(--sigrika-transition-cover-duration) cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.sigrika-theme-transition[data-phase="covered"] .sigrika-theme-transition__veil {
+  opacity: 1;
+}
+
+.sigrika-theme-transition[data-phase="revealing"] .sigrika-theme-transition__veil {
+  animation: sigrika-theme-veil-reveal var(--sigrika-transition-reveal-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sigrika-theme-transition__pulse {
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--theme-danger) 54%, transparent), transparent 54%);
+  mix-blend-mode: screen;
+}
+
+.sigrika-theme-transition[data-direction="exit"] .sigrika-theme-transition__pulse {
+  background: radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--theme-panel-bg) 84%, transparent), color-mix(in srgb, var(--theme-danger) 18%, transparent) 32%, transparent 62%);
+}
+
+.sigrika-theme-transition[data-phase="covering"] .sigrika-theme-transition__pulse {
+  animation: sigrika-theme-pulse-cover var(--sigrika-transition-cover-duration) ease-out both;
+}
+
+.sigrika-theme-transition[data-phase="revealing"] .sigrika-theme-transition__pulse {
+  animation: sigrika-theme-pulse-reveal var(--sigrika-transition-reveal-duration) ease-out both;
+}
+
+.sigrika-theme-transition__slices {
+  z-index: 3;
+  overflow: hidden;
+}
+
+.sigrika-theme-transition__slice {
+  top: var(--sigrika-transition-slice-top);
+  left: -6vw;
+  width: 112vw;
+  height: var(--sigrika-transition-slice-height);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: var(--sigrika-transition-slice-origin) center;
+  background: linear-gradient(90deg, var(--sigrika-theme-transition-dark), var(--sigrika-theme-transition-red) 48%, var(--sigrika-theme-transition-deep));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sigrika-theme-transition-hot) 28%, transparent), 0 0 16px color-mix(in srgb, var(--sigrika-theme-transition-red) 28%, transparent);
+  will-change: transform, opacity;
+}
+
+.sigrika-theme-transition[data-direction="exit"] .sigrika-theme-transition__slice {
+  background: linear-gradient(90deg, var(--sigrika-theme-transition-deep), var(--sigrika-theme-transition-red) 50%, var(--sigrika-theme-transition-deep));
+}
+
+.sigrika-theme-transition[data-phase="covering"] .sigrika-theme-transition__slice {
+  animation: sigrika-theme-slice-cover var(--sigrika-transition-cover-duration) steps(5, end) both;
+  animation-delay: calc(var(--sigrika-transition-slice-index) * -9ms);
+}
+
+.sigrika-theme-transition[data-phase="covered"] .sigrika-theme-transition__slice {
+  opacity: 0.72;
+  transform: scaleX(1);
+}
+
+.sigrika-theme-transition[data-phase="revealing"] .sigrika-theme-transition__slice {
+  animation: sigrika-theme-slice-reveal var(--sigrika-transition-reveal-duration) steps(6, end) both;
+}
+
+.sigrika-theme-transition__fault {
+  z-index: 4;
+  left: -5vw;
+  width: 110vw;
+  height: 3px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-panel-bg) 72%, transparent) 18%, var(--sigrika-theme-transition-hot) 48%, color-mix(in srgb, var(--theme-panel-bg) 62%, transparent) 78%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--sigrika-theme-transition-red) 62%, transparent);
+}
+
+.sigrika-theme-transition__fault--upper { top: 31%; }
+.sigrika-theme-transition__fault--lower { top: 72%; }
+
+.sigrika-theme-transition[data-phase="covering"] .sigrika-theme-transition__fault {
+  animation: sigrika-theme-fault-cover var(--sigrika-transition-cover-duration) steps(3, end) both;
+}
+
+.sigrika-theme-transition[data-phase="revealing"] .sigrika-theme-transition__fault {
+  animation: sigrika-theme-fault-reveal var(--sigrika-transition-reveal-duration) steps(4, end) both;
+}

@@ -301,7 +301,8 @@ export const {
   listActiveRooms,
   listWatchRooms,
   isUserInActiveRoom,
-  findRoomForUser
+  findRoomForUser,
+  findActiveSigrikaCandyDuel
 } = roomQueries;
 const roomPersistenceRestoreLifecycle = createRoomPersistenceRestoreLifecycle({
   rooms,

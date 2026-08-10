@@ -19,7 +19,9 @@ export function applyRoomClock(room, clock) {
 }
 
 function sameTime(left, right) {
-  return left?.main === right?.main
+  return left?.unlimited === right?.unlimited
+    && left?.main === right?.main
+    && left?.mainTotal === right?.mainTotal
     && left?.byoYomi === right?.byoYomi
     && left?.periodRemaining === right?.periodRemaining
     && left?.periods === right?.periods;
