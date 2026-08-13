@@ -1,0 +1,31 @@
+{
+  "file": "C:\\codex\\SigrikaGo\\.trellis\\tasks\\08-10-design-denia-nameplate-concepts\\concepts\\candidates\\a-dreammaker-bubble-wand-1125x240.png",
+  "ok": true,
+  "image": {
+    "width": 1125,
+    "height": 240,
+    "ratio": 4.6875,
+    "encoding": "rgba8"
+  },
+  "alphaBounds": {
+    "left": 136,
+    "top": 12,
+    "right": 989,
+    "bottom": 227
+  },
+  "margins": {
+    "left": 136,
+    "top": 12,
+    "right": 135,
+    "bottom": 12
+  },
+  "safeArea": {
+    "left": 315,
+    "right": 930,
+    "width": 615,
+    "ratio": 0.546667
+  },
+  "cornersTransparent": true,
+  "alphaThreshold": 0,
+  "errors": []
+}

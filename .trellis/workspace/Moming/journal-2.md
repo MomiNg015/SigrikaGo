@@ -1326,3 +1326,37 @@ Selected the light corrupted home mix and detuned-shadow duel mix, generated fin
 ### Next Steps
 
 - None - task complete
+
+
+## Session 101: Allow desktop phone-window emulation
+
+**Date**: 2026-08-13
+**Task**: Allow desktop phone-window emulation
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Added the 1440x768 desktop viewport gate, then corrected phone-layout classification so desktop windows intentionally resized into the bounded common-phone viewport range remain playable while tablet identities stay excluded.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `18601b7a` | (see git log) |
+| `d0291efc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -1,0 +1,31 @@
+{
+  "file": "C:\\codex\\SigrikaGo\\public\\assets\\achievements\\denia-spark-100-wins-nameplate.png",
+  "ok": true,
+  "image": {
+    "width": 1125,
+    "height": 240,
+    "ratio": 4.6875,
+    "encoding": "rgba8"
+  },
+  "alphaBounds": {
+    "left": 56,
+    "top": 12,
+    "right": 1068,
+    "bottom": 227
+  },
+  "margins": {
+    "left": 56,
+    "top": 12,
+    "right": 56,
+    "bottom": 12
+  },
+  "safeArea": {
+    "left": 300,
+    "right": 938,
+    "width": 638,
+    "ratio": 0.567111
+  },
+  "cornersTransparent": true,
+  "alphaThreshold": 0,
+  "errors": []
+}
