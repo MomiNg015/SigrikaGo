@@ -52,6 +52,7 @@ import { useStartupPreload } from "./useStartupPreload.js";
 import { useSyncedRefs } from "./useSyncedRefs.js";
 import { useToastQueue } from "./useToastQueue.js";
 import { exitSigrikaCandySpectatorResult } from "./sigrikaCandyResultNavigation.js";
+import DesktopViewportGate from "./DesktopViewportGate.jsx";
 
 const SOCKET_BASE = deploymentSocketBase();
 const EXIT_CONFIRM_TITLE = "\u786e\u5b9a\u8981\u9000\u51fa\u6e38\u620f\u5417\uff1f";
@@ -635,24 +636,26 @@ export default function App() {
       aria-busy={sigrikaCorruptionTransitioning || undefined}
       className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}
     >
-      <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
-      <InteractionFeedback audioSettings={audioSettings} />
-      {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
-      {showExitConfirm && (
-        <ConfirmModal
-          title={EXIT_CONFIRM_TITLE}
-          message={EXIT_CONFIRM_MESSAGE}
-          confirmText={EXIT_CONFIRM_TEXT}
-          onCancel={() => setShowExitConfirm(false)}
-          onConfirm={() => {
-            setShowExitConfirm(false);
-            exitThroughBack();
-          }}
-        />
-      )}
-      <AppRoutes {...routeProps} />
-      <AppOverlays {...appOverlayProps} />
-      <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
+      <DesktopViewportGate>
+        <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
+        <InteractionFeedback audioSettings={audioSettings} />
+        {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
+        {showExitConfirm && (
+          <ConfirmModal
+            title={EXIT_CONFIRM_TITLE}
+            message={EXIT_CONFIRM_MESSAGE}
+            confirmText={EXIT_CONFIRM_TEXT}
+            onCancel={() => setShowExitConfirm(false)}
+            onConfirm={() => {
+              setShowExitConfirm(false);
+              exitThroughBack();
+            }}
+          />
+        )}
+        <AppRoutes {...routeProps} />
+        <AppOverlays {...appOverlayProps} />
+        <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
+      </DesktopViewportGate>
     </div>
   );
 }

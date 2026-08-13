@@ -32,6 +32,46 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Desktop Minimum Viewport Gate Contract
+
+#### Scope / Trigger
+
+- Any change to the app-shell viewport gate, mobile capability classification, or the desktop minimum window dimensions.
+
+#### Signatures and contracts
+
+- `DESKTOP_MINIMUM_VIEWPORT = { width: 1440, height: 768 }` uses inclusive CSS-pixel boundaries.
+- `PHONE_SCREEN_MAX_SHORT_SIDE = 480` caps the exemption at common phone-class screens. Classification uses the device screen's shorter CSS-pixel side, so portrait/landscape rotation does not change the result and narrowing a desktop browser window cannot create a phone exemption.
+- `isCommonPhoneDevice(...)` rejects explicit tablet identities first, then requires both phone-size screen geometry and at least one device signal: coarse/no-hover media, positive touch points, User-Agent Client Hints mobile identity, or a recognized phone user agent. A `481px` or larger screen short side is not phone-class; Android user agents without `Mobile`, plus iPad/Tablet/PlayBook/Silk/Kindle identities, stay excluded even at the boundary.
+- `shouldBlockDesktopViewport({ width, height, phoneDevice })` returns `false` only for a classified common phone, or when both desktop dimensions meet their minimums.
+- `DesktopViewportGate` is the single outer owner around route, audio, and overlay rendering. It listens for `resize`, `orientationchange`, and media-query changes, preserves application state while blocked, and shows the exact accessible copy `请用更大尺寸窗口进行游玩`.
+
+#### Validation matrix
+
+- `1440 x 768` desktop -> render the application.
+- `1439 x 768`, `1440 x 767`, or `1366 x 768` desktop -> render only the size notice.
+- Recognized phone with screen short side from common `320px` through the inclusive `480px` cap -> preserve the mobile application in portrait and landscape.
+- `481px+` short side, including Android and iPad tablets, or a narrow desktop window without phone evidence -> treat as desktop and apply the minimum.
+
+#### Tests required
+
+- Unit-test the inclusive width/height boundaries, representative `320/360/390/412/430/480px` phone screens, rotated phone geometry, and `600/768px` tablet exclusions.
+- DOM-test notice copy, replacement of application content, and restoration after resize.
+- Browser-test at least one undersized desktop and the exact `1440 x 768` boundary; confirm zero document-level horizontal overflow.
+
+#### Wrong vs correct
+
+```js
+// Wrong: a narrowed desktop browser bypasses the gate.
+const mobile = matchMedia("(max-width: 900px)").matches;
+
+// Wrong: a large touch-enabled desktop bypasses the gate.
+const mobile = matchMedia("(pointer: coarse)").matches;
+
+// Correct: reject tablet identity, then require phone-size device-screen
+// geometry plus real device evidence. Viewport width is not the device class.
+const phone = !tabletIdentity && mobileEvidence && screenShortSide <= 480;
+```
 ### Character Detail BGM Preview Interaction Contract
 
 #### 1. Scope / Trigger

@@ -160,6 +160,14 @@ describe("App startup preload wiring", () => {
     );
   });
 
+  it("guards undersized desktop viewports at the application shell", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain('import DesktopViewportGate from "./DesktopViewportGate.jsx"');
+    expect(source).toContain("<DesktopViewportGate>");
+    expect(source).toContain("</DesktopViewportGate>");
+  });
+
   it("coordinates persistent Sigrika state changes through the one-shot full-screen transition", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 

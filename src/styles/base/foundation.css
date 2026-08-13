@@ -170,6 +170,56 @@ button {
   box-shadow: 0 10px 26px rgba(32, 24, 35, 0.12);
 }
 
+.desktop-viewport-gate {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: inherit;
+}
+
+.desktop-viewport-gate-panel {
+  width: min(520px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 36px 40px 40px;
+  border: 2px solid var(--bright-border, currentColor);
+  border-radius: 12px;
+  background: var(--bright-sheet, Canvas);
+  text-align: center;
+  box-shadow: var(--bright-shadow, 4px 4px 0 currentColor);
+}
+
+.desktop-viewport-gate-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: var(--bright-blue, color-mix(in srgb, currentColor 12%, Canvas));
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.desktop-viewport-gate h1 {
+  margin: 0;
+  font-family: var(--font-window-title), var(--font-ui-default);
+  font-size: 26px;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.desktop-viewport-gate p {
+  margin: 0;
+  color: var(--bright-ink-soft, color-mix(in srgb, currentColor 72%, transparent));
+  font-size: 15px;
+  line-height: 1.6;
+}
+
 .auth-screen,
 .home-screen,
 .room-screen,
