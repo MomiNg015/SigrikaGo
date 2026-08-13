@@ -4,8 +4,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import DesktopViewportGate, {
   DESKTOP_MINIMUM_VIEWPORT,
   MOBILE_INPUT_MEDIA_QUERY,
-  PHONE_SCREEN_MAX_SHORT_SIDE,
-  isCommonPhoneDevice,
+  PHONE_VIEWPORT_RANGE,
+  isCommonPhoneViewport,
+  shouldUsePhoneLayout,
   shouldBlockDesktopViewport
 } from "./DesktopViewportGate.jsx";
 
@@ -50,10 +51,15 @@ describe("DesktopViewportGate", () => {
     expect(shouldBlockDesktopViewport({ width: 1440, height: 767 })).toBe(true);
   });
 
-  it("exempts common phone screen sizes in portrait and landscape", () => {
-    expect(PHONE_SCREEN_MAX_SHORT_SIDE).toBe(480);
+  it("exempts common phone-sized viewports in portrait and landscape", () => {
+    expect(PHONE_VIEWPORT_RANGE).toEqual({
+      minShortSide: 320,
+      maxShortSide: 480,
+      minLongSide: 568,
+      maxLongSide: 1024
+    });
 
-    for (const [screenWidth, screenHeight] of [
+    for (const [width, height] of [
       [320, 568],
       [360, 800],
       [390, 844],
@@ -62,59 +68,60 @@ describe("DesktopViewportGate", () => {
       [480, 960],
       [932, 430]
     ]) {
-      expect(isCommonPhoneDevice({
-        maxTouchPoints: 5,
-        screenHeight,
-        screenWidth
-      })).toBe(true);
+      expect(isCommonPhoneViewport({ height, width })).toBe(true);
     }
 
-    expect(isCommonPhoneDevice({
-      screenHeight: 844,
-      screenWidth: 390,
-      userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 9) AppleWebKit/537.36 Mobile"
-    })).toBe(true);
+    expect(isCommonPhoneViewport({ width: 319, height: 568 })).toBe(false);
+    expect(isCommonPhoneViewport({ width: 481, height: 960 })).toBe(false);
+    expect(isCommonPhoneViewport({ width: 480, height: 567 })).toBe(false);
+    expect(isCommonPhoneViewport({ width: 480, height: 1025 })).toBe(false);
   });
 
-  it("does not grant the phone exemption to tablets or narrowed desktop windows", () => {
-    expect(isCommonPhoneDevice({
-      mobileInput: true,
-      screenHeight: 960,
-      screenWidth: 480,
-      userAgent: "Mozilla/5.0 (Linux; Android 14)"
-    })).toBe(false);
-    expect(isCommonPhoneDevice({
-      maxTouchPoints: 5,
-      screenHeight: 960,
-      screenWidth: 481,
-      userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel Fold) AppleWebKit/537.36 Mobile"
-    })).toBe(false);
-    expect(isCommonPhoneDevice({
+  it("lets a narrowed desktop use the phone layout while excluding tablets", () => {
+    expect(shouldUsePhoneLayout({
+      width: 390,
+      height: 844,
+      screenWidth: 1920,
+      screenHeight: 1080,
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    })).toBe(true);
+    expect(shouldUsePhoneLayout({
       maxTouchPoints: 5,
       mobileInput: true,
+      width: 390,
+      height: 844,
       screenHeight: 1024,
       screenWidth: 768,
       userAgent: "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)"
     })).toBe(false);
-    expect(isCommonPhoneDevice({
-      screenHeight: 1080,
-      screenWidth: 1920
+    expect(shouldUsePhoneLayout({
+      maxTouchPoints: 5,
+      mobileInput: true,
+      width: 390,
+      height: 844,
+      screenHeight: 1366,
+      screenWidth: 1024,
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1"
     })).toBe(false);
-    expect(isCommonPhoneDevice({
+    expect(shouldUsePhoneLayout({
+      width: 390,
+      height: 430,
       screenHeight: 844,
       screenWidth: 390,
-      userAgentDataMobile: true
+      userAgentDataMobile: true,
+      userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 9) AppleWebKit/537.36 Mobile"
     })).toBe(true);
 
     expect(shouldBlockDesktopViewport({
       width: 390,
       height: 844,
-      phoneDevice: false
+      phoneLayout: false
     })).toBe(true);
     expect(shouldBlockDesktopViewport({
       width: 390,
       height: 844,
-      phoneDevice: true
+      phoneLayout: true
     })).toBe(false);
   });
 
@@ -136,13 +143,14 @@ describe("DesktopViewportGate", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("keeps a phone visible when media-query input detection is unavailable", () => {
+  it("lets a desktop browser enter the phone layout after narrowing", () => {
     setViewport({
       width: 390,
       height: 844,
-      maxTouchPoints: 5,
+      screenWidth: 1920,
+      screenHeight: 1080,
       mobileInput: false,
-      userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 9) AppleWebKit/537.36 Mobile"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
     });
     render(
       <DesktopViewportGate>

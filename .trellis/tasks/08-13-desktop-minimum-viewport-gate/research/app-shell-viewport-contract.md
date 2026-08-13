@@ -1,7 +1,7 @@
 # App shell viewport contract research
 
 - The application composition root is `src/app/App.jsx`; route and overlay state remain mounted there.
-- The product supports common phones but intentionally excludes tablets from the mobile exemption. The gate therefore rejects explicit tablet identities, then classifies a phone from device evidence plus an inclusive `480px` maximum device-screen short side. Screen geometry is stable across rotation and cannot be forged merely by narrowing a desktop viewport; Android without `Mobile`, iPad/Tablet/PlayBook/Silk/Kindle, and `481px+` screen short sides remain gated even with touch input.
+- The product supports common phone layouts and intentionally permits desktop browser emulation by resizing. The primary classifier is therefore the current viewport's inclusive short-side `320–480px` and long-side `568–1024px` range, independent of pointer capability. Explicit Android-tablet, iPad/iPadOS desktop-mode, Tablet, PlayBook, Silk, and Kindle identities stay excluded; real phone evidence plus phone-range device-screen geometry is only a fallback for temporarily compressed phone viewports.
 - `useAppShellTheme` distinguishes the isolated admin theme, but the viewport gate belongs above route presentation and applies uniformly to every desktop route, including admin.
 - Rendering the gate inside `.app-shell` avoids a global body-only layer and lets the selected player theme supply its existing tokens.
-- A React resize hook is required because a one-time CSS media query cannot combine device-screen class, multiple mobile-device signals, an exact two-axis minimum, and testable runtime restoration cleanly.
+- A React resize hook is required because a one-time CSS media query cannot combine the bounded two-axis phone range, explicit tablet exclusion, compressed real-phone fallback, an exact desktop minimum, and testable runtime restoration cleanly.

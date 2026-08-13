@@ -6,45 +6,62 @@ export const DESKTOP_MINIMUM_VIEWPORT = Object.freeze({
 });
 
 export const MOBILE_INPUT_MEDIA_QUERY = "(hover: none), (pointer: coarse)";
-export const PHONE_SCREEN_MAX_SHORT_SIDE = 480;
+export const PHONE_VIEWPORT_RANGE = Object.freeze({
+  minShortSide: 320,
+  maxShortSide: 480,
+  minLongSide: 568,
+  maxLongSide: 1024
+});
 
 const MOBILE_USER_AGENT_PATTERN =
   /webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i;
 const TABLET_USER_AGENT_PATTERN = /iPad|Tablet|PlayBook|Silk|Kindle/i;
 
-export function isCommonPhoneDevice({
+export function isCommonPhoneViewport({ height = 0, width = 0 } = {}) {
+  const shortSide = Math.min(width, height);
+  const longSide = Math.max(width, height);
+
+  return shortSide >= PHONE_VIEWPORT_RANGE.minShortSide &&
+    shortSide <= PHONE_VIEWPORT_RANGE.maxShortSide &&
+    longSide >= PHONE_VIEWPORT_RANGE.minLongSide &&
+    longSide <= PHONE_VIEWPORT_RANGE.maxLongSide;
+}
+
+export function shouldUsePhoneLayout({
+  height = 0,
   maxTouchPoints = 0,
   mobileInput = false,
   screenHeight = 0,
   screenWidth = 0,
   userAgent = "",
-  userAgentDataMobile = false
+  userAgentDataMobile = false,
+  width = 0
 } = {}) {
-  const positiveScreenSides = [screenWidth, screenHeight].filter((side) => side > 0);
-  const screenShortSide = positiveScreenSides.length > 0
-    ? Math.min(...positiveScreenSides)
-    : 0;
   const hasTabletIdentity =
     TABLET_USER_AGENT_PATTERN.test(userAgent) ||
-    (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent));
+    (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent)) ||
+    (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
   const hasMobileDeviceEvidence =
     mobileInput ||
     maxTouchPoints > 0 ||
     userAgentDataMobile === true ||
     MOBILE_USER_AGENT_PATTERN.test(userAgent);
 
-  return !hasTabletIdentity &&
-    hasMobileDeviceEvidence &&
-    screenShortSide > 0 &&
-    screenShortSide <= PHONE_SCREEN_MAX_SHORT_SIDE;
+  if (hasTabletIdentity) return false;
+  if (isCommonPhoneViewport({ height, width })) return true;
+
+  return hasMobileDeviceEvidence && isCommonPhoneViewport({
+    height: screenHeight,
+    width: screenWidth
+  });
 }
 
 export function shouldBlockDesktopViewport({
   height = 0,
-  phoneDevice = false,
+  phoneLayout = false,
   width = 0
 } = {}) {
-  if (phoneDevice) return false;
+  if (phoneLayout) return false;
   return width < DESKTOP_MINIMUM_VIEWPORT.width || height < DESKTOP_MINIMUM_VIEWPORT.height;
 }
 
@@ -57,13 +74,15 @@ function readDesktopViewportState(viewport = globalThis.window) {
 
   return shouldBlockDesktopViewport({
     height: viewport.innerHeight,
-    phoneDevice: isCommonPhoneDevice({
+    phoneLayout: shouldUsePhoneLayout({
+      height: viewport.innerHeight,
       maxTouchPoints: navigator.maxTouchPoints,
       mobileInput: viewport.matchMedia?.(MOBILE_INPUT_MEDIA_QUERY)?.matches ?? false,
       screenHeight,
       screenWidth,
       userAgent: navigator.userAgent,
-      userAgentDataMobile: navigator.userAgentData?.mobile
+      userAgentDataMobile: navigator.userAgentData?.mobile,
+      width: viewport.innerWidth
     }),
     width: viewport.innerWidth
   });

@@ -41,37 +41,36 @@ Questions to answer:
 #### Signatures and contracts
 
 - `DESKTOP_MINIMUM_VIEWPORT = { width: 1440, height: 768 }` uses inclusive CSS-pixel boundaries.
-- `PHONE_SCREEN_MAX_SHORT_SIDE = 480` caps the exemption at common phone-class screens. Classification uses the device screen's shorter CSS-pixel side, so portrait/landscape rotation does not change the result and narrowing a desktop browser window cannot create a phone exemption.
-- `isCommonPhoneDevice(...)` rejects explicit tablet identities first, then requires both phone-size screen geometry and at least one device signal: coarse/no-hover media, positive touch points, User-Agent Client Hints mobile identity, or a recognized phone user agent. A `481px` or larger screen short side is not phone-class; Android user agents without `Mobile`, plus iPad/Tablet/PlayBook/Silk/Kindle identities, stay excluded even at the boundary.
-- `shouldBlockDesktopViewport({ width, height, phoneDevice })` returns `false` only for a classified common phone, or when both desktop dimensions meet their minimums.
+- `PHONE_VIEWPORT_RANGE = { minShortSide: 320, maxShortSide: 480, minLongSide: 568, maxLongSide: 1024 }` defines the inclusive common-phone window range. `isCommonPhoneViewport({ width, height })` uses shorter/longer viewport sides so the same range works in portrait and landscape.
+- `shouldUsePhoneLayout(...)` rejects explicit tablet identities first, including iPadOS desktop-mode user agents (`Macintosh` plus multiple touch points). A current viewport inside the phone range is enough to select the phone layout, including a desktop browser deliberately narrowed to emulate a phone. Mobile input, touch points, User-Agent Client Hints, or a phone user agent may additionally preserve phone layout when a real phone's current viewport is temporarily compressed, but only when its device screen remains inside the same range.
+- `shouldBlockDesktopViewport({ width, height, phoneLayout })` returns `false` only when phone layout is selected, or when both desktop dimensions meet their minimums.
 - `DesktopViewportGate` is the single outer owner around route, audio, and overlay rendering. It listens for `resize`, `orientationchange`, and media-query changes, preserves application state while blocked, and shows the exact accessible copy `请用更大尺寸窗口进行游玩`.
 
 #### Validation matrix
 
 - `1440 x 768` desktop -> render the application.
 - `1439 x 768`, `1440 x 767`, or `1366 x 768` desktop -> render only the size notice.
-- Recognized phone with screen short side from common `320px` through the inclusive `480px` cap -> preserve the mobile application in portrait and landscape.
-- `481px+` short side, including Android and iPad tablets, or a narrow desktop window without phone evidence -> treat as desktop and apply the minimum.
+- `320 x 568`, `390 x 844`, `480 x 960`, and `932 x 430`, including a fine-pointer desktop browser at those window sizes -> preserve the phone application.
+- `319 x 568`, `480 x 567`, `481 x 960`, or `480 x 1025` without a qualifying real-phone fallback -> treat as desktop and apply the minimum.
+- Explicit Android-tablet, iPad, or iPadOS desktop-mode identity -> apply the desktop minimum even when its current viewport is narrowed into the phone range.
 
 #### Tests required
 
-- Unit-test the inclusive width/height boundaries, representative `320/360/390/412/430/480px` phone screens, rotated phone geometry, and `600/768px` tablet exclusions.
+- Unit-test all four inclusive phone-range boundaries, representative phone portrait/landscape sizes, desktop narrowing without mobile hardware signals, real-phone compressed-viewport fallback, and explicit tablet exclusion.
 - DOM-test notice copy, replacement of application content, and restoration after resize.
 - Browser-test at least one undersized desktop and the exact `1440 x 768` boundary; confirm zero document-level horizontal overflow.
 
 #### Wrong vs correct
 
 ```js
-// Wrong: a narrowed desktop browser bypasses the gate.
-const mobile = matchMedia("(max-width: 900px)").matches;
+// Wrong: width alone admits tiny or tablet-proportioned windows.
+const phone = width <= 480;
 
-// Wrong: a large touch-enabled desktop bypasses the gate.
-const mobile = matchMedia("(pointer: coarse)").matches;
-
-// Correct: reject tablet identity, then require phone-size device-screen
-// geometry plus real device evidence. Viewport width is not the device class.
-const phone = !tabletIdentity && mobileEvidence && screenShortSide <= 480;
+// Correct: explicit tablets stay excluded; ordinary desktop windows may
+// intentionally enter the bounded phone layout by matching both viewport axes.
+const phone = !tabletIdentity && isCommonPhoneViewport({ width, height });
 ```
+
 ### Character Detail BGM Preview Interaction Contract
 
 #### 1. Scope / Trigger
