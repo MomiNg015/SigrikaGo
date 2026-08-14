@@ -36,39 +36,39 @@ Questions to answer:
 
 #### Scope / Trigger
 
-- Any change to the app-shell viewport gate, mobile capability classification, or the desktop minimum window dimensions.
+- Any change to the app-shell viewport gate, compact-layout geometry, or the desktop minimum window dimensions.
 
 #### Signatures and contracts
 
 - `DESKTOP_MINIMUM_VIEWPORT = { width: 1440, height: 768 }` uses inclusive CSS-pixel boundaries.
-- `PHONE_VIEWPORT_RANGE = { minShortSide: 320, maxShortSide: 480, minLongSide: 568, maxLongSide: 1024 }` defines the inclusive common-phone window range. `isCommonPhoneViewport({ width, height })` uses shorter/longer viewport sides so the same range works in portrait and landscape.
-- `shouldUsePhoneLayout(...)` rejects explicit tablet identities first, including iPadOS desktop-mode user agents (`Macintosh` plus multiple touch points). A current viewport inside the phone range is enough to select the phone layout, including a desktop browser deliberately narrowed to emulate a phone. Mobile input, touch points, User-Agent Client Hints, or a phone user agent may additionally preserve phone layout when a real phone's current viewport is temporarily compressed, but only when its device screen remains inside the same range.
-- `shouldBlockDesktopViewport({ width, height, phoneLayout })` returns `false` only when phone layout is selected, or when both desktop dimensions meet their minimums.
-- `DesktopViewportGate` is the single outer owner around route, audio, and overlay rendering. It listens for `resize`, `orientationchange`, and media-query changes, preserves application state while blocked, and shows the exact accessible copy `请用更大尺寸窗口进行游玩`.
+- `COMPACT_VIEWPORT_RANGE = { minShortSide: 320, maxShortSide: 480, minLongSide: 568, maxLongSide: 1024 }` defines the inclusive rotatable compact range.
+- `NARROW_PORTRAIT_VIEWPORT_RANGE = { minWidth: 320, maxWidth: 520, minHeight: 568 }` extends compact layout to tall narrow windows such as the observed `496 x 1047` Chrome content area.
+- `isCompactViewport({ width, height })` uses current viewport geometry only. It must not inspect user agents, touch points, pointer/hover media, `navigator.userAgentData`, or physical device-screen dimensions; identical viewport sizes always receive identical layout treatment on phones, tablets, and desktops.
+- `shouldBlockDesktopViewport({ width, height, compactLayout })` returns `false` only when compact layout is selected, or when both desktop dimensions meet their minimums.
+- `DesktopViewportGate` is the single outer owner around route, audio, and overlay rendering. It listens for `resize` and `orientationchange`, preserves application state while blocked, and shows only the exact accessible copy `请用合适尺寸窗口进行游玩`.
 
 #### Validation matrix
 
 - `1440 x 768` desktop -> render the application.
 - `1439 x 768`, `1440 x 767`, or `1366 x 768` desktop -> render only the size notice.
-- `320 x 568`, `390 x 844`, `480 x 960`, and `932 x 430`, including a fine-pointer desktop browser at those window sizes -> preserve the phone application.
-- `319 x 568`, `480 x 567`, `481 x 960`, or `480 x 1025` without a qualifying real-phone fallback -> treat as desktop and apply the minimum.
-- Explicit Android-tablet, iPad, or iPadOS desktop-mode identity -> apply the desktop minimum even when its current viewport is narrowed into the phone range.
+- `320 x 568`, `390 x 844`, `480 x 960`, and `932 x 430` on any device -> preserve the compact application.
+- `496 x 1047` or the inclusive `520 x 568` narrow-portrait boundary on any device -> preserve the compact application.
+- `319 x 1047`, `521 x 1047`, `520 x 567`, or intermediate `768 x 1024` on any device -> show the size notice.
 
 #### Tests required
 
-- Unit-test all four inclusive phone-range boundaries, representative phone portrait/landscape sizes, desktop narrowing without mobile hardware signals, real-phone compressed-viewport fallback, and explicit tablet exclusion.
-- DOM-test notice copy, replacement of application content, and restoration after resize.
+- Unit-test both compact geometry ranges, their inclusive boundaries, the observed Chrome `496 x 1047` viewport, and device-identical outcomes.
+- DOM-test notice copy without secondary minimum-size text, replacement of application content, and restoration after resize.
 - Browser-test at least one undersized desktop and the exact `1440 x 768` boundary; confirm zero document-level horizontal overflow.
 
 #### Wrong vs correct
 
 ```js
-// Wrong: width alone admits tiny or tablet-proportioned windows.
-const phone = width <= 480;
+// Wrong: layout behavior differs for the same viewport based on device identity.
+const compact = isTabletUserAgent ? false : isCompactViewport({ width, height });
 
-// Correct: explicit tablets stay excluded; ordinary desktop windows may
-// intentionally enter the bounded phone layout by matching both viewport axes.
-const phone = !tabletIdentity && isCommonPhoneViewport({ width, height });
+// Correct: only the current viewport geometry selects the compact layout.
+const compact = isCompactViewport({ width, height });
 ```
 
 ### Character Detail BGM Preview Interaction Contract

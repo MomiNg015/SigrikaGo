@@ -5,85 +5,52 @@ export const DESKTOP_MINIMUM_VIEWPORT = Object.freeze({
   height: 768
 });
 
-export const MOBILE_INPUT_MEDIA_QUERY = "(hover: none), (pointer: coarse)";
-export const PHONE_VIEWPORT_RANGE = Object.freeze({
+export const COMPACT_VIEWPORT_RANGE = Object.freeze({
   minShortSide: 320,
   maxShortSide: 480,
   minLongSide: 568,
   maxLongSide: 1024
 });
+export const NARROW_PORTRAIT_VIEWPORT_RANGE = Object.freeze({
+  minWidth: 320,
+  maxWidth: 520,
+  minHeight: 568
+});
 
-const MOBILE_USER_AGENT_PATTERN =
-  /webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i;
-const TABLET_USER_AGENT_PATTERN = /iPad|Tablet|PlayBook|Silk|Kindle/i;
-
-export function isCommonPhoneViewport({ height = 0, width = 0 } = {}) {
+export function isCompactViewport({ height = 0, width = 0 } = {}) {
   const shortSide = Math.min(width, height);
   const longSide = Math.max(width, height);
+  const fitsRotatableRange =
+    shortSide >= COMPACT_VIEWPORT_RANGE.minShortSide &&
+    shortSide <= COMPACT_VIEWPORT_RANGE.maxShortSide &&
+    longSide >= COMPACT_VIEWPORT_RANGE.minLongSide &&
+    longSide <= COMPACT_VIEWPORT_RANGE.maxLongSide;
+  const fitsNarrowPortraitRange =
+    width >= NARROW_PORTRAIT_VIEWPORT_RANGE.minWidth &&
+    width <= NARROW_PORTRAIT_VIEWPORT_RANGE.maxWidth &&
+    height >= NARROW_PORTRAIT_VIEWPORT_RANGE.minHeight;
 
-  return shortSide >= PHONE_VIEWPORT_RANGE.minShortSide &&
-    shortSide <= PHONE_VIEWPORT_RANGE.maxShortSide &&
-    longSide >= PHONE_VIEWPORT_RANGE.minLongSide &&
-    longSide <= PHONE_VIEWPORT_RANGE.maxLongSide;
-}
-
-export function shouldUsePhoneLayout({
-  height = 0,
-  maxTouchPoints = 0,
-  mobileInput = false,
-  screenHeight = 0,
-  screenWidth = 0,
-  userAgent = "",
-  userAgentDataMobile = false,
-  width = 0
-} = {}) {
-  const hasTabletIdentity =
-    TABLET_USER_AGENT_PATTERN.test(userAgent) ||
-    (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent)) ||
-    (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
-  const hasMobileDeviceEvidence =
-    mobileInput ||
-    maxTouchPoints > 0 ||
-    userAgentDataMobile === true ||
-    MOBILE_USER_AGENT_PATTERN.test(userAgent);
-
-  if (hasTabletIdentity) return false;
-  if (isCommonPhoneViewport({ height, width })) return true;
-
-  return hasMobileDeviceEvidence && isCommonPhoneViewport({
-    height: screenHeight,
-    width: screenWidth
-  });
+  return fitsRotatableRange || fitsNarrowPortraitRange;
 }
 
 export function shouldBlockDesktopViewport({
+  compactLayout = false,
   height = 0,
-  phoneLayout = false,
   width = 0
 } = {}) {
-  if (phoneLayout) return false;
+  if (compactLayout) return false;
   return width < DESKTOP_MINIMUM_VIEWPORT.width || height < DESKTOP_MINIMUM_VIEWPORT.height;
 }
 
 function readDesktopViewportState(viewport = globalThis.window) {
   if (!viewport) return false;
-  const navigator = viewport.navigator ?? {};
-  const screen = viewport.screen ?? {};
-  const screenWidth = screen.width || viewport.innerWidth;
-  const screenHeight = screen.height || viewport.innerHeight;
 
   return shouldBlockDesktopViewport({
-    height: viewport.innerHeight,
-    phoneLayout: shouldUsePhoneLayout({
+    compactLayout: isCompactViewport({
       height: viewport.innerHeight,
-      maxTouchPoints: navigator.maxTouchPoints,
-      mobileInput: viewport.matchMedia?.(MOBILE_INPUT_MEDIA_QUERY)?.matches ?? false,
-      screenHeight,
-      screenWidth,
-      userAgent: navigator.userAgent,
-      userAgentDataMobile: navigator.userAgentData?.mobile,
       width: viewport.innerWidth
     }),
+    height: viewport.innerHeight,
     width: viewport.innerWidth
   });
 }
@@ -93,18 +60,15 @@ export function useDesktopViewportGate() {
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
-    const mobileInputMedia = window.matchMedia?.(MOBILE_INPUT_MEDIA_QUERY);
     const update = () => setBlocked(readDesktopViewportState());
 
     update();
     window.addEventListener("resize", update);
     window.addEventListener("orientationchange", update);
-    mobileInputMedia?.addEventListener?.("change", update);
 
     return () => {
       window.removeEventListener("resize", update);
       window.removeEventListener("orientationchange", update);
-      mobileInputMedia?.removeEventListener?.("change", update);
     };
   }, []);
 
@@ -120,8 +84,7 @@ export default function DesktopViewportGate({ children }) {
     <main className="desktop-viewport-gate" role="alert" aria-live="polite">
       <section className="desktop-viewport-gate-panel">
         <span className="desktop-viewport-gate-mark" aria-hidden="true">↗</span>
-        <h1>请用更大尺寸窗口进行游玩</h1>
-        <p>桌面端最低需要 1440 × 768 的可用窗口空间。</p>
+        <h1>请用合适尺寸窗口进行游玩</h1>
       </section>
     </main>
   );

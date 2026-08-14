@@ -213,13 +213,6 @@ button {
   text-wrap: balance;
 }
 
-.desktop-viewport-gate p {
-  margin: 0;
-  color: var(--bright-ink-soft, color-mix(in srgb, currentColor 72%, transparent));
-  font-size: 15px;
-  line-height: 1.6;
-}
-
 .auth-screen,
 .home-screen,
 .room-screen,
