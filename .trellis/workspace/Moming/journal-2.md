@@ -1360,3 +1360,36 @@ Added the 1440x768 desktop viewport gate, then corrected phone-layout classifica
 ### Next Steps
 
 - None - task complete
+
+
+## Session 102: Make viewport gate device-agnostic
+
+**Date**: 2026-08-14
+**Task**: Make viewport gate device-agnostic
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Changed the application shell gate to select compact or full-desktop layout solely from current viewport geometry, removed UA/touch/tablet detection, removed the secondary minimum-size copy, and changed the notice to 请用合适尺寸窗口进行游玩.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9f5f5573` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
