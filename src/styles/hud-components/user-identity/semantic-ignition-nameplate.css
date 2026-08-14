@@ -1,4 +1,3 @@
-/* Asset-owned presentation for Sigrika's hand-painted citrus-sun “Semantic Ignition” nameplate. */
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] {
   --user-nameplate-base-width: 150px;
   --user-nameplate-base-height: 32px;
@@ -11,102 +10,82 @@
     0 0 3px rgba(255, 244, 211, 0.76);
 }
 
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name {
+  font-family: var(--font-ui-default);
+  font-style: italic;
+  letter-spacing: calc(0.08px * var(--user-nameplate-scale));
+}
+
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-background {
   filter:
-    drop-shadow(0 0 calc(1.4px * var(--user-nameplate-scale)) rgba(255, 190, 60, 0.72))
-    drop-shadow(0 0 calc(2.2px * var(--user-nameplate-scale)) rgba(137, 104, 218, 0.5));
+    drop-shadow(0 0 calc(1.9px * var(--user-nameplate-scale)) rgba(255, 198, 74, 0.84))
+    drop-shadow(0 0 calc(3.2px * var(--user-nameplate-scale)) rgba(145, 102, 226, 0.64));
 }
 
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
-  top: calc(1px * var(--user-nameplate-scale));
-  left: calc(6px * var(--user-nameplate-scale));
-  width: calc(31px * var(--user-nameplate-scale));
-  height: calc(30px * var(--user-nameplate-scale));
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 225, 0.82) 0 8%, rgba(255, 205, 70, 0.44) 28%, rgba(255, 176, 35, 0.16) 48%, transparent 68%);
-  filter: drop-shadow(0 0 3px rgba(255, 184, 38, 0.74));
+  top: calc(6px * var(--user-nameplate-scale));
+  left: calc(21px * var(--user-nameplate-scale));
+  width: calc(52px * var(--user-nameplate-scale));
+  height: calc(20px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(90deg, transparent 5%, rgba(255, 216, 116, 0.12) 24%, rgba(255, 246, 205, 0.88) 52%, rgba(196, 135, 255, 0.24) 70%, transparent 100%),
+    linear-gradient(90deg, transparent 8%, rgba(190, 239, 255, 0.08) 28%, rgba(207, 246, 255, 0.72) 54%, rgba(183, 122, 255, 0.2) 72%, transparent 100%),
+    linear-gradient(90deg, transparent 12%, rgba(255, 221, 137, 0.08) 34%, rgba(255, 239, 185, 0.64) 58%, transparent 100%);
+  background-position: 0 3px, 14px 10px, 5px 17px;
+  background-repeat: no-repeat;
+  background-size: 82% 1.2px, 64% 1px, 48% 0.9px;
+  filter: drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(217, 182, 255, 0.56));
   mix-blend-mode: screen;
-  opacity: 0.68;
-  transform-origin: 50% 50%;
-  animation: semantic-nameplate-sunlight 3.4s ease-in-out infinite alternate;
+  opacity: 0;
+  animation: semantic-nameplate-carrier-flow 2.45s linear -0.15s infinite;
 }
 
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-core {
-  top: calc(18px * var(--user-nameplate-scale));
-  left: calc(10px * var(--user-nameplate-scale));
-  width: calc(15px * var(--user-nameplate-scale));
-  height: calc(10px * var(--user-nameplate-scale));
+  top: calc(5px * var(--user-nameplate-scale));
+  left: calc(12px * var(--user-nameplate-scale));
+  width: calc(27px * var(--user-nameplate-scale));
+  height: calc(22px * var(--user-nameplate-scale));
   background:
-    linear-gradient(90deg, transparent 33%, rgba(255, 255, 231, 0.9) 48% 52%, transparent 67%),
-    linear-gradient(0deg, transparent 25%, rgba(255, 255, 231, 0.78) 47% 53%, transparent 75%),
-    radial-gradient(circle, rgba(255, 250, 210, 0.94) 0 8%, rgba(255, 195, 55, 0.3) 22%, transparent 48%);
-  filter: drop-shadow(0 0 1px rgba(255, 198, 62, 0.72));
+    linear-gradient(90deg, transparent 34%, rgba(255, 255, 231, 0.92) 47% 53%, transparent 66%),
+    linear-gradient(0deg, transparent 32%, rgba(255, 255, 231, 0.82) 47% 53%, transparent 68%),
+    radial-gradient(circle, rgba(255, 250, 210, 0.9) 0 6%, rgba(255, 195, 55, 0.24) 21%, transparent 48%);
+  filter: drop-shadow(0 0 calc(1.4px * var(--user-nameplate-scale)) rgba(255, 198, 62, 0.78));
   mix-blend-mode: screen;
-  opacity: 0.38;
-  transform-origin: 50% 50%;
-  animation: semantic-nameplate-citrus-glint 2.2s ease-in-out -0.7s infinite;
+  opacity: 0.42;
+  animation: semantic-nameplate-ignition-flare 2.45s linear -0.15s infinite;
 }
 
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
-  top: calc(5px * var(--user-nameplate-scale));
-  left: 29%;
-  width: 66%;
-  height: calc(22px * var(--user-nameplate-scale));
-  border-radius: 50%;
+  top: calc(1px * var(--user-nameplate-scale));
+  left: 25%;
+  width: 69%;
+  height: calc(30px * var(--user-nameplate-scale));
   background-image:
-    linear-gradient(102deg, transparent 8%, rgba(196, 128, 255, 0.22) 25%, rgba(255, 241, 190, 0.72) 46%, rgba(187, 226, 255, 0.42) 56%, transparent 76%),
-    linear-gradient(90deg, transparent, rgba(255, 222, 133, 0.28) 30%, rgba(255, 251, 222, 0.9) 52%, rgba(255, 218, 121, 0.24) 72%, transparent),
-    linear-gradient(90deg, transparent, rgba(209, 184, 255, 0.2) 28%, rgba(227, 241, 255, 0.74) 52%, rgba(190, 158, 249, 0.18) 74%, transparent),
-    linear-gradient(166deg, transparent 0 34%, rgba(190, 239, 255, 0.1) 38%, rgba(190, 239, 255, 0.74) 41%, transparent 46%),
-    linear-gradient(174deg, transparent 0 53%, rgba(201, 166, 255, 0.08) 56%, rgba(201, 166, 255, 0.62) 60%, transparent 65%);
-  background-position: 12% center, 4% 1px, 28% calc(100% - 1px), 100% center, 100% center;
+    linear-gradient(96deg, transparent 9%, rgba(255, 244, 194, 0.92) 48%, rgba(201, 145, 255, 0.46) 64%, transparent 86%),
+    linear-gradient(84deg, transparent 12%, rgba(226, 197, 255, 0.78) 52%, rgba(255, 219, 130, 0.38) 68%, transparent 90%),
+    linear-gradient(101deg, transparent 16%, rgba(201, 244, 255, 0.8) 55%, rgba(190, 139, 255, 0.32) 68%, transparent 88%);
+  background-position: 2% 5px, 28% calc(100% - 4px), 67% 10px;
   background-repeat: no-repeat;
-  background-size: 58% 78%, 48% 1px, 42% 1px, 31% 100%, 29% 100%;
-  filter: drop-shadow(0 0 1px rgba(167, 220, 255, 0.48));
+  background-size:
+    56% calc(1.35px * var(--user-nameplate-scale)),
+    50% calc(1.2px * var(--user-nameplate-scale)),
+    36% calc(1.1px * var(--user-nameplate-scale));
+  filter:
+    drop-shadow(0 0 1px rgba(255, 218, 129, 0.62))
+    drop-shadow(0 0 1.4px rgba(167, 220, 255, 0.58));
   mix-blend-mode: screen;
-  opacity: 0.76;
-  transform: translate3d(-8%, 0, 0);
-  transform-origin: right center;
-  animation: semantic-nameplate-wind-tail 3.2s ease-in-out infinite alternate;
-}
-
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles,
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before,
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
-  inset: calc(2px * var(--user-nameplate-scale)) calc(4px * var(--user-nameplate-scale));
-  content: "";
-  background-repeat: no-repeat;
-  transform-origin: center;
+  opacity: 0.16;
+  animation: semantic-nameplate-rune-flow 2.45s linear -0.15s infinite;
 }
 
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
+  inset: calc(2px * var(--user-nameplate-scale)) calc(4px * var(--user-nameplate-scale));
   background-image:
     radial-gradient(circle, rgba(255, 249, 211, 0.96) 0 0.8px, transparent 1.6px),
-    radial-gradient(circle, rgba(218, 242, 255, 0.9) 0 0.8px, transparent 1.5px);
-  background-position: 18% 8%, 88% 21%;
-  background-size: 4px 4px, 4px 4px;
-  animation: semantic-nameplate-stars-a 2.2s ease-in-out infinite alternate;
-}
-
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before,
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
-  position: absolute;
-  display: block;
-  pointer-events: none;
-}
-
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before {
-  background-image:
-    radial-gradient(circle, rgba(255, 226, 149, 0.94) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgba(205, 232, 255, 0.86) 0 0.7px, transparent 1.5px);
-  background-position: 7% 72%, 94% 67%;
-  background-size: 5px 5px, 4px 4px;
-  animation: semantic-nameplate-stars-b 2.8s ease-in-out -1.2s infinite alternate;
-}
-
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
-  background-image: radial-gradient(circle, rgba(255, 252, 226, 0.94) 0 0.8px, transparent 1.6px);
-  background-position: 83% 82%;
+    radial-gradient(circle, rgba(218, 242, 255, 0.9) 0 0.8px, transparent 1.6px),
+    radial-gradient(circle, rgba(255, 226, 149, 0.9) 0 0.8px, transparent 1.6px);
+  background-position: 13% 12%, 94% 24%, 86% 82%;
+  background-repeat: no-repeat;
   background-size: 4px 4px;
-  animation: semantic-nameplate-stars-c 3.2s ease-in-out -2s infinite alternate;
+  animation: semantic-nameplate-stars-a 2.4s ease-in-out infinite alternate;
 }

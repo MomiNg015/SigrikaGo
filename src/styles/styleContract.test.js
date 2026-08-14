@@ -859,8 +859,17 @@ describe("root CSS entry contract", () => {
     expect(corruptionDamageCss).toContain("sigrika-corruption-tear-middle");
     expect(corruptionDamageCss).toContain("sigrika-corruption-fragment");
     expect(finalNameplateCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-denia-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]');
     expect(finalNameplateCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
     expect(finalNameplateCss).toContain("color: #fffdf4 !important");
+    expect(finalNameplateCss).toContain("color: #fffaf5 !important");
+    expect(finalNameplateCss).toContain("color: #f5ffff !important");
+    expect(finalNameplateCss).toContain("height: var(--user-nameplate-height) !important");
+    expect(finalNameplateCss).toContain("font-style: italic !important");
+    expect(finalNameplateCss).toContain("font-weight: 800 !important");
+    expect(finalNameplateCss).toContain("padding-inline-end: calc(3px * var(--user-nameplate-scale))");
+    expect(finalNameplateCss).toContain("margin-inline-end: calc(-3px * var(--user-nameplate-scale))");
     expect(finalNameplateCss).toContain("text-shadow:");
     expect(finalNameplateCss).toContain("overflow: visible !important");
 

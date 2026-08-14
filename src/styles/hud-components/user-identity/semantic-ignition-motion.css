@@ -1,37 +1,83 @@
-/* Illustration-aligned sunlight, citrus glint, wind-tail, and starlight motion for “Semantic Ignition”. */
-@keyframes semantic-nameplate-sunlight {
-  from { opacity: 0.58; transform: scale(0.98); }
-  to { opacity: 0.86; transform: scale(1.035); }
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::before,
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-@keyframes semantic-nameplate-citrus-glint {
-  0%, 58%, 100% { opacity: 0.18; transform: translate3d(-4%, 4%, 0) scale(0.72); }
-  72% { opacity: 0.9; transform: translate3d(7%, -6%, 0) scale(1); }
-  84% { opacity: 0.28; transform: translate3d(12%, -9%, 0) scale(0.78); }
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::before {
+  top: calc(7px * var(--user-nameplate-scale));
+  right: calc(-7px * var(--user-nameplate-scale));
+  width: calc(40px * var(--user-nameplate-scale));
+  height: calc(4px * var(--user-nameplate-scale));
+  background: linear-gradient(90deg, transparent 0 5%, rgba(255, 209, 95, 0.34) 22%, rgba(255, 250, 214, 0.96) 43%, rgba(207, 147, 255, 0.72) 66%, transparent 100%);
+  clip-path: polygon(0 36%, 100% 0, 82% 52%, 100% 100%, 0 68%, 16% 50%);
+  filter:
+    drop-shadow(0 0 calc(1.2px * var(--user-nameplate-scale)) rgba(255, 226, 142, 0.86))
+    drop-shadow(0 0 calc(2px * var(--user-nameplate-scale)) rgba(185, 113, 255, 0.54));
+  opacity: 0;
+  animation: semantic-nameplate-tail-stream-a 2.45s linear -0.15s infinite;
 }
 
-@keyframes semantic-nameplate-wind-tail {
-  from { opacity: 0.68; transform: translate3d(-8%, 1%, 0); }
-  to { opacity: 0.9; transform: translate3d(10%, -1%, 0); }
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::after {
+  top: calc(21px * var(--user-nameplate-scale));
+  right: calc(-4px * var(--user-nameplate-scale));
+  width: calc(33px * var(--user-nameplate-scale));
+  height: calc(3px * var(--user-nameplate-scale));
+  background: linear-gradient(90deg, transparent 0 8%, rgba(187, 125, 255, 0.28) 23%, rgba(219, 185, 255, 0.82) 46%, rgba(197, 243, 255, 0.7) 64%, transparent 100%);
+  clip-path: polygon(0 30%, 100% 14%, 84% 52%, 100% 86%, 0 70%, 18% 50%);
+  filter:
+    drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(209, 185, 255, 0.8))
+    drop-shadow(0 0 calc(1.6px * var(--user-nameplate-scale)) rgba(176, 232, 255, 0.46));
+  opacity: 0;
+  animation: semantic-nameplate-tail-stream-b 2.45s linear -0.15s infinite;
+}
+
+@keyframes semantic-nameplate-carrier-flow {
+  0%, 8% { opacity: 0; transform: translateX(-27%) skewX(-9deg); }
+  18% { opacity: 0.52; transform: translateX(8%) skewX(-9deg); }
+  68% { opacity: 0.72; transform: translateX(154%) skewX(-9deg); }
+  88%, 100% { opacity: 0; transform: translateX(196%) skewX(-9deg); }
+}
+
+@keyframes semantic-nameplate-ignition-flare {
+  0%, 8%, 100% { opacity: 0.36; transform: translateX(0); }
+  17% { opacity: 0.96; transform: translateX(4%); }
+  34% { opacity: 0.5; transform: translateX(8%); }
+  56% { opacity: 0.32; transform: translateX(12%); }
+}
+
+@keyframes semantic-nameplate-rune-flow {
+  0%, 10% { opacity: 0.12; transform: translateX(-10%); }
+  25% { opacity: 0.86; transform: translateX(-2%); }
+  70% { opacity: 0.82; transform: translateX(16%); }
+  90%, 100% { opacity: 0; transform: translateX(27%); }
+}
+
+@keyframes semantic-nameplate-tail-stream-a {
+  0%, 56% { opacity: 0; transform: translateX(-20%) skewX(-18deg); }
+  66% { opacity: 0.94; transform: translateX(-5%) skewX(-18deg); }
+  88% { opacity: 0.72; transform: translateX(25%) skewX(-18deg); }
+  100% { opacity: 0; transform: translateX(45%) skewX(-18deg); }
+}
+
+@keyframes semantic-nameplate-tail-stream-b {
+  0%, 62% { opacity: 0; transform: translateX(-21%) skewX(-14deg); }
+  72% { opacity: 0.82; transform: translateX(-3%) skewX(-14deg); }
+  92% { opacity: 0.62; transform: translateX(24%) skewX(-14deg); }
+  100% { opacity: 0; transform: translateX(45%) skewX(-14deg); }
 }
 
 @keyframes semantic-nameplate-stars-a {
-  from { opacity: 0.18; transform: scale(0.92); }
-  to { opacity: 0.58; transform: scale(1.03); }
-}
-
-@keyframes semantic-nameplate-stars-b {
-  from { opacity: 0.12; transform: translate3d(0, 2%, 0) scale(0.86); }
-  to { opacity: 0.54; transform: translate3d(0, -2%, 0) scale(1.05); }
-}
-
-@keyframes semantic-nameplate-stars-c {
-  from { opacity: 0.1; transform: scale(0.88); }
-  to { opacity: 0.5; transform: scale(1.06); }
+  from { opacity: 0.16; transform: translateX(-1%); }
+  to { opacity: 0.46; transform: translateX(1%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::before,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::after,
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *,
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *::before,
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *::after {
@@ -39,24 +85,32 @@
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
-    opacity: 0.72;
-    transform: none;
+    opacity: 0.34;
+    transform: translateX(58%) skewX(-9deg);
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-core {
-    opacity: 0.34;
+    opacity: 0.64;
     transform: none;
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
-    opacity: 0.78;
-    transform: none;
+    opacity: 0.52;
+    transform: translateX(7%);
   }
 
-  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles,
-  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before,
-  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
-    opacity: 0.34;
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::before {
+    opacity: 0.58;
+    transform: translateX(5%) skewX(-18deg);
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect::after {
+    opacity: 0.46;
+    transform: translateX(3%) skewX(-14deg);
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
+    opacity: 0.28;
     transform: none;
   }
 }

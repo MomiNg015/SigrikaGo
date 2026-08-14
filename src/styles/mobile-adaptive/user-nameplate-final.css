@@ -1,17 +1,57 @@
-/* Final exact-asset owner after Bright School and responsive safety layers. */
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-main,
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-main,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect {
+/* Final exact-asset winners after Bright School and responsive safety layers. */
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+),
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-main,
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name-tag,
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-nameplate-effect,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-main,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-nameplate-effect {
   overflow: visible !important;
 }
 
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag {
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name-tag {
   box-sizing: border-box !important;
   flex: 0 0 var(--user-nameplate-width) !important;
   width: var(--user-nameplate-width) !important;
@@ -23,17 +63,51 @@
   padding-right: var(--user-nameplate-padding-right) !important;
 }
 
-.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name {
+.user-identity:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate:is(
+  [data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-denia-spark-100-wins-nameplate"],
+  [data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]
+) .user-identity-name {
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden !important;
-  color: #fffdf4 !important;
+  font-family: var(--font-ui-default) !important;
   font-size: var(--user-nameplate-font-size) !important;
+  font-style: italic !important;
   font-weight: 800 !important;
+  letter-spacing: calc(0.08px * var(--user-nameplate-scale)) !important;
+  padding-inline-end: calc(3px * var(--user-nameplate-scale));
+  margin-inline-end: calc(-3px * var(--user-nameplate-scale));
   text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name {
+  color: #fffdf4 !important;
   text-shadow:
     0 1px 1px rgba(48, 17, 79, 0.98),
     0 0 3px rgba(255, 244, 211, 0.76) !important;
-  white-space: nowrap !important;
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-name {
+  color: #fffaf5 !important;
+  text-shadow:
+    0 1px 1px rgba(51, 28, 104, 0.96),
+    0 0 3px rgba(246, 222, 255, 0.82) !important;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-name {
+  color: #f5ffff !important;
+  transform: translateY(var(--aemeath-nameplate-text-offset-y)) !important;
+  text-shadow:
+    0 1px 1px rgba(1, 37, 68, 0.98),
+    0 0 3px rgba(201, 246, 255, 0.8) !important;
 }
