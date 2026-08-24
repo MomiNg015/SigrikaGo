@@ -42,7 +42,6 @@
     .message-board-modal,
     .onboarding-story-modal,
     .watch-list-modal,
-    .profile-replay-dialog,
     .user-profile-modal
   ) {
     width: 100% !important;

@@ -35,15 +35,6 @@
     min-width: 0;
   }
 
-  .resume-title-actions {
-    gap: 5px;
-    padding-right: clamp(116px, 34vw, 138px);
-  }
-
-  .resume-title-actions h2 {
-    flex: 1 1 100%;
-  }
-
   .resume-mini-action {
     min-height: 30px;
     padding: 5px 8px;

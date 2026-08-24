@@ -80,7 +80,7 @@
 
 .match-portrait,
 .character-detail-art img,
-.profile-resume-hero img,
+.profile-resume-hero > .profile-hero-portrait > .profile-portrait-mask > img,
 .warehouse-effect-result img {
   filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.26)) drop-shadow(0 16px 24px rgba(0, 0, 0, 0.34));
 }

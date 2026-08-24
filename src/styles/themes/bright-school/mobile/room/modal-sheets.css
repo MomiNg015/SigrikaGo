@@ -21,7 +21,6 @@
     .friends-modal,
     .message-board-modal,
     .watch-list-modal,
-    .profile-replay-dialog,
     .user-profile-modal
   ) {
     transform-origin: center bottom !important;

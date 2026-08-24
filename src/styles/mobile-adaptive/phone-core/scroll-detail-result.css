@@ -5,29 +5,11 @@
   .house-layout,
   .owned-decoration-section,
   .warehouse-grid,
-  .leaderboard-table,
-  .profile-replay-list-scroll {
+    .leaderboard-table {
     min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  .profile-replay-dialog {
-    min-height: 0;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-
-  .profile-replay-dialog .profile-replay-list-scroll {
-    flex: 1 1 auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .profile-replay-dialog .replay-table {
-    overflow: visible;
-    overscroll-behavior: auto;
   }
 
   .friends-list,
@@ -145,7 +127,6 @@
   }
 
   .result-rewards,
-  .profile-resume-stats,
   .profile-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

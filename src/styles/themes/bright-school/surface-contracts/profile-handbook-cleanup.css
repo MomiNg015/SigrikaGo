@@ -1,6 +1,5 @@
 .app-shell.player-theme-enabled.theme-bright-school .top-stats-bar .stat strong,
-.app-shell.player-theme-enabled.theme-bright-school .stat strong,
-.app-shell.player-theme-enabled.theme-bright-school .profile-resume-stats strong {
+.app-shell.player-theme-enabled.theme-bright-school .stat strong {
   font-size: 20px !important;
   line-height: 1.2 !important;
 }

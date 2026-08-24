@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
-import { ChartNoAxesColumn, CircleAlert, MonitorPlay, Star, ThumbsUp, Trophy, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { CircleAlert, MonitorPlay, ThumbsUp, UserPlus, X } from "lucide-react";
 import { api } from "../api/client.js";
-import { CHARACTERS } from "../shared/characters.js";
-import { characterPortraitImageProps } from "../shared/characterPortraits.js";
-import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
-import UserIdentity from "../shared/UserIdentity.jsx";
-import { characterThemeStyle, findCharacter } from "../shared/characterDisplay.js";
-import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
-import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
-import { ModalActionButton } from "./modalComponents.jsx";
-import { PaginatedReplayList } from "./ReplayList.jsx";
+import { normalizeGameModeId } from "../shared/gameModes.js";
+import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
+import ProfileResumeView, {
+  characterRecordColumns,
+  orderedProfileModes,
+  recordStatsFromUser,
+  sortCharacterStatsByGames
+} from "./ProfileResumeView.jsx";
+import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import { useReplayPagination } from "./useReplayPagination.js";
 
 export function UserProfileCard({
   user,
   characters,
   token,
+  onClose,
   onOpenReplay,
   replayDisabled = false,
   onAddFriend,
@@ -24,19 +25,28 @@ export function UserProfileCard({
 }) {
   const [mode, setMode] = useState(normalizeGameModeId(user.mode));
   const [profileUser, setProfileUser] = useState({ ...user, mode: normalizeGameModeId(user.mode) });
-  const mainCharacter = findCharacter(characters, profileUser.characterId) ?? CHARACTERS.sigrika;
-  const characterStats = sortCharacterStatsByGames(profileUser.characterStats);
   const [showReplays, setShowReplays] = useState(false);
   const [profileError, setProfileError] = useState("");
   const [profileNotice, setProfileNotice] = useState("");
   const [loadingProfileMode, setLoadingProfileMode] = useState(false);
+  const [requestedMode, setRequestedMode] = useState("");
+  const [failedMode, setFailedMode] = useState("");
   const [likePending, setLikePending] = useState(false);
+  const [friendPending, setFriendPending] = useState(false);
+  const [blacklistPending, setBlacklistPending] = useState(false);
+  const [showBlacklistConfirm, setShowBlacklistConfirm] = useState(false);
+  const [blacklistError, setBlacklistError] = useState("");
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportContent, setReportContent] = useState("");
   const [reportPending, setReportPending] = useState(false);
-  const recordSummary = splitRecordSummary(profileUser.record);
+  const [reportError, setReportError] = useState("");
+  const modeRequestRef = useRef(null);
+  const requestSequenceRef = useRef(0);
+  const activeUserIdRef = useRef(user.id);
   const canActOnProfile = profileUser.relation !== "self";
   const canLikeProfile = canActOnProfile && !profileUser.likedToday && !likePending;
+  const isFriend = profileUser.relation === "friend";
+  const isBlacklisted = profileUser.relation === "blacklist";
   const replayPagination = useReplayPagination({
     enabled: showReplays && !replayDisabled,
     endpoint: profileUser.id
@@ -47,12 +57,26 @@ export function UserProfileCard({
 
   useEffect(() => {
     const nextMode = normalizeGameModeId(user.mode);
+    requestSequenceRef.current += 1;
+    activeUserIdRef.current = user.id;
+    modeRequestRef.current = null;
     setProfileUser({ ...user, mode: nextMode });
     setMode(nextMode);
+    setRequestedMode("");
+    setFailedMode("");
+    setLoadingProfileMode(false);
     setProfileError("");
     setProfileNotice("");
+    setShowReplays(false);
+    setLikePending(false);
+    setFriendPending(false);
+    setBlacklistPending(false);
+    setReportPending(false);
     setReportContent("");
+    setReportError("");
     setShowReportDialog(false);
+    setShowBlacklistConfirm(false);
+    setBlacklistError("");
   }, [user]);
 
   function notify(message, tone = "danger") {
@@ -63,197 +87,241 @@ export function UserProfileCard({
 
   async function changeMode(nextMode) {
     const normalizedMode = normalizeGameModeId(nextMode);
-    if (normalizedMode === mode || loadingProfileMode) return;
-    const previousMode = mode;
-    setMode(normalizedMode);
+    if (normalizedMode === mode || modeRequestRef.current) return;
+    if (!token || !profileUser.id) return;
+    const requestedUserId = profileUser.id;
+    const sequence = ++requestSequenceRef.current;
+    setRequestedMode(normalizedMode);
+    setFailedMode("");
     setProfileError("");
     setProfileNotice("");
-    if (!token || !profileUser.id) return;
     setLoadingProfileMode(true);
+    const request = api(`/api/users/${requestedUserId}/profile?mode=${encodeURIComponent(normalizedMode)}`, { token });
+    modeRequestRef.current = { request, sequence, requestedUserId };
     try {
-      const data = await api(`/api/users/${profileUser.id}/profile?mode=${encodeURIComponent(normalizedMode)}`, { token });
-      setProfileUser({ ...(data.profile ?? profileUser), mode: normalizedMode });
+      const data = await request;
+      if (requestSequenceRef.current !== sequence || activeUserIdRef.current !== requestedUserId) return;
+      setProfileUser((current) => ({ ...current, ...(data.profile ?? {}), mode: normalizedMode }));
+      setMode(normalizedMode);
+      setFailedMode("");
     } catch (error) {
-      setMode(previousMode);
-      setProfileError(error.message);
+      if (requestSequenceRef.current === sequence && activeUserIdRef.current === requestedUserId) {
+        setFailedMode(normalizedMode);
+        setProfileError(error.message);
+      }
     } finally {
-      setLoadingProfileMode(false);
+      if (modeRequestRef.current?.sequence === sequence) modeRequestRef.current = null;
+      if (requestSequenceRef.current === sequence && activeUserIdRef.current === requestedUserId) {
+        setLoadingProfileMode(false);
+        setRequestedMode("");
+      }
     }
   }
 
-  async function openReplays() {
-    if (replayDisabled) return;
-    setShowReplays(true);
+  function openReplays() {
+    if (!replayDisabled) setShowReplays(true);
   }
 
   async function likeProfile() {
     if (!canLikeProfile || !token) return;
+    const requestedUserId = profileUser.id;
     setLikePending(true);
     setProfileError("");
     setProfileNotice("");
     try {
-      const data = await api(`/api/users/${profileUser.id}/like`, { method: "POST", token });
+      const data = await api(`/api/users/${requestedUserId}/like`, { method: "POST", token });
+      if (activeUserIdRef.current !== requestedUserId) return;
       setProfileUser((current) => ({
         ...current,
         likeCount: data.likeCount ?? current.likeCount ?? 0,
         likedToday: data.likedToday ?? true
       }));
     } catch (error) {
-      notify(error.message, "danger");
+      if (activeUserIdRef.current === requestedUserId) notify(error.message, "danger");
     } finally {
-      setLikePending(false);
+      if (activeUserIdRef.current === requestedUserId) setLikePending(false);
     }
+  }
+
+  async function addFriend() {
+    if (!canActOnProfile || isFriend || friendPending || !onAddFriend) return;
+    const requestedUserId = profileUser.id;
+    setFriendPending(true);
+    setProfileError("");
+    try {
+      await onAddFriend(profileUser);
+      if (activeUserIdRef.current !== requestedUserId) return;
+      setProfileUser((current) => ({ ...current, relation: "friend" }));
+    } catch (error) {
+      if (activeUserIdRef.current === requestedUserId) notify(error.message, "danger");
+    } finally {
+      if (activeUserIdRef.current === requestedUserId) setFriendPending(false);
+    }
+  }
+
+  async function addBlacklist() {
+    if (!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist) return;
+    const requestedUserId = profileUser.id;
+    setBlacklistPending(true);
+    setBlacklistError("");
+    try {
+      await onAddBlacklist(profileUser);
+      if (activeUserIdRef.current !== requestedUserId) return;
+      setProfileUser((current) => ({ ...current, relation: "blacklist" }));
+      setShowBlacklistConfirm(false);
+    } catch (error) {
+      if (activeUserIdRef.current === requestedUserId) setBlacklistError(error.message);
+    } finally {
+      if (activeUserIdRef.current === requestedUserId) setBlacklistPending(false);
+    }
+  }
+
+  function openBlacklistConfirm() {
+    setBlacklistError("");
+    setShowBlacklistConfirm(true);
+  }
+
+  function closeReportDialog() {
+    if (reportPending) return;
+    setShowReportDialog(false);
+    setReportError("");
   }
 
   async function submitReport(event) {
     event.preventDefault();
     if (!canActOnProfile || !token || reportPending) return;
+    const requestedUserId = profileUser.id;
     setReportPending(true);
-    setProfileError("");
+    setReportError("");
     setProfileNotice("");
     try {
-      await api(`/api/users/${profileUser.id}/report`, {
+      await api(`/api/users/${requestedUserId}/report`, {
         method: "POST",
         token,
         body: { content: reportContent }
       });
+      if (activeUserIdRef.current !== requestedUserId) return;
       setShowReportDialog(false);
       setReportContent("");
+      setReportError("");
       notify("举报已提交", "success");
     } catch (error) {
-      setProfileError(error.message);
+      if (activeUserIdRef.current === requestedUserId) setReportError(error.message);
     } finally {
-      setReportPending(false);
+      if (activeUserIdRef.current === requestedUserId) setReportPending(false);
     }
   }
 
+  const likeCount = profileUser.likeCount ?? 0;
+  const likeLabel = likePending ? `点赞中 ${likeCount}` : profileUser.likedToday ? `已点赞 ${likeCount}` : `点赞 ${likeCount}`;
+  const friendLabel = friendPending ? "添加中…" : isFriend ? "已是好友" : "加好友";
+
   return (
-    <section className="user-profile-card">
-      <div className="profile-resume-hero">
-        <span className="profile-chain-portrait">
-          <img {...characterPortraitImageProps(mainCharacter, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={mainCharacter.name} />
-          <CharacterChainBadge user={profileUser} characterId={mainCharacter.id} />
-        </span>
-        <div className="profile-identity-block">
-          <h3>
-            <UserIdentity user={profileUser} />
-          </h3>
-        </div>
-        <div className="profile-social-actions" aria-label="用户互动">
-          <button
-            className="profile-like-button"
-            type="button"
-            title="点赞"
-            aria-label={`点赞，当前 ${profileUser.likeCount ?? 0} 次`}
-            disabled={!canLikeProfile}
-            onClick={likeProfile}
-          >
-            <ThumbsUp size={17} />
-            <span>{profileUser.likeCount ?? 0}</span>
-          </button>
-          <button
-            className="profile-report-button"
-            type="button"
-            title="举报"
-            aria-label="举报用户"
-            disabled={!canActOnProfile}
-            onClick={() => setShowReportDialog(true)}
-          >
-            <CircleAlert size={18} />
-          </button>
-        </div>
-      </div>
-      <div className="mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
-        {modeOrderedEntries().map((entry) => (
-          <button
-            key={entry.id}
-            type="button"
-            role="tab"
-            aria-selected={mode === entry.id}
-            className={mode === entry.id ? "active" : ""}
-            disabled={loadingProfileMode && mode !== entry.id}
-            onClick={() => changeMode(entry.id)}
-          >
-            {entry.shortTitle}
-          </button>
-        ))}
-      </div>
-      {profileError && <p className="room-people-error">{profileError}</p>}
-      {profileNotice && <p className="profile-inline-notice">{profileNotice}</p>}
-      <div className="profile-resume-stats">
-        <span className="profile-record-stat">
-          <small><ChartNoAxesColumn size={16} />战绩</small>
-          <b className="profile-record-lines">
-            <span className="profile-record-total">{recordSummary.total}</span>
-            <span className="profile-record-separator"> · </span>
-            <span className="profile-record-breakdown">{recordSummary.breakdown}</span>
-          </b>
-        </span>
-        <span><small><Star size={16} />积分</small><b className="text-rating-value">{profileUser.rating}分</b></span>
-        <span><small><Trophy size={16} />段位</small><b>{profileUser.rank}</b></span>
-      </div>
-      <RecentResultMarkers results={profileUser.recentResults} className="profile-rank-results" label="最近十盘的战绩" />
-      <div className="profile-resume-section profile-character-section">
-        <strong>角色战绩</strong>
-        <div className="profile-character-list">
-          {characterStats.map((item) => {
-            const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
-            const record = characterRecordColumns(item);
-            return (
-              <div className="profile-character-row" style={characterThemeStyle(character)} key={item.characterId}>
-                <span className="profile-chain-portrait small">
-                  <img {...characterPortraitImageProps(character, { itemEffects: profileUser.itemEffects, user: profileUser })} alt={character.name} />
-                  <CharacterChainBadge user={profileUser} characterId={character.id} />
-                </span>
-                <span>{character.name}</span>
-                <span className="profile-character-total">{record.total}局</span>
-                <span className="profile-character-wins">{record.wins}胜</span>
-                <span className="profile-character-losses">{record.losses}负</span>
-                <span className="profile-character-draws">{record.draws}和</span>
-                <b className="profile-character-rate">{record.winRate}</b>
-              </div>
-            );
-          })}
-          {characterStats.length === 0 && <p className="quiet-text">暂无角色战绩。</p>}
-        </div>
-      </div>
-      <div className="profile-resume-section">
-        <div className="profile-footer-actions">
-          <button className="profile-replay-button" type="button" disabled={replayDisabled} onClick={openReplays}>
-            <MonitorPlay size={18} />
-            对局回放
-          </button>
-          <div className="profile-relation-actions">
-            <button type="button" disabled={profileUser.relation === "self" || profileUser.relation === "friend"} onClick={() => onAddFriend?.(profileUser)}>
-              {profileUser.relation === "friend" ? "已是好友" : "加为好友"}
+    <ModalDialog
+      className="room-floating-modal user-profile-modal profile-dossier-modal user-profile-card"
+      ariaLabelledBy="user-profile-modal-title"
+      onClose={onClose}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <header className="profile-modal-header">
+        <h2 id="user-profile-modal-title">详细资料</h2>
+        <button className="close-button" type="button" onClick={onClose} aria-label="关闭详细资料"><X size={20} /></button>
+      </header>
+
+      <ProfileResumeView
+        context="social"
+        user={profileUser}
+        characters={characters}
+        mode={mode}
+        modePending={loadingProfileMode}
+        onModeChange={changeMode}
+        stats={{ ...recordStatsFromUser(profileUser), rating: profileUser.rating }}
+        recentResults={profileUser.recentResults}
+        characterStats={profileUser.characterStats}
+        identityActions={(
+          <>
+            <button
+              className="profile-like-button"
+              type="button"
+              aria-label={likeLabel}
+              disabled={!canLikeProfile}
+              onClick={likeProfile}
+            >
+              <ThumbsUp size={17} />
+              <span>{likeLabel}</span>
             </button>
-            <button type="button" disabled={profileUser.relation === "self" || profileUser.relation === "blacklist"} onClick={() => onAddBlacklist?.(profileUser)}>
-              {profileUser.relation === "blacklist" ? "已在黑名单" : "加入黑名单"}
+            <button
+              className="profile-friend-button"
+              type="button"
+              disabled={!canActOnProfile || isFriend || friendPending || !onAddFriend}
+              onClick={addFriend}
+            >
+              <UserPlus size={17} />
+              <span>{friendLabel}</span>
+            </button>
+            <button
+              className="profile-report-button"
+              type="button"
+              disabled={!canActOnProfile || reportPending}
+              onClick={() => {
+                setReportError("");
+                setShowReportDialog(true);
+              }}
+            >
+              <CircleAlert size={17} />
+              <span>举报</span>
+            </button>
+          </>
+        )}
+        recentAction={(
+          <button className="profile-replay-button" type="button" disabled={replayDisabled} onClick={openReplays}>
+            <MonitorPlay size={18} />对局回放
+          </button>
+        )}
+        status={(loadingProfileMode || profileError || profileNotice) ? (
+          <div className="profile-mode-feedback">
+            {loadingProfileMode && (
+              <p className="quiet-text">
+                正在载入{profileModeTitle(requestedMode)}战绩，当前仍显示{profileModeTitle(mode)}。
+              </p>
+            )}
+            {profileError && <p className="room-people-error" role="alert">{profileError}</p>}
+            {failedMode && (
+              <button type="button" className="profile-retry-button" onClick={() => changeMode(failedMode)}>重新加载</button>
+            )}
+            {profileNotice && <p className="profile-inline-notice">{profileNotice}</p>}
+          </div>
+        ) : null}
+        secondaryActions={(
+          <div className="profile-relation-actions">
+            <button className="profile-blacklist-button" type="button" disabled={!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist} onClick={openBlacklistConfirm}>
+              {blacklistPending ? "处理中…" : isBlacklisted ? "已在黑名单" : "加入黑名单"}
             </button>
           </div>
-        </div>
-      </div>
+        )}
+      />
+
       {showReplays && (
-        <div className="modal-backdrop profile-modal-backdrop" onClick={() => setShowReplays(false)}>
-          <section className="room-floating-modal replay-dialog profile-replay-dialog" onClick={(event) => event.stopPropagation()}>
-            <button className="close-button" onClick={() => setShowReplays(false)}><X size={18} /></button>
-            <h3><UserIdentity user={profileUser} compact showNameplate={false} /> 的对局回放</h3>
-            <div className="profile-replay-list-scroll" onScroll={replayPagination.onScroll}>
-              <PaginatedReplayList
-                pagination={replayPagination}
-                characters={characters}
-                currentUser={profileUser}
-                onOpenReplay={onOpenReplay}
-              />
-            </div>
-          </section>
-        </div>
+        <HouseReplayDialog
+          characterListView={characters}
+          currentUser={profileUser}
+          onClose={() => setShowReplays(false)}
+          onOpenReplay={onOpenReplay}
+          pagination={replayPagination}
+        />
       )}
+
       {showReportDialog && (
-        <div className="modal-backdrop profile-modal-backdrop" onClick={() => setShowReportDialog(false)}>
-          <section className="room-floating-modal confirm-inline-modal profile-report-dialog" onClick={(event) => event.stopPropagation()}>
-            <button className="close-button" type="button" onClick={() => setShowReportDialog(false)}><X size={18} /></button>
+        <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
+          <ModalDialog
+            className="room-floating-modal confirm-inline-modal profile-report-dialog"
+            ariaLabelledBy="profile-report-title"
+            onClose={closeReportDialog}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
             <form onSubmit={submitReport}>
+              <h3 id="profile-report-title">举报用户</h3>
               <label htmlFor="profile-report-content">举报内容</label>
               <textarea
                 id="profile-report-content"
@@ -263,15 +331,56 @@ export function UserProfileCard({
                 rows={5}
               />
               <small>{reportContent.length}/400</small>
+              {reportError && <p className="profile-dialog-error" role="alert">{reportError}</p>}
               <div>
-                <ModalActionButton variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>提交</ModalActionButton>
+                <ModalActionButton variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>
+                  {reportPending ? "提交中…" : "提交举报"}
+                </ModalActionButton>
               </div>
             </form>
-          </section>
+          </ModalDialog>
         </div>
       )}
-    </section>
+
+      {showBlacklistConfirm && (
+        <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
+          <ModalDialog
+            className="room-floating-modal confirm-inline-modal profile-blacklist-dialog"
+            ariaLabelledBy="profile-blacklist-title"
+            onClose={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="close-button"
+              type="button"
+              aria-label="关闭黑名单确认窗口"
+              disabled={blacklistPending}
+              onClick={() => setShowBlacklistConfirm(false)}
+            >
+              <X size={18} />
+            </button>
+            <section className="profile-blacklist-confirm">
+              <h3 id="profile-blacklist-title">加入黑名单</h3>
+              <p>加入后将限制与该用户的社交互动，确定继续吗？</p>
+              {blacklistError && <p className="profile-dialog-error" role="alert">{blacklistError}</p>}
+              <div>
+                <ModalActionButton variant="danger" type="button" disabled={blacklistPending} onClick={addBlacklist}>
+                  {blacklistPending ? "处理中…" : "确认加入"}
+                </ModalActionButton>
+                <ModalActionButton variant="secondary" type="button" disabled={blacklistPending} onClick={() => setShowBlacklistConfirm(false)}>
+                  暂不处理
+                </ModalActionButton>
+              </div>
+            </section>
+          </ModalDialog>
+        </div>
+      )}
+    </ModalDialog>
   );
+}
+
+function profileModeTitle(mode) {
+  return orderedProfileModes().find((entry) => entry.id === mode)?.shortTitle ?? "当前模式";
 }
 
 export function splitRecordSummary(record = "0局 · 0胜0负0和") {
@@ -281,69 +390,12 @@ export function splitRecordSummary(record = "0局 · 0胜0负0和") {
   if (rest.length > 0) return { total, breakdown: rest.join(" · ") };
 
   const compactMatch = normalized.match(/^(\d+\s*局)\s*(.+)$/u);
-  if (compactMatch) {
-    return { total: compactMatch[1], breakdown: compactMatch[2] };
-  }
+  if (compactMatch) return { total: compactMatch[1], breakdown: compactMatch[2] };
 
   return { total: normalized, breakdown: "0胜0负0和" };
 }
 
-export function sortCharacterStatsByGames(characterStats = []) {
-  return [...(Array.isArray(characterStats) ? characterStats : [])].sort((a, b) => (
-    characterStatGames(b) - characterStatGames(a)
-      || String(a.characterId ?? "").localeCompare(String(b.characterId ?? ""), "zh-CN")
-  ));
-}
-
-export function characterRecordColumns(item = {}) {
-  const total = finiteRecordNumber(item.total);
-  const wins = finiteRecordNumber(item.wins);
-  const losses = finiteRecordNumber(item.losses);
-  const draws = finiteRecordNumber(item.draws);
-  if (total !== null || wins !== null || losses !== null || draws !== null) {
-    const normalized = {
-      total: total ?? Math.max(0, (wins ?? 0) + (losses ?? 0) + (draws ?? 0)),
-      wins: wins ?? 0,
-      losses: losses ?? 0,
-      draws: draws ?? 0
-    };
-    return {
-      ...normalized,
-      winRate: item.winRate ?? winRateText(normalized.wins, normalized.total)
-    };
-  }
-
-  const compact = String(item.record ?? "").match(/(\d+)\s*\u5c40\s*(?:[\u00b7\u2022]\s*)?(\d+)\s*\u80dc\s*(\d+)\s*\u8d1f\s*(\d+)\s*\u548c/u);
-  if (compact) {
-    const normalized = {
-      total: Number(compact[1]),
-      wins: Number(compact[2]),
-      losses: Number(compact[3]),
-      draws: Number(compact[4])
-    };
-    return {
-      ...normalized,
-      winRate: item.winRate ?? winRateText(normalized.wins, normalized.total)
-    };
-  }
-
-  return { total: 0, wins: 0, losses: 0, draws: 0, winRate: item.winRate ?? "0.0%" };
-}
-
-function characterStatGames(item = {}) {
-  if (Number.isFinite(item.total)) return item.total;
-  const match = String(item.record ?? "").match(/(\d+)\s*局/u);
-  return match ? Number(match[1]) : 0;
-}
-
-function finiteRecordNumber(value) {
-  const number = Number(value);
-  return Number.isFinite(number) ? Math.max(0, number) : null;
-}
-
-function winRateText(wins, total) {
-  return total > 0 ? ((wins / total) * 100).toFixed(1) + "%" : "0.0%";
-}
+export { characterRecordColumns, sortCharacterStatsByGames };
 
 export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", onConfirm, onCancel }) {
   return (

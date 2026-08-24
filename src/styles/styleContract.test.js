@@ -600,9 +600,6 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/coarse-house.css",
       "./mobile-adaptive/motion-keyframes.css",
       "./mobile-adaptive/mobile-room-portrait.css",
-      "./mobile-adaptive/mobile-profile-records.css",
-      "./mobile-adaptive/mobile-profile-hero-results.css",
-      "./mobile-adaptive/mobile-profile-social-actions.css",
       "./mobile-adaptive/profile-report-dialog.css",
       "./mobile-adaptive/mobile-room-landscape.css",
       "./mobile-adaptive/narrow-phone.css",
@@ -610,6 +607,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/reduced-motion.css",
       "./mobile-adaptive/home-narrow-desktop.css",
       "./mobile-adaptive/bright-school-portrait.css",
+      "./mobile-adaptive/mobile-profile-records.css",
       "./mobile-adaptive/information-center.css",
       "./mobile-adaptive/semantic-accent-typography.css",
       "./mobile-adaptive/shop-window-redesign.css",
@@ -898,6 +896,7 @@ describe("root CSS entry contract", () => {
     );
     expect(cssImports(mobileProfileRecordsEntry)).toEqual([
       "./mobile-profile-records/profile-shell-hero.css",
+      "./mobile-profile-records/profile-summary-results.css",
       "./mobile-profile-records/character-record-list.css",
       "./mobile-profile-records/footer-resume-stats.css"
     ]);
@@ -968,9 +967,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(profileHouseRecordsEntry)).toEqual([
       "./profile-house-records/house-profile-stats.css",
-      "./profile-house-records/profile-resume-stats.css",
-      "./profile-house-records/character-record-dialog.css",
-      "./profile-house-records/resume-character-records.css"
+      "./profile-house-records/character-record-dialog.css"
     ]);
     expect(profileHouseRecordsEntry).not.toContain(".profile-grid.top-stats-bar");
     expect(profileHouseRecordsEntry).not.toContain(".character-record-dialog");
@@ -1004,7 +1001,6 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(brightSchoolPortraitEntry)).toEqual([
       "./bright-school-portrait/resume-modal-layout.css",
-      "./bright-school-portrait/resume-character-records.css",
       "./bright-school-portrait/home-player-plaque.css",
       "./bright-school-portrait/shop-wallet.css",
       "./bright-school-portrait/settings-tabs.css",
@@ -1022,7 +1018,6 @@ describe("root CSS entry contract", () => {
       "utf8"
     );
     expect(cssImports(resumeModalLayoutEntry)).toEqual([
-      "./resume-modal-layout/actions-stats-records.css",
       "./resume-modal-layout/header-grid.css",
       "./resume-modal-layout/achievement-personalization.css"
     ]);
@@ -1599,6 +1594,7 @@ describe("root CSS entry contract", () => {
       "./modals/nested-profile.css",
       "./modals/profile-character-records.css",
       "./modals/profile-hero-cleanup.css",
+      "./modals/profile-overview.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
       "./modals/character-music-player.css",
@@ -1714,14 +1710,12 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(replayModeResumeEntry)).toEqual([
       "./replay-mode-resume/replay-list-table.css",
-      "./replay-mode-resume/resume-header-actions.css",
       "./replay-mode-resume/match-mode-tabs.css",
       "./replay-mode-resume/practice-difficulty.css",
       "./replay-mode-resume/resume-modal-layout.css",
       "./replay-mode-resume/achievement-modal.css",
       "./replay-mode-resume/personalization-preview-grid.css",
-      "./replay-mode-resume/personalization-picker.css",
-      "./replay-mode-resume/resume-character-records.css"
+      "./replay-mode-resume/personalization-picker.css"
     ]);
     expect(replayModeResumeEntry).not.toContain(".replay-list {");
     expect(replayModeResumeEntry).not.toContain(".resume-modal {");

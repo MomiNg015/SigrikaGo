@@ -1215,64 +1215,57 @@ Correct:
 }
 ```
 
-### Mobile profile replay scroll containment contract
+### Standalone profile replay and scroll containment contract
 
 #### 1. Scope / Trigger
-- Trigger: any change to `UserProfileCard`, `ReplayList`, `.profile-replay-dialog`, `.profile-replay-list-scroll`, `.replay-table`, mobile replay card CSS, or Bright School mobile replay overrides.
+- Trigger: any change to `ResumeModal`, `UserProfileCard`, `HouseReplayDialog`, `ReplayList`, `.standalone-replay-backdrop`, `.replay-dialog-list-scroll`, `.nested-modal.replay-dialog`, mobile replay card CSS, or Bright School mobile replay overrides.
 
 #### 2. Signatures
-- `UserProfileCard` renders the profile replay modal as `.profile-replay-dialog`.
-- `.profile-replay-list-scroll` is the only vertical scroll owner for profile/detail replay history on phones.
-- `.profile-replay-dialog .replay-table` is content inside that scroll owner.
+- `HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination })` is the single replay-list dialog used by self resume and social detail.
+- The shared overlay renders as `.standalone-replay-backdrop > .nested-modal.replay-dialog` through `createPortal(..., document.querySelector(".app-shell") ?? document.body)`.
+- `.replay-dialog-list-scroll` is the only vertical scroll owner for both resume and social-profile replay history; `.nested-modal.replay-dialog .replay-table` is non-scrollable content inside it.
 - `useReplayPagination({ enabled, endpoint, token })` owns 50-row page state for both resume and profile replay dialogs.
 
 #### 3. Contracts
-- Keep `.profile-replay-dialog` as a bounded fixed-height/mobile shell with a fixed title/close area and a `minmax(0, 1fr)` replay-list region.
-- Keep `.profile-replay-list-scroll` scrollable with `overflow-y: auto`, `min-height: 0`, and touch momentum support.
-- Keep `.profile-replay-dialog .replay-table` non-scrollable with `overflow: visible`, not only `overflow-y: visible`. CSS computes `overflow-y: visible` back to `auto` when the other axis is `hidden`/`auto`, which creates a dead inner scroll container that can intercept touch and wheel chaining.
+- Keep the replay overlay outside `.resume-modal` and `.user-profile-modal`; it must remain independently dismissible while the underlying dossier stays mounted. The dedicated class reuses a bounded z-index below the high-layer inventory threshold and above ordinary modal backdrops.
+- Keep `.nested-modal.replay-dialog` as a bounded shell with a fixed title/close area and a `minmax(0, 1fr)` replay-list region.
+- Keep `.replay-dialog-list-scroll` scrollable with `overflow-y: auto`, `min-height: 0`, touch momentum support, and `onScroll={pagination.onScroll}`.
+- Keep `.nested-modal.replay-dialog .replay-table` non-scrollable with `overflow: visible`, not only `overflow-y: visible`. CSS computes `overflow-y: visible` back to `auto` when the other axis is hidden or auto, which creates a dead inner scroll container that can intercept touch and wheel chaining.
 - Bright School final mobile overrides must repeat the same `overflow: visible !important` and `overscroll-behavior: auto !important` table contract after any generic `.replay-table` mobile scroll rules.
-- House nested replay dialogs may keep their own table scroll/card contract; do not use a broad `.replay-table` rule to change profile replay scroll ownership.
+- Do not restore `.profile-replay-dialog` or `.profile-replay-list-scroll`; those duplicate profile-only owners are retired.
 - The owning scroll element must forward `onScroll` to the pagination hook. Reaching the final 48px loads `nextCursor`; a null cursor renders the completed state and makes no further request.
 
 #### 4. Validation & Error Matrix
-- Profile replay history has more rows than the visible mobile list -> swiping on row text or buttons scrolls `.profile-replay-list-scroll`.
-- `.profile-replay-dialog .replay-table` computes to `overflow-y: auto` with no scroll range -> invalid, because it can swallow scroll gestures before the outer list receives them.
+- Social replay opens -> shared replay dialog is portaled outside the detailed-profile dialog and closing it leaves detailed profile visible.
+- Replay history has more rows than the visible mobile list -> swiping on row text or buttons scrolls `.replay-dialog-list-scroll`.
+- `.nested-modal.replay-dialog .replay-table` computes to `overflow-y: auto` with no scroll range -> invalid, because it can swallow scroll gestures before the outer list receives them.
 - Bright School portrait active -> same scroll owner contract as base mobile.
 - First page shorter than the full history -> scrolling to the bottom appends older records without replacing or duplicating the first page.
 
 #### 5. Good/Base/Bad Cases
-- Good: `.profile-replay-dialog .replay-table { overflow: visible; overscroll-behavior: auto; }`
-- Base: `.profile-replay-list-scroll` owns the scrollbar and scrollTop changes while `.replay-table` remains at scrollTop `0`.
-- Bad: `.profile-replay-dialog .replay-table { overflow-x: hidden; overflow-y: visible; }`
-- Bad: a generic `.replay-table { overflow-y: auto; overscroll-behavior: contain; }` rule that also matches profile replay after the profile-specific override.
+- Good: both callers render `HouseReplayDialog`, `.replay-dialog-list-scroll` owns scrolling, and the nested table is overflow-visible.
+- Base: the shared portal targets `document.body` in isolated tests that have no `.app-shell`.
+- Bad: recreating a profile-only replay modal inside `UserProfileCard` or binding pagination scroll to the non-scrolling dialog shell.
+- Bad: `.nested-modal.replay-dialog .replay-table { overflow-x: hidden; overflow-y: visible; }`.
 
 #### 6. Tests Required
-- `src/modals/ReplayList.test.jsx` should assert the final mobile CSS contains the profile replay table `overflow: visible` contract for both base and Bright School final layers.
+- `src/modals/UserProfileCard.dom.test.jsx` should assert reuse, portal placement outside detailed profile, independent dismissal, and opener-focus restoration.
+- `src/modals/ReplayList.test.jsx` should assert the shared wrapper scroll owner, final mobile table `overflow: visible` contract, and absence of retired profile replay selectors.
 - `src/modals/useReplayPagination.dom.test.jsx` should assert initial loading, cursor URL encoding, bottom detection, append semantics, and terminal `nextCursor = null`.
-- For browser-level regression checks, render a mobile Bright School profile replay fixture and verify wheel/touch scrolling changes `.profile-replay-list-scroll.scrollTop` while `.profile-replay-dialog .replay-table.scrollTop` stays `0`.
+- Browser regression checks should open replay from social detail on desktop and mobile, verify the portal is not a profile-dialog descendant, and confirm the underlying profile remains after replay dismissal.
 
 #### 7. Wrong vs Correct
 
 Wrong:
 
-```css
-.profile-replay-dialog .replay-table {
-  overflow-x: hidden;
-  overflow-y: visible;
-}
+```jsx
+<UserProfileCard>{showReplays && <ProfileOnlyReplayDialog />}</UserProfileCard>
 ```
 
 Correct:
 
-```css
-.profile-replay-dialog .profile-replay-list-scroll {
-  overflow-y: auto;
-}
-
-.profile-replay-dialog .replay-table {
-  overflow: visible;
-  overscroll-behavior: auto;
-}
+```jsx
+{showReplays && <HouseReplayDialog pagination={replayPagination} />}
 ```
 
 ### Home Layout Contracts
@@ -1309,35 +1302,75 @@ Correct:
 
 ### Mobile Profile Record Layout Contracts
 
-When displaying record summaries inside compact mobile profile cards, split the total game count from the win/loss/draw count so both pieces remain readable.
+Self resume and social profile dialogs share one semantic dossier. Portrait layouts must preserve the desktop information order while converting the record area into one bounded vertical scroll surface.
 
 Required assertion points:
 
-- Profile record cards should render separate elements for total games and win/loss/draw counts, with a desktop separator that can be hidden on mobile.
-- Character-record rows should not collapse total/win/loss/draw into one combined text cell. Use separate total, win, loss, draw, and win-rate columns, and right-align those stat cells in desktop, mobile, and Bright School override layers.
-- Mobile Bright School rules and the final `mobile-adaptive.css` guard should set the record wrapper to a two-row grid, hide the separator, and keep each line `white-space: nowrap` with `word-break: keep-all`.
-- Card-level selectors such as `.profile-resume-stats > span` must target direct stat cards only; do not use `.profile-resume-stats span` when nested record-line spans exist.
+- `.profile-resume-view` owns identity hero, fixed mode tabs, and `.profile-record-panel`. On portrait screens the modal shell and shared view keep `overflow: hidden`; `.profile-record-panel` is the single vertical scroll owner for status, summary, recent results, character records, and secondary actions.
+- The summary uses four explicit `.profile-summary-item` nodes in the order 段位、积分、总对局、胜率. Portrait layout uses a 2×2 grid; it must not reintroduce the old three-card `.profile-resume-stats` or combined record-string markup.
 - Recent rank result markers must render below the record/rating/rank stat row, not inside one stat card. On mobile profile and resume modals, the ten-result marker set must stay on one marker row; use a ten-column grid plus `clamp()` marker/font sizing instead of `flex-wrap` so wins/losses shrink before wrapping. Empty-state text such as `暂无` must span the marker grid, stay centered, and use a wider responsive chip than a single win/loss marker so the text cannot overflow its border.
-- In resume/profile modals, `.profile-grid.top-stats-bar` is the outer wrapper for stat cards plus recent-result markers and must stay `grid-template-columns: 1fr` in base, mobile, Bright School mobile, and final `mobile-adaptive.css` layers. On desktop resume modals, keep this wrapper `overflow: visible` so rating/rank `.stat-tip` popovers can escape the stat row; the embedded `.resume-character-records` section owns its own internal scroll/clip behavior. The inner `.profile-resume-stats` grid must keep all three stat cards on one row with `repeat(3, minmax(0, 1fr))`; on mobile, split only the record card value into total games and win/loss/draw lines.
 - Rating/rank `.stat-tip` prose must explicitly restore `white-space: normal`, `word-break: normal`, and `overflow-wrap: anywhere`; Bright School summary cards deliberately use `word-break: keep-all` for short labels, and allowing that inherited value into Chinese tooltip prose makes an entire sentence overflow the tooltip surface.
-- In the `履历` modal, character records for the selected mode are embedded below the recent-result marker row as `.resume-character-records`. Do not reopen the old nested `CharacterRecordsDialog` from the stat card; keep the stat cards as summary data and the character list as an internally scrolling section.
+- Character records use one semantic `.profile-character-table` with fixed columns 角色、对局、胜、负、和、胜率. Portrait screens keep the header visible and preserve every character as one native six-column table row; header cells and body cells remain `nowrap`, only the nested character name may ellipsize, and the table and its wrapper must not own horizontal scrolling.
+- On desktop, `.profile-character-table-scroll` owns only the table's vertical overflow inside the fixed-height dossier. On portrait screens it becomes overflow-visible because `.profile-record-panel` owns the whole body scroll.
+- Portrait paint must be nested inside `.profile-portrait-mask` with `overflow: hidden`; chain badges remain siblings of that mask inside the visible `.profile-chain-portrait` carrier. The profile dossier resets costume `scale` / `translate` and centers the image independently from scene framing. Identity paint stays at 70% of its mask; character-record paint uses `object-fit: contain` at 80%, while its mask remains borderless and transparent. Do not clip the carrier itself because that hides badges.
+- Keep desktop table cells in native table layout. Put flex alignment on an inner `.profile-character-identity` wrapper rather than `display: flex` on the `th`, otherwise browser table sizing can truncate the character name and destabilize numeric columns.
+- Portrait rows use a 60px native table-row height. Allocate explicit widths to all six columns so the final win-rate value fits without overflow; keep the inner identity wrapper on one line with a 40px portrait and an ellipsizing name.
+- Bright School's final owner must reset terminal-system `font-family`, background, clip-path, box-shadow, borders, and cell colors on `.profile-character-table`. Scope this reset to the semantic profile table; `.character-record-row` belongs to the house manual and keeps its existing paper-card treatment.
+- At maximum scroll, the last character record and footer actions must be fully visible. Preserve bottom `scroll-padding` on the desktop table owner and safe bottom padding on the portrait `.profile-record-panel` / footer.
+- Desktop `.profile-record-panel` assigns `status`, `overview`, `characters`, and `actions` grid areas explicitly. Optional status markup must not shift the character section into an intrinsic `auto` row or push the footer below the clipped shell.
+- The large dossier structural surfaces remain transparent so the outer Bright School paper grid is continuous. Sticky table headings may use a bounded translucent paper fill to prevent text overlap while rows scroll.
+- Social profile headers reserve a 44px close-control grid column and align the title and close boxes on the same top and center coordinates on desktop and portrait viewports.
 
 Wrong:
 
 ```jsx
-<span>{user.record}</span>
+<div className="profile-resume-stats"><span>{user.record}</span></div>
 ```
 
-This can collapse `29局 · 15胜10负4和` into one clipped line on narrow mobile cards.
+This revives the old combined record card and cannot express the required four-item summary or semantic table.
 
 Correct:
 
 ```jsx
-<b className="profile-record-lines">
-  <span className="profile-record-total">29局</span>
-  <span className="profile-record-separator"> · </span>
-  <span className="profile-record-breakdown">15胜10负4和</span>
-</b>
+<div className="profile-summary-grid">
+  <ProfileSummaryItem label="段位" value={rank} />
+  <ProfileSummaryItem label="积分" value={`${rating}分`} />
+  <ProfileSummaryItem label="总对局" value={`${totalGames}局`} />
+  <ProfileSummaryItem label="胜率" value={winRate} />
+</div>
+```
+
+Portrait mask and identity ownership:
+
+```jsx
+<span className="profile-chain-portrait small">
+  <span className="profile-portrait-mask">
+    <img className="profile-character-avatar" alt="" />
+  </span>
+  <span className="profile-chain-badge">2</span>
+</span>
+<span className="profile-character-name">角色名</span>
+```
+
+```css
+/* Wrong: flex changes the table-cell sizing algorithm. */
+.profile-character-table th { display: flex; }
+
+/* Correct: the cell remains a table cell; only its child aligns content. */
+.profile-character-identity { display: flex; align-items: center; }
+
+/* Portrait: preserve a real one-line table, with only the name allowed to truncate. */
+.profile-character-table tbody tr { display: table-row; height: 60px; }
+.profile-character-table :is(th, td) { white-space: nowrap; }
+.profile-character-name { overflow: hidden; text-overflow: ellipsis; }
+
+/* Record portraits: remove the avatar-card chrome and preserve source proportions. */
+.profile-character-table .profile-portrait-mask { background: transparent; border: 0; }
+.profile-character-table .profile-portrait-mask > img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
 ```
 
 Tooltip inheritance boundary:
@@ -1826,7 +1859,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
 - Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
 - Close and icon-only controls expose an accessible name.
-- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Equivalent profile panels must not fork their palettes by markup: both `.profile-resume-stats > span` and `.profile-resume-stats > .stat` use the same summary-card treatment. Each `.profile-character-row` and `.character-record-row` receives the current catalog character `palette` through `--character-theme-color`, then uses an 18% theme-color mix against the clean white sheet for a restrained light surface while retaining the shared dark-brown outline and hard shadow. State meaning remains owned by existing labels rather than card fill. Character-record positive values use the darker green `#3b6048`; the light mix keeps normal-size text above WCAG AA even for the darkest configurable palette.
+- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the pale mist-blue `#e7f5f8` surface. Shared profile summaries use ruled `.profile-summary-item` cells rather than markup-dependent card variants. Semantic `.profile-character-table tbody tr` receives the current catalog character `palette` through `--character-theme-color` and uses only a restrained light row tint; the separate house-manual `.character-record-row` keeps its existing 18% character-color paper card, dark-brown outline, and hard shadow. State meaning remains owned by existing labels rather than row fill. Positive values keep their accessible dark green treatment.
 - At `max-width: 768px`, Bright School's dashed utility-window headers—`.leaderboard-header`, `.warehouse-header`, `.house-header`, `.friends-modal-header`, and `.watch-list-header`—share one final owner. Their title uses the `clamp(20px, 6vw, 28px)` window-title scale, the header centers its content on a 44px control row, and the dashed divider keeps at least 12px clearance below that row. Do not add narrower media rules that shrink or top-align one title independently.
 - Watch refresh and close buttons remain static inside `.watch-list-actions` and align to the same vertical center. Information center, shop, recruitment, settings, and IRIS headers keep their established dedicated layout owners; they are audited separately and must not be pulled into the dashed utility-header selector merely to share typography.
 - ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
@@ -1836,14 +1869,14 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - Escape in a nested picker -> close only the picker.
 - Tab from the last focusable item -> wrap to the first; Shift+Tab from the first -> wrap to the last.
 - Modal closes -> restore focus when the opener is still connected.
-- Bright School character-record rows collapse back to one fixed white/wheat surface or ignore the live character `palette` -> theme contract failure.
+- Bright School profile table rows or house character-record cards collapse back to one fixed white/wheat surface or ignore the live character `palette` -> theme contract failure.
 - Character-record positive text falls below `4.5:1` against a generated light theme surface -> accessibility review failure.
 - Hooks dependency mismatch or undefined JSX identifier -> lint failure.
 
 #### 5. Good/Base/Bad Cases
 - Good: a leaderboard modal passes its title id to `labelledBy` and its close button has `aria-label="关闭"`.
 - Good: a narrow Watch header keeps “对局列表” at the shared mobile window-title size while refresh and close remain centered above the dashed divider.
-- Good: row-specific custom properties tint social and character-record cards while the shared selector continues to own border, radius, and shadow.
+- Good: row-specific custom properties tint profile table rows and house character-record cards while each surface keeps its own restrained treatment.
 - Base: a non-interactive visual wrapper remains a normal element and does not pretend to be a dialog.
 - Bad: a clickable `<div>` modal shell with no keyboard focus boundary.
 - Bad: using the whole card fill to encode online, win, or loss state instead of the existing labels and values.
@@ -1855,7 +1888,7 @@ Keep the full generated silhouette inside the dialogue element, then vary the fr
 - Migrated modal tests assert the shared dialog shell and accessible title/controls.
 - `WarehouseModal.test.js`, `LeaderboardModal.test.jsx`, and `FriendsModal.test.jsx` assert the utility-window header content, the friends title/toolbar/list row contract, and the transparent `.friends-tabs` wrapper while individual tab buttons retain their active styling.
 - `WatchModal.test.js` asserts that the final mobile owner includes every dashed utility-header family, preserves the shared title scale and divider clearance, and keeps Watch actions statically centered.
-- `src/styles/themeContract.test.js` locks the mist-blue social surface, character-palette light mix, shared outline variable, and darker accessible positive-value green; profile rendering tests assert both row variants expose `--character-theme-color`.
+- `src/styles/themeContract.test.js` locks the mist-blue social surface, character-palette light mixes, outline variable for card-style records, and accessible positive-value green; profile rendering tests assert semantic table rows expose `--character-theme-color`.
 - `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
 
 #### 7. Wrong vs Correct
@@ -1888,8 +1921,11 @@ Card surface correct:
 
 ```css
 .friends-row { --bright-commerce-card-surface: #e7f5f8; }
-:is(.profile-character-row, .character-record-row) {
+.character-record-row {
   --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color) 18%, #ffffff);
+}
+.profile-character-table tbody tr {
+  background: color-mix(in srgb, var(--character-theme-color) 4%, #ffffff);
 }
 ```
 

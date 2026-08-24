@@ -1,29 +1,39 @@
-/* Bright School profile resume statistic cards. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats {
-  gap: 14px !important;
+/* Bright School profile dossier summary: one ruled field, not four nested cards. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-grid {
+  gap: 0 !important;
+  background: var(--bright-sheet-clean) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > :is(span, .stat) {
-  min-height: 78px !important;
-  padding: 14px 18px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  gap: 5px !important;
-  background: linear-gradient(135deg, #fff8e5, #ffdfeb) !important;
-  color: #3d2b25 !important;
-  border: 3px solid #3d2b25 !important;
-  border-radius: 18px !important;
-  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.7) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item {
+  min-height: 108px !important;
+  padding: 20px 22px !important;
+  display: grid !important;
+  align-content: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   clip-path: none !important;
   transform: none !important;
-  white-space: normal !important;
-  word-break: keep-all !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > :is(span, .stat) > :is(small, span) {
-  color: #6a554d !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item + .profile-summary-item {
+  border-left: 1px solid color-mix(in srgb, var(--bright-ink) 18%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-blue)) !important;
   opacity: 1 !important;
   font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item > strong {
+  color: var(--bright-ink) !important;
+  font-size: 1.25rem !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item.is-primary > strong {
+  font-size: 1.5625rem !important;
 }

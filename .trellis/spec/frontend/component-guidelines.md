@@ -529,56 +529,67 @@ Correct:
 ### Scenario: User Profile Social Actions
 
 #### 1. Scope / Trigger
-- Trigger: any change to `UserProfileCard`, friend/room profile overlays, profile hero layout, like/report buttons, or report dialogs.
+- Trigger: any change to `ProfileResumeView`, `ResumeModal`, `UserProfileCard`, friend/room profile overlays, profile hero layout, mode tabs, social actions, report dialogs, or blacklist confirmation.
 - The profile card is reused from friends/search and room member/observer flows, so behavior and layout must stay consistent on desktop and mobile.
 
 #### 2. Signatures
+- Shared renderer: `ProfileResumeView({ context, user, characters, mode, onModeChange, modePending, stats, recentResults, characterStats, identityActions, recentAction, secondaryActions, status })`.
 - `UserProfileCard({ user, characters, token, onOpenReplay, replayDisabled, onAddFriend, onAddBlacklist, onNotice })`.
 - Profile payload fields used by the component: `id`, `relation`, `likeCount`, `likedToday`, `characterId`, `itemEffects`, `record`, `rating`, `rank`, `characterStats`, `recentResults`.
 - Like mutation: `POST /api/users/${profileUser.id}/like`.
 - Report mutation: `POST /api/users/${profileUser.id}/report` with `{ content }`.
 
 #### 3. Contracts
-- The portrait/username hero card owns the like/report controls. Do not move them into the footer relation-action area.
-- Like is an icon button with `ThumbsUp` plus a numeric count. Report is an icon-only `CircleAlert` button. Buttons must not include text labels inside the button.
-- Self profiles disable both like and report. Profiles already liked today disable only like. Blacklist relation must not disable either action unless it is also self/already-liked.
+- The shared identity hero owns context-specific primary actions. `context="self"` exposes only the text-labelled “个性化” action; `context="social"` exposes text-labelled “点赞 {count}”、“加好友/已是好友”、“举报”. Self resume markup must not render like, friend, or report actions.
+- “成就” remains a self-resume header action before the coin wallet and close button. Both self and social replay actions use `recentAction` beside the “最近十盘” heading. Blacklist remains the only social `secondaryActions` footer action, has no redundant relationship label, and must not be promoted into the identity hero.
+- Self resume and social profile replay actions both instantiate `HouseReplayDialog`. That shared dialog portals its `.standalone-replay-backdrop` to the themed `.app-shell` (falling back to `document.body`), so it is not a descendant of `.resume-modal` or `.user-profile-modal`; closing it restores focus without closing the underlying dossier. Do not restore the retired `.profile-replay-dialog` implementation.
+- Social profiles viewed as self disable like, friend, and report. Profiles already liked today disable like; existing friends render “已是好友” and disable the friend action. Blacklist relation must not disable like or report unless the profile is also self/already-liked.
+- Mode tabs render in the explicit order 星炬、标准、五子棋. While a new mode is loading, the selected tab and visible record data remain aligned to the last successful mode, tabs expose `aria-disabled`, and duplicate requests are ignored. Only a successful response changes the displayed mode; a failed request exposes an inline retry.
 - Successful report submission closes the dialog, clears the textarea, and emits `onNotice("举报已提交", "success")` when provided.
-- If no `onNotice` prop exists, local success text should not use the danger/error class.
-- Mobile and desktop hero content is left-aligned with portrait in the first column, identity in the second column, and social actions anchored bottom-right.
+- Report failures stay inside the nested report dialog and preserve the draft. Blacklist requires a separate nested confirmation dialog; a failure stays inside that dialog.
+- Mobile and desktop hero content is left-aligned. Portrait and identity share the first row on portrait screens, and context actions occupy a full-width second row.
+- Profile hero and character-record portrait paint is centered at 70% of its mask and resets scene-specific costume scale/translation inside this dossier.
+- The dossier's structural hero, tabs, record panel, overview, recent-results region, character region, and footer remain transparent so the owning window paper grid is continuous. On desktop, `.profile-record-panel` uses explicit `status`, `overview`, `characters`, and `actions` grid areas; the named areas must not depend on whether the optional status node is mounted. The character table owns vertical scrolling while the blacklist footer stays visible.
+- `.profile-modal-header` reserves a real close-control grid column. The heading and close button use the same 44px alignment track on desktop and portrait layouts; generic absolute close-button rules must not move the social profile close control.
 
 #### 4. Validation & Error Matrix
 - Missing token -> mutation handlers should no-op or rely on auth route rejection; do not optimistically change local state without a response.
 - Like request fails -> keep current count/state and show error via notice/local error.
 - Report request fails -> keep dialog content and show error.
 - Report content empty after trim -> disable submit.
-- `relation === "self"` -> disable like and report controls in markup.
+- `relation === "self"` -> disable like, friend, and report controls in social-profile markup.
+- User or mode changes before a request resolves -> ignore the stale response and retain the new user's/current mode's data.
 
 #### 5. Good/Base/Bad Cases
 - Good: a friends-profile success notice appears in the top toast through `onNotice`.
-- Good: a room-profile report success falls back to a local success notice instead of a red error line.
+- Good: a report failure appears beside the report form without replacing the profile's mode-loading feedback.
 - Base: profile cards without like fields render count `0` and enabled state from relation.
-- Bad: rendering text such as "举报" inside the report icon button.
-- Bad: centering mobile hero content, because it no longer matches the desktop profile card contract.
+- Bad: changing the highlighted tab immediately while the table still contains the previous mode's data.
+- Bad: rendering like, friend, or report inside the self-resume identity area.
 
 #### 6. Tests Required
-- Static markup tests assert `profile-social-actions`, `profile-like-button`, `profile-report-button`, count rendering, and disabled states.
-- Source or component tests assert like/report API paths.
-- CSS contract tests assert desktop/mobile left-aligned hero grid and bottom-right social action selectors.
+- DOM tests assert the three-tab text/DOM order, self/social action separation, visible labels/counts, native disabled states, retry behavior, and stale-response protection.
+- Component tests assert like/report API paths, report draft preservation, and blacklist confirmation.
+- CSS contract tests assert the desktop constrained dossier, transparent structural surfaces, named desktop record areas, portrait 2×2 summary, one profile-body scroll owner, one-line character records, standalone shared replay portal, and no legacy profile replay selectors.
 
 #### 7. Wrong vs Correct
 
 Wrong:
 
 ```jsx
-<button>举报</button>
+<button aria-selected="true">标准</button>
+<ProfileRecords mode="spark" />
 ```
 
 Correct:
 
 ```jsx
-<button className="profile-report-button" title="举报" aria-label="举报用户">
-  <CircleAlert size={18} />
-</button>
+<ProfileResumeView
+  context="social"
+  mode={displayedMode}
+  modePending={requestedMode !== displayedMode}
+  identityActions={<><button>点赞 12</button><button>加好友</button><button>举报</button></>}
+/>
 ```
 
 ---

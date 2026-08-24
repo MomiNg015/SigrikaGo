@@ -1,0 +1,97 @@
+/* Shared self/social dossier shell, identity, feedback, and portrait framing. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero {
+  overflow: visible !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--bright-ink) 26%, transparent) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.resume-modal, .user-profile-modal) {
+  width: min(1440px, calc(100vw - 48px)) !important;
+  max-width: calc(100vw - 48px) !important;
+  height: min(900px, calc(100dvh - 32px)) !important;
+  max-height: calc(100dvh - 32px) !important;
+  overflow: hidden !important;
+  scrollbar-gutter: auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view {
+  width: min(1160px, 100%) !important;
+  max-width: 1160px !important;
+  margin-inline: auto !important;
+  background: transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view :is(
+  .profile-record-panel,
+  .profile-summary-grid,
+  .profile-overview-grid,
+  .profile-recent-section,
+  .profile-character-section,
+  .profile-secondary-actions
+) {
+  background: transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table thead th {
+  background: color-mix(in srgb, var(--bright-sheet-clean) 78%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr {
+  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 9%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 5%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag) {
+  background-color: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-status .quiet-text {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero .profile-portrait-mask {
+  background: color-mix(in srgb, var(--bright-sheet-clean) 94%, var(--bright-blue)) !important;
+  border: 1px solid color-mix(in srgb, var(--bright-ink) 16%, transparent) !important;
+  border-radius: 14px !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-resume-hero .profile-portrait-mask > img {
+  width: 70% !important;
+  height: 70% !important;
+  object-position: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  scale: 1 !important;
+  translate: 0 0 !important;
+}

@@ -2,24 +2,6 @@
   overflow: auto;
 }
 
-.profile-replay-dialog {
-  width: min(760px, calc(100vw - 44px));
-  max-height: min(560px, calc(100vh - 96px));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.profile-replay-dialog .replay-table {
-  min-width: 0;
-}
-
-.profile-replay-list-scroll {
-  min-height: 0;
-  overflow: auto;
-  padding-right: 4px;
-}
-
 .match-portrait {
   width: 118px;
   height: 108px;

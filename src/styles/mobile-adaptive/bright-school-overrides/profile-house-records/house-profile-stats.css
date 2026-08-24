@@ -1,5 +1,4 @@
 @media (max-width: 760px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
     display: block !important;
     min-width: 0 !important;

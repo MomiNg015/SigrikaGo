@@ -20,7 +20,6 @@
   .message-board-modal,
   .room-floating-modal,
   .character-target-modal,
-  .profile-replay-dialog,
   .shop-item-detail-modal {
     width: min(100%, calc(100vw - 16px));
     max-width: calc(100vw - 16px);
@@ -35,7 +34,6 @@
   .message-board-modal,
   .room-floating-modal,
   .character-target-modal,
-  .profile-replay-dialog,
   .shop-item-detail-modal {
     padding: 14px;
   }

@@ -83,12 +83,7 @@
 
   .room-floating-modal.user-profile-modal {
     max-height: var(--mobile-modal-max-height);
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
   }
 
-  .profile-replay-dialog {
-    display: flex;
-    flex-direction: column;
-  }
 }

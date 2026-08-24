@@ -113,8 +113,7 @@
   .friends-list,
   .chat-log,
   .message-list,
-  .watch-room-table,
-  .profile-replay-list-scroll,
+    .watch-room-table,
   .character-record-list,
   .character-grid-container,
   .room-member-list
@@ -131,8 +130,7 @@
   .friends-list,
   .chat-log,
   .message-list,
-  .watch-room-table,
-  .profile-replay-list-scroll,
+    .watch-room-table,
   .character-record-list,
   .character-grid-container
 )::-webkit-scrollbar {

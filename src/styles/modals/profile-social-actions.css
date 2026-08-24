@@ -1,68 +1,47 @@
-/* Profile like/report actions and report dialog fields. */
-.profile-social-actions {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-}
-
-.profile-like-button,
-.profile-report-button {
-  min-height: 38px;
-  border: 1px solid #9fc5e8;
-  border-radius: 8px;
-  background: #dff1ff;
-  color: #4f3d55;
-  font-weight: 900;
-  box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);
-  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
-}
-
-.profile-like-button {
+/* Contextual profile actions and report dialog fields. */
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button) {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 58px;
-  padding: 7px 10px;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 22%, transparent);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--profile-dossier-ink);
+  font-weight: 900;
+  box-shadow: none;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
+}
+
+.profile-like-button {
+  background: color-mix(in srgb, var(--profile-dossier-sheet) 95%, var(--profile-dossier-blue));
+}
+
+.profile-friend-button {
+  background: color-mix(in srgb, var(--profile-dossier-sheet) 95%, var(--profile-dossier-mint));
 }
 
 .profile-report-button {
-  display: inline-grid;
-  place-items: center;
-  width: 38px;
-  padding: 0;
-  border-color: #d84f60;
-  background: #ff6f7d;
-  color: #ffffff;
+  background: color-mix(in srgb, var(--profile-dossier-sheet) 96%, var(--theme-danger));
+  color: color-mix(in srgb, var(--profile-dossier-ink) 78%, var(--theme-danger));
+  border-color: color-mix(in srgb, var(--theme-danger) 62%, var(--profile-dossier-ink));
 }
 
-.profile-like-button svg,
-.profile-report-button svg {
-  width: 17px;
-  height: 17px;
-}
-
-.profile-like-button span {
-  color: inherit;
-  font-size: inherit;
-  line-height: 1;
-}
-
-.profile-like-button:active:not(:disabled),
-.profile-report-button:active:not(:disabled) {
-  transform: translateY(2px);
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled) {
+  transform: none;
   box-shadow: none;
 }
 
-.profile-like-button:disabled,
-.profile-report-button:disabled {
-  background: #ebe6ed;
-  color: #9a909d;
-  border-color: #d6d1d8;
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--profile-dossier-ink) 36%, transparent);
+  background: color-mix(in srgb, var(--profile-dossier-sheet) 88%, var(--profile-dossier-blue));
+}
+
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):disabled {
+  background: color-mix(in srgb, var(--profile-dossier-sheet) 78%, var(--profile-dossier-ink));
+  color: color-mix(in srgb, var(--profile-dossier-ink) 48%, var(--profile-dossier-sheet));
+  border-color: color-mix(in srgb, var(--profile-dossier-ink) 28%, var(--profile-dossier-sheet));
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -73,8 +52,12 @@
   width: 100%;
 }
 
+.profile-report-dialog h3 {
+  margin: 0 40px 6px 0;
+}
+
 .profile-report-dialog label {
-  color: #4f3d55;
+  color: var(--profile-dossier-ink);
   font-weight: 900;
 }
 
@@ -82,17 +65,48 @@
   width: 100%;
   min-height: 132px;
   resize: vertical;
-  border: 1px solid #d7cae0;
+  border: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 32%, var(--profile-dossier-sheet));
   border-radius: 8px;
   padding: 10px;
-  color: #3f3145;
+  background: var(--profile-dossier-sheet);
+  color: var(--profile-dossier-ink);
   box-sizing: border-box;
 }
 
 .profile-report-dialog small {
   justify-self: end;
-  color: #7d6a82;
+  color: #6a554d;
   font-weight: 800;
+}
+
+.profile-dialog-error {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--theme-danger) 56%, var(--profile-dossier-ink));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--theme-danger) 9%, var(--profile-dossier-sheet));
+  color: color-mix(in srgb, var(--profile-dossier-ink) 82%, var(--theme-danger));
+  font-weight: 900;
+}
+
+.profile-blacklist-confirm {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-blacklist-confirm h3,
+.profile-blacklist-confirm p {
+  margin: 0;
+}
+
+.profile-blacklist-confirm h3 {
+  padding-right: 42px;
+}
+
+.profile-blacklist-confirm > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .profile-report-dialog form > div {

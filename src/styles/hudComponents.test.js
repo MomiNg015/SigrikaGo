@@ -381,7 +381,7 @@ describe("component-level HUD refinements", () => {
   it("unifies Bright School cute typography and repairs warehouse/profile text blocks", () => {
     expect(themesCss).toContain("Bright School cute typography and warehouse/profile repair layer.");
     expect(themesCss).toContain('"Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item");
     expect(themesCss).toContain("clip-path: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header {");
     expect(themesCss).not.toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");

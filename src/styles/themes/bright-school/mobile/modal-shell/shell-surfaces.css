@@ -46,7 +46,6 @@
     .message-board-modal,
     .onboarding-story-modal,
     .watch-list-modal,
-    .profile-replay-dialog,
     .user-profile-modal
   ) {
     width: 100% !important;
@@ -72,8 +71,7 @@
     .message-board-modal,
     .onboarding-story-modal,
     .watch-list-modal,
-    .user-profile-modal,
-    .profile-replay-dialog
+    .user-profile-modal
   ) {
     display: flex !important;
     flex-direction: column !important;

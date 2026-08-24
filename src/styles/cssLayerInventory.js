@@ -1,9 +1,9 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-08-12",
+  date: "2026-08-24",
   scope: "All CSS files under src/styles after the import-only split work, including the focused normal/corrupted theme-transition visual structure and reduced-motion owners, the focused corrupted-duel atmosphere, panel, timer, control, icon, secondary-surface, mobile-readability, portaled system-log, lifecycle, replay/result, and dialogue/fake-skill presentation owners, the ten focused production IRIS Database V2 entry/shell/greeting/portrait/archive/record/theme/typography owners with image-free desktop/mobile art reservations and the scoped Dotted Songti Circle plus WuWa Latin/numeric font stack, the shared and Bright School character-music-player subdomains with the transparent hand-painted radio shell, contained alpha-safe asset geometry, and painted-circle control alignment, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned open-starlight rune-ink Semantic Ignition with a persistent rim, separated open-center left-to-right filaments/contour streams, and paired right-tail streaks, Danya off-center pearlescent dream bubble, and Aemeath paper-flight beacon nameplate shells plus their reduced-motion owners, Aemeath exact-ID ice-white username treatment, separated paper-wake and perimeter traces, paired right-tail light, the board-owned Aemeath rainbow grid-trace and particle owners with their reduced-motion fallback, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox text-only low-chrome list, completion-state dimming, quiet paper reader, independent item/coin tiles, portaled shop-style item detail, quantity/claimed overlays, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the semantic Bright School login header with its responsive mascot-panel composition and extended layered paper-rule shelf, the dedicated 900px mobile-layout login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared orange preload fill-flow, borderless warm-glow, upright endpoint-glide, and disabled password-toggle centering owners, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, desktop raster background, dedicated portrait raster background, and enlarged mascot-copy owner files, the deep-red theatrical costume storefront with a separate card/art owner, portaled wardrobe dialog, split responsive wardrobe layout, Bright School costume overlay owners, and home-scoped portrait width guard, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, the full-width 16px watch-mode tabs with one-em room-count spacing, the final Bright School practice-entry rotation, reduced-motion behavior, and home-utility hard-shadow parity owner, the shared skill-trait description popover, admin glossary, mobile character-detail scrolling owner rules, the scoped Bright School root scrollbar, final portrait modal shadow-gutter, admin neutral scrollbar owners, and the Bright School unobtained-roster monochrome CRT surface, hidden-intel monitor, and shared signal-fault motion owners.",
   metrics: {
     totalFiles: 672,
-    totalBytes: 1437512,
+    totalBytes: 1438991,
     importantCount: 8360,
     importantFiles: 334,
     hardcodedHexCount: 2470,
@@ -12,6 +12,7 @@ export const CSS_DEBT_BASELINE = {
     highZIndexFiles: 7
   },
   featureDeltas: [
+    "2026-08-24: registers the shared self/social profile dossier refinement and splits the Bright School final winner into bounded surface/portrait and action/tab owners behind one import-only entry. Profile portraits reset scene framing and center at 70%, mobile character records remain a native one-line six-column table, replay aligns with the recent-results heading, and the profile tabs/actions opt out of generic hard-shadow press treatment. The net 1479-byte CSS delta adds no hardcoded hex color, motion, breakpoint, reduced-motion family, high-z-index declaration, or important-count growth beyond the existing baseline ceiling; the house-manual character record owner remains outside the reset.",
     "2026-08-13: adds a bounded, motion-free desktop viewport notice to the existing base foundation while keeping the application shell as the single runtime owner. The 1097-byte normalized delta reuses inherited and Bright School theme values, adds no CSS file, important declaration, hardcoded hex color, media-query family, reduced-motion family, or high-z-index debt; runtime classification and resize restoration remain in the tested React gate rather than introducing a CSS-only device heuristic.",
     "2026-08-13: preserves the selected nameplates' font and 150px by 32px geometry while fixing legal-name italic ink clipping in the existing final exact-asset owner. A 3 scaled-pixel inline-end paint reserve exceeds the measured 2.33px Chromium overhang for Alice_12 and four CJK characters at home scale; an equal negative margin cancels layout growth so text centering, safe width, and legacy ellipsis remain unchanged. The 126-byte normalized delta adds no file, important declaration, color, breakpoint, motion family, or high-z-index debt.",
     "2026-08-12: refines only the selected Aemeath and Danya exact-asset owners after the in-game visual review. Aemeath keeps the existing 150px by 32px raster and 62px safe width, reallocates its padding to 34px and 28px so the username moves left inside the art, and scopes a 12 scaled-pixel whole-tag translation to the real home PlayerPlaque instead of shifting every consumer; Danya keeps its bubble geometry and motion family while strengthening the persistent lavender-pink Alpha rim plus the minimum/peak pearl, refraction, tail-fold, and glint opacity. The 258-byte normalized delta adds no file, important declaration, hardcoded hex color, breakpoint, motion family, scale/rotation animation, or high-z-index debt.",
@@ -446,6 +447,7 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/mobile-room-landscape.css",
       "mobile-adaptive/mobile-profile-records.css",
       "mobile-adaptive/mobile-profile-records/profile-shell-hero.css",
+      "mobile-adaptive/mobile-profile-records/profile-summary-results.css",
       "mobile-adaptive/mobile-profile-records/character-record-list.css",
       "mobile-adaptive/mobile-profile-records/footer-resume-stats.css",
       "mobile-adaptive/bright-school-overrides.css",
@@ -457,7 +459,6 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/home-narrow-desktop.css",
       "mobile-adaptive/bright-school-portrait.css",
       "mobile-adaptive/bright-school-portrait/resume-modal-layout.css",
-      "mobile-adaptive/bright-school-portrait/resume-modal-layout/actions-stats-records.css",
       "mobile-adaptive/bright-school-portrait/resume-modal-layout/header-grid.css",
       "mobile-adaptive/bright-school-portrait/resume-modal-layout/achievement-personalization.css",
       "mobile-adaptive/bright-school-portrait/settings-tabs.css",
@@ -706,7 +707,6 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
   {
     entry: "mobile-adaptive/bright-school-portrait/resume-modal-layout.css",
     files: [
-      "mobile-adaptive/bright-school-portrait/resume-modal-layout/actions-stats-records.css",
       "mobile-adaptive/bright-school-portrait/resume-modal-layout/header-grid.css",
       "mobile-adaptive/bright-school-portrait/resume-modal-layout/achievement-personalization.css"
     ]
@@ -723,6 +723,7 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
     entry: "mobile-adaptive/mobile-profile-records.css",
     files: [
       "mobile-adaptive/mobile-profile-records/profile-shell-hero.css",
+      "mobile-adaptive/mobile-profile-records/profile-summary-results.css",
       "mobile-adaptive/mobile-profile-records/character-record-list.css",
       "mobile-adaptive/mobile-profile-records/footer-resume-stats.css"
     ]

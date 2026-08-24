@@ -24,7 +24,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .character-detail-art img,
-  .profile-resume-hero img,
+  .profile-resume-hero > .profile-hero-portrait > .profile-portrait-mask > img,
   .portrait-wrap img,
   .shop-mascot-slot img
 ) {

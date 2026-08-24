@@ -1,10 +1,8 @@
-/* Startorch terminal replay and profile surfaces */
-
 .replay-item,
 .replay-table-row,
 .profile-resume-hero,
-.profile-resume-stats > span,
-.profile-character-row,
+.profile-summary-item,
+.profile-character-table tbody tr,
 .character-record-row,
 .warehouse-effect-result p {
   border: 1px solid var(--terminal-line-soft);
@@ -17,16 +15,16 @@
 
 .replay-table-heading,
 .replay-item span,
-.profile-resume-hero span,
-.profile-resume-section strong,
-.profile-resume-stats small,
+.profile-summary-label,
+.profile-section-heading h4,
+.profile-character-table thead th,
 .replay-table-row span,
-.profile-character-row span {
+.profile-character-table tbody :is(th, td) {
   color: var(--terminal-muted);
 }
 
 .replay-table-row,
-.profile-character-row,
+.profile-character-table,
 .result-rewards span {
   font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
 }
@@ -60,4 +58,23 @@
   width: min(760px, calc(100vw - 32px));
   max-height: min(760px, calc(100dvh - 32px));
   overflow: auto;
+}
+
+.nested-modal-backdrop .nested-modal.replay-dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.replay-dialog-list-scroll {
+  min-width: 0;
+  min-height: 0;
+  padding-right: 4px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.replay-dialog-list-scroll .replay-table {
+  min-width: 0;
 }

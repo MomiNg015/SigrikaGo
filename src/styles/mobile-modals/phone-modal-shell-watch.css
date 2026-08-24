@@ -7,8 +7,7 @@
   .settings-modal,
   .message-board-modal,
   .small-modal.watch-list-modal,
-  .room-floating-modal.user-profile-modal,
-  .profile-replay-dialog {
+  .room-floating-modal.user-profile-modal {
     width: calc(100vw - 16px);
     max-height: var(--mobile-modal-max-height);
     padding: 12px;
@@ -25,8 +24,7 @@
   .friends-list,
   .house-layout,
   .warehouse-grid,
-  .watch-room-table,
-  .profile-replay-list-scroll {
+  .watch-room-table {
     min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;

@@ -1,15 +1,13 @@
 import { Shirt, X } from "lucide-react";
+import { createPortal } from "react-dom";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
 import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/characterCv.js";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { PaginatedReplayList } from "../ReplayList.jsx";
-import { characterRecordColumns } from "../UserProfileCard.jsx";
-import {
-  characterCandyPortrait,
-  characterCandyPortraitProps
-} from "./houseStats.js";
+import { ModalDialog } from "../modalComponents.jsx";
+import { characterCandyPortraitProps } from "./houseStats.js";
 import SkillDescription from "../../shared/SkillDescription.jsx";
 import { formatSkillOverclock } from "../../shared/skillTraits.js";
 
@@ -41,6 +39,7 @@ export function CharacterDetailDialog({
     "--detail-label-border": "2px solid #6b7280",
     "--detail-label-radius": "0"
   };
+  const portrait = characterCandyPortraitProps(character, itemEffects, user);
   const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
     characterId: character.id,
     trackId,
@@ -58,7 +57,7 @@ export function CharacterDetailDialog({
           <button className="character-costume-open-button" type="button" aria-label={`查看${character.name}的服装`} onClick={onOpenCostumes}>
             <Shirt aria-hidden="true" />
           </button>
-          <img {...characterCandyPortraitProps(character, itemEffects, user)} alt={character.name} />
+          <img src={portrait.src} style={portrait.style} alt={character.name} />
         </div>
         <div className="character-detail-copy">
           <div className="character-detail-heading">
@@ -116,7 +115,6 @@ export function CharacterDetailDialog({
     </div>
   );
 }
-
 export function characterMusicSlots({ character, derivedSkills = [], musicTracks, user }) {
   if (!character?.id) return [];
   const slotDefinitions = [
@@ -156,52 +154,28 @@ export function characterMusicSlots({ character, derivedSkills = [], musicTracks
 }
 
 export function HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination }) {
-  return (
-    <div className="nested-modal-backdrop" onClick={onClose}>
-      <section className="nested-modal replay-dialog" onScroll={pagination.onScroll} onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={18} /></button>
-        <h3>对局回放</h3>
-        <PaginatedReplayList
-          pagination={pagination}
-          characters={characterListView}
-          currentUser={currentUser}
-          onOpenReplay={onOpenReplay}
-        />
-      </section>
+  const dialog = (
+    <div className="nested-modal-backdrop standalone-replay-backdrop" onClick={onClose}>
+      <ModalDialog
+        className="nested-modal replay-dialog"
+        ariaLabelledBy="resume-replay-title"
+        onClose={onClose}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button className="close-button" type="button" aria-label="关闭对局回放" onClick={onClose}><X size={18} /></button>
+        <h3 id="resume-replay-title">对局回放</h3>
+        <div className="replay-dialog-list-scroll" onScroll={pagination.onScroll}>
+          <PaginatedReplayList
+            pagination={pagination}
+            characters={characterListView}
+            currentUser={currentUser}
+            onOpenReplay={onOpenReplay}
+          />
+        </div>
+      </ModalDialog>
     </div>
   );
-}
 
-export function CharacterRecordsPanel({ characterRecords, itemEffects }) {
-  return (
-    <div className="character-record-list">
-      {characterRecords.length === 0 && <p className="quiet-text">{"\u6682\u65e0\u89d2\u8272\u6218\u7ee9\u3002"}</p>}
-      {characterRecords.map((entry) => {
-        const record = characterRecordColumns(entry);
-        return (
-          <article className="character-record-row" style={characterThemeStyle(entry.character)} key={entry.character.id}>
-            <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
-            <strong>{entry.character.name}</strong>
-            <span className="character-record-total">{record.total}{"\u5c40"}</span>
-            <span className="character-record-wins">{record.wins}{"\u80dc"}</span>
-            <span className="character-record-losses">{record.losses}{"\u8d1f"}</span>
-            <span className="character-record-draws">{record.draws}{"\u548c"}</span>
-            <b className="character-record-rate">{record.winRate}</b>
-          </article>
-        );
-      })}
-    </div>
-  );
-}
-
-export function CharacterRecordsDialog({ characterRecords, itemEffects, onClose }) {
-  return (
-    <div className="nested-modal-backdrop" onClick={onClose}>
-      <section className="nested-modal character-record-dialog" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={18} /></button>
-        <h3>角色战绩</h3>
-        <CharacterRecordsPanel characterRecords={characterRecords} itemEffects={itemEffects} />
-      </section>
-    </div>
-  );
+  if (typeof document === "undefined") return dialog;
+  return createPortal(dialog, document.querySelector(".app-shell") ?? document.body);
 }

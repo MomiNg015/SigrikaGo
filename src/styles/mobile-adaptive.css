@@ -12,9 +12,6 @@
 @import "./mobile-adaptive/coarse-house.css";
 @import "./mobile-adaptive/motion-keyframes.css";
 @import "./mobile-adaptive/mobile-room-portrait.css";
-@import "./mobile-adaptive/mobile-profile-records.css";
-@import "./mobile-adaptive/mobile-profile-hero-results.css";
-@import "./mobile-adaptive/mobile-profile-social-actions.css";
 @import "./mobile-adaptive/profile-report-dialog.css";
 @import "./mobile-adaptive/mobile-room-landscape.css";
 @import "./mobile-adaptive/narrow-phone.css";
@@ -22,6 +19,7 @@
 @import "./mobile-adaptive/reduced-motion.css";
 @import "./mobile-adaptive/home-narrow-desktop.css";
 @import "./mobile-adaptive/bright-school-portrait.css";
+@import "./mobile-adaptive/mobile-profile-records.css";
 @import "./mobile-adaptive/information-center.css";
 @import "./mobile-adaptive/semantic-accent-typography.css";
 @import "./mobile-adaptive/shop-window-redesign.css";

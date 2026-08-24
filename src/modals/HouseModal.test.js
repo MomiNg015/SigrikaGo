@@ -7,7 +7,7 @@ import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
-import { characterMusicSlots, CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
+import { characterMusicSlots, CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 import { sortCharacterStatsByGames, splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
@@ -70,7 +70,7 @@ describe("deriveCharacterRecordStats", () => {
     ]).map((item) => item.characterId)).toEqual(["aemeath", "sigrika", "denia"]);
   });
 
-  it("renders mobile-safe two-line record markup for profile and character records", () => {
+  it("renders the shared profile summary and semantic character record table", () => {
     const profileHtml = renderToStaticMarkup(createElement(UserProfileCard, {
       user: {
         id: 1,
@@ -99,48 +99,35 @@ describe("deriveCharacterRecordStats", () => {
           portrait: "/assets/sigrika_centered.webp"
         }
       },
-      token: "token"
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
     }));
-    const recordHtml = renderToStaticMarkup(createElement(CharacterRecordsDialog, {
-      characterRecords: [{
-        character: {
-          id: "sigrika",
-          name: "西格莉卡",
-          palette: "#f2a4d8",
-          portrait: "/assets/sigrika_centered.webp"
-        },
-        total: 29,
-        wins: 15,
-        losses: 10,
-        draws: 4
-      }],
-      itemEffects: {},
-      onClose: () => {}
-    }));
-
-    expect(profileHtml).toContain("profile-record-lines");
-    expect(profileHtml).toContain("profile-record-total");
-    expect(profileHtml).toContain("profile-record-breakdown");
+    expect(profileHtml).toContain("profile-summary-grid");
+    expect(profileHtml).toContain("profile-character-table");
     expect(profileHtml).toContain("profile-mode-tabs");
-    expect(profileHtml).toContain("profile-social-actions");
+    expect(profileHtml).toContain("profile-identity-actions");
     expect(profileHtml).toContain("profile-like-button");
+    expect(profileHtml).toContain("profile-friend-button");
     expect(profileHtml).toContain("profile-report-button");
-    expect(profileHtml).toContain("text-rating-value");
-    expect(profileHtml).toContain(">3</span>");
+    expect(profileHtml).not.toContain("text-rating-value");
+    expect(profileHtml).toContain("点赞 3");
     expect(profileHtml).toContain("background-image:url(/assets/nameplate.png)");
+    expect(profileHtml.indexOf(">星炬</button>")).toBeLessThan(profileHtml.indexOf(">标准</button>"));
+    expect(profileHtml.indexOf(">标准</button>")).toBeLessThan(profileHtml.indexOf(">五子棋</button>"));
     expect(profileHtml).toContain(">五子棋</button>");
     expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
-    expect(profileHtml).toContain("recent-result-label");
-    expect(profileHtml).toContain("最近十盘的战绩");
+    expect(profileHtml).toContain("profile-recent-section");
     expect(profileHtml).toContain("--character-theme-color:#67d9e8");
-    expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-resume-stats"));
+    expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-summary-grid"));
     expect(profileHtml).not.toContain("3段 · 1160分");
-    expect(recordHtml).toContain("character-record-total");
-    expect(recordHtml).toContain("character-record-wins");
-    expect(recordHtml).toContain("character-record-losses");
-    expect(recordHtml).toContain("character-record-draws");
-    expect(recordHtml).toContain("character-record-rate");
-    expect(recordHtml).toContain("--character-theme-color:#f2a4d8");
+    expect(profileHtml).toContain("<th scope=\"col\">角色</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">对局</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">胜</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">负</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">和</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">胜率</th>");
+    expect(profileHtml).toContain("data-label=\"胜率\"");
   });
 
   it("disables profile like and report actions for self and disables repeat daily likes", () => {
@@ -158,18 +145,26 @@ describe("deriveCharacterRecordStats", () => {
     const selfHtml = renderToStaticMarkup(createElement(UserProfileCard, {
       user: { ...baseUser, relation: "self" },
       characters,
-      token: "token"
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
     }));
     const likedHtml = renderToStaticMarkup(createElement(UserProfileCard, {
       user: { ...baseUser, relation: "none", likedToday: true },
       characters,
-      token: "token"
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
     }));
 
     expect(selfHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-friend-button"[^>]*disabled=""/);
     expect(selfHtml).toMatch(/class="profile-report-button"[^>]*disabled=""/);
     expect(likedHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(likedHtml).not.toMatch(/class="profile-friend-button"[^>]*disabled=""/);
     expect(likedHtml).not.toMatch(/class="profile-report-button"[^>]*disabled=""/);
+    expect(likedHtml).toContain("已点赞 4");
+    expect(likedHtml).not.toContain("个性化");
   });
 
   it("keeps the profile report dialog submit-only below the textarea", () => {
@@ -583,81 +578,54 @@ describe("deriveCharacterRecordStats", () => {
       onOpenReplay: () => {}
     }));
 
-    expect(html).toContain("<h2>履历</h2>");
-    expect(html.indexOf("mode-tabs")).toBeLessThan(html.indexOf("resume-replay-action"));
-    expect(html).toContain(">五子棋</button>");
+    expect(html).toContain('<h2 id="resume-modal-title">履历</h2>');
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('data-profile-context="self"');
+    expect(html.indexOf(">星炬</button>")).toBeLessThan(html.indexOf(">标准</button>"));
+    expect(html.indexOf(">标准</button>")).toBeLessThan(html.indexOf(">五子棋</button>"));
     expect(html).not.toContain(">来下五子棋吗？</button>");
-    expect(html.indexOf("top-stats-bar")).toBeLessThan(html.indexOf("resume-replay-action"));
-    expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("resume-character-records"));
-    expect(html).toContain("top-stats-bar");
-    expect(html).toContain("text-rating-value");
-    expect(html).toContain("resume-wallet");
-    expect(html).toContain("achievement-entry-action");
-    expect(html).toContain("personalization-entry-action");
-    expect(html).not.toContain("blue-gem-wallet");
-    expect(html).toContain("对局回放");
-    expect(html).toContain("战绩");
-    expect(html).toContain("段位");
-    expect(html).toContain("profile-record-lines");
-    expect(html).toContain("profile-record-total");
-    expect(html).toContain("profile-record-breakdown");
-    expect(html).toContain("resume-recent-section");
-    expect(html).toContain(">最近十盘</strong>");
-    expect(html).toContain("resume-character-records");
-    expect(html).toContain("角色战绩");
-    expect(html).toContain("character-record-list");
+    expect(html).toContain("profile-personalization-button");
+    expect(html).not.toContain("profile-like-button");
+    expect(html).not.toContain("profile-friend-button");
+    expect(html).not.toContain("profile-report-button");
+    expect(html.indexOf("achievement-entry-action")).toBeLessThan(html.indexOf("resume-wallet"));
+    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("resume-close-button"));
+    expect(html).not.toContain("text-rating-value");
+    expect(html).toContain("profile-summary-grid");
+    expect(html).toContain("总对局");
+    expect(html).toContain("胜率");
+    expect(html).toContain("resume-replay-action");
+    expect(html).toContain("profile-character-table");
+    expect(html).toContain("<th scope=\"col\">角色</th>");
+    expect(html).toContain("<th scope=\"col\">对局</th>");
+    expect(html).toContain("<th scope=\"col\">胜率</th>");
     expect(html).toContain("暂无角色战绩");
     expect(html).not.toContain("character-record-dialog");
-    expect(html).toContain("金币");
 
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const mobileModalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const resumeSource = readFileSync(new URL("./ResumeModal.jsx", import.meta.url), "utf8");
-    expect(modalCss).toContain(".modal-backdrop .resume-header-actions .close-button");
-    expect(modalCss).toContain(".modal-backdrop .resume-header-actions .resume-wallet");
-    expect(modalCss).toContain("grid-template-columns: max-content minmax(0, 1fr) max-content var(--modal-close-size, 44px);");
-    expect(modalCss).toContain(".resume-header-actions {\n  margin-left: 0;\n  position: static;");
-    expect(modalCss).toContain("justify-self: end;");
-    expect(modalCss).toContain(".resume-modal .resume-header > .resume-header-actions");
-    expect(modalCss).toContain("grid-column: 3;");
-    expect(modalCss).toContain(".resume-modal .resume-header > .resume-close-button");
-    expect(modalCss).toContain("grid-column: 4;");
+    expect(modalCss).toContain("width: min(1440px, calc(100vw - 48px));");
+    expect(modalCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(modalCss).toContain(".profile-summary-grid");
+    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain(".profile-character-table");
+    expect(modalCss).toContain("table-layout: fixed;");
     expect(brightSchoolCss).toContain(".resume-modal > .resume-header");
-    expect(brightSchoolCss).toContain("display: grid !important");
-    expect(brightSchoolCss).toContain("grid-template-columns: max-content minmax(0, 1fr) max-content var(--modal-close-size, 44px) !important");
-    expect(brightSchoolCss).toContain(".resume-modal > .resume-header > .resume-header-actions");
-    expect(brightSchoolCss).toContain("grid-column: 3 !important");
-    expect(brightSchoolCss).toContain(".resume-modal > .resume-header > .resume-close-button");
-    expect(brightSchoolCss).toContain("grid-column: 4 !important");
-    expect(modalCss).toContain(".resume-title-actions .achievement-entry-action");
-    expect(modalCss).toContain("background: #ffe4ee;");
-    expect(modalCss).toContain(".resume-title-actions .personalization-entry-action");
-    expect(modalCss).toContain("background: #e5f4ff;");
-    expect(modalCss).toContain("min-height: var(--modal-close-size, 44px);");
-    expect(modalCss).toContain("padding-right: 0;");
-    expect(modalCss).toContain(".resume-character-records");
-    expect(modalCss).toContain(".resume-character-records .character-record-list");
-    expect(modalCss).toContain("max-height: none;");
-    expect(mobileModalCss).toContain(".resume-header-actions .close-button");
-    expect(mobileModalCss).toContain("min-height: var(--modal-close-size, 44px);");
-    expect(finalMobileCss).toContain(".resume-character-records");
-    expect(finalMobileCss).toContain(".resume-header-actions {\n    position: absolute !important;");
-    expect(finalMobileCss).toContain("right: 0 !important");
-    expect(finalMobileCss).toContain("justify-self: auto !important");
-    expect(finalMobileCss).toContain(".resume-modal > .resume-header");
-    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 48%) !important");
-    expect(finalMobileCss).toContain(".resume-modal > .resume-header > .resume-header-actions");
-    expect(finalMobileCss).toContain("grid-area: wallet !important");
-    expect(finalMobileCss).toContain("grid-column: auto !important");
-    expect(finalMobileCss).toContain("max-width: 100% !important");
-    expect(finalMobileCss).toContain("flex-wrap: nowrap !important");
-    expect(finalMobileCss).toContain(".resume-modal > .resume-header > .resume-close-button");
-    expect(finalMobileCss).toContain("grid-area: close !important");
-    expect(finalMobileCss).toContain("visibility: visible !important");
+    expect(brightSchoolCss).toContain("display: flex !important");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-resume-hero");
+    expect(finalMobileCss).toContain('"portrait identity"\n      "actions actions" !important');
+    expect(finalMobileCss).toContain(".profile-summary-grid");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(2, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-character-table tbody tr");
+    expect(finalMobileCss).toContain("display: table-row !important");
+    expect(finalMobileCss).toContain("display: table-header-group !important");
+    expect(finalMobileCss).toContain("overflow-x: hidden !important");
     expect(resumeSource).not.toContain("showCharacterRecords");
     expect(resumeSource).not.toContain("CharacterRecordsDialog");
+    expect(resumeSource).toContain("<ProfileResumeView");
   });
 
   it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
@@ -955,67 +923,67 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(css).toContain(".house-modal");
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
-    expect(css).toContain(".resume-modal");
-    expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
-    expect(modalCss).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(modalCss).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
-    expect(modalCss).toContain("overflow: visible;");
-    expect(modalCss).toContain(".resume-modal {\n  width: min(620px, 100%);\n  display: grid;\n  grid-template-rows: auto auto auto minmax(0, 1fr);");
+    expect(modalCss).toContain(".resume-modal,\n.room-floating-modal.user-profile-modal");
+    expect(modalCss).toContain("width: min(1440px, calc(100vw - 48px));");
+    expect(modalCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
     expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
     expect(modalCss).toContain("overflow: hidden;");
-    expect(modalCss).toContain(".resume-character-records {\n  display: grid;\n  grid-template-rows: auto minmax(0, 1fr);");
-    expect(modalCss).toContain(".resume-character-records .character-record-list");
+    expect(modalCss).toContain(".profile-resume-view");
+    expect(modalCss).toContain(".profile-overview-grid");
+    expect(modalCss).toContain(".profile-summary-grid");
+    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain(".profile-character-table");
+    expect(modalCss).toContain("table-layout: fixed;");
+    expect(modalCss).toContain(".profile-character-table-scroll");
     expect(modalCss).toContain("overscroll-behavior: contain;");
-    expect(modalCss).toContain("max-height: none;");
-    expect(modalCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(modalCss).toContain("white-space: nowrap;");
-    expect(modalCss).toContain("word-break: keep-all;");
     expect(modalCss).toContain(".room-floating-modal.user-profile-modal");
-    expect(modalCss).toContain("max-height: min(760px, calc(100dvh - 32px));");
-    expect(modalCss).toContain(".profile-character-list");
-    expect(modalCss).toContain("max-height: min(260px, 34dvh);");
-    expect(modalCss).toContain(".profile-resume-hero img");
+    expect(modalCss).toContain("height: min(900px, calc(100dvh - 32px));");
+    expect(modalCss).toContain(".profile-resume-hero > .profile-hero-portrait > .profile-portrait-mask > img");
     expect(modalCss).toContain("filter: none;");
     expect(modalCss).toContain(".profile-identity-block :where(.user-identity, .user-identity-main, .user-identity-name-tag)");
     expect(modalCss).toContain("background-color: transparent;");
-    expect(modalCss).toContain("min-height: 38px;");
-    expect(modalCss).toContain("min-width: 58px;");
+    expect(modalCss).toContain(".profile-friend-button");
+    expect(modalCss).toContain("min-height: 44px;");
     expect(modalCss).toContain(".profile-replay-button {");
-    expect(modalCss).toContain("background: #e4f6f0;");
     expect(modalCss).toContain(".profile-replay-button:disabled");
     expect(modalCss).toContain(".profile-relation-actions button:disabled");
-    expect(modalCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd);");
     expect(modalCss).toContain(".confirm-inline-modal");
     expect(modalCss).toContain("position: fixed;");
     expect(modalCss).toContain("inset: 50% auto auto 50%;");
     expect(modalCss).toContain("transform: translate(-50%, -50%);");
     expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
-    expect(modalCss).toContain(".profile-like-button:active:not(:disabled)");
-    expect(modalCss).toContain("transform: translateY(2px);");
-    expect(modalCss).toContain("box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);");
+    expect(modalCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled)");
+    expect(modalCss).toContain("transform: none;");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const finalThemeCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
-    expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
+    const profileAuditCss = readFileSync(
+      new URL("../styles/themes/bright-school/quality-base/audit-profile-modals.css", import.meta.url),
+      "utf8"
+    );
+    expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto minmax(0, 1fr) !important;");
     expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
     expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(brightSchoolModalCss).toContain("background: #ff9ebb !important");
-    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag)");
-    expect(brightSchoolComponentCss).toContain("background-color: transparent !important");
-    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-chain-portrait > img");
-    expect(brightSchoolComponentCss).toContain("border: 0 !important");
-    expect(brightSchoolComponentCss).toContain("background: #dff1ff !important");
-    expect(brightSchoolComponentCss).toContain("background: #ff6f7d !important");
-    expect(brightSchoolComponentCss).toContain("box-shadow: 2px 2px 0 var(--bright-border) !important");
-    expect(brightSchoolComponentCss).toContain(":is(.profile-like-button, .profile-report-button):active:not(:disabled)");
-    expect(brightSchoolComponentCss).toContain("transform: translateY(2px) !important");
-    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-replay-button");
-    expect(brightSchoolComponentCss).toContain("background: #e4f6f0 !important");
-    expect(brightSchoolComponentCss).toContain(":is(.profile-replay-button:disabled, .profile-relation-actions button:disabled)");
-    expect(brightSchoolComponentCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd) !important");
+    expect(finalThemeCss).toContain(".user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag)");
+    expect(finalThemeCss).toContain("background-color: transparent !important");
+    expect(finalThemeCss).toContain(".profile-resume-view .profile-resume-hero .profile-portrait-mask > img");
+    expect(finalThemeCss).toContain(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask");
+    expect(finalThemeCss).toContain("background: transparent !important");
+    expect(finalThemeCss).toContain("border: 0 !important");
+    expect(finalThemeCss).toContain(".profile-character-table tbody tr");
+    expect(finalThemeCss).toContain("clip-path: none !important");
+    expect(profileAuditCss).toContain(".profile-character-table tbody tr");
+    expect(profileAuditCss).not.toContain(".character-record-row");
+    expect(finalThemeCss).toContain(".profile-friend-button");
+    expect(finalThemeCss).toContain(".profile-resume-view .profile-mode-tabs button[aria-selected=\"true\"]");
+    expect(finalThemeCss).toContain("box-shadow: inset 0 -3px 0 var(--bright-pink) !important");
+    expect(finalThemeCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled)");
+    expect(finalThemeCss).toContain("transform: none !important");
     expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
       .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
     expect(finalThemeCss).toContain(".house-modal .character-list");
@@ -1050,10 +1018,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("position: fixed !important");
     expect(css).toContain("transform: none !important");
     expect(css).toContain("overflow-wrap: anywhere !important");
-    expect(css).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(css).toContain("grid-template-columns: 1fr !important");
-    expect(css).toContain(".resume-modal .profile-resume-stats");
-    expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(css).toContain("grid-template-rows: none !important");
     expect(css).toContain("grid-auto-rows: 88px !important");
     expect(css).toContain("overflow-y: auto !important");
@@ -1063,11 +1027,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("padding-bottom: 6px !important");
     expect(css).toContain("scroll-padding: 0 8px 6px 0 !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
-    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: 1fr;");
-    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
-    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-resume-stats");
-    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
     expect(css).toContain(".house-modal .owned-decoration-chip strong");
     expect(css).toContain(".character-record-dialog");
@@ -1078,74 +1037,33 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".character-detail-art img");
     expect(css).toContain("filter: none !important");
     expect(css).toContain("max-height: min(128px, 20dvh) !important");
-    expect(finalMobileCss).toContain(".profile-grid.top-stats-bar .stat strong");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-mode-tabs");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-resume-hero");
-    expect(finalMobileCss).toContain("grid-template-columns: 86px minmax(0, 1fr) !important");
-    expect(finalMobileCss).toContain("justify-items: start !important");
-    expect(finalMobileCss).toContain("text-align: left !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-social-actions");
-    expect(finalMobileCss).toContain("height: 22px !important");
-    expect(finalMobileCss).toContain("min-width: 40px !important");
-    expect(finalMobileCss).toContain("width: 22px !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-like-button:disabled");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-report-button:disabled");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-resume-hero");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-identity-actions");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-resume-view-self .profile-identity-actions");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
     expect(finalMobileCss).toContain(".profile-report-dialog");
     expect(finalMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog");
     expect(finalMobileCss).toContain("width: min(420px, calc(100vw - 44px)) !important");
     expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-footer-actions");
-    expect(finalMobileCss).toContain("grid-template-columns: max-content minmax(0, max-content) !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-replay-button");
-    expect(finalMobileCss).toContain("background: #e4f6f0 !important");
-    expect(finalMobileCss).toContain("border-color: #73b79f !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-relation-actions button:disabled");
-    expect(finalMobileCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd) !important");
-    expect(finalMobileCss).toContain("cursor: not-allowed !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-resume-stats > span");
-    expect(finalMobileCss).toContain("align-content: center !important");
-    expect(finalMobileCss).toContain("justify-items: center !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-record-total");
-    expect(finalMobileCss).toContain("font-size: clamp(17px, 5.1vw, 20px) !important");
-    expect(finalMobileCss).toContain("font-size: clamp(11px, 3.05vw, 13px) !important");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-character-row");
+    expect(finalMobileCss).toContain(".profile-secondary-actions");
+    expect(finalMobileCss).toContain("justify-content: flex-end !important");
+    expect(finalMobileCss).toContain(".profile-summary-grid");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(2, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-character-table tbody tr");
+    expect(finalMobileCss).toContain("display: table-row !important");
     expect(finalMobileCss).toContain("overflow-x: hidden !important");
-    expect(finalMobileCss).toContain("border-radius: 0 !important");
-    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.72fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.48fr) !important");
-    expect(finalMobileCss).toContain(".profile-character-rate");
-    expect(finalMobileCss).toContain(".user-profile-card .profile-record-breakdown");
-    expect(finalMobileCss).toContain("font-size: clamp(12px, 3.45vw, 16px) !important");
-    expect(finalMobileCss).toContain("white-space: nowrap !important");
-    expect(finalMobileCss).toContain("word-break: normal !important");
-    expect(finalMobileCss).toContain(".resume-header-actions .close-button");
+    expect(finalMobileCss).toContain(".resume-modal > .resume-header > .resume-header-actions");
     expect(finalMobileCss).toContain("position: static !important");
-    expect(finalMobileCss).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(finalMobileCss).toContain("grid-template-columns: 1fr !important");
-    expect(finalMobileCss).toContain("grid-template-rows: auto auto minmax(0, 1fr) !important");
-    expect(finalMobileCss).toContain(".resume-modal .profile-resume-stats");
-    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
-    expect(finalMobileCss).toContain(".resume-modal .profile-rank-results");
-    expect(finalMobileCss).toContain(".resume-character-records");
-    expect(finalMobileCss).toContain(".resume-character-records .character-record-list");
-    expect(finalMobileCss).toContain("height: 100% !important");
-    expect(finalMobileCss).toContain("max-height: none !important");
-    expect(finalMobileCss).toContain(".resume-character-records > strong");
-    expect(finalMobileCss).toContain("background: transparent !important");
-    expect(finalMobileCss).toContain("box-shadow: none !important");
-    expect(finalMobileCss).toContain("justify-self: end !important");
-    expect(finalMobileCss).toContain("text-align: right !important");
-    expect(finalMobileCss).toContain("font-variant-numeric: tabular-nums !important");
-    expect(modalCss).toContain(".profile-rank-results::after");
+    expect(finalMobileCss).toContain(".profile-rank-results");
+    expect(modalCss).toContain(".profile-rank-results::before,\n.profile-rank-results::after");
     expect(modalCss).toContain("display: flex;");
     expect(modalCss).toContain("flex-wrap: wrap;");
     expect(modalCss).toContain(".profile-rank-results .recent-result-label");
-    expect(modalCss).toContain("flex: 0 0 100%;");
+    expect(modalCss).toContain("display: none;");
     expect(modalCss).toContain("content: none;");
     expect(modalCss).not.toContain("content: \"显示最近十盘的战绩\";");
-    expect(modalCss).toContain("color: #1f1714;");
-    expect(modalCss).toContain("z-index: 2;");
-    expect(modalCss).toContain("border: 2px solid #3d2b25");
-    expect(modalCss).toContain("box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2)");
     expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(finalMobileCss).toContain("background: #ff9ebb !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
@@ -1166,11 +1084,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".character-record-row");
     expect(finalMobileCss).toContain("grid-template-columns: 42px minmax(52px, 0.82fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr) !important");
-    expect(finalMobileCss).toContain(".resume-character-records .character-record-row");
-    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.58fr) repeat(4, minmax(24px, 0.32fr)) minmax(38px, 0.42fr) !important");
-    expect(finalMobileCss).toContain(".resume-character-records .character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate)");
-    expect(finalMobileCss).toContain(".profile-record-lines");
-    expect(finalMobileCss).toContain(".profile-record-separator");
     expect(finalMobileCss).toContain("overflow-wrap: normal !important");
   });
 

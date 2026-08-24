@@ -242,13 +242,17 @@ describe("player theme CSS contract", () => {
       ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: #e7f5f8;\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) {\n  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row {\n  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));\n}"
     );
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school :is(.profile-character-row, .character-record-row) b {\n  color: #3b6048;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school .character-record-row b {\n  color: #3b6048;\n}"
     );
-    expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) {");
-    expect(profileStatsCss).toContain(".profile-resume-stats > :is(span, .stat) > :is(small, span) {");
+    expect(commerceSocialCss).not.toContain(".profile-character-row");
+    expect(profileStatsCss).toContain(".profile-summary-grid {");
+    expect(profileStatsCss).toContain(".profile-summary-item {");
+    expect(profileStatsCss).toContain("background: transparent !important");
+    expect(profileStatsCss).toContain("box-shadow: none !important");
+    expect(profileStatsCss).toContain(".profile-summary-label {");
   });
 
   it("keeps Bright School theme tokens available to the Tailwind semantic scaffold", () => {
@@ -633,6 +637,7 @@ describe("player theme CSS contract", () => {
       "./quality-base/audit-home.css",
       "./quality-base/audit-commerce.css",
       "./quality-base/audit-profile-modals.css",
+      "./quality-base/profile-dossier.css",
       "./quality-base/audit-room.css",
       "./quality-base/audit-compact.css",
       "./quality-base/refinement-foundation.css",

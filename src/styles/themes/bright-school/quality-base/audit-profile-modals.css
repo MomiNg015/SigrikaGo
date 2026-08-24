@@ -17,11 +17,6 @@
   text-align: center !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero {
-  overflow: visible !important;
-  background: #fff6dd !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method {
@@ -38,13 +33,6 @@
   padding: 4px 12px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong {
-  display: block !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section {
   padding: 22px !important;
   gap: 18px !important;
@@ -55,4 +43,40 @@
   flex-wrap: wrap !important;
   align-items: center !important;
   gap: 12px !important;
+}
+
+/* Final Bright School owner that removes terminal/HUD bleed from dossier records. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table {
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table thead th {
+  background: color-mix(in srgb, var(--bright-sheet-clean) 72%, var(--bright-blue)) !important;
+  color: color-mix(in srgb, var(--bright-ink) 78%, var(--bright-blue)) !important;
+  border-color: color-mix(in srgb, var(--bright-ink) 16%, transparent) !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr {
+  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 8%, var(--bright-sheet-clean)) !important;
+  color: var(--bright-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 4%, color-mix(in srgb, var(--bright-sheet-clean) 92%, var(--bright-blue))) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td) {
+  color: var(--bright-ink) !important;
+  border-color: color-mix(in srgb, var(--bright-ink) 15%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table td strong {
+  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-mint)) !important;
 }

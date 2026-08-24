@@ -149,8 +149,7 @@
   .warehouse-grid,
   .leaderboard-table,
   .friends-list,
-  .watch-room-table,
-  .profile-replay-list-scroll,
+    .watch-room-table,
   .shop-grid,
   .mobile-tab-panel,
   .character-list {
@@ -173,7 +172,6 @@
   .message-board-modal,
   .room-floating-modal,
   .character-target-modal,
-  .profile-replay-dialog,
   .shop-item-detail-modal {
     transform-origin: center bottom;
     animation: mobile-sheet-in var(--mobile-sheet-duration) var(--mobile-tap-ease);

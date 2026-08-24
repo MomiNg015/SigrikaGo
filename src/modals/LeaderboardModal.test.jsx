@@ -183,7 +183,7 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain("overflow: auto");
     expect(phoneModalMedia).toContain(".room-floating-modal.user-profile-modal");
     expect(phoneModalMedia).toContain("max-height: var(--mobile-modal-max-height)");
-    expect(phoneModalMedia).toContain(".profile-replay-dialog");
+    expect(phoneModalMedia).not.toContain(".profile-replay-dialog");
     expect(phoneModalMedia).toContain(".replay-table");
     expect(phoneModalMedia).toContain("overflow-x: auto");
   });

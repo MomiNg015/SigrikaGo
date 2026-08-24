@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
 import { ModalActionButton } from "../modalComponents.jsx";
 import MatchModeRuleText from "../../home/MatchModeRuleText.jsx";
@@ -26,18 +25,16 @@ export default function FriendsOverlays({
     <>
       {profileUser && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseProfile}>
-          <section className="room-floating-modal user-profile-modal" onClick={(event) => event.stopPropagation()}>
-            <button className="close-button" onClick={onCloseProfile}><X size={20} /></button>
-            <UserProfileCard
-              user={profileUser}
-              characters={characters}
-              token={token}
-              onAddFriend={onAddFriend}
-              onAddBlacklist={onAddBlacklist}
-              onOpenReplay={onOpenReplay}
-              onNotice={onNotice}
-            />
-          </section>
+          <UserProfileCard
+            user={profileUser}
+            characters={characters}
+            token={token}
+            onClose={onCloseProfile}
+            onAddFriend={onAddFriend}
+            onAddBlacklist={onAddBlacklist}
+            onOpenReplay={onOpenReplay}
+            onNotice={onNotice}
+          />
         </div>
       )}
       {confirmTarget && (

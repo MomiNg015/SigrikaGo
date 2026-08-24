@@ -1,6 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
 import { roomPeople } from "./roomView.js";
@@ -175,21 +174,19 @@ function RoomPeopleList({
       {profileUser && (
         <RoomPeopleFloatingLayer anchor={panelRef.current}>
           <div className="modal-backdrop room-overlay-backdrop" onClick={() => setProfileUser(null)}>
-            <section className="room-floating-modal user-profile-modal" onClick={(event) => event.stopPropagation()}>
-              <button className="close-button" onClick={() => setProfileUser(null)}><X size={18} /></button>
-              <UserProfileCard
-                user={profileUser}
-                characters={characters}
-                token={token}
-                replayDisabled
-                onAddFriend={addProfileFriend}
-                onAddBlacklist={addProfileBlacklist}
-                onOpenReplay={(recordId) => {
-                  setProfileUser(null);
-                  onOpenReplay?.(recordId);
-                }}
-              />
-            </section>
+            <UserProfileCard
+              user={profileUser}
+              characters={characters}
+              token={token}
+              replayDisabled
+              onClose={() => setProfileUser(null)}
+              onAddFriend={addProfileFriend}
+              onAddBlacklist={addProfileBlacklist}
+              onOpenReplay={(recordId) => {
+                setProfileUser(null);
+                onOpenReplay?.(recordId);
+              }}
+            />
           </div>
         </RoomPeopleFloatingLayer>
       )}

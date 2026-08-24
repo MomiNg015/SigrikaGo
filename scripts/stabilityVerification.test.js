@@ -40,6 +40,7 @@ describe("local stability verification command", () => {
     expect(source).toContain('process.env.STABILITY_PORT ?? process.env.PORT ?? "4173"');
     expect(source).toContain("baseURL: stabilityBaseURL");
     expect(source).toContain('command: "node scripts/start-stability-server.mjs"');
+    expect(source).toContain("viewport: { width: 1440, height: 768 }");
     expect(source).not.toContain("npm run dev");
   });
 });

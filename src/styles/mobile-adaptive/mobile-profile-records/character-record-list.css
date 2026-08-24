@@ -1,79 +1,150 @@
+/* Compact six-column record table: one character always occupies one row. */
 @media (max-width: 768px) {
-  .user-profile-card .profile-record-lines {
-    display: grid !important;
-    justify-items: center !important;
-    gap: 1px !important;
-    white-space: normal !important;
-  }
-
-  .user-profile-card .profile-record-total,
-  .user-profile-card .profile-record-breakdown {
-    max-width: 100% !important;
-    overflow: hidden !important;
-    text-align: center !important;
-    text-overflow: clip !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-  }
-
-  .user-profile-card .profile-record-breakdown {
-    font-size: clamp(12px, 3.45vw, 16px) !important;
-  }
-
-  .user-profile-card .profile-record-separator {
-    display: none !important;
-  }
-
-  .user-profile-card .profile-rank-results {
-    min-height: 44px !important;
-    margin: 0 2px !important;
-    padding: 8px 10px !important;
-  }
-
-  .user-profile-card .profile-character-section {
-    min-height: 0 !important;
-    border-radius: 0 !important;
+  .profile-character-section {
+    display: block !important;
+    padding: 16px 12px 8px !important;
     overflow: visible !important;
   }
 
-  .user-profile-card .profile-character-list {
+  .profile-character-table-scroll {
     width: 100% !important;
     max-width: 100% !important;
+    margin-top: 8px !important;
+    padding: 0 0 8px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .profile-character-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+    table-layout: fixed !important;
+  }
+
+  .profile-character-table thead {
+    position: static !important;
+    display: table-header-group !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table tbody {
+    display: table-row-group !important;
+    width: auto !important;
+  }
+
+  .profile-character-table tbody tr {
+    display: table-row !important;
+    width: auto !important;
+    height: 60px !important;
     min-height: 0 !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    padding-right: 2px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: color-mix(in srgb, var(--character-theme-color, var(--profile-dossier-blue)) 5%, var(--profile-dossier-sheet)) !important;
   }
 
-  .user-profile-card .profile-character-row {
-    grid-template-columns: 38px minmax(48px, 0.72fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.48fr) !important;
-    gap: 4px !important;
-    margin: 0 2px 4px !important;
-    padding: 8px !important;
+  .profile-character-table :is(th, td) {
+    display: table-cell !important;
+    width: auto !important;
     min-width: 0 !important;
-    max-width: calc(100% - 4px) !important;
-    box-sizing: border-box !important;
-    font-size: clamp(10px, 2.72vw, 12px) !important;
+    padding: 7px 2px !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 16%, transparent) !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
   }
 
-  .user-profile-card .profile-character-row > * {
-    min-width: 0 !important;
+  .profile-character-table :is(th, td):first-child {
+    width: 40% !important;
+    padding-left: 4px !important;
+    padding-right: 5px !important;
+    text-align: left !important;
   }
 
-  .user-profile-card .profile-character-row > span:nth-child(2) {
+  .profile-character-table :is(th, td):nth-child(2) {
+    width: 12% !important;
+  }
+
+  .profile-character-table :is(th, td):is(:nth-child(3), :nth-child(4), :nth-child(5)) {
+    width: 9% !important;
+  }
+
+  .profile-character-table :is(th, td):last-child {
+    width: 21% !important;
+  }
+
+  .profile-character-table thead th {
+    position: sticky !important;
+    top: 0 !important;
+    height: 32px !important;
+    padding-block: 6px !important;
+    font-size: 0.6875rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .profile-character-table .profile-character-identity {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-height: 0 !important;
     overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table .profile-chain-portrait.small,
+  .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask > img {
+    width: 80% !important;
+    height: 80% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    scale: 1 !important;
+    translate: 0 0 !important;
+  }
+
+  .profile-character-name {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    color: var(--profile-dossier-ink) !important;
+    font-size: 0.8125rem !important;
+    line-height: 1.15 !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
-  .user-profile-card .profile-character-row :is(.profile-character-total, .profile-character-wins, .profile-character-losses, .profile-character-draws, .profile-character-rate) {
-    justify-self: end !important;
-    text-align: right !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    font-variant-numeric: tabular-nums !important;
+  .profile-character-table tbody td {
+    font-size: 0.75rem !important;
+  }
+
+  .profile-character-table tbody td::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .profile-character-table .profile-character-empty-row {
+    display: table-row !important;
+    height: 104px !important;
+  }
+
+  .profile-character-table .profile-character-empty-row td {
+    display: table-cell !important;
+    width: auto !important;
+    height: 104px !important;
+    padding: 24px 8px !important;
+    text-align: center !important;
+    white-space: normal !important;
   }
 }

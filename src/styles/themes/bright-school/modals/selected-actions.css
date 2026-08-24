@@ -13,13 +13,13 @@
   color: #3d2b25 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions .achievement-entry-action {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .achievement-entry-action {
   background: #ffe4ee !important;
   border-color: #f08bad !important;
   color: #76314a !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions .personalization-entry-action {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-personalization-button {
   background: #d9f0ff !important;
   border-color: #7db8e8 !important;
   color: #245f8c !important;

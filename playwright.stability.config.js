@@ -29,6 +29,7 @@ export default defineConfig({
       name: "desktop-chromium",
       use: {
         ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 768 },
         extraHTTPHeaders: { "x-stability-scope": "desktop-chromium" },
         channel: "chrome"
       }

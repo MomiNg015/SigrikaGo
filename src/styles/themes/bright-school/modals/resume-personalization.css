@@ -1,31 +1,20 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {
-  grid-template-rows: auto auto auto minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
   max-height: calc(100dvh - 32px) !important;
   overflow: hidden !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header {
-  display: grid !important;
-  grid-template-columns: max-content minmax(0, 1fr) max-content var(--modal-close-size, 44px) !important;
+  display: flex !important;
   align-items: center !important;
-  justify-content: stretch !important;
+  justify-content: space-between !important;
   gap: 12px !important;
   padding-right: 0 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header > .resume-header-actions {
-  grid-column: 3 !important;
   position: static !important;
   justify-self: end !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header > .resume-close-button {
-  grid-column: 4 !important;
-  position: static !important;
-  inset: auto !important;
-  justify-self: end !important;
-  align-self: center !important;
-  transform: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal {

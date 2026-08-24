@@ -9,7 +9,6 @@
   }
 
   .result-rewards,
-  .profile-resume-stats,
   .profile-grid {
     grid-template-columns: 1fr;
   }

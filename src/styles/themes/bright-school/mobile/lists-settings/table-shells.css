@@ -17,8 +17,7 @@
     gap: 8px !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table {
     grid-template-rows: none !important;
     grid-auto-rows: auto !important;
     align-content: start !important;
@@ -29,8 +28,7 @@
     display: none !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table-heading {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading {
     min-width: 0 !important;
   }
 
