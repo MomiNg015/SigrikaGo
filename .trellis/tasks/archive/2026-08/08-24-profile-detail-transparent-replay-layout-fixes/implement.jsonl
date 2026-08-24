@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Profile styling crosses the base modal owner, Bright School final owner, mobile safety layer, and CSS debt contracts."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"The shared profile modal has explicit desktop/mobile visual, scroll, and stability verification contracts."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"The replay overlay and profile dialog must preserve shared ModalDialog composition and focus behavior."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Detailed profile should reuse the existing replay dialog instead of maintaining a second implementation."}
