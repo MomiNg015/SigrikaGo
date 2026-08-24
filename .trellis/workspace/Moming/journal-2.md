@@ -1427,3 +1427,36 @@ Validated and committed the selected Sigrika, Danya, and Aemeath achievement nam
 ### Next Steps
 
 - None - task complete
+
+
+## Session 104: Polish shared profile dossier portraits
+
+**Date**: 2026-08-24
+**Task**: Polish shared profile dossier portraits
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Completed the shared resume/profile dossier redesign and follow-up fixes: transparent structural surfaces, standalone replay dialog, stable long-list footer, aligned header controls, and borderless transparent character-record portrait masks with centered 80% contain sizing. Verified focused contracts, lint, production build, built CSS, docs generation, and six desktop/mobile viewport stability coverage.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `07201a07` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
