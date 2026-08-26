@@ -180,8 +180,7 @@
     width: calc(100vw - 16px);
     max-height: calc(100dvh - 16px);
     padding: 10px;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
   }
 
   .room-floating-modal.confirm-inline-modal {
