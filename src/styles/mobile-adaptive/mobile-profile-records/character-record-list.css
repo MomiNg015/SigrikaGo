@@ -1,36 +1,51 @@
 /* Compact six-column record table: one character always occupies one row. */
 @media (max-width: 768px) {
   .profile-character-section {
-    display: block !important;
+    --profile-character-columns: 48% 12% repeat(3, 7%) 19%;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    min-height: 0 !important;
     padding: 16px 12px 8px !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+  }
+
+  .profile-character-table-head {
+    display: grid !important;
+    margin-right: var(--profile-character-scrollbar-gutter) !important;
   }
 
   .profile-character-table-scroll {
     width: 100% !important;
     max-width: 100% !important;
-    margin-top: 8px !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
     padding: 0 0 8px !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
     box-sizing: border-box !important;
-    scrollbar-gutter: auto !important;
+    scrollbar-gutter: stable !important;
+    scroll-padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .profile-character-table {
     display: table !important;
     width: 100% !important;
     border-collapse: separate !important;
+    border-spacing: 0 !important;
     table-layout: fixed !important;
   }
 
   .profile-character-table thead {
-    position: static !important;
+    position: absolute !important;
     display: table-header-group !important;
-    width: auto !important;
-    height: auto !important;
-    overflow: visible !important;
-    clip: auto !important;
-    clip-path: none !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
     white-space: nowrap !important;
   }
 
@@ -47,7 +62,7 @@
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
-    background: color-mix(in srgb, var(--character-theme-color, var(--profile-dossier-blue)) 5%, var(--profile-dossier-sheet)) !important;
+    background: transparent !important;
   }
 
   .profile-character-table :is(th, td) {
@@ -55,38 +70,45 @@
     width: auto !important;
     min-width: 0 !important;
     padding: 7px 2px !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
     border-bottom: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 16%, transparent) !important;
+    border-left: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     text-align: center !important;
     vertical-align: middle !important;
     white-space: nowrap !important;
   }
 
   .profile-character-table :is(th, td):first-child {
-    width: 40% !important;
     padding-left: 4px !important;
     padding-right: 5px !important;
     text-align: left !important;
   }
 
-  .profile-character-table :is(th, td):nth-child(2) {
+  .profile-character-table .profile-character-col-identity {
+    width: 48% !important;
+  }
+
+  .profile-character-table .profile-character-col-total {
     width: 12% !important;
   }
 
-  .profile-character-table :is(th, td):is(:nth-child(3), :nth-child(4), :nth-child(5)) {
-    width: 9% !important;
+  .profile-character-table .profile-character-col-outcome {
+    width: 7% !important;
   }
 
-  .profile-character-table :is(th, td):last-child {
-    width: 21% !important;
+  .profile-character-table .profile-character-col-rate {
+    width: 19% !important;
   }
 
   .profile-character-table thead th {
-    position: sticky !important;
-    top: 0 !important;
-    height: 32px !important;
-    padding-block: 6px !important;
-    font-size: 0.6875rem !important;
-    letter-spacing: 0.02em !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
   .profile-character-table .profile-character-identity {
@@ -101,9 +123,9 @@
 
   .profile-character-table .profile-chain-portrait.small,
   .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask {
-    flex: 0 0 40px !important;
-    width: 40px !important;
-    height: 40px !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    height: 46px !important;
   }
 
   .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask > img {
@@ -147,4 +169,5 @@
     text-align: center !important;
     white-space: normal !important;
   }
+
 }

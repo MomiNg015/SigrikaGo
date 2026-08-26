@@ -81,7 +81,13 @@ export default function ProfileResumeView({
 
         <section className="profile-overview-grid" aria-label="模式战绩摘要">
           <div className="profile-summary-grid">
-            <ProfileSummaryItem emphasis icon={<Trophy size={17} />} label="段位" value={user.rank ?? "未定段"} />
+            <ProfileSummaryItem
+              emphasis
+              icon={<Trophy size={17} />}
+              label="段位"
+              value={user.rank ?? "未定段"}
+              tip="每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。"
+            />
             <ProfileSummaryItem
               emphasis
               icon={<Star size={17} />}
@@ -102,14 +108,25 @@ export default function ProfileResumeView({
         </section>
 
         <section className="profile-character-section" aria-label="角色战绩">
-          <div className="profile-section-heading">
+          <div className="profile-character-table-head" aria-hidden="true">
             <h4>角色战绩</h4>
+            <span>对局</span>
+            <span>胜</span>
+            <span>负</span>
+            <span>和</span>
+            <span>胜率</span>
           </div>
           <div className="profile-character-table-scroll">
             <table className="profile-character-table">
+              <colgroup>
+                <col className="profile-character-col-identity" />
+                <col className="profile-character-col-total" />
+                <col className="profile-character-col-outcome" span="3" />
+                <col className="profile-character-col-rate" />
+              </colgroup>
               <thead>
                 <tr>
-                  <th scope="col">角色</th>
+                  <th scope="col" aria-label="角色"></th>
                   <th scope="col">对局</th>
                   <th scope="col">胜</th>
                   <th scope="col">负</th>
@@ -184,7 +201,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   }
 
   return (
-    <div className="mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
+    <div className="mode-tabs window-mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
       {tabs.map((entry, index) => (
         <button
           key={entry.id}
@@ -214,7 +231,11 @@ function ProfileSummaryItem({ icon, label, value, valueClassName = "", tip = "",
         {icon}
         {label}
         {tip && (
-          <span className="stat-tip-wrap" tabIndex="0" aria-label={`${label}说明`}>
+          <span
+            className="stat-tip-wrap"
+            tabIndex="0"
+            aria-label={`${label}说明`}
+          >
             <HelpCircle size={14} />
             <span className="stat-tip" role="tooltip">{tip}</span>
           </span>

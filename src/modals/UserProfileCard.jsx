@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CircleAlert, MonitorPlay, ThumbsUp, UserPlus, X } from "lucide-react";
+import { CircleAlert, MonitorPlay, ThumbsUp, UserPlus, UserRoundX, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { normalizeGameModeId } from "../shared/gameModes.js";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
@@ -215,6 +215,7 @@ export function UserProfileCard({
   const likeCount = profileUser.likeCount ?? 0;
   const likeLabel = likePending ? `点赞中 ${likeCount}` : profileUser.likedToday ? `已点赞 ${likeCount}` : `点赞 ${likeCount}`;
   const friendLabel = friendPending ? "添加中…" : isFriend ? "已是好友" : "加好友";
+  const blacklistLabel = blacklistPending ? "处理中…" : isBlacklisted ? "已在黑名单" : "加入黑名单";
 
   return (
     <ModalDialog
@@ -247,29 +248,38 @@ export function UserProfileCard({
               disabled={!canLikeProfile}
               onClick={likeProfile}
             >
-              <ThumbsUp size={17} />
-              <span>{likeLabel}</span>
+              <ThumbsUp size={18} />
+              <span className="profile-like-count" aria-hidden="true">{likeCount}</span>
             </button>
             <button
               className="profile-friend-button"
               type="button"
+              aria-label={friendLabel}
               disabled={!canActOnProfile || isFriend || friendPending || !onAddFriend}
               onClick={addFriend}
             >
-              <UserPlus size={17} />
-              <span>{friendLabel}</span>
+              <UserPlus size={18} />
+            </button>
+            <button
+              className="profile-blacklist-button"
+              type="button"
+              aria-label={blacklistLabel}
+              disabled={!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist}
+              onClick={openBlacklistConfirm}
+            >
+              <UserRoundX size={18} />
             </button>
             <button
               className="profile-report-button"
               type="button"
+              aria-label="举报"
               disabled={!canActOnProfile || reportPending}
               onClick={() => {
                 setReportError("");
                 setShowReportDialog(true);
               }}
             >
-              <CircleAlert size={17} />
-              <span>举报</span>
+              <CircleAlert size={18} />
             </button>
           </>
         )}
@@ -292,13 +302,6 @@ export function UserProfileCard({
             {profileNotice && <p className="profile-inline-notice">{profileNotice}</p>}
           </div>
         ) : null}
-        secondaryActions={(
-          <div className="profile-relation-actions">
-            <button className="profile-blacklist-button" type="button" disabled={!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist} onClick={openBlacklistConfirm}>
-              {blacklistPending ? "处理中…" : isBlacklisted ? "已在黑名单" : "加入黑名单"}
-            </button>
-          </div>
-        )}
       />
 
       {showReplays && (

@@ -88,7 +88,7 @@ export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };
 
 function ModeTabs({ mode, roomCounts, onModeChange }) {
   return (
-    <div className="mode-tabs" role="tablist" aria-label="对弈模式">
+    <div className="mode-tabs window-mode-tabs" role="tablist" aria-label="对弈模式">
       {modeOrderedEntries().map((entry) => {
         const count = Number(roomCounts[entry.id] ?? 0);
         return (

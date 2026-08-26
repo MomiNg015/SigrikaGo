@@ -1,0 +1,14 @@
+/* Profile tabs reuse the watch-window mode-tab control language. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-mode-tabs {
+  box-sizing: border-box !important;
+  width: auto !important;
+  min-width: 0 !important;
+  gap: 4px !important;
+  margin: 0 8px !important;
+  padding: 12px 0 14px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}

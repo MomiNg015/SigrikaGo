@@ -48,19 +48,30 @@
 /* Final Bright School owner that removes terminal/HUD bleed from dossier records. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table {
   background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
   color: var(--bright-ink) !important;
   font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table thead th {
-  background: color-mix(in srgb, var(--bright-sheet-clean) 72%, var(--bright-blue)) !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  background: transparent !important;
   color: color-mix(in srgb, var(--bright-ink) 78%, var(--bright-blue)) !important;
-  border-color: color-mix(in srgb, var(--bright-ink) 16%, transparent) !important;
+  border: 0 !important;
   clip-path: none !important;
+  box-shadow: none !important;
+  white-space: nowrap !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr {
-  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 8%, var(--bright-sheet-clean)) !important;
+  background: transparent !important;
   color: var(--bright-ink) !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -69,12 +80,32 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody tr:nth-child(even) {
-  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 4%, color-mix(in srgb, var(--bright-sheet-clean) 92%, var(--bright-blue))) !important;
+  background: transparent !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td) {
+  background: color-mix(in srgb, var(--character-theme-color, var(--bright-blue)) 7%, var(--profile-dossier-card-surface, var(--bright-sheet))) !important;
   color: var(--bright-ink) !important;
-  border-color: color-mix(in srgb, var(--bright-ink) 15%, transparent) !important;
+  border-top: 1px solid color-mix(in srgb, var(--bright-ink) 74%, transparent) !important;
+  border-right: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--bright-ink) 74%, transparent) !important;
+  border-left: 0 !important;
+  box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td):first-child {
+  border-left: 1px solid color-mix(in srgb, var(--bright-ink) 74%, transparent) !important;
+  border-radius: 8px 0 0 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td):last-child {
+  border-right: 1px solid color-mix(in srgb, var(--bright-ink) 74%, transparent) !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table .profile-character-empty-row td {
+  border: 1px solid color-mix(in srgb, var(--bright-ink) 74%, transparent) !important;
+  border-radius: 8px !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table td strong {

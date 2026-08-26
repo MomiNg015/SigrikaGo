@@ -51,12 +51,14 @@
 }
 
 .profile-summary-item {
+  position: relative;
   display: grid;
   align-content: center;
   gap: 10px;
   min-width: 0;
   min-height: 108px;
   padding: 20px 22px;
+  overflow: visible;
 }
 
 .profile-summary-item + .profile-summary-item {
@@ -85,6 +87,34 @@
 
 .profile-summary-item.is-primary > strong {
   font-size: 1.5625rem;
+}
+
+.profile-summary-item .stat-tip-wrap {
+  position: static;
+}
+
+.profile-summary-item:has(.stat-tip-wrap:is(:hover, :focus-within)) {
+  z-index: 7;
+}
+
+.profile-summary-item .stat-tip {
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: 0;
+  right: auto;
+  width: min(250px, calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
+  transform: translateY(-8px);
+}
+
+.profile-summary-item:nth-child(even) .stat-tip {
+  left: auto;
+  right: 0;
+}
+
+.profile-summary-item .stat-tip-wrap:hover .stat-tip,
+.profile-summary-item .stat-tip-wrap:focus-within .stat-tip {
+  transform: translateY(0);
 }
 
 .profile-recent-section {

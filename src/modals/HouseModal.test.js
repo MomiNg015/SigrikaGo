@@ -105,10 +105,13 @@ describe("deriveCharacterRecordStats", () => {
     }));
     expect(profileHtml).toContain("profile-summary-grid");
     expect(profileHtml).toContain("profile-character-table");
+    expect(profileHtml).toContain("profile-character-table-head");
+    expect(profileHtml).toContain("aria-hidden=\"true\"");
     expect(profileHtml).toContain("profile-mode-tabs");
     expect(profileHtml).toContain("profile-identity-actions");
     expect(profileHtml).toContain("profile-like-button");
     expect(profileHtml).toContain("profile-friend-button");
+    expect(profileHtml).toContain("profile-blacklist-button");
     expect(profileHtml).toContain("profile-report-button");
     expect(profileHtml).not.toContain("text-rating-value");
     expect(profileHtml).toContain("点赞 3");
@@ -121,7 +124,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("--character-theme-color:#67d9e8");
     expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-summary-grid"));
     expect(profileHtml).not.toContain("3段 · 1160分");
-    expect(profileHtml).toContain("<th scope=\"col\">角色</th>");
+    expect(profileHtml).toContain("<th scope=\"col\" aria-label=\"角色\"></th>");
     expect(profileHtml).toContain("<th scope=\"col\">对局</th>");
     expect(profileHtml).toContain("<th scope=\"col\">胜</th>");
     expect(profileHtml).toContain("<th scope=\"col\">负</th>");
@@ -159,6 +162,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(selfHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
     expect(selfHtml).toMatch(/class="profile-friend-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-blacklist-button"[^>]*disabled=""/);
     expect(selfHtml).toMatch(/class="profile-report-button"[^>]*disabled=""/);
     expect(likedHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
     expect(likedHtml).not.toMatch(/class="profile-friend-button"[^>]*disabled=""/);
@@ -596,7 +600,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("胜率");
     expect(html).toContain("resume-replay-action");
     expect(html).toContain("profile-character-table");
-    expect(html).toContain("<th scope=\"col\">角色</th>");
+    expect(html).toContain("<h4>角色战绩</h4>");
+    expect(html).toContain("profile-character-col-identity");
+    expect(html).toContain("<th scope=\"col\" aria-label=\"角色\"></th>");
     expect(html).toContain("<th scope=\"col\">对局</th>");
     expect(html).toContain("<th scope=\"col\">胜率</th>");
     expect(html).toContain("暂无角色战绩");
@@ -955,14 +961,19 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("inset: 50% auto auto 50%;");
     expect(modalCss).toContain("transform: translate(-50%, -50%);");
     expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
-    expect(modalCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled)");
+    expect(modalCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button):active:not(:disabled)");
     expect(modalCss).toContain("transform: none;");
+    expect(modalCss).toContain(".profile-identity-actions .profile-like-button");
+    expect(modalCss).toContain("min-width: 72px;");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const finalThemeCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
     const profileAuditCss = readFileSync(
       new URL("../styles/themes/bright-school/quality-base/audit-profile-modals.css", import.meta.url),
       "utf8"
+    );
+    const profileActionsCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/quality-base/profile-dossier/actions-tabs.css", import.meta.url)
     );
     expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto minmax(0, 1fr) !important;");
     expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
@@ -972,6 +983,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalThemeCss).toContain(".user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag)");
     expect(finalThemeCss).toContain("background-color: transparent !important");
     expect(finalThemeCss).toContain(".profile-resume-view .profile-resume-hero .profile-portrait-mask > img");
+    expect(finalThemeCss).toContain("width: 80% !important");
+    expect(finalThemeCss).toContain("height: 80% !important");
+    expect(finalThemeCss).toContain("object-fit: contain !important");
     expect(finalThemeCss).toContain(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask");
     expect(finalThemeCss).toContain("background: transparent !important");
     expect(finalThemeCss).toContain("border: 0 !important");
@@ -979,11 +993,29 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalThemeCss).toContain("clip-path: none !important");
     expect(profileAuditCss).toContain(".profile-character-table tbody tr");
     expect(profileAuditCss).not.toContain(".character-record-row");
+    expect(finalThemeCss).toContain("--profile-dossier-card-surface: var(--bright-sheet)");
+    expect(finalThemeCss).toContain("box-shadow: var(--profile-dossier-shadow-large) !important");
+    expect(finalThemeCss).toContain("box-shadow: var(--profile-dossier-shadow-medium) !important");
+    expect(finalThemeCss).toContain(".profile-character-table-head");
+    expect(profileAuditCss).toContain("7%, var(--profile-dossier-card-surface, var(--bright-sheet))");
+    expect(profileAuditCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important");
     expect(finalThemeCss).toContain(".profile-friend-button");
-    expect(finalThemeCss).toContain(".profile-resume-view .profile-mode-tabs button[aria-selected=\"true\"]");
-    expect(finalThemeCss).toContain("box-shadow: inset 0 -3px 0 var(--bright-pink) !important");
-    expect(finalThemeCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled)");
-    expect(finalThemeCss).toContain("transform: none !important");
+    expect(profileActionsCss).toContain("Profile tabs reuse the watch-window mode-tab control language.");
+    expect(profileActionsCss).toContain("width: auto !important");
+    expect(profileActionsCss).toContain("min-width: 0 !important");
+    expect(profileActionsCss).toContain("gap: 4px !important");
+    expect(profileActionsCss).not.toContain(".profile-mode-tabs button:is(.active, [aria-selected=\"true\"])");
+    expect(profileActionsCss).toContain("background: var(--bright-cream) !important");
+    expect(profileActionsCss).toContain("button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button)");
+    expect(profileActionsCss).toContain(".achievement-entry-action,\n  .resume-wallet");
+    expect(profileActionsCss).toContain("filter: none !important");
+    expect(profileActionsCss).toContain("transform: translateY(-2px) !important");
+    expect(profileActionsCss).toContain("transform: translateY(1px) !important");
+    expect(profileActionsCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(profileActionsCss).toContain(":is(.profile-report-button, .profile-blacklist-button)");
+    expect(profileActionsCss).toContain("var(--bright-sheet) 76%, var(--theme-danger)");
+    expect(finalThemeCss).toContain(".resume-replay-action");
+    expect(finalThemeCss).toContain("background: #e4f6f0 !important");
     expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
       .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
     expect(finalThemeCss).toContain(".house-modal .character-list");

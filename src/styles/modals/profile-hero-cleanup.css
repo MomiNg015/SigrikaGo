@@ -25,6 +25,8 @@
 }
 
 .profile-record-panel {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
@@ -34,7 +36,7 @@
     "actions";
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
 }
 
@@ -73,9 +75,9 @@
 
 .profile-portrait-mask > img {
   display: block;
-  width: 70% !important;
-  height: 70% !important;
-  object-fit: contain;
+  width: 80% !important;
+  height: 80% !important;
+  object-fit: contain !important;
   object-position: center;
   transform-origin: center;
   scale: 1 !important;
@@ -89,8 +91,18 @@
 
 .profile-resume-hero h3 {
   margin: 0;
-  font-size: 1.6875rem;
+  font-size: 2.3625rem;
   line-height: 1.15;
+}
+
+.profile-identity-block .user-identity {
+  --user-nameplate-scale: 1.4;
+  max-width: none;
+  padding: 4px 16px;
+}
+
+.profile-identity-block :is(.user-identity-main, .user-identity-name-tag) {
+  max-width: none;
 }
 
 .profile-identity-actions {
@@ -107,48 +119,16 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-  padding: 12px 16px 14px;
-  border-bottom: 1px solid var(--profile-dossier-line);
+  gap: 4px;
+  width: auto;
+  margin: 0 8px;
+  padding: 12px 0 14px;
+  border: 0;
   background: transparent;
-}
-
-.profile-resume-view .profile-mode-tabs button {
-  min-height: 46px;
-  border: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 18%, transparent);
-  border-radius: 8px;
-  background: var(--profile-dossier-sheet);
-  color: color-mix(in srgb, var(--profile-dossier-ink) 82%, var(--profile-dossier-blue));
-  box-shadow: inset 0 -2px 0 transparent;
-  font-size: 1rem;
-  font-weight: 900;
-  transform: none;
-  transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
-}
-
-.profile-resume-view .profile-mode-tabs button + button {
-  border-left-color: color-mix(in srgb, var(--profile-dossier-ink) 18%, transparent);
-}
-
-.profile-resume-view .profile-mode-tabs button.active,
-.profile-resume-view .profile-mode-tabs button[aria-selected="true"] {
-  border-color: color-mix(in srgb, var(--profile-dossier-pink) 56%, var(--profile-dossier-line));
-  background: color-mix(in srgb, var(--profile-dossier-sheet) 91%, var(--profile-dossier-pink));
-  color: var(--profile-dossier-ink);
-  box-shadow: inset 0 -3px 0 var(--profile-dossier-pink);
-  transform: none;
 }
 
 .profile-resume-view .profile-mode-tabs button[aria-disabled="true"] {
   cursor: wait;
-}
-
-.profile-resume-view .profile-mode-tabs button:focus-visible {
-  position: relative;
-  z-index: 2;
-  outline: 3px solid color-mix(in srgb, var(--profile-dossier-blue) 76%, var(--profile-dossier-ink));
-  outline-offset: 2px;
 }
 
 .profile-identity-block,

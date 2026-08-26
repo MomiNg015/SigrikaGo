@@ -1,16 +1,13 @@
 /* Final portrait summary, request feedback, and recent-result rhythm. */
 @media (max-width: 768px) {
   .profile-resume-view .profile-mode-tabs {
-    gap: 8px !important;
+    gap: 4px !important;
     padding: 10px 12px 12px !important;
   }
 
   .profile-resume-view .profile-mode-tabs button {
-    min-height: 46px !important;
-    padding: 6px 8px !important;
-    border-radius: 8px !important;
-    transform: none !important;
-    filter: none !important;
+    min-height: 44px !important;
+    padding: 0 8px !important;
   }
 
   .profile-resume-status {
@@ -24,37 +21,70 @@
     gap: 8px !important;
   }
 
+  .profile-resume-view .profile-identity-actions {
+    justify-self: stretch !important;
+    display: grid !important;
+    grid-template-columns: minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .profile-resume-view-self .profile-identity-actions {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .profile-resume-view .profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button, .profile-personalization-button) {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 8px 6px !important;
+    font-size: 0.8125rem !important;
+  }
+
   .profile-retry-button {
     min-height: 44px !important;
   }
 
   .profile-overview-grid {
     grid-template-columns: minmax(0, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-overview-grid {
+    gap: 6px !important;
+    padding: 2px 0 6px !important;
   }
 
   .profile-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding-bottom: 2px !important;
   }
 
   .profile-summary-item,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item {
-    min-height: 88px !important;
-    padding: 14px !important;
+    gap: 6px !important;
+    min-height: 64px !important;
+    padding: 8px !important;
   }
 
-  .profile-summary-item + .profile-summary-item,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item + .profile-summary-item {
+  .profile-summary-item + .profile-summary-item {
     border-left: 0 !important;
   }
 
-  .profile-summary-item:nth-child(even),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(even) {
+  .profile-summary-item:nth-child(even) {
     border-left: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 18%, transparent) !important;
   }
 
-  .profile-summary-item:nth-child(n + 3),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(n + 3) {
+  .profile-summary-item:nth-child(n + 3) {
     border-top: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 18%, transparent) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item + .profile-summary-item,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(even),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(n + 3) {
+    border: 2px solid var(--profile-dossier-card-border) !important;
   }
 
   .profile-summary-item > strong,
@@ -64,7 +94,11 @@
     font-size: 1.25rem !important;
   }
 
-  .profile-summary-item .stat-tip {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-summary-item .stat-tip {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    bottom: auto !important;
+    width: min(250px, calc(100vw - 56px)) !important;
     max-width: calc(100vw - 56px) !important;
     transform: translateY(8px) !important;
   }
@@ -84,10 +118,14 @@
   }
 
   .profile-recent-section {
-    gap: 10px !important;
-    padding: 16px 14px !important;
+    gap: 4px !important;
+    padding: 6px 10px !important;
     border-top: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 18%, transparent) !important;
     border-left: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-recent-section {
+    border: 2px solid var(--profile-dossier-card-border) !important;
   }
 
   .profile-recent-section .profile-section-heading {
@@ -117,4 +155,5 @@
     width: 56px !important;
     justify-self: start !important;
   }
+
 }

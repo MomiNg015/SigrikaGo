@@ -67,7 +67,8 @@ describe("player theme CSS contract", () => {
       "./modals.css",
       "./mobile.css",
       "./effects.css",
-      "./skill-descriptions.css"
+      "./skill-descriptions.css",
+      "./quality-base/profile-dossier.css"
     ]);
     expect(themeEntry).not.toContain(".app-shell.player-theme-enabled .result-badge");
     expect(qaGuardEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school");
@@ -637,7 +638,6 @@ describe("player theme CSS contract", () => {
       "./quality-base/audit-home.css",
       "./quality-base/audit-commerce.css",
       "./quality-base/audit-profile-modals.css",
-      "./quality-base/profile-dossier.css",
       "./quality-base/audit-room.css",
       "./quality-base/audit-compact.css",
       "./quality-base/refinement-foundation.css",

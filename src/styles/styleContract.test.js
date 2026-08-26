@@ -898,6 +898,7 @@ describe("root CSS entry contract", () => {
       "./mobile-profile-records/profile-shell-hero.css",
       "./mobile-profile-records/profile-summary-results.css",
       "./mobile-profile-records/character-record-list.css",
+      "./mobile-profile-records/character-record-cards.css",
       "./mobile-profile-records/footer-resume-stats.css"
     ]);
     expect(mobileProfileRecordsEntry).not.toContain(".user-profile-card {");

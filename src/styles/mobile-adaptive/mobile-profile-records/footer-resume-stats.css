@@ -26,4 +26,8 @@
     font-size: 0.8125rem !important;
     white-space: nowrap !important;
   }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view-social .profile-identity-actions button.profile-report-button:not(:disabled) {
+    background: color-mix(in srgb, var(--bright-sheet) 76%, var(--theme-danger)) !important;
+  }
 }

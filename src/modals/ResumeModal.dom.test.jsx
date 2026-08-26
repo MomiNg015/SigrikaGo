@@ -70,6 +70,9 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("tooltip", {
       name: "对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
     })).toBeTruthy();
+    expect(screen.getByRole("tooltip", {
+      name: "每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。"
+    })).toBeTruthy();
     expect(screen.getByLabelText("履历操作").textContent).toBe("个性化");
     expect(document.querySelector(".profile-recent-section .profile-section-heading .profile-replay-button")).toBeTruthy();
     expect(screen.queryByText("点赞", { exact: false })).toBeNull();

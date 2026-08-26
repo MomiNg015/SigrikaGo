@@ -90,33 +90,35 @@
   }
 
   .profile-record-panel {
-    display: block !important;
+    display: grid !important;
+    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "status"
+      "overview"
+      "characters"
+      "actions" !important;
     min-height: 0 !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    overscroll-behavior: contain !important;
-    scroll-padding-bottom: 18px !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow: visible !important;
   }
 
   .profile-resume-view .profile-resume-hero {
     display: grid !important;
-    grid-template-columns: minmax(104px, 118px) minmax(0, 1fr) !important;
+    grid-template-columns: 108px minmax(0, 1fr) !important;
     grid-template-areas:
       "portrait identity"
       "actions actions" !important;
     align-items: center !important;
     justify-items: stretch !important;
-    gap: 12px 14px !important;
+    gap: 8px 12px !important;
     min-height: 0 !important;
-    padding: 14px !important;
-    text-align: left !important;
+    padding: 10px 12px !important;
+    text-align: center !important;
   }
 
   .profile-resume-view .profile-hero-portrait {
     justify-self: center !important;
-    width: 118px !important;
-    height: 106px !important;
+    width: 108px !important;
+    height: 96px !important;
   }
 
   .profile-resume-view .profile-hero-portrait > .profile-portrait-mask {
@@ -125,8 +127,8 @@
   }
 
   .profile-resume-view .profile-hero-portrait > .profile-portrait-mask > img {
-    width: 70% !important;
-    height: 70% !important;
+    width: 80% !important;
+    height: 80% !important;
     object-fit: contain !important;
     object-position: center !important;
     scale: 1 !important;
@@ -134,38 +136,39 @@
   }
 
   .profile-resume-view .profile-identity-block {
-    justify-self: stretch !important;
+    justify-self: center !important;
+    display: grid !important;
+    place-items: center !important;
     width: 100% !important;
-    text-align: left !important;
+    text-align: center !important;
   }
 
   .profile-resume-view .profile-resume-hero h3 {
     max-width: 100% !important;
-    font-size: 1.25rem !important;
+    font-size: 1.75rem !important;
   }
 
-  .profile-resume-view .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag) {
+  .profile-resume-view .profile-identity-block .user-identity {
+    --user-nameplate-scale: 1.288 !important;
+    justify-items: center !important;
+    max-width: 100% !important;
+    padding: 4px 12px !important;
+  }
+
+  .profile-resume-view .profile-identity-block :is(.user-identity-main, .user-identity-name-tag) {
     max-width: 100% !important;
   }
 
-  .profile-resume-view .profile-identity-actions {
-    justify-self: stretch !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    width: 100% !important;
+  .profile-resume-view .profile-identity-block .user-identity.has-nameplate .user-identity-name-tag {
+    width: var(--user-nameplate-width) !important;
+    min-width: var(--user-nameplate-width) !important;
+    max-width: var(--user-nameplate-width) !important;
+    height: var(--user-nameplate-height) !important;
+    min-height: var(--user-nameplate-height) !important;
   }
 
-  .profile-resume-view-self .profile-identity-actions {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .profile-resume-view .profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button, .profile-personalization-button) {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 44px !important;
-    padding: 8px 6px !important;
-    font-size: 0.8125rem !important;
+  .profile-resume-view .profile-identity-block .user-identity-main {
+    justify-content: center !important;
   }
 
 }

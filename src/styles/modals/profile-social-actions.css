@@ -1,21 +1,45 @@
 /* Contextual profile actions and report dialog fields. */
-.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button) {
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button) {
+  width: 44px;
+  min-width: 44px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 4px;
   border: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 22%, transparent);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px;
   color: var(--profile-dossier-ink);
   font-weight: 900;
   box-shadow: none;
   transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
 }
 
-.profile-like-button {
+.profile-identity-actions .profile-like-button {
+  width: auto;
+  min-width: 58px;
+  padding-inline: 10px;
   background: color-mix(in srgb, var(--profile-dossier-sheet) 95%, var(--profile-dossier-blue));
+}
+
+.profile-identity-actions > button > svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+@media (min-width: 769px) {
+  .profile-identity-actions .profile-like-button {
+    min-width: 72px;
+    gap: 8px;
+    padding-inline: 14px;
+  }
+}
+
+.profile-like-count {
+  min-width: 1ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .profile-friend-button {
@@ -28,17 +52,17 @@
   border-color: color-mix(in srgb, var(--theme-danger) 62%, var(--profile-dossier-ink));
 }
 
-.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):active:not(:disabled) {
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button):active:not(:disabled) {
   transform: none;
   box-shadow: none;
 }
 
-.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):hover:not(:disabled) {
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button):hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--profile-dossier-ink) 36%, transparent);
   background: color-mix(in srgb, var(--profile-dossier-sheet) 88%, var(--profile-dossier-blue));
 }
 
-.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-report-button):disabled {
+.profile-identity-actions :is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button):disabled {
   background: color-mix(in srgb, var(--profile-dossier-sheet) 78%, var(--profile-dossier-ink));
   color: color-mix(in srgb, var(--profile-dossier-ink) 48%, var(--profile-dossier-sheet));
   border-color: color-mix(in srgb, var(--profile-dossier-ink) 28%, var(--profile-dossier-sheet));

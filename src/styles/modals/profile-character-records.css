@@ -1,4 +1,6 @@
 .profile-character-section {
+  --profile-character-columns: 36% repeat(5, minmax(0, 1fr));
+  --profile-character-scrollbar-gutter: 10px;
   grid-area: characters;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -10,6 +12,40 @@
   background: transparent;
 }
 
+.profile-character-table-head {
+  display: none;
+  grid-template-columns: var(--profile-character-columns);
+  align-items: end;
+  height: 32px;
+  max-height: 32px;
+  min-width: 0;
+  margin-right: var(--profile-character-scrollbar-gutter);
+  padding: 0;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--profile-dossier-ink) 68%, var(--profile-dossier-blue));
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.profile-character-table-head > :is(h4, span) {
+  align-self: end;
+  min-width: 0;
+  margin: 0;
+  padding: 0 14px 2px;
+  box-sizing: border-box;
+  text-align: right;
+}
+
+.profile-character-table-head > h4 {
+  color: var(--profile-dossier-ink);
+  font-size: 1.0625rem;
+  font-weight: 900;
+  text-align: left;
+}
+
 .profile-character-table-scroll {
   min-width: 0;
   min-height: 0;
@@ -18,7 +54,6 @@
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
   scroll-padding-bottom: 12px;
-  padding-right: 6px;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
 }
@@ -26,7 +61,7 @@
 .profile-character-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0;
+  border-spacing: 0 8px;
   table-layout: fixed;
   color: var(--profile-dossier-ink);
   font-variant-numeric: tabular-nums;
@@ -52,8 +87,11 @@
 }
 
 .profile-character-table :is(th, td):first-child {
-  width: 36%;
   text-align: left;
+}
+
+.profile-character-table .profile-character-col-identity {
+  width: 36%;
 }
 
 .profile-character-table tbody th {
@@ -84,15 +122,15 @@
 }
 
 .profile-character-table .profile-chain-portrait.small {
-  flex: 0 0 60px;
-  width: 60px;
-  height: 50px;
+  flex: 0 0 68px;
+  width: 68px;
+  height: 56px;
   overflow: visible;
 }
 
 .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask {
-  width: 60px;
-  height: 50px;
+  width: 68px;
+  height: 56px;
   border: 0;
   border-radius: 8px;
   background: transparent;

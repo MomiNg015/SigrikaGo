@@ -59,12 +59,21 @@ describe("UserProfileCard dossier interactions", () => {
     const actions = screen.getByLabelText("用户互动");
     expect(within(actions).getByRole("button", { name: "点赞 5" })).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "加好友" })).toBeTruthy();
+    expect(within(actions).getByRole("button", { name: "加入黑名单" })).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "举报" })).toBeTruthy();
+    expect([...actions.children].map((button) => button.className)).toEqual([
+      "profile-like-button",
+      "profile-friend-button",
+      "profile-blacklist-button",
+      "profile-report-button"
+    ]);
+    expect([...actions.children].map((button) => button.textContent)).toEqual(["5", "", "", ""]);
+    expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("width"))).toEqual(["18", "18", "18", "18"]);
+    expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("height"))).toEqual(["18", "18", "18", "18"]);
     expect(within(actions).queryByRole("button", { name: "个性化" })).toBeNull();
     const recentHeading = document.querySelector(".profile-recent-section .profile-section-heading");
     expect(within(recentHeading).getByRole("button", { name: "对局回放" })).toBeTruthy();
-    expect(document.querySelector(".profile-secondary-actions").textContent).not.toContain("关系操作");
-    expect(within(document.querySelector(".profile-secondary-actions")).queryByRole("button", { name: "对局回放" })).toBeNull();
+    expect(document.querySelector(".profile-secondary-actions")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "加入黑名单" }));
     expect(screen.getByRole("dialog", { name: "加入黑名单" })).toBeTruthy();
@@ -243,9 +252,9 @@ describe("UserProfileCard dossier interactions", () => {
       ]
     });
 
-    expect(screen.getAllByRole("columnheader").map((header) => header.textContent)).toEqual([
-      "角色", "对局", "胜", "负", "和", "胜率"
-    ]);
+    const headers = screen.getAllByRole("columnheader");
+    expect(headers.map((header) => header.textContent)).toEqual(["", "对局", "胜", "负", "和", "胜率"]);
+    expect(headers[0].getAttribute("aria-label")).toBe("角色");
     expect(screen.getAllByRole("rowheader").map((header) => header.textContent)).toEqual(["爱弥斯", "西格莉卡"]);
     expect(document.querySelectorAll(".profile-portrait-mask")).toHaveLength(3);
     expect(document.querySelectorAll(".profile-chain-portrait.small > .profile-portrait-mask > img")).toHaveLength(2);

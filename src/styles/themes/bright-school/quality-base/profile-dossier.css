@@ -1,3 +1,4 @@
 /* Final Bright School profile dossier owner. Keep concrete rules split by responsibility. */
 @import "./profile-dossier/surfaces-portraits.css";
+@import "./profile-dossier/card-surfaces.css";
 @import "./profile-dossier/actions-tabs.css";

@@ -1,0 +1,101 @@
+/* Theme-native dossier cards and their deliberate depth hierarchy. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view {
+  --profile-dossier-card-surface: var(--bright-sheet);
+  --profile-dossier-card-border: var(--bright-border);
+  --profile-dossier-shadow-large: 4px 5px 0 rgba(61, 43, 37, 0.78);
+  --profile-dossier-shadow-medium: 3px 4px 0 rgba(61, 43, 37, 0.68);
+  --profile-dossier-shadow-small: 1px 2px 0 rgba(61, 43, 37, 0.54);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero {
+  overflow: visible !important;
+  margin: 4px 8px 8px !important;
+  background: var(--profile-dossier-card-surface) !important;
+  color: var(--bright-ink) !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--profile-dossier-shadow-large) !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view :is(
+  .profile-record-panel,
+  .profile-overview-grid,
+  .profile-secondary-actions
+) {
+  background: transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-panel {
+  padding: 4px 8px 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-overview-grid {
+  gap: 12px !important;
+  padding: 4px 0 12px !important;
+  border: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-grid {
+  gap: 10px !important;
+  background: transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item {
+  position: relative !important;
+  overflow: visible !important;
+  border: 2px solid var(--profile-dossier-card-border) !important;
+  border-radius: 14px !important;
+  background: var(--profile-dossier-card-surface) !important;
+  box-shadow: var(--profile-dossier-shadow-medium) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item + .profile-summary-item {
+  border-left: 2px solid var(--profile-dossier-card-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(1) .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-pink)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(2) .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 70%, var(--bright-blue)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(3) .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-mint)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(4) .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 76%, var(--bright-pink)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-recent-section {
+  border: 2px solid var(--profile-dossier-card-border) !important;
+  border-radius: 14px !important;
+  background: var(--profile-dossier-card-surface) !important;
+  box-shadow: var(--profile-dossier-shadow-medium) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-section {
+  margin: 0 0 8px !important;
+  padding: 14px 16px 12px !important;
+  border: 2px solid var(--profile-dossier-card-border) !important;
+  border-radius: 16px !important;
+  background: var(--profile-dossier-card-surface) !important;
+  box-shadow: var(--profile-dossier-shadow-large) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-head {
+  display: grid !important;
+  padding-inline: 0 !important;
+  color: color-mix(in srgb, var(--bright-ink) 78%, var(--bright-blue)) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item .stat-tip {
+  z-index: 6 !important;
+}

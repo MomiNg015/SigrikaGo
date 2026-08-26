@@ -1,0 +1,48 @@
+/* Final portrait Bright School card paint for the semantic six-column record table. */
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-head {
+    display: grid !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table {
+    border-spacing: 0 7px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table thead th {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td) {
+    border-top: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 74%, transparent) !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 74%, transparent) !important;
+    border-left: 0 !important;
+    background: color-mix(in srgb, var(--character-theme-color, var(--profile-dossier-blue)) 7%, var(--profile-dossier-card-surface, var(--bright-sheet))) !important;
+    box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td):first-child {
+    border-left: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 74%, transparent) !important;
+    border-radius: 8px 0 0 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table tbody :is(th, td):last-child {
+    border-right: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 74%, transparent) !important;
+    border-radius: 0 8px 8px 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table .profile-character-empty-row td {
+    border: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 74%, transparent) !important;
+    border-radius: 8px !important;
+  }
+}

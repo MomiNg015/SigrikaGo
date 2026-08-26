@@ -230,3 +230,26 @@
   color: #fff;
   border-color: #1f6f5b;
 }
+
+/* Shared geometry for top-level window mode tabs (watch list and profile dossier). */
+.mode-tabs.window-mode-tabs {
+  width: 100%;
+  justify-self: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.mode-tabs.window-mode-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-size: 16px;
+  line-height: 1;
+}
