@@ -236,11 +236,16 @@ describe("player theme CSS contract", () => {
       new URL("./themes/bright-school/commerce/warehouse-profile/profile-stats.css", import.meta.url),
       "utf8"
     );
+    const refinementFoundationCss = readFileSync(
+      new URL("./themes/bright-school/quality-base/refinement-foundation.css", import.meta.url),
+      "utf8"
+    );
 
     expect(commerceSocialCss).toContain("--bright-commerce-card-surface: var(--bright-sheet-clean)");
     expect(commerceSocialCss).toContain("--bright-commerce-card-outline: #4a3736");
+    expect(refinementFoundationCss).toContain("--bright-sheet: #fffaf0");
     expect(commerceSocialCss).toContain(
-      ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: #e7f5f8;\n}"
+      ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: var(--bright-sheet);\n}"
     );
     expect(commerceSocialCss).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school .character-record-row {\n  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));\n}"

@@ -16,7 +16,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .friends-row {
-  --bright-commerce-card-surface: #e7f5f8;
+  --bright-commerce-card-surface: var(--bright-sheet);
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .character-record-row {
