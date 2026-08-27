@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 104
-- **Last Active**: 2026-08-24
+- **Total Sessions**: 105
+- **Last Active**: 2026-08-27
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1462 | Active |
+| `journal-2.md` | ~1495 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 105 | 2026-08-27 | Interaction and modal motion polish | `899c5e14` | `codex/animation-polish-audit-fixes` |
 | 104 | 2026-08-24 | Polish shared profile dossier portraits | `07201a07` | `codex/nameplate-fixes` |
 | 103 | 2026-08-14 | Finalize and archive all pending work | `72755bb7`, `b724a451` | `codex/nameplate-fixes` |
 | 102 | 2026-08-14 | Make viewport gate device-agnostic | `9f5f5573` | `codex/nameplate-fixes` |
