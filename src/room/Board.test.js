@@ -1009,16 +1009,21 @@ describe("areBoardPropsEqual", () => {
   test("bright school keeps skill targeting glow separate from star-point dots", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const targetingBlock = css.slice(css.indexOf("Bright School skill targeting repair."));
+    const baseBoardCss = readFileSync(new URL("../styles/room/board/frame-coordinates.css", import.meta.url), "utf8");
+    const baseTargetingKeyframes = baseBoardCss.slice(
+      baseBoardCss.indexOf("@keyframes target-rainbow"),
+      baseBoardCss.indexOf("@keyframes color-illusion-board-texture-spread")
+    );
 
     expect(targetingBlock).toContain(".board-wrap.targeting");
-    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-0");
-    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-50");
-    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-100");
+    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow");
     expect(targetingBlock).toContain("box-shadow:");
+    expect(targetingBlock).toContain("outline: 4px solid #ff75b7");
     expect(targetingBlock).toContain("animation: bright-school-board-targeting-glow 1.15s linear infinite !important");
-    expect(targetingBlock).toContain("animation: bright-school-board-targeting-aura 1.15s linear infinite !important");
     expect(targetingBlock).toContain("@keyframes bright-school-board-targeting-glow");
-    expect(targetingBlock).toContain("@keyframes bright-school-board-targeting-aura");
+    expect(targetingBlock).not.toContain("bright-school-board-targeting-aura");
+    expect(baseTargetingKeyframes).toContain("outline-color:");
+    expect(baseTargetingKeyframes).not.toContain("box-shadow:");
     expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::after");
     expect(targetingBlock).toContain("transform: translate(-50%, -50%) !important");
     expect(targetingBlock).toContain(".board-wrap.targeting .point.previewable::before");

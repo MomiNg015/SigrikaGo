@@ -121,10 +121,9 @@ describe("ActionBar helpers", () => {
     expect(targetingBlock).toContain("--bright-school-skill-active-bg-0");
     expect(targetingBlock).toContain("--bright-school-skill-active-shadow-0");
     expect(targetingBlock).toContain("animation: bright-school-skill-action-glow 1.1s linear infinite !important");
-    expect(targetingBlock).toContain("animation: bright-school-skill-action-aura 1.1s linear infinite !important");
     expect(targetingBlock).toContain("box-shadow:");
     expect(targetingBlock).toContain("@keyframes bright-school-skill-action-glow");
-    expect(targetingBlock).toContain("@keyframes bright-school-skill-action-aura");
+    expect(targetingBlock).not.toContain("bright-school-skill-action-aura");
     expect(targetingBlock).toContain("0% {");
     expect(targetingBlock).toContain("50% {");
     expect(targetingBlock).toContain("100% {");

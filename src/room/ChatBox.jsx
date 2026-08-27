@@ -112,17 +112,19 @@ function ChatBox({
       bottom: popupAnchor.bottom,
       width: popupAnchor.width,
       height: popupAnchor.height,
-      maxHeight: popupAnchor.maxHeight,
-      pointerEvents: "auto"
+      maxHeight: popupAnchor.maxHeight
     }
     : floatingLayerZ
       ? { "--room-floating-z": floatingLayerZ }
       : undefined;
-  const popup = isOpen && (
+  const popup = (
     <section
       className={chatPopoverClassName({ mobileDockPopup, isSigrikaDuelSystemLog })}
       id={panelId}
       ref={panelRef}
+      data-open={isOpen}
+      aria-hidden={!isOpen}
+      inert={!isOpen}
       role={mobileDockPopup ? "tabpanel" : undefined}
       aria-labelledby={mobileDockPopup ? `${panelId}-trigger` : undefined}
       style={popupStyle}

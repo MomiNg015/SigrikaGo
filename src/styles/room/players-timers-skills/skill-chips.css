@@ -66,6 +66,8 @@
 }
 
 .skill-chip.targeting {
+  outline: 3px solid #ff5b6b;
+  outline-offset: 2px;
   animation: target-rainbow 1.2s linear infinite;
 }
 

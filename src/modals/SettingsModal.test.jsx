@@ -115,6 +115,15 @@ describe("SettingsModal terminal style hooks", () => {
     expect(mobileSafetyCss).toContain("overflow: visible !important");
   });
 
+  it("limits tab-change motion to the newly mounted settings panel", () => {
+    const css = readFileSync(new URL("../styles/commerce/shop-settings/settings-panel.css", import.meta.url), "utf8");
+
+    expect(css).toContain("animation: settings-panel-in 150ms cubic-bezier(0.16, 1, 0.3, 1) both");
+    expect(css).toContain("transform: translateY(2px)");
+    expect(css).toContain("animation: settings-panel-fade-in 80ms ease both");
+    expect(css).not.toMatch(/\.settings-modal\s*\{[^}]*animation:\s*settings-panel-in/s);
+  });
+
   it("keeps final mobile settings modal scroll contained", () => {
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 

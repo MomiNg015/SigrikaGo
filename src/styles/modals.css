@@ -1,5 +1,7 @@
 @import "./modals/base-result-skill.css";
+@import "./modals/window-entry-motion.css";
 @import "./modals/result-modal.css";
+@import "./modals/result-reward-motion.css";
 @import "./modals/replay-mode-resume.css";
 @import "./modals/nested-profile.css";
 @import "./modals/profile-character-records.css";

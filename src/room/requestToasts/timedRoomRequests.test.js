@@ -147,6 +147,7 @@ describe("timed room request toasts", () => {
     }));
 
     expect(actionableHtml).toContain("room-request-toast actionable");
+    expect(actionableHtml).toContain("--room-request-toast-duration:");
     expect(actionableHtml).toContain("同意");
     expect(actionableHtml).not.toContain("room-request-toast-close");
     expect(actionableHtml).not.toContain("关闭提示");
@@ -159,6 +160,26 @@ describe("timed room request toasts", () => {
 
     expect(source).toContain("createPortal(content, document.body)");
     expect(source).toContain("typeof document === \"undefined\"");
+  });
+
+  it("uses a transform-only countdown while preserving its reduced-motion duration", () => {
+    const chatCss = readFileSync(new URL("../../styles/room/chat-responsive.css", import.meta.url), "utf8");
+    const requestCss = readFileSync(
+      new URL("../../styles/room/actions-requests/request-toast.css", import.meta.url),
+      "utf8"
+    );
+    const reducedMotionCss = readFileSync(
+      new URL("../../styles/themes/bright-school/effects/reduced-motion.css", import.meta.url),
+      "utf8"
+    );
+    const progressKeyframes = chatCss.match(/@keyframes room-request-progress-shrink\s*\{[\s\S]*?\n\}/)?.[0] ?? "";
+
+    expect(progressKeyframes).toContain("transform: scaleX(1)");
+    expect(progressKeyframes).toContain("transform: scaleX(0)");
+    expect(progressKeyframes).not.toContain("width:");
+    expect(requestCss).toContain("transform-origin: left center");
+    expect(requestCss).toContain("var(--room-request-toast-duration, 10s) linear forwards");
+    expect(reducedMotionCss).toContain(":not(.room-request-toast-progress span)");
   });
 });
 

@@ -572,13 +572,19 @@ describe("root CSS entry contract", () => {
 
   it("keeps the mobile interaction safety layer touch friendly", () => {
     const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const phoneInteractionsCss = readFileSync(new URL("./mobile-adaptive/phone-interactions.css", import.meta.url), "utf8");
     const touchConfirmBlock = mobileCss.match(/\.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
+    const genericTransitionBlock = phoneInteractionsCss.match(/button,\s*[\s\S]*?\.watch-room-row\s*\{[\s\S]*?\n  \}/)?.[0] ?? "";
+    const genericActiveBlock = phoneInteractionsCss.match(/button:active[\s\S]*?\.watch-room-row:active\s*\{[\s\S]*?\n  \}/)?.[0] ?? "";
 
     expect(mobileCss).toContain("--mobile-tap-duration: 120ms");
     expect(mobileCss).toContain("-webkit-tap-highlight-color: transparent");
     expect(mobileCss).toContain(".point.previewable:active");
     expect(mobileCss).toContain("touch-action: none");
     expect(touchConfirmBlock).not.toContain("transform: scale");
+    expect(genericTransitionBlock).not.toContain("filter var(--mobile-tap-duration)");
+    expect(genericTransitionBlock).not.toContain("box-shadow var(--mobile-tap-duration)");
+    expect(genericActiveBlock).not.toContain("filter:");
     expect(mobileCss).toContain("@keyframes mobile-sheet-in");
     expect(mobileCss).toContain("@media (max-width: 768px) and (prefers-reduced-motion: reduce)");
   });
@@ -1123,6 +1129,46 @@ describe("root CSS entry contract", () => {
     expect(warehouseToastEntry).not.toContain("@keyframes toast-fade");
   });
 
+  it("keeps purposeful reveal motion scoped to story choices and result reward tiles", () => {
+    const storyCss = readFileSync(new URL("./modals/onboarding-story/actions-skip.css", import.meta.url), "utf8");
+    const resultCss = readFileSync(new URL("./modals/result-reward-motion.css", import.meta.url), "utf8");
+    const skillPopoverCss = readFileSync(new URL("./base/skill-description.css", import.meta.url), "utf8");
+
+    expect(storyCss).toContain("onboarding-story-option-in 180ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(storyCss).toContain("nth-child(n + 4) { animation-delay: 120ms; }");
+    expect(storyCss).toContain("onboarding-story-option-fade-in 80ms ease");
+    expect(resultCss).toContain(".result-rewards > span");
+    expect(resultCss).toContain("result-reward-tile-in 200ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(resultCss).toContain("nth-child(2)");
+    expect(resultCss).toContain("animation-delay: 40ms");
+    expect(resultCss).toContain("result-reward-tile-fade-in 80ms ease");
+    expect(skillPopoverCss).toContain("transform-origin: var(--skill-trait-arrow-x) 100%");
+    expect(skillPopoverCss).toContain("--skill-trait-enter-y: -4px");
+    expect(skillPopoverCss).toContain("transform-origin: var(--skill-trait-arrow-x) 0%");
+    expect(skillPopoverCss).toContain("translateY(var(--skill-trait-enter-y)) scale(0.98)");
+  });
+
+  it("gives desktop modal families distinct transform-and-opacity entrances", () => {
+    const modalMotionCss = readFileSync(new URL("./modals/window-entry-motion.css", import.meta.url), "utf8");
+
+    expect(modalMotionCss).toContain("@media screen and (min-width: 769px)");
+    expect(modalMotionCss).toContain("modal-backdrop-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(modalMotionCss).toContain("modal-window-enter 260ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(modalMotionCss).toContain("modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(modalMotionCss).toContain("nested-modal-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(modalMotionCss).toContain(".information-center-modal .information-center-master");
+    expect(modalMotionCss).toContain(".information-center-modal .information-center-reader");
+    expect(modalMotionCss).toContain("translate: 0 16px");
+    expect(modalMotionCss).toContain("scale: 0.96");
+    expect(modalMotionCss).toContain("translate: 0 8px");
+    expect(modalMotionCss).toContain("scale: 0.98");
+    expect(modalMotionCss).toContain("scale: 0.94");
+    expect(modalMotionCss).toContain("translate: -10px 0");
+    expect(modalMotionCss).toContain("translate: 10px 0");
+    expect(modalMotionCss).not.toMatch(/\n\s+(?:width|height|margin|padding|top|left):/i);
+    expect(modalMotionCss).not.toContain("transition: all");
+  });
+
   it("keeps commerce gacha.css as an import-only commerce sub-entry", () => {
     const gachaEntry = readFileSync(new URL("./commerce/gacha.css", import.meta.url), "utf8");
 
@@ -1590,7 +1636,9 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(modalsEntry)).toEqual([
       "./modals/base-result-skill.css",
+      "./modals/window-entry-motion.css",
       "./modals/result-modal.css",
+      "./modals/result-reward-motion.css",
       "./modals/replay-mode-resume.css",
       "./modals/nested-profile.css",
       "./modals/profile-character-records.css",

@@ -49,8 +49,6 @@
     touch-action: manipulation;
     transition:
       transform var(--mobile-tap-duration) var(--mobile-tap-ease),
-      filter var(--mobile-tap-duration) var(--mobile-tap-ease),
-      box-shadow var(--mobile-tap-duration) var(--mobile-tap-ease),
       background-color var(--mobile-tap-duration) var(--mobile-tap-ease),
       border-color var(--mobile-tap-duration) var(--mobile-tap-ease);
   }
@@ -76,7 +74,6 @@
   .friends-row:active,
   .watch-room-row:active {
     transform: translateY(1px) scale(var(--mobile-press-scale));
-    filter: brightness(0.985) saturate(1.04);
   }
 
   .mobile-room-screen .mobile-tab-button {

@@ -44,6 +44,10 @@ describe("ChatBox popover draft", () => {
       </main>
     );
     const trigger = screen.getByRole("tab", { name: /剧情记录/ });
+    const initiallyHiddenPopover = document.querySelector(".tutorial-story-log-popover");
+    expect(initiallyHiddenPopover?.getAttribute("data-open")).toBe("false");
+    expect(initiallyHiddenPopover?.getAttribute("aria-hidden")).toBe("true");
+    expect(initiallyHiddenPopover?.hasAttribute("inert")).toBe(true);
     trigger.getBoundingClientRect = () => ({
       left: 280,
       right: 380,
@@ -66,7 +70,7 @@ describe("ChatBox popover draft", () => {
     expect(dock?.contains(popover)).toBe(false);
     expect(popover?.style.position).toBe("fixed");
     expect(popover?.style.display).toBe("grid");
-    expect(popover?.style.pointerEvents).toBe("auto");
+    expect(popover?.style.pointerEvents).toBe("");
     expect(popover?.style.zIndex).toBe("141");
     expect(popover?.style.left).toBe("20px");
     expect(popover?.style.bottom).toBe("88px");
@@ -80,6 +84,10 @@ describe("ChatBox popover draft", () => {
     expect(trigger.getAttribute("aria-selected")).toBe("true");
 
     await user.click(screen.getByRole("button", { name: "关闭剧情记录" }));
-    expect(document.querySelector(".tutorial-story-log-popover")).toBeNull();
+    const closedPopover = document.querySelector(".tutorial-story-log-popover");
+    expect(closedPopover).toBe(popover);
+    expect(closedPopover?.getAttribute("data-open")).toBe("false");
+    expect(closedPopover?.getAttribute("aria-hidden")).toBe("true");
+    expect(closedPopover?.hasAttribute("inert")).toBe(true);
   });
 });

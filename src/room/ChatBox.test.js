@@ -134,7 +134,7 @@ describe("ChatBox", () => {
     expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
-  it("keeps tutorial records behind the popup toggle", () => {
+  it("keeps tutorial records mounted but inert behind the popup toggle", () => {
     const markup = renderToStaticMarkup(createElement(ChatBox, chatProps({
       readonly: true,
       disabledInputMessage: "剧情教学记录仅供查看",
@@ -148,8 +148,11 @@ describe("ChatBox", () => {
 
     expect(markup).toContain("剧情记录");
     expect(markup).toContain("chat-toggle-button");
-    expect(markup).not.toContain("chat-popover");
-    expect(markup).not.toContain("你好");
+    expect(markup).toContain("chat-popover");
+    expect(markup).toContain('data-open="false"');
+    expect(markup).toContain('aria-hidden="true"');
+    expect(markup).toContain("inert");
+    expect(markup).toContain("你好");
     expect(markup).not.toContain("placeholder=\"输入聊天内容\"");
   });
 
@@ -184,6 +187,20 @@ describe("ChatBox", () => {
     expect(messageBlock).toContain("word-break: break-word");
     expect(nameBlock).toContain("overflow-wrap: anywhere");
     expect(nameBlock).toContain("word-break: break-word");
+  });
+
+  it("uses a retargetable popover transition with a reduced-motion fallback", () => {
+    const css = readFileSync(new URL("../styles/room/chat-responsive.css", import.meta.url), "utf8");
+    const popoverBlock = cssBlock(css, ".chat-popover");
+    const openBlock = cssBlock(css, '.chat-popover[data-open="true"]');
+
+    expect(popoverBlock).toContain("opacity: 0");
+    expect(popoverBlock).toContain("scale(0.97)");
+    expect(popoverBlock).toContain("opacity 160ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(openBlock).toContain("pointer-events: auto");
+    expect(css).not.toContain("@keyframes chat-popover-open");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(css).toContain("opacity 80ms ease");
   });
 });
 

@@ -43,7 +43,7 @@ function TimedRoomRequestProgress({ deadline }) {
 
   return (
     <div className="room-request-toast-progress" aria-hidden="true">
-      <span key={deadline} style={{ animationDuration: `${remainingSeconds}s` }} />
+      <span key={deadline} style={{ "--room-request-toast-duration": `${remainingSeconds}s` }} />
     </div>
   );
 }

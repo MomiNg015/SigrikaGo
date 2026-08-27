@@ -92,4 +92,5 @@ describe("SkillDescription", () => {
       { innerWidth: 320, innerHeight: 480 }
     )).toMatchObject({ x: 28, placement: "above" });
   });
+
 });

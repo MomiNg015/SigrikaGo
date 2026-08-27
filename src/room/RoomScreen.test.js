@@ -779,7 +779,10 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain(".chat-popover");
     expect(roomCss).toContain("bottom: calc(100% + 10px)");
     expect(roomCss).toContain("transform-origin: right bottom");
-    expect(roomCss).toContain("@keyframes chat-popover-open");
+    expect(roomCss).toContain('.chat-popover[data-open="true"]');
+    expect(roomCss).toContain("opacity 160ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(roomCss).not.toContain("@keyframes chat-popover-open");
+    expect(chatSource).toContain("inert={!isOpen}");
     expect(roomCss).not.toContain(".chat-widget.embedded");
     expect(roomCss).not.toContain(".chat-readonly-note");
     expect(chatCss).not.toContain("calc(7.25em + 44px)");

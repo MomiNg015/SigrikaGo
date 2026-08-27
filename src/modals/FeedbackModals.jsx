@@ -30,17 +30,22 @@ export function ConfirmModal({ title, message, confirmText, atmosphere, onConfir
 
 export function Toast({ text, tone = "danger", onClose }) {
   const onCloseRef = useRef(onClose);
+  const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
 
   useEffect(() => {
-    const id = setTimeout(() => onCloseRef.current(), 3000);
-    return () => clearTimeout(id);
+    const exitId = setTimeout(() => setExiting(true), 2600);
+    const closeId = setTimeout(() => onCloseRef.current(), 3000);
+    return () => {
+      clearTimeout(exitId);
+      clearTimeout(closeId);
+    };
   }, []);
 
-  return <div className={`toast ${tone}`}>{text}</div>;
+  return <div className={`toast ${tone}`} data-exiting={exiting || undefined}>{text}</div>;
 }
 
 export function ToastStack({ toasts, onClose }) {

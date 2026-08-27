@@ -33,6 +33,29 @@
   min-height: 230px;
   display: grid;
   gap: 14px;
+  animation: settings-panel-in 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes settings-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-panel {
+    animation: settings-panel-fade-in 80ms ease both;
+  }
+}
+
+@keyframes settings-panel-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .theme-settings-panel {

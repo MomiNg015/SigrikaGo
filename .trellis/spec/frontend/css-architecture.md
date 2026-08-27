@@ -132,6 +132,44 @@ Do not migrate or restyle these surfaces unless the task explicitly targets them
 - `CSS_MOTION_CONTRACT` records the current timing token sources and reduced-motion families. Motion-heavy CSS should animate `transform` and `opacity` where possible and keep `prefers-reduced-motion` coverage beside the owning family.
 - `CSS_BREAKPOINT_CONTRACT` registers the current responsive media-query families. New breakpoint families need a desktop and mobile rationale plus contract-test registration.
 
+### Lifecycle And Informative Motion Exceptions
+
+The Bright School blanket reduced-motion owner must not force lifecycle-managed feedback or informative countdown progress to its final state after 1ms. Exclude the exact element from the blanket selector, then give the component a scoped fallback: toasts keep their authored lifetime and use an opacity-only exit transition, while timed request progress keeps its server-derived linear duration and uses left-origin `scaleX()` instead of width.
+
+```css
+/* Wrong: the toast becomes invisible immediately and the countdown jumps to empty. */
+.theme-bright-school * { animation-duration: 1ms !important; }
+@keyframes request-progress { to { width: 0; } }
+
+/* Correct: exact exceptions retain information without layout animation. */
+.theme-bright-school *:not(.toast):not(.room-request-toast-progress span) {
+  animation-duration: 1ms !important;
+}
+.toast { transition: opacity 400ms ease, transform 400ms ease; }
+@keyframes request-progress { to { transform: scaleX(0); } }
+```
+
+Required regression assertions: the toast exit state is transition-driven rather than keyframe-driven, reduced motion removes its translation while preserving the 3-second lifecycle, request progress owns `transform-origin: left center`, and no request-progress keyframe contains `width`.
+
+### Component-Scoped Reveal Motion
+
+Short reveal motion must belong to the element whose state or hierarchy changed, never to an unrelated page or modal shell. Chat and tutorial-record popovers stay mounted in an inert, `aria-hidden` closed state and use a retargetable 160ms opacity/transform transition so rapid open/close input can reverse naturally. Skill-trait popovers derive `transform-origin` and entry direction from `data-placement` plus `--skill-trait-arrow-x`. Mobile's generic press layer transitions only transform and necessary colors; paint-heavy filter or box-shadow feedback remains opt-in at the component owner.
+
+Story reply choices, achievement toasts, result reward tiles, and settings tab panels are the approved component-level reveal additions from this audit. Their motion is bounded to 150-220ms, uses only opacity/transform, caps stagger at 120ms, and removes translation plus stagger under `prefers-reduced-motion`. Result reward keyframes live in the focused `modals/result-reward-motion.css` owner so `result-modal.css` stays below the 6000-byte concrete-file guard. Contract tests must prove selector scope, durations, stagger caps, reduced-motion behavior, and that ordinary toast/modal surfaces are not animated by these component owners.
+
+The product-approved desktop window-entry pass is a separate shell-level family owned by `modals/window-entry-motion.css` under `screen and (min-width: 769px)`. It targets only explicit player-window roots: ordinary windows use a 260ms 16px/0.96 entrance, data windows and nested details use 200ms restrained variants, and information-center master/reader panes use 220ms directional entrances delayed by 40ms and 70ms. Use the individual `translate` and `scale` transform properties so Bright School's intentional static `transform: none !important` anti-bleed winner cannot erase the keyframes; do not remove that anti-bleed contract globally. Story, character-opening, recruitment-cinematic, and mobile-sheet owners remain outside this family. Per the explicit product direction for this pass, this owner intentionally has no `prefers-reduced-motion` branch; do not generalize that exception to other motion owners.
+
+```css
+/* Wrong: Bright School's important anti-bleed transform wins over this keyframe. */
+@keyframes modal-in { from { transform: translateY(16px) scale(0.96); } }
+
+/* Correct: independent transform components preserve the static anti-bleed rule. */
+@keyframes modal-in {
+  from { translate: 0 16px; scale: 0.96; }
+  to { translate: 0; scale: 1; }
+}
+```
+
 ## Tailwind Route
 
 Tailwind v4 is installed only as a low-intrusion utility layer through `src/styles/tailwind.css`.

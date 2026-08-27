@@ -59,6 +59,11 @@ describe("FeedbackModals helpers", () => {
 
   it("keeps toast styling focused on general notices and success feedback", () => {
     const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const source = readFileSync(new URL("./FeedbackModals.jsx", import.meta.url), "utf8");
+    const reducedMotionCss = readFileSync(
+      new URL("../styles/themes/bright-school/effects/reduced-motion.css", import.meta.url),
+      "utf8"
+    );
     const successBlock = css.match(/\.toast\.success\s*\{[^}]+\}/)?.[0] ?? "";
     const mailBlock = css.match(/\.toast\.mail\s*\{[^}]+\}/)?.[0] ?? "";
 
@@ -67,6 +72,17 @@ describe("FeedbackModals helpers", () => {
     expect(mailBlock).toContain("color: #28573b");
     expect(css).not.toContain(".toast.reward");
     expect(css).not.toContain(".toast.penalty");
+    expect(css).toContain('.toast[data-exiting="true"]');
+    expect(css).toContain("opacity 400ms ease");
+    expect(css).toContain('.toast.achievement[data-exiting="true"]');
+    expect(css).toContain("@starting-style");
+    expect(css).toContain("translateY(-8px) scale(0.97)");
+    expect(css).not.toContain("@keyframes toast-fade");
+    expect(source).toContain("setTimeout(() => setExiting(true), 2600)");
+    expect(source).toContain("setTimeout(() => onCloseRef.current(), 3000)");
+    expect(source).toContain("data-exiting={exiting || undefined}");
+    expect(reducedMotionCss).toContain("transition: opacity 400ms ease");
+    expect(reducedMotionCss).toContain("transform: none");
   });
 });
 

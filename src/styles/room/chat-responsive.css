@@ -1,7 +1,7 @@
 /* Room chat controls and responsive compact adjustments. */
-@keyframes shrink {
-  from { width: 100%; }
-  to { width: 0%; }
+@keyframes room-request-progress-shrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
 }
 
 .chat-widget {
@@ -73,7 +73,22 @@
   width: min(360px, calc(100vw - 24px));
   max-height: min(460px, calc(100dvh - 96px));
   transform-origin: right bottom;
-  animation: chat-popover-open 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(4px, 4px) scale(0.97);
+  pointer-events: none;
+  transition:
+    opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 160ms;
+}
+
+.chat-popover[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  pointer-events: auto;
+  transition-delay: 0s;
 }
 
 .chat-box {
@@ -164,14 +179,17 @@
   margin-top: clamp(8px, 1vw, 10px);
 }
 
-@keyframes chat-popover-open {
-  from {
-    opacity: 0;
-    transform: translate(12px, 12px) scale(0.84);
+@media (prefers-reduced-motion: reduce) {
+  .chat-popover {
+    transform: none;
+    transition:
+      opacity 80ms ease,
+      visibility 0s linear 80ms;
   }
-  to {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
+
+  .chat-popover[data-open="true"] {
+    transform: none;
+    transition-delay: 0s;
   }
 }
 

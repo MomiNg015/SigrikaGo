@@ -74,6 +74,7 @@
 }
 
 .skill-trait-popover {
+  --skill-trait-enter-y: 4px;
   position: fixed;
   z-index: calc(var(--room-floating-z, 180) + 21);
   box-sizing: border-box;
@@ -85,6 +86,15 @@
   box-shadow: 0 14px 32px rgba(39, 30, 45, 0.22);
   pointer-events: auto;
   animation: skill-trait-popover-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-trait-popover[data-placement="above"] {
+  transform-origin: var(--skill-trait-arrow-x) 100%;
+}
+
+.skill-trait-popover[data-placement="below"] {
+  --skill-trait-enter-y: -4px;
+  transform-origin: var(--skill-trait-arrow-x) 0%;
 }
 
 .skill-trait-popover-content {
@@ -165,7 +175,7 @@
 @keyframes skill-trait-popover-in {
   from {
     opacity: 0;
-    transform: translateY(4px) scale(0.98);
+    transform: translateY(var(--skill-trait-enter-y)) scale(0.98);
   }
   to {
     opacity: 1;

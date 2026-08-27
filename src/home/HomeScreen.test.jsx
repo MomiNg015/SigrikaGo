@@ -1156,6 +1156,10 @@ describe("HomeScreen", () => {
   it("renders the recruitment entry as an enabled image utility action with a ready accent", () => {
     const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
     const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
+    const mobileUtilityInteractionSource = readFileSync(
+      new URL("../styles/mobile-adaptive/home-utility-interactions.css", import.meta.url),
+      "utf8"
+    );
     const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
     const routeSource = readFileSync(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
     const overlaySource = readFileSync(new URL("../app/AppOverlays.jsx", import.meta.url), "utf8");
@@ -1175,9 +1179,8 @@ describe("HomeScreen", () => {
     expect(source).not.toContain("<strong>扭蛋</strong>");
     expect(mobileCss).toContain(".utility-entry:active:not(:disabled)");
     const mobileUtilityContainerBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\), \.utility-image-entry:active:not\(:disabled\)\)\s*\{[^}]+\}/)?.[0] ?? "";
-    const mobileUtilityHoverArtBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\)\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileUtilityFocusArtBlock = mobileCss.match(/\.utility-image-entry:focus-visible:not\(:disabled\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileUtilityActiveArtBlock = mobileCss.match(/\.utility-image-entry:active:not\(:disabled\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
-    const mobileUtilityHoverMotionBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\)\) \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileUtilityActiveMotionBlock = mobileCss.match(/\.utility-image-entry:active:not\(:disabled\) \.utility-entry-motion\s*\{[^}]+\}/)?.[0] ?? "";
     expect(mobileUtilityContainerBlock).toContain("background: transparent !important");
     expect(mobileUtilityContainerBlock).toContain("border: 0 !important");
@@ -1185,9 +1188,17 @@ describe("HomeScreen", () => {
     expect(mobileUtilityContainerBlock).toContain("box-shadow: none !important");
     expect(mobileUtilityContainerBlock).toContain("overflow: visible !important");
     expect(mobileUtilityContainerBlock).toContain("transform: none !important");
-    expect(mobileUtilityHoverArtBlock).toContain("brightness(1.04) saturate(1.06)");
-    expect(mobileUtilityHoverArtBlock).not.toContain("transform:");
-    expect(mobileUtilityHoverMotionBlock).toContain("transform: translateY(-1px) rotate(0.6deg) !important");
+    expect(mobileUtilityFocusArtBlock).toContain("brightness(1.04) saturate(1.06)");
+    expect(mobileUtilityFocusArtBlock).not.toContain("transform:");
+    expect(mobileUtilityInteractionSource).toContain("@media (hover: hover) and (pointer: fine)");
+    expect(mobileUtilityInteractionSource).toContain(".utility-image-entry:hover:not(:disabled) .utility-entry-motion");
+    expect(mobileUtilityInteractionSource).toContain("transform: translateY(-1px) rotate(0.6deg) !important");
+    expect(mobileUtilityInteractionSource).toMatch(
+      /\.utility-image-entry:hover:not\(:disabled\) \.utility-entry-art\s*\{\s*filter: none !important;/
+    );
+    expect(mobileUtilityInteractionSource).toMatch(
+      /\.utility-image-entry:focus-visible:not\(:disabled\) \.utility-entry-motion\s*\{\s*transform: none !important;/
+    );
     expect(mobileUtilityActiveArtBlock).toContain("drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26))");
     expect(mobileUtilityActiveArtBlock).not.toContain("transform:");
     expect(mobileUtilityActiveMotionBlock).toContain("transform: translateY(1px) !important");
