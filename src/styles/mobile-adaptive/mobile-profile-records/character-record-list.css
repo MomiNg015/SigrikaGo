@@ -4,7 +4,7 @@
     --profile-character-columns: 48% 12% repeat(3, 7%) 19%;
     display: grid !important;
     grid-template-rows: auto minmax(0, 1fr) !important;
-    gap: 8px !important;
+    gap: 4px !important;
     min-height: 0 !important;
     padding: 16px 12px 8px !important;
     overflow: hidden !important;
@@ -13,6 +13,20 @@
   .profile-character-table-head {
     display: grid !important;
     margin-right: var(--profile-character-scrollbar-gutter) !important;
+  }
+
+  .profile-character-table-head > :is(h4, span) {
+    padding-inline: 2px !important;
+  }
+
+  .profile-character-table-head > h4 {
+    padding-left: 4px !important;
+    padding-right: 5px !important;
+    text-align: left !important;
+  }
+
+  .profile-character-table-head > span {
+    text-align: center !important;
   }
 
   .profile-character-table-scroll {
@@ -25,9 +39,21 @@
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     box-sizing: border-box !important;
-    scrollbar-gutter: stable !important;
+    scrollbar-gutter: auto !important;
     scroll-padding-bottom: 8px !important;
     -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .profile-character-table {

@@ -109,14 +109,14 @@ export default function ProfileResumeView({
 
         <section className="profile-character-section" aria-label="角色战绩">
           <div className="profile-character-table-head" aria-hidden="true">
-            <h4>角色战绩</h4>
+            <h4 className="text-window-title">角色战绩</h4>
             <span>对局</span>
             <span>胜</span>
             <span>负</span>
             <span>和</span>
             <span>胜率</span>
           </div>
-          <div className="profile-character-table-scroll">
+          <div className="profile-character-table-scroll" tabIndex={0} aria-label="角色战绩列表">
             <table className="profile-character-table">
               <colgroup>
                 <col className="profile-character-col-identity" />

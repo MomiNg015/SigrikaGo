@@ -1,10 +1,10 @@
 .profile-character-section {
   --profile-character-columns: 36% repeat(5, minmax(0, 1fr));
-  --profile-character-scrollbar-gutter: 10px;
+  --profile-character-scrollbar-gutter: 0px;
   grid-area: characters;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 10px;
+  gap: 4px;
   min-width: 0;
   min-height: 0;
   padding: 14px 20px 10px;
@@ -41,8 +41,9 @@
 
 .profile-character-table-head > h4 {
   color: var(--profile-dossier-ink);
-  font-size: 1.0625rem;
+  font-size: 1.5rem;
   font-weight: 900;
+  letter-spacing: 0;
   text-align: left;
 }
 
@@ -52,10 +53,16 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-width: none;
   scrollbar-gutter: stable;
+  -ms-overflow-style: none;
   scroll-padding-bottom: 12px;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
+}
+
+.profile-character-table-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .profile-character-table {

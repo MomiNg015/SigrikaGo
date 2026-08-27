@@ -45,8 +45,16 @@ describe("profile mobile layout contracts", () => {
     expect(recordsCss).toContain(".profile-character-section {");
     expect(recordsCss).toContain("grid-area: characters;");
     expect(recordsCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(recordsCss).toContain("gap: 4px;");
     expect(recordsCss).toContain(".profile-character-table-head > :is(h4, span)");
     expect(recordsCss).toContain(".profile-character-table-head");
+    expect(recordsCss).toContain("--profile-character-scrollbar-gutter: 0px;");
+    expect(recordsCss).toContain("font-size: 1.5rem;");
+    expect(recordsCss).toContain("letter-spacing: 0;");
+    expect(recordsCss).toContain("scrollbar-width: none;");
+    expect(recordsCss).toContain("-ms-overflow-style: none;");
+    expect(recordsCss).toContain(".profile-character-table-scroll::-webkit-scrollbar");
+    expect(recordsCss).toContain("display: none;");
     expect(nestedCss).toContain(".profile-secondary-actions {\n  grid-area: actions;");
     expect(themeOwnerCss).toContain(".profile-resume-hero .profile-portrait-mask");
     expect(cardSurfaceCss).toContain(".profile-record-panel,");
@@ -55,6 +63,15 @@ describe("profile mobile layout contracts", () => {
     expect(cardSurfaceCss).toContain("background: var(--profile-dossier-card-surface) !important;");
     expect(cardSurfaceCss).toContain("box-shadow: var(--profile-dossier-shadow-large) !important;");
     expect(cardSurfaceCss).toContain("box-shadow: var(--profile-dossier-shadow-medium) !important;");
+    expect(cardSurfaceCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll"
+    );
+    expect(cardSurfaceCss).toContain("scrollbar-width: none !important;");
+    expect(cardSurfaceCss).toContain("scrollbar-gutter: auto !important;");
+    expect(cardSurfaceCss).toContain(".profile-character-table-scroll::-webkit-scrollbar");
+    expect(cardSurfaceCss).toContain("display: none !important;");
+    expect(cardSurfaceCss).toContain("width: 0 !important;");
+    expect(cardSurfaceCss).toContain("height: 0 !important;");
   });
 
   it("keeps the shared dossier compact without horizontal scrolling", () => {
@@ -109,7 +126,23 @@ describe("profile mobile layout contracts", () => {
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(characterRecordsCss).toContain(".profile-character-table-head");
     expect(characterRecordsCss).toContain("display: grid !important");
+    expect(characterRecordsCss).toContain("gap: 4px !important");
     expect(characterRecordsCss).toContain("overflow-y: auto !important");
+    expect(characterRecordsCss).toContain("scrollbar-gutter: auto !important");
+    expect(characterRecordsCss).toContain(".profile-character-table-head > :is(h4, span)");
+    expect(characterRecordsCss).toContain("padding-inline: 2px !important");
+    expect(characterRecordsCss).toContain(".profile-character-table-head > h4");
+    expect(characterRecordsCss).toContain("padding-left: 4px !important");
+    expect(characterRecordsCss).toContain("padding-right: 5px !important");
+    expect(characterRecordsCss).toContain(".profile-character-table-head > span");
+    expect(characterRecordsCss).toContain("text-align: center !important");
+    expect(characterRecordsCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll"
+    );
+    expect(characterRecordsCss).toContain(".profile-character-table-scroll::-webkit-scrollbar");
+    expect(characterRecordsCss).toContain("display: none !important");
+    expect(characterRecordsCss).toContain("width: 0 !important");
+    expect(characterRecordsCss).toContain("height: 0 !important");
     expect(characterRecordsCss).toContain("clip-path: inset(50%) !important");
     expect(characterRecordCardsCss).toContain(".theme-bright-school .profile-character-table-head");
     expect(characterRecordCardsCss).toContain("display: grid !important");
