@@ -9,3 +9,6 @@
 @import "./effects.css";
 @import "./skill-descriptions.css";
 @import "./quality-base/profile-dossier.css";
+@import "./home/campus-stationery.css";
+@import "./modals/campus-handbook.css";
+@import "./modals/campus-handbook-mobile.css";

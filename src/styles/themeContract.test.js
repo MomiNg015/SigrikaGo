@@ -68,7 +68,10 @@ describe("player theme CSS contract", () => {
       "./mobile.css",
       "./effects.css",
       "./skill-descriptions.css",
-      "./quality-base/profile-dossier.css"
+      "./quality-base/profile-dossier.css",
+      "./home/campus-stationery.css",
+      "./modals/campus-handbook.css",
+      "./modals/campus-handbook-mobile.css"
     ]);
     expect(themeEntry).not.toContain(".app-shell.player-theme-enabled .result-badge");
     expect(qaGuardEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school");
