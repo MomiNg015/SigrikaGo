@@ -1,0 +1,28 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+const sources = ["button-color-roles.css", "button-color-states.css"].map((file) =>
+  readFileSync(new URL(`./quality-base/${file}`, import.meta.url), "utf8")
+);
+
+describe("campus button color boundary", () => {
+  it("limits the color owners to paint and color tokens", () => {
+    const allowed = new Set(["background", "color", "border-color"]);
+    for (const source of sources) {
+      const properties = [...source.matchAll(/(?:\{|;)\s*([\w-]+)\s*:/g)].map((match) => match[1]);
+      expect(properties.length).toBeGreaterThan(0);
+      expect(properties.filter((property) => !property.startsWith("--campus-") && !allowed.has(property))).toEqual([]);
+      expect(source).not.toMatch(/url\(|@keyframes|@media/);
+    }
+  });
+
+  it("excludes special scenes and uses explicit ordinary controls", () => {
+    const states = sources[1];
+    expect(states).toContain(":not(.is-sigrika-corrupted)");
+    expect(states).toContain(".room-screen:not(.sigrika-candy-duel-room)");
+    expect(states).toContain(".confirm-modal:not(.sigrika-duel-confirm-modal)");
+    expect(states.match(/:not\(:where\(\.sigrika-duel-confirm-modal \*, \.sigrika-candy-duel-room \*\)\)/g)).toHaveLength(3);
+    expect(states).toContain(".action-bar:not(.tutorial-choice-actions) > button:not(.skill-action)");
+    expect(states).not.toMatch(/\[class\*|\.admin-screen|\.home-image-entry|\.utility-entry/);
+  });
+});

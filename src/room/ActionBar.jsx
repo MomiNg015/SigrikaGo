@@ -97,7 +97,7 @@ function ActionBar({
         <span className="action-label mobile-action-button-label">{skillName} · {skillUses}</span>
       </button>
       )}
-      {drawEnabled && <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
+      {drawEnabled && <button className="draw-action" onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </button>}

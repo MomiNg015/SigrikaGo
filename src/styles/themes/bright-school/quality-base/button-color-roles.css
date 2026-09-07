@@ -1,0 +1,46 @@
+/* Button color roles only: shape, layout, art and motion stay with existing owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) {
+  --campus-button-paper: var(--bright-paper);
+  --campus-button-tool: color-mix(in srgb, var(--bright-blue) 28%, var(--bright-paper));
+  --campus-button-tool-hover: color-mix(in srgb, var(--bright-blue) 52%, var(--bright-paper));
+  --campus-button-selected: color-mix(in srgb, var(--bright-blue) 80%, var(--bright-paper));
+  --campus-button-primary: color-mix(in srgb, var(--bright-pink) 70%, var(--bright-paper));
+  --campus-button-success: color-mix(in srgb, var(--bright-mint) 68%, var(--bright-paper));
+  --campus-button-danger: color-mix(in srgb, var(--theme-danger) 24%, var(--bright-paper));
+  --campus-button-danger-hover: color-mix(in srgb, var(--theme-danger) 38%, var(--bright-paper));
+  --campus-button-danger-ink: color-mix(in srgb, var(--bright-ink) 76%, var(--theme-danger));
+  --campus-button-disabled: color-mix(in srgb, var(--bright-ink) 9%, var(--bright-paper));
+  --campus-button-disabled-ink: color-mix(in srgb, var(--bright-ink) 74%, var(--bright-paper));
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.primary-action, .login-submit-btn, .decision-actions > button:not(.secondary-action)) {
+  --campus-control-fill: var(--campus-button-primary);
+  --campus-control-hover: var(--bright-pink);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.icon-button, .home-mobile-menu-panel > button, .friend-search > button, .counting-action, .replay-bar > button) {
+  --campus-control-fill: var(--campus-button-tool);
+  --campus-control-hover: var(--campus-button-tool-hover);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .home-top-strip :is(.topbar-actions > .icon-button:not(.logout-action):not(.announcement-action):not(.mailbox-action):not(.onboarding-action), .home-mobile-menu-panel > button:not(.logout-action):not(.home-mobile-announcement-action):not(.home-mobile-mailbox-action):not(.home-mobile-onboarding-action)) {
+  --campus-control-fill: var(--campus-button-paper);
+  --campus-control-hover: var(--campus-button-tool);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.mailbox-claim-button, .action-bar > .draw-action) {
+  --campus-control-fill: var(--campus-button-success);
+  --campus-control-hover: var(--bright-mint);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.settings-tabs > button, .friends-tabs > button, .mode-tabs > button, .achievement-tabs > button, .announcement-tabs > button, .mobile-tab-button, .room-toggles > .toggle):is(.active, [aria-selected="true"], [aria-pressed="true"]) {
+  --campus-control-fill: var(--campus-button-selected);
+  --campus-control-hover: var(--bright-blue);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.danger-action, .resign-action, .mailbox-delete-button, .home-top-strip .logout-action) {
+  --campus-control-fill: var(--campus-button-danger);
+  --campus-control-hover: var(--campus-button-danger-hover);
+  --campus-control-ink: var(--campus-button-danger-ink);
+  --campus-control-border: var(--campus-button-danger-ink);
+}

@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/button-colors.md","reason":"Verify color-only scope, protected scenes, states and real computed winners."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Run project checks and preserve existing behavior."}

@@ -4,6 +4,8 @@
 
 ## 阅读顺序
 
+普通 Bright School 按钮配色由 `quality-base/button-color-roles.css` 与 `button-color-states.css` 统一：纸白用于次要操作，浅蓝用于入口与工具，蓝色用于选中标签，粉色用于主要确认，薄荷色用于领取或和棋等操作，淡红用于退出、删除、认输。两个 owner 只修改背景、文字/图标和边框颜色，保留现有尺寸、布局、阴影、动效及文案；禁用态悬停不切换为可用态配色。首页两端的 `logout-action` 与对局 `draw-action` 仅提供语义配色钩子。手绘图片入口、部员手册出战旗帜、已有履历/商店/招募/IRIS 专属配色、黑化与特殊决战及后台管理均保留原有视觉。美化不自行增加提示、统计或装饰性标签，约束记录于 `PRODUCT.md` 和前端按钮配色规范。
+
 1. [项目总览与功能边界](./system-design/01-project-overview.md)
 2. [前端架构与状态边界](./system-design/02-frontend-architecture.md)
 3. [后端、HTTP API 与实时房间](./system-design/03-backend-realtime-api.md)

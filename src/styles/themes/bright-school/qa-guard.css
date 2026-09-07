@@ -9,3 +9,5 @@
 @import "./effects.css";
 @import "./skill-descriptions.css";
 @import "./quality-base/profile-dossier.css";
+@import "./quality-base/button-color-roles.css";
+@import "./quality-base/button-color-states.css";

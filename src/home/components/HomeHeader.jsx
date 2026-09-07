@@ -93,7 +93,7 @@ export default function HomeHeader({
             <span>后台管理</span>
           </button>
         )}
-        <button className="icon-button" type="button" aria-label="退出登录" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
+        <button className="icon-button logout-action" type="button" aria-label="退出登录" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
       </div>
       <div className={`home-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <button
@@ -135,7 +135,7 @@ export default function HomeHeader({
               后台
             </button>
           )}
-          <button type="button" onClick={closeMobileMenu(onLogout)}>
+          <button className="logout-action" type="button" onClick={closeMobileMenu(onLogout)}>
             <LogOut size={18} />
             退出
           </button>

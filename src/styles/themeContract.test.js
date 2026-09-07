@@ -68,7 +68,9 @@ describe("player theme CSS contract", () => {
       "./mobile.css",
       "./effects.css",
       "./skill-descriptions.css",
-      "./quality-base/profile-dossier.css"
+      "./quality-base/profile-dossier.css",
+      "./quality-base/button-color-roles.css",
+      "./quality-base/button-color-states.css"
     ]);
     expect(themeEntry).not.toContain(".app-shell.player-theme-enabled .result-badge");
     expect(qaGuardEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school");
