@@ -123,7 +123,7 @@ export default function HouseModal({ token, user, characterListView, audioSettin
 
   return (
     <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
-      <section className={`house-modal campus-handbook ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={closeHouseModal}><X size={20} /></button>
         <header className="house-header">
           <h2>部员手册</h2>

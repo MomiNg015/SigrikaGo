@@ -102,7 +102,6 @@ export default function HouseCharacterGrid({
               <button
                 className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
                 title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
-                aria-label={`${character.name}：${disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}`}
                 data-ui-sound="confirm"
                 disabled={sortieDisabled}
                 onClick={(event) => {
@@ -177,7 +176,7 @@ export default function HouseCharacterGrid({
               </>
             )}
             <CharacterChainBadge user={user} characterId={characterId} />
-            <strong className="handbook-name-tag">{displayName}</strong>
+            <strong>{displayName}</strong>
           </div>
         );
       })}

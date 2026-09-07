@@ -24,7 +24,6 @@ Avoid generic dark sci-fi HUD styling bleeding into the Bright School theme, mar
 
 - Make game state legible before making it decorative.
 - Preserve the Bright School paper-and-campus identity without inventing nonstandard controls.
-- Beautification refines existing content and layout. Do not add decorative labels, ownership counters, helper copy, or explanatory hints unless the user explicitly requests that content.
 - Keep desktop and mobile workflows equivalent, with mobile receiving explicit layout treatment instead of being a later shrink pass.
 - Use semantic feedback for loading, errors, unread state, disabled state, selected state, and dangerous actions.
 - Keep admin surfaces quieter and denser than player surfaces so content operations stay efficient.
