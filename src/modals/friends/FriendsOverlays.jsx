@@ -1,3 +1,4 @@
+import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
 import { ModalActionButton } from "../modalComponents.jsx";
 import MatchModeRuleText from "../../home/MatchModeRuleText.jsx";
@@ -25,7 +26,7 @@ export default function FriendsOverlays({
     <>
       {profileUser && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseProfile}>
-          <UserProfileCard
+          <UserProfileCard titleStickers
             user={profileUser}
             characters={characters}
             token={token}
@@ -54,8 +55,8 @@ export default function FriendsOverlays({
       )}
       {duelModeTarget && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseDuelMode}>
-          <section className="room-floating-modal match-mode-modal" onClick={(event) => event.stopPropagation()}>
-            <h2>选择对弈模式</h2>
+          <section className="room-floating-modal match-mode-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
+            <WindowTitleSticker titleKey="match-mode" />
             <p className="quiet-text">向 <UserIdentity user={duelModeTarget} compact /> 发起对局申请</p>
             <div className="match-mode-options">
               {modeOrderedEntries().map((mode) => (

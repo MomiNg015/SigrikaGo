@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useState } from "react";
 import { Send, X } from "lucide-react";
 import { api } from "../api/client.js";
@@ -37,9 +38,9 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <form className="message-board-modal" onSubmit={submitFeedback} onClick={(event) => event.stopPropagation()}>
+      <form className="message-board-modal window-sticker-host" onSubmit={submitFeedback} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
-        <h2>留言板</h2>
+        <WindowTitleSticker titleKey="message-board" />
         <textarea
           className="message-board-input"
           maxLength={FEEDBACK_MAX_LENGTH}

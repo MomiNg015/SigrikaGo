@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { X } from "lucide-react";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseTargetState } from "./warehouse/WarehouseTargetModal.jsx";
@@ -18,10 +19,10 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="warehouse-modal" onClick={(event) => event.stopPropagation()}>
+      <section className="warehouse-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭仓库" onClick={onClose}><X size={20} /></button>
-        <header className="warehouse-header">
-          <h2>仓库</h2>
+        <header className="warehouse-header window-sticker-header">
+          <WindowTitleSticker titleKey="warehouse" />
         </header>
         {loading && <p className="quiet-text">加载中...</p>}
         {!loading && (

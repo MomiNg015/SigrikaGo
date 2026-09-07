@@ -198,6 +198,7 @@ export default function AnnouncementModal({
       backdropClassName="announcement-backdrop"
       modalClassName="announcement-modal"
       title={TEXT.title}
+      titleStickerKey="announcements"
       titleId="announcement-modal-title"
       closeLabel={TEXT.close}
       backLabel={TEXT.back}

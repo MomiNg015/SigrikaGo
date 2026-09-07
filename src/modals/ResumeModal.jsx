@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Award, CircleDollarSign, MonitorPlay, Palette, X } from "lucide-react";
 import { api } from "../api/client.js";
@@ -113,13 +114,13 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <ModalDialog
-        className="house-modal resume-modal profile-dossier-modal"
+        className="house-modal resume-modal profile-dossier-modal window-sticker-host"
         ariaLabelledBy="resume-modal-title"
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="house-header resume-header">
-          <h2 id="resume-modal-title">履历</h2>
+        <header className="house-header resume-header window-sticker-header">
+          <WindowTitleSticker titleKey="resume" id="resume-modal-title" />
           <div className="resume-header-actions">
             <button type="button" className="resume-mini-action achievement-entry-action" onClick={onOpenAchievements}>
               <Award size={16} />成就
@@ -173,7 +174,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         />
 
         {showReplays && (
-          <HouseReplayDialog
+          <HouseReplayDialog titleStickers
             characterListView={characterListView}
             currentUser={modeUser}
             onClose={() => setShowReplays(false)}

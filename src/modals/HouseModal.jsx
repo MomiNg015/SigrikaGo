@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
@@ -123,10 +124,10 @@ export default function HouseModal({ token, user, characterListView, audioSettin
 
   return (
     <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
-      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host"}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={closeHouseModal}><X size={20} /></button>
-        <header className="house-header">
-          <h2>部员手册</h2>
+        <header className="house-header window-sticker-header">
+          <WindowTitleSticker titleKey="handbook" enabled={!sigrikaCorrupted} />
         </header>
         <HouseCharacterGrid
           audioSettings={audioSettings}

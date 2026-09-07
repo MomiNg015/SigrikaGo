@@ -5,12 +5,15 @@ import LeaderboardModal, { isLeaderboardCurrentUser, leaderboardRankClass } from
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
-  it("renders a text-only leaderboard header", () => {
+  it("renders a labelled leaderboard sticker header", () => {
     const markup = renderToStaticMarkup(
       <LeaderboardModal token="token" user={{ id: "u1" }} characters={{}} onClose={() => {}} />
     );
 
-    expect(markup).toContain('<header class="leaderboard-header"><h2 id="leaderboard-modal-title">排行榜</h2></header>');
+    expect(markup).toContain('<header class="leaderboard-header window-sticker-header">');
+    expect(markup).toContain('<h2 id="leaderboard-modal-title" class="window-title-sticker"');
+    expect(markup).toContain('<span class="window-title-sticker-label">排行榜</span>');
+    expect(markup).toContain('/assets/window-titles/leaderboard.webp');
     expect(markup).not.toContain("至少完成一盘对局的注册用户");
     expect(markup).not.toContain("lucide-trophy");
   });

@@ -104,6 +104,7 @@ export default function MailboxModal({
       backdropClassName="mailbox-backdrop"
       modalClassName="mailbox-modal"
       title="邮箱"
+      titleStickerKey="mailbox"
       titleId="mailbox-modal-title"
       closeLabel="关闭邮箱"
       backLabel="返回邮件列表"

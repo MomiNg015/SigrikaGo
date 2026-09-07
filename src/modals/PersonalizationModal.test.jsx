@@ -48,7 +48,7 @@ describe("PersonalizationModal", () => {
     expect(source).toContain("chooseOption");
     expect(source).toContain("setPickerType(\"\")");
     expect(source).toContain("personalization-picker-modal");
-    expect(source).toContain("选择{pickerSection.label}");
+    expect(source).toContain('titleKey={`picker-${pickerSection.type}`}');
     expect(css).toContain(".personalization-section-summary");
     expect(css).toContain(".personalization-style-trigger");
     expect(css).toContain(".personalization-picker-backdrop");

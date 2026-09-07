@@ -1,0 +1,101 @@
+/* The title stays outside the content scroller; only opted-in campus windows use art. */
+.window-title-sticker-art {
+  display: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-title-sticker > .window-title-sticker-label {
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-weight: 400 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host {
+  overflow: visible !important;
+  --window-title-scale: 1;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header {
+  position: static !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker {
+  position: static !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  min-height: 32px;
+  width: min(calc(var(--window-title-width) * var(--window-title-scale) - 24px), 100%);
+  margin: 0 !important;
+  font-family: var(--font-window-title), var(--font-ui-default);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker.has-loaded-art > .window-title-sticker-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker-art {
+  display: block !important;
+  visibility: hidden;
+  position: absolute !important;
+  inset: calc(var(--window-title-height) * var(--window-title-scale) / -3) auto auto -8px !important;
+  width: calc(var(--window-title-width) * var(--window-title-scale)) !important;
+  height: calc(var(--window-title-height) * var(--window-title-scale)) !important;
+  max-width: calc(100% - 56px) !important;
+  min-width: 0 !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: rotate(-2deg) !important;
+  transform-origin: 28% 65%;
+  z-index: 1;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker.has-loaded-art > .window-title-sticker-art {
+  visibility: visible;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
+  padding-top: max(36px, env(safe-area-inset-top)) !important;
+  padding-left: max(18px, env(safe-area-inset-left)) !important;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host {
+    --window-title-scale: 0.8;
+    max-height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
+    padding-top: calc(32px + env(safe-area-inset-top)) !important;
+    padding-left: calc(16px + env(safe-area-inset-left)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.window-sticker-host {
+    min-height: 0 !important;
+    height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-header {
+    grid-template-columns: minmax(0, 1fr) 44px 44px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-back-button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-header .window-title-sticker {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}

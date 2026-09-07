@@ -12,7 +12,7 @@ import {
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
-  it("renders a text-only warehouse header", () => {
+  it("renders a labelled warehouse sticker header", () => {
     const html = renderToStaticMarkup(createElement(WarehouseModal, {
       token: "token",
       user: { ownedCharacters: [] },
@@ -20,7 +20,9 @@ describe("WarehouseModal candy feedback", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain('<header class="warehouse-header"><h2>仓库</h2></header>');
+    expect(html).toContain('<header class="warehouse-header window-sticker-header">');
+    expect(html).toContain('<span class="window-title-sticker-label">仓库</span>');
+    expect(html).toContain('/assets/window-titles/warehouse.webp');
     expect(html).toContain('aria-label="关闭仓库"');
     expect(html).not.toContain("查看并使用已经购买的道具。");
     expect(html).not.toContain("lucide-package");

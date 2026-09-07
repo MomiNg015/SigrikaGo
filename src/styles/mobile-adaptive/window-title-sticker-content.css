@@ -1,0 +1,132 @@
+/* Windows that previously scrolled their shell now keep the title above an inner scroller. */
+.personalization-sticker-scroll {
+  display: contents;
+}
+
+/* Dossier children have relative positioning; its nested backdrop must stay fixed. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host > .profile-modal-backdrop:has(> .window-sticker-host) {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(
+  .settings-modal,
+  .achievement-modal,
+  .personalization-modal
+).window-sticker-host {
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .personalization-modal.window-sticker-host {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  height: min(580px, calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+  padding-bottom: 20px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .personalization-modal.window-sticker-host > .primary-action {
+  position: static !important;
+  justify-self: end;
+  margin: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host :is(
+  .settings-panel,
+  .achievement-list,
+  .personalization-sticker-scroll,
+  .window-sticker-scroll
+) {
+  min-height: 0 !important;
+  min-width: 0 !important;
+  max-height: 100%;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding: 6px 12px 14px 6px;
+  scroll-padding: 6px 12px 14px 6px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .personalization-sticker-scroll {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(
+  .profile-report-dialog,
+  .profile-blacklist-dialog
+).window-sticker-host {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  width: min(420px, calc(100vw - 44px)) !important;
+  max-width: calc(100vw - 44px) !important;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .profile-blacklist-dialog.window-sticker-host {
+  width: min(360px, calc(100vw - 44px)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.resume-modal, .user-profile-modal).window-sticker-host {
+  min-height: 0 !important;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-sticker-host {
+  min-height: min(520px, calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host :is(
+  .recruitment-header > div,
+  .practice-difficulty-heading
+) {
+  position: static !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .personalization-picker-list {
+  padding: 6px 12px 14px 6px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(
+  .friends-modal,
+  .house-modal:not(.resume-modal, .achievement-modal, .personalization-modal)
+).window-sticker-host {
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .house-modal.window-sticker-host:not(.resume-modal, .achievement-modal, .personalization-modal) {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host :is(.friends-list, .character-grid-container) {
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 6px 12px 14px 6px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .message-board-modal.window-sticker-host {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column;
+  max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .message-board-modal.window-sticker-host textarea {
+  flex: 1 1 auto;
+  min-height: 80px;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .resume-modal.window-sticker-host .resume-header {
+    padding-top: 28px !important;
+  }
+}

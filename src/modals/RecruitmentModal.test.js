@@ -51,7 +51,7 @@ describe("RecruitmentModal", () => {
     expect(modalSource).toContain("audioSettings");
     expect(modalSource).not.toContain("\u56de\u5e94\u5df2\u7ecf\u9001\u5230\u90e8\u5ba4\u95e8\u53e3");
     expect(modalSource).not.toContain("\u8fd9\u6b21\u8fd8\u6ca1\u6709\u65b0\u56de\u5e94");
-    expect(modalSource).toContain('<h2 id="recruitment-modal-title">部员招募栏</h2>');
+    expect(modalSource).toContain('<WindowTitleSticker titleKey="recruitment" id="recruitment-modal-title" enabled={!cinematicPlaying} />');
     expect(modalSource).not.toContain("围棋部招新现场");
     expect(modalSource).not.toContain("公示板已经摆好");
     expect(modalSource).not.toContain("等待招新回应");

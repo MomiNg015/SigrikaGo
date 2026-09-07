@@ -585,7 +585,8 @@ describe("deriveCharacterRecordStats", () => {
       onOpenReplay: () => {}
     }));
 
-    expect(html).toContain('<h2 id="resume-modal-title">履历</h2>');
+    expect(html).toContain('<h2 id="resume-modal-title" class="window-title-sticker"');
+    expect(html).toContain('<span class="window-title-sticker-label">履历</span>');
     expect(html).toContain('role="dialog"');
     expect(html).toContain('data-profile-context="self"');
     expect(html.indexOf(">星炬</button>")).toBeLessThan(html.indexOf(">标准</button>"));

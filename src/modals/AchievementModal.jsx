@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Award, X } from "lucide-react";
@@ -112,9 +113,9 @@ export default function AchievementModal({ token, onClose, onNotice }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="house-modal achievement-modal" onClick={(event) => event.stopPropagation()}>
-        <header className="house-header achievement-header">
-          <h2>成就</h2>
+      <section className="house-modal achievement-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
+        <header className="house-header achievement-header window-sticker-header">
+          <WindowTitleSticker titleKey="achievements" />
           <button className="close-button" type="button" onClick={onClose} aria-label="关闭成就窗口"><X size={20} /></button>
         </header>
         <div className="achievement-tabs" role="tablist" aria-label="成就筛选">

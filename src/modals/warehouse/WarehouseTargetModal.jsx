@@ -1,3 +1,4 @@
+import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { UserRound, X } from "lucide-react";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
@@ -19,13 +20,13 @@ export default function WarehouseTargetModal({
 
   return (
     <div className="modal-backdrop nested-backdrop" onClick={onClose}>
-      <section className="character-target-modal" onClick={(event) => event.stopPropagation()}>
+      <section className={`character-target-modal${warehouseTargetState(targetResult).isResolved ? "" : " window-sticker-host"}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         {warehouseTargetState(targetResult).isResolved ? (
           <WarehouseEffectResult targetState={targetResult} characters={characters} user={user} />
         ) : (
           <>
-            <h2>选择角色</h2>
+            <WindowTitleSticker titleKey="select-character" />
             <div className="warehouse-character-grid">
               {ownedCharacters.map((character) => {
                 const targetAvailability = warehouseCharacterTargetAvailability({

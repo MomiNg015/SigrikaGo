@@ -1,3 +1,4 @@
+import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
 import { useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
@@ -141,8 +142,8 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <section className={`small-modal match-mode-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : ""}`} onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
-        <h2>选择对弈模式</h2>
+      <section className={`small-modal match-mode-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host"}`} onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
+        <WindowTitleSticker titleKey="match-mode" enabled={!sigrikaCorrupted} />
         <div className="match-mode-options">
           {modeOrderedEntries().map((mode) => (
             <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : ""}`} key={mode.id}>
@@ -247,12 +248,12 @@ function PracticeDifficultyDialog({ onClose, onSelect }) {
     >
       <ModalDialog
         ariaLabelledBy="practice-difficulty-title"
-        className="nested-modal practice-difficulty-modal"
+        className="nested-modal practice-difficulty-modal window-sticker-host"
         onClick={(event) => event.stopPropagation()}
         onClose={onClose}
       >
-        <div className="practice-difficulty-heading">
-          <h2 id="practice-difficulty-title">准时宝陪练</h2>
+        <div className="practice-difficulty-heading window-sticker-header">
+          <WindowTitleSticker titleKey="practice" id="practice-difficulty-title" />
           <p>
             <span>随机猜先。</span>
             <br />

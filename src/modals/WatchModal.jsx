@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { RefreshCw, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/client.js";
@@ -44,9 +45,9 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="small-modal watch-list-modal" ariaLabelledBy="watch-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
-        <div className="watch-list-header">
-          <h2 id="watch-modal-title">对局列表</h2>
+      <ModalDialog className="small-modal watch-list-modal window-sticker-host" ariaLabelledBy="watch-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+        <div className="watch-list-header window-sticker-header">
+          <WindowTitleSticker titleKey="watch" id="watch-modal-title" />
           <div className="watch-list-actions">
             <button className="icon-button" type="button" title="刷新列表" aria-label="刷新对局列表" onClick={loadRooms} disabled={loading}>
               <RefreshCw size={18} />

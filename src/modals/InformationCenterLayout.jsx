@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
 import { ModalDialog } from "./modalComponents.jsx";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 
 const NARROW_INFORMATION_CENTER_QUERY = "(max-width: 768px)";
 
@@ -27,6 +28,7 @@ export default function InformationCenterLayout({
   backdropClassName,
   modalClassName,
   title,
+  titleStickerKey,
   titleId,
   closeLabel,
   backLabel = "返回列表",
@@ -62,13 +64,13 @@ export default function InformationCenterLayout({
       onClick={onClose}
     >
       <ModalDialog
-        className={["modal-panel", "information-center-modal", modalClassName].filter(Boolean).join(" ")}
+        className={["modal-panel", "information-center-modal", titleStickerKey && "window-sticker-host", modalClassName].filter(Boolean).join(" ")}
         ariaLabelledBy={titleId}
         data-mobile-view={mobileView}
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="information-center-header">
+        <header className={`information-center-header${titleStickerKey ? " window-sticker-header" : ""}`}>
           <button
             ref={backButtonRef}
             className="information-center-back-button"
@@ -81,7 +83,7 @@ export default function InformationCenterLayout({
           >
             <ArrowLeft size={20} />
           </button>
-          <h2 id={titleId}>{title}</h2>
+          {titleStickerKey ? <WindowTitleSticker titleKey={titleStickerKey} id={titleId} /> : <h2 id={titleId}>{title}</h2>}
           <button className="close-button information-center-close-button" type="button" aria-label={closeLabel} onClick={onClose}>
             <X size={20} />
           </button>

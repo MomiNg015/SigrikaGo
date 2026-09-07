@@ -4,6 +4,8 @@
 
 ## 当前结论
 
+- 固定功能标题资源由 `src/shared/windowTitleStickers.js` 登记，共 23 组，位于 `public/assets/window-titles/`。每组交付透明 PNG 和运行用无损 WebP，像素尺寸为逻辑显示尺寸的 3 倍。`node scripts/generate-window-title-stickers.mjs` 使用项目的 `LXGWMarkerGothic-Regular.ttf`（霞鹭）排版，绘制素净纸底与细棕边框；不再使用插画簇或模拟笔刷字体。标题按窗口打开时加载，不加入启动阻塞资源；图片未加载或失败时显示相同字体的语义文字标题。
+
 - 运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。
 - 首批服装店源资源仍保留在 `public/assets/costumes/`：西格莉卡 1 套、达妮娅 2 套、娜波摩 2 套，以及看板娘娜波摩 greeting/thanks/empty 三种状态。当前角色/衣柜消费者使用 `public/assets/costumes/portraits/` 下的规范化 lossless VP8L WebP；五张服装与十张默认角色立绘、达妮娅基础糖果特效立绘共用 900×900 单帧透明画布、792px 安全框和底部中心锚点，因此衣柜不再依靠 83/88/94 的逐件缩放补偿。达妮娅糖果特效在同一几何规范内保持 16 帧动画 WebP，而不是静态首帧。看板娘仍保持独立的 1024×1024 接待区构图，不进入角色立绘规范。常态商品/看板娘资源进入商店启动清单，用户已装备服装及其可选糖果特效立绘进入登录 critical images，房间双方开局服装快照进入 battle preload。
 - 招募道具运行期图标由 `src/shared/recruitment.js` 统一暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 `imageUrl` 归一到当前共享配置，启动种子也会按每个道具的 `staleImageUrls` 回填空值或精确旧默认 SVG 路径，避免已有 SQLite 行继续显示旧资源且不覆盖后台自定义图。“招新贴报/招新海报”使用 `public/assets/items/recruitment-poster.webp`，由 `C:/codex/image/item/Recruitment_paper.png` 无损 WebP 转换而来；“先约电台广播券”使用 `public/assets/items/radio-recruitment-ticket.webp`，由 `C:/codex/image/item/boardcast_ticket.png` 转换而来。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 `public/assets/items/rainbow-bean-candy.webp`，由 `C:/codex/image/item/rainbow-candy-cutout-full.png` 无损 WebP 转换而来；服务端 `server/itemImages.js` 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 `/assets/items/rainbow-bean-candy.png`。`public/assets/promotional/` 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 `recruitment-poster-v1..v3.png` 和“先约电台广播券”候选 `radio-coupon-v1..v3.png`。这些候选 PNG 不进入 `RUNTIME_IMAGE_ASSETS` 或启动预加载，除非后续 UI 明确引用。

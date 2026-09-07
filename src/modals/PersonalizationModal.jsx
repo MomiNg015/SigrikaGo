@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Palette, ShieldCheck, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
 const SECTIONS = [
@@ -95,11 +96,12 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="house-modal personalization-modal" ariaLabelledBy="personalization-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
-        <header className="house-header achievement-header">
-          <h2 id="personalization-modal-title">个性化</h2>
+      <ModalDialog className="house-modal personalization-modal window-sticker-host" ariaLabelledBy="personalization-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+        <header className="house-header achievement-header window-sticker-header">
+          <WindowTitleSticker titleKey="personalization" id="personalization-modal-title" />
           <button className="close-button" type="button" onClick={onClose} aria-label="关闭个性化窗口"><X size={20} /></button>
         </header>
+        <div className="personalization-sticker-scroll">
         <div className="personalization-preview" aria-label="个性化试穿预览">
           <UserIdentity user={previewUser} />
         </div>
@@ -128,16 +130,17 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
             );
           })}
         </div>
+        </div>
         {pickerSection && (
           <div className="nested-modal-backdrop personalization-picker-backdrop" onClick={() => setPickerType("")}>
             <ModalDialog
-              className="nested-modal personalization-picker-modal"
+              className="nested-modal personalization-picker-modal window-sticker-host"
               ariaLabel={`选择${pickerSection.label}`}
               onClose={() => setPickerType("")}
               onClick={(event) => event.stopPropagation()}
             >
-              <header className="personalization-picker-header">
-                <h3>选择{pickerSection.label}</h3>
+              <header className="personalization-picker-header window-sticker-header">
+                <WindowTitleSticker titleKey={`picker-${pickerSection.type}`} as="h3" />
                 <button type="button" className="close-button" onClick={() => setPickerType("")} aria-label="关闭样式选择窗口">
                   <X size={18} />
                 </button>

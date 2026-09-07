@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useState } from "react";
 import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
@@ -24,14 +25,14 @@ export default function SettingsModal({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section
-        className={`settings-modal settings-modal-content settings-tab-${tab}`}
+        className={`settings-modal settings-modal-content window-sticker-host settings-tab-${tab}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
         onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" type="button" aria-label={"\u5173\u95ed\u8bbe\u7f6e"} onClick={onClose}><X size={20} /></button>
-        <h2 id="settings-modal-title">{"\u8bbe\u7f6e"}</h2>
+        <WindowTitleSticker titleKey="settings" id="settings-modal-title" />
         <div className="settings-tabs" role="tablist" aria-label={"\u8bbe\u7f6e\u5206\u7c7b"}>
           <button
             id="settings-tab-audio"

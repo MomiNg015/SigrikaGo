@@ -51,6 +51,21 @@ describe("UserProfileCard dossier interactions", () => {
     api.mockReset();
   });
 
+  it.each([false, true])("opts report titles in explicitly and restores focus (stickers: %s)", (titleStickers) => {
+    const { container } = renderProfile({}, { titleStickers });
+    expect(Boolean(container.querySelector(".window-title-sticker"))).toBe(titleStickers);
+    const trigger = screen.getByRole("button", { name: "举报", exact: true });
+    trigger.focus();
+    fireEvent.click(trigger);
+    const dialog = screen.getByRole("dialog", { name: "举报用户" });
+    const title = within(dialog).getByRole("heading", { name: "举报用户" });
+    expect(title.classList.contains("window-title-sticker")).toBe(titleStickers);
+    expect(Boolean(title.closest("form"))).toBe(!titleStickers);
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "举报用户" })).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
+
   it("keeps social actions in the identity area and locks the mode tab order", async () => {
     const onAddBlacklist = vi.fn().mockResolvedValue(undefined);
     renderProfile({}, { onAddBlacklist });

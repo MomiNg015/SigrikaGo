@@ -11,8 +11,10 @@ import ProfileResumeView, {
 } from "./ProfileResumeView.jsx";
 import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import { useReplayPagination } from "./useReplayPagination.js";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 
 export function UserProfileCard({
+  titleStickers = false,
   user,
   characters,
   token,
@@ -219,13 +221,13 @@ export function UserProfileCard({
 
   return (
     <ModalDialog
-      className="room-floating-modal user-profile-modal profile-dossier-modal user-profile-card"
+      className={`room-floating-modal user-profile-modal profile-dossier-modal user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
       ariaLabelledBy="user-profile-modal-title"
       onClose={onClose}
       onClick={(event) => event.stopPropagation()}
     >
-      <header className="profile-modal-header">
-        <h2 id="user-profile-modal-title">详细资料</h2>
+      <header className={`profile-modal-header${titleStickers ? " window-sticker-header" : ""}`}>
+        <WindowTitleSticker titleKey="profile" id="user-profile-modal-title" enabled={titleStickers} />
         <button className="close-button" type="button" onClick={onClose} aria-label="关闭详细资料"><X size={20} /></button>
       </header>
 
@@ -306,6 +308,7 @@ export function UserProfileCard({
 
       {showReplays && (
         <HouseReplayDialog
+          titleStickers={titleStickers}
           characterListView={characters}
           currentUser={profileUser}
           onClose={() => setShowReplays(false)}
@@ -317,14 +320,15 @@ export function UserProfileCard({
       {showReportDialog && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
           <ModalDialog
-            className="room-floating-modal confirm-inline-modal profile-report-dialog"
+            className={`room-floating-modal confirm-inline-modal profile-report-dialog${titleStickers ? " window-sticker-host" : ""}`}
             ariaLabelledBy="profile-report-title"
             onClose={closeReportDialog}
             onClick={(event) => event.stopPropagation()}
           >
             <button className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
-            <form onSubmit={submitReport}>
-              <h3 id="profile-report-title">举报用户</h3>
+            {titleStickers && <WindowTitleSticker titleKey="report" as="h3" id="profile-report-title" />}
+            <form onSubmit={submitReport} className={titleStickers ? "window-sticker-scroll" : undefined}>
+              {!titleStickers && <h3 id="profile-report-title">举报用户</h3>}
               <label htmlFor="profile-report-content">举报内容</label>
               <textarea
                 id="profile-report-content"
@@ -348,7 +352,7 @@ export function UserProfileCard({
       {showBlacklistConfirm && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
           <ModalDialog
-            className="room-floating-modal confirm-inline-modal profile-blacklist-dialog"
+            className={`room-floating-modal confirm-inline-modal profile-blacklist-dialog${titleStickers ? " window-sticker-host" : ""}`}
             ariaLabelledBy="profile-blacklist-title"
             onClose={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}
             onClick={(event) => event.stopPropagation()}
@@ -362,8 +366,9 @@ export function UserProfileCard({
             >
               <X size={18} />
             </button>
-            <section className="profile-blacklist-confirm">
-              <h3 id="profile-blacklist-title">加入黑名单</h3>
+            {titleStickers && <WindowTitleSticker titleKey="blacklist" as="h3" id="profile-blacklist-title" />}
+            <section className={`profile-blacklist-confirm${titleStickers ? " window-sticker-scroll" : ""}`}>
+              {!titleStickers && <h3 id="profile-blacklist-title">加入黑名单</h3>}
               <p>加入后将限制与该用户的社交互动，确定继续吗？</p>
               {blacklistError && <p className="profile-dialog-error" role="alert">{blacklistError}</p>}
               <div>

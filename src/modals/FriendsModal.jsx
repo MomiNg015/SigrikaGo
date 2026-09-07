@@ -1,3 +1,4 @@
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
@@ -137,12 +138,12 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   return (
     <>
       <div className="modal-backdrop" onClick={onClose}>
-        <section className="friends-modal" onClick={(event) => event.stopPropagation()}>
+        <section className="friends-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
           <button className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
             <X size={20} />
           </button>
-          <header className="friends-modal-header">
-            <h2>社交系统</h2>
+          <header className="friends-modal-header window-sticker-header">
+            <WindowTitleSticker titleKey="friends" />
           </header>
           <FriendsToolbar
             activeTab={activeTab}

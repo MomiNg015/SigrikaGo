@@ -9,6 +9,7 @@ import { PaginatedReplayList } from "../ReplayList.jsx";
 import { ModalDialog } from "../modalComponents.jsx";
 import { characterCandyPortraitProps } from "./houseStats.js";
 import SkillDescription from "../../shared/SkillDescription.jsx";
+import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { formatSkillOverclock } from "../../shared/skillTraits.js";
 
 export function CharacterDetailDialog({
@@ -153,17 +154,17 @@ export function characterMusicSlots({ character, derivedSkills = [], musicTracks
     .filter((slot) => slot.track || slot.options.length > 0);
 }
 
-export function HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination }) {
+export function HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination, titleStickers = false }) {
   const dialog = (
     <div className="nested-modal-backdrop standalone-replay-backdrop" onClick={onClose}>
       <ModalDialog
-        className="nested-modal replay-dialog"
+        className={`nested-modal replay-dialog${titleStickers ? " window-sticker-host" : ""}`}
         ariaLabelledBy="resume-replay-title"
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" type="button" aria-label="关闭对局回放" onClick={onClose}><X size={18} /></button>
-        <h3 id="resume-replay-title">对局回放</h3>
+        <WindowTitleSticker titleKey="replays" as="h3" id="resume-replay-title" enabled={titleStickers} />
         <div className="replay-dialog-list-scroll" onScroll={pagination.onScroll}>
           <PaginatedReplayList
             pagination={pagination}

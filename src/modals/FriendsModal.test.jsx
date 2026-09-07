@@ -27,7 +27,9 @@ describe("FriendsModal mobile layout", () => {
 
     expect(html).toContain("friends-modal-close");
     expect(html).toContain("aria-label=\"关闭好友窗口\"");
-    expect(html).toContain('<header class="friends-modal-header"><h2>社交系统</h2></header>');
+    expect(html).toContain('<header class="friends-modal-header window-sticker-header">');
+    expect(html).toContain('<span class="window-title-sticker-label">社交系统</span>');
+    expect(html).toContain('/assets/window-titles/friends.webp');
   });
 
   it("omits rank and rating from friends and blacklist list rows", () => {
