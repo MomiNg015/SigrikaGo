@@ -35,3 +35,10 @@ None blocking. Scope and visual constraints follow the user's approval of button
 - `npm run check` passed: 352 test files / 2506 tests, lint, portraits, admin snapshot, production build, built CSS, production config and generated system-design HTML. A transient worker-channel exit cleared on rerun; no test or check was skipped.
 - Preview screenshots and browser scripts are local ignored artifacts under `.tmp/button-colors-*`; fixtures use synthetic account data and actual components.
 - CSS inventory records the isolated change against HEAD, so it does not rely on unrelated working-tree reductions. Existing unrelated edits are excluded from the commit.
+
+## Follow-up: handbook decoration cards
+- User requested a dashed divider between characters and decorations, plus character-card shadows, hover and click presentation on decoration cards.
+- Updated the existing section owner, restored 3px card hard shadows, and reused the existing sticker transition/hover owner. Portrait press feedback already covers both card types and remains shared.
+- Browser comparison at 1440px and 390px confirms identical normal/hover/pressed shadows, transforms, filters and transition values for enabled character and decoration cards; no document overflow. Preserve existing selected/disabled behavior and all copy, art and layout.
+- Design-hook palette findings concern unchanged legacy colors in the existing owner; this follow-up adds no literal colors and does not suppress those findings.
+- Validation: 352 test files / 2506 tests, lint, portraits, admin snapshot, production build, built CSS and production configuration passed. The final docs write returned a transient Windows `UNKNOWN` error; rerunning `npm run docs:system-design` succeeded. No new architecture or component convention was introduced, so existing CSS guidance remains applicable.

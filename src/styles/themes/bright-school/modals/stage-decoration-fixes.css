@@ -33,6 +33,11 @@
   clip-path: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box {
+  border-top: 2px dashed var(--bright-border) !important;
+  border-radius: 0 !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header::before,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header::after,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list::before,

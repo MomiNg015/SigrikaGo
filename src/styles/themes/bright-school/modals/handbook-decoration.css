@@ -75,14 +75,14 @@
   color: #3d2b25 !important;
   border: 2px solid #3d2b25 !important;
   border-radius: 14px !important;
-  box-shadow: none !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected {
   background: #dff5df !important;
   color: #235534 !important;
   border-color: #235534 !important;
-  box-shadow: none !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected strong {
