@@ -28,7 +28,7 @@ export const WINDOW_TITLE_STICKERS = Object.freeze(Object.fromEntries(
   Object.entries(TITLES).map(([key, title]) => [key, Object.freeze({
     title,
     src: `/assets/window-titles/${key}.webp`,
-    width: title.length <= 2 ? 144 : title.length <= 4 ? 192 : 240,
-    height: title.length <= 2 ? 64 : title.length <= 4 ? 68 : 72
+    width: title.length <= 2 ? 168 : title.length <= 4 ? 220 : 272,
+    height: title.length <= 2 ? 76 : title.length <= 4 ? 80 : 84
   })])
 ));

@@ -4,7 +4,7 @@
 
 ## 当前结论
 
-- 固定功能标题资源由 `src/shared/windowTitleStickers.js` 登记，共 23 组，位于 `public/assets/window-titles/`。每组交付透明 PNG 和运行用无损 WebP，像素尺寸为逻辑显示尺寸的 3 倍。`node scripts/generate-window-title-stickers.mjs` 使用项目的 `LXGWMarkerGothic-Regular.ttf`（霞鹭）排版，绘制素净纸底与细棕边框；不再使用插画簇或模拟笔刷字体。标题按窗口打开时加载，不加入启动阻塞资源；图片未加载或失败时显示相同字体的语义文字标题。
+- 固定功能标题资源由 `src/shared/windowTitleStickers.js` 登记，共 23 组，位于 `public/assets/window-titles/`。每组交付透明 PNG 和运行用无损 WebP，像素尺寸为逻辑显示尺寸的 3 倍。`node scripts/generate-window-title-stickers.mjs` 使用项目的 `LXGWMarkerGothic-Regular.ttf`（霞鹭）排版，绘制带浅蓝横线和轻微暖色层次的纸面、白色裁切边、细棕轮廓、小折角与投影；不再使用插画簇或模拟笔刷字体。标题按窗口打开时加载，不加入启动阻塞资源；图片未加载或失败时显示相同字体的语义文字标题。
 
 - 运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。
 - 首批服装店源资源仍保留在 `public/assets/costumes/`：西格莉卡 1 套、达妮娅 2 套、娜波摩 2 套，以及看板娘娜波摩 greeting/thanks/empty 三种状态。当前角色/衣柜消费者使用 `public/assets/costumes/portraits/` 下的规范化 lossless VP8L WebP；五张服装与十张默认角色立绘、达妮娅基础糖果特效立绘共用 900×900 单帧透明画布、792px 安全框和底部中心锚点，因此衣柜不再依靠 83/88/94 的逐件缩放补偿。达妮娅糖果特效在同一几何规范内保持 16 帧动画 WebP，而不是静态首帧。看板娘仍保持独立的 1024×1024 接待区构图，不进入角色立绘规范。常态商品/看板娘资源进入商店启动清单，用户已装备服装及其可选糖果特效立绘进入登录 critical images，房间双方开局服装快照进入 battle preload。

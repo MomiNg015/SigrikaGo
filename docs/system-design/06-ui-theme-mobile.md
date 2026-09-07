@@ -4,7 +4,7 @@
 
 ## 当前结论
 
-- 普通校园主题首页及固定功能子窗口通过 `WindowTitleSticker` 使用素净纸签标题；透明图片中的文字由项目霞鹭字体直接排版。纸签左侧越界 8px、上方约三分之一露出并固定倾斜 -2°，逻辑尺寸为 144×64、192×68、240×72，手机缩至 80%。`window-title-stickers.css` 负责非滚动外壳定位、安全区与标题回退，`window-title-sticker-content.css` 保留内部滚动、按钮阴影内边距与嵌套遮罩定位。标题不增加副标题或说明；商店及子窗口、IRIS、动态名称、匹配状态与剧情不参与。共用资料卡和回放通过 `titleStickers` 显式启用，对局入口默认关闭；黑化主题保持原字体标题。主页和社交挑战的“选择对弈模式”使用同一资源。
+- 普通校园主题首页及固定功能子窗口通过 `WindowTitleSticker` 使用素净纸签标题；透明图片中的文字由项目霞鹭字体直接排版。纸签左侧越界 20px（手机 18px）、上方露出 52% 并固定倾斜 -2°，逻辑尺寸为 168×76、220×80、272×84，手机缩至 80%；浅色横线纸面、白色裁切边、小折角和投影提供贴纸层次。各窗口共用扣除 76px 与安全区的高度预算，为越界图片与阴影保留空间。普通标题栏采用 8px 顶部内边距、44px 最小行高和 4px 底部内边距，绝对定位关闭按钮贴齐窗口上缘；部员手册虚线与正文整体上提 20px，履历操作区继续保留独立间距。`window-title-stickers.css` 负责非滚动外壳定位、安全区与标题回退，`window-title-sticker-content.css` 保留内部滚动、按钮阴影内边距与嵌套遮罩定位。标题不增加副标题或说明；商店及子窗口、IRIS、动态名称、匹配状态与剧情不参与。共用资料卡和回放通过 `titleStickers` 显式启用，对局入口默认关闭；黑化主题保持原字体标题。主页和社交挑战的“选择对弈模式”使用同一资源。
 
 - 玩家侧目前只有 Bright School 一个默认主题，但主题注册、作用域和 CSS 入口仍保留扩展口。
 - `src/styles/base.css`、`room.css`、`modals.css`、`commerce-settings.css`、`responsive.css`、`mobile-room.css`、`hud-components.css`、`mobile-adaptive.css` 和后台/剧情教学路由 CSS 都保持 import-only 入口加领域子目录的结构；低频路由 CSS 由 lazy owner 组件导入，最终 `mobile-adaptive.css` 仍在主题之后作为手机、窄桌面和后台全屏安全层。

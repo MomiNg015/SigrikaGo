@@ -16,6 +16,15 @@ describe("window title asset delivery", () => {
         expect(metadata.hasAlpha, key).toBe(true);
         expect(stats.channels.at(-1).min, key).toBe(0);
         expect(stats.channels.at(-1).max, key).toBe(255);
+        const { data, info } = await image.clone().ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+        const edgeAlpha = [];
+        for (let x = 0; x < info.width; x += 1) {
+          edgeAlpha.push(data[x * 4 + 3], data[((info.height - 1) * info.width + x) * 4 + 3]);
+        }
+        for (let y = 0; y < info.height; y += 1) {
+          edgeAlpha.push(data[y * info.width * 4 + 3], data[(y * info.width + info.width - 1) * 4 + 3]);
+        }
+        expect(Math.max(...edgeAlpha), `${key}.${extension}: shadow must fade before the canvas edge`).toBeLessThanOrEqual(2);
       }
     }
   });

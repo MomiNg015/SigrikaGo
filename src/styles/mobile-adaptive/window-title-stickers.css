@@ -11,10 +11,30 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host {
   overflow: visible !important;
   --window-title-scale: 1;
+  --window-title-left: -20px;
+  --window-sticker-available-height: calc(100dvh - 76px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: var(--window-sticker-available-height) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header {
   position: static !important;
+}
+
+/* The outside title no longer needs the old padded text-title row. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host:has(> .window-sticker-header:not(.resume-header)) {
+  padding-top: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header:not(.resume-header) {
+  min-height: 44px !important;
+  padding-top: 0 !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host > .close-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header:not(.resume-header) > .close-button {
+  top: 0 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker {
@@ -41,7 +61,7 @@
   display: block !important;
   visibility: hidden;
   position: absolute !important;
-  inset: calc(var(--window-title-height) * var(--window-title-scale) / -3) auto auto -8px !important;
+  inset: calc(var(--window-title-height) * var(--window-title-scale) * -0.52) auto auto var(--window-title-left) !important;
   width: calc(var(--window-title-width) * var(--window-title-scale)) !important;
   height: calc(var(--window-title-height) * var(--window-title-scale)) !important;
   max-width: calc(100% - 56px) !important;
@@ -65,24 +85,24 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
-  padding-top: max(36px, env(safe-area-inset-top)) !important;
-  padding-left: max(18px, env(safe-area-inset-left)) !important;
+  padding-top: calc(54px + env(safe-area-inset-top)) !important;
+  padding-left: calc(24px + env(safe-area-inset-left)) !important;
 }
 
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host {
     --window-title-scale: 0.8;
-    max-height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    --window-title-left: -18px;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
-    padding-top: calc(32px + env(safe-area-inset-top)) !important;
-    padding-left: calc(16px + env(safe-area-inset-left)) !important;
+    padding-top: calc(46px + env(safe-area-inset-top)) !important;
+    padding-left: calc(22px + env(safe-area-inset-left)) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.window-sticker-host {
     min-height: 0 !important;
-    height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    height: var(--window-sticker-available-height) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-header {
