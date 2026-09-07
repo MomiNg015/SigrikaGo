@@ -623,6 +623,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/shop-card-badges.css",
       "./mobile-adaptive/costume-store.css",
       "./mobile-adaptive/modal-shadow-gutters.css",
+      "./mobile-adaptive/modal-control-gutters.css",
       "./mobile-adaptive/mobile-window-headers.css",
       "./mobile-adaptive/user-nameplate-final.css",
       "./mobile-adaptive/sigrika-corruption.css"

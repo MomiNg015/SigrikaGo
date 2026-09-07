@@ -1,0 +1,28 @@
+/* Player windows keep native scrolling without transient scrollbar chrome. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.modal-backdrop, .nested-modal-backdrop),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.modal-backdrop, .nested-modal-backdrop) * {
+  scrollbar-width: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.modal-backdrop, .nested-modal-backdrop)::-webkit-scrollbar,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.modal-backdrop, .nested-modal-backdrop) *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Inset scroll content so hard shadows and pressed controls stay inside its clip. */
+@media (max-width: 900px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.modal-backdrop, .nested-modal-backdrop) :is(
+    .settings-panel,
+    .settings-body,
+    .friends-list,
+    .warehouse-grid,
+    .leaderboard-list,
+    .watch-room-table,
+    .character-grid-container
+  ) {
+    padding: 6px 12px 14px 6px !important;
+    scroll-padding: 6px 12px 14px 6px !important;
+  }
+}

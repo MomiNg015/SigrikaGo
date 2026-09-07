@@ -454,7 +454,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(source).toContain("onClick={closeHouseModal}");
   });
 
-  it("renders owned decorations with icon and application status in the house manual", () => {
+  it("renders icon-only owned decorations with an accessible name in the house manual", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -480,7 +480,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("decorations-section");
     expect(html).toContain("aria-label=\"爪印棋子\"");
     expect(html).not.toContain(">爪印棋子</span>");
-    expect(html).toContain(">应用</strong>");
+    expect(html).not.toContain(">应用</strong>");
     expect(html).not.toContain(">使用中</strong>");
   });
 
@@ -931,7 +931,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("overscroll-behavior: contain !important");
 
     expect(css).toContain(".house-modal");
-    expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
+    expect(css).toContain("grid-template-rows: auto minmax(0, 1fr) auto !important");
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
     expect(modalCss).toContain(".resume-modal,\n.room-floating-modal.user-profile-modal");
@@ -1063,7 +1063,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("scroll-padding: 0 8px 6px 0 !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
-    expect(css).toContain(".house-modal .owned-decoration-chip strong");
+    expect(css).not.toContain(".house-modal .owned-decoration-chip strong::after");
     expect(css).toContain(".character-record-dialog");
     expect(css).toContain("width: min(420px, calc(100vw - 20px)) !important");
     expect(css).toContain(".character-record-row span");
@@ -1071,7 +1071,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("word-break: keep-all !important");
     expect(css).toContain(".character-detail-art img");
     expect(css).toContain("filter: none !important");
-    expect(css).toContain("max-height: min(128px, 20dvh) !important");
+    expect(css).toContain("max-height: min(156px, 30dvh) !important");
     expect(finalMobileCss).toContain(".profile-resume-view .profile-resume-hero");
     expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
     expect(finalMobileCss).toContain(".profile-resume-view .profile-identity-actions");
@@ -1111,7 +1111,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".house-modal .character-list");
     expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(finalMobileCss).toContain("grid-auto-rows: 88px !important");
-    expect(finalMobileCss).toContain("repeat(auto-fill, minmax(58px, 70px)) !important");
+    expect(finalMobileCss).toContain("repeat(auto-fill, 80px) !important");
     expect(finalMobileCss).toContain(".house-modal .deploy-tag");
     expect(finalMobileCss).toContain("padding-right: 6px !important");
     expect(finalMobileCss).toContain("padding-bottom: 6px !important");

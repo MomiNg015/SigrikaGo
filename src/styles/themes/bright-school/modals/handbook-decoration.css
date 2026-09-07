@@ -71,6 +71,10 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
+  width: 80px !important;
+  height: 80px !important;
+  min-height: 80px !important;
+  padding: 10px !important;
   background: #fffaf0 !important;
   color: #3d2b25 !important;
   border: 2px solid #3d2b25 !important;
@@ -89,7 +93,11 @@
   color: #235534 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip .stone-decoration-preview {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip .stone-decoration-preview {
+  position: relative;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -98,8 +106,20 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip .stone-decoration-preview span {
+  position: absolute;
+  width: 32px;
   box-shadow: none !important;
   filter: none !important;
+}
+
+.house-modal .owned-decoration-chip .stone-decoration-preview span:first-child {
+  top: 0;
+  left: 0;
+}
+
+.house-modal .owned-decoration-chip .stone-decoration-preview span:last-child {
+  right: 0;
+  bottom: 0;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger,

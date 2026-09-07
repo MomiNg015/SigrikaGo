@@ -10,7 +10,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal {
     display: grid !important;
-    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
     align-content: stretch !important;
     gap: 10px !important;
     overflow: hidden !important;

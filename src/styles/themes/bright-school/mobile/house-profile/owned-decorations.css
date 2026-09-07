@@ -5,7 +5,7 @@
     flex: 0 0 auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    max-height: min(128px, 20dvh) !important;
+    max-height: min(156px, 30dvh) !important;
     padding-top: 4px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -27,25 +27,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
     min-width: 0 !important;
     width: 100% !important;
-    min-height: 50px !important;
-    padding: 4px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip strong {
-    font-size: 0 !important;
-    line-height: 0 !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip strong::after {
-    content: "✓" !important;
-    display: inline-grid !important;
-    place-items: center !important;
-    width: 18px !important;
-    height: 18px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.76) !important;
-    color: #3d2b25 !important;
-    font-size: 12px !important;
-    line-height: 1 !important;
+    min-height: 80px !important;
+    padding: 10px !important;
   }
 }

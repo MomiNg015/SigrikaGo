@@ -14,7 +14,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-list {
-    grid-template-columns: repeat(auto-fill, minmax(58px, 70px)) !important;
+    grid-template-columns: repeat(auto-fill, 80px) !important;
     justify-content: start !important;
     align-content: start !important;
   }
@@ -25,9 +25,9 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
-    width: 70px !important;
-    max-width: 70px !important;
-    min-height: 54px !important;
+    width: 80px !important;
+    max-width: 80px !important;
+    min-height: 80px !important;
     justify-self: start !important;
   }
 

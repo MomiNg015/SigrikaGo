@@ -86,6 +86,8 @@ Portrait rules in `mobile/house-profile/character-grid-cards.css` must preserve 
 
 ### Visual mask, shadow, and scrollbar ownership
 
+Player modal content uses `mobile-adaptive/modal-control-gutters.css` after the exterior modal gutters. Keep native overflow ownership intact while hiding scrollbar chrome inside player modal backdrops. Narrow settings, friend, warehouse, watch, ranking and handbook scroll content reserves explicit top/right/bottom/left padding for button transforms and hard shadows. Verify the final content row at maximum scroll and while pressed; do not fix clipping by deleting shadows or disabling scrolling. Handbook decoration cards are 80px squares with 10px padding and diagonal black/white preview stones; selection and pending state remain native ARIA/disabled attributes, without visible status text or checkmarks.
+
 When an image needs rounded cropping plus an exterior shadow, the crop belongs to an inner mask and the shadow belongs to that mask or an unclipped outer compositor. Badges and other decorations remain siblings of the mask so they are not clipped. Do not put `overflow: hidden`, the image, and external decorations on the same owner.
 
 Scrollbar styling must be attached to a semantic shell and, where necessary, its root `html`/`body` state. Never style scrollbars through a bare global `*` selector: terminal/HUD cyan, Bright School paper pink/blue, and admin neutral gray-blue are independent visual contracts. An outer panel with `overflow: hidden` must also reserve explicit right/bottom shadow gutter and subtract that gutter from its scrollable children rather than removing or weakening the shadow.

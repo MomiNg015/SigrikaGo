@@ -38,11 +38,11 @@ export default function HouseDecorationPicker({
               disabled={selected || applyingDecoration === decorationId}
               aria-label={decorationLabel}
               aria-pressed={selected}
+              aria-busy={applyingDecoration === decorationId || undefined}
               title={decorationLabel}
               onClick={() => onApplyDecoration(decorationId)}
             >
               {decoration ? <StoneDecorationPreview decoration={decoration} /> : null}
-              <strong>{selected ? "使用中" : applyingDecoration === decorationId ? "应用中" : "应用"}</strong>
             </button>
           );
         })}
