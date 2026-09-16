@@ -2,12 +2,26 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import PlayerPlaque from "./PlayerPlaque.jsx";
+import { readFileSync } from "node:fs";
 
 afterEach(cleanup);
 
 describe("home student ID", () => {
   const character = { id: "sigrika", portrait: "/sigrika.png" };
   const user = { username: "星炬学院测试同学", rank: "9段", rating: 3000 };
+
+  it("anchors the hanging card to the board, outside the stage's named grid area", () => {
+    const home = readFileSync("src/home/HomeScreen.jsx", "utf8");
+    const stage = readFileSync("src/home/components/HomeStage.jsx", "utf8");
+    const css = readFileSync("src/styles/mobile-adaptive/home-student-id-layout.css", "utf8");
+    expect(home).toMatch(/className="home-main-panel home-terminal-main">\s*<PlayerPlaque/);
+    expect(stage).not.toContain("<PlayerPlaque");
+    const zone = css.match(/\.home-player-zone\.home-student-id-zone\s*\{([^}]+)\}/)?.[1];
+    expect(zone).toContain("position: absolute !important");
+    expect(zone).toContain("grid-area: auto !important");
+    expect(zone).toContain("inset: -10px auto auto 8% !important");
+    expect(zone).toContain("width: var(--home-hanging-id-width)");
+  });
 
   it("updates the current portrait, including costume framing, and shows only the username", () => {
     const { container, rerender } = render(<PlayerPlaque character={character} user={user} />);

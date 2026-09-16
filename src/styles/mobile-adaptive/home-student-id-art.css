@@ -1,0 +1,63 @@
+.home-student-id-zone .home-student-id-pin {
+  position: absolute;
+  z-index: 2;
+  top: 4.4%;
+  left: 50.8%;
+  width: clamp(7px, 0.8vw, 11px);
+  aspect-ratio: 1;
+  border: 1.5px solid var(--school-ink, #514638);
+  border-radius: 46% 54% 48% 52%;
+  background: color-mix(in srgb, var(--school-ink, #514638) 25%, ivory);
+  box-shadow: inset 1px 1px 0 rgb(255 255 255 / 0.65), 1px 2px 1px rgb(61 43 37 / 0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+
+.home-student-id .home-student-id-shell {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.home-student-id .home-student-id-portrait {
+  position: absolute;
+  left: 44.6%;
+  top: 41.9%;
+  width: 38.1%;
+  height: 30.3%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-student-id .home-student-id-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.home-student-id .home-student-id-name {
+  position: absolute;
+  left: 44%;
+  top: 76%;
+  width: 38%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-align: center;
+  font-family: var(--font-window-title, inherit);
+  font-size: clamp(12px, 1.3vw, 18px);
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: none;
+}
+
+.home-student-id .home-student-id-name[data-long-name] {
+  font-size: clamp(8px, 4cqw, 12px);
+}

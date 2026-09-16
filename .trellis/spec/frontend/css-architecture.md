@@ -98,6 +98,8 @@ CSS/DOM contract tests must assert the avatar mask structure, visible outer over
 
 ### Home hanging student ID
 
+The card is now a direct child of `.home-main-panel`, positioned absolutely at the left part of the board's top edge. Always reset `grid-area: auto !important` on `.home-student-id-zone`: inherited `grid-area: player` creates an implicit grid containing block and shrinks/moves the absolute card to the far right. Keep responsive width on the board via `--home-hanging-id-width`, and reserve its hanging clearance in the stage rows. The pin is decorative and non-interactive. All card hardware and edges use the same hand-painted style as the handbook.
+
 `PlayerPlaque` now renders `.home-student-id` with the complete transparent metal-hook card asset. Keep live portrait and username overlays in the narrow right column, with the name below the portrait; do not restore full-width content, ranks or achievement equipment. Use the shared costume/effect-aware portrait resolver. `mobile-adaptive/home-student-id.css` owns the final stage layout and clears inherited button and zone chrome with the full duplicated Bright School specificity. Assert actual computed background/border/shadow in browser QA: a shorter `.app-shell` selector loses to theme button rules even with `!important`. Preserve resume click/keyboard/disabled behavior and verify portrait mobile widths of 360, 390 and 412px without horizontal overflow.
 
 Allowed patterns:

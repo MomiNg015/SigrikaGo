@@ -10,6 +10,7 @@ import { ModalDialog } from "../modals/modalComponents.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
+import PlayerPlaque from "./components/PlayerPlaque.jsx";
 import { HomeActionButton } from "./homeComponents.jsx";
 import IrisDatabase from "./IrisDatabase.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
@@ -62,13 +63,11 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
         />
 
         <section className="home-main-panel home-terminal-main">
+          <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} disabled={sigrikaCorrupted} />
           <HomeStage
             sigrikaCorrupted={sigrikaCorrupted}
-            selectedCharacter={selectedCharacter}
-            user={user}
             onOpenFriends={onOpenFriends}
             onOpenHouse={onOpenHouse}
-            onOpenResume={onOpenResume}
             onOpenLeaderboard={onOpenLeaderboard}
             onOpenShop={onOpenShop}
             recruitmentReady={recruitmentReady}
