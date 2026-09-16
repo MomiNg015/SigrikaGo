@@ -96,6 +96,10 @@ CSS/DOM contract tests must assert the avatar mask structure, visible outer over
 
 ## Selector Rules
 
+### Home hanging student ID
+
+`PlayerPlaque` now renders `.home-student-id` with the complete transparent metal-hook card asset. Keep live portrait and username overlays in the narrow right column, with the name below the portrait; do not restore full-width content, ranks or achievement equipment. Use the shared costume/effect-aware portrait resolver. `mobile-adaptive/home-student-id.css` owns the final stage layout and clears inherited button and zone chrome with the full duplicated Bright School specificity. Assert actual computed background/border/shadow in browser QA: a shorter `.app-shell` selector loses to theme button rules even with `!important`. Preserve resume click/keyboard/disabled behavior and verify portrait mobile widths of 360, 390 and 412px without horizontal overflow.
+
 Allowed patterns:
 
 - Explicit owner selectors such as `.settings-modal-content`, `.announcement-list-row`, `.lock-character-card`, `.store-owned-tag`.

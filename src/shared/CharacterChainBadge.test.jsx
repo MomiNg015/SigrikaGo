@@ -25,7 +25,7 @@ describe("CharacterChainBadge", () => {
     const roomSource = readFileSync(new URL("../room/PlayerInfo.jsx", import.meta.url), "utf8");
     const css = readCssWithImports(new URL("../styles/hud-components.css", import.meta.url));
 
-    expect(homeSource).toContain("CharacterChainBadge");
+    expect(homeSource).not.toContain("CharacterChainBadge");
     expect(houseSource).toContain("CharacterChainBadge");
     expect(roomSource).toContain("CharacterChainBadge");
     expect(css).toContain(".character-chain-badge");

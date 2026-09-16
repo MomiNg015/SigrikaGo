@@ -19,7 +19,7 @@ export default function HomeStage({
   onStartMatch
 }) {
   return (
-    <section className="home-grid-featured home-stage home-terminal-stage">
+    <section className="home-grid-featured home-stage home-terminal-stage home-stage-with-student-id">
       <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} disabled={sigrikaCorrupted} />
       <HouseManualEntry sigrikaCorrupted={sigrikaCorrupted} onOpenHouse={onOpenHouse} />
       <MatchEntry sigrikaCorrupted={sigrikaCorrupted} onStartMatch={onStartMatch} onPreloadPlayableReady={onPreloadPlayableReady} />

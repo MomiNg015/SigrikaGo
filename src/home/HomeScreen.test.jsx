@@ -147,7 +147,7 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("不限时 · 自动匹配");
     expect(html).not.toContain("sigrika-corruption-duel-sigil");
     expect(html).toContain("与西格莉卡？决战");
-    expect(html).toContain('class="home-player-plaque tactical-id-card"');
+    expect(html).toContain('class="home-student-id"');
     expect(html).not.toContain('class="iris-database-entry"');
     expect(html).not.toContain('class="home-header-mascot"');
     expect(html).not.toContain("home-brand-corruption-marks");
@@ -319,7 +319,7 @@ describe("HomeScreen", () => {
     const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const matchBlock = css.match(/\.match-image-entry\s*\{[^}]+\}/g)?.find((block) => block.includes("border-color: rgba(0, 191, 255, 0.32)")) ?? "";
 
-    expect(html).toContain('class="home-grid-featured home-stage home-terminal-stage"');
+    expect(html).toContain('class="home-grid-featured home-stage home-terminal-stage home-stage-with-student-id"');
     expect(html).toContain('class="home-image-entry house-manual-entry hologram-entry"');
     expect(html).toContain('class="home-image-entry match-image-entry hologram-entry"');
     expect(html).toContain('src="/assets/home/book-entry.webp"');
@@ -437,41 +437,15 @@ describe("HomeScreen", () => {
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
 
-    expect(html).toContain("home-player-row tactical-id-row");
-    expect(html).toContain("home-player-plaque tactical-id-card");
+    expect(html).toContain('class="home-student-id"');
     expect(html).toContain('aria-label="打开履历"');
-    expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
-    expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
-    expect(html).toContain("plaque-mode-stat plaque-mode-stat-gomoku");
-    expect(html).toContain('aria-label="对弈模式段位"');
-    expect(html).toContain("plaque-mode-icon");
-    expect(html).toContain('src="/assets/match-modes/mode-spark.png"');
-    expect(html).toContain('src="/assets/match-modes/mode-standard.png"');
-    expect(html).toContain('src="/assets/match-modes/mode-gomoku.png"');
-    const plaqueModeIcons = html.match(/\x3cimg class="plaque-mode-icon"[^>]+>/g) ?? [];
-    expect(plaqueModeIcons).toHaveLength(3);
-    plaqueModeIcons.forEach((icon) => expect(icon).toContain('decoding="sync"'));
-    expect(html).toContain("plaque-mode-rank");
-    expect(html).toContain('aria-label="星炬 4段"');
-    expect(html).toContain('<span class="plaque-mode-rank plaque-mode-rank-dan" aria-hidden="true">4</span>');
-    expect(html).toContain('<span class="plaque-mode-rank plaque-mode-rank-dan" aria-hidden="true">3</span>');
-    expect(html).not.toContain(">4段</span>");
-    expect(html).not.toContain(">3段</span>");
-    const gradeRankHtml = renderHome({
-      user: {
-        modeStats: {
-          spark: { rating: 1260, rank: "4段", recentResults: [], wins: 3, losses: 1, draws: 0 },
-          standard: { rating: 920, rank: "5级", recentResults: [], wins: 1, losses: 2, draws: 0 },
-          gomoku: { rating: 1010, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 1 }
-        }
-      }
-    });
-    expect(gradeRankHtml).toContain('aria-label="标准 5级"');
-    expect(gradeRankHtml).toContain('<span class="plaque-mode-rank plaque-mode-rank-kyu" aria-hidden="true">5</span>');
-    expect(gradeRankHtml).not.toContain(">5级</span>");
+    expect(html).toContain('class="home-student-id-portrait"');
+    expect(html).toContain('class="home-student-id-name"');
+    expect(html).not.toContain('aria-label="对弈模式段位"');
+    expect(html).not.toContain('plaque-mode-stat');
     expect(html).not.toContain("plaque-mode-name");
     expect(html).not.toContain("plaque-mode-rating");
-    expect(html).toContain('<span class="plaque-avatar"><span class="plaque-avatar-mask"><img');
+    expect(html).toContain('<span class="home-student-id-portrait"><img');
     expect(html).not.toContain("1260分");
     expect(html).not.toContain("920分");
     expect(html).not.toContain("1010分");
@@ -761,7 +735,7 @@ describe("HomeScreen", () => {
     expect(brightUtilityCss).not.toContain(".utility-entry:nth-child(3n),\n.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover");
   });
 
-  it("renders equipped achievement nameplates on the player identity tag", () => {
+  it("keeps achievement nameplates out of the student ID while retaining their source assets", () => {
     const html = renderHome({
       user: {
         achievementEquipment: {
@@ -782,11 +756,11 @@ describe("HomeScreen", () => {
     });
 
     expect(html).not.toContain("plaque-nameplate-bg");
-    expect(html).toContain("user-identity has-nameplate");
-    expect(html).toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
-    expect(html).toContain("user-identity-name-tag");
-    expect(html).toContain("user-identity-nameplate-effect");
-    expect(html).toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
+    expect(html).not.toContain("user-identity has-nameplate");
+    expect(html).not.toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
+    expect(html).not.toContain("user-identity-name-tag");
+    expect(html).not.toContain("user-identity-nameplate-effect");
+    expect(html).not.toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
 
     const source = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/semantic-nameplate.png", import.meta.url)));
     expect({ width: source.width, height: source.height }).toEqual({ width: 1125, height: 240 });
@@ -826,8 +800,8 @@ describe("HomeScreen", () => {
         }
       }
     });
-    expect(deniaHtml).toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
-    expect(deniaHtml).toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
+    expect(deniaHtml).not.toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
+    expect(deniaHtml).not.toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
 
     const deniaSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/denia-spark-100-wins-nameplate.png", import.meta.url)));
     expect({ width: deniaSource.width, height: deniaSource.height }).toEqual({ width: 1125, height: 240 });
@@ -867,8 +841,8 @@ describe("HomeScreen", () => {
         }
       }
     });
-    expect(aemeathHtml).toContain('data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"');
-    expect(aemeathHtml).toContain("background-image:url(/assets/achievements/aemeath-spark-100-wins-nameplate.png)");
+    expect(aemeathHtml).not.toContain('data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"');
+    expect(aemeathHtml).not.toContain("background-image:url(/assets/achievements/aemeath-spark-100-wins-nameplate.png)");
 
     const aemeathSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/aemeath-spark-100-wins-nameplate.png", import.meta.url)));
     expect({ width: aemeathSource.width, height: aemeathSource.height }).toEqual({ width: 1125, height: 240 });
