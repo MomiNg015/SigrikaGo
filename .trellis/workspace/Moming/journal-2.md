@@ -1493,3 +1493,36 @@ Completed three animation-audit batches and added the first desktop modal-entry 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 106: 首页挂扣学生证
+
+**Date**: 2026-09-16
+**Task**: 首页挂扣学生证
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+使用用户确认的几何学院风透明挂扣学生证，右侧显示动态角色立绘、下方显示用户名；移除首页段位与成就装饰。完成桌面及360/390/412竖屏、长用户名、角色切换、点击与键盘验证。npm run check通过：356文件、2517测试。仅提交本任务代码和文档片段，保留其他WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4c84f002` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
