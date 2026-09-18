@@ -1658,3 +1658,36 @@ Implemented user-approved soft gold paper buttons, localized edge shimmer, reply
 ### Next Steps
 
 - None - task complete
+
+
+## Session 111: Guided choice border and responsive sizing
+
+**Date**: 2026-09-18
+**Task**: Guided choice border and responsive sizing
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Set guided borders to 3px; equal-height desktop grids and full-width portrait choices. Verified four viewport widths, 105 focused tests, production build and built-CSS checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a0633cfa` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
