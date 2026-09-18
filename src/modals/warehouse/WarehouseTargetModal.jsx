@@ -41,13 +41,14 @@ export default function WarehouseTargetModal({
                     className={targetAvailability.disabled ? "warehouse-target-disabled" : ""}
                     disabled={targetAvailability.disabled}
                     aria-disabled={targetAvailability.disabled}
-                    title={character.name}
+                    title={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
+                    aria-label={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
                     onClick={() => {
                       if (!targetAvailability.disabled) onUseItem(targetItem, character.id);
                     }}
                   >
                     <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
-                    <span>{character.name}</span>
+                    <span>{character.name}{targetItem?.disabledCharacterReasons?.[canonicalCharacterId(character.id)] ? "（暂不可用）" : ""}</span>
                   </button>
                 );
               })}
@@ -81,8 +82,10 @@ export function warehouseTargetState(targetState) {
 }
 
 export function warehouseCharacterTargetAvailability({ character, item, itemEffects = {} }) {
-  if (!item || item.itemId !== RAINBOW_BEAN_CANDY_ID) return { disabled: false, reason: "" };
   const characterId = canonicalCharacterId(character?.id);
+  const disabledReason = item?.disabledCharacterReasons?.[characterId];
+  if (disabledReason) return { disabled: true, reason: disabledReason };
+  if (!item || item.itemId !== RAINBOW_BEAN_CANDY_ID) return { disabled: false, reason: "" };
   const targetRule = RAINBOW_BEAN_CANDY_TARGET_RULES[characterId];
   if (!targetRule) return { disabled: true, reason: "无效果" };
   if (itemEffects?.[targetRule.effectKey]) return { disabled: true, reason: targetRule.activeLabel };

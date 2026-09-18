@@ -1,5 +1,28 @@
 # Sigrika Candy Duel Recovery Contract
 
+## Temporary production item-entry restriction
+
+### Scope / Trigger
+Until the Sigrika candy story is complete, production must reject new candy use on Sigrika. This does not disable recovery of existing progress.
+
+### Signatures
+`toItemPayload(item).disabledCharacterReasons` is a canonical character ID to reason map. `useInventoryItem` throws a route error with status 403 for a restricted target.
+
+### Contracts
+`NODE_ENV=production` restricts only `rainbow-bean-candy` on `sigrika`. The same server helper generates the inventory map and validates item use before story reads, random outcome selection, consumption, effects, or arc writes. The warehouse renders disabled targets with a visible unavailable label and accessible reason. Local development and other characters retain their existing rules.
+
+### Validation & Error Matrix
+Production Sigrika -> disabled inventory target and 403 on direct use; development Sigrika -> normal use; production Denia/Aemeath/Lynae -> normal accepted/rejected outcome; unrelated items -> empty restriction map.
+
+### Good / Base / Bad Cases
+Good: stale clients receive a server rejection without losing candy. Base: existing candy effects and story recovery remain available. Bad: deleting saved story progress or hiding only a frontend button.
+
+### Tests Required
+`server/items.test.js` verifies inventory projection, no user/asset writes or story reads on rejection, development success, and production Denia success. `src/modals/WarehouseModal.test.js` verifies disabled markup and the visible explanation.
+
+### Wrong vs Correct
+Wrong: filter Sigrika only using a frontend build flag. Correct: publish and enforce the same server restriction, consuming it in the warehouse. Remove the temporary restriction deliberately when the story is ready.
+
 ## 1. Scope / Trigger
 
 Use this contract when changing `sigrika-candy:duel-start`, `sigrika-candy:duel-status`, `sigrika-candy:duel-watch`, the account-level Sigrika candy arc, special-room restoration, empty-room cleanup interactions, or the client transition that starts or observes the corruption duel. The account can outlive its `PersistedRoom`; `duel-active` is therefore not proof that a resumable room still exists.

@@ -64,6 +64,8 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
 
     const targetType = normalizeItemTargetType(item.itemTargetType);
     const targetCharacter = String(characterId ?? "").trim();
+    const disabledReason = itemDisabledCharacterReasons(item)[canonicalCharacterId(targetCharacter)];
+    if (disabledReason) throw routeError(403, disabledReason);
     if (targetType === "character") {
       if (!targetCharacter) throw routeError(400, "请选择角色");
       const ownedCharacters = publicUserAssets(user).ownedCharacters.map(canonicalCharacterId);
@@ -146,9 +148,17 @@ export function toItemPayload(item, quantity = 0) {
     itemId: payload.targetId,
     quantity,
     targetType: normalizeItemTargetType(payload.itemTargetType),
+    disabledCharacterReasons: itemDisabledCharacterReasons(item),
     usable: !isRecruitmentInventoryItem(payload.targetId),
     actionVisible: isRecruitmentInventoryActionVisible(payload.targetId)
   };
+}
+
+function itemDisabledCharacterReasons(item) {
+  if (item.targetId === RAINBOW_BEAN_CANDY_ID && process.env.NODE_ENV === "production") {
+    return { sigrika: "西格莉卡的糖果剧情尚未开放，暂不可使用" };
+  }
+  return {};
 }
 
 function toShopLikePayload(item) {

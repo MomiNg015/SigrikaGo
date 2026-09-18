@@ -13,6 +13,26 @@ import {
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
+  it("disables the server-restricted Sigrika target with a visible explanation", () => {
+    const item = {
+      itemId: "rainbow-bean-candy",
+      disabledCharacterReasons: { sigrika: "西格莉卡的糖果剧情尚未开放，暂不可使用" }
+    };
+    const sigrika = { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" };
+    const denia = { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" };
+    expect(warehouseCharacterTargetAvailability({ character: sigrika, item })).toEqual({
+      disabled: true, reason: item.disabledCharacterReasons.sigrika
+    });
+    expect(warehouseCharacterTargetAvailability({ character: denia, item })).toEqual({ disabled: false, reason: "" });
+    const html = renderToStaticMarkup(createElement(WarehouseTargetModal, {
+      characters: { sigrika, denia }, ownedCharacters: [sigrika, denia], targetItem: item,
+      user: {}, onClose: () => {}, onUseItem: () => {}
+    }));
+    expect(html.match(/disabled=""/g)).toHaveLength(1);
+    expect(html).toContain("西格莉卡（暂不可用）");
+    expect(html).toContain(item.disabledCharacterReasons.sigrika);
+  });
+
   it("renders a labelled warehouse sticker header", () => {
     const html = renderToStaticMarkup(createElement(WarehouseModal, {
       token: "token",
