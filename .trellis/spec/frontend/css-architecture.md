@@ -245,7 +245,7 @@ Mobile player tap tooltips portal to the nearest `.app-shell`, preserving theme 
 
 ### Empty records and guided actions
 
-For both profile contexts, empty character records render a compact `.profile-character-empty` label instead of the header/table/scroller. The empty record panel uses natural rows; populated table scrolling stays unchanged.
+For both profile contexts, empty character records retain the `.profile-character-section` card shell and add `.profile-character-empty` for a compact centered label instead of the header/table/scroller. The empty record panel uses natural rows; populated table scrolling stays unchanged.
 
 `mobile-adaptive/guided-actions.css` owns soft gold paper fills, 3px campus-weight borders, restrained shadows, left-aligned copy and trailing chevrons, with a masked localized animated edge highlight for enabled story-footer and tutorial action buttons. Exclude native and ARIA disabled controls. Keep the pseudo-element content/display explicit to beat room resets; reduced-motion selectors must match the enabled selector specificity. Preserve long-choice wrapping, board target rings and skip/close semantics. Check computed pseudo content and reduced-motion animation, not animation-name alone.
 

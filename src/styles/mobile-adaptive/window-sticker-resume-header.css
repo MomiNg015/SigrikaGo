@@ -123,12 +123,11 @@
   }
 }
 
-.profile-character-empty {
+.profile-resume-view .profile-character-section.profile-character-empty {
   grid-area: characters;
   align-self: start;
-  display: flex;
+  display: flex !important;
   justify-content: center;
-  padding: 6px 0;
   font-size: 0.75rem;
 }
 

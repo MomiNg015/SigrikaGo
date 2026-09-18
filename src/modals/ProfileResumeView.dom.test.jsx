@@ -10,6 +10,8 @@ describe("profile character record empty state", () => {
     const props = { context, user: { username: "测试部员", characterId: "sigrika" }, characters: [], mode: "spark", stats: {} };
     const { rerender } = render(<ProfileResumeView {...props} />);
     const empty = screen.getByLabelText("角色战绩");
+    expect(empty.classList.contains("profile-character-section")).toBe(true);
+    expect(empty.querySelector(".profile-character-table-head")).toBeNull();
     expect(empty.textContent).toBe("暂无");
     expect(empty.querySelector(".recent-result-empty")).toBeTruthy();
     expect(screen.queryByRole("table")).toBeNull();
