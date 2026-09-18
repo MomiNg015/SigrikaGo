@@ -1,4 +1,3 @@
-.tutorial-battle-choice button,
 .tutorial-battle-continue,
 .tutorial-battle-action,
 .tutorial-action-bar button {
@@ -23,7 +22,6 @@
   transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.tutorial-battle-choice button::after,
 .tutorial-battle-continue::after,
 .tutorial-battle-action::after,
 .tutorial-action-bar button::after {
@@ -37,14 +35,12 @@
   opacity: 0.72;
 }
 
-.tutorial-battle-choice button > *,
 .tutorial-battle-continue > *,
 .tutorial-battle-action > *,
 .tutorial-action-bar button > * {
   flex: 0 0 auto;
 }
 
-.tutorial-battle-choice button span,
 .tutorial-battle-continue span,
 .tutorial-battle-action span,
 .tutorial-action-bar button span {
@@ -52,8 +48,6 @@
   min-width: 0;
 }
 
-.tutorial-battle-choice button:hover,
-.tutorial-battle-choice button:focus-visible,
 .tutorial-battle-continue:hover,
 .tutorial-battle-continue:focus-visible,
 .tutorial-battle-action:hover,
@@ -66,7 +60,6 @@
   outline: none;
 }
 
-.tutorial-battle-choice button:active,
 .tutorial-battle-continue:active,
 .tutorial-battle-action:active,
 .tutorial-action-bar button:active {
@@ -84,6 +77,26 @@
   min-height: 64px;
   padding: 8px 12px;
   box-sizing: border-box;
+}
+
+.tutorial-action-bar.tutorial-choice-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  align-content: start;
+  max-height: 128px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.tutorial-choice-actions button {
+  height: auto;
+}
+
+.tutorial-choice-actions button span {
+  overflow: visible;
+  white-space: normal;
 }
 
 .tutorial-action-bar .tutorial-highlight-action {
@@ -137,7 +150,7 @@
   padding: 8px 12px !important;
 }
 
-.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button {
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button {
   flex: 1 1 0 !important;
   width: 100% !important;
   min-width: 0 !important;
@@ -151,13 +164,32 @@
   text-align: center !important;
 }
 
-.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button span {
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button span {
   flex: 0 1 auto !important;
   text-align: center !important;
 }
 
-.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button::after {
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button::after {
   display: none !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions {
+  --tutorial-choice-background: rgb(228 248 220/.72);
+  --tutorial-choice-hover-background: rgb(215 245 202/.8);
+  --tutorial-choice-active-background: rgb(255 214 231/.8);
+  max-height: none;
+  flex-direction: column;
+  overflow: visible;
+  overscroll-behavior: auto;
+  scrollbar-gutter: auto;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions button {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 46px;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 @keyframes tutorial-action-pulse {

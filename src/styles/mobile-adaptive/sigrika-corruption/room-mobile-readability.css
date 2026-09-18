@@ -47,13 +47,13 @@
   background: var(--sigrika-duel-surface-raised) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tap-tooltip {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .mobile-tap-tooltip {
   border-color: var(--sigrika-duel-line) !important;
   color: var(--sigrika-duel-text) !important;
   background: var(--sigrika-duel-surface-raised) !important;
   box-shadow: 0 3px 6px var(--sigrika-duel-shadow-soft) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tap-tooltip :is(p, span, strong) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .mobile-tap-tooltip :is(p, span, strong) {
   color: inherit !important;
 }

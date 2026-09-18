@@ -154,6 +154,7 @@ export default function AppRoutes({
           characters={characters}
           loadingLinesText={siteSettings.characterLoadingLines}
           progress={assetProgress}
+          progressHint="（首次加载需要1-3分钟，请耐心等待哦~）"
           user={user}
           tipsText={siteSettings.preloadTips}
         />

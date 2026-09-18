@@ -719,7 +719,6 @@ export default function TutorialBattleScreen({
       <RoomHeader
         room={displayRoom}
         roomGameInfo={roomGameInfo}
-        showCloseCountdown={false}
         showCoords={showCoords}
         exitLabel="退出/跳过"
         showUtilityControls={false}
@@ -740,6 +739,7 @@ export default function TutorialBattleScreen({
               previewControlsEnabled={previewControlsEnabled}
               skillName={skillLabel(currentNode, characters)}
               onContinue={handleContinue}
+              onChoice={handleChoice}
               onSkillButton={handleSkillButton}
               onPlayerButton={() => completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode))}
               onRevealText={revealNpcBubbleText}
@@ -781,6 +781,7 @@ export default function TutorialBattleScreen({
           setSpectatorStep={() => {}}
           setViewColor={() => {}}
           showPeoplePanel={false}
+          showOperationHint={!choicesVisible}
           showTutorialLog
           showCoords={showCoords}
           showMoves={false}
@@ -795,11 +796,7 @@ export default function TutorialBattleScreen({
           winnerColor={displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color}
         />
         <TutorialBattleDirector
-          characters={characters}
-          choicesVisible={choicesVisible}
-          node={currentNode}
           npcBubble={npcBubble}
-          onChoice={handleChoice}
           revealedNpcBubbleId={revealedNpcBubbleId}
         />
         {loading && (
@@ -831,17 +828,11 @@ export default function TutorialBattleScreen({
 }
 
 function TutorialBattleDirector({
-  characters,
-  choicesVisible,
-  node,
   npcBubble,
-  onChoice,
   revealedNpcBubbleId
 }) {
-  const options = Array.isArray(node?.options) ? node.options : [];
   return (
     <div className="tutorial-battle-director" aria-live="polite">
-      {choicesVisible && options.length > 0 && <div className="tutorial-battle-choice-scrim" aria-hidden="true" />}
       {npcBubble && (
         <section
           className={`tutorial-battle-dialogue ${npcBubble.closing ? "closing" : ""}`}
@@ -852,15 +843,6 @@ function TutorialBattleDirector({
             <strong>{npcBubble.speakerName}</strong>
             <p><TypewriterText key={npcBubble.id} revealAll={revealedNpcBubbleId === npcBubble.id} text={npcBubble.text} /></p>
           </div>
-        </section>
-      )}
-      {choicesVisible && options.length > 0 && (
-        <section className="tutorial-battle-choice">
-          {options.map((option, index) => (
-            <button key={`${node.id}-${index}`} type="button" onClick={() => onChoice(option)}>
-              <span>{option.label || "继续"}</span>
-            </button>
-          ))}
         </section>
       )}
     </div>
@@ -916,7 +898,7 @@ function prefersReducedMotion() {
   return canAnimateTypewriter() && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 }
 
-function TutorialActionPanel({
+export function TutorialActionPanel({
   node,
   phase,
   pendingWait,
@@ -924,6 +906,7 @@ function TutorialActionPanel({
   previewControlsEnabled,
   skillName,
   onContinue,
+  onChoice,
   onSkillButton,
   onPlayerButton,
   onRevealText,
@@ -932,7 +915,14 @@ function TutorialActionPanel({
   if (!node) return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   const hasOptions = Array.isArray(node.options) && node.options.length > 0;
   if (choicesVisible && hasOptions) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
+    return (
+      <TutorialChoiceActions
+        key={node.id}
+        node={node}
+        onChoice={onChoice}
+        onRevealText={onRevealText}
+      />
+    );
   }
   if (pendingWait) {
     const buttonText = pendingWait.manualContinue ? "继续" : "立即继续";
@@ -987,6 +977,46 @@ function TutorialActionPanel({
     return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
   }
   return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
+}
+
+export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
+  const groupRef = useRef(null);
+  const submittedRef = useRef(false);
+  const [submitted, setSubmitted] = useState(false);
+  const options = Array.isArray(node?.options) ? node.options : [];
+
+  useEffect(() => {
+    groupRef.current?.querySelector("button:not(:disabled)")?.focus();
+  }, []);
+
+  const selectOption = (option) => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    setSubmitted(true);
+    onChoice?.(option);
+  };
+
+  return (
+    <div
+      ref={groupRef}
+      className="action-bar tutorial-action-bar tutorial-choice-actions"
+      role="group"
+      aria-label="请选择回答"
+      aria-busy={submitted}
+      onClick={onRevealText}
+    >
+      {options.map((option, index) => (
+        <button
+          key={`${node.id}-${index}`}
+          type="button"
+          disabled={submitted}
+          onClick={() => selectOption(option)}
+        >
+          <span>{option.label || "继续"}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function TutorialBattleLoading({ loading, characters, players, user }) {

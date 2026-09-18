@@ -113,6 +113,7 @@ export default function AssetPreloadScreen({
   label = "",
   loadingLinesText = DEFAULT_SITE_SETTINGS.characterLoadingLines,
   progress,
+  progressHint = "",
   statusText = "",
   showTips = true,
   tipsText,
@@ -284,6 +285,7 @@ export default function AssetPreloadScreen({
             </span>
           </div>
         </div>
+        {progressHint && <p className="preload-status preload-progress-hint">{progressHint}</p>}
         {showTips && displayTip && <p className="preload-tip" aria-live="polite">{displayTip}</p>}
       </section>
     </main>

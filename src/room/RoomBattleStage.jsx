@@ -55,6 +55,7 @@ export default function RoomBattleStage({
   skillEffectsEnabled = true,
   skillPreview,
   showPeoplePanel = true,
+  showOperationHint = true,
   showTutorialLog = false,
   tutorialTargetPointId = "",
   tutorialAnyBoardTarget = false,
@@ -130,7 +131,7 @@ export default function RoomBattleStage({
       onFloatingLayerRequest={handleMembersFloatingLayer}
     />
   );
-  const hintPanel = !isReplay && role === "player" && (
+  const hintPanel = showOperationHint && !isReplay && role === "player" && (
     <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
   );
   const boardPanel = (

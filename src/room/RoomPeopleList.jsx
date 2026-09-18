@@ -163,7 +163,6 @@ function RoomPeopleList({
                     <button type="button" disabled={isSelf || isFriend} onClick={() => toggleBlacklist(person)}>
                       {isBlocked ? "从黑名单解除" : "加入黑名单"}
                     </button>
-                    <button type="button" disabled>密谈</button>
                   </div>
                 </RoomPeopleFloatingLayer>
               )}

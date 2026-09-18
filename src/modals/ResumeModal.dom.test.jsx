@@ -73,18 +73,22 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("tooltip", {
       name: "每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。"
     })).toBeTruthy();
-    expect(screen.getByLabelText("履历操作").textContent).toBe("个性化");
-    expect(document.querySelector(".profile-recent-section .profile-section-heading .profile-replay-button")).toBeTruthy();
+    expect(document.querySelector(".profile-identity-actions")).toBeNull();
+    expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
+    expect(screen.getByRole("button", { name: "对局回放" }).textContent).toBe("");
+    expect(document.querySelector(".profile-summary-item.has-action .profile-replay-button")).toBeTruthy();
     expect(screen.queryByText("点赞", { exact: false })).toBeNull();
     expect(screen.queryByText("加好友")).toBeNull();
     expect(screen.queryByText("举报")).toBeNull();
     expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "五子棋"]);
     expect([...document.querySelector(".resume-header-actions").children].map((element) => {
       if (element.matches(".achievement-entry-action")) return "成就";
+      if (element.matches(".personalization-entry-action")) return "个性化";
       if (element.matches(".resume-wallet")) return "金币";
       if (element.matches(".resume-close-button")) return "关闭";
       return "未知";
-    })).toEqual(["成就", "金币", "关闭"]);
+    })).toEqual(["成就", "个性化", "金币", "关闭"]);
     fireEvent.click(screen.getByRole("button", { name: "成就" }));
     fireEvent.click(screen.getByRole("button", { name: "个性化" }));
     expect(onOpenAchievements).toHaveBeenCalledTimes(1);

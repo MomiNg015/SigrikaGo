@@ -1,6 +1,6 @@
 import { TUTORIAL_NODE_TYPES } from "../shared/tutorialNodeTypes.js";
 
-export const GUIDED_POINT_WARNING = "请落子或选择黄圈位置";
+export const GUIDED_POINT_WARNING = "请在黄圈位置落子";
 export const UNGUIDED_WRONG_MOVE_FEEDBACK_DELAY_MS = 1500;
 
 export function tutorialTargetPointForNode(node, phase) {

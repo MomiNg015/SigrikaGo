@@ -165,16 +165,23 @@ Short reveal motion must belong to the element whose state or hierarchy changed,
 
 Story reply choices, achievement toasts, result reward tiles, and settings tab panels are the approved component-level reveal additions from this audit. Their motion is bounded to 150-220ms, uses only opacity/transform, caps stagger at 120ms, and removes translation plus stagger under `prefers-reduced-motion`. Result reward keyframes live in the focused `modals/result-reward-motion.css` owner so `result-modal.css` stays below the 6000-byte concrete-file guard. Contract tests must prove selector scope, durations, stagger caps, reduced-motion behavior, and that ordinary toast/modal surfaces are not animated by these component owners.
 
-The product-approved desktop window-entry pass is a separate shell-level family owned by `modals/window-entry-motion.css` under `screen and (min-width: 769px)`. It targets only explicit player-window roots: ordinary windows use a 260ms 16px/0.96 entrance, data windows and nested details use 200ms restrained variants, and information-center master/reader panes use 220ms directional entrances delayed by 40ms and 70ms. Use the individual `translate` and `scale` transform properties so Bright School's intentional static `transform: none !important` anti-bleed winner cannot erase the keyframes; do not remove that anti-bleed contract globally. Story, character-opening, recruitment-cinematic, and mobile-sheet owners remain outside this family. Per the explicit product direction for this pass, this owner intentionally has no `prefers-reduced-motion` branch; do not generalize that exception to other motion owners.
+The product-approved desktop window-entry pass is a separate shell-level family owned by `modals/window-entry-motion.css` under `screen and (min-width: 769px)`. It targets only explicit player-window roots: ordinary windows use a 260ms 16px/0.96 entrance, data windows and nested details use 200ms restrained variants, and information-center master/reader panes use 220ms directional entrances delayed by 40ms and 70ms. Use the individual `translate` and `scale` transform properties so Bright School's intentional static `transform: none !important` anti-bleed winner cannot erase the keyframes; do not remove that anti-bleed contract globally. Every entry uses `backwards` fill, never `both` or `forwards`: delayed panes still receive their first frame, while settled window shells release the individual transform components so nested `position: fixed` backdrops remain viewport-relative. Story, character-opening, recruitment-cinematic, and mobile-sheet owners remain outside this family. Per the explicit product direction for this pass, this owner intentionally has no `prefers-reduced-motion` branch; do not generalize that exception to other motion owners.
 
 ```css
 /* Wrong: Bright School's important anti-bleed transform wins over this keyframe. */
 @keyframes modal-in { from { transform: translateY(16px) scale(0.96); } }
 
+/* Wrong: the settled shell keeps transform components and traps fixed descendants. */
+.modal-window { animation: modal-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
 /* Correct: independent transform components preserve the static anti-bleed rule. */
 @keyframes modal-in {
   from { translate: 0 16px; scale: 0.96; }
   to { translate: 0; scale: 1; }
+}
+
+.modal-window {
+  animation: modal-in 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 ```
 
@@ -219,3 +226,7 @@ npm run verify:stability -- tests/stability/skill-effects.spec.js
 ```
 
 Run `npm run docs:system-design` whenever CSS architecture, theme structure, or technical-debt guidance changes.
+
+### Portrait battle shadow and tooltip boundaries
+
+Mobile player tap tooltips portal to the nearest `.app-shell`, preserving theme variables and `--room-floating-z`; never keep them beneath clipped player slots. Their own selector must work outside `.mobile-room-screen`. Choose the viewport half with more room and bound scroll height by available space. `mobile-adaptive/mobile-room-shadow-gutters.css` reserves right/bottom viewport and tab-panel bleed, permits board shadow overflow, and lets the dock size from its bounded scrolling panel instead of clipping it with a second maximum height. Verify 360x800, 390x844 and 412x915, including long tooltips, final scroll rows and unchanged document width.

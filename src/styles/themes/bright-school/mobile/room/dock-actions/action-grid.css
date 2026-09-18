@@ -16,7 +16,7 @@
     grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .action-bar button {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .action-bar:not(.tutorial-choice-actions) button {
     grid-column: auto !important;
     grid-row: auto !important;
     min-width: 0 !important;

@@ -83,11 +83,9 @@
   .friend-action-row {
     min-width: 0;
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    display: flex;
     gap: 6px;
     overflow-x: hidden;
-    justify-content: stretch;
   }
 
   .friend-gear-button {

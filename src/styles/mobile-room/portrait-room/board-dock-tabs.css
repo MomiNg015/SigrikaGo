@@ -31,7 +31,7 @@
     overflow: visible;
   }
 
-  .mobile-room-screen .mobile-tab-panel .action-bar button {
+  .mobile-room-screen .mobile-tab-panel .action-bar:not(.tutorial-choice-actions) button {
     min-height: 46px;
     height: 46px;
     padding: 4px;

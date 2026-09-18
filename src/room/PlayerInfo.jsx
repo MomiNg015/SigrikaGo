@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
@@ -234,13 +235,13 @@ function PlayerInfo({
           <span className="skill-chip skill-chip-placeholder" />
         </div>
       )}
-      {tapTooltip && (
+      {tapTooltip && createPortal(
         <div
           className="mobile-tap-tooltip"
           style={{
             "--tooltip-x": `${tapTooltip.x}px`,
             "--tooltip-y": `${tapTooltip.y}px`,
-            ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {})
+            "--room-floating-z": floatingLayerZ ?? 120
           }}
           data-placement={tapTooltip.placement}
           role="tooltip"
@@ -253,7 +254,8 @@ function PlayerInfo({
               onPopoverOpenChange={setTraitPopoverOpen}
             />
           ) : tapTooltip.text}
-        </div>
+        </div>,
+        tapTooltip.portalTarget ?? document.body
       )}
     </aside>
   );
@@ -360,7 +362,7 @@ export function tooltipPointFromEvent(event, viewport = globalThis) {
   const horizontalInset = Math.min(TOOLTIP_HALF_WIDTH + TOOLTIP_VIEWPORT_MARGIN, Math.max(TOOLTIP_VIEWPORT_MARGIN, width / 2));
   const verticalInset = TOOLTIP_VIEWPORT_MARGIN;
   const rawY = event.clientY ?? 0;
-  const placement = rawY < TOOLTIP_TOP_FLIP_THRESHOLD ? "below" : "above";
+  const placement = rawY < height / 2 ? "below" : "above";
   return {
     x: clamp(event.clientX ?? 0, horizontalInset, Math.max(horizontalInset, width - horizontalInset)),
     y: clamp(rawY, verticalInset, Math.max(verticalInset, height - verticalInset)),
@@ -372,7 +374,11 @@ function openTapTooltip(event, content, setTapTooltip) {
   if (!isMobileTooltipInput()) return false;
   event.preventDefault();
   event.stopPropagation();
-  setTapTooltip({ ...tooltipPointFromEvent(event), ...tooltipContent(content) });
+  setTapTooltip({
+    ...tooltipPointFromEvent(event),
+    ...tooltipContent(content),
+    portalTarget: event.currentTarget?.closest?.(".app-shell") ?? document.body
+  });
   return true;
 }
 
@@ -387,7 +393,8 @@ function openTapTooltipFromKeyboard(event, content, setTapTooltip) {
       clientX: rect.left + rect.width / 2,
       clientY: rect.top + rect.height / 2
     }),
-    ...tooltipContent(content)
+    ...tooltipContent(content),
+    portalTarget: event.currentTarget?.closest?.(".app-shell") ?? document.body
   });
   return true;
 }
@@ -413,4 +420,3 @@ function clamp(value, min, max) {
 const TOOLTIP_MAX_WIDTH = 232;
 const TOOLTIP_HALF_WIDTH = TOOLTIP_MAX_WIDTH / 2;
 const TOOLTIP_VIEWPORT_MARGIN = 16;
-const TOOLTIP_TOP_FLIP_THRESHOLD = 120;

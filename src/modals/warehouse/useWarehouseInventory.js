@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
+import { characterListFromCatalog } from "../../shared/characters.js";
 import {
   SIGRIKA_CANDY_DEBUG_JUMP_NODE_ID,
   SIGRIKA_CANDY_STORY_NODE_IDS
@@ -114,9 +115,10 @@ export function useWarehouseInventory({
     }
   }
 
-  const ownedCharacters = useMemo(() => (user?.ownedCharacters ?? [])
-    .map((characterId) => characters[characterId])
-    .filter(Boolean), [user?.ownedCharacters, characters]);
+  const ownedCharacters = useMemo(() => warehouseOwnedCharactersForDisplay(
+    characters,
+    user?.ownedCharacters
+  ), [user?.ownedCharacters, characters]);
 
   function closeTargetModal() {
     setTargetItem(null);
@@ -134,6 +136,12 @@ export function useWarehouseInventory({
     useItem,
     usingItemId
   };
+}
+
+export function warehouseOwnedCharactersForDisplay(characters = {}, ownedCharacterIds = []) {
+  const owned = new Set((ownedCharacterIds ?? []).map(canonicalCharacterId));
+  return characterListFromCatalog(characters)
+    .filter((character) => owned.has(canonicalCharacterId(character.id)));
 }
 
 function notifyAchievementUnlocks(unlocks = [], onNotice) {

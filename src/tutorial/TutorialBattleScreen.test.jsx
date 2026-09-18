@@ -72,26 +72,30 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).not.toContain("tutorial-battle-loading");
   });
 
-  it("keeps reply choices as option-only panels without their own close affordance", () => {
+  it("places reply choices in the existing action panel without covering or dimming the board", () => {
     const source = readSource();
     const css = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
+    const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
 
-    expect(source).toContain("tutorial-battle-choice-scrim");
+    expect(source).toContain("<TutorialChoiceActions");
+    expect(source).toContain('className="action-bar tutorial-action-bar tutorial-choice-actions"');
+    expect(source).toContain('role="group"');
+    expect(source).toContain('aria-label="请选择回答"');
+    expect(source).toContain("showOperationHint={!choicesVisible}");
+    expect(source).not.toContain("tutorial-battle-choice-scrim");
     expect(source).not.toContain("className=\"tutorial-battle-feedback\"");
-    expect(source).not.toContain("aria-label=\"选择回复\"");
     expect(source).not.toContain("tutorial-battle-choice-close");
     expect(source).not.toContain("MessageSquareText");
     expect(source).not.toContain("onRequestCloseChoices");
-    expect(css).toContain(".tutorial-battle-choice-scrim");
-    expect(css).toContain("position: fixed");
-    expect(css).toContain("background: rgba(15, 23, 42, 0.58)");
-    const choiceBlock = cssBlock(css, ".tutorial-battle-choice");
-    expect(choiceBlock).toContain("padding: 0");
-    expect(choiceBlock).toContain("border: 0");
-    expect(choiceBlock).toContain("background: transparent");
-    expect(choiceBlock).toContain("box-shadow: none");
+    expect(css).not.toContain(".tutorial-battle-choice-scrim");
+    expect(css).not.toContain(".tutorial-battle-choice");
+    const choiceBlock = cssBlock(actionCss, ".tutorial-action-bar.tutorial-choice-actions");
+    expect(choiceBlock).toContain("display: grid");
+    expect(choiceBlock).toContain("grid-template-columns: repeat(auto-fit");
+    expect(choiceBlock).toContain("overflow-y: auto");
+    expect(choiceBlock).not.toContain("position: absolute");
+    expect(choiceBlock).not.toContain("transform:");
     expect(css).not.toContain("tutorial-battle-choice-close");
-    expect(css).not.toContain(".tutorial-battle-choice svg");
   });
 
   it("uses simplified node progression controls and option transition waits", () => {
@@ -146,18 +150,17 @@ describe("TutorialBattleScreen runtime integration", () => {
 
     expect(loadingCss).toContain("position: fixed");
     expect(loadingCss).toContain("min-height: 100dvh");
-    expect(overlayCss).toContain("z-index: 4");
     expect(actionCss).toContain("justify-content: stretch");
     expect(actionCss).toContain("background: var(--tutorial-choice-background, #e4f8dc)");
     expect(actionCss).toContain("flex: 1 1 0");
     expect(actionCss).toContain(".tutorial-action-bar button::after");
-    expect(actionCss).toContain(".tutorial-battle-choice button:active");
+    expect(actionCss).toContain(".tutorial-action-bar button:active");
     expect(actionCss).toContain("background: var(--tutorial-choice-active-background, #ffd6e7)");
     expect(targetRingCss).toContain(".board .point.tutorial-target-point .tutorial-target-ring");
     expect(targetRingCss).toContain("animation: tutorial-target-pulse 1.2s ease-in-out infinite");
-    expect(brightChoiceCss).toContain(".tutorial-battle-choice button:active:not(:disabled)");
+    expect(brightChoiceCss).toContain(".tutorial-choice-actions button:active:not(:disabled)");
     expect(brightChoiceCss).toContain("background: var(--tutorial-choice-active-background, #ffd6e7) !important");
-    expect(brightChoiceCss).toContain(".tutorial-battle-choice button:hover:not(:disabled)");
+    expect(brightChoiceCss).toContain(".tutorial-choice-actions button:hover:not(:disabled)");
     expect(brightChoiceCss).toContain("box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important");
     expect(brightChoiceCss).toContain("filter: saturate(1.04) brightness(1.01) !important");
     expect(brightChoiceCss).toContain("transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important");
@@ -166,10 +169,10 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(actionCss).toContain("flex-wrap: nowrap !important");
     expect(actionCss).not.toContain("tutorial-action-hint");
     expect(actionCss).not.toContain(".tutorial-action-bar p");
-    expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button");
-    const mobileTeachingButtonBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button");
-    const mobileTeachingButtonTextBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button span");
-    const mobileTeachingButtonAfterBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button::after");
+    expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button");
+    const mobileTeachingButtonBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button");
+    const mobileTeachingButtonTextBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button span");
+    const mobileTeachingButtonAfterBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button::after");
     expect(mobileTeachingButtonBlock).toContain("justify-content: center !important");
     expect(mobileTeachingButtonBlock).toContain("text-align: center !important");
     expect(mobileTeachingButtonTextBlock).toContain("flex: 0 1 auto !important");
@@ -198,17 +201,28 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(mobileDialogueBlock).not.toContain("backdrop-filter");
   });
 
-  it("keeps mobile reply text opaque while using translucent choice surfaces", () => {
+  it("keeps mobile reply choices opaque, vertical, and scrollable inside the action dock", () => {
     const baseCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
-    const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
     const themeCss = readFileSync(new URL("../styles/themes/bright-school/room/tutorial-choice-interactions.css", import.meta.url), "utf8");
-    const mobileCss = overlayCss.split("@media (max-width: 900px)")[1] ?? "";
-    const mobileChoiceBlock = cssBlock(mobileCss, ".tutorial-battle-choice");
+    const mobileDockCss = readFileSync(new URL("../styles/mobile-adaptive/mobile-room-portrait/dock-panels.css", import.meta.url), "utf8");
+    const finalActionCss = readFileSync(new URL("../styles/mobile-adaptive/mobile-room-portrait/action-decision-controls.css", import.meta.url), "utf8");
+    const brightActionCss = readFileSync(new URL("../styles/themes/bright-school/mobile/room/dock-actions/action-grid.css", import.meta.url), "utf8");
+    const mobileChoiceBlock = cssBlock(baseCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions");
 
     expect(mobileChoiceBlock).toContain("--tutorial-choice-background: rgb(228 248 220/.72)");
     expect(mobileChoiceBlock).toContain("--tutorial-choice-hover-background: rgb(215 245 202/.8)");
+    expect(mobileChoiceBlock).toContain("flex-direction: column");
+    expect(mobileChoiceBlock).toContain("max-height: none");
+    expect(mobileChoiceBlock).toContain("overflow: visible");
+    expect(mobileChoiceBlock).toContain("overscroll-behavior: auto");
+    expect(mobileChoiceBlock).toContain("scrollbar-gutter: auto");
     expect(mobileChoiceBlock).not.toContain("opacity:");
     expect(mobileChoiceBlock).not.toContain("backdrop-filter");
+    expect(mobileDockCss).toContain(".mobile-room-screen .mobile-tab-panel");
+    expect(mobileDockCss).toContain("overflow-y: auto");
+    expect(finalActionCss).toContain(".action-bar:not(.tutorial-choice-actions) button");
+    expect(finalActionCss).not.toContain(".action-bar button {\n");
+    expect(brightActionCss).toContain(".action-bar:not(.tutorial-choice-actions) button");
     expect(baseCss).toContain("var(--tutorial-choice-background, #e4f8dc)");
     expect(themeCss).toContain("var(--tutorial-choice-active-background, #ffd6e7)");
   });
@@ -240,7 +254,7 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("function handleBoardSurface()");
     expect(source).toContain("currentNode?.type === TUTORIAL_NODE_TYPES.playerMove");
     expect(source).toContain("warn(tutorialWrongPointWarning(currentNode, skillPhase))");
-    expect(guidanceSource).toContain('GUIDED_POINT_WARNING = "请落子或选择黄圈位置"');
+    expect(guidanceSource).toContain('GUIDED_POINT_WARNING = "请在黄圈位置落子"');
   });
 
   it("supports hidden targets, scripted wrong-move branches, and silent board resets", () => {
@@ -255,25 +269,27 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("applyBoardSetup(currentNode)");
   });
 
-  it("keeps reply choice buttons from creating local scrollbars", () => {
-    const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
+  it("lets long reply buttons grow and keeps mobile scrolling on the outer dock panel", () => {
     const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
-    const baseChoiceBlock = cssBlock(overlayCss, ".tutorial-battle-choice");
-    const mobileChoiceBlock = cssBlocks(overlayCss, ".tutorial-battle-choice").at(-1) ?? "";
-    const choiceButtonBlock = cssBlock(actionCss, ".tutorial-battle-choice button,\n.tutorial-battle-continue,\n.tutorial-battle-action,\n.tutorial-action-bar button");
+    const mobileRoomPortraitCss = readFileSync(new URL("../styles/mobile-room/portrait-room/board-dock-tabs.css", import.meta.url), "utf8");
+    const baseChoiceBlock = cssBlock(actionCss, ".tutorial-action-bar.tutorial-choice-actions");
+    const mobileChoiceBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions");
+    const mobileChoiceButtonBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions button");
+    const choiceButtonBlock = cssBlock(actionCss, ".tutorial-battle-continue,\n.tutorial-battle-action,\n.tutorial-action-bar button");
+    const growingChoiceButtonBlock = cssBlock(actionCss, ".tutorial-choice-actions button");
+    const growingChoiceTextBlock = cssBlock(actionCss, ".tutorial-choice-actions button span");
 
-    expect(baseChoiceBlock).toContain("min-width: 0");
-    expect(baseChoiceBlock).not.toContain("overflow-x");
-    expect(baseChoiceBlock).not.toContain("overflow-y");
-    expect(baseChoiceBlock).not.toContain("overflow: auto");
-    expect(baseChoiceBlock).not.toContain("overflow: scroll");
-    expect(baseChoiceBlock).not.toContain("overflow: hidden");
-    expect(mobileChoiceBlock).not.toContain("max-height");
-    expect(mobileChoiceBlock).not.toContain("overflow-x");
-    expect(mobileChoiceBlock).not.toContain("overflow-y");
-    expect(mobileChoiceBlock).not.toContain("overflow: auto");
-    expect(mobileChoiceBlock).not.toContain("overflow: scroll");
-    expect(mobileChoiceBlock).not.toContain("overflow: hidden");
+    expect(baseChoiceBlock).toContain("overflow-x: hidden");
+    expect(baseChoiceBlock).toContain("overflow-y: auto");
+    expect(baseChoiceBlock).toContain("align-content: start");
+    expect(mobileChoiceBlock).toContain("overflow: visible");
+    expect(mobileChoiceButtonBlock).toContain("height: auto;");
+    expect(mobileChoiceButtonBlock).toContain("flex: 0 0 auto;");
+    expect(growingChoiceButtonBlock).toContain("height: auto");
+    expect(growingChoiceTextBlock).toContain("overflow: visible");
+    expect(growingChoiceTextBlock).toContain("white-space: normal");
+    expect(mobileRoomPortraitCss).toContain(".action-bar:not(.tutorial-choice-actions) button");
+    expect(mobileRoomPortraitCss).not.toContain(".action-bar button {");
     expect(choiceButtonBlock).toContain("min-width: 0");
     expect(choiceButtonBlock).toContain("max-width: 100%");
     expect(choiceButtonBlock).toContain("overflow-wrap: anywhere");
@@ -291,19 +307,4 @@ function cssBlock(css, selector) {
   const bodyStart = source.indexOf("{", start);
   const bodyEnd = source.indexOf("}", bodyStart);
   return source.slice(bodyStart + 1, bodyEnd);
-}
-
-function cssBlocks(css, selector) {
-  const source = css.replace(/\r\n/g, "\n");
-  const blocks = [];
-  let searchIndex = 0;
-  while (searchIndex < source.length) {
-    const start = source.indexOf(`${selector} {`, searchIndex);
-    if (start === -1) break;
-    const bodyStart = source.indexOf("{", start);
-    const bodyEnd = source.indexOf("}", bodyStart);
-    blocks.push(source.slice(bodyStart + 1, bodyEnd));
-    searchIndex = bodyEnd + 1;
-  }
-  return blocks;
 }

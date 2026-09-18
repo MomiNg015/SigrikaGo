@@ -34,5 +34,8 @@
 @import "./mobile-adaptive/user-nameplate-final.css";
 @import "./mobile-adaptive/window-title-stickers.css";
 @import "./mobile-adaptive/window-title-sticker-content.css";
+@import "./mobile-adaptive/window-sticker-resume-header.css";
+@import "./mobile-adaptive/match-mode-title-layout.css";
+@import "./mobile-adaptive/mobile-room-shadow-gutters.css";
 @import "./mobile-adaptive/home-student-id.css";
 @import "./mobile-adaptive/sigrika-corruption.css";

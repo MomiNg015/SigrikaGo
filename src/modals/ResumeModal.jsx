@@ -125,6 +125,9 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
             <button type="button" className="resume-mini-action achievement-entry-action" onClick={onOpenAchievements}>
               <Award size={16} />成就
             </button>
+            <button type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" onClick={onOpenPersonalization}>
+              <Palette size={16} />个性化
+            </button>
             <p
               className="shop-wallet resume-wallet"
               title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
@@ -146,14 +149,9 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           stats={stats}
           recentResults={modeUser.recentResults}
           characterStats={characterStats}
-          identityActions={(
-            <button type="button" className="profile-personalization-button personalization-entry-action" onClick={onOpenPersonalization}>
-              <Palette size={18} />个性化
-            </button>
-          )}
           recentAction={(
-            <button className="profile-replay-button resume-replay-action" type="button" onClick={() => setShowReplays(true)}>
-              <MonitorPlay size={18} />对局回放
+            <button className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => setShowReplays(true)}>
+              <MonitorPlay size={18} aria-hidden="true" />
             </button>
           )}
           status={(profileLoading || profileError) ? (

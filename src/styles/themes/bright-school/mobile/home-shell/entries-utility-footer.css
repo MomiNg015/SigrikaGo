@@ -101,6 +101,16 @@
     overflow: visible !important;
   }
 
+  /* Keep row one and asset sizing fixed; tighten each following row by 8px. */
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:nth-child(n + 3) {
+    position: relative !important;
+    top: -8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:nth-child(n + 5) {
+    top: -16px !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-motion {
     width: 132% !important;
   }

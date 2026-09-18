@@ -214,15 +214,15 @@ describe("RoomScreen helpers", () => {
     expect(shouldShowRoomCloseCountdown({ game: { phase: "finished" }, closesAt: null })).toBe(false);
   });
 
-  it("keeps the close countdown timer local to the room header", () => {
+  it("omits the close countdown presentation and ticking timer", () => {
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url));
     const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url));
 
     expect(source).not.toContain("closeCountdownNow");
     expect(source).not.toContain("setInterval(() => setCloseCountdownNow");
-    expect(headerSource).toContain("function RoomCloseCountdown");
-    expect(headerSource).toContain("const timerId = setInterval(() => setNow(Date.now()), 1000)");
-    expect(headerSource).toContain("<RoomCloseCountdown closesAt={room.closesAt} />");
+    expect(headerSource).not.toContain("RoomCloseCountdown");
+    expect(headerSource).not.toContain("setInterval");
+    expect(headerSource).not.toContain("close-countdown");
   });
 
   it("treats finished player rooms as spectator view", () => {
@@ -438,7 +438,7 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("aspect-ratio: 1");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-button");
     expect(portraitMedia).toContain("min-height: 40px");
-    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar button");
+    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar:not(.tutorial-choice-actions) button");
     expect(portraitMedia).toContain(".mobile-room-screen .color-badge");
     expect(portraitMedia).toContain("display: none");
     expect(portraitMedia).toContain(".mobile-room-screen .skill-detail-panel");
@@ -600,7 +600,7 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar .action-label");
     expect(portraitMedia).toContain("display: block !important");
     expect(portraitMedia).toContain("font-size: 10px !important");
-    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar button");
+    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar:not(.tutorial-choice-actions) button");
     expect(portraitMedia).toContain("border: 0 !important");
     expect(portraitMedia).toContain("box-shadow: none !important");
     expect(portraitMedia).toContain("background: transparent !important");
@@ -807,6 +807,8 @@ describe("RoomScreen helpers", () => {
     const peopleSource = readText(new URL("./RoomPeopleList.jsx", import.meta.url), "utf8");
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const popoverBlock = roomCss.match(/\.room-person-popover\s*\{[^}]+\}/)?.[0] ?? "";
+    const popoverButtonBlock = roomCss.match(/\.room-person-popover button\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(peopleSource).toContain("openPersonMenu(person.id, event)");
     expect(peopleSource).toContain("event.clientX");
@@ -815,7 +817,11 @@ describe("RoomScreen helpers", () => {
     expect(peopleSource).toContain("--room-floating-z");
     expect(peopleSource).toContain("--room-person-popover-x");
     expect(peopleSource).toContain("--room-person-popover-y");
-    expect(peopleSource).toContain("<button type=\"button\" disabled>密谈</button>");
+    expect(peopleSource).not.toContain(">密谈</button>");
+    expect(popoverBlock).toContain("display: flex");
+    expect(popoverBlock).toContain("align-items: stretch");
+    expect(popoverButtonBlock).toContain("flex: 1 1 0");
+    expect(popoverButtonBlock).toContain("white-space: nowrap");
     expect(roomCss).toContain("position: fixed");
     expect(roomCss).toContain("left: var(--room-person-popover-x)");
     expect(roomCss).toContain("top: var(--room-person-popover-y)");

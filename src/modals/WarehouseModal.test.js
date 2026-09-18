@@ -7,6 +7,7 @@ import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./wa
 import {
   characterItemUseNotice,
   itemStoryLabels,
+  warehouseOwnedCharactersForDisplay,
   withSigrikaCandyDebugJumpOption
 } from "./warehouse/useWarehouseInventory.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
@@ -220,6 +221,27 @@ describe("WarehouseModal candy feedback", () => {
     expect(brightSchoolCss).toContain(".warehouse-item .primary-action:disabled");
     expect(brightSchoolCss).toContain("background: #d8d4cc !important");
     expect(brightSchoolCss).toContain("cursor: not-allowed !important");
+  });
+
+  it("orders item-use character targets like the house manual instead of asset storage", () => {
+    const characters = {
+      sigrika: { id: "sigrika", name: "西格莉卡", sortOrder: 0 },
+      denia: { id: "denia", name: "达妮娅", sortOrder: 1 },
+      aemeath: { id: "aemeath", name: "爱弥斯", sortOrder: 2 },
+      lynae: { id: "lynae", name: "琳奈", sortOrder: 3 },
+      baconbits: { id: "baconbits", name: "猪小仙", sortOrder: 9 }
+    };
+
+    expect(warehouseOwnedCharactersForDisplay(
+      characters,
+      ["sigrika", "denia", "aemeath", "baconbits", "lynae"]
+    ).map((character) => character.id)).toEqual([
+      "sigrika",
+      "denia",
+      "aemeath",
+      "lynae",
+      "baconbits"
+    ]);
   });
 
   it("adds a development-only eighth-use shortcut without removing the normal story path", () => {

@@ -95,21 +95,21 @@ export default function ProfileResumeView({
               value={`${finiteRecordNumber(stats?.rating ?? user.rating) ?? 0}分`}
               tip="对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
             />
-            <ProfileSummaryItem icon={<Gamepad2 size={17} />} label="总对局" value={`${normalizedStats.totalGames}局`} />
+            <ProfileSummaryItem icon={<Gamepad2 size={17} />} label="总对局" value={`${normalizedStats.totalGames}局`} action={context === "self" ? recentAction : null} />
             <ProfileSummaryItem icon={<CircleGauge size={17} />} label="胜率" value={winRate} />
           </div>
           <section className="profile-recent-section" aria-label="最近十盘">
-            <div className="profile-section-heading">
+            {context !== "self" && <div className="profile-section-heading">
               <h4>最近十盘</h4>
               {recentAction}
-            </div>
+            </div>}
             <RecentResultMarkers results={recentResults} className="profile-rank-results" />
           </section>
         </section>
 
         <section className="profile-character-section" aria-label="角色战绩">
           <div className="profile-character-table-head" aria-hidden="true">
-            <h4 className="text-window-title">角色战绩</h4>
+            {context === "self" ? <span /> : <h4 className="text-window-title">角色战绩</h4>}
             <span>对局</span>
             <span>胜</span>
             <span>负</span>
@@ -224,9 +224,9 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   );
 }
 
-function ProfileSummaryItem({ icon, label, value, valueClassName = "", tip = "", emphasis = false }) {
+function ProfileSummaryItem({ icon, label, value, valueClassName = "", tip = "", emphasis = false, action = null }) {
   return (
-    <div className={`profile-summary-item${emphasis ? " is-primary" : ""}`}>
+    <div className={`profile-summary-item${emphasis ? " is-primary" : ""}${action ? " has-action" : ""}`}>
       <span className="profile-summary-label">
         {icon}
         {label}
@@ -242,6 +242,7 @@ function ProfileSummaryItem({ icon, label, value, valueClassName = "", tip = "",
         )}
       </span>
       <strong className={valueClassName || undefined}>{value}</strong>
+      {action}
     </div>
   );
 }

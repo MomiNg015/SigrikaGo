@@ -9,7 +9,7 @@
     display: none;
   }
 
-  .mobile-room-screen .mobile-tap-tooltip {
+  .mobile-tap-tooltip {
     position: fixed;
     left: var(--tooltip-x);
     top: var(--tooltip-y);
@@ -18,7 +18,7 @@
     box-sizing: border-box;
     width: min(232px, calc(100vw - 32px));
     max-width: min(232px, calc(100vw - 32px));
-    max-height: min(38dvh, calc(100dvh - 32px));
+    max-height: min(38dvh, calc(var(--tooltip-y) - 26px));
     overflow: auto;
     overscroll-behavior: contain;
     padding: 8px 10px;
@@ -39,7 +39,8 @@
     animation: mobile-tap-tooltip-in 140ms ease-out;
   }
 
-  .mobile-room-screen .mobile-tap-tooltip[data-placement="below"] {
+  .mobile-tap-tooltip[data-placement="below"] {
+    max-height: min(38dvh, calc(100dvh - var(--tooltip-y) - 26px));
     transform: translate(-50%, 10px);
     animation-name: mobile-tap-tooltip-in-below;
   }

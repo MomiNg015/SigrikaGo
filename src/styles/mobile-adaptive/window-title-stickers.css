@@ -34,7 +34,22 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host > .close-button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header:not(.resume-header) > .close-button {
-  top: 0 !important;
+  top: 6px !important;
+  right: 16px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.window-sticker-host .close-button, .window-sticker-header .icon-button, .window-sticker-header .information-center-back-button) {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-header button {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding-block: 0 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-title-sticker {
@@ -106,7 +121,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-header {
-    grid-template-columns: minmax(0, 1fr) 44px 44px !important;
+    grid-template-columns: minmax(0, 1fr) 36px 36px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-sticker-host .information-center-back-button {

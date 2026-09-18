@@ -59,7 +59,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     viewColor,
     winnerColor
   } = useRoomBoardView({ room, user, replayStep });
-  const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
   const isSigrikaCandyDuel = Boolean(displayRoom.sigrikaCandyDuel);
   const skillBanner = skillPreview
     ? {
@@ -163,7 +162,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       <RoomHeader
         room={displayRoom}
         roomGameInfo={isSigrikaCandyDuel ? specialDuelRoomGameInfo(displayRoom) : roomGameInfo}
-        showCloseCountdown={showCloseCountdown}
         showCoords={showCoords}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}

@@ -65,7 +65,7 @@ describe("FriendsModal mobile layout", () => {
     }
   });
 
-  it("renders unavailable friend actions as disabled controls", () => {
+  it("removes whisper and keeps unavailable friend actions disabled", () => {
     const rows = [{
       id: "user-1",
       username: "moming",
@@ -85,11 +85,18 @@ describe("FriendsModal mobile layout", () => {
       onRequestMatch: () => {},
       onToggleAction: () => {}
     }));
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const hudFriendCss = readCssWithImports(new URL("../styles/hud-components/hud-hardening.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/surface-contracts.css", import.meta.url));
+    const actionRowBlock = commerceCss.match(/\.friend-action-row\s*\{[^}]+\}/)?.[0] ?? "";
+    const actionButtonBlock = commerceCss.match(/\.friend-action-row button\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(html).toContain("<button type=\"button\" disabled=\"\">密谈</button>");
+    expect(html).not.toContain("密谈");
+    expect(html).toContain(">详细信息</button>");
+    expect(html).toContain(">解除好友</button>");
     expect(html).toContain("<button type=\"button\" disabled=\"\">对局申请</button>");
+    expect(actionRowBlock).toContain("display: flex");
+    expect(actionButtonBlock).toContain("flex: 1 1 0");
     expect(hudFriendCss).toContain(".friend-action-row button:disabled");
     expect(hudFriendCss).toContain("cursor: not-allowed");
     expect(brightSchoolCss).toContain(".friend-action-row button:disabled");
@@ -133,6 +140,7 @@ describe("FriendsModal mobile layout", () => {
     const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
     const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
+    const phoneActionRowBlock = phoneModalMedia.match(/\.friend-action-row\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(phoneModalMedia).toContain(".friends-list-heading");
     expect(phoneModalMedia).toContain("display: none");
@@ -149,6 +157,8 @@ describe("FriendsModal mobile layout", () => {
     expect(phoneModalMedia).toContain("scroll-padding: 0 6px 6px 0");
     expect(phoneModalMedia).toContain("width: 100%");
     expect(phoneModalMedia).not.toContain(".friends-row,\n  .friend-action-row {\n    min-width: 560px;");
+    expect(phoneActionRowBlock).toContain("display: flex");
+    expect(phoneActionRowBlock).not.toContain("grid-template-columns");
     expect(adaptivePhoneMedia).toContain(".friends-list");
     expect(adaptivePhoneMedia).toContain("grid-template-rows: auto auto minmax(0, 1fr)");
     expect(adaptivePhoneMedia).toContain("overflow-x: hidden");

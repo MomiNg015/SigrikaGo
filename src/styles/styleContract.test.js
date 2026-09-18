@@ -628,6 +628,9 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/user-nameplate-final.css",
       "./mobile-adaptive/window-title-stickers.css",
       "./mobile-adaptive/window-title-sticker-content.css",
+      "./mobile-adaptive/window-sticker-resume-header.css",
+      "./mobile-adaptive/match-mode-title-layout.css",
+      "./mobile-adaptive/mobile-room-shadow-gutters.css",
       "./mobile-adaptive/home-student-id.css",
       "./mobile-adaptive/sigrika-corruption.css"
     ]);
@@ -1152,16 +1155,17 @@ describe("root CSS entry contract", () => {
     expect(skillPopoverCss).toContain("translateY(var(--skill-trait-enter-y)) scale(0.98)");
   });
 
-  it("gives desktop modal families distinct transform-and-opacity entrances", () => {
+  it("releases desktop modal transform components after their entrances", () => {
     const modalMotionCss = readFileSync(new URL("./modals/window-entry-motion.css", import.meta.url), "utf8");
 
     expect(modalMotionCss).toContain("@media screen and (min-width: 769px)");
-    expect(modalMotionCss).toContain("modal-backdrop-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
-    expect(modalMotionCss).toContain("modal-window-enter 260ms cubic-bezier(0.16, 1, 0.3, 1)");
-    expect(modalMotionCss).toContain("modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
-    expect(modalMotionCss).toContain("nested-modal-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1)");
-    expect(modalMotionCss).toContain(".information-center-modal .information-center-master");
-    expect(modalMotionCss).toContain(".information-center-modal .information-center-reader");
+    expect(modalMotionCss).toContain("modal-backdrop-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("modal-window-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("nested-modal-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("information-center-master-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) 40ms backwards");
+    expect(modalMotionCss).toContain("information-center-reader-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) 70ms backwards");
+    expect(modalMotionCss).not.toMatch(/animation:[^;]+\b(?:both|forwards)\s*;/g);
     expect(modalMotionCss).toContain("translate: 0 16px");
     expect(modalMotionCss).toContain("scale: 0.96");
     expect(modalMotionCss).toContain("translate: 0 8px");

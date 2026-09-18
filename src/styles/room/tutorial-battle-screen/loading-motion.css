@@ -13,15 +13,6 @@
     linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.92));
 }
 
-@keyframes tutorial-choice-scrim-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes tutorial-battle-bubble-in {
   from {
     opacity: 0;
@@ -67,7 +58,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tutorial-battle-choice button,
   .tutorial-battle-continue,
   .tutorial-battle-action,
   .tutorial-action-bar button {
@@ -76,7 +66,6 @@
 
   .tutorial-battle-dialogue,
   .tutorial-battle-dialogue.closing,
-  .tutorial-battle-choice-scrim,
   .chat-popover.tutorial-story-log-popover,
   .board .point.tutorial-target-point .tutorial-target-ring,
   .tutorial-action-bar .tutorial-highlight-action {

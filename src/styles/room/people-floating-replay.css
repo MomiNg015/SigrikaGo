@@ -118,8 +118,8 @@
   top: var(--room-person-popover-y);
   z-index: var(--room-floating-z, 140);
   width: min(284px, calc(100vw - 24px));
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  align-items: stretch;
   gap: 4px;
   padding: 6px;
   transform: translate(8px, calc(-100% - 8px));
@@ -135,12 +135,16 @@
 }
 
 .room-person-popover button {
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 26px;
+  padding: 0 4px;
   border: 1px solid rgba(126, 102, 144, 0.16);
   border-radius: 6px;
   background: #f8f3fb;
   color: #514258;
   font-size: 11px;
+  white-space: nowrap;
 }
 
 .room-person-popover button:disabled {

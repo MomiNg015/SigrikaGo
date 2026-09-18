@@ -1,0 +1,18 @@
+/* Reserve hard-shadow bleed without removing scroll ownership. */
+@media (max-width: 768px) and (orientation: portrait) {
+  :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .mobile-room-screen .mobile-room-viewport {
+    padding: 0 5px 6px 0 !important;
+  }
+
+  :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .mobile-room-screen .mobile-board-viewport {
+    overflow: visible !important;
+  }
+
+  :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .mobile-room-screen .mobile-room-dock {
+    max-height: none !important;
+  }
+
+  :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .mobile-room-screen .mobile-tab-panel {
+    padding: 6px 10px 12px 6px !important;
+  }
+}

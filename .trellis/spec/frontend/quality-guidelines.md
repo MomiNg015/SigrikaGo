@@ -250,21 +250,22 @@ Wrong:
 </section>
 ```
 
-### Social action disabled-state contract
+### Social action availability contract
 
-Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must render unavailable actions as native disabled controls, not as active-looking inert buttons.
+Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must distinguish retained-but-unavailable actions from product-removed actions.
 
 Required assertion points:
 
-- Use a real `disabled` attribute for actions that cannot run, including unavailable direct-message entries while the feature is not implemented.
+- Use a real `disabled` attribute for retained actions that temporarily cannot run, such as an offline-user match request.
+- When product direction removes an unimplemented action, omit it from markup entirely instead of leaving a disabled discovery placeholder. Keep the remaining action buttons equal-width and horizontally distributed.
 - Keep click handlers guarded when the action depends on mutable user state, such as online/offline match requests or friend/blacklist relation changes.
 - Add base and active-theme `button:disabled` CSS when high-specificity theme layers style the same action buttons with `!important`; disabled actions must stay gray and use `cursor: not-allowed` on desktop and mobile.
-- Static markup tests should assert the disabled attribute for unavailable social actions, and style-contract tests should assert the disabled selector exists in every theme layer that can override the button.
+- Static markup tests should assert both the absence of product-removed actions and the disabled attribute for retained unavailable actions. Style-contract tests should assert the disabled selector exists in every theme layer that can override the remaining buttons.
 
 Wrong:
 
 ```jsx
-<button type="button">Direct message</button>
+<button type="button">Request match</button>
 ```
 
 This looks actionable even when the feature is unavailable.
@@ -272,7 +273,7 @@ This looks actionable even when the feature is unavailable.
 Correct:
 
 ```jsx
-<button type="button" disabled>Direct message</button>
+<button type="button" disabled>Request match</button>
 ```
 
 ### Home utility unavailable-entry contract
@@ -2026,6 +2027,52 @@ Correct:
 ```js
 const character = { id: practiceBot.botProfile.id, systemVoices: {} };
 resolveSystemVoice(`countdown-${second}`, { character }); // TTS
+```
+
+### Scenario: Shared Character Display Order
+
+#### 1. Scope / Trigger
+- Trigger: rendering a player-facing character collection that must match the house manual, including warehouse item-use target selection.
+
+#### 2. Signatures
+- `characterListFromCatalog(characters)` is the shared display-order source and sorts by catalog `sortOrder` before applying its stable fallback order.
+- `warehouseOwnedCharactersForDisplay(characters, ownedCharacterIds)` returns only owned catalog entries in that shared display order.
+
+#### 3. Contracts
+- Treat `user.ownedCharacters` as ownership/storage data, not presentation order.
+- Apply `characterListFromCatalog()` before filtering to owned or otherwise eligible character ids.
+- Canonicalize ids on both sides of the membership check so aliases do not change inclusion or ordering.
+- Ordering changes must not alter ownership, eligibility, disabled state, or card presentation.
+
+#### 4. Validation & Error Matrix
+- Owned ids arrive in acquisition/storage order -> output still follows catalog `sortOrder`.
+- Owned ids contain aliases -> canonical characters remain included once in catalog order.
+- Owned id is absent from the current catalog -> omit it, matching existing catalog-backed rendering behavior.
+- Empty or missing owned-id list -> return an empty list.
+
+#### 5. Good/Base/Bad Cases
+- Good: sort the catalog once, then filter it through a canonical owned-id set.
+- Base: an already catalog-ordered owned list produces the same visible order.
+- Bad: map `user.ownedCharacters` directly to character objects, because asset storage order can drift from the house manual.
+
+#### 6. Tests Required
+- `src/modals/WarehouseModal.test.js` must use deliberately shuffled owned ids with explicit `sortOrder` values and assert the same sequence as the house manual.
+- Keep `src/shared/characters.test.js` coverage for shared catalog ordering and fallback behavior.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+ownedCharacterIds.map((id) => characters[id]).filter(Boolean);
+```
+
+Correct:
+
+```js
+const owned = new Set(ownedCharacterIds.map(canonicalCharacterId));
+return characterListFromCatalog(characters)
+  .filter((character) => owned.has(canonicalCharacterId(character.id)));
 ```
 
 ### Scenario: Story Trigger and Player-Surface Routing

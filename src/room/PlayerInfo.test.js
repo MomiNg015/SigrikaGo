@@ -29,7 +29,7 @@ describe("PlayerInfo labels", () => {
     expect(tooltipPointFromEvent({ clientX: 188, clientY: 126 }, { innerWidth: 375, innerHeight: 667 })).toEqual({
       x: 188,
       y: 126,
-      placement: "above"
+      placement: "below"
     });
     expect(tooltipPointFromEvent({ clientX: 2, clientY: 800 }, { innerWidth: 375, innerHeight: 667 })).toEqual({
       x: 132,
@@ -310,7 +310,7 @@ describe("PlayerInfo labels", () => {
     expect(roomCss).toContain("width: min(232px, calc(100vw - 32px))");
     expect(roomCss).toContain("left: var(--tooltip-x)");
     expect(roomCss).toContain("top: var(--tooltip-y)");
-    expect(roomCss).toContain("max-height: min(38dvh, calc(100dvh - 32px))");
+    expect(roomCss).toContain("max-height: min(38dvh, calc(var(--tooltip-y) - 26px))");
     expect(roomCss).toContain("overflow: auto");
     expect(roomCss).toContain("white-space: normal");
     expect(roomCss).toContain("overflow-wrap: anywhere");

@@ -59,7 +59,8 @@ describe("RoomPeopleList floating actions", () => {
     expect(screen.getByRole("button", { name: "详细信息" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "加好友" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "加入黑名单" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "密谈" }).disabled).toBe(true);
+    expect(screen.queryByRole("button", { name: "密谈" })).toBeNull();
+    expect(popover?.querySelectorAll("button")).toHaveLength(3);
 
     fireEvent.pointerDown(screen.getByRole("button", { name: "详细信息" }));
     expect(document.querySelector(".room-person-popover")).toBeTruthy();

@@ -14,6 +14,8 @@
 
 .preload-status { margin-top: -8px; color: rgba(79, 61, 85, 0.7); font-size: 14px; font-weight: 800; line-height: 1.4; }
 
+.preload-progress-hint { text-decoration: underline; text-underline-offset: 3px; }
+
 .preload-progress { --bar-h: 20px; --mascot-h: calc(var(--bar-h) * 3); width: 100%; height: var(--mascot-h); display: grid; place-items: center; }
 
 .preload-progress-track { position: relative; isolation: isolate; width: calc(100% - var(--mascot-h)); height: var(--mascot-h); display: grid; align-items: center; filter: drop-shadow(3px 3px 0 rgba(91, 57, 38, 0.18)); }

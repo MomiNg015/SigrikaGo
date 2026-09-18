@@ -77,6 +77,7 @@ describe("PlayerInfo mobile skill traits", () => {
     await user.click(screen.getByRole("button", { name: new RegExp(character.skill.name) }));
     const traitTrigger = screen.getByRole("button", { name: /特性词【禁先】/ });
     expect(document.querySelector(".mobile-tap-tooltip")).toBeTruthy();
+    expect(document.querySelector(".mobile-tap-tooltip").closest(".player-info")).toBeNull();
 
     await user.click(traitTrigger);
     await waitFor(() => {
@@ -86,6 +87,7 @@ describe("PlayerInfo mobile skill traits", () => {
     expect(document.querySelector(".skill-trait-popover")?.style.getPropertyValue("--room-floating-z"))
       .toBe("120");
     expect(document.querySelector(".mobile-tap-tooltip")).toBeTruthy();
+    expect(document.querySelector(".mobile-tap-tooltip").closest(".player-info")).toBeNull();
   });
 
   it("keeps the card and username passive while isolating viewpoint and stat controls", async () => {

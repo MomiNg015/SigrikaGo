@@ -1,10 +1,10 @@
 import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
 import { PRACTICE_DIFFICULTY_OPTIONS } from "../shared/practiceMode.js";
-import { UsersRound } from "lucide-react";
+import { Info, UsersRound } from "lucide-react";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { ModalDialog } from "../modals/modalComponents.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
@@ -13,7 +13,7 @@ import HomeStage from "./components/HomeStage.jsx";
 import PlayerPlaque from "./components/PlayerPlaque.jsx";
 import { HomeActionButton } from "./homeComponents.jsx";
 import IrisDatabase from "./IrisDatabase.jsx";
-import MatchModeRuleText from "./MatchModeRuleText.jsx";
+import MatchModeRulesTooltip from "./MatchModeRulesTooltip.jsx";
 import MatchModeWatermark from "./MatchModeWatermark.jsx";
 import {
   SIGRIKA_CANDY_DUEL_AVAILABILITY,
@@ -130,6 +130,28 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 
 function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
+  const [rulesHover, setRulesHover] = useState(null);
+  useEffect(() => {
+    const dismiss = () => setRulesHover(null);
+    const onKeyDown = (event) => { if (event.key === "Escape") dismiss(); };
+    const onOutsidePointerDown = (event) => {
+      if (!event.target.closest?.(".match-mode-info-button, .match-mode-rules-tooltip")) dismiss();
+    };
+    document.addEventListener("pointerdown", onOutsidePointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("scroll", dismiss, true);
+    window.addEventListener("resize", dismiss);
+    return () => {
+      document.removeEventListener("pointerdown", onOutsidePointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", dismiss, true);
+      window.removeEventListener("resize", dismiss);
+    };
+  }, []);
+  const showRules = (event, mode) => {
+    if (event.pointerType === "touch" || !window.matchMedia("(min-width: 769px) and (hover: hover) and (pointer: fine)").matches) return;
+    setRulesHover({ mode, x: event.clientX, y: event.clientY });
+  };
   const [sigrikaDuelConfirmOpen, setSigrikaDuelConfirmOpen] = useState(false);
   const sigrikaDuelOccupied = sigrikaDuelAvailability === SIGRIKA_CANDY_DUEL_AVAILABILITY.occupied;
   const sigrikaDuelOwned = sigrikaDuelAvailability === SIGRIKA_CANDY_DUEL_AVAILABILITY.owned;
@@ -151,19 +173,42 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                 disabled={sigrikaCorrupted}
                 type="button"
                 onFocus={() => onPreloadPlayableReady?.(mode.id)}
-                onPointerEnter={() => onPreloadPlayableReady?.(mode.id)}
+                onPointerEnter={(event) => {
+                  onPreloadPlayableReady?.(mode.id);
+                  showRules(event, mode);
+                }}
+                onPointerMove={(event) => showRules(event, mode)}
+                onPointerLeave={() => setRulesHover(null)}
+                onPointerDown={() => setRulesHover(null)}
                 onClick={() => onSelect(mode.id)}
               >
                 <MatchModeWatermark mode={mode} />
                 <span className="match-mode-copy">
                   <strong>{mode.title}</strong>
-                  <MatchModeRuleText rulesText={mode.rulesText} />
                 </span>
                 <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts[mode.id] ?? 0)} 人`}>
                   <UsersRound size={16} aria-hidden="true" />
                   <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>
                 </span>
               </button>
+              {!sigrikaCorrupted && (
+                <button
+                  className="match-mode-info-button"
+                  type="button"
+                  aria-label={`查看${mode.title}规则`}
+                  aria-expanded={Boolean(rulesHover?.tap && rulesHover.mode.id === mode.id)}
+                  aria-controls={rulesHover?.tap && rulesHover.mode.id === mode.id ? "match-mode-rules-tooltip" : undefined}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    setRulesHover((current) => current?.tap && current.mode.id === mode.id
+                      ? null
+                      : { mode, tap: true, x: rect.left, y: rect.bottom });
+                  }}
+                >
+                  <Info size={16} aria-hidden="true" />
+                </button>
+              )}
               {mode.id === "spark" && (
                 <button
                   aria-label="准时宝陪练"
@@ -183,6 +228,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
             </div>
           ))}
         </div>
+        {rulesHover && <MatchModeRulesTooltip hover={rulesHover} />}
         {sigrikaCorrupted && (
           <button
             aria-busy={sigrikaDuelWatchPending || undefined}
