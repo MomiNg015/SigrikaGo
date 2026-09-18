@@ -1922,3 +1922,36 @@ Restored settings scroller gutters and reserved motion/shadow bounds in shop car
 ### Next Steps
 
 - None - task complete
+
+
+## Session 119: Compact friends window
+
+**Date**: 2026-09-18
+**Task**: Compact friends window
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored status before portrait, removed friends/blacklist column headings and capped desktop window at 760px. Browser validation passed at desktop and two portrait sizes, including actions, blacklist, empty and long lists with shadow clearance. Full check passed with 2529 tests; docs and CSS contract updated.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9d0c9590` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
