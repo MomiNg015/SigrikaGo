@@ -39,3 +39,12 @@ The user supplied the intended movement and spacing goals; exact pixel offsets a
 - Replaced the CSS width-based shift with measured midpoint positioning. Repeated resize callbacks subtract the existing translation to avoid accumulated drift. Mobile clears the desktop variable and keeps its separate layout.
 - Verified 2229px: both horizontal layout gaps approximately 115px; 1920px: both approximately 50px. Six viewport screenshots are under .codex-run/handbook-centered-*.
 - 103 targeted tests pass, including resize, no-drift, mobile reset and observer cleanup coverage.
+
+## Student-ID content follow-up
+- User requested horizontal and vertical portrait centering and personalized username effects.
+- Photo frame now owns flex centering with contain sizing; the shared portrait resolver still supplies costume framing.
+- Username reuses UserIdentity with the equipped nameplate only, retaining background and exact asset-ID animations. No extra title/badge rows.
+- Visually verified Sigrika, Denia and Aemeath equipped skins at 1440px and 390px, including actual image box centering and mobile text size. Local screenshots: .codex-run/student-id-personalized-*.
+- Design hook broken-image report is a false positive for spread characterPortraitImageProps; palette findings are existing test fixtures, not new rendered colors.
+- User feedback: username too small. Expanded the name region to 62% of the card and set normal/equipped name sizing to 18px desktop and 13px mobile; nameplate scale is 1 / 0.6. Rechecked desktop and phone screenshots with all three personalized skins.
+- Final positioning feedback: shift the whole username and decoration slightly right/up. Set left:28%, top:74.5%, retaining the enlarged sizing.

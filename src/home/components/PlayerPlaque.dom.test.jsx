@@ -48,4 +48,19 @@ describe("home student ID", () => {
     expect(onOpenResume).toHaveBeenCalledOnce();
     expect(button.disabled).toBe(true);
   });
+
+  it("updates the equipped username effect without adding title or badge rows", () => {
+    const equippedUser = { ...user, achievementEquipmentAssets: {
+      nameplate: { id: "reward-sigrika-spark-100-wins-nameplate", imageUrl: "/nameplate.png" },
+      title: { text: "不在学生证展示的称号" },
+      badge: { name: "徽章", imageUrl: "/badge.png" }
+    } };
+    const { container, rerender } = render(<PlayerPlaque character={character} user={equippedUser} />);
+    expect(container.querySelector(".user-identity").dataset.nameplateId).toBe("reward-sigrika-spark-100-wins-nameplate");
+    expect(container.querySelector(".user-identity-nameplate-effect")).toBeTruthy();
+    expect(container.querySelector(".user-identity-title, .user-identity-emblem")).toBeNull();
+    rerender(<PlayerPlaque character={character} user={user} />);
+    expect(container.querySelector(".user-identity-nameplate-effect")).toBeNull();
+    expect(screen.getByText(user.username)).toBeTruthy();
+  });
 });

@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync, statSync } from "node:fs";
@@ -735,7 +735,7 @@ describe("HomeScreen", () => {
     expect(brightUtilityCss).not.toContain(".utility-entry:nth-child(3n),\n.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover");
   });
 
-  it("keeps achievement nameplates out of the student ID while retaining their source assets", () => {
+  it("renders the equipped username nameplate inside the student ID and retains its source assets", () => {
     const html = renderHome({
       user: {
         achievementEquipment: {
@@ -756,11 +756,11 @@ describe("HomeScreen", () => {
     });
 
     expect(html).not.toContain("plaque-nameplate-bg");
-    expect(html).not.toContain("user-identity has-nameplate");
-    expect(html).not.toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
-    expect(html).not.toContain("user-identity-name-tag");
-    expect(html).not.toContain("user-identity-nameplate-effect");
-    expect(html).not.toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
+    expect(html).toContain("user-identity has-nameplate");
+    expect(html).toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
+    expect(html).toContain("user-identity-name-tag");
+    expect(html).toContain("user-identity-nameplate-effect");
+    expect(html).toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
 
     const source = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/semantic-nameplate.png", import.meta.url)));
     expect({ width: source.width, height: source.height }).toEqual({ width: 1125, height: 240 });
@@ -800,8 +800,8 @@ describe("HomeScreen", () => {
         }
       }
     });
-    expect(deniaHtml).not.toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
-    expect(deniaHtml).not.toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
+    expect(deniaHtml).toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
+    expect(deniaHtml).toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
 
     const deniaSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/denia-spark-100-wins-nameplate.png", import.meta.url)));
     expect({ width: deniaSource.width, height: deniaSource.height }).toEqual({ width: 1125, height: 240 });
@@ -841,8 +841,8 @@ describe("HomeScreen", () => {
         }
       }
     });
-    expect(aemeathHtml).not.toContain('data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"');
-    expect(aemeathHtml).not.toContain("background-image:url(/assets/achievements/aemeath-spark-100-wins-nameplate.png)");
+    expect(aemeathHtml).toContain('data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"');
+    expect(aemeathHtml).toContain("background-image:url(/assets/achievements/aemeath-spark-100-wins-nameplate.png)");
 
     const aemeathSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/aemeath-spark-100-wins-nameplate.png", import.meta.url)));
     expect({ width: aemeathSource.width, height: aemeathSource.height }).toEqual({ width: 1125, height: 240 });

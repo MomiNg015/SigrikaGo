@@ -22,6 +22,8 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ### Hanging student ID and handbook spacing
 
+The student-ID photo frame must center the image box on both axes: shared image rules can force intrinsic height even with `height: 100%`, so use frame-owned flex centering and `object-fit: contain`. Preserve costume framing from the shared portrait resolver. Its username uses `UserIdentity` with only the equipped nameplate asset; do not add title/badge rows. Scale the nameplate independently from text sizing so the portrait-phone username remains readable, and retain exact asset-ID effect hooks.
+
 `HomeStage` centers the desktop handbook between the board-anchored `.home-student-id-zone` right edge and `.home-match-feature` left edge. Observe their containers and sizes with `ResizeObserver`; subtract the current translation before computing the new `--home-manual-center-offset` so repeated callbacks never accumulate movement. At 768px and below clear the desktop variable and retain the portrait CSS placement. Do not approximate the midpoint by translating half of the capped stage's surplus width: the two neighbors have different positioning containers. Keep the ID and match entry fixed, and verify equal side gaps at multiple desktop widths.
 
 Bright School is the default player theme. Its entry map is:

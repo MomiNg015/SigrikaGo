@@ -27,6 +27,9 @@
   top: 41.9%;
   width: 38.1%;
   height: 30.3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   pointer-events: none;
 }
@@ -35,24 +38,24 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  object-fit: contain;
+  object-position: center;
 }
 
 .home-student-id .home-student-id-name {
   position: absolute;
-  left: 44%;
-  top: 76%;
-  width: 38%;
+  left: 28%;
+  top: 74.5%;
+  width: 62%;
   height: 10%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   overflow-wrap: anywhere;
   text-align: center;
   font-family: var(--font-window-title, inherit);
-  font-size: clamp(12px, 1.3vw, 18px);
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.25;
   text-shadow: none;
@@ -60,4 +63,39 @@
 
 .home-student-id .home-student-id-name[data-long-name] {
   font-size: clamp(8px, 4cqw, 12px);
+}
+
+.home-student-id-name .user-identity {
+  --user-nameplate-scale: 1;
+  --user-nameplate-font-size: 18px;
+  --user-nameplate-padding-left: 24px;
+  --user-nameplate-padding-right: 6px;
+  width: 100%;
+  padding: 0;
+  justify-items: center;
+  font-size: inherit;
+}
+
+.home-student-id-name .user-identity .user-identity-main {
+  justify-content: center;
+}
+
+.home-student-id-name .user-identity .user-identity-name-tag {
+  width: 100%;
+  max-width: 100%;
+  padding-inline: 3px;
+  justify-content: center;
+}
+
+.home-student-id-name .user-identity .user-identity-name {
+  font-size: inherit !important;
+}
+
+@media (max-width: 768px) {
+  .home-student-id-name .user-identity {
+    --user-nameplate-scale: 0.6;
+    --user-nameplate-font-size: 13px;
+    --user-nameplate-padding-left: 10px;
+    --user-nameplate-padding-right: 3px;
+  }
 }

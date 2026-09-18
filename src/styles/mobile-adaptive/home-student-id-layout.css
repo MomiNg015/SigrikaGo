@@ -130,6 +130,6 @@
   }
 
   .home-student-id .home-student-id-name {
-    font-size: clamp(10px, 2.8vw, 14px);
+    font-size: 13px;
   }
 }

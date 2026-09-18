@@ -1,4 +1,5 @@
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export default function PlayerPlaque({ character, user, onOpenResume, disabled = false }) {
   return (
@@ -12,7 +13,9 @@ export default function PlayerPlaque({ character, user, onOpenResume, disabled =
         <span className="home-student-id-portrait">
           <img {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })} alt="当前出战角色" />
         </span>
-        <span className="home-student-id-name" data-long-name={Array.from(user.username ?? "").length > 8 || undefined} title={user.username}>{user.username}</span>
+        <span className="home-student-id-name" data-long-name={Array.from(user.username ?? "").length > 8 || undefined} title={user.username}>
+          <UserIdentity user={{ ...user, achievementEquipmentAssets: { nameplate: user.achievementEquipmentAssets?.nameplate } }} />
+        </span>
       </button>
     </section>
   );
