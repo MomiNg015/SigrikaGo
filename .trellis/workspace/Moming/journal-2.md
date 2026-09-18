@@ -1856,3 +1856,36 @@ Unified desktop card widths, padding and value typography across rank, rating, t
 ### Next Steps
 
 - None - task complete
+
+
+## Session 117: Polish six home window issues
+
+**Date**: 2026-09-18
+**Task**: Polish six home window issues
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Completed six approved UI improvements: shop dialogue sizing, audio controls, desktop friend grouping, leaderboard name/rank hierarchy, personalization state markers and auth selected state. Full check passed with 2528 tests; final CSS regression 126 tests and production browser fixtures at 1440, 390 and 360 passed. Updated system design and CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8dbb8c2d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
