@@ -1955,3 +1955,36 @@ Restored status before portrait, removed friends/blacklist column headings and c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 120: Center friend status and align mobile rows
+
+**Date**: 2026-09-18
+**Task**: Center friend status and align mobile rows
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Centered status text on both axes and aligned portrait rows using a fixed status column and left-aligned identity beside the avatar. Verified desktop, 390px and 320px layouts, actions, long lists and shadow gutters. Full check rerun passed all 2529 tests after one transient engine child-process timeout. Updated docs and CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2ed3303a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

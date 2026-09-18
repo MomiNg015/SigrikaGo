@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 119
+- **Total Sessions**: 120
 - **Last Active**: 2026-09-18
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1957 | Active |
+| `journal-2.md` | ~1990 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 120 | 2026-09-18 | Center friend status and align mobile rows | `2ed3303a` | `codex/campus-home-handbook-polish` |
 | 119 | 2026-09-18 | Compact friends window | `9d0c9590` | `codex/campus-home-handbook-polish` |
 | 118 | 2026-09-18 | Fix home window shadow clipping | `f11b8de` | `codex/campus-home-handbook-polish` |
 | 117 | 2026-09-18 | Polish six home window issues | `8dbb8c2d` | `codex/campus-home-handbook-polish` |
