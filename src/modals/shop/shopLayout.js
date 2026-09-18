@@ -2,10 +2,12 @@ const DESKTOP_CARD_WIDTH = 180;
 const DESKTOP_CARD_HEIGHT = 252;
 const MOBILE_CARD_WIDTH = 164;
 const MOBILE_CARD_HEIGHT = 196;
-const DESKTOP_EDGE = 14;
+const DESKTOP_EDGE = 28;
 const DESKTOP_GAP = 28;
 const DESKTOP_CELL_BREATHING_ROOM = 48;
 const DESKTOP_JITTER_RESERVE = 6;
+// Cover rotation, maximum bobbing travel and the lower-right hard shadow.
+const MOBILE_SHADOW_EDGE = 22;
 
 export function layoutShopCards({ width, height, count, mobile = false, seed = 1 }) {
   const safeCount = Math.max(0, Math.min(5, Number(count) || 0));
@@ -61,12 +63,13 @@ function layoutMobileCards(width, height, count) {
   const rows = cardRows(count);
   const horizontalGap = Math.max(4, Math.min(5, width * 0.012));
   const verticalGap = Math.max(8, Math.min(10, height * 0.025));
-  const verticalEdge = Math.max(8, Math.min(10, height * 0.025));
+  const verticalEdge = Math.min(MOBILE_SHADOW_EDGE, height * 0.2);
+  const horizontalEdge = Math.min(10, width * 0.1);
   const rowCount = rows.length;
   const maxColumns = Math.max(...rows);
   const scale = Math.min(
     1,
-    (width - (horizontalGap * (maxColumns + 1))) / (MOBILE_CARD_WIDTH * maxColumns),
+    (width - (horizontalEdge * 2) - (horizontalGap * (maxColumns - 1))) / (MOBILE_CARD_WIDTH * maxColumns),
     (height - (verticalEdge * 2) - (verticalGap * (rowCount - 1))) / (MOBILE_CARD_HEIGHT * rowCount)
   );
   const cardWidth = MOBILE_CARD_WIDTH * scale;

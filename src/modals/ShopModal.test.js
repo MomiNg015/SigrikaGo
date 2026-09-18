@@ -370,12 +370,12 @@ describe("Zahira shop window", () => {
     expect(new Set(five.slice(0, 2).map((placement) => placement.y)).size).toBe(1);
     expect(new Set(five.slice(2).map((placement) => placement.y)).size).toBe(1);
     expect(five[2].y).toBeGreaterThan(five[0].y);
-    expect(four[0].width).toBeGreaterThan(157);
+    expect(four[0].width).toBeGreaterThan(145);
     expect(four[1].x - (four[0].x + four[0].width)).toBeGreaterThanOrEqual(4);
     expect(four[1].x - (four[0].x + four[0].width)).toBeLessThanOrEqual(5);
     expect(four[2].y - (four[0].y + four[0].height)).toBeGreaterThanOrEqual(8);
-    expect(four[0].y).toBeGreaterThanOrEqual(8);
-    expect(407 - (four[3].y + four[3].height)).toBeGreaterThanOrEqual(8);
+    expect(four[0].y).toBeGreaterThanOrEqual(22);
+    expect(407 - (four[3].y + four[3].height)).toBeGreaterThanOrEqual(22);
     expect(three[0].y).toBe(three[1].y);
     expect(three[2].y).toBeGreaterThan(three[0].y);
     expect(three[2].x + (three[2].width / 2)).toBeCloseTo(351 / 2);
@@ -438,6 +438,26 @@ describe("Zahira shop window", () => {
     expect(getShopItemDescription({ description: "  sample desc  " })).toBe("sample desc");
     expect(html).toContain("illust：画师");
     expect(html).toContain('target="_blank"');
+  });
+
+  it("keeps rotated, floating card shadows inside the clipped product stage", () => {
+    const angle = 2 * Math.PI / 180;
+    for (const mobile of [false, true]) {
+      for (const [width, height] of [[294, 260], [351, 407], [760, 540]]) {
+        for (let count = 1; count <= 5; count += 1) {
+          for (const card of layoutShopCards({ width, height, count, mobile, seed: 22 })) {
+            const bob = 9 * (mobile ? 1.5 : 2) * card.scale;
+            const rotationX = card.height * Math.sin(angle) / 2;
+            const rotationY = card.width * Math.sin(angle) / 2;
+            const shadow = 5 * card.scale;
+            expect(card.x - rotationX - bob * Math.sin(angle)).toBeGreaterThanOrEqual(0);
+            expect(card.x + card.width + rotationX + bob * Math.sin(angle) + shadow).toBeLessThanOrEqual(width);
+            expect(card.y - rotationY - bob).toBeGreaterThanOrEqual(0);
+            expect(card.y + card.height + rotationY + bob + shadow).toBeLessThanOrEqual(height);
+          }
+        }
+      }
+    }
   });
 
   it("renders music detail category and known ownership states", () => {

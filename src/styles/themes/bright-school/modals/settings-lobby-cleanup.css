@@ -5,7 +5,8 @@
   border: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
-  padding: 0 !important;
+  /* This panel scrolls: reserve room for card shadows at its clipping edges. */
+  padding: 6px 12px 14px 6px !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content::before,

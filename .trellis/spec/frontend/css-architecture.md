@@ -20,6 +20,10 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ## Bright School Contract
 
+### Shadow clipping boundaries
+
+Scrollable panel padding is functional shadow clearance, not decorative surface styling. Do not reset it when clearing backgrounds or borders. Check right/bottom shadow extents at both scroll endpoints, including theme tabs and short portrait screens. Animated shop card layout must budget for rotation, maximum floating displacement and cast shadows before scaling; retain the product stage paint containment.
+
 ### Reviewed window state and content sizing
 
 Portrait shop dialogue must clear desktop bottom anchoring before using auto height; test long copy against the painted frame after fonts load. Auth pressed state must remain distinct after pointer/focus leaves. Personalization keeps its bounded inner scroller but uses content height, with accessible saved/preview markers that do not persist until Save. Desktop friend identity stays grouped; mobile leaderboard names use ellipsis instead of hard clipping. Constrain both the identity grid track and its main row; text-overflow alone cannot fix an intrinsic-width child clipped by its parent. Desktop duplicate-rank visibility belongs to the final theme leaderboard rule. Audio range inputs retain keyboard behavior while theme tracks use the numeric progress variable and portrait labels share a row with values.
