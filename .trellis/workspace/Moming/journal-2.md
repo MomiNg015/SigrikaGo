@@ -1724,3 +1724,36 @@ Reserved natural action-track height and bounded option scrolling, preserving bo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 113: Full-width story continue action
+
+**Date**: 2026-09-18
+**Task**: Full-width story continue action
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Removed obsolete 280px width cap. Real modal desktop/mobile buttons match footer widths with bottom spacing preserved; 28 focused tests passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0190473d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
