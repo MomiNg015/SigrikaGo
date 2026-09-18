@@ -86,8 +86,12 @@ describe("UserProfileCard dossier interactions", () => {
     expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("width"))).toEqual(["18", "18", "18", "18"]);
     expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("height"))).toEqual(["18", "18", "18", "18"]);
     expect(within(actions).queryByRole("button", { name: "个性化" })).toBeNull();
-    const recentHeading = document.querySelector(".profile-recent-section .profile-section-heading");
-    expect(within(recentHeading).getByRole("button", { name: "对局回放" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
+    const totalSummary = screen.getByText("总对局").closest(".profile-summary-item");
+    const replayButton = within(totalSummary).getByRole("button", { name: "对局回放" });
+    expect(replayButton.textContent).toBe("");
+    expect(screen.getByLabelText("最近十盘").querySelector(".profile-rank-results")).toBeTruthy();
     expect(document.querySelector(".profile-secondary-actions")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "加入黑名单" }));

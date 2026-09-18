@@ -22,6 +22,8 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ### Portrait social-profile records
 
+Self and social dossiers share the compact record presentation: no visible character-record or recent-ten heading, centered single-row recent results, and an accessible icon-only replay button in the total-games summary. Shared record selectors target `.profile-resume-view`, not only `.profile-resume-view-self`; context-specific identity actions and scroll ownership stay separate. Lock both surfaces with DOM tests so a self-profile polish cannot silently leave social details on the old markup.
+
 At widths up to 768px, `.user-profile-modal .profile-resume-view-social` owns vertical body scrolling. The social record panel and character section use natural block height; `.profile-character-table-scroll` has automatic height, no maximum height, and visible overflow inside that body scroller. Do not compress it into a residual `minmax(0,1fr)` row: identity, social actions, mode tabs and the recent-results summary can consume all available height. Verify the last record is reachable at 360x640 with and without title stickers. Preserve self-resume and desktop scrolling contracts.
 
 ### Hanging student ID and handbook spacing

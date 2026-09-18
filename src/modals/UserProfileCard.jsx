@@ -286,8 +286,8 @@ export function UserProfileCard({
           </>
         )}
         recentAction={(
-          <button className="profile-replay-button" type="button" disabled={replayDisabled} onClick={openReplays}>
-            <MonitorPlay size={18} />对局回放
+          <button className="profile-replay-button" type="button" aria-label="对局回放" title="对局回放" disabled={replayDisabled} onClick={openReplays}>
+            <MonitorPlay size={18} aria-hidden="true" />
           </button>
         )}
         status={(loadingProfileMode || profileError || profileNotice) ? (

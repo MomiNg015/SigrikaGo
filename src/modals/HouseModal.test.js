@@ -106,7 +106,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-summary-grid");
     expect(profileHtml).toContain("profile-character-table");
     expect(profileHtml).toContain("profile-character-table-head");
-    expect(profileHtml).toContain("text-window-title");
+    expect(profileHtml).not.toContain('<h4 class="text-window-title">角色战绩</h4>');
     expect(profileHtml).toContain("tabindex=\"0\"");
     expect(profileHtml).toContain("aria-label=\"角色战绩列表\"");
     expect(profileHtml).toContain("aria-hidden=\"true\"");
