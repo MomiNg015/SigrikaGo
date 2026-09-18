@@ -106,7 +106,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player > span {
-    display: grid !important;
+    display: none !important;
     place-items: center !important;
     line-height: 1 !important;
   }

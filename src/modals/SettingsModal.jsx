@@ -87,6 +87,7 @@ export default function SettingsModal({
                   </button>
                   <input
                     type="range"
+                    style={{ "--audio-progress": `${audioSettings[item.key]}%` }}
                     min="0"
                     max="100"
                     aria-labelledby={labelId}

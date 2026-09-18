@@ -97,9 +97,12 @@
   .shop-mascot-bubble,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
     top: 57% !important;
+    bottom: auto !important;
     right: auto !important;
     left: 3% !important;
     width: 62% !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
     max-width: none !important;
     min-height: 0 !important;
     margin: 0 !important;

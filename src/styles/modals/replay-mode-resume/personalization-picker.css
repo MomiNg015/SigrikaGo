@@ -101,6 +101,17 @@
   place-items: center;
 }
 
+.personalization-option-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.personalization-option-label > svg,
+.personalization-current-option > svg {
+  flex: 0 0 auto;
+}
+
 .personalization-modal > .primary-action {
   position: absolute;
   right: 18px;

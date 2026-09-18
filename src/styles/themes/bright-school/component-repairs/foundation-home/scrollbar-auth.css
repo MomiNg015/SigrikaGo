@@ -59,6 +59,11 @@
   background: var(--bright-blue);
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented > button[aria-pressed="true"] {
+  background: var(--bright-blue) !important;
+  box-shadow: inset 0 -3px 0 var(--bright-ink) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
   background: transparent !important;
   background-image: none !important;

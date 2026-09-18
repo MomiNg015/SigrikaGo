@@ -37,3 +37,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item.is-primary > strong {
   font-size: 1.5625rem !important;
 }
+
+@media (min-width: 769px) {
+  .leaderboard-row > span { font-size: 0.875rem; font-weight: 600; }
+}

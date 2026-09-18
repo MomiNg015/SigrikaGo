@@ -89,7 +89,7 @@
 .personalization-current-option {
   min-height: 42px;
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   min-width: 0;

@@ -20,10 +20,13 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity-main {
     justify-content: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact {
     max-width: 100% !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact .user-identity-name-tag {
@@ -31,6 +34,11 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact .user-identity-name {
-    text-overflow: clip !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact:not(.has-nameplate),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact:not(.has-nameplate) .user-identity-name-tag {
+    padding-inline: 0 !important;
   }
 }

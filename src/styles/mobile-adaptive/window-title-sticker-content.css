@@ -24,7 +24,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .personalization-modal.window-sticker-host {
   grid-template-rows: auto minmax(0, 1fr) auto !important;
-  height: min(580px, var(--window-sticker-available-height)) !important;
+  height: auto !important;
   padding-bottom: 20px !important;
 }
 

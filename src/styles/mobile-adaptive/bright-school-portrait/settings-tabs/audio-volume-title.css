@@ -1,4 +1,14 @@
 @media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto;
+    gap: 0 12px !important;
+    padding: 8px 12px !important;
+  }
+
+  .settings-modal .volume-row > input { grid-column: 1 / -1; grid-row: 2; }
+  .settings-modal .volume-row > strong { grid-column: 2; grid-row: 1; justify-self: end; }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:hover,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus,
@@ -7,6 +17,9 @@
     appearance: none !important;
     -webkit-appearance: none !important;
     min-width: 0 !important;
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: flex-start !important;
     border: 0 !important;
     border-radius: 0 !important;
     outline: 0 !important;

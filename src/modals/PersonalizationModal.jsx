@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Palette, ShieldCheck, Trophy, X } from "lucide-react";
+import { Check, Eye, Palette, ShieldCheck, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
@@ -82,6 +82,16 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
     return selectedAsset(assets, activeId) ?? fallbackAsset(equipmentAssets[section.type], activeId);
   }
 
+  function optionState(section, assetId) {
+    if ((savedEquipment[section.field] || "") === assetId) {
+      return <Check size={16} role="img" aria-label="已装备" />;
+    }
+    if ((equipment[section.field] || "") === assetId) {
+      return <Eye size={16} role="img" aria-label="试穿中" />;
+    }
+    return null;
+  }
+
   function chooseOption(section, assetId) {
     setEquipment((current) => ({ ...current, [section.field]: assetId }));
     setPickerType("");
@@ -117,6 +127,7 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
                   <span className="personalization-current-option">
                     {currentAsset?.imageUrl && <img src={currentAsset.imageUrl} alt="" />}
                     <b>{currentAsset?.name ?? "默认"}</b>
+                    {optionState(section, activeId)}
                   </span>
                   <button
                     type="button"
@@ -149,22 +160,24 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
                 <button
                   type="button"
                   className={optionClass(pickerSection, "")}
+                  aria-pressed={(equipment[pickerSection.field] || "") === ""}
                   onClick={() => chooseOption(pickerSection, "")}
                 >
                   <span className="personalization-option-preview" aria-hidden="true" />
-                  <span>默认</span>
+                  <span className="personalization-option-label"><span>默认</span>{optionState(pickerSection, "")}</span>
                 </button>
                 {(grouped[pickerSection.type] ?? []).map((asset) => (
                   <button
                     key={asset.id}
                     type="button"
                     className={optionClass(pickerSection, asset.id)}
+                    aria-pressed={equipment[pickerSection.field] === asset.id}
                     onClick={() => chooseOption(pickerSection, asset.id)}
                   >
                     <span className="personalization-option-preview">
                       {asset.imageUrl && <img src={asset.imageUrl} alt="" />}
                     </span>
-                    <span>{asset.name}</span>
+                    <span className="personalization-option-label"><span>{asset.name}</span>{optionState(pickerSection, asset.id)}</span>
                   </button>
                 ))}
               </div>

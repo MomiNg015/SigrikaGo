@@ -20,6 +20,10 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ## Bright School Contract
 
+### Reviewed window state and content sizing
+
+Portrait shop dialogue must clear desktop bottom anchoring before using auto height; test long copy against the painted frame after fonts load. Auth pressed state must remain distinct after pointer/focus leaves. Personalization keeps its bounded inner scroller but uses content height, with accessible saved/preview markers that do not persist until Save. Desktop friend identity stays grouped; mobile leaderboard names use ellipsis instead of hard clipping. Constrain both the identity grid track and its main row; text-overflow alone cannot fix an intrinsic-width child clipped by its parent. Desktop duplicate-rank visibility belongs to the final theme leaderboard rule. Audio range inputs retain keyboard behavior while theme tracks use the numeric progress variable and portrait labels share a row with values.
+
 ### Portrait social-profile records
 
 Self and social dossiers share the compact record presentation: no visible character-record or recent-ten heading, centered single-row recent results, and an accessible icon-only replay button in the total-games summary. Shared record selectors target `.profile-resume-view`, not only `.profile-resume-view-self`; context-specific identity actions and scroll ownership stay separate. Lock both surfaces with DOM tests so a self-profile polish cannot silently leave social details on the old markup.
