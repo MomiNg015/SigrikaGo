@@ -38,8 +38,8 @@
   overflow: visible;
   color: var(--school-ink, #514638);
   cursor: pointer;
-  transform-origin: 50% 4%;
-  transition: transform 180ms ease;
+  transform-origin: 50.8% 2%;
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-student-id-zone .home-student-id::before,
@@ -57,9 +57,9 @@
   outline-offset: 4px;
 }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-student-id-zone .home-student-id:enabled:hover {
-    transform: rotate(2deg);
+    transform: rotate(-3deg) !important;
   }
 }
 
@@ -95,6 +95,8 @@
   height: clamp(200px, 28vw, 340px) !important;
   align-self: end !important;
   margin-bottom: 8px;
+  /* HomeStage centers this entry between the board-anchored ID and match entry. */
+  translate: var(--home-manual-center-offset, 0px) 0;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-stage-with-student-id > .home-match-feature {
@@ -113,7 +115,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage.home-stage-with-student-id {
     grid-template-areas: "player manual" "match match" "utility utility" !important;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    grid-template-rows: minmax(calc(var(--home-hanging-id-width) * 1699 / 926 - 30px), auto) auto auto !important;
+    grid-template-rows: minmax(calc(var(--home-hanging-id-width) * 1699 / 926 - 50px), auto) auto auto !important;
     gap: 8px !important;
   }
 
@@ -123,7 +125,8 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-stage-with-student-id > .house-manual-entry {
     height: clamp(148px, 42vw, 220px) !important;
-    align-self: center !important;
+    align-self: end !important;
+    translate: -12px 0;
   }
 
   .home-student-id .home-student-id-name {

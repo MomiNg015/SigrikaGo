@@ -20,6 +20,10 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ## Bright School Contract
 
+### Hanging student ID and handbook spacing
+
+`HomeStage` centers the desktop handbook between the board-anchored `.home-student-id-zone` right edge and `.home-match-feature` left edge. Observe their containers and sizes with `ResizeObserver`; subtract the current translation before computing the new `--home-manual-center-offset` so repeated callbacks never accumulate movement. At 768px and below clear the desktop variable and retain the portrait CSS placement. Do not approximate the midpoint by translating half of the capped stage's surplus width: the two neighbors have different positioning containers. Keep the ID and match entry fixed, and verify equal side gaps at multiple desktop widths.
+
 Bright School is the default player theme. Its entry map is:
 
 1. `themes/bright-school/base.css`
