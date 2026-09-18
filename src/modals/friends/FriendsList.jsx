@@ -26,12 +26,6 @@ export default function FriendsList({
 
   return (
     <div className="friends-list">
-      <div className="friends-list-heading">
-        <span>状态</span>
-        <span>常用角色</span>
-        <span>用户名</span>
-        <span>操作</span>
-      </div>
       {rows.map((row) => {
         const character = findCharacter(characters, row.characterId) ?? CHARACTERS.sigrika;
         return (

@@ -7,20 +7,12 @@
   scroll-padding: 0 6px 6px 0;
 }
 
-.friends-list-heading,
 .friends-row {
   display: grid;
   grid-template-columns: 66px 92px minmax(120px, 1fr) 74px;
   align-items: center;
   gap: 10px;
   text-align: center;
-}
-
-.friends-list-heading {
-  padding: 0 12px;
-  color: #7d6a82;
-  font-size: 13px;
-  font-weight: 900;
 }
 
 .friends-row {
@@ -82,21 +74,16 @@
 }
 
 @media (min-width: 769px) {
-  .friends-list-heading,
   .friends-row {
-    grid-template-columns: 56px minmax(0, 1fr) 66px 44px;
+    grid-template-columns: 66px 56px minmax(0, 1fr) 44px;
     text-align: left;
   }
 
   .friends-row { min-height: 68px; padding-block: 6px; }
-  .friends-row > img,
-  .friends-list-heading > :nth-child(2) { grid-column: 1; grid-row: 1; }
-  .friends-row > .friend-main,
-  .friends-list-heading > :nth-child(3) { grid-column: 2; grid-row: 1; }
-  .friends-row > .online-status,
-  .friends-list-heading > :nth-child(1) { grid-column: 3; grid-row: 1; }
-  .friends-row > .friend-actions-cell,
-  .friends-list-heading > :nth-child(4) { grid-column: 4; grid-row: 1; }
+  .friends-row > .online-status { grid-column: 1; grid-row: 1; }
+  .friends-row > img { grid-column: 2; grid-row: 1; }
+  .friends-row > .friend-main { grid-column: 3; grid-row: 1; }
+  .friends-row > .friend-actions-cell { grid-column: 4; grid-row: 1; }
   .friends-row > img { width: 56px; height: 48px; }
   .friends-row > .friend-main { display: block; min-width: 0; }
   .friend-main .user-identity { justify-content: flex-start; }

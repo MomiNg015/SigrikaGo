@@ -1,4 +1,10 @@
 /* Windows that previously scrolled their shell now keep the title above an inner scroller. */
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal.window-sticker-host {
+    width: min(760px, calc(100vw - 48px)) !important;
+  }
+}
+
 .personalization-sticker-scroll {
   display: contents;
 }

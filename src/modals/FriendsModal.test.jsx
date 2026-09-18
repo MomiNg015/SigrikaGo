@@ -57,6 +57,7 @@ describe("FriendsModal mobile layout", () => {
       const html = renderList(activeTab);
 
       expect(html).toContain("moming");
+      expect(html).not.toContain("friends-list-heading");
       expect(html).not.toContain("friend-stats");
       expect(html).not.toContain("friend-rank");
       expect(html).not.toContain("friend-rating");
