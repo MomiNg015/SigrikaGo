@@ -1625,3 +1625,36 @@ Aligned the student ID with the bounded central stage on wide desktop, allowing 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 110: Soft gold guided reply controls
+
+**Date**: 2026-09-18
+**Task**: Soft gold guided reply controls
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Implemented user-approved soft gold paper buttons, localized edge shimmer, reply glyphs and chevrons. Verified desktop/mobile, submission disabled state and reduced motion; full gate passed, final style/build checks passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c4d90a39` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
