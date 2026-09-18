@@ -1823,3 +1823,36 @@ Restored the shared character-record card shell for empty self and social profil
 ### Next Steps
 
 - None - task complete
+
+
+## Session 116: Unify desktop profile summary cards
+
+**Date**: 2026-09-18
+**Task**: Unify desktop profile summary cards
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Unified desktop card widths, padding and value typography across rank, rating, total games and win rate. Preserved replay action and mobile layout. Verified both contexts at desktop and mobile sizes, 23 focused tests, production build and built CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7cd4ecaf` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
