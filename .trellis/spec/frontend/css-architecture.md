@@ -254,3 +254,5 @@ Guided story/tutorial option groups use equal-height grid tracks on desktop. At 
 Story modal grids reserve an `auto` final action track rather than a fractional track: wrapped guided buttons must not overflow into bottom padding. Bound option lists with `min(34dvh, 260px)` and scroll within their padded area, including desktop.
 
 Story continue/finish controls keep width: 100% without a fixed maximum width, filling the same footer as the choices.
+
+Story and battle continue/continue-now controls share the 18px outline Play glyph with aria-hidden. Explicit continue choices use it too; ordinary replies retain MessageCircle.

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { FastForward, MessageCircle, X } from "lucide-react";
+import { FastForward, MessageCircle, Play, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
@@ -251,7 +251,10 @@ export default function StoryPlayerModal({
             <div className="onboarding-story-pending" role="status" aria-live="polite">
               <span>继续中...</span>
               {previewControlsEnabled && (
-                <button className="secondary-action" type="button" onClick={finishPendingWait}>立即继续</button>
+                <button className="secondary-action" type="button" onClick={finishPendingWait}>
+                  <Play size={18} aria-hidden="true" />
+                  <span>立即继续</span>
+                </button>
               )}
             </div>
           )}
@@ -259,7 +262,9 @@ export default function StoryPlayerModal({
             <div className="onboarding-story-options">
               {visibleOptions.map((option) => (
                 <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => scheduleOptionTransition(option)}>
-                  <MessageCircle size={20} aria-hidden="true" />
+                  {["继续", "立即继续"].includes(option.label?.trim())
+                    ? <Play size={18} aria-hidden="true" />
+                    : <MessageCircle size={20} aria-hidden="true" />}
                   <span>{option.label}</span>
                 </button>
               ))}
@@ -267,7 +272,8 @@ export default function StoryPlayerModal({
           )}
           {typingComplete && !hasOptions && !pendingWait && (
             <button className="primary-action onboarding-story-single-action" type="button" onClick={() => moveTo(nextStoryNodeId(node))}>
-              {node.nextNodeId ? textLabels.continue : textLabels.finish}
+              {node.nextNodeId && <Play size={18} aria-hidden="true" />}
+              <span>{node.nextNodeId ? textLabels.continue : textLabels.finish}</span>
             </button>
           )}
         </footer>

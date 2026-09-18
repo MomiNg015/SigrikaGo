@@ -930,7 +930,7 @@ export function TutorialActionPanel({
       <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         {(pendingWait.manualContinue || previewControlsEnabled) && (
           <button className="tutorial-highlight-action" type="button" onClick={onSkipPendingWait}>
-            <Play size={18} />
+            <Play size={18} aria-hidden="true" />
             <span>{buttonText}</span>
           </button>
         )}
@@ -941,7 +941,7 @@ export function TutorialActionPanel({
     return (
       <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
         <button className="tutorial-highlight-action" type="button" onClick={onContinue}>
-          <Play size={18} />
+          <Play size={18} aria-hidden="true" />
           <span>继续</span>
         </button>
       </nav>
@@ -1012,7 +1012,9 @@ export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
           disabled={submitted}
           onClick={() => selectOption(option)}
         >
-          <MessageCircle size={20} aria-hidden="true" />
+          {["继续", "立即继续"].includes(option.label?.trim() || "继续")
+            ? <Play size={18} aria-hidden="true" />
+            : <MessageCircle size={20} aria-hidden="true" />}
           <span>{option.label || "继续"}</span>
         </button>
       ))}
