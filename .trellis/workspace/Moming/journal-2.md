@@ -1790,3 +1790,36 @@ Added the existing outline Play glyph to story continue, preview continue-now an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 115: Preserve empty character record cards
+
+**Date**: 2026-09-18
+**Task**: Preserve empty character record cards
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored the shared character-record card shell for empty self and social profiles while retaining compact centered placeholder text and hiding table content. Updated system design and CSS contracts. Verified 70 focused tests, production build, built CSS checks, and desktop/mobile browser layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7dd64023` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
