@@ -1526,3 +1526,36 @@ Completed three animation-audit batches and added the first desktop modal-entry 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 107: Cloud Sigrika candy restriction
+
+**Date**: 2026-09-18
+**Task**: Cloud Sigrika candy restriction
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Production blocks candy use on Sigrika before state changes; warehouse displays server restriction; development and other characters unchanged. 357 test files and 2524 tests passed with two workers; lint, build, asset, snapshot, production configuration and documentation checks passed. No cloud deployment or push performed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `31d64d1c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
