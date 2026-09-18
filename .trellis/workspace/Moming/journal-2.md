@@ -1691,3 +1691,36 @@ Set guided borders to 3px; equal-height desktop grids and full-width portrait ch
 ### Next Steps
 
 - None - task complete
+
+
+## Session 112: Story action bottom clearance
+
+**Date**: 2026-09-18
+**Task**: Story action bottom clearance
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Reserved natural action-track height and bounded option scrolling, preserving bottom padding for wrapped replies. Verified real modal desktop, short viewport, portrait and eight-option scrolling; 66 tests and build checks passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `668d1553` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
