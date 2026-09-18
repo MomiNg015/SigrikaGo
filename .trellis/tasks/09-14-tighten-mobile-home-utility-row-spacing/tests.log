@@ -1,0 +1,15 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/HomeScreen.test.jsx src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 371ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 932ms
+
+ Test Files  2 passed (2)
+      Tests  79 passed (79)
+   Start at  10:13:22
+   Duration  2.89s (transform 490ms, setup 0ms, collect 1.09s, tests 1.30s, environment 0ms, prepare 309ms)
+
