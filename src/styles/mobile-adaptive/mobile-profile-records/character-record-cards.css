@@ -1,5 +1,26 @@
 /* Final portrait Bright School card paint for the semantic six-column record table. */
 @media (max-width: 768px) {
+  /* One social-profile body scroller keeps records reachable on short phones. */
+  .user-profile-modal .profile-resume-view-social {
+    display: block !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .profile-resume-view-social .profile-record-panel,
+  .profile-resume-view-social .profile-character-section {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .profile-resume-view-social .profile-character-table-scroll {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-head {
     display: grid !important;
   }

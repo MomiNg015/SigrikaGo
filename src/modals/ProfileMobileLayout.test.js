@@ -74,6 +74,17 @@ describe("profile mobile layout contracts", () => {
     expect(cardSurfaceCss).toContain("height: 0 !important;");
   });
 
+  it("keeps social character records in one natural-height body scroller on short phones", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive/mobile-profile-records/character-record-cards.css", import.meta.url), "utf8");
+    const body = css.match(/\.user-profile-modal \.profile-resume-view-social\s*\{([^}]+)\}/)?.[1] ?? "";
+    expect(body).toContain("display: block !important");
+    expect(body).toContain("overflow-y: auto !important");
+    const list = css.match(/\.profile-resume-view-social \.profile-character-table-scroll\s*\{([^}]+)\}/)?.[1] ?? "";
+    expect(list).toContain("height: auto !important");
+    expect(list).toContain("max-height: none !important");
+    expect(list).toContain("overflow: visible !important");
+  });
+
   it("keeps the shared dossier compact without horizontal scrolling", () => {
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const finalProfileCss = readFileSync(

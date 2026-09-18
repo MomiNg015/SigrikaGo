@@ -20,6 +20,10 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ## Bright School Contract
 
+### Portrait social-profile records
+
+At widths up to 768px, `.user-profile-modal .profile-resume-view-social` owns vertical body scrolling. The social record panel and character section use natural block height; `.profile-character-table-scroll` has automatic height, no maximum height, and visible overflow inside that body scroller. Do not compress it into a residual `minmax(0,1fr)` row: identity, social actions, mode tabs and the recent-results summary can consume all available height. Verify the last record is reachable at 360x640 with and without title stickers. Preserve self-resume and desktop scrolling contracts.
+
 ### Hanging student ID and handbook spacing
 
 The student-ID photo frame must center the image box on both axes: shared image rules can force intrinsic height even with `height: 100%`, so use frame-owned flex centering and `object-fit: contain`. Preserve costume framing from the shared portrait resolver. Its username uses `UserIdentity` with only the equipped nameplate asset; do not add title/badge rows. Scale the nameplate independently from text sizing so the portrait-phone username remains readable, and retain exact asset-ID effect hooks.
