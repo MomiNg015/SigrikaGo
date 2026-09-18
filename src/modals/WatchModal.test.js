@@ -91,6 +91,7 @@ describe("WatchModal helpers", () => {
     expect(modeButtonBlock).toContain("align-items: center;");
     expect(modeButtonBlock).toContain("justify-content: center;");
     expect(modeButtonBlock).toContain("gap: 1em;");
+    expect(roomCountBlock).toContain("flex: none;");
     expect(roomCountBlock).toContain("display: inline-grid;");
     expect(roomCountBlock).toContain("place-items: center;");
     expect(roomCountBlock).toContain("width: 1.75em;");

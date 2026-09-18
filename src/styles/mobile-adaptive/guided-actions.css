@@ -1,0 +1,43 @@
+@property --guided-ring-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 110deg;
+}
+
+/* Shared final owner for player-guided actions, including portrait controls. */
+:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"]) {
+  position: relative;
+  overflow: visible;
+  background: rgb(255 207 64) !important;
+  color: rgb(61 43 37) !important;
+  border-color: rgb(132 89 20) !important;
+  animation: none !important;
+}
+
+:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"])::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: -5px;
+  padding: 3px;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: linear-gradient(var(--guided-ring-angle), rgb(255 103 135), rgb(255 209 66), rgb(92 214 175), rgb(96 164 255), rgb(188 121 244), rgb(255 103 135)) !important;
+  filter: drop-shadow(0 0 2px rgb(188 121 244 / 0.65)) !important;
+  -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+  mask-composite: exclude;
+  animation: guided-action-ring 3s linear infinite;
+}
+
+@keyframes guided-action-ring {
+  from { --guided-ring-angle: 110deg; }
+  to { --guided-ring-angle: 470deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"])::before {
+    animation: none;
+  }
+}

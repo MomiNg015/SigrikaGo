@@ -72,7 +72,7 @@ export default function ProfileResumeView({
 
       <div
         id={panelId}
-        className="profile-record-panel"
+        className={`profile-record-panel${records.length === 0 ? " is-empty" : ""}`}
         role="tabpanel"
         aria-labelledby={`${context}-profile-tab-${normalizedMode}`}
         aria-busy={modePending ? "true" : undefined}
@@ -103,72 +103,74 @@ export default function ProfileResumeView({
           </section>
         </section>
 
-        <section className="profile-character-section" aria-label="角色战绩">
-          <div className="profile-character-table-head" aria-hidden="true">
-            <span />
-            <span>对局</span>
-            <span>胜</span>
-            <span>负</span>
-            <span>和</span>
-            <span>胜率</span>
-          </div>
-          <div className="profile-character-table-scroll" tabIndex={0} aria-label="角色战绩列表">
-            <table className="profile-character-table">
-              <colgroup>
-                <col className="profile-character-col-identity" />
-                <col className="profile-character-col-total" />
-                <col className="profile-character-col-outcome" span="3" />
-                <col className="profile-character-col-rate" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th scope="col" aria-label="角色"></th>
-                  <th scope="col">对局</th>
-                  <th scope="col">胜</th>
-                  <th scope="col">负</th>
-                  <th scope="col">和</th>
-                  <th scope="col">胜率</th>
-                </tr>
-              </thead>
-              <tbody>
-                {records.map((item) => {
-                  const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
-                  const record = characterRecordColumns(item);
-                  return (
-                    <tr style={characterThemeStyle(character)} key={item.characterId}>
-                      <th scope="row" data-label="角色">
-                        <span className="profile-character-identity">
-                          <span className="profile-chain-portrait small">
-                            <span className="profile-portrait-mask">
-                              <img
-                                {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })}
-                                alt=""
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            </span>
-                            <CharacterChainBadge user={user} characterId={character.id} />
-                          </span>
-                          <span className="profile-character-name">{character.name}</span>
-                        </span>
-                      </th>
-                      <td data-label="对局">{record.total}</td>
-                      <td data-label="胜">{record.wins}</td>
-                      <td data-label="负">{record.losses}</td>
-                      <td data-label="和">{record.draws}</td>
-                      <td data-label="胜率"><strong>{record.winRate}</strong></td>
-                    </tr>
-                  );
-                })}
-                {records.length === 0 && (
-                  <tr className="profile-character-empty-row">
-                    <td colSpan="6">暂无角色战绩。</td>
+        {records.length === 0 ? (
+          <section className="profile-character-empty" aria-label="角色战绩">
+            <span className="recent-result-empty">暂无</span>
+          </section>
+        ) : (
+          <section className="profile-character-section" aria-label="角色战绩">
+            <div className="profile-character-table-head" aria-hidden="true">
+              <span />
+              <span>对局</span>
+              <span>胜</span>
+              <span>负</span>
+              <span>和</span>
+              <span>胜率</span>
+            </div>
+            <div className="profile-character-table-scroll" tabIndex={0} aria-label="角色战绩列表">
+              <table className="profile-character-table">
+                <colgroup>
+                  <col className="profile-character-col-identity" />
+                  <col className="profile-character-col-total" />
+                  <col className="profile-character-col-outcome" span="3" />
+                  <col className="profile-character-col-rate" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col" aria-label="角色"></th>
+                    <th scope="col">对局</th>
+                    <th scope="col">胜</th>
+                    <th scope="col">负</th>
+                    <th scope="col">和</th>
+                    <th scope="col">胜率</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody>
+                  {records.map((item) => {
+                    const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
+                    const record = characterRecordColumns(item);
+                    return (
+                      <tr style={characterThemeStyle(character)} key={item.characterId}>
+                        <th scope="row" data-label="角色">
+                          <span className="profile-character-identity">
+                            <span className="profile-chain-portrait small">
+                              <span className="profile-portrait-mask">
+                                <img
+                                  {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })}
+                                  alt=""
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              </span>
+                              <CharacterChainBadge user={user} characterId={character.id} />
+                            </span>
+                            <span className="profile-character-name">{character.name}</span>
+                          </span>
+                        </th>
+                        <td data-label="对局">{record.total}</td>
+                        <td data-label="胜">{record.wins}</td>
+                        <td data-label="负">{record.losses}</td>
+                        <td data-label="和">{record.draws}</td>
+                        <td data-label="胜率"><strong>{record.winRate}</strong></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        )}
 
         {secondaryActions && (
           <footer className="profile-secondary-actions" aria-label="其他资料操作">

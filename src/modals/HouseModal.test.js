@@ -603,13 +603,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("总对局");
     expect(html).toContain("胜率");
     expect(html).toContain("resume-replay-action");
-    expect(html).toContain("profile-character-table");
-    expect(html).not.toContain("<h4 class=\"text-window-title\">角色战绩</h4>");
-    expect(html).toContain("profile-character-col-identity");
-    expect(html).toContain("<th scope=\"col\" aria-label=\"角色\"></th>");
-    expect(html).toContain("<th scope=\"col\">对局</th>");
-    expect(html).toContain("<th scope=\"col\">胜率</th>");
-    expect(html).toContain("暂无角色战绩");
+    expect(html).not.toContain("profile-character-table");
+    expect(html).toContain("profile-character-empty");
+    expect(html).not.toContain("profile-character-table-head");
     expect(html).not.toContain("character-record-dialog");
 
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));

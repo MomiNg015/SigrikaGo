@@ -260,7 +260,8 @@ describe("UserProfileCard dossier interactions", () => {
     expect(screen.getByText("0局")).toBeTruthy();
     expect(screen.getByText("0.0%")).toBeTruthy();
     expect(within(screen.getByLabelText("最近胜负")).getByText("暂无")).toBeTruthy();
-    expect(screen.getByText("暂无角色战绩。")).toBeTruthy();
+    expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无");
+    expect(screen.queryByRole("table")).toBeNull();
   });
 
   it("sorts multiple character rows while preserving the fixed semantic headers", () => {

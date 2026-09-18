@@ -242,3 +242,9 @@ Run `npm run docs:system-design` whenever CSS architecture, theme structure, or 
 ### Portrait battle shadow and tooltip boundaries
 
 Mobile player tap tooltips portal to the nearest `.app-shell`, preserving theme variables and `--room-floating-z`; never keep them beneath clipped player slots. Their own selector must work outside `.mobile-room-screen`. Choose the viewport half with more room and bound scroll height by available space. `mobile-adaptive/mobile-room-shadow-gutters.css` reserves right/bottom viewport and tab-panel bleed, permits board shadow overflow, and lets the dock size from its bounded scrolling panel instead of clipping it with a second maximum height. Verify 360x800, 390x844 and 412x915, including long tooltips, final scroll rows and unchanged document width.
+
+### Empty records and guided actions
+
+For both profile contexts, empty character records render a compact `.profile-character-empty` label instead of the header/table/scroller. The empty record panel uses natural rows; populated table scrolling stays unchanged.
+
+`mobile-adaptive/guided-actions.css` owns gold fills and the masked animated exterior ring for enabled story-footer and tutorial action buttons. Exclude native and ARIA disabled controls. Keep the pseudo-element content/display explicit to beat room resets; reduced-motion selectors must match the enabled selector specificity. Preserve long-choice wrapping, board target rings and skip/close semantics. Check computed pseudo content and reduced-motion animation, not animation-name alone.

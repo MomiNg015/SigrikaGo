@@ -122,3 +122,17 @@
     width: 20% !important;
   }
 }
+
+.profile-character-empty {
+  grid-area: characters;
+  align-self: start;
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+  font-size: 0.75rem;
+}
+
+.profile-record-panel.is-empty {
+  grid-template-rows: auto auto auto auto;
+  align-content: start;
+}
