@@ -11,7 +11,7 @@
   height: min(680px, calc(100dvh - 32px));
   max-height: calc(100dvh - 32px);
   display: grid;
-  grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) auto;
   gap: 14px;
   padding: clamp(16px, 2.4vw, 24px);
   overflow: hidden;
@@ -39,7 +39,7 @@
 }
 
 .onboarding-story-modal.long-text-compress-portrait {
-  grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) minmax(56px, 1fr);
+  grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto;
 }
 
 .onboarding-story-fast-forward {

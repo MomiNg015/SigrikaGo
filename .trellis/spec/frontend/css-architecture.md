@@ -250,3 +250,5 @@ For both profile contexts, empty character records render a compact `.profile-ch
 `mobile-adaptive/guided-actions.css` owns soft gold paper fills, 3px campus-weight borders, restrained shadows, left-aligned copy and trailing chevrons, with a masked localized animated edge highlight for enabled story-footer and tutorial action buttons. Exclude native and ARIA disabled controls. Keep the pseudo-element content/display explicit to beat room resets; reduced-motion selectors must match the enabled selector specificity. Preserve long-choice wrapping, board target rings and skip/close semantics. Check computed pseudo content and reduced-motion animation, not animation-name alone.
 
 Guided story/tutorial option groups use equal-height grid tracks on desktop. At 768px and below, use one full-width column with natural row heights. Preserve wrapping rather than clamping the longest response.
+
+Story modal grids reserve an `auto` final action track rather than a fractional track: wrapped guided buttons must not overflow into bottom padding. Bound option lists with `min(34dvh, 260px)` and scroll within their padded area, including desktop.

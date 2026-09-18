@@ -90,9 +90,9 @@ describe("OnboardingStoryModal", () => {
     expect(brightSchoolRootShellCss).toContain(".tutorial-session-backdrop");
     expect(brightSchoolRootShellCss).toContain("background-color: rgba(35, 27, 31, 0.64) !important");
     expect(modalBlock).toContain("padding: clamp(16px, 2.4vw, 24px)");
-    expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr)");
+    expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) auto");
     expect(onboardingStoryCss).toContain(".onboarding-story-modal.long-text-compress-portrait");
-    expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) minmax(56px, 1fr)");
+    expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto");
     expect(onboardingStoryCss).toContain("max-height: calc(100% - 64px)");
     expect(onboardingStoryCss).toContain("overflow: auto;");
     expect(onboardingStoryCss).toContain("grid-template-columns: repeat(auto-fit, minmax(0, 1fr))");
