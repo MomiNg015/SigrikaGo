@@ -252,3 +252,5 @@ For both profile contexts, empty character records render a compact `.profile-ch
 Guided story/tutorial option groups use equal-height grid tracks on desktop. At 768px and below, use one full-width column with natural row heights. Preserve wrapping rather than clamping the longest response.
 
 Story modal grids reserve an `auto` final action track rather than a fractional track: wrapped guided buttons must not overflow into bottom padding. Bound option lists with `min(34dvh, 260px)` and scroll within their padded area, including desktop.
+
+Story continue/finish controls keep width: 100% without a fixed maximum width, filling the same footer as the choices.
