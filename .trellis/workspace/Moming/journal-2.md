@@ -1592,3 +1592,36 @@ Compact empty character records; gold guided actions with animated multicolor ri
 ### Next Steps
 
 - None - task complete
+
+
+## Session 109: Compact wide desktop home composition
+
+**Date**: 2026-09-18
+**Task**: Compact wide desktop home composition
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Aligned the student ID with the bounded central stage on wide desktop, allowing handbook centering to follow. Verified 2542/1920/1440 desktop and unchanged 390 portrait bounds; npm run check passed with 2527 tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD~1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
