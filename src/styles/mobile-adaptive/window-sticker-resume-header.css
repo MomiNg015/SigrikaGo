@@ -96,6 +96,21 @@
   letter-spacing: 0;
 }
 
+@media (min-width: 769px) {
+  .profile-resume-view .profile-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item.has-action {
+    padding: 20px 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item > strong {
+    font-size: 1.5625rem !important;
+  }
+}
+
 @media (max-width: 768px) {
   .profile-resume-view .profile-rank-results {
     flex-wrap: nowrap;
