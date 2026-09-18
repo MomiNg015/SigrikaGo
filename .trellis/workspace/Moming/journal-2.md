@@ -1757,3 +1757,36 @@ Removed obsolete 280px width cap. Real modal desktop/mobile buttons match footer
 ### Next Steps
 
 - None - task complete
+
+
+## Session 114: Consistent guided continue icons
+
+**Date**: 2026-09-18
+**Task**: Consistent guided continue icons
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Added the existing outline Play glyph to story continue, preview continue-now and explicit continue choices. Verified actual desktop/mobile rendering and unchanged full-row width/spacing; 36 tests passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fcc42de0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
