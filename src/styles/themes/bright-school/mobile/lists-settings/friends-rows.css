@@ -16,7 +16,7 @@
     display: grid !important;
     grid-template-areas:
       "status avatar info action" !important;
-    grid-template-columns: auto 32px minmax(0, 1fr) 44px !important;
+    grid-template-columns: 48px 32px minmax(0, 1fr) 44px !important;
     gap: 4px 6px !important;
     align-items: center !important;
     padding: 10px !important;
@@ -27,6 +27,7 @@
     grid-area: status !important;
     min-width: 0 !important;
     padding: 4px 6px !important;
+    width: 100%;
     font-size: 11px !important;
   }
 
@@ -42,8 +43,25 @@
     display: grid !important;
     gap: 4px !important;
     align-content: center !important;
-    justify-items: center !important;
-    text-align: center !important;
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .user-identity {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    text-align: left;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .user-identity-main {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .user-identity:not(.has-nameplate),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .user-identity:not(.has-nameplate) .user-identity-name-tag {
+    padding-inline: 0;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-username {

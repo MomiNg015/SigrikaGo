@@ -47,6 +47,10 @@
 }
 
 .online-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   min-width: 52px;
   justify-self: center;
   padding: 5px 8px;
