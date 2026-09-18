@@ -4,31 +4,98 @@
   initial-value: 110deg;
 }
 
-/* Shared final owner for player-guided actions, including portrait controls. */
-:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"]) {
-  position: relative;
-  overflow: visible;
-  background: rgb(255 207 64) !important;
-  color: rgb(61 43 37) !important;
-  border-color: rgb(132 89 20) !important;
-  animation: none !important;
-}
+/* Reply-paper controls: geometry stays stable while only enabled edges shimmer. */
+:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button {
+  & {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    height: auto !important;
+    min-height: 56px !important;
+    padding: 13px 18px !important;
+    border-width: 1.5px !important;
+    border-style: solid !important;
+    border-radius: 13px !important;
+    text-align: left !important;
+    line-height: 1.55 !important;
+    font-family: var(--font-ui-default) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    overflow: visible;
+    animation: none !important;
+  }
 
-:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"])::before {
-  content: "" !important;
-  display: block !important;
-  position: absolute;
-  inset: -5px;
-  padding: 3px;
-  border-radius: inherit;
-  pointer-events: none;
-  background-image: linear-gradient(var(--guided-ring-angle), rgb(255 103 135), rgb(255 209 66), rgb(92 214 175), rgb(96 164 255), rgb(188 121 244), rgb(255 103 135)) !important;
-  filter: drop-shadow(0 0 2px rgb(188 121 244 / 0.65)) !important;
-  -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
-  mask-composite: exclude;
-  animation: guided-action-ring 3s linear infinite;
+  &:not(:disabled):not([aria-disabled="true"]) {
+    background: linear-gradient(180deg, rgb(255 243 196), rgb(255 224 154)) !important;
+    color: rgb(73 53 31) !important;
+    border-color: rgb(173 135 76) !important;
+    box-shadow: 0 3px 0 rgb(188 152 89 / 0.32), inset 0 1px 0 rgb(255 251 238) !important;
+    transform: none !important;
+    transition: transform 180ms ease-out, box-shadow 180ms ease-out !important;
+  }
+
+  &:not(:disabled):not([aria-disabled="true"])::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    inset: -4px;
+    padding: 1.5px;
+    border-radius: 16px;
+    pointer-events: none;
+    background-image: conic-gradient(from var(--guided-ring-angle), transparent 0deg 245deg, rgb(148 203 188) 275deg, rgb(234 164 187) 312deg, rgb(237 187 95) 342deg, transparent 360deg) !important;
+    filter: none !important;
+    -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    mask-composite: exclude;
+    animation: guided-action-ring 4s linear infinite;
+  }
+
+  &::after {
+    content: "" !important;
+    display: block !important;
+    position: static !important;
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    margin: 0 3px 0 auto;
+    border: 0 !important;
+    border-top: 2px solid currentColor !important;
+    border-right: 2px solid currentColor !important;
+    transform: rotate(45deg) !important;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  & > span {
+    flex: 1 1 auto !important;
+    min-width: 0;
+    text-align: left !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  & > svg {
+    flex: 0 0 20px;
+    color: rgb(167 121 52);
+  }
+
+  &:not(:disabled):not([aria-disabled="true"]):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 0 rgb(188 152 89 / 0.25), 0 8px 18px rgb(185 144 65 / 0.12) !important;
+  }
+
+  &:not(:disabled):not([aria-disabled="true"]):active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 1px 0 rgb(188 152 89 / 0.32) !important;
+  }
+
+  &:not(:disabled):not([aria-disabled="true"]):focus-visible {
+    outline: 2px solid rgb(146 101 30) !important;
+    outline-offset: 6px;
+  }
 }
 
 @keyframes guided-action-ring {
@@ -37,7 +104,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions) button:not(:disabled):not([aria-disabled="true"])::before {
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"])::before {
     animation: none;
+  }
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]),
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):hover,
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):active {
+    transition: none !important;
+    transform: none !important;
   }
 }

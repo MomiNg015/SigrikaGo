@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { FastForward, X } from "lucide-react";
+import { FastForward, MessageCircle, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
@@ -259,7 +259,8 @@ export default function StoryPlayerModal({
             <div className="onboarding-story-options">
               {visibleOptions.map((option) => (
                 <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => scheduleOptionTransition(option)}>
-                  {option.label}
+                  <MessageCircle size={20} aria-hidden="true" />
+                  <span>{option.label}</span>
                 </button>
               ))}
             </div>

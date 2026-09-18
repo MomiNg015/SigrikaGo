@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Calculator, Flag, Play, Sparkles } from "lucide-react";
+import { Calculator, Flag, MessageCircle, Play, Sparkles } from "lucide-react";
 import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 import {
@@ -1012,6 +1012,7 @@ export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
           disabled={submitted}
           onClick={() => selectOption(option)}
         >
+          <MessageCircle size={20} aria-hidden="true" />
           <span>{option.label || "继续"}</span>
         </button>
       ))}
