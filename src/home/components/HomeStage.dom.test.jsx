@@ -42,3 +42,37 @@ it("centers the desktop handbook between its neighbors without accumulating offs
   unmount();
   expect(disconnect).toHaveBeenCalledOnce();
 });
+
+it("pulls the ID into the bounded desktop composition and releases its anchor on portrait mobile", () => {
+  let resize;
+  let stageLeft = 550;
+  vi.stubGlobal("innerWidth", 2542);
+  vi.stubGlobal("ResizeObserver", class {
+    constructor(callback) { resize = callback; }
+    observe() {}
+    disconnect() {}
+  });
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+    if (this.matches(".test-board")) return { left: 58, width: 2426 };
+    if (this.matches(".home-stage")) return { left: stageLeft };
+    if (this.matches(".home-student-id-zone")) return { right: 840 };
+    if (this.matches(".home-match-feature")) return { left: 1200 };
+    return { left: 860, width: 320 };
+  });
+  vi.spyOn(window, "getComputedStyle").mockImplementation(() => ({ paddingLeft: "26px", translate: "none" }));
+  const { container, unmount } = render(<section className="test-board"><div className="home-student-id-zone" /><HomeStage /></section>);
+  const board = container.querySelector(".test-board");
+  expect(board.style.getPropertyValue("--home-student-id-left")).toBe("518px");
+  resize();
+  expect(board.style.getPropertyValue("--home-student-id-left")).toBe("518px");
+  stageLeft = 150;
+  resize();
+  expect(Number.parseFloat(board.style.getPropertyValue("--home-student-id-left"))).toBeCloseTo(194.08);
+  vi.stubGlobal("innerWidth", 390);
+  resize();
+  expect(board.style.getPropertyValue("--home-student-id-left")).toBe("");
+  vi.stubGlobal("innerWidth", 2542);
+  resize();
+  unmount();
+  expect(board.style.getPropertyValue("--home-student-id-left")).toBe("");
+});

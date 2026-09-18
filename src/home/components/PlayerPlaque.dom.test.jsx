@@ -19,7 +19,7 @@ describe("home student ID", () => {
     const zone = css.match(/\.home-player-zone\.home-student-id-zone\s*\{([^}]+)\}/)?.[1];
     expect(zone).toContain("position: absolute !important");
     expect(zone).toContain("grid-area: auto !important");
-    expect(zone).toContain("inset: -10px auto auto 8% !important");
+    expect(zone).toContain("inset: -10px auto auto var(--home-student-id-left, 8%) !important");
     expect(zone).toContain("width: var(--home-hanging-id-width)");
   });
 

@@ -6,7 +6,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone.home-student-id-zone {
   position: absolute !important;
   grid-area: auto !important;
-  inset: -10px auto auto 8% !important;
+  inset: -10px auto auto var(--home-student-id-left, 8%) !important;
   width: var(--home-hanging-id-width) !important;
   max-width: 100% !important;
   height: auto !important;
@@ -95,7 +95,7 @@
   height: clamp(200px, 28vw, 340px) !important;
   align-self: end !important;
   margin-bottom: 8px;
-  /* HomeStage centers this entry between the board-anchored ID and match entry. */
+  /* HomeStage keeps the ID and handbook inside the centered composition. */
   translate: var(--home-manual-center-offset, 0px) 0;
 }
 

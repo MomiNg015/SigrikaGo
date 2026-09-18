@@ -24,11 +24,17 @@ export default function HomeStage({
     const match = stage?.querySelector(".home-match-feature");
     if (!plaque || !manual || !match || typeof ResizeObserver === "undefined") return;
 
-    const positionManual = () => {
+    const positionEntries = () => {
       if (window.innerWidth <= 768) {
+        board.style.removeProperty("--home-student-id-left");
         manual.style.removeProperty("--home-manual-center-offset");
         return;
       }
+      const boardBounds = board.getBoundingClientRect();
+      const stageBounds = stage.getBoundingClientRect();
+      const stageInset = Number.parseFloat(getComputedStyle(stage).paddingLeft) || 0;
+      const compositionLeft = stageBounds.left - boardBounds.left + stageInset;
+      board.style.setProperty("--home-student-id-left", `${Math.max(boardBounds.width * 0.08, compositionLeft)}px`);
       const plaqueBounds = plaque.getBoundingClientRect();
       const matchBounds = match.getBoundingClientRect();
       const manualBounds = manual.getBoundingClientRect();
@@ -37,13 +43,14 @@ export default function HomeStage({
       const targetCenter = (plaqueBounds.right + matchBounds.left) / 2;
       manual.style.setProperty("--home-manual-center-offset", `${targetCenter - originalCenter}px`);
     };
-    const observer = new ResizeObserver(positionManual);
+    const observer = new ResizeObserver(positionEntries);
     [board, stage, plaque, manual, match].forEach((element) => observer.observe(element));
-    window.addEventListener("resize", positionManual);
-    positionManual();
+    window.addEventListener("resize", positionEntries);
+    positionEntries();
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", positionManual);
+      board.style.removeProperty("--home-student-id-left");
+      window.removeEventListener("resize", positionEntries);
       manual.style.removeProperty("--home-manual-center-offset");
     };
   }, []);
