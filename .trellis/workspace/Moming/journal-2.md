@@ -1889,3 +1889,36 @@ Completed six approved UI improvements: shop dialogue sizing, audio controls, de
 ### Next Steps
 
 - None - task complete
+
+
+## Session 118: Fix home window shadow clipping
+
+**Date**: 2026-09-18
+**Task**: Fix home window shadow clipping
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored settings scroller gutters and reserved motion/shadow bounds in shop card layout. Inspected 15 real-component views/tabs across desktop and portrait sizes and both scroll endpoints. Added maximum-motion geometry regression; npm run check passed with 2529 tests. Updated system design and CSS contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f11b8de` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

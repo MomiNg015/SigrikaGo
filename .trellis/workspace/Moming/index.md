@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 117
+- **Total Sessions**: 118
 - **Last Active**: 2026-09-18
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1891 | Active |
+| `journal-2.md` | ~1924 | Active |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 118 | 2026-09-18 | Fix home window shadow clipping | `f11b8de` | `codex/campus-home-handbook-polish` |
 | 117 | 2026-09-18 | Polish six home window issues | `8dbb8c2d` | `codex/campus-home-handbook-polish` |
 | 116 | 2026-09-18 | Unify desktop profile summary cards | `7cd4ecaf` | `codex/campus-home-handbook-polish` |
 | 115 | 2026-09-18 | Preserve empty character record cards | `7dd64023` | `codex/campus-home-handbook-polish` |
