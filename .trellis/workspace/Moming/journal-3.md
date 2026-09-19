@@ -203,3 +203,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 127: 玩家窗口手绘书签推广
+
+**Date**: 2026-09-19
+**Task**: 玩家窗口手绘书签推广
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+设置、成就、排行榜、观战、好友、首页详细资料、公告、招募接入共享左侧手绘书签。保留数量和未读点，手机招募长标签换列，排行榜统计换行并保证姓名列，详细资料窄屏操作两行。125项相关检查、lint、生产构建和构建后CSS通过；全量测试保留既有ShopModal CSS断言失败。已同步文档/规范并保留.codex-run本地预览。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d4f3cde4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
