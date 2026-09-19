@@ -104,3 +104,36 @@ Added a quiet hand-drawn grid and enlarged portrait match entry; compacted heade
 ### Next Steps
 
 - None - task complete
+
+
+## Session 124: 履历手机窗口与书签比例
+
+**Date**: 2026-09-19
+**Task**: 履历手机窗口与书签比例
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+手机履历取消固定满屏高度，保留视口上限和正文滚动；书签加宽到58px，最小高度72px，间距8px。四条记录的476x1052预览收掉多余留白；320x568长列表末项可达，390x844边界和桌面横排正常。88项测试及定向lint通过，同步系统设计与HTML。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d5d7fb7a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
