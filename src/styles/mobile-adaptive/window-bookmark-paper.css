@@ -42,6 +42,15 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab::before,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab::after { content: none !important; }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab:not([aria-selected="true"])::after {
+  content: "" !important;
+  position: absolute;
+  inset: 5px 0 5px auto;
+  width: 18px;
+  background: linear-gradient(90deg, transparent, rgb(61 43 37 / 18%));
+  pointer-events: none;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab > .window-bookmark-paper {
   position: absolute !important;
   inset: 0 !important;

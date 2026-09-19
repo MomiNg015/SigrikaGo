@@ -18,7 +18,8 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host > .window-bookmark-rail {
   position: absolute !important;
-  inset: var(--window-bookmark-top) auto 18px calc(2px - var(--window-bookmark-width)) !important;
+  /* Stop at the outer paper edge so the window border stays above the tucked ends. */
+  inset: var(--window-bookmark-top) auto 18px calc(-3px - var(--window-bookmark-width)) !important;
   z-index: 1 !important;
   width: var(--window-bookmark-width) !important;
   min-width: 0 !important;
