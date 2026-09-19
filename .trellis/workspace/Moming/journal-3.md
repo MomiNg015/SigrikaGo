@@ -236,3 +236,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 128: 修整书签窗口列表与分隔线
+
+**Date**: 2026-09-19
+**Task**: 修整书签窗口列表与分隔线
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+好友列表采用自然行高；观战去掉房间数；书签文字不换行并适配长招募标签；统一标题虚线间距。207 项相关测试、lint、build、built CSS 检查通过，已完成桌面和 320px 竖屏实测。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0997c67c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

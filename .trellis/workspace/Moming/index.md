@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 127
+- **Total Sessions**: 128
 - **Last Active**: 2026-09-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~238 | Active |
+| `journal-3.md` | ~271 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 128 | 2026-09-19 | 修整书签窗口列表与分隔线 | `0997c67c` | `codex/campus-home-handbook-polish` |
 | 127 | 2026-09-19 | 玩家窗口手绘书签推广 | `d4f3cde4` | `codex/campus-home-handbook-polish` |
 | 126 | 2026-09-19 | 修复懒加载子窗口导致履历闪隐 | `244b2516` | `codex/campus-home-handbook-polish` |
 | 125 | 2026-09-19 | 履历书签轮廓加粗 | `145545ab` | `codex/campus-home-handbook-polish` |
