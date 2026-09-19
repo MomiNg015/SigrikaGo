@@ -1,0 +1,51 @@
+[data-bookmark-anchor] { display: none !important; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) {
+  --window-bookmark-width: 112px;
+  --window-bookmark-top: 72px;
+  position: relative !important;
+  isolation: isolate;
+  overflow: visible !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-bookmark-host > .window-bookmark-rail) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding-left: calc(128px + env(safe-area-inset-left)) !important;
+  padding-right: calc(18px + env(safe-area-inset-right)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host > .window-bookmark-rail {
+  position: absolute !important;
+  inset: var(--window-bookmark-top) auto 18px calc(2px - var(--window-bookmark-width)) !important;
+  z-index: 1 !important;
+  width: var(--window-bookmark-width) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 5px 0 8px 5px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  scroll-padding-block: 5px 8px;
+}
+
+.window-bookmark-rail::-webkit-scrollbar { display: none; }
+
+/* The resume no longer needs the grid track formerly occupied by its mode tabs. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) > .profile-resume-view {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}

@@ -1,0 +1,4 @@
+/* Shared hand-drawn window tabs; the shell reserves their visible footprint. */
+@import "./window-bookmark-shells.css";
+@import "./window-bookmark-paper.css";
+@import "./window-bookmark-mobile.css";

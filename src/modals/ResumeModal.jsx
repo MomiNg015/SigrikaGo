@@ -114,7 +114,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <ModalDialog
-        className="house-modal resume-modal profile-dossier-modal window-sticker-host"
+        className="house-modal resume-modal profile-dossier-modal window-sticker-host window-bookmark-host"
         ariaLabelledBy="resume-modal-title"
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
@@ -122,10 +122,10 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         <header className="house-header resume-header window-sticker-header">
           <WindowTitleSticker titleKey="resume" id="resume-modal-title" />
           <div className="resume-header-actions">
-            <button type="button" className="resume-mini-action achievement-entry-action" onClick={onOpenAchievements}>
+            <button type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
               <Award size={16} />成就
             </button>
-            <button type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" onClick={onOpenPersonalization}>
+            <button type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
               <Palette size={16} />个性化
             </button>
             <p

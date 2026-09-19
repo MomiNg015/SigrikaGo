@@ -18,6 +18,15 @@ All title lettering uses the actual `public/assets/fonts/LXGWMarkerGothic-Regula
 - Nested profile confirmation backdrops must remain fixed to the viewport. The dossier's broad relative-positioning rule for children must not capture them.
 - `mobile-adaptive/window-title-stickers.css` owns placement and safe-area sizing; `window-title-sticker-content.css` owns content scroll geometry. Both load before the final corruption owner.
 
-## Validation
+## Resume bookmark tabs
+
+- Only `ResumeModal` opts into `window-bookmark-host`. Do not enable social profiles, other windows, room tabs or admin controls without a separate user request.
+- `WindowBookmarkTabs({ children, className, ...props })` preserves existing inline buttons outside an opted-in ordinary Bright School host. Its portal targets the closest dialog only; an unmarked nested dialog must never attach its tabs to an outer marked host.
+- Keep button IDs, controls, callbacks, pending guards and selection under the profile owner's control. Use Up/Down and Home/End on the vertical rail; leave legacy inline keyboard handlers unchanged. Observe app theme classes and restore inline placement on corruption/theme changes.
+- Draw only the paper outline; label text uses the actual LXGW font through `--font-window-title`. Keep reduced-motion fallback and visible keyboard focus.
+- The backdrop must constrain its grid column with `minmax(0, 1fr)` before resolving the window's percentage max-width. Reserve the full left rail plus its shadow. Scroll the mobile resume body independently from the rail; verify the final record remains reachable at 320x568.
+- `WindowBookmarkTabs.dom.test.jsx` covers relocation, callbacks, selection, pending state, keyboard and theme opt-outs. Existing resume/profile tests continue to cover data loading and stale responses.
+
+## Window title validation
 
 Check 320x568, 390x844, 800x600 and desktop: complete title bounds, header controls, native scrolling, pressed shadows, nested overlay coverage, close/return/focus restoration, image failure, room opt-out and special-theme opt-out. Asset tests verify both formats and actual alpha margins. Update the system-design entry and chapters 05/06, then regenerate HTML.

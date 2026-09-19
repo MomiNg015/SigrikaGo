@@ -1,0 +1,82 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab {
+  --bookmark-paper: #e1ede6;
+  --bookmark-tilt: -0.6deg;
+  position: relative !important;
+  isolation: isolate;
+  flex: 0 0 auto !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 56px !important;
+  height: auto !important;
+  padding: 9px 12px 9px 7px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  clip-path: none !important;
+  overflow: visible !important;
+  transform: translateX(7px) !important;
+  transition: transform 180ms ease-out !important;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-weight: 400 !important;
+  cursor: pointer;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:nth-child(3n + 2) { --bookmark-paper: #e2ebf2; --bookmark-tilt: 0.6deg; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:nth-child(3n) { --bookmark-paper: #f2e1e5; --bookmark-tilt: -0.3deg; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab[aria-selected="true"] { --bookmark-paper: #bfe3cd; transform: translateX(0) !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:nth-child(3n + 2)[aria-selected="true"] { --bookmark-paper: #b9d7eb; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:nth-child(3n)[aria-selected="true"] { --bookmark-paper: #efb9c7; }
+
+@media (min-width: 769px) and (hover: hover) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:not(:disabled, [aria-disabled="true"], [aria-selected="true"]):hover { transform: translateX(3px) !important; }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:focus-visible { outline: 2px solid var(--bright-ink) !important; outline-offset: -5px !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab:is(:disabled, [aria-disabled="true"]) { opacity: 0.65; cursor: wait; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab::after { content: none !important; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-tab > .window-bookmark-paper {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  overflow: visible;
+  transform: rotate(var(--bookmark-tilt));
+  filter: drop-shadow(1px 3px 0 #54443855);
+  pointer-events: none;
+}
+
+.window-bookmark-fill { fill: var(--bookmark-paper); stroke: #58473b; stroke-width: 1.7; }
+.window-bookmark-pencil { fill: none; stroke: var(--bright-ink); stroke-opacity: 0.25; stroke-width: 0.8; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-size: 21px !important;
+  font-weight: 400 !important;
+  line-height: 1.25;
+  color: inherit !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(span, strong, b, small) { font-family: inherit !important; color: inherit !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab { transition: none !important; }
+}

@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useRef } from "react";
 import { CircleGauge, Gamepad2, HelpCircle, Star, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
@@ -199,7 +200,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   }
 
   return (
-    <div className="mode-tabs window-mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
+    <WindowBookmarkTabs className="mode-tabs window-mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
       {tabs.map((entry, index) => (
         <button
           key={entry.id}
@@ -218,7 +219,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
           {entry.shortTitle}
         </button>
       ))}
-    </div>
+    </WindowBookmarkTabs>
   );
 }
 
