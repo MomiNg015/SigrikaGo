@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 125
+- **Total Sessions**: 126
 - **Last Active**: 2026-09-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~172 | Active |
+| `journal-3.md` | ~205 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 126 | 2026-09-19 | 修复懒加载子窗口导致履历闪隐 | `244b2516` | `codex/campus-home-handbook-polish` |
 | 125 | 2026-09-19 | 履历书签轮廓加粗 | `145545ab` | `codex/campus-home-handbook-polish` |
 | 124 | 2026-09-19 | 履历手机窗口与书签比例 | `d5d7fb7a` | `codex/campus-home-handbook-polish` |
 | 123 | 2026-09-19 | 履历书签接缝修整 | `00d0fbce` | `codex/campus-home-handbook-polish` |

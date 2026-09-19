@@ -170,3 +170,36 @@ Added a quiet hand-drawn grid and enlarged portrait match entry; compacted heade
 ### Next Steps
 
 - None - task complete
+
+
+## Session 126: 修复懒加载子窗口导致履历闪隐
+
+**Date**: 2026-09-19
+**Task**: 修复懒加载子窗口导致履历闪隐
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每窗口独立边界。延迟模块解析的成就与个性化DOM回归测试先失败后通过，验证可见性、节点状态与layout effect保留；真实组件预览验证两种窗口打开关闭。63项相关测试、npm run lint、生产构建通过。同步架构文档及组件规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `244b2516` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
