@@ -20,7 +20,7 @@ const cases = [
   ["设置", SettingsModal, { audioSettings: { master: 80, bgm: 60, sfx: 60, voice: 80 }, setAudioSettings: noop }, "关于"],
   ["成就", AchievementModal, {}, "已达成"],
   ["排行榜", LeaderboardModal, {}, "标准"],
-  ["观战", WatchModal, {}, "标准，2 个房间"],
+  ["观战", WatchModal, {}, "标准"],
   ["好友", FriendsModal, {}, "黑名单"],
   ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "更新日志"],
   ["招募", RecruitmentModal, {}, new RegExp(RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.radioTicket].name)],

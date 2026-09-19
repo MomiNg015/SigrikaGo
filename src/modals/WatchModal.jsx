@@ -14,7 +14,6 @@ import { ModalDialog } from "./modalComponents.jsx";
 export default function WatchModal({ token, characters, onJoinRoom, onNotice, onClose }) {
   const [mode, setMode] = useState("spark");
   const [rooms, setRooms] = useState([]);
-  const [roomCounts, setRoomCounts] = useState(() => watchRoomCountDefaults());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -26,11 +25,6 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
       const data = await api(`/api/rooms/watch?mode=${encodeURIComponent(mode)}`, { token });
       const nextRooms = data.rooms ?? [];
       setRooms(nextRooms);
-      setRoomCounts((current) => ({
-        ...current,
-        ...(data.roomCounts ?? {}),
-        [mode]: Number(data.roomCounts?.[mode] ?? nextRooms.length)
-      }));
     } catch (loadError) {
       const message = loadError.message || "观战列表加载失败";
       setError(message);
@@ -58,7 +52,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
             </button>
           </div>
         </div>
-        <ModeTabs mode={mode} roomCounts={roomCounts} onModeChange={setMode} />
+        <ModeTabs mode={mode} onModeChange={setMode} />
         <div className="watch-room-table" role="table">
           <div className="watch-room-head" role="row">
             <span>房间号</span>
@@ -88,30 +82,24 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
 
 export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };
 
-function ModeTabs({ mode, roomCounts, onModeChange }) {
+function ModeTabs({ mode, onModeChange }) {
   return (
     <WindowBookmarkTabs className="mode-tabs window-mode-tabs" role="tablist" aria-label="对弈模式">
       {modeOrderedEntries().map((entry) => {
-        const count = Number(roomCounts[entry.id] ?? 0);
         return (
           <button
             key={entry.id}
             type="button"
             role="tab"
-            aria-label={`${entry.shortTitle}，${count} 个房间`}
+            aria-label={entry.shortTitle}
             aria-selected={mode === entry.id}
             className={mode === entry.id ? "active" : ""}
             onClick={() => onModeChange(entry.id)}
           >
             <span>{entry.shortTitle}</span>
-            <span className="watch-mode-count" aria-hidden="true">{count}</span>
           </button>
         );
       })}
     </WindowBookmarkTabs>
   );
-}
-
-function watchRoomCountDefaults() {
-  return Object.fromEntries(modeOrderedEntries().map((entry) => [entry.id, 0]));
 }

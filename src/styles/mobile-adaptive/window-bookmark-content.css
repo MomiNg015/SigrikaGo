@@ -11,10 +11,6 @@
   grid-template-rows: auto minmax(0, 1fr) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .watch-list-modal.window-bookmark-host:has(> .window-bookmark-rail) {
-  min-height: min(380px, var(--window-sticker-available-height)) !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) {
   min-height: min(520px, var(--window-sticker-available-height)) !important;
 }
@@ -38,7 +34,7 @@
   height: 18px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(b, .watch-mode-count) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > b {
   margin: 0 !important;
   font-size: 14px !important;
   line-height: 1.2;
@@ -49,6 +45,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label {
   flex-direction: column;
   text-align: center;
+  font-size: 16px !important;
 }
 
 @media (max-width: 768px) {
@@ -59,7 +56,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label > span {
-    max-height: 76px;
+    flex: 0 0 auto;
   }
 }
 
@@ -84,5 +81,15 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.window-bookmark-host:has(> .window-bookmark-rail) .profile-identity-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 6px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+    --window-bookmark-width: 148px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .modal-backdrop:has(> .recruitment-modal > .window-bookmark-rail) {
+    padding-left: calc(164px + env(safe-area-inset-left)) !important;
   }
 }

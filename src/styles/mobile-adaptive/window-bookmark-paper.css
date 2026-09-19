@@ -80,11 +80,11 @@
   font-weight: 400 !important;
   line-height: 1.25;
   color: inherit !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere;
+  white-space: nowrap !important;
+  overflow-wrap: normal;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(span, strong, b, small) { font-family: inherit !important; color: inherit !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(span, strong, b, small) { font-family: inherit !important; color: inherit !important; white-space: nowrap !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab { transition: none !important; }

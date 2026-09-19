@@ -83,7 +83,6 @@ describe("WatchModal helpers", () => {
     expect(css).toContain("font-size: 16px;");
     const modeTabsBlock = cssBlock(css, ".watch-list-modal .mode-tabs");
     const modeButtonBlock = cssBlock(css, ".watch-list-modal .mode-tabs button");
-    const roomCountBlock = cssBlock(css, ".watch-list-modal .watch-mode-count");
     expect(modeTabsBlock).toContain("padding: 0;");
     expect(modeTabsBlock).toContain("border: 0;");
     expect(modeTabsBlock).toContain("background: transparent;");
@@ -91,14 +90,6 @@ describe("WatchModal helpers", () => {
     expect(modeButtonBlock).toContain("align-items: center;");
     expect(modeButtonBlock).toContain("justify-content: center;");
     expect(modeButtonBlock).toContain("gap: 1em;");
-    expect(roomCountBlock).toContain("flex: none;");
-    expect(roomCountBlock).toContain("display: inline-grid;");
-    expect(roomCountBlock).toContain("place-items: center;");
-    expect(roomCountBlock).toContain("width: 1.75em;");
-    expect(roomCountBlock).toContain("height: 1.75em;");
-    expect(roomCountBlock).toContain("padding: 0;");
-    expect(roomCountBlock).toContain("border-radius: 50%;");
-    expect(roomCountBlock).toContain("font-size: inherit;");
     expect(css).toContain("grid-template-rows: auto auto minmax(220px, 1fr) auto auto;");
     expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("min-height: 40px;");
@@ -114,7 +105,7 @@ describe("WatchModal helpers", () => {
 
     expect(html).toContain(">五子棋</span>");
     expect(html).not.toContain(">来下五子棋吗？</span>");
-    expect(html).toContain('aria-label="五子棋，0 个房间"');
+    expect(html).toContain('aria-label="五子棋"');
   });
 
   it("keeps watch list headers and rows on the same mobile columns", () => {

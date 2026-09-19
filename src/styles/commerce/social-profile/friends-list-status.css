@@ -1,6 +1,7 @@
 .friends-list {
   min-width: 620px;
   display: grid;
+  align-content: start;
   gap: 8px;
   padding-right: 6px;
   padding-bottom: 6px;
