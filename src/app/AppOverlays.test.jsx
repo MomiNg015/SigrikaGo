@@ -17,7 +17,8 @@ describe("AppOverlays", () => {
 
   it("keeps mailbox item detail independent from account inventory state", () => {
     const source = readFileSync(new URL("./AppOverlays.jsx", import.meta.url), "utf8");
-    const mailboxBlock = source.slice(source.indexOf("{showMailbox &&"), source.indexOf("</Suspense>"));
+    const mailboxStart = source.indexOf("{showMailbox &&");
+    const mailboxBlock = source.slice(mailboxStart, source.indexOf("</Suspense>", mailboxStart));
 
     expect(mailboxBlock).not.toContain("user={user}");
   });

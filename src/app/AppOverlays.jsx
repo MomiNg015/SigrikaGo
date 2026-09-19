@@ -154,6 +154,7 @@ export default function AppOverlays({
           onComplete={onMatchSuccessComplete}
         />
       )}
+      {/* Each lazy window loads independently so existing windows stay visible. */}
       <Suspense fallback={null}>
         {showHouse && user && (
           <HouseModal
@@ -170,6 +171,8 @@ export default function AppOverlays({
             onNotice={showToast}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showResume && user && (
           <ResumeModal
             user={user}
@@ -181,6 +184,8 @@ export default function AppOverlays({
             onOpenReplay={openReplay}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showAchievements && user && (
           <AchievementModal
             token={token}
@@ -188,6 +193,8 @@ export default function AppOverlays({
             onNotice={showToast}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showPersonalization && user && (
           <PersonalizationModal
             token={token}
@@ -197,6 +204,8 @@ export default function AppOverlays({
             onUserChange={updateUser}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showWarehouse && user && (
           <WarehouseModal
             token={token}
@@ -208,6 +217,8 @@ export default function AppOverlays({
             onClose={() => setShowWarehouse(false)}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showLeaderboard && (
           <LeaderboardModal
             token={token}
@@ -216,6 +227,8 @@ export default function AppOverlays({
             onClose={() => setShowLeaderboard(false)}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showWatch && (
           <WatchModal
             token={token}
@@ -225,6 +238,8 @@ export default function AppOverlays({
             onNotice={showToast}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showFriends && (
           <FriendsModal
             token={token}
@@ -235,6 +250,8 @@ export default function AppOverlays({
             onOpenReplay={openReplay}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showShop && (
           <ShopModal
             token={token}
@@ -246,6 +263,8 @@ export default function AppOverlays({
             musicTracks={musicTracks}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showRecruitment && (
           <RecruitmentModal
             audioSettings={audioSettings}
@@ -259,6 +278,8 @@ export default function AppOverlays({
             onClose={() => setShowRecruitment(false)}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showSettings && (
           <SettingsModal
             siteSettings={siteSettings}
@@ -270,6 +291,8 @@ export default function AppOverlays({
             onClose={() => setShowSettings(false)}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showAnnouncements && (
           <AnnouncementModal
             token={token}
@@ -279,6 +302,8 @@ export default function AppOverlays({
             onSummaryChange={onAnnouncementSummaryChange}
           />
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {showMailbox && (
           <MailboxModal
             token={token}

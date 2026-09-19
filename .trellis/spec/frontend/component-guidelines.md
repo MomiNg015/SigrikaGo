@@ -1314,3 +1314,8 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 <!-- Component-related mistakes your team has made -->
 
 (To be filled by the team)
+
+## Independent lazy overlay boundaries
+
+- Give every lazy business window in `AppOverlays` its own `Suspense` boundary. A pending sibling must never hide an already visible window or tear down its layout effects. Keep existing visibility state and close callbacks.
+- Regression coverage must defer first-time module resolution, assert that the original dialog remains accessible with the same DOM node and local state, then resolve and close the new dialog. `AppOverlays.dom.test.jsx` covers resume to achievements and personalization.
