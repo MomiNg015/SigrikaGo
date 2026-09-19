@@ -66,7 +66,7 @@
   pointer-events: none;
 }
 
-.window-bookmark-fill { fill: var(--bookmark-paper); stroke: #58473b; stroke-width: 1.7; }
+.window-bookmark-fill { fill: var(--bookmark-paper); stroke: #58473b; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
 .window-bookmark-pencil { fill: none; stroke: var(--bright-ink); stroke-opacity: 0.25; stroke-width: 0.8; }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label {
