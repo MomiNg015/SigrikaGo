@@ -137,3 +137,36 @@ Added a quiet hand-drawn grid and enlarged portrait match entry; compacted heade
 ### Next Steps
 
 - None - task complete
+
+
+## Session 125: 履历书签轮廓加粗
+
+**Date**: 2026-09-19
+**Task**: 履历书签轮廓加粗
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+外轮廓从1.7改为2.5px并设置non-scaling-stroke，手机窄幅SVG保持清晰边线；内线与布局不变。桌面和390px竖屏预览通过，80项样式文档测试及定向lint通过，同步系统设计与HTML。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `145545ab` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
