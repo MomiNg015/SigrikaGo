@@ -912,7 +912,7 @@ describe("HomeScreen", () => {
     expect(brightMobileMenuPanelBlock).toContain("z-index: var(--home-floating-z) !important");
     expect(brightMobileCss).toContain("main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main");
     expect(brightMobileCss).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-mobile.webp")');
-    expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important");
+    expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(48px, 13vw, 60px) !important");
     expect(brightMobileCss).not.toContain("main.home-screen.home-terminal-screen > section.home-orientation-guard");
     expect(brightMobileCss).toContain('"player"\n      "match"\n      "manual"\n      "utility" !important');
     expect(brightMobileStageBlock).toContain("grid-template-rows: auto clamp(176px, 52vw, 224px) clamp(148px, 42vw, 188px) auto !important");
@@ -926,7 +926,7 @@ describe("HomeScreen", () => {
     expect(brightMobileImageEntryBlock).toContain("overflow: visible !important");
     expect(brightMobileImageBlock).toContain("filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
     expect(brightMobileMatchImageBlock).toContain("overflow: visible !important");
-    expect(brightMobileUtilityGridBlock).toContain("grid-template: repeat(3, max(52px, 18vw)) / repeat(2, minmax(0, 46%)) !important");
+    expect(brightMobileUtilityGridBlock).toContain("grid-template: repeat(3, max(52px, 13.5vw)) / repeat(2, minmax(0, 46%)) !important");
     expect(brightMobileUtilityGridBlock).toContain("justify-content: center !important");
     expect(brightMobileUtilityGridBlock).toContain("gap: 2px !important");
     expect(brightMobileUtilityEntryBlock).toContain("min-height: 52px !important");

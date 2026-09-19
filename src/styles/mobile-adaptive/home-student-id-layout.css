@@ -129,6 +129,13 @@
     translate: -12px 0;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-stage-with-student-id > .home-match-feature {
+    width: calc(100% + 32px) !important;
+    max-width: calc(100% + 32px) !important;
+    margin-inline: -16px !important;
+    height: clamp(248px, 70vw, 300px) !important;
+  }
+
   .home-student-id .home-student-id-name {
     font-size: 13px;
   }

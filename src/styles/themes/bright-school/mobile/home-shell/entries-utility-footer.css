@@ -78,7 +78,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
     grid-area: utility !important;
     display: grid !important;
-    grid-template: repeat(3, max(52px, 18vw)) / repeat(2, minmax(0, 46%)) !important;
+    grid-template: repeat(3, max(52px, 13.5vw)) / repeat(2, minmax(0, 46%)) !important;
     justify-content: center !important;
     gap: 2px !important;
   }
@@ -99,16 +99,6 @@
     border: 0 !important;
     box-shadow: none !important;
     overflow: visible !important;
-  }
-
-  /* Keep row one and asset sizing fixed; tighten each following row by 8px. */
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:nth-child(n + 3) {
-    position: relative !important;
-    top: -8px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:nth-child(n + 5) {
-    top: -16px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-motion {

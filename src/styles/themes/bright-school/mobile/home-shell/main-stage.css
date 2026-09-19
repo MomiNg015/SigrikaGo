@@ -5,7 +5,7 @@
     width: 100% !important;
     min-width: 0 !important;
     margin: 4px 0 0 !important;
-    padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important;
+    padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(48px, 13vw, 60px) !important;
     border: 0 !important;
     border-radius: 20px !important;
     overflow: visible !important;
