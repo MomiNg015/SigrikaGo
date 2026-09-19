@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "../WindowBookmarkTabs.jsx";
 import { Search } from "lucide-react";
 import { SEARCH_USERNAME_MAX_LENGTH } from "./friendSearch.js";
 
@@ -10,10 +11,10 @@ export default function FriendsToolbar({
 }) {
   return (
     <div className="friends-modal-toolbar">
-      <div className="friends-tabs" role="tablist" aria-label="好友列表分类">
+      <WindowBookmarkTabs className="friends-tabs" role="tablist" aria-label="好友列表分类">
         <button className={activeTab === "friends" ? "active" : ""} type="button" onClick={() => onTabChange("friends")}>好友</button>
         <button className={activeTab === "blacklist" ? "active" : ""} type="button" onClick={() => onTabChange("blacklist")}>黑名单</button>
-      </div>
+      </WindowBookmarkTabs>
       <form className="friend-search" onSubmit={(event) => {
         event.preventDefault();
         onSearchSubmit();

@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { RefreshCw, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -45,7 +46,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="small-modal watch-list-modal window-sticker-host" ariaLabelledBy="watch-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+      <ModalDialog className="small-modal watch-list-modal window-sticker-host window-bookmark-host" ariaLabelledBy="watch-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <div className="watch-list-header window-sticker-header">
           <WindowTitleSticker titleKey="watch" id="watch-modal-title" />
           <div className="watch-list-actions">
@@ -89,7 +90,7 @@ export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };
 
 function ModeTabs({ mode, roomCounts, onModeChange }) {
   return (
-    <div className="mode-tabs window-mode-tabs" role="tablist" aria-label="对弈模式">
+    <WindowBookmarkTabs className="mode-tabs window-mode-tabs" role="tablist" aria-label="对弈模式">
       {modeOrderedEntries().map((entry) => {
         const count = Number(roomCounts[entry.id] ?? 0);
         return (
@@ -107,7 +108,7 @@ function ModeTabs({ mode, roomCounts, onModeChange }) {
           </button>
         );
       })}
-    </div>
+    </WindowBookmarkTabs>
   );
 }
 

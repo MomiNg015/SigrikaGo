@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useState } from "react";
 import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
@@ -25,7 +26,7 @@ export default function SettingsModal({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section
-        className={`settings-modal settings-modal-content window-sticker-host settings-tab-${tab}`}
+        className={`settings-modal settings-modal-content window-sticker-host window-bookmark-host settings-tab-${tab}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
@@ -33,7 +34,7 @@ export default function SettingsModal({
       >
         <button className="close-button" type="button" aria-label={"\u5173\u95ed\u8bbe\u7f6e"} onClick={onClose}><X size={20} /></button>
         <WindowTitleSticker titleKey="settings" id="settings-modal-title" />
-        <div className="settings-tabs" role="tablist" aria-label={"\u8bbe\u7f6e\u5206\u7c7b"}>
+        <WindowBookmarkTabs className="settings-tabs" role="tablist" aria-label={"\u8bbe\u7f6e\u5206\u7c7b"}>
           <button
             id="settings-tab-audio"
             className={tab === "audio" ? "active" : ""}
@@ -61,7 +62,7 @@ export default function SettingsModal({
             aria-controls="settings-panel-about"
             onClick={() => setTab("about")}
           ><Info size={16} />{"\u5173\u4e8e"}</button>
-        </div>
+        </WindowBookmarkTabs>
         {tab === "audio" && (
           <div id={panelId} className="settings-panel settings-modal-content" role="tabpanel" aria-labelledby="settings-tab-audio">
             {audioItems.map((item) => {

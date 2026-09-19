@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
@@ -36,7 +37,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="leaderboard-modal window-sticker-host" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+      <ModalDialog className="leaderboard-modal window-sticker-host window-bookmark-host" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭排行榜" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header window-sticker-header">
           <WindowTitleSticker titleKey="leaderboard" id="leaderboard-modal-title" />
@@ -98,7 +99,7 @@ export function isLeaderboardCurrentUser(player, user) {
 
 function ModeTabs({ mode, onModeChange }) {
   return (
-    <div className="mode-tabs" role="tablist" aria-label="对弈模式">
+    <WindowBookmarkTabs className="mode-tabs" role="tablist" aria-label="对弈模式">
       {modeOrderedEntries().map((entry) => (
         <button
           key={entry.id}
@@ -111,6 +112,6 @@ function ModeTabs({ mode, onModeChange }) {
           {entry.shortTitle}
         </button>
       ))}
-    </div>
+    </WindowBookmarkTabs>
   );
 }

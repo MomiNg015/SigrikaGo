@@ -1,0 +1,88 @@
+/* Content owns scrolling after its tab row moves outside the paper shell. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) {
+  min-height: min(340px, var(--window-sticker-available-height)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .settings-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .achievement-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .watch-list-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  min-height: min(380px, var(--window-sticker-available-height)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  min-height: min(520px, var(--window-sticker-available-height)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .friends-modal.window-bookmark-host:has(> .window-bookmark-rail) .friends-modal-toolbar {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .announcement-modal.window-bookmark-host:has(> .window-bookmark-rail) .information-center-master {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) .recruitment-actions {
+  grid-template-columns: minmax(0, 1fr) !important;
+  justify-items: end;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(svg, img, .recruitment-item-icon) {
+  flex: 0 0 auto;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(b, .watch-mode-count) {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.2;
+  writing-mode: horizontal-tb;
+  letter-spacing: 0;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label {
+  flex-direction: column;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label {
+    flex-direction: row;
+    font-size: 16px !important;
+    line-height: 1.15;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label > span {
+    max-height: 76px;
+  }
+}
+
+/* Reserve a readable player-name column beside the portrait bookmark gutter. */
+@media (max-width: 560px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) .leaderboard-row {
+    min-height: 116px !important;
+    height: auto !important;
+    grid-template-columns: 24px 36px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "rank avatar player"
+      "score score record"
+      "rate rate rate" !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) .leaderboard-row > b {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.window-bookmark-host:has(> .window-bookmark-rail) .profile-identity-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+}

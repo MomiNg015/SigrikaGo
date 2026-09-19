@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useRef, useState } from "react";
 import { ClipboardList, Radio, Ticket, X } from "lucide-react";
@@ -85,7 +86,7 @@ export default function RecruitmentModal({
   return (
     <div className={`modal-backdrop recruitment-backdrop ${cinematicPlaying ? "is-cinematic-locked" : ""}`} onClick={closeModal}>
       <ModalDialog
-        className={`recruitment-modal ${cinematicPlaying ? "" : "window-sticker-host"} recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
+        className={`recruitment-modal ${cinematicPlaying ? "" : "window-sticker-host window-bookmark-host"} recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
         ariaLabelledBy="recruitment-modal-title"
         onClose={closeModal}
         onClick={(event) => event.stopPropagation()}
@@ -118,7 +119,7 @@ export default function RecruitmentModal({
 
         {phase === "idle" && (
           <footer className="recruitment-actions">
-            <div
+            <WindowBookmarkTabs
               className="recruitment-item-strip"
               role="tablist"
               aria-label="招募道具"
@@ -136,7 +137,7 @@ export default function RecruitmentModal({
                   <b>x{item.quantity}</b>
                 </button>
               ))}
-            </div>
+            </WindowBookmarkTabs>
             <button className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
               {busy ? "张贴中" : canUse ? "使用" : "数量不足"}
             </button>

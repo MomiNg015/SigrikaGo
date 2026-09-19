@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -113,12 +114,12 @@ export default function AchievementModal({ token, onClose, onNotice }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="house-modal achievement-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
+      <section className="house-modal achievement-modal window-sticker-host window-bookmark-host" onClick={(event) => event.stopPropagation()}>
         <header className="house-header achievement-header window-sticker-header">
           <WindowTitleSticker titleKey="achievements" />
           <button className="close-button" type="button" onClick={onClose} aria-label="关闭成就窗口"><X size={20} /></button>
         </header>
-        <div className="achievement-tabs" role="tablist" aria-label="成就筛选">
+        <WindowBookmarkTabs className="achievement-tabs" role="tablist" aria-label="成就筛选">
           {FILTERS.map((item) => (
             <button
               key={item.id}
@@ -131,7 +132,7 @@ export default function AchievementModal({ token, onClose, onNotice }) {
               {item.label}
             </button>
           ))}
-        </div>
+        </WindowBookmarkTabs>
         <div className="achievement-list" aria-busy={loading}>
           <div className="achievement-row achievement-heading" aria-hidden="true">
             <span>成就名</span>

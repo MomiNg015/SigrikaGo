@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useEffect, useRef, useState } from "react";
 import { FileText, Pin, RefreshCw } from "lucide-react";
 import { api } from "../api/client.js";
@@ -196,7 +197,7 @@ export default function AnnouncementModal({
   return (
     <InformationCenterLayout
       backdropClassName="announcement-backdrop"
-      modalClassName="announcement-modal"
+      modalClassName="announcement-modal window-bookmark-host"
       title={TEXT.title}
       titleStickerKey="announcements"
       titleId="announcement-modal-title"
@@ -209,7 +210,7 @@ export default function AnnouncementModal({
       detailLabelledBy={detail.open ? "announcement-detail-title" : undefined}
       list={(
         <>
-          <div className="announcement-tabs" role="tablist" aria-label={TEXT.title}>
+          <WindowBookmarkTabs className="announcement-tabs" role="tablist" aria-label={TEXT.title}>
             {KINDS.map((kind, index) => (
               <button
                 key={kind.id}
@@ -227,7 +228,7 @@ export default function AnnouncementModal({
                 {unreadByKind[kind.id] && <i className="announcement-unread-dot" aria-hidden="true" />}
               </button>
             ))}
-          </div>
+          </WindowBookmarkTabs>
 
           <section
             className="announcement-list-region"

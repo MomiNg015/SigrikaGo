@@ -221,7 +221,7 @@ export function UserProfileCard({
 
   return (
     <ModalDialog
-      className={`room-floating-modal user-profile-modal profile-dossier-modal user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
+      className={`room-floating-modal user-profile-modal profile-dossier-modal user-profile-card${titleStickers ? " window-sticker-host window-bookmark-host" : ""}`}
       ariaLabelledBy="user-profile-modal-title"
       onClose={onClose}
       onClick={(event) => event.stopPropagation()}

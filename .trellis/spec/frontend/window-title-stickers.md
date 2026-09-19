@@ -18,12 +18,13 @@ All title lettering uses the actual `public/assets/fonts/LXGWMarkerGothic-Regula
 - Nested profile confirmation backdrops must remain fixed to the viewport. The dossier's broad relative-positioning rule for children must not capture them.
 - `mobile-adaptive/window-title-stickers.css` owns placement and safe-area sizing; `window-title-sticker-content.css` owns content scroll geometry. Both load before the final corruption owner.
 
-## Resume bookmark tabs
+## Player window bookmark tabs
 
-- Only `ResumeModal` opts into `window-bookmark-host`. Do not enable social profiles, other windows, room tabs or admin controls without a separate user request.
+- Approved hosts: Resume, Settings, Achievements, Leaderboard, Watch, Friends, Announcements and idle Recruitment. Home social profiles opt in only with `titleStickers`; in-room profiles, room docks and admin controls stay inline. Do not revive unused ShopTabs/Gacha entry points.
 - `WindowBookmarkTabs({ children, className, ...props })` preserves existing inline buttons outside an opted-in ordinary Bright School host. Its portal targets the closest dialog only; an unmarked nested dialog must never attach its tabs to an outer marked host.
 - Keep button IDs, controls, callbacks, pending guards and selection under the profile owner's control. Use Up/Down and Home/End on the vertical rail; leave legacy inline keyboard handlers unchanged. Observe app theme classes and restore inline placement on corruption/theme changes.
 - Draw only the paper outline; label text uses the actual LXGW font through `--font-window-title`. Keep reduced-motion fallback and visible keyboard focus.
+- Preserve badges, unread indicators and inventory counts. Adapt inner grid tracks after portal relocation; keep inner content scrollable and bookmark rails independent. Bound minimum shell height by the safe viewport; long portrait recruitment names wrap into vertical columns.
 - The backdrop must constrain its grid column with `minmax(0, 1fr)` before resolving the window's percentage max-width. Reserve the full left rail plus its shadow. Scroll the mobile resume body independently from the rail; verify the final record remains reachable at 320x568.
 - `WindowBookmarkTabs.dom.test.jsx` covers relocation, callbacks, selection, pending state, keyboard and theme opt-outs. Existing resume/profile tests continue to cover data loading and stale responses.
 
