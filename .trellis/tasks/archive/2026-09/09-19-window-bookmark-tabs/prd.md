@@ -14,7 +14,7 @@ Use one shared tab wrapper that preserves legacy markup outside opted-in Bright 
 - [x] Theme and room opt-outs restore the original inline layout.
 - [x] Desktop and narrow portrait shells show unclipped title, rail and content; long rails scroll.
 - [x] Scoped checks, build, asset/config checks pass; docs/spec and generated HTML are current. Full suite has one verified pre-existing ShopModal CSS assertion failure.
-- [ ] Only scoped files are committed; preserve .codex-run and unrelated work.
+- [x] Scoped implementation committed as 226b906f; .codex-run previews preserved.
 
 ## Verification
 - 116 focused tests pass; full suite 2532 passed / 1 failed. Existing `ShopModal.test.js:728` reads aggregate mobile CSS and rejects a width declaration already in `HEAD:src/styles/mobile-adaptive/home-student-id-layout.css:133`; no shop/home code was changed.
