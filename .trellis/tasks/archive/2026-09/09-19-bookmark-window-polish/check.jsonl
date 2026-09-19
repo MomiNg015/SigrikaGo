@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Style ownership and mobile clearance"}
+{"file": ".trellis/spec/frontend/window-title-stickers.md", "reason": "Bookmark and title shell contracts"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verification scope"}
