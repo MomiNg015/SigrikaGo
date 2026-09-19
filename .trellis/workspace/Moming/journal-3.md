@@ -71,3 +71,36 @@ Added a quiet hand-drawn grid and enlarged portrait match entry; compacted heade
 ### Next Steps
 
 - None - task complete
+
+
+## Session 123: 履历书签接缝修整
+
+**Date**: 2026-09-19
+**Task**: 履历书签接缝修整
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+书签列右沿对齐窗口外边框，未选中尾端增加轻微暗部；桌面和390px竖屏视觉验证及切换通过，88项相关测试和定向lint通过。同步系统设计文档及HTML。保留未跟踪的.codex-run预览文件。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `00d0fbce` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
