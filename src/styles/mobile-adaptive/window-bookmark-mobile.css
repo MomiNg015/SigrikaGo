@@ -1,20 +1,26 @@
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) {
-    --window-bookmark-width: 53px;
+    --window-bookmark-width: 58px;
     --window-bookmark-top: 68px;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    align-self: start;
     margin-inline: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-bookmark-host > .window-bookmark-rail) {
-    padding-left: calc(59px + env(safe-area-inset-left)) !important;
+    padding-left: calc(64px + env(safe-area-inset-left)) !important;
     padding-right: calc(12px + env(safe-area-inset-right)) !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-host > .window-bookmark-rail {
+    gap: 8px !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab {
-    min-height: 84px !important;
-    padding: 10px 9px 10px 2px !important;
+    min-height: 72px !important;
+    padding: 6px 7px 6px 4px !important;
     transform: translateX(4px) !important;
   }
 
@@ -24,7 +30,7 @@
     writing-mode: vertical-rl;
     text-orientation: upright;
     font-size: 18px !important;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
   }
 
 }
