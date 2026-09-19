@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 121
+- **Total Sessions**: 122
 - **Last Active**: 2026-09-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~40 | Active |
+| `journal-3.md` | ~73 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 122 | 2026-09-19 | 履历左侧书签选项卡 | `226b906f` | `codex/campus-home-handbook-polish` |
 | 121 | 2026-09-19 | Home grid and mobile match focus | `4eed174e` | `codex/campus-home-handbook-polish` |
 | 120 | 2026-09-18 | Center friend status and align mobile rows | `2ed3303a` | `codex/campus-home-handbook-polish` |
 | 119 | 2026-09-18 | Compact friends window | `9d0c9590` | `codex/campus-home-handbook-polish` |
