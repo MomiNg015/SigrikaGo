@@ -1,9 +1,59 @@
 /* Ordinary portrait battles: quiet information chrome, readable actions. */
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room):not(:has(.tutorial-battle-screen-stage)) {
+    --battle-line: color-mix(in srgb, var(--bright-ink) 18%, transparent);
+    --battle-shadow: color-mix(in srgb, var(--bright-ink) 14%, transparent);
+    background: var(--bright-paper) !important;
+
+    & .room-header,
+    & .mobile-room-dock {
+      background: transparent !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    & .room-code-label,
+    & .room-info-tag {
+      background: transparent !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    & .room-header .toggle {
+      border: 1px solid var(--battle-line) !important;
+      border-radius: 14px !important;
+      background: var(--bright-sheet-clean) !important;
+      box-shadow: 0 2px 0 var(--battle-shadow) !important;
+    }
+
+    & .player-info {
+      background: var(--bright-sheet-clean) !important;
+      border: 1px solid var(--battle-line) !important;
+      border-radius: 14px !important;
+    }
+
     & .player-info.active-turn {
-      background: var(--bright-paper) !important;
-      border-color: var(--bright-border) !important;
+      background: var(--bright-sheet-clean) !important;
+      border-color: color-mix(in srgb, var(--bright-mint) 75%, var(--bright-ink)) !important;
+    }
+
+    & .player-info :is(.rank-tag, .rating-tag) {
+      border: 0 !important;
+      background: transparent !important;
+      padding-inline: 2px !important;
+      color: var(--bright-muted) !important;
+    }
+
+    & .board-stage {
+      border: 1px solid var(--battle-line) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 3px 0 var(--battle-shadow), 0 8px 20px var(--battle-shadow) !important;
+    }
+
+    & .board-wrap {
+      border: 1px solid var(--battle-line) !important;
+      border-radius: 14px !important;
+      box-shadow: inset 0 0 0 1px var(--bright-cream) !important;
     }
 
     & .player-info .captures > * {
@@ -14,19 +64,29 @@
     }
 
     & .player-info .digital-timer {
-      border-width: 1px !important;
+      border-color: transparent !important;
       border-radius: 8px !important;
+      background: var(--bright-paper) !important;
+    }
+
+    & .digital-timer :is(.timer-primary, .timer-digits) {
+      font-family: var(--font-ui-default) !important;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600 !important;
+      letter-spacing: -0.03em;
     }
 
     & .player-info.active-turn .digital-timer {
       background: var(--bright-mint) !important;
-      border-color: var(--bright-border) !important;
+      border-color: transparent !important;
     }
 
     & .player-info .skill-chip {
       font-size: 11px !important;
       border-width: 1px !important;
       border-radius: 8px !important;
+      border-color: var(--battle-line) !important;
+      background: var(--bright-paper) !important;
     }
 
     & .mobile-tab-list {
@@ -35,8 +95,16 @@
     }
 
     & .mobile-tab-button {
-      border-width: 1px !important;
+      border: 0 !important;
       border-radius: 8px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      color: var(--bright-muted) !important;
+
+      &.active {
+        background: color-mix(in srgb, var(--bright-blue) 35%, var(--bright-sheet-clean)) !important;
+        color: var(--bright-ink) !important;
+      }
     }
 
     & .mobile-tab-panel .action-bar:not(.replay-bar):not(.tutorial-choice-actions) {
@@ -46,7 +114,29 @@
 
       & button {
         border-width: 1px !important;
-        border-radius: 8px !important;
+        border-color: var(--battle-line) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 3px 0 var(--battle-shadow) !important;
+        transform: none !important;
+      }
+
+      & button:not(.skill-action):not(:disabled) {
+        background: var(--bright-sheet-clean) !important;
+      }
+
+      & button:active:not(:disabled) {
+        transform: translateY(2px) !important;
+        box-shadow: 0 1px 0 var(--battle-shadow) !important;
+      }
+
+      & button:focus-visible {
+        outline: 2px solid var(--bright-ink) !important;
+        outline-offset: 3px !important;
+      }
+
+      & button:disabled {
+        box-shadow: none !important;
+        transform: none !important;
       }
 
       & .action-label {
@@ -55,7 +145,34 @@
       }
 
       & .skill-action {
-        border-width: 2px !important;
+        background: var(--bright-pink-soft) !important;
+        border-color: color-mix(in srgb, var(--bright-pink) 70%, var(--bright-ink)) !important;
+        box-shadow: 0 3px 0 color-mix(in srgb, var(--bright-pink) 65%, var(--bright-ink)), 0 5px 10px var(--battle-shadow) !important;
+
+        &.active:not(:disabled) {
+          background: var(--bright-pink) !important;
+          box-shadow: inset 0 0 0 1px var(--bright-ink), 0 1px 0 var(--battle-shadow) !important;
+          transform: translateY(2px) !important;
+          outline: none !important;
+          animation: none !important;
+
+          &::after { display: none !important; }
+        }
+
+        &:active:not(:disabled) {
+          box-shadow: 0 1px 0 var(--battle-shadow) !important;
+        }
+
+        &:disabled {
+          background: var(--bright-paper) !important;
+          border-color: var(--battle-line) !important;
+          box-shadow: none !important;
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--bright-ink) !important;
+          outline-offset: 3px !important;
+        }
       }
     }
   }

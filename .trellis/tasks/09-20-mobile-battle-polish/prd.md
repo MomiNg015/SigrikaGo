@@ -4,6 +4,7 @@
 Refine the existing portrait Bright School battle interface on a new branch, following the reviewed first-tier proposal.
 
 ## Agreed scope
+- Follow-up: elevate portrait battle visual hierarchy using clean paper, fine outlines, quieter secondary controls and softer board depth. Correct skill shadow consistency across default, pressed, selected and disabled states; preserve single-row header and existing assets.
 - Follow-up: move development test actions to accessible icon-only header buttons; preserve existing development/player and phase/skill locks, with a single mobile header row without increasing header height.
 - Follow-up: remove the operation-hint block from both desktop and mobile battle layouts, including the shared tutorial stage. Keep actionable confirmations and tutorial choices.
 - Keep action order, game behavior, board geometry and desktop layout.
@@ -29,3 +30,4 @@ The user authorized a first implementation after the review; no additional prefe
 - Follow-up verified: desktop and mobile have zero `.operation-hint` nodes; 176 room/tutorial/style/document tests and lint pass. The operation panel keeps a single row with no hint gap.
 - Header tools: 158 focused checks and lint pass. Desktop controls align with the utility row; 360px portrait retains 44x44 buttons without horizontal overflow. Event tests verify all three payloads and disabled actions.
 - Superseding mobile layout: user requires no header height increase. At 320/360/390/412px, all five header controls share the same Y position and the header is 60px tall. Test controls are 32x44; room metadata stays on one horizontally scrollable line.
+- Refined pass: 173 related checks and lint pass. Browser verifies default raised skill shadow, depressed selected state without old glow/pseudo-element, disabled shadow none, reduced-motion transition 0.001s, and no horizontal overflow at 320/360/390/412px. Header remains 60px and action panel stays inside each viewport. Typography reuses the existing UI font token instead of introducing a new face.

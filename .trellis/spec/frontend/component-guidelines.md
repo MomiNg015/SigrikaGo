@@ -8,6 +8,8 @@
 
 ### Battle action presentation
 
+Ordinary portrait battle visual states belong to `mobile-battle-polish.css`. Skill actions have a raised resting shadow, a depressed selected/pressed state, no disabled shadow, and an explicit focus-visible outline. The owner must override both mobile flat-control resets and the shared skill glow (including its pseudo-element); desktop/tutorial/corrupted battles stay excluded. Verify computed styles after pointer release, not only the pressed frame.
+
 Development test controls belong to `RoomHeader`, never `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label`, and unchanged test action payloads. On mobile, controls stay in the same header row with 32px-wide, 44px-high targets; room metadata scrolls horizontally instead of wrapping; `RoomHeader.test.jsx` checks payloads, disabled clicks, and default absence.
 
 `RoomBattleStage` does not render `OperationHint` in desktop or mobile layouts, including tutorial battles. Mobile `.mobile-action-panel` contains only the action panel; keep it to one grid row without an empty hint gap. Preserve actionable draw/scoring confirmations and tutorial choices. `RoomScreen.test.js` and `TutorialBattleScreen.test.jsx` lock the shared-stage removal.
