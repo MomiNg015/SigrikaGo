@@ -1,3 +1,4 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import { Crown, Handshake } from "lucide-react";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { COLORS } from "../shared/game.js";
@@ -10,7 +11,7 @@ import {
 import { SIGRIKA_CANDY_DUEL } from "../shared/sigrikaCandyArc.js";
 
 export function ReplayList({ records = [], characters, onOpenReplay, compact = false, currentUser = null }) {
-  if (records.length === 0) return <p className="quiet-text">暂无已结束的对局记录。</p>;
+  if (records.length === 0) return <WindowEmptyState compact={compact}>暂无已结束的对局记录。</WindowEmptyState>;
 
   return (
     <div className={`replay-table ${compact ? "compact" : ""}`}>

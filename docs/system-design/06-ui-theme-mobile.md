@@ -4,11 +4,11 @@
 
 `ResumeModal`、`SettingsModal`、`AchievementModal`、`LeaderboardModal`、`WatchModal`、`FriendsModal`和 `AnnouncementModal` 显式声明 `window-bookmark-host`，对应分类/模式控件使用 `WindowBookmarkTabs`；`UserProfileCard` 仅在首页好友入口启用 `titleStickers` 时接入，房间内保持原布局。组件保留原按钮 ID、`aria-controls`、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 `.app-shell` 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 `ShopTabs` 和 `GachaModal` 没有现行入口，不为样式推广重新启用。
 
-书签以简短不规则 SVG 纸边与淡色底呈现，外轮廓使用 2.5px 描边和 `vector-effect: non-scaling-stroke`，避免手机窄幅缩放把侧边线压细；内部铅笔线保持纤细。文字引用 `--font-window-title` 对应的 `LXGWMarkerGothic-Regular.ttf`，不将文字烘焙进图片。书签列右沿对齐窗口外边框，尾端不覆盖窗口边线；未选中项尾端使用窄幅渐变暗部表现插入纸页的层次。选中项向外伸出，桌面悬停小幅平移，减少动态效果偏好关闭过渡。书签保留 tab 语义，纵列使用上下方向键及 Home/End，加载期间不会触发模式切换；未接入时保留原有横向键盘操作。
+书签以简短不规则 SVG 纸边与淡色底呈现，外轮廓使用 2.5px 描边和 `vector-effect: non-scaling-stroke`，避免手机窄幅缩放把侧边线压细；内部铅笔线保持纤细。书签内部仅呈现文字，SVG/图片图标与装饰点隐藏；标签及嵌套文字显式使用 400 字重并避免合成加粗。文字引用 `--font-window-title` 对应的 `LXGWMarkerGothic-Regular.ttf`，不将文字烘焙进图片。书签列右沿对齐窗口外边框，尾端不覆盖窗口边线；未选中项尾端使用窄幅渐变暗部表现插入纸页的层次。选中项向外伸出，桌面悬停小幅平移，减少动态效果偏好关闭过渡。书签保留 tab 语义，纵列使用上下方向键及 Home/End，加载期间不会触发模式切换；未接入时保留原有横向键盘操作。
 
 `mobile-adaptive/window-bookmarks.css` 汇总外层几何、纸签样式、内容滚动适配和移动端规则，在最终黑化规则前加载。backdrop 使用 `minmax(0, 1fr)` 列并预留书签与阴影空间，避免窗口原有视口宽度撑大隐式 grid 列；书签列独立滚动，正文不会带走书签。宽度不超过 1100px 或高度不超过 700px 时正文整体滚动，窄桌面的最近十盘移到四项统计下方；手机履历使用内容自适应高度，保留原安全视口最大高度并顶部对齐，少量记录不再留下整屏空纸；58px 宽书签列使用 72px 最小标签高度和 8px 间隔，竖排文字居中。手机正文可纵向滚动到最后一条角色战绩，320–360px 竖屏采用图标式成就/个性化入口并缩小身份头像，回放按钮换行保留 44px 点击区域。桌面、800×600 窄桌面与 320×568、390×844 竖屏均验证边界、模式切换和内容可达性。
 
-`window-bookmark-content.css` 移除设置/成就/公告中原选项卡占用的网格行，好友工具栏保留搜索行，招募道具选择保留在窗口内操作栏，不接入书签；图标使用书签内专门尺寸，观战书签移除房间数，仅保留模式名称，公告未读点继续显示。560px 以下的排行榜把积分与战绩移到姓名下方，避免书签预留空间挤没姓名列；360px 以下的详细资料社交操作分成两行，保持 44px 点击区。空窗口留出标签所需最低高度（340px，上限受安全视口约束）；书签文字禁止换行：桌面单行横排、手机单列竖排；标签列独立滚动。好友与黑名单列表采用 `align-content: start`，单行不会随容器剩余空间拉高。贴纸标题头统一保留 52px 最小高度、12px 底部内边距和 10px 下外边距，给虚线两侧的控件阴影与正文留出间隔；履历沿用专属操作行。`WindowBookmarkWindows.dom.test.jsx` 对接入窗口验证挂载、选择回调，以及房间资料与招募道具选择的 opt-out；独立懒加载边界继续由 `AppOverlays.dom.test.jsx` 回归保护。
+`window-bookmark-content.css` 移除设置/成就/公告中原选项卡占用的网格行，好友工具栏保留搜索行，招募道具选择保留在窗口内操作栏，不接入书签；图标使用书签内专门尺寸，观战书签移除房间数，仅保留模式名称，书签内部隐藏图标及未读装饰点，仅保留文字；公告列表的未读状态继续显示。560px 以下的排行榜把积分与战绩移到姓名下方，避免书签预留空间挤没姓名列；360px 以下的详细资料社交操作分成两行，保持 44px 点击区。空窗口留出标签所需最低高度（340px，上限受安全视口约束）；书签文字禁止换行：桌面单行横排、手机单列竖排；标签列独立滚动。好友与黑名单列表采用 `align-content: start`，单行不会随容器剩余空间拉高。贴纸标题头统一保留 52px 最小高度、12px 底部内边距和 10px 下外边距，给虚线两侧的控件阴影与正文留出间隔；履历沿用专属操作行。`WindowBookmarkWindows.dom.test.jsx` 对接入窗口验证挂载、选择回调，以及房间资料与招募道具选择的 opt-out；独立懒加载边界继续由 `AppOverlays.dom.test.jsx` 回归保护。
 
 ## 首页挂扣学生证
 
@@ -220,3 +220,9 @@
 - Empty player inboxes keep the same information-center layout as populated inboxes: the list region renders a compact empty state and the desktop detail pane stays reserved.
 - Mail list rows keep unread/claimable/completed scan cues. The detail pane uses a crop-safe low-contrast natural-paper texture with no authored rules or runtime blur overlay; title, sender/time metadata and delete action stay fixed while the shared prose region scrolls, and only real attachments create the compact footer shelf.
 - Mailbox mobile safety lives in `src/styles/mobile-adaptive/bright-school-portrait/mailbox-modal.css`, imported through the final Bright School portrait guard entry after chat fixes and before character detail fixes.
+
+## 玩家窗口空状态
+
+`WindowEmptyState` 保留调用方原有文案与语义容器，以 `aria-hidden` 的手绘纸页替代重复的粗虚线卡片。普通校园主题使用透明无边框容器、深墨色常规霞鹜文字与静态纸页；其他主题隐藏插画，保留文字。`window-empty-states.css` 在书签样式后、黑化样式前加载，显式覆盖旧空状态容器、伪元素和 SVG 的强规则。
+
+普通空状态最小高度 154px，紧凑版为 88px；后者用于履历战绩、装饰区及公告/邮件列表。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历战绩、装饰与服装商店。加载提示与错误状态不复用空结果插画；观战只有存在房间时渲染表格，空结果不留空表头，也不会在加载失败时同时显示暂无房间。接入书签的观战窗口移除旧选项卡网格轨道，使正文/空状态在剩余内容区布局。

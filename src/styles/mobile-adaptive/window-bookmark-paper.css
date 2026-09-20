@@ -84,8 +84,12 @@
   overflow-wrap: normal;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(span, strong, b, small) { font-family: inherit !important; color: inherit !important; white-space: nowrap !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(span, strong, b, small) { font-family: inherit !important; font-weight: 400 !important; font-synthesis: none; color: inherit !important; white-space: nowrap !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-rail > .window-bookmark-tab { transition: none !important; }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label :is(svg, img, .announcement-unread-dot) {
+  display: none !important;
 }

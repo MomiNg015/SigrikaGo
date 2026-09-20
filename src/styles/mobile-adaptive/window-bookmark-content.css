@@ -19,20 +19,6 @@
   grid-template-rows: minmax(0, 1fr) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(svg, img) {
-  flex: 0 0 auto;
-  width: 18px !important;
-  height: 18px !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > b {
-  margin: 0 !important;
-  font-size: 14px !important;
-  line-height: 1.2;
-  writing-mode: horizontal-tb;
-  letter-spacing: 0;
-}
-
 /* Reserve a readable player-name column beside the portrait bookmark gutter. */
 @media (max-width: 560px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) .leaderboard-row {
@@ -55,4 +41,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 6px !important;
   }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .watch-list-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  grid-template-rows: auto minmax(0, 1fr) !important;
 }

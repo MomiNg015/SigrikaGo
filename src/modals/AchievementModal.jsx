@@ -1,3 +1,4 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useState } from "react";
@@ -140,7 +141,7 @@ export default function AchievementModal({ token, onClose, onNotice }) {
             <span>成就奖励</span>
           </div>
           {loading && <p className="achievement-empty">读取成就中...</p>}
-          {!loading && filtered.length === 0 && <p className="achievement-empty">这里暂时没有成就。</p>}
+          {!loading && filtered.length === 0 && <WindowEmptyState className="achievement-empty">这里暂时没有成就。</WindowEmptyState>}
           {!loading && filtered.map((achievement) => (
             <article
               key={achievement.id}

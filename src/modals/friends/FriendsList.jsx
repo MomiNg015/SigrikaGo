@@ -1,3 +1,4 @@
+import WindowEmptyState from "../WindowEmptyState.jsx";
 import { Fragment } from "react";
 import { Settings } from "lucide-react";
 import { CHARACTERS } from "../../shared/characters.js";
@@ -64,7 +65,7 @@ export default function FriendsList({
           </Fragment>
         );
       })}
-      {rows.length === 0 && <p className="quiet-text">暂无名单成员。</p>}
+      {rows.length === 0 && <WindowEmptyState>暂无名单成员。</WindowEmptyState>}
     </div>
   );
 }

@@ -1,0 +1,73 @@
+.window-empty-state {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 12px;
+  text-align: center;
+}
+.window-empty-art { display: none; }
+
+/* Empty results share one quiet sketch, not another dashed card inside a window. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  grid-column: 1 / -1;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 154px !important;
+  height: auto !important;
+  padding: 20px 12px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--bright-ink) !important;
+  overflow: visible !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state::after { content: none !important; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state > .window-empty-art {
+  display: block !important;
+  flex: 0 0 auto;
+  width: 100px !important;
+  height: 76px !important;
+  margin: 0 !important;
+  color: var(--bright-ink) !important;
+  stroke-width: 1.6 !important;
+}
+.window-empty-shadow { fill: var(--bright-blue); fill-opacity: 0.24; stroke: none; }
+.window-empty-sheet { fill: var(--bright-paper, white); stroke: currentColor; stroke-linejoin: round; }
+.window-empty-fold { stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.window-empty-rule { stroke: currentColor; stroke-opacity: 0.4; stroke-linecap: round; }
+.window-empty-pencil { stroke: currentColor; stroke-opacity: 0.5; stroke-linecap: round; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state .window-empty-label,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state .window-empty-label > span {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 !important;
+  color: var(--bright-ink) !important;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state.window-empty-compact {
+  min-height: 88px !important;
+  padding: 12px 8px !important;
+  gap: 6px !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state.window-empty-compact > .window-empty-art {
+  width: 58px !important;
+  height: 44px !important;
+}

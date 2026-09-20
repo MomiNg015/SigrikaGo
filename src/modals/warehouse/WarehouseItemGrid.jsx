@@ -1,12 +1,10 @@
+import WindowEmptyState from "../WindowEmptyState.jsx";
 import { Package } from "lucide-react";
 
 export default function WarehouseItemGrid({ items, usingItemId, onSelectTargetItem, onUseItem }) {
   if (items.length === 0) {
     return (
-      <div className="warehouse-empty">
-        <Package />
-        <strong>暂无道具</strong>
-      </div>
+      <WindowEmptyState className="warehouse-empty">暂无道具</WindowEmptyState>
     );
   }
 

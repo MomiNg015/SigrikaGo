@@ -1,3 +1,4 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { RefreshCw, X } from "lucide-react";
@@ -53,7 +54,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
           </div>
         </div>
         <ModeTabs mode={mode} onModeChange={setMode} />
-        <div className="watch-room-table" role="table">
+        {rooms.length > 0 && <div className="watch-room-table" role="table">
           <div className="watch-room-head" role="row">
             <span>房间号</span>
             <span>房间人数</span>
@@ -71,8 +72,8 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
               onClose={onClose}
             />
           ))}
-        </div>
-        {!loading && rooms.length === 0 && <p className="watch-empty">当前没有可观战房间</p>}
+        </div>}
+        {!loading && !error && rooms.length === 0 && <WindowEmptyState className="watch-empty">当前没有可观战房间</WindowEmptyState>}
         {loading && <p className="watch-empty">加载中...</p>}
         {error && <p className="watch-error">{error}</p>}
       </ModalDialog>

@@ -1,6 +1,7 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Archive, Check, Coins, Gift, MailOpen, Ticket, Trash2, X } from "lucide-react";
+import { Archive, Check, Coins, Gift, Ticket, Trash2, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
@@ -146,9 +147,8 @@ export default function MailboxModal({
             </ul>
           )}
           {messages.length === 0 && (
-            <div className="mailbox-list-empty">
-              {listEmptyText}
-            </div>
+            loaded ? <WindowEmptyState compact className="mailbox-list-empty">{listEmptyText}</WindowEmptyState>
+              : <div className="mailbox-list-empty">{listEmptyText}</div>
           )}
           <div className="information-center-status" role="status" aria-live="polite">
             {!loaded ? listEmptyText : busyId ? "正在处理邮件" : error}
@@ -203,10 +203,7 @@ export default function MailboxModal({
           )}
         </article>
       ) : (
-        <article className="mailbox-detail mailbox-detail-empty">
-          <MailOpen size={28} />
-          <h3>{EMPTY_TEXT}</h3>
-        </article>
+        <WindowEmptyState as="article" className="mailbox-detail mailbox-detail-empty">{EMPTY_TEXT}</WindowEmptyState>
       )}
     />
   );

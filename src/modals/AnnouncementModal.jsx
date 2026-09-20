@@ -1,6 +1,7 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useEffect, useRef, useState } from "react";
-import { FileText, Pin, RefreshCw } from "lucide-react";
+import { Pin, RefreshCw } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
@@ -246,7 +247,7 @@ export default function AnnouncementModal({
             )}
             {activeList.loading && <div className="announcement-empty">{TEXT.loading}</div>}
             {!activeList.loading && activeList.loaded && activeList.items.length === 0 && (
-              <div className="announcement-empty">{isNarrow ? activeMeta.mobileEmptyText : TEXT.empty}</div>
+              <WindowEmptyState compact className="announcement-empty">{isNarrow ? activeMeta.mobileEmptyText : TEXT.empty}</WindowEmptyState>
             )}
             {activeList.items.length > 0 && (
               <ul className="announcement-list">
@@ -324,10 +325,7 @@ export default function AnnouncementModal({
           {detail.readError && <p className="form-error announcement-read-error">{detail.readError}</p>}
         </article>
       ) : (
-        <div className="information-center-empty-reader">
-          <FileText size={34} aria-hidden="true" />
-          <h3>{TEXT.empty}</h3>
-        </div>
+        <WindowEmptyState className="information-center-empty-reader">{TEXT.empty}</WindowEmptyState>
       )}
     />
   );

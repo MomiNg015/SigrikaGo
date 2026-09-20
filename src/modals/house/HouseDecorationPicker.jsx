@@ -1,3 +1,4 @@
+import WindowEmptyState from "../WindowEmptyState.jsx";
 import { RotateCcw } from "lucide-react";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
@@ -26,7 +27,7 @@ export default function HouseDecorationPicker({
         )}
       </div>
       <div className="owned-decoration-list">
-        {ownedDecorations.length === 0 && <p className="quiet-text">暂无装饰。</p>}
+        {ownedDecorations.length === 0 && <WindowEmptyState compact>暂无装饰。</WindowEmptyState>}
         {ownedDecorations.map((decorationId) => {
           const decoration = getStoneDecoration(decorationId);
           const selected = selectedStoneDecoration === decorationId;

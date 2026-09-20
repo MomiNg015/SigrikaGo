@@ -33,8 +33,17 @@ describe("WatchModal mode tabs", () => {
     expect(screen.getByRole("tab", { name: "五子棋" })).toBeTruthy();
     expect(api).toHaveBeenCalledWith("/api/rooms/watch?mode=spark", { token: "token" });
     expect(document.querySelector(".watch-mode-count")).toBeNull();
+    expect(screen.queryByRole("table")).toBeNull();
     fireEvent.click(screen.getByRole("tab", { name: "标准", exact: true }));
     await waitFor(() => expect(api).toHaveBeenCalledWith("/api/rooms/watch?mode=standard", { token: "token" }));
     expect(screen.getByRole("tab", { name: "标准", exact: true }).getAttribute("aria-selected")).toBe("true");
   });
+  it("shows a load error without presenting it as an empty room list", async () => {
+    api.mockRejectedValue(new Error("网络不可用"));
+    const { container } = render(<WatchModal token="token" characters={{}} onClose={() => {}} />);
+    expect(await screen.findByText("网络不可用")).toBeTruthy();
+    expect(container.querySelector(".window-empty-state")).toBeNull();
+    expect(screen.queryByRole("table")).toBeNull();
+  });
+
 });

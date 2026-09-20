@@ -1,3 +1,4 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useState } from "react";
@@ -45,7 +46,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
         <ModeTabs mode={mode} onModeChange={setMode} />
         {loading && <p className="quiet-text">加载中...</p>}
         {error && <p className="form-error admin-action-error">{error}</p>}
-        {!loading && !error && players.length === 0 && <p className="quiet-text">暂无上榜用户。</p>}
+        {!loading && !error && players.length === 0 && <WindowEmptyState>暂无上榜用户。</WindowEmptyState>}
         {!loading && !error && players.length > 0 && (
           <div className="leaderboard-table">
             <div className="leaderboard-heading">

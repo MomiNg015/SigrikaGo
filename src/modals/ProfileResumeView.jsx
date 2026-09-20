@@ -1,3 +1,4 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useRef } from "react";
 import { CircleGauge, Gamepad2, HelpCircle, Star, Trophy } from "lucide-react";
@@ -105,9 +106,9 @@ export default function ProfileResumeView({
         </section>
 
         {records.length === 0 ? (
-          <section className="profile-character-section profile-character-empty" aria-label="角色战绩">
+          <WindowEmptyState as="section" compact className="profile-character-section profile-character-empty" aria-label="角色战绩">
             <span className="recent-result-empty">暂无</span>
-          </section>
+          </WindowEmptyState>
         ) : (
           <section className="profile-character-section" aria-label="角色战绩">
             <div className="profile-character-table-head" aria-hidden="true">
