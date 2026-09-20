@@ -31,7 +31,7 @@
   background: var(--campus-control-fill, var(--campus-button-paper)) !important;
   color: var(--campus-control-ink, var(--bright-ink)) !important;
   border-color: var(--bright-border) !important;
-  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  box-shadow: var(--campus-control-shadow, 3px 3px 0 var(--bright-border)) !important;
   text-shadow: none !important;
   filter: none !important;
   transform: none !important;
@@ -45,7 +45,7 @@
     &:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
       background: var(--campus-control-hover, var(--campus-button-paper-hover)) !important;
       transform: translateY(-1px) !important;
-      box-shadow: 3px 4px 0 var(--bright-border) !important;
+      box-shadow: var(--campus-control-hover-shadow, 3px 4px 0 var(--bright-border)) !important;
     }
   }
 
@@ -57,7 +57,7 @@
   &:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
     background: color-mix(in srgb, var(--campus-control-fill, var(--campus-button-paper)) 90%, var(--bright-ink)) !important;
     transform: translate(2px, 2px) !important;
-    box-shadow: 1px 1px 0 var(--bright-border) !important;
+    box-shadow: var(--campus-control-active-shadow, 1px 1px 0 var(--bright-border)) !important;
   }
 
   &:is(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
