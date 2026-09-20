@@ -8,6 +8,8 @@
 
 ### Battle development tools
 
+Ordinary portrait skill actions retain the scoped tactile states in `action-button-labels.css`: light pink with 3px shadow at rest, darker pink/depressed selected state without the old glow, and visible keyboard focus. Keep this exception isolated from other battle controls, desktop, tutorials and corrupted rooms.
+
 `RoomBattleStage` omits the operation-hint block in both desktop and mobile layouts, including tutorials. Keep actionable confirmations and tutorial choices. The mobile action panel has one row without the removed hint gap.
 
 Development test controls belong to `RoomHeader`, not `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label` and unchanged action payloads. Mobile header controls remain on one row with 32x44 test buttons; metadata scrolls horizontally instead of wrapping. `RoomHeader.test.jsx` verifies payloads, disabled clicks and default absence.

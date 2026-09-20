@@ -1,6 +1,7 @@
 # Battle UI scoped rollback
 
 ## Final user-directed scope
+- Subsequent explicit exception: restore only the previous portrait skill-button default/selected appearance, with light pink raised default and depressed darker-pink selection without glow.
 - Restore the visual design from branch starting commit 5e897757. All beautification experiments, including skill-shadow overrides, are withdrawn.
 - Retain icon-only development tools in the header, with accessible labels and the existing action/visibility guards.
 - Keep the header on one row without increasing its height.
