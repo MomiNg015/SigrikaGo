@@ -877,6 +877,7 @@
 <ul>
 <li>同一脚本内“略懂一点”和“我超强的哦！”继续进入原有共享剧情对弈，保留既有棋盘、落点、技能、节点类型和演出节奏；最后一次达妮娅技能演示结束后，两条路径从 <code>story-62</code> 直接接入初学者分支的 <code>doc-story-182</code> 至 <code>doc-story-194</code>，三种水平选择共用同一套最终剧情文案。两次 <code>board-setup</code> 在固定 3 秒加载页结束后保留 1 秒看盘；NPC 落子/技能按场景使用 0.45–0.8 秒动作前停顿和 0.3–0.35 秒动作回复停顿，两次带“打吃”气泡的落子在结算后总计保留约 1.05–1.2 秒看盘；玩家技能演出结算后保留 0.8 秒再出现回应；连续短反应对白仍自动推进，但在打字结束后至少保留 1–1.2 秒阅读时间，完整技能说明使用纯手动继续；连续玩家选项统一使用 0.2 秒选择后过渡。该调整只更新 <code>onboarding.default</code> 内容数据，不改变 <code>TutorialBattleScreen</code> 的全局默认时序或节点运行合同。</li>
 </ul>
+<p>窗口内容加载提示统一使用 <code>WindowLoadingState</code>：与空状态配套的手绘纸页、书写铅笔和霞鹜字体，局部读取采用紧凑版，支持减少动态效果。详见资源与预加载分篇。</p>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -4833,6 +4834,8 @@
 <h3>Tutorial handoff progress and human portrait</h3>
 <p>Unassigned human tutorial players reuse <code>SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET</code> as display-only art. Their character remains null, preserving the tutorial's no-skill contract; assigned actors, NPCs and practice bots retain their existing resolution. Tutorial portrait preloading includes this shared asset.</p>
 <p>The tutorial route Suspense fallback uses zero progress instead of the completed global startup asset progress. <code>TutorialBattleLoading</code> remains keyed by loading ID, and timed progress also records its owning ID so a new segment renders zero before effects reset the timer. This prevents an initial 100% flash in story/battle handoffs while preserving forward progress timing and cleanup.</p>
+<h3>Window content loading</h3>
+<p>Player windows use <code>WindowLoadingState</code> for pending content, sharing the empty-state paper drawing and LXGW typography. A gently moving pencil distinguishes loading from empty results; reduced-motion disables it. Compact inline feedback preserves existing content during profile mode changes and replay pagination. Request lifecycles, errors, and full-screen resource progress are unchanged.</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
 <h2>玩家窗口左侧书签选项卡</h2>

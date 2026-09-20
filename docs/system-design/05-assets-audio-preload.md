@@ -229,3 +229,7 @@
 Unassigned human tutorial players reuse `SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET` as display-only art. Their character remains null, preserving the tutorial's no-skill contract; assigned actors, NPCs and practice bots retain their existing resolution. Tutorial portrait preloading includes this shared asset.
 
 The tutorial route Suspense fallback uses zero progress instead of the completed global startup asset progress. `TutorialBattleLoading` remains keyed by loading ID, and timed progress also records its owning ID so a new segment renders zero before effects reset the timer. This prevents an initial 100% flash in story/battle handoffs while preserving forward progress timing and cleanup.
+
+### Window content loading
+
+Player windows use `WindowLoadingState` for pending content, sharing the empty-state paper drawing and LXGW typography. A gently moving pencil distinguishes loading from empty results; reduced-motion disables it. Compact inline feedback preserves existing content during profile mode changes and replay pagination. Request lifecycles, errors, and full-screen resource progress are unchanged.

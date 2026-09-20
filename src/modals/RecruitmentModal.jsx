@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useRef, useState } from "react";
 import { ClipboardList, Radio, Ticket, X } from "lucide-react";
@@ -98,7 +99,7 @@ export default function RecruitmentModal({
         </header>
 
         <main className={`recruitment-board recruitment-board-${phase}`}>
-          {loading && <p className="quiet-text">加载招新公示中...</p>}
+          {loading && <WindowLoadingState>加载招新公示中...</WindowLoadingState>}
           {!loading && phase === "idle" && <IdleBoard selectedItem={selectedItem} />}
           {!loading && phase === "pending" && (
             <PendingBoard

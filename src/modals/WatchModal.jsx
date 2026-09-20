@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
@@ -74,7 +75,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
           ))}
         </div>}
         {!loading && !error && rooms.length === 0 && <WindowEmptyState className="watch-empty">当前没有可观战房间</WindowEmptyState>}
-        {loading && <p className="watch-empty">加载中...</p>}
+        {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {error && <p className="watch-error">{error}</p>}
       </ModalDialog>
     </div>

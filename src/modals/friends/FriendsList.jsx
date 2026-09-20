@@ -1,3 +1,4 @@
+import WindowLoadingState from "../WindowLoadingState.jsx";
 import WindowEmptyState from "../WindowEmptyState.jsx";
 import { Fragment } from "react";
 import { Settings } from "lucide-react";
@@ -23,7 +24,7 @@ export default function FriendsList({
   onRequestMatch,
   onToggleAction
 }) {
-  if (loading) return <p className="quiet-text">加载中...</p>;
+  if (loading) return <WindowLoadingState>加载中...</WindowLoadingState>;
 
   return (
     <div className="friends-list">

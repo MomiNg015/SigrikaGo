@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Award, CircleDollarSign, MonitorPlay, Palette, X } from "lucide-react";
@@ -157,9 +158,9 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           status={(profileLoading || profileError) ? (
             <div className="profile-mode-feedback">
               {profileLoading && (
-                <p className="quiet-text">
+                <WindowLoadingState compact>
                   正在载入{profileModeTitle(requestedMode)}战绩，当前仍显示{profileModeTitle(mode)}。
-                </p>
+                </WindowLoadingState>
               )}
               {profileError && (
                 <>

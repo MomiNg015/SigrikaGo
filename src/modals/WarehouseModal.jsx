@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { X } from "lucide-react";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
@@ -24,7 +25,7 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
         <header className="warehouse-header window-sticker-header">
           <WindowTitleSticker titleKey="warehouse" />
         </header>
-        {loading && <p className="quiet-text">加载中...</p>}
+        {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {!loading && (
           <WarehouseItemGrid
             items={items}

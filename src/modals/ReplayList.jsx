@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { Crown, Handshake } from "lucide-react";
 import { findCharacter } from "../shared/characterDisplay.js";
@@ -81,7 +82,7 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
         />
       )}
       {!loading && !error && records.length === 0 && <ReplayList records={[]} characters={characters} />}
-      {loading && <p className="quiet-text replay-pagination-status">{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</p>}
+      {loading && <WindowLoadingState compact={records.length > 0}>{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</WindowLoadingState>}
       {error && (
         <div className="replay-pagination-error">
           <p className="room-people-error">{error}</p>

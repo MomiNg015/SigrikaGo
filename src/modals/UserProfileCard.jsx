@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import { useEffect, useRef, useState } from "react";
 import { CircleAlert, MonitorPlay, ThumbsUp, UserPlus, UserRoundX, X } from "lucide-react";
 import { api } from "../api/client.js";
@@ -293,9 +294,9 @@ export function UserProfileCard({
         status={(loadingProfileMode || profileError || profileNotice) ? (
           <div className="profile-mode-feedback">
             {loadingProfileMode && (
-              <p className="quiet-text">
+              <WindowLoadingState compact>
                 正在载入{profileModeTitle(requestedMode)}战绩，当前仍显示{profileModeTitle(mode)}。
-              </p>
+              </WindowLoadingState>
             )}
             {profileError && <p className="room-people-error" role="alert">{profileError}</p>}
             {failedMode && (

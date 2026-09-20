@@ -71,3 +71,34 @@
   width: 58px !important;
   height: 44px !important;
 }
+
+/* Loading shares the paper silhouette; motion belongs only to its pencil. */
+.window-loading-state > .window-empty-art {
+  display: block;
+  width: 100px;
+  height: 76px;
+  flex: 0 0 auto;
+  color: inherit;
+  stroke-width: 1.6;
+}
+.window-loading-pencil {
+  animation: window-pencil-write 1.6s ease-in-out infinite;
+}
+@keyframes window-pencil-write {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -2px); }
+  50% { transform: translate(6px, 0); }
+  75% { transform: translate(2px, 2px); }
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-loading-state.window-loading-compact {
+  flex-direction: row;
+  min-height: 64px !important;
+  gap: 10px !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-loading-compact .window-empty-label {
+  font-size: 16px !important;
+  text-align: left;
+}
+@media (prefers-reduced-motion: reduce) {
+  .window-loading-pencil { animation: none; }
+}

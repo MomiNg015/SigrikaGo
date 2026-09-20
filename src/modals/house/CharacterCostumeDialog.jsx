@@ -1,3 +1,4 @@
+import WindowLoadingState from "../WindowLoadingState.jsx";
 import { Shirt, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -43,7 +44,7 @@ export default function CharacterCostumeDialog({
           <button className="close-button" type="button" aria-label="关闭服装列表" onClick={onClose}><X size={18} /></button>
         </header>
         <div className="character-costume-grid">
-          {loading && <p className="character-costume-empty">正在整理服装…</p>}
+          {loading && <WindowLoadingState>正在整理服装…</WindowLoadingState>}
           {!loading && cards.map((costume) => {
             const owned = costume.isDefault || costume.owned;
             const equipped = characterOwned && (costume.isDefault

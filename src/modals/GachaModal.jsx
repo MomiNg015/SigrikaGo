@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import { CircleDollarSign, Gem, History, List, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { buildGachaRewardDisplay, formatGachaDateRange, formatGachaRemaining, gachaPrizeTypeLabel } from "./gacha/gachaHelpers.js";
@@ -46,7 +47,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
         </aside>
 
         <div className="gacha-main">
-          {loading && <p className="quiet-text">加载扭蛋池...</p>}
+          {loading && <WindowLoadingState>加载扭蛋池...</WindowLoadingState>}
           {!loading && !activePool && <p className="quiet-text">当前没有开放中的扭蛋池</p>}
           {activePool && (
             <>

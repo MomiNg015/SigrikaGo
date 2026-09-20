@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -148,10 +149,10 @@ export default function MailboxModal({
           )}
           {messages.length === 0 && (
             loaded ? <WindowEmptyState compact className="mailbox-list-empty">{listEmptyText}</WindowEmptyState>
-              : <div className="mailbox-list-empty">{listEmptyText}</div>
+              : <WindowLoadingState compact>{listEmptyText}</WindowLoadingState>
           )}
           <div className="information-center-status" role="status" aria-live="polite">
-            {!loaded ? listEmptyText : busyId ? "正在处理邮件" : error}
+            {loaded ? (busyId ? "正在处理邮件" : error) : null}
           </div>
         </div>
       )}

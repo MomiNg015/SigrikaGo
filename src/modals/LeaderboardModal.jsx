@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
@@ -44,7 +45,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
           <WindowTitleSticker titleKey="leaderboard" id="leaderboard-modal-title" />
         </header>
         <ModeTabs mode={mode} onModeChange={setMode} />
-        {loading && <p className="quiet-text">加载中...</p>}
+        {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {error && <p className="form-error admin-action-error">{error}</p>}
         {!loading && !error && players.length === 0 && <WindowEmptyState>暂无上榜用户。</WindowEmptyState>}
         {!loading && !error && players.length > 0 && (

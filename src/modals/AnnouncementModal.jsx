@@ -1,3 +1,4 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useEffect, useRef, useState } from "react";
@@ -245,7 +246,7 @@ export default function AnnouncementModal({
                 </ModalActionButton>
               </div>
             )}
-            {activeList.loading && <div className="announcement-empty">{TEXT.loading}</div>}
+            {activeList.loading && <WindowLoadingState compact>{TEXT.loading}</WindowLoadingState>}
             {!activeList.loading && activeList.loaded && activeList.items.length === 0 && (
               <WindowEmptyState compact className="announcement-empty">{isNarrow ? activeMeta.mobileEmptyText : TEXT.empty}</WindowEmptyState>
             )}
@@ -310,7 +311,7 @@ export default function AnnouncementModal({
               </p>
             )}
           </header>
-          {detail.loading && <div className="announcement-empty announcement-detail-loading">{TEXT.detailLoading}</div>}
+          {detail.loading && <WindowLoadingState>{TEXT.detailLoading}</WindowLoadingState>}
           {detail.error && (
             <div className="announcement-inline-error">
               <span>{detail.error}</span>
