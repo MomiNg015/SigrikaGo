@@ -269,3 +269,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 129: 恢复招募窗口内道具选择
+
+**Date**: 2026-09-20
+**Task**: 恢复招募窗口内道具选择
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+移除招募窗口侧边书签，恢复窗口底部道具按钮组及选中状态，清理招募专属书签 CSS，同步文档。41 项相关测试、lint、build、built CSS 通过，桌面与 390px 手机布局、切换实测通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b50c4e81` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
