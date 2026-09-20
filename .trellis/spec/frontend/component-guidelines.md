@@ -1325,6 +1325,8 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 ## Independent lazy overlay boundaries
 
+- Ordinary button labels default to `white-space: nowrap`. Friend action groups wrap entire buttons using intrinsic text widths instead of shrinking labels into multiple lines. Portrait bookmark leaderboard rows share the same identity, score/rate and record layout with the pinned current-user row; retain top-rank art and identity truncation.
+
 - Desktop room headers auto-place optional utility groups in columns after the flexible metadata track. Never hard-code three tracks: development tools add a fourth group. Keep metadata and utility rows non-wrapping, with horizontal scrolling only for metadata.
 
 - Room member details use the same `UserProfileCard titleStickers` and `profile-modal-backdrop` as friend details, portaled outside the dock. Preserve battle replay restrictions.

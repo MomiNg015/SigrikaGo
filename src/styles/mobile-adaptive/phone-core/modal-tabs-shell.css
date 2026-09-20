@@ -89,6 +89,6 @@
     min-height: 44px;
     padding: 8px 10px;
     line-height: 1.2;
-    white-space: normal;
+    white-space: nowrap;
   }
 }

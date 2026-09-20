@@ -83,7 +83,7 @@
     display: inline-grid !important;
     place-items: center !important;
     width: min(100%, 220px) !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
   }
 
   .recruitment-item-watermark-art {

@@ -97,7 +97,9 @@ describe("FriendsModal mobile layout", () => {
     expect(html).toContain(">解除好友</button>");
     expect(html).toMatch(/<button[^>]*data-button-role="primary"[^>]*disabled=""[^>]*>对局申请<\/button>/);
     expect(actionRowBlock).toContain("display: flex");
-    expect(actionButtonBlock).toContain("flex: 1 1 0");
+    expect(actionRowBlock).toContain("flex-wrap: wrap");
+    expect(actionButtonBlock).toContain("flex: 1 0 auto");
+    expect(actionButtonBlock).toContain("white-space: nowrap");
     expect(hudFriendCss).toContain(".friend-action-row button:disabled");
     expect(hudFriendCss).toContain("cursor: not-allowed");
     expect(brightSchoolCss).toContain(".friend-action-row button:disabled");
