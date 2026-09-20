@@ -82,9 +82,32 @@
 }
 
 @media (max-width: 900px), (pointer: coarse) {
-  .mobile-room-screen .room-header-test-tools {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: end;
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .mobile-room-screen .room-header:has(.room-header-test-tools) {
+    grid-template-columns: minmax(0, 1fr) auto auto auto !important;
+    gap: 4px !important;
+
+    & .room-title-line {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      scrollbar-width: none;
+
+      & > span { flex-shrink: 0; }
+    }
+
+    & .room-header-test-tools {
+      grid-column: 2;
+      grid-row: 1;
+      flex-wrap: nowrap;
+      gap: 2px;
+
+      & .toggle {
+        width: 32px !important;
+        min-width: 32px !important;
+      }
+    }
+
+    & .room-toggles { display: none !important; }
+    & .room-mobile-exit { grid-column: 3; grid-row: 1; }
+    & .room-mobile-menu { grid-column: 4; grid-row: 1; }
   }
 }

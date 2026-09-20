@@ -4,7 +4,7 @@
 Refine the existing portrait Bright School battle interface on a new branch, following the reviewed first-tier proposal.
 
 ## Agreed scope
-- Follow-up: move development test actions to accessible icon-only header buttons; preserve existing development/player and phase/skill locks, with a right-aligned second mobile header row.
+- Follow-up: move development test actions to accessible icon-only header buttons; preserve existing development/player and phase/skill locks, with a single mobile header row without increasing header height.
 - Follow-up: remove the operation-hint block from both desktop and mobile battle layouts, including the shared tutorial stage. Keep actionable confirmations and tutorial choices.
 - Keep action order, game behavior, board geometry and desktop layout.
 - Improve action-label readability, reduce nested player-stat chrome, soften the active-turn fill and lighten dock tabs.
@@ -28,3 +28,4 @@ The user authorized a first implementation after the review; no additional prefe
 - Preview screenshots and fixture are under the pre-existing untracked `.codex-run/` directory.
 - Follow-up verified: desktop and mobile have zero `.operation-hint` nodes; 176 room/tutorial/style/document tests and lint pass. The operation panel keeps a single row with no hint gap.
 - Header tools: 158 focused checks and lint pass. Desktop controls align with the utility row; 360px portrait retains 44x44 buttons without horizontal overflow. Event tests verify all three payloads and disabled actions.
+- Superseding mobile layout: user requires no header height increase. At 320/360/390/412px, all five header controls share the same Y position and the header is 60px tall. Test controls are 32x44; room metadata stays on one horizontally scrollable line.

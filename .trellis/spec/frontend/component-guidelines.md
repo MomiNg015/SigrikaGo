@@ -8,7 +8,7 @@
 
 ### Battle action presentation
 
-Development test controls belong to `RoomHeader`, never `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label`, and unchanged test action payloads. On mobile, the three controls occupy a right-aligned second header row; `RoomHeader.test.jsx` checks payloads, disabled clicks, and default absence.
+Development test controls belong to `RoomHeader`, never `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label`, and unchanged test action payloads. On mobile, controls stay in the same header row with 32px-wide, 44px-high targets; room metadata scrolls horizontally instead of wrapping; `RoomHeader.test.jsx` checks payloads, disabled clicks, and default absence.
 
 `RoomBattleStage` does not render `OperationHint` in desktop or mobile layouts, including tutorial battles. Mobile `.mobile-action-panel` contains only the action panel; keep it to one grid row without an empty hint gap. Preserve actionable draw/scoring confirmations and tutorial choices. `RoomScreen.test.js` and `TutorialBattleScreen.test.jsx` lock the shared-stage removal.
 
