@@ -1,4 +1,3 @@
-import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useRef, useState } from "react";
 import { ClipboardList, Radio, Ticket, X } from "lucide-react";
@@ -86,7 +85,7 @@ export default function RecruitmentModal({
   return (
     <div className={`modal-backdrop recruitment-backdrop ${cinematicPlaying ? "is-cinematic-locked" : ""}`} onClick={closeModal}>
       <ModalDialog
-        className={`recruitment-modal ${cinematicPlaying ? "" : "window-sticker-host window-bookmark-host"} recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
+        className={`recruitment-modal ${cinematicPlaying ? "" : "window-sticker-host"} recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
         ariaLabelledBy="recruitment-modal-title"
         onClose={closeModal}
         onClick={(event) => event.stopPropagation()}
@@ -119,9 +118,9 @@ export default function RecruitmentModal({
 
         {phase === "idle" && (
           <footer className="recruitment-actions">
-            <WindowBookmarkTabs
+            <div
               className="recruitment-item-strip"
-              role="tablist"
+              role="group"
               aria-label="招募道具"
               style={{ "--recruitment-item-count": items.length }}
             >
@@ -130,6 +129,7 @@ export default function RecruitmentModal({
                   key={item.itemType}
                   className={`recruitment-item-button ${item.appearanceId ? `recruitment-item-${item.appearanceId}` : ""} ${selectedItemType === item.itemType ? "active" : ""}`}
                   type="button"
+                  aria-pressed={selectedItemType === item.itemType}
                   onClick={() => setSelectedItemType(item.itemType)}
                 >
                   <RecruitmentItemIcon item={item} />
@@ -137,7 +137,7 @@ export default function RecruitmentModal({
                   <b>x{item.quantity}</b>
                 </button>
               ))}
-            </WindowBookmarkTabs>
+            </div>
             <button className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
               {busy ? "张贴中" : canUse ? "使用" : "数量不足"}
             </button>

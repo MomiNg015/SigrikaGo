@@ -23,7 +23,6 @@ const cases = [
   ["观战", WatchModal, {}, "标准"],
   ["好友", FriendsModal, {}, "黑名单"],
   ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "更新日志"],
-  ["招募", RecruitmentModal, {}, new RegExp(RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.radioTicket].name)],
   ["详细资料", UserProfileCard, { titleStickers: true }, "标准"]
 ];
 
@@ -51,6 +50,20 @@ describe("player window bookmark rollout", () => {
     await waitFor(() => expect(target.getAttribute("aria-selected")).toBe("true"));
     expect(container.querySelectorAll('.window-bookmark-tab[aria-selected="true"]')).toHaveLength(1);
     expect(target.querySelector(".window-bookmark-paper")).not.toBeNull();
+  });
+
+  it("keeps recruitment items inside the action footer and preserves selection", async () => {
+    const { container } = render(<div className="app-shell player-theme-enabled theme-bright-school">
+      <RecruitmentModal {...shared} />
+    </div>);
+    const target = await screen.findByRole("button", { name: new RegExp(RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.radioTicket].name) });
+    expect(container.querySelector(".window-bookmark-rail")).toBeNull();
+    expect(target.closest(".recruitment-actions")).not.toBeNull();
+    expect(screen.getByRole("group", { name: "招募道具" })).toBeTruthy();
+    fireEvent.click(target);
+    await waitFor(() => expect(target.getAttribute("aria-pressed")).toBe("true"));
+    expect(container.querySelectorAll('.recruitment-item-button[aria-pressed="true"]')).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "使用", exact: true }).disabled).toBe(false);
   });
 
   it("keeps in-room profile tabs inline without the home window opt-in", () => {

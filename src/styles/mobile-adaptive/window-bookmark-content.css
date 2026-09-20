@@ -11,10 +11,6 @@
   grid-template-rows: auto minmax(0, 1fr) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) {
-  min-height: min(520px, var(--window-sticker-available-height)) !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .friends-modal.window-bookmark-host:has(> .window-bookmark-rail) .friends-modal-toolbar {
   grid-template-columns: minmax(0, 1fr) !important;
 }
@@ -23,12 +19,7 @@
   grid-template-rows: minmax(0, 1fr) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) .recruitment-actions {
-  grid-template-columns: minmax(0, 1fr) !important;
-  justify-items: end;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(svg, img, .recruitment-item-icon) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-bookmark-label > :is(svg, img) {
   flex: 0 0 auto;
   width: 18px !important;
   height: 18px !important;
@@ -40,24 +31,6 @@
   line-height: 1.2;
   writing-mode: horizontal-tb;
   letter-spacing: 0;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label {
-  flex-direction: column;
-  text-align: center;
-  font-size: 16px !important;
-}
-
-@media (max-width: 768px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label {
-    flex-direction: row;
-    font-size: 16px !important;
-    line-height: 1.15;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal > .window-bookmark-rail .window-bookmark-label > span {
-    flex: 0 0 auto;
-  }
 }
 
 /* Reserve a readable player-name column beside the portrait bookmark gutter. */
@@ -81,15 +54,5 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.window-bookmark-host:has(> .window-bookmark-rail) .profile-identity-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 6px !important;
-  }
-}
-
-@media (min-width: 769px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .recruitment-modal.window-bookmark-host:has(> .window-bookmark-rail) {
-    --window-bookmark-width: 148px;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .modal-backdrop:has(> .recruitment-modal > .window-bookmark-rail) {
-    padding-left: calc(164px + env(safe-area-inset-left)) !important;
   }
 }
