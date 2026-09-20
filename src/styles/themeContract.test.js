@@ -79,15 +79,10 @@ describe("player theme CSS contract", () => {
   it("keeps Bright School commerce as an import-only domain entry", () => {
     const commerceEntry = readFileSync(new URL("./themes/bright-school/commerce.css", import.meta.url), "utf8");
     const recruitmentPolish = readFileSync(new URL("./themes/bright-school/commerce/recruitment.css", import.meta.url), "utf8");
-    const magicClockPolish = readFileSync(
-      new URL("./themes/bright-school/commerce/recruitment/magic-clock.css", import.meta.url),
-      "utf8"
-    );
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
       "./commerce/recruitment.css",
-      "./commerce/recruitment/magic-clock.css",
       "./commerce/shop.css",
       "./commerce/warehouse-profile.css"
     ]);
@@ -98,8 +93,7 @@ describe("player theme CSS contract", () => {
     expect(recruitmentPolish).not.toContain("var(--recruitment-paper-background-image)");
     expect(recruitmentPolish).toContain("background-position: center center !important;");
     expect(recruitmentPolish).toContain("background-size: cover !important;");
-    expect(recruitmentPolish).toContain(".recruitment-use-button:disabled");
-    expect(recruitmentPolish).toContain("cursor: not-allowed !important;");
+    expect(recruitmentPolish).not.toContain(".recruitment-use-button:disabled");
     expect(recruitmentPolish).toContain(".recruitment-fast-forward-button");
     expect(recruitmentPolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(");
     expect(recruitmentPolish).toContain(
@@ -113,11 +107,8 @@ describe("player theme CSS contract", () => {
     expect(recruitmentPolish).toContain("border-radius: 0 !important;");
     expect(recruitmentPolish).toContain(".recruitment-selection-card p");
     expect(recruitmentPolish).toContain("color: #b53434 !important;");
-    expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button");
-    expect(recruitmentPolish).toContain("background: #fffdf6 !important;");
-    expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
-    expect(magicClockPolish).toContain(".recruitment-fast-forward-button:disabled");
-    expect(magicClockPolish).toContain("filter: grayscale(0.86) !important;");
+    expect(recruitmentPolish).not.toContain(".recruitment-result-actions .recruitment-use-button");
+    expect(recruitmentPolish).not.toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {

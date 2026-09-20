@@ -26,6 +26,15 @@ describe("campus button color boundary", () => {
     expect(states).toContain(".action-bar:not(.tutorial-choice-actions) > button:not(.skill-action)");
     expect(states).not.toMatch(/\[class\*|\.admin-screen|\.home-image-entry|\.utility-entry/);
   });
+  it("requires explicit roles before painting specialty-window actions", () => {
+    expect(sources[0]).not.toContain(":is(");
+    expect(sources[1]).toContain('.recruitment-modal) button[data-button-role]');
+    expect(sources[1]).toContain('.profile-dossier-modal *, .shop-modal *, .recruitment-modal *');
+    const recruitment = readFileSync(new URL('../../../modals/RecruitmentModal.jsx', import.meta.url), 'utf8');
+    expect(recruitment).toContain('data-button-role="success" className="primary-action"');
+    expect(recruitment).not.toMatch(/data-button-role="[^"]+"\s+className=\{?[^\n]*recruitment-item-button/);
+  });
+
   it("owns complete input states without changing control layout", () => {
     const states = sources[1];
     expect(states).toContain("(hover: hover) and (pointer: fine)");

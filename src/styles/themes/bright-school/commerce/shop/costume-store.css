@@ -98,15 +98,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button {
-  background: var(--costume-detail-gold) !important;
-  color: var(--bright-ink) !important;
-  border: 3px solid var(--bright-border) !important;
-  box-shadow: 3px 4px 0 rgba(12, 2, 5, 0.72) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button:hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-detail-purchase-button:focus-visible {
-  background: var(--bright-cream) !important;
+  border-width: 3px !important;
+  border-style: solid !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-equip-prompt-modal {

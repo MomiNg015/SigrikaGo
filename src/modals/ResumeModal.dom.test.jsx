@@ -89,6 +89,8 @@ describe("ResumeModal authoritative record stats", () => {
       if (element.matches(".resume-close-button")) return "关闭";
       return "未知";
     })).toEqual(["成就", "个性化", "金币", "关闭"]);
+    expect(screen.getByRole("button", { name: "成就" }).dataset.buttonRole).toBe("tool");
+    expect(screen.getByRole("button", { name: "关闭履历" }).dataset.buttonRole).toBe("secondary");
     fireEvent.click(screen.getByRole("button", { name: "成就" }));
     fireEvent.click(screen.getByRole("button", { name: "个性化" }));
     expect(onOpenAchievements).toHaveBeenCalledTimes(1);

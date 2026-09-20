@@ -156,12 +156,6 @@
   .recruitment-result-actions .recruitment-use-button {
     width: min(100%, 220px) !important;
     justify-self: center !important;
-    background: #fffdf6 !important;
-    color: #3d2b25 !important;
-  }
-
-  .recruitment-result-actions .recruitment-use-button:active:not(:disabled) {
-    background: #ff8fb7 !important;
   }
 
   .recruitment-item-strip {
@@ -193,11 +187,5 @@
   .recruitment-item-button b,
   .recruitment-use-button {
     font-size: 0.78rem !important;
-  }
-
-  .recruitment-use-button:disabled {
-    background: #d8d1cb !important;
-    color: rgba(61, 43, 37, 0.58) !important;
-    box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.18) !important;
   }
 }

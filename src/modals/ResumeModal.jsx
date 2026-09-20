@@ -123,10 +123,10 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         <header className="house-header resume-header window-sticker-header">
           <WindowTitleSticker titleKey="resume" id="resume-modal-title" />
           <div className="resume-header-actions">
-            <button type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
+            <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
               <Award size={16} />成就
             </button>
-            <button type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
+            <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
               <Palette size={16} />个性化
             </button>
             <p
@@ -136,7 +136,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
               <CircleDollarSign size={18} />
               {user.coins}
             </p>
-            <button className="close-button resume-close-button" type="button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
+            <button data-button-role="secondary" className="close-button resume-close-button" type="button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
           </div>
         </header>
 
@@ -151,7 +151,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           recentResults={modeUser.recentResults}
           characterStats={characterStats}
           recentAction={(
-            <button className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => setShowReplays(true)}>
+            <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => setShowReplays(true)}>
               <MonitorPlay size={18} aria-hidden="true" />
             </button>
           )}
@@ -165,7 +165,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
               {profileError && (
                 <>
                   <p className="room-people-error" role="alert">{profileError}</p>
-                  <button type="button" className="profile-retry-button" onClick={retryFailedMode}>重新加载</button>
+                  <button data-button-role="tool" type="button" className="profile-retry-button" onClick={retryFailedMode}>重新加载</button>
                 </>
               )}
             </div>

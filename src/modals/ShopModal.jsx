@@ -77,7 +77,7 @@ export default function ShopModal({
         onClick={(event) => event.stopPropagation()}
       >
         <header className="shop-header" data-store={activeStore}>
-          <button
+          <button data-button-role="tool"
             className={`shop-refresh-button is-${activeCatalog.refreshMode}`}
             type="button"
             aria-label={refreshLabel}
@@ -93,7 +93,7 @@ export default function ShopModal({
             {activeStore === "costume" ? "残星会cosplay部" : "扎希拉商铺"}
           </h2>
           <ShopCoinBalance coins={activeCatalog.effectiveUser?.coins ?? user?.coins ?? 0} />
-          <button className="close-button shop-close-button" type="button" aria-label="关闭商店" onClick={onClose}>
+          <button data-button-role="secondary" className="close-button shop-close-button" type="button" aria-label="关闭商店" onClick={onClose}>
             <X aria-hidden="true" />
           </button>
         </header>

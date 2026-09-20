@@ -19,24 +19,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-refresh-button, .shop-close-button) {
-  background: #fffdf5 !important;
-  color: #3d2b25 !important;
-  border: 3px solid #3d2b25 !important;
-  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.76) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-refresh-button:not(:disabled), .shop-close-button):hover {
-  background: #ffe1eb !important;
-  transform: translateY(-1px) rotate(-1deg) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-refresh-button:disabled {
-  background: #d8d1cb !important;
-  color: rgba(61, 43, 37, 0.58) !important;
-  border-color: rgba(61, 43, 37, 0.48) !important;
-  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.22) !important;
-  filter: grayscale(1) !important;
-  opacity: 0.72 !important;
+  border-width: 3px !important;
+  border-style: solid !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout.shop-window-body {

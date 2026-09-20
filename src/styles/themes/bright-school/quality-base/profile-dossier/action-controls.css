@@ -1,4 +1,4 @@
-/* Theme-native dossier actions, isolated from generic pressed controls. */
+/* Dossier geometry only; tagged action paint is shared with ordinary controls. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
   .resume-header-actions,
   .profile-modal-header,
@@ -7,73 +7,10 @@
   .profile-secondary-actions,
   .profile-mode-feedback
 ) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button) {
-  color: var(--bright-ink) !important;
-  border: 2px solid var(--bright-border) !important;
+  border-width: 2px !important;
+  border-style: solid !important;
   border-radius: 14px !important;
-  background: var(--bright-cream) !important;
-  background-image: none !important;
-  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.72) !important;
   clip-path: none !important;
-  filter: none !important;
-  text-shadow: none !important;
-  transform: none !important;
-  transition:
-    transform 160ms ease-out,
-    box-shadow 160ms ease-out,
-    background-color 160ms ease-out,
-    border-color 160ms ease-out !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
-  .resume-header-actions,
-  .profile-modal-header,
-  .profile-identity-actions,
-  .profile-section-heading,
-  .profile-secondary-actions,
-  .profile-mode-feedback
-) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button):is(:hover, :focus-visible):not(:disabled) {
-  background: color-mix(in srgb, var(--bright-cream) 88%, var(--bright-pink)) !important;
-  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.76) !important;
-  transform: translateY(-2px) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
-  .resume-header-actions,
-  .profile-modal-header,
-  .profile-identity-actions,
-  .profile-section-heading,
-  .profile-secondary-actions,
-  .profile-mode-feedback
-) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button):focus-visible {
-  outline: 3px solid var(--bright-blue) !important;
-  outline-offset: 3px !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
-  .resume-header-actions,
-  .profile-modal-header,
-  .profile-identity-actions,
-  .profile-section-heading,
-  .profile-secondary-actions,
-  .profile-mode-feedback
-) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button):active:not(:disabled) {
-  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.68) !important;
-  transform: translateY(1px) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
-  .resume-header-actions,
-  .profile-modal-header,
-  .profile-identity-actions,
-  .profile-section-heading,
-  .profile-secondary-actions,
-  .profile-mode-feedback
-) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button):disabled {
-  background: color-mix(in srgb, var(--bright-cream) 76%, var(--bright-ink)) !important;
-  color: color-mix(in srgb, var(--bright-ink) 52%, var(--bright-cream)) !important;
-  border-color: color-mix(in srgb, var(--bright-ink) 34%, var(--bright-cream)) !important;
-  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.34) !important;
-  transform: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .resume-header-actions :is(
@@ -84,35 +21,4 @@
   filter: none !important;
   stroke: currentColor !important;
   text-shadow: none !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(.profile-report-button, .profile-blacklist-button:not(:disabled)) {
-  color: color-mix(in srgb, var(--bright-ink) 78%, var(--theme-danger)) !important;
-  border-color: color-mix(in srgb, var(--theme-danger) 62%, var(--bright-border)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view-social .profile-identity-actions button.profile-report-button:not(:disabled) {
-  background: color-mix(in srgb, var(--bright-sheet) 76%, var(--theme-danger)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
-  .resume-header-actions,
-  .profile-modal-header,
-  .profile-identity-actions,
-  .profile-section-heading,
-  .profile-secondary-actions,
-  .profile-mode-feedback
-) button.profile-report-button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button):not(:disabled) {
-  background: color-mix(in srgb, var(--bright-sheet) 76%, var(--theme-danger)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(.profile-report-button, .profile-blacklist-button):is(:hover, :focus-visible):not(:disabled) {
-  background: color-mix(in srgb, var(--bright-cream) 90%, var(--theme-danger)) !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal button {
-    transition: none !important;
-    transform: none !important;
-  }
 }

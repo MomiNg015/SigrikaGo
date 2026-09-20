@@ -43,7 +43,7 @@ export default function CostumeDetailDialog({
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="close-button" type="button" aria-label="关闭服装详情" onClick={onClose}><X size={18} /></button>
+        <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭服装详情" onClick={onClose}><X size={18} /></button>
         <div className="shop-detail-art costume-detail-art" aria-hidden="true">
           <img src={costume.portraitUrl} alt="" />
         </div>
@@ -64,7 +64,7 @@ export default function CostumeDetailDialog({
                 <dt>售价</dt>
                 <dd>{costume.finalPrice} 金币</dd>
               </dl>
-              <button
+              <button data-button-role="primary"
                 className="primary-action costume-detail-purchase-button"
                 type="button"
                 aria-label={purchaseLabel}
@@ -98,15 +98,15 @@ export function CostumePurchaseEquipDialog({ costume, equipping, onEquip, onClos
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="close-button" type="button" aria-label="关闭装扮确认" onClick={onClose}><X size={18} /></button>
+        <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭装扮确认" onClick={onClose}><X size={18} /></button>
         <Shirt className="costume-equip-prompt-icon" aria-hidden="true" />
         <h3 id={titleId}>购买成功</h3>
         <p>是否立即装扮“{costume.name}”？</p>
         <div className="inline-actions costume-equip-prompt-actions">
-          <ModalActionButton disabled={equipping} onClick={equip}>
+          <ModalActionButton data-button-role="primary" disabled={equipping} onClick={equip}>
             {equipping ? "装扮中…" : "立即装扮"}
           </ModalActionButton>
-          <ModalActionButton variant="secondary" disabled={equipping} onClick={onClose}>
+          <ModalActionButton data-button-role="secondary" variant="secondary" disabled={equipping} onClick={onClose}>
             暂不装扮
           </ModalActionButton>
         </div>

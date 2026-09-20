@@ -70,36 +70,9 @@
   background: #ffdfeb !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-use-button:disabled {
-  border-color: rgba(61, 43, 37, 0.42) !important;
-  background: #d8d1cb !important;
-  color: rgba(61, 43, 37, 0.58) !important;
-  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.22) !important;
-  cursor: not-allowed !important;
-  transform: none !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button {
-  border: 2px solid rgba(61, 43, 37, 0.72) !important;
-  background: #fffdf6 !important;
-  color: #3d2b25 !important;
-  box-shadow: none !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:hover:not(:disabled),
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:focus-visible:not(:disabled) {
-  border-color: #3d2b25 !important;
-  background: #e9fff5 !important;
-  color: #145f49 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-actions .recruitment-use-button {
-  background: #fffdf6 !important;
-  color: #3d2b25 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-actions .recruitment-use-button:active:not(:disabled) {
-  background: #ff8fb7 !important;
+  border-width: 2px !important;
+  border-style: solid !important;
 }
 
 @media (max-width: 768px) {

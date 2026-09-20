@@ -1270,7 +1270,7 @@ describe("root CSS entry contract", () => {
     expect(phoneRecruitment).toContain(".recruitment-empty-board::before");
     expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
     expect(phoneRecruitment).toContain(".recruitment-result-actions");
-    expect(phoneRecruitment).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
+    expect(phoneRecruitment).not.toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
     expect(phoneRecruitment).toContain(".recruitment-status-card");
     expect(phoneRecruitment).toContain("grid-template-columns: minmax(0, 1fr) !important;");
     expect(phoneRecruitment).not.toContain(".recruitment-result-miss::after");
@@ -1283,7 +1283,7 @@ describe("root CSS entry contract", () => {
     expect(phoneRecruitment).toContain("opacity: 0.28 !important;");
     expect(phoneRecruitment).toContain(".recruitment-item-button span:not(.recruitment-item-icon)");
     expect(phoneRecruitment).toContain("display: none !important;");
-    expect(phoneRecruitment).toContain(".recruitment-use-button:disabled");
+    expect(phoneRecruitment).not.toContain(".recruitment-use-button:disabled");
   });
 
   it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {

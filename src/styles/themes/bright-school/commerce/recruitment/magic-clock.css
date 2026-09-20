@@ -1,9 +1,0 @@
-/* Bright School disabled-state winner for the recruitment magic-clock utility. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:disabled {
-  border-color: #958e88 !important;
-  background: #d8d1cb !important;
-  color: rgba(61, 43, 37, 0.55) !important;
-  cursor: not-allowed !important;
-  filter: grayscale(0.86) !important;
-  opacity: 0.72 !important;
-}

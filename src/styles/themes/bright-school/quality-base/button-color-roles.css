@@ -14,39 +14,39 @@
   --campus-button-disabled-ink: color-mix(in srgb, var(--bright-ink) 74%, var(--bright-paper));
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.primary-action, .login-submit-btn, .decision-actions > button:not(.secondary-action):not(.danger-action), [data-button-role="primary"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.primary-action, .login-submit-btn, .decision-actions > button:not(.secondary-action):not(.danger-action), [data-button-role="primary"]) {
   --campus-control-fill: var(--campus-button-primary);
   --campus-control-hover: var(--bright-pink);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.icon-button, .home-mobile-menu-panel > button, .friend-search > button, .counting-action, .replay-bar > button, [data-button-role="tool"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.icon-button, .home-mobile-menu-panel > button, .friend-search > button, .counting-action, .replay-bar > button, [data-button-role="tool"]) {
   --campus-control-fill: var(--campus-button-tool);
   --campus-control-hover: var(--campus-button-tool-hover);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .home-top-strip :is(.topbar-actions > .icon-button:not(.logout-action):not(.announcement-action):not(.mailbox-action):not(.onboarding-action), .home-mobile-menu-panel > button:not(.logout-action):not(.home-mobile-announcement-action):not(.home-mobile-mailbox-action):not(.home-mobile-onboarding-action)) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .home-top-strip :where(.topbar-actions > .icon-button:not(.logout-action):not(.announcement-action):not(.mailbox-action):not(.onboarding-action), .home-mobile-menu-panel > button:not(.logout-action):not(.home-mobile-announcement-action):not(.home-mobile-mailbox-action):not(.home-mobile-onboarding-action)) {
   --campus-control-fill: var(--campus-button-paper);
   --campus-control-hover: var(--campus-button-tool);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.mailbox-claim-button, .action-bar > .draw-action, [data-button-role="success"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.mailbox-claim-button, .action-bar > .draw-action, [data-button-role="success"]) {
   --campus-control-fill: var(--campus-button-success);
   --campus-control-hover: var(--bright-mint);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.settings-tabs > button, .friends-tabs > button, .mode-tabs > button, .achievement-tabs > button, .announcement-tabs > button, .mobile-tab-button, .room-toggles > .toggle):is(.active, [aria-selected="true"], [aria-pressed="true"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.settings-tabs > button, .friends-tabs > button, .mode-tabs > button, .achievement-tabs > button, .announcement-tabs > button, .mobile-tab-button, .room-toggles > .toggle):where(.active, [aria-selected="true"], [aria-pressed="true"]) {
   --campus-control-fill: var(--campus-button-selected);
   --campus-control-hover: var(--bright-blue);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.danger-action, .resign-action, .mailbox-delete-button, .home-top-strip .logout-action, [data-button-role="danger"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.danger-action, .resign-action, .mailbox-delete-button, .home-top-strip .logout-action, [data-button-role="danger"]) {
   --campus-control-fill: var(--campus-button-danger);
   --campus-control-hover: var(--campus-button-danger-hover);
   --campus-control-ink: var(--campus-button-danger-ink);
   --campus-control-border: var(--campus-button-danger-ink);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.secondary-action, .close-button, .information-center-back-button, .information-center-close-button, [data-button-role="secondary"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.secondary-action, .close-button, .information-center-back-button, .information-center-close-button, [data-button-role="secondary"]) {
   --campus-control-fill: var(--campus-button-paper);
   --campus-control-hover: var(--campus-button-paper-hover);
 }

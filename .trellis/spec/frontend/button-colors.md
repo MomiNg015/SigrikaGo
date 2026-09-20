@@ -14,3 +14,7 @@ The ordinary player palette and interaction states are owned by `quality-base/bu
 - Validate desktop and portrait mobile with the real ancestor chain. Compare dimensions, text, borders, shadows and motion before/after; inspect computed color winners rather than assuming a token wins.
 
 `src/styles/themes/bright-school/buttonColors.test.js` enforces the role-only color boundary, layout-free state owner, input states and protected selectors. Existing theme and component tests cover imports and behavior; browser QA verifies states, contrast and unchanged geometry.
+
+## Specialty window opt-in
+
+Dossier, shop, recruitment and their report/purchase/equip dialogs opt ordinary actions in through native `button[data-button-role]`. Untagged cards, shop signposts, wallets and recruitment item choices retain their independent artwork. Opted-in buttons keep component geometry, while prior owner paint and state declarations are removed. Close/return uses secondary, profile entry/replay/retry and refresh/acceleration uses tool, purchase/start/add-friend uses primary, recruitment claim uses success, and report/blacklist uses danger. The exclusion branch remains for untagged specialty controls.

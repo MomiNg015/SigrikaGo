@@ -58,7 +58,7 @@ export default function ShopItemCard({ item, purchasingId, user, onBuy, onShowDe
           </p>
         </div>
       </button>
-      <button className={`primary-action ${actionStateClass}`} disabled={disabled} onClick={buyWithoutOpeningDetail}>
+      <button data-button-role="primary" className={`primary-action ${actionStateClass}`} disabled={disabled} onClick={buyWithoutOpeningDetail}>
         {owned ? "已拥有" : soldOut ? "已售罄" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
       </button>
     </article>

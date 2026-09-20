@@ -229,7 +229,7 @@ export function UserProfileCard({
     >
       <header className={`profile-modal-header${titleStickers ? " window-sticker-header" : ""}`}>
         <WindowTitleSticker titleKey="profile" id="user-profile-modal-title" enabled={titleStickers} />
-        <button className="close-button" type="button" onClick={onClose} aria-label="关闭详细资料"><X size={20} /></button>
+        <button data-button-role="secondary" className="close-button" type="button" onClick={onClose} aria-label="关闭详细资料"><X size={20} /></button>
       </header>
 
       <ProfileResumeView
@@ -244,7 +244,7 @@ export function UserProfileCard({
         characterStats={profileUser.characterStats}
         identityActions={(
           <>
-            <button
+            <button data-button-role="tool"
               className="profile-like-button"
               type="button"
               aria-label={likeLabel}
@@ -254,7 +254,7 @@ export function UserProfileCard({
               <ThumbsUp size={18} />
               <span className="profile-like-count" aria-hidden="true">{likeCount}</span>
             </button>
-            <button
+            <button data-button-role="primary"
               className="profile-friend-button"
               type="button"
               aria-label={friendLabel}
@@ -263,7 +263,7 @@ export function UserProfileCard({
             >
               <UserPlus size={18} />
             </button>
-            <button
+            <button data-button-role="danger"
               className="profile-blacklist-button"
               type="button"
               aria-label={blacklistLabel}
@@ -272,7 +272,7 @@ export function UserProfileCard({
             >
               <UserRoundX size={18} />
             </button>
-            <button
+            <button data-button-role="danger"
               className="profile-report-button"
               type="button"
               aria-label="举报"
@@ -287,7 +287,7 @@ export function UserProfileCard({
           </>
         )}
         recentAction={(
-          <button className="profile-replay-button" type="button" aria-label="对局回放" title="对局回放" disabled={replayDisabled} onClick={openReplays}>
+          <button data-button-role="tool" className="profile-replay-button" type="button" aria-label="对局回放" title="对局回放" disabled={replayDisabled} onClick={openReplays}>
             <MonitorPlay size={18} aria-hidden="true" />
           </button>
         )}
@@ -300,7 +300,7 @@ export function UserProfileCard({
             )}
             {profileError && <p className="room-people-error" role="alert">{profileError}</p>}
             {failedMode && (
-              <button type="button" className="profile-retry-button" onClick={() => changeMode(failedMode)}>重新加载</button>
+              <button data-button-role="tool" type="button" className="profile-retry-button" onClick={() => changeMode(failedMode)}>重新加载</button>
             )}
             {profileNotice && <p className="profile-inline-notice">{profileNotice}</p>}
           </div>
@@ -326,7 +326,7 @@ export function UserProfileCard({
             onClose={closeReportDialog}
             onClick={(event) => event.stopPropagation()}
           >
-            <button className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
+            <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
             {titleStickers && <WindowTitleSticker titleKey="report" as="h3" id="profile-report-title" />}
             <form onSubmit={submitReport} className={titleStickers ? "window-sticker-scroll" : undefined}>
               {!titleStickers && <h3 id="profile-report-title">举报用户</h3>}
@@ -341,7 +341,7 @@ export function UserProfileCard({
               <small>{reportContent.length}/400</small>
               {reportError && <p className="profile-dialog-error" role="alert">{reportError}</p>}
               <div>
-                <ModalActionButton variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>
+                <ModalActionButton data-button-role="danger" variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>
                   {reportPending ? "提交中…" : "提交举报"}
                 </ModalActionButton>
               </div>
@@ -358,7 +358,7 @@ export function UserProfileCard({
             onClose={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}
             onClick={(event) => event.stopPropagation()}
           >
-            <button
+            <button data-button-role="secondary"
               className="close-button"
               type="button"
               aria-label="关闭黑名单确认窗口"
@@ -373,10 +373,10 @@ export function UserProfileCard({
               <p>加入后将限制与该用户的社交互动，确定继续吗？</p>
               {blacklistError && <p className="profile-dialog-error" role="alert">{blacklistError}</p>}
               <div>
-                <ModalActionButton variant="danger" type="button" disabled={blacklistPending} onClick={addBlacklist}>
+                <ModalActionButton data-button-role="danger" variant="danger" type="button" disabled={blacklistPending} onClick={addBlacklist}>
                   {blacklistPending ? "处理中…" : "确认加入"}
                 </ModalActionButton>
-                <ModalActionButton variant="secondary" type="button" disabled={blacklistPending} onClick={() => setShowBlacklistConfirm(false)}>
+                <ModalActionButton data-button-role="secondary" variant="secondary" type="button" disabled={blacklistPending} onClick={() => setShowBlacklistConfirm(false)}>
                   暂不处理
                 </ModalActionButton>
               </div>
@@ -411,8 +411,8 @@ export function ConfirmPanel({ message, confirmText = "确定", cancelText = "�
     <section className="inline-confirm-panel">
       <p>{message}</p>
       <div>
-        <button className="danger-action" type="button" onClick={onConfirm}>{confirmText}</button>
-        <button type="button" onClick={onCancel}>{cancelText}</button>
+        <button data-button-role="danger" className="danger-action" type="button" onClick={onConfirm}>{confirmText}</button>
+        <button data-button-role="secondary" type="button" onClick={onCancel}>{cancelText}</button>
       </div>
     </section>
   );

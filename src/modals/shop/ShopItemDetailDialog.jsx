@@ -20,7 +20,7 @@ export default function ShopItemDetailDialog({ item, user, onClose }) {
   return (
     <div className="nested-modal-backdrop shop-detail-backdrop" onClick={onClose}>
       <section className="nested-modal shop-item-detail-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" type="button" onClick={onClose}><X size={18} /></button>
+        <button data-button-role="secondary" className="close-button" type="button" onClick={onClose}><X size={18} /></button>
         <div className="shop-detail-art" aria-hidden="true">
           {decoration
             ? <StoneDecorationPreview decoration={decoration} label={item.name} large />

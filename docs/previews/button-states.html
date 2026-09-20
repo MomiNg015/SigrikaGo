@@ -12,11 +12,12 @@
 .review-note { max-width: 70ch; line-height: 1.6; }
 @media(max-width: 520px) { .button-review { padding: 12px; } .button-review .confirm-modal { padding: 16px; } .review-row > strong { width: 100%; } }
 </style></head><body><div class="app-shell player-theme-enabled theme-bright-school button-review">
-<section class="confirm-modal"><h1>普通按钮状态样板</h1><p class="review-note">使用项目实际样式。鼠标悬停、按住按钮或用 Tab 键切换焦点，比较五类操作的反馈。</p><div class="review-rows" id="review-rows"></div><p id="review-result" role="status">点击按钮可验证正常响应。</p></section>
+<section class="confirm-modal"><h1>普通按钮状态样板</h1><p class="review-note">使用项目实际样式。鼠标悬停、按住按钮或用 Tab 键切换焦点，比较五类操作的反馈。</p><div class="review-rows" id="review-rows"></div><div class="review-row"><button id="open-resume" data-button-role="tool" type="button">预览履历窗口</button></div><p id="review-result" role="status">点击按钮可验证正常响应。</p></section>
 <section class="friends-modal" style="position:relative;width:100%;max-width:980px;margin:20px auto;padding:24px"><h2>好友菜单实组件</h2><div id="friends-preview"></div></section>
+<section class="recruitment-modal" style="position:relative;width:100%;max-width:980px;margin:20px auto;padding:24px;height:auto"><h2>招募操作状态</h2><div class="review-row"><button class="primary-action recruitment-use-button" data-button-role="primary">开始招募</button><button class="primary-action" data-button-role="success">领取招募结果</button><button class="primary-action recruitment-use-button" data-button-role="secondary">返回招募</button><button class="primary-action recruitment-use-button" data-button-role="primary" disabled>道具不足</button></div></section>
 </div>
 <script type="module">
-import React from 'react'; import {createRoot} from 'react-dom/client'; import FriendsList from '/src/modals/friends/FriendsList.jsx'; import {CHARACTERS} from '/src/shared/characters.js';
+import ResumeModal from '/src/modals/ResumeModal.jsx'; import ShopItemCard from '/src/modals/shop/ShopItemCard.jsx'; import React from 'react'; import {createRoot} from 'react-dom/client'; import FriendsList from '/src/modals/friends/FriendsList.jsx'; import {CHARACTERS} from '/src/shared/characters.js';
 const roles=[['primary','主要操作','确认'],['secondary','次要操作','返回'],['tool','工具操作','刷新'],['success','领取操作','领取'],['danger','危险操作','删除']];
 const list=document.getElementById('review-rows');
 for(const [role,title,label] of roles) {
@@ -25,4 +26,8 @@ for(const [role,title,label] of roles) {
 }
 const noop=()=>{};
 createRoot(document.getElementById('friends-preview')).render(React.createElement(FriendsList,{actionRow:{id:'preview-user'},activeTab:'friends',characters:CHARACTERS,loading:false,rows:[{id:'preview-user',username:'样板好友',characterId:'sigrika',status:'online'}],onOpenConfirm:noop,onOpenProfile:noop,onRequestMatch:noop,onToggleAction:noop}));
+const modalHost=document.createElement('div');document.querySelector('.app-shell').append(modalHost);const modalRoot=createRoot(modalHost);
+document.getElementById('open-resume').onclick=()=>modalRoot.render(React.createElement(ResumeModal,{user:{id:'preview-user',username:'样板玩家',characterId:'sigrika',coins:100,rating:900,rank:'2段',itemEffects:{},modeStats:{spark:{rating:900,rank:'2段',wins:1,losses:0,draws:0,recentResults:[]}}},characterListView:Object.values(CHARACTERS),onClose:()=>modalRoot.render(null),onOpenAchievements:noop,onOpenPersonalization:noop,onOpenReplay:noop}));
+const shop=document.createElement('section');shop.className='shop-modal';shop.style.cssText='position:relative;width:100%;max-width:980px;margin:20px auto;padding:24px;height:auto;';shop.innerHTML='<h2>商城购买实组件</h2><div id="shop-preview" style="width:220px;max-width:100%"></div>';
+document.querySelector('.app-shell').append(shop);createRoot(shop.querySelector('#shop-preview')).render(React.createElement(ShopItemCard,{item:{id:'preview-item',name:'示例道具',category:'item',finalPrice:10,priceCoins:10,purchasable:true},user:{coins:100},onBuy:noop,onShowDetail:noop}));
 </script></body></html>

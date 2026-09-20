@@ -91,7 +91,7 @@ export default function RecruitmentModal({
         onClose={closeModal}
         onClick={(event) => event.stopPropagation()}
       >
-        {!cinematicPlaying && <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>}
+        {!cinematicPlaying && <button data-button-role="secondary" className="close-button" type="button" onClick={onClose}><X size={20} /></button>}
         <header className="recruitment-header window-sticker-header">
           <div>
             <WindowTitleSticker titleKey="recruitment" id="recruitment-modal-title" enabled={!cinematicPlaying} />
@@ -139,14 +139,14 @@ export default function RecruitmentModal({
                 </button>
               ))}
             </div>
-            <button className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
+            <button data-button-role="primary" className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
               {busy ? "张贴中" : canUse ? "使用" : "数量不足"}
             </button>
           </footer>
         )}
         {phase === "result" && (
           <footer className="recruitment-actions recruitment-result-actions">
-            <button className="primary-action recruitment-use-button" type="button" onClick={clearResult}>
+            <button data-button-role="secondary" className="primary-action recruitment-use-button" type="button" onClick={clearResult}>
               {result?.type === "success" ? "欢迎新部员！" : "收回道具"}
             </button>
           </footer>
@@ -217,7 +217,7 @@ function PendingBoard({
             </span>
           )}
           {magicClock && (
-            <button
+            <button data-button-role="tool"
               className="recruitment-fast-forward-button"
               type="button"
               disabled={busy || clockUnavailable}
@@ -240,7 +240,7 @@ function ReadyBoard({ task, busy, onClaim }) {
     <section className="recruitment-status-card recruitment-ready-card">
       <RecruitmentItemWatermark item={task} />
       <div>
-        <button className="primary-action" type="button" disabled={busy} onClick={onClaim}>
+        <button data-button-role="success" className="primary-action" type="button" disabled={busy} onClick={onClaim}>
           瞧瞧有没有新部员！
         </button>
       </div>
