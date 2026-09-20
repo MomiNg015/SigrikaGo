@@ -1,6 +1,7 @@
 # Battle UI scoped rollback
 
 ## Final user-directed scope
+- Desktop follow-up: keep metadata, development tools, utility buttons and exit aligned on one row; optional groups and long names must not increase header height.
 - Follow-up: member details match friend details; portrait dock tabs anchor to the action-tab baseline and grow downward without moving board/player information.
 - Subsequent explicit exception: restore portrait skill-button default/selected depth, preserving shared multicolor backgrounds and depressed selection without glow.
 - Restore the visual design from branch starting commit 5e897757. All beautification experiments, including skill-shadow overrides, are withdrawn.

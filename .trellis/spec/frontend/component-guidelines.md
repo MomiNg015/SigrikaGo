@@ -1325,6 +1325,8 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 ## Independent lazy overlay boundaries
 
+- Desktop room headers auto-place optional utility groups in columns after the flexible metadata track. Never hard-code three tracks: development tools add a fourth group. Keep metadata and utility rows non-wrapping, with horizontal scrolling only for metadata.
+
 - Room member details use the same `UserProfileCard titleStickers` and `profile-modal-backdrop` as friend details, portaled outside the dock. Preserve battle replay restrictions.
 - Portrait battle dock tabs reserve the measured action-panel height. Other panels grow downward without resizing board/player rows; screen scrolling must keep overflow reachable. Hidden action content remains measurable but invisible and non-interactive.
 

@@ -45,8 +45,21 @@
 
 .desktop-room-screen .room-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
   align-items: center;
+  column-gap: 12px;
+}
+
+.desktop-room-screen .room-title-line {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.desktop-room-screen .room-title-line > span {
+  flex-shrink: 0;
 }
 
 .room-title-stack {
@@ -56,6 +69,7 @@
 .desktop-room-screen .room-toggles {
   justify-self: end;
   justify-content: flex-end;
+  flex-wrap: nowrap;
 }
 
 .desktop-room-screen .room-mobile-exit {

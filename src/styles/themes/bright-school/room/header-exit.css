@@ -1,7 +1,7 @@
 /* Bright School room replay/battle readability fixes. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto auto !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   align-items: center !important;
 }
 
