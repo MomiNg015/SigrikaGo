@@ -30,7 +30,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.profile-dossier-modal, .profile-report-dialog, .profile-blacklist-dialog, .shop-modal, .shop-item-detail-modal, .costume-equip-prompt-modal, .recruitment-modal) button[data-button-role]:not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *)) {
   background: var(--campus-control-fill, var(--campus-button-paper)) !important;
   color: var(--campus-control-ink, var(--bright-ink)) !important;
-  border-color: var(--bright-border) !important;
+  border-color: var(--campus-control-border, var(--bright-border)) !important;
   box-shadow: var(--campus-control-shadow, 3px 3px 0 var(--bright-border)) !important;
   text-shadow: none !important;
   filter: none !important;

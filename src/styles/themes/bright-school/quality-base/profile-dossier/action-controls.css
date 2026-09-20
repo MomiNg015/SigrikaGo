@@ -53,21 +53,21 @@
     --campus-control-fill: #ffe4ee;
     --campus-control-hover: #ffe4ee;
     --campus-control-ink: #76314a;
-    border-color: #f08bad !important;
+    --campus-control-border: #f08bad;
   }
 
   & .personalization-entry-action {
     --campus-control-fill: #d9f0ff;
     --campus-control-hover: #d9f0ff;
     --campus-control-ink: #245f8c;
-    border-color: #7db8e8 !important;
+    --campus-control-border: #7db8e8;
   }
 
   & .resume-replay-action {
     --campus-control-fill: #e4f6f0;
     --campus-control-hover: #e4f6f0;
     --campus-control-ink: #245b4f;
-    border-color: #73b79f !important;
+    --campus-control-border: #73b79f;
   }
 }
 
