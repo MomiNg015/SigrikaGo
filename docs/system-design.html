@@ -53,6 +53,7 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<p>对弈引导未指定角色的用户侧使用黑化西格莉卡剧情中的默认玩家立绘，仅改变展示，不填入角色 ID 或技能；指定教学角色及 NPC 保持原展示。该立绘随教学立绘集合预加载。引导路由懒加载等待页从 0 开始，不复用首页已完成的资源进度；每段教学过渡读条按 loading ID 隔离状态，首帧不会闪现上一阶段的满进度。</p>
 <p>玩家窗口空状态使用 <code>WindowEmptyState</code>：轻量手绘纸页配原有提示文字，去掉重复的粗虚线和厚重卡片边框；履历战绩、装饰及窄列表使用紧凑版。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历和服装商店。加载与错误保留独立反馈；空观战列表不绘制空表头，提示在窗口内容区居中。</p>
 <p><code>AppOverlays</code> 的懒加载窗口各自使用独立 <code>Suspense</code> 边界。履历打开成就、个性化等新窗口时，仅新窗口等待模块加载，已打开窗口保持可见及原有状态，不会闪隐后一起重现。</p>
 <p>玩家常规校园主题窗口统一使用左侧手绘书签选项卡：履历、设置、成就、排行榜、观战、好友、首页玩家详细资料和公告。外轮廓为不随 SVG 缩放变细的 2.5px 描边，文字使用霞鹜字体；桌面单行横排、手机单列竖排，招募道具选择保留在窗口内操作栏，展示图标、名称、数量及选中状态，不接入侧边书签。<code>WindowBookmarkTabs</code> 将书签挂载到显式启用窗口外层，内部内容与书签分别滚动，保留原回调和加载禁用状态，书签内部隐藏图标及装饰点，仅显示常规字重文字，观战书签仅显示模式名称。手机窗口受安全视口限制，履历与详细资料随内容收高；黑化、其他主题、房间内资料及底部功能栏保持原控件。当前商城的双店铺切换不改，未接入现行入口的旧商城分类和扭蛋组件不重新启用。</p>
@@ -4829,6 +4830,9 @@
 <ul>
 <li>Loading-character presentation excludes <code>baconbits</code> at the shared <code>AssetPreloadScreen</code> boundary. Both random catalog selection and explicit fixed-character inputs fall back to another portrait-bearing character, and configured Baconbits loading copy is ignored; the underlying character portrait remains part of gameplay asset preload when a room actually contains Baconbits.</li>
 </ul>
+<h3>Tutorial handoff progress and human portrait</h3>
+<p>Unassigned human tutorial players reuse <code>SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET</code> as display-only art. Their character remains null, preserving the tutorial's no-skill contract; assigned actors, NPCs and practice bots retain their existing resolution. Tutorial portrait preloading includes this shared asset.</p>
+<p>The tutorial route Suspense fallback uses zero progress instead of the completed global startup asset progress. <code>TutorialBattleLoading</code> remains keyed by loading ID, and timed progress also records its owning ID so a new segment renders zero before effects reset the timer. This prevents an initial 100% flash in story/battle handoffs while preserving forward progress timing and cleanup.</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
 <h2>玩家窗口左侧书签选项卡</h2>

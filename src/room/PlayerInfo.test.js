@@ -399,7 +399,7 @@ describe("PlayerInfo labels", () => {
     expect(finalRoomPortraitImageBlock).toContain("filter: none !important");
   });
 
-  it("keeps no-character tutorial player slots stable without rendering portrait or skill content", () => {
+  it("fills unassigned tutorial players with the default story portrait without granting a skill", () => {
     const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
       player: {
         color: COLORS.black,
@@ -429,8 +429,9 @@ describe("PlayerInfo labels", () => {
     const brightMobileTutorialNoCharacterBlackBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait");
     const brightMobileTutorialNoCharacterWhiteBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.white-portrait");
 
-    expect(markup).toContain("portrait-wrap black-portrait no-character");
-    expect(markup).not.toContain("<img");
+    expect(markup).toContain("tutorial-player-portrait");
+    expect(markup).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+    expect(markup).not.toContain("black-portrait no-character");
     expect(markup).toContain("meta-tag rank-tag meta-placeholder");
     expect(markup).toContain("skill-chip-placeholder");
     expect(noCharacterBlock).toContain("height: var(--side-portrait)");

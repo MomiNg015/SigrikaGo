@@ -140,7 +140,7 @@ export default function AppRoutes({
       character={tutorialBattleLoadingCharacter(tutorialBattleSession, characters)}
       characters={characters}
       label={TUTORIAL_BATTLE_ENTRY_LOADING_TEXT}
-      progress={assetProgress}
+      progress={0}
       showTips={false}
       user={user}
     />

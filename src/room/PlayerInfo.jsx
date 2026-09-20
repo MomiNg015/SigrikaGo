@@ -65,7 +65,8 @@ function PlayerInfo({
   const isBot = Boolean(player.isBot || player.user?.isBot);
   const isPracticeBot = isBot && isNoCharacter;
   const botPortraitUrl = isBot ? player.botProfile?.portraitUrl : "";
-  const useNoCharacterPortraitLayout = !sigrikaCandyDuel && isNoCharacter && !botPortraitUrl;
+  const useTutorialPlayerPortrait = Boolean(player.isTutorialPlayer && isNoCharacter && !isBot && player.user?.id !== "tutorial-npc");
+  const useNoCharacterPortraitLayout = !sigrikaCandyDuel && isNoCharacter && !botPortraitUrl && !useTutorialPlayerPortrait;
   const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
@@ -94,9 +95,9 @@ function PlayerInfo({
   const portraitContent = (
     <>
       {hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
-      {isCorruptedPlayer && (
+      {(isCorruptedPlayer || useTutorialPlayerPortrait) && (
         <img
-          className="sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"
+          className={useTutorialPlayerPortrait ? "tutorial-player-portrait" : "sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"}
           src={SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url}
           alt="玩家"
         />

@@ -18,6 +18,7 @@ import { DesktopRoomLayout, MobileRoomLayout, useMobileRoomLayout } from "../roo
 import { roomGameInfoForPlayers } from "../room/roomState.js";
 import { COLORS, GAME_PHASES, cloneState, getPoint } from "../shared/game.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { latestSkillPreview, resolveBackgroundMusic } from "../shared/musicLibrary.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
 import {
@@ -92,13 +93,14 @@ export default function TutorialBattleScreen({
 }) {
   const script = session?.script;
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
-  const tutorialPortraitUrls = useMemo(() => [...new Set(
-    (script?.nodes ?? [])
+  const tutorialPortraitUrls = useMemo(() => [...new Set([
+    SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url,
+    ...(script?.nodes ?? [])
       .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
       .filter(Boolean)
       .map((characterId) => findCharacter(characters, characterId).portrait)
       .filter(Boolean)
-  )], [characters, script?.nodes]);
+  ])], [characters, script?.nodes]);
   const startNode = nodesById.get(session?.startNodeId) ?? nodesById.get(script?.startNodeId) ?? {};
   const [players, setPlayers] = useState(() => tutorialPlayersForSetup(startNode, user, characters));
   const [game, setGame] = useState(() => createTutorialGameState({
@@ -1022,7 +1024,7 @@ export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
   );
 }
 
-function TutorialBattleLoading({ loading, characters, players, user }) {
+export function TutorialBattleLoading({ loading, characters, players, user }) {
   const characterId = loading.node?.npcCharacterId || loading.node?.characterId || playerByUserId(players, NPC_ID)?.characterId;
   const character = findCharacter(characters, characterId);
   const progress = useTimedLoadingProgress(loading.id);
@@ -1041,13 +1043,13 @@ function TutorialBattleLoading({ loading, characters, players, user }) {
 }
 
 function useTimedLoadingProgress(loadingId) {
-  const [progress, setProgress] = useState(0);
+  const [progressState, setProgress] = useState(() => ({ loadingId, value: 0 }));
 
   useEffect(() => {
     const start = Date.now();
     let frameId = null;
     let timeoutId = null;
-    setProgress(0);
+    setProgress({ loadingId, value: 0 });
 
     function scheduleFrame(callback) {
       if (typeof window.requestAnimationFrame === "function") {
@@ -1059,7 +1061,7 @@ function useTimedLoadingProgress(loadingId) {
 
     function tick() {
       const nextProgress = Math.min(1, (Date.now() - start) / MIN_LOADING_MS);
-      setProgress(nextProgress);
+      setProgress({ loadingId, value: nextProgress });
       if (nextProgress < 1) scheduleFrame(tick);
     }
 
@@ -1070,7 +1072,7 @@ function useTimedLoadingProgress(loadingId) {
     };
   }, [loadingId]);
 
-  return progress;
+  return progressState.loadingId === loadingId ? progressState.value : 0;
 }
 
 function gameForCurrentNode(game, node, players) {

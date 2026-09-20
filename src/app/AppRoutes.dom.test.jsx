@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AppRoutes from "./AppRoutes.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
+
+vi.mock("../tutorial/TutorialBattleScreen.jsx", () => ({ default: () => { throw new Promise(() => {}); } }));
 
 vi.mock("../home/HomeScreen.jsx", () => ({
   default: vi.fn(() => <div data-testid="home-screen" />)
@@ -57,6 +59,11 @@ describe("AppRoutes home render boundary", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+  });
+
+  it("starts a tutorial handoff at zero even after global assets are fully loaded", () => {
+    render(<AppRoutes {...createBaseProps({ view: "tutorial-battle", assetProgress: 1, tutorialBattleSession: { script: { nodes: [] } } })} />);
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("0");
   });
 
   it("does not rerender the home tree for room-only route updates", () => {
