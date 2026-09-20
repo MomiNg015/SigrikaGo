@@ -7,7 +7,6 @@ import RoomPeopleList from "./RoomPeopleList.jsx";
 import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 
-const SHOW_TEST_TOOLS = import.meta.env.DEV;
 const ROOM_FLOATING_LAYER_BASE_Z = 140;
 
 export default function RoomBattleStage({
@@ -31,7 +30,6 @@ export default function RoomBattleStage({
   onCountingRespond,
   onDrawRequest,
   onDrawRespond,
-  onGameAction,
   onOpenReplay,
   onPass,
   onResign,
@@ -77,15 +75,6 @@ export default function RoomBattleStage({
   const handleStoryLogFloatingLayer = useCallback(() => {
     bringFloatingLayerToFront("story-log");
   }, [bringFloatingLayerToFront]);
-  const handleTestRandomLayout = useCallback(() => {
-    onGameAction({ type: "test-random-layout" });
-  }, [onGameAction]);
-  const handleTestRestoreSkill = useCallback(() => {
-    onGameAction({ type: "test-restore-skill" });
-  }, [onGameAction]);
-  const handleTestEnterByoYomi = useCallback(() => {
-    onGameAction({ type: "test-enter-byo-yomi" });
-  }, [onGameAction]);
   const handleConfirmScoring = useCallback(() => {
     onScoringAction({ type: "confirm-dead" });
   }, [onScoringAction]);
@@ -174,11 +163,7 @@ export default function RoomBattleStage({
       replayMax={liveStep}
       replayMode={roomViewStatus?.controlMode ?? (isReplay ? "replay" : "spectator")}
       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
-      showTestTools={SHOW_TEST_TOOLS && !sigrikaCandyDuel}
       drawEnabled={!sigrikaCandyDuel}
-      onTestRandomLayout={handleTestRandomLayout}
-      onTestRestoreSkill={handleTestRestoreSkill}
-      onTestEnterByoYomi={handleTestEnterByoYomi}
       onPass={onPass}
       onCountingRequest={onCountingRequest}
       onDrawRequest={onDrawRequest}

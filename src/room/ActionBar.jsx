@@ -11,7 +11,6 @@ import { gameModeFamily } from "../shared/gameModes.js";
 import { canRequestOpponentDecision } from "./actionBar/actionAvailability.js";
 import DeadStoneDecisionBar from "./actionBar/DeadStoneDecisionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
-import TestTools from "./actionBar/TestTools.jsx";
 
 function ActionBar({
   role,
@@ -36,11 +35,7 @@ function ActionBar({
   replayStep = 0,
   replayMax = 0,
   replayMode = "replay",
-  showTestTools = false,
   onReplayStep,
-  onTestRandomLayout,
-  onTestRestoreSkill,
-  onTestEnterByoYomi,
   onPass,
   onCountingRequest,
   onDrawRequest,
@@ -102,14 +97,6 @@ function ActionBar({
         <span className="action-label mobile-action-button-label">和棋</span>
       </button>}
       <button className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
-      {showTestTools && (
-        <TestTools
-          disabled={phase !== "playing" || skillLocked || !me}
-          onRandomLayout={onTestRandomLayout}
-          onRestoreSkill={onTestRestoreSkill}
-          onEnterByoYomi={onTestEnterByoYomi}
-        />
-      )}
     </nav>
   );
 }
@@ -142,10 +129,6 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.hasAnyStones === next.hasAnyStones
     && previous.opponentConnected === next.opponentConnected
     && previous.scoring === next.scoring
-    && previous.showTestTools === next.showTestTools
-    && previous.onTestRandomLayout === next.onTestRandomLayout
-    && previous.onTestRestoreSkill === next.onTestRestoreSkill
-    && previous.onTestEnterByoYomi === next.onTestEnterByoYomi
     && previous.onPass === next.onPass
     && previous.onCountingRequest === next.onCountingRequest
     && previous.onDrawRequest === next.onDrawRequest

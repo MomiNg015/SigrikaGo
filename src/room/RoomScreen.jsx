@@ -166,6 +166,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onOpenSettings={onOpenSettings}
         onBack={requestExitConfirm}
         onToggleCoords={toggleCoords}
+        showTestTools={import.meta.env.DEV && role === "player" && !isReplay && !isSigrikaCandyDuel && !(displayRoom.game.phase === GAME_PHASES.markingDead && scoring)}
+        testToolsDisabled={displayRoom.game.phase !== GAME_PHASES.playing || Boolean(skillPreview) || !me}
+        onGameAction={onGameAction}
       />
       <RoomBattleStage
         battleLayoutClassName={battleLayoutClassName}
@@ -187,7 +190,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onCountingRespond={onCountingRespond}
         onDrawRequest={onDrawRequest}
         onDrawRespond={onDrawRespond}
-        onGameAction={onGameAction}
         onOpenReplay={onOpenReplay}
         onPass={requestPassConfirm}
         onResign={requestResignConfirm}

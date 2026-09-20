@@ -143,7 +143,9 @@ describe("ActionBar helpers", () => {
   it("keeps removable test tools development-only", () => {
     const source = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("const SHOW_TEST_TOOLS = import.meta.env.DEV");
+    const roomSource = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    expect(source).not.toContain("showTestTools");
+    expect(roomSource).toContain('showTestTools={import.meta.env.DEV && role === "player" && !isReplay && !isSigrikaCandyDuel');
     expect(source).not.toContain("VITE_ENABLE_TEST_TOOLS");
   });
 
@@ -203,9 +205,8 @@ describe("ActionBar helpers", () => {
   it("keeps room battle action callbacks stable for memoized controls", () => {
     const source = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("const handleTestRandomLayout = useCallback");
     expect(source).toContain("const handleConfirmScoring = useCallback");
-    expect(source).toContain("onTestRandomLayout={handleTestRandomLayout}");
+    expect(source).not.toContain("TestTools");
     expect(source).toContain("onConfirmScoring={handleConfirmScoring}");
     expect(source).not.toContain("onTestRandomLayout={() =>");
     expect(source).not.toContain("onConfirmScoring={() =>");

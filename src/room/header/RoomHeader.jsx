@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
+import TestTools from "../actionBar/TestTools.jsx";
 
 export default function RoomHeader({
   room,
@@ -10,6 +11,9 @@ export default function RoomHeader({
   onBack,
   exitLabel = "退出房间",
   showUtilityControls = true,
+  showTestTools = false,
+  testToolsDisabled = false,
+  onGameAction,
   onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,6 +36,7 @@ export default function RoomHeader({
           )}
         </p>
       </div>
+      {showTestTools && <TestTools disabled={testToolsDisabled} onGameAction={onGameAction} />}
       {showUtilityControls && <div className="room-toggles">
         <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>

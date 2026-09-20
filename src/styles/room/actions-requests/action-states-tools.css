@@ -56,3 +56,35 @@
   color: #765229;
   font-weight: 800;
 }
+
+.room-header .room-header-test-tools {
+  display: flex;
+  justify-self: end;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.room-header .room-header-test-tools .toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .room-header .room-header-test-tools {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .mobile-room-screen .room-header-test-tools {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+}
