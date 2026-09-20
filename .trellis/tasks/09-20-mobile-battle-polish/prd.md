@@ -4,6 +4,7 @@
 Refine the existing portrait Bright School battle interface on a new branch, following the reviewed first-tier proposal.
 
 ## Agreed scope
+- Superseding direction: retain the campus notebook identity (grid paper, ink outlines, pastel controls). Refine card/board thickness, shadow consistency and proportions within that style. The user rejected the previous generic white/thin-gray-border direction.
 - Follow-up: elevate portrait battle visual hierarchy using clean paper, fine outlines, quieter secondary controls and softer board depth. Correct skill shadow consistency across default, pressed, selected and disabled states; preserve single-row header and existing assets.
 - Follow-up: move development test actions to accessible icon-only header buttons; preserve existing development/player and phase/skill locks, with a single mobile header row without increasing header height.
 - Follow-up: remove the operation-hint block from both desktop and mobile battle layouts, including the shared tutorial stage. Keep actionable confirmations and tutorial choices.
@@ -21,6 +22,7 @@ Refine the existing portrait Bright School battle interface on a new branch, fol
 The user authorized a first implementation after the review; no additional preference decision blocks this reversible visual pass.
 
 ## Validation and handoff
+- Campus revision: 320/360/390/412px browser checks retain 60px header, no horizontal overflow and visible player-card shadow clearance. Skill defaults to a 3px shadow, selected to a depressed 1px shadow, and disabled to no shadow. Updated preview: `.codex-run/battle-campus-390.png`.
 - First pass implemented on `codex/mobile-battle-polish`; left uncommitted for visual review.
 - Real header/stage/action components inspected with simulated players at 360x640, 390x844 and 412x915; long-name and waiting states checked, skill targeting toggles correctly.
 - At 390px the board remains 356px before and after; desktop action typography remains 16px.

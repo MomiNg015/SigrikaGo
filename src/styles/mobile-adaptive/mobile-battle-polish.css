@@ -1,15 +1,14 @@
-/* Ordinary portrait battles: quiet information chrome, readable actions. */
+/* Campus stationery: ink contours, layered paper and tactile action states. */
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room):not(:has(.tutorial-battle-screen-stage)) {
-    --battle-line: color-mix(in srgb, var(--bright-ink) 18%, transparent);
-    --battle-shadow: color-mix(in srgb, var(--bright-ink) 14%, transparent);
-    background: var(--bright-paper) !important;
+    --battle-line: var(--bright-ink);
+    --battle-shadow: color-mix(in srgb, var(--bright-ink) 65%, transparent);
 
     & .room-header,
     & .mobile-room-dock {
-      background: transparent !important;
-      border-color: transparent !important;
-      box-shadow: none !important;
+      background: var(--bright-sheet) !important;
+      border: 2px solid var(--battle-line) !important;
+      box-shadow: 2px 3px 0 var(--battle-shadow) !important;
     }
 
     & .room-code-label,
@@ -20,21 +19,29 @@
     }
 
     & .room-header .toggle {
-      border: 1px solid var(--battle-line) !important;
+      border: 2px solid var(--battle-line) !important;
       border-radius: 14px !important;
-      background: var(--bright-sheet-clean) !important;
+      background: var(--bright-blue) !important;
       box-shadow: 0 2px 0 var(--battle-shadow) !important;
+
+      &:active:not(:disabled) {
+        transform: translateY(1px) !important;
+        box-shadow: 0 1px 0 var(--battle-shadow) !important;
+      }
     }
 
     & .player-info {
-      background: var(--bright-sheet-clean) !important;
-      border: 1px solid var(--battle-line) !important;
-      border-radius: 14px !important;
+      background: linear-gradient(var(--bright-sheet-clean), var(--bright-sheet)) !important;
+      border: 2px solid var(--battle-line) !important;
+      border-radius: 16px !important;
+      box-shadow: 2px 3px 0 var(--battle-shadow) !important;
     }
 
+    & .mobile-player-slot { overflow: visible !important; }
+
     & .player-info.active-turn {
-      background: var(--bright-sheet-clean) !important;
-      border-color: color-mix(in srgb, var(--bright-mint) 75%, var(--bright-ink)) !important;
+      background: linear-gradient(var(--bright-sheet), var(--bright-cream)) !important;
+      border-color: var(--battle-line) !important;
     }
 
     & .player-info :is(.rank-tag, .rating-tag) {
@@ -45,15 +52,15 @@
     }
 
     & .board-stage {
-      border: 1px solid var(--battle-line) !important;
-      border-radius: 14px !important;
-      box-shadow: 0 3px 0 var(--battle-shadow), 0 8px 20px var(--battle-shadow) !important;
+      border: 2px solid var(--battle-line) !important;
+      border-radius: 18px !important;
+      box-shadow: 3px 4px 0 var(--battle-shadow), 0 8px 16px color-mix(in srgb, var(--bright-ink) 12%, transparent) !important;
     }
 
     & .board-wrap {
-      border: 1px solid var(--battle-line) !important;
-      border-radius: 14px !important;
-      box-shadow: inset 0 0 0 1px var(--bright-cream) !important;
+      border: 0 !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 0 0 3px var(--bright-cream) !important;
     }
 
     & .player-info .captures > * {
@@ -64,7 +71,7 @@
     }
 
     & .player-info .digital-timer {
-      border-color: transparent !important;
+      border: 1px solid var(--battle-line) !important;
       border-radius: 8px !important;
       background: var(--bright-paper) !important;
     }
@@ -78,7 +85,7 @@
 
     & .player-info.active-turn .digital-timer {
       background: var(--bright-mint) !important;
-      border-color: transparent !important;
+      border-color: var(--battle-line) !important;
     }
 
     & .player-info .skill-chip {
@@ -86,7 +93,7 @@
       border-width: 1px !important;
       border-radius: 8px !important;
       border-color: var(--battle-line) !important;
-      background: var(--bright-paper) !important;
+      background: var(--bright-pink-soft) !important;
     }
 
     & .mobile-tab-list {
@@ -95,14 +102,14 @@
     }
 
     & .mobile-tab-button {
-      border: 0 !important;
+      border: 1px solid var(--battle-line) !important;
       border-radius: 8px !important;
-      background: transparent !important;
-      box-shadow: none !important;
+      background: var(--bright-paper) !important;
+      box-shadow: 0 2px 0 var(--battle-shadow) !important;
       color: var(--bright-muted) !important;
 
       &.active {
-        background: color-mix(in srgb, var(--bright-blue) 35%, var(--bright-sheet-clean)) !important;
+        background: var(--bright-blue) !important;
         color: var(--bright-ink) !important;
       }
     }
@@ -113,15 +120,11 @@
       }
 
       & button {
-        border-width: 1px !important;
+        border-width: 2px !important;
         border-color: var(--battle-line) !important;
         border-radius: 14px !important;
         box-shadow: 0 3px 0 var(--battle-shadow) !important;
         transform: none !important;
-      }
-
-      & button:not(.skill-action):not(:disabled) {
-        background: var(--bright-sheet-clean) !important;
       }
 
       & button:active:not(:disabled) {
@@ -146,8 +149,8 @@
 
       & .skill-action {
         background: var(--bright-pink-soft) !important;
-        border-color: color-mix(in srgb, var(--bright-pink) 70%, var(--bright-ink)) !important;
-        box-shadow: 0 3px 0 color-mix(in srgb, var(--bright-pink) 65%, var(--bright-ink)), 0 5px 10px var(--battle-shadow) !important;
+        border-color: var(--battle-line) !important;
+        box-shadow: 0 3px 0 var(--battle-shadow) !important;
 
         &.active:not(:disabled) {
           background: var(--bright-pink) !important;

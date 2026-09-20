@@ -8,6 +8,8 @@
 
 ### Battle action presentation
 
+Portrait battle polish must retain the campus notebook grid, ink contours and semantic pastel controls. Improve paper/board depth and consistent states within that identity; do not substitute generic white surfaces and gray hairlines. Player slots allow their small shadows to paint into the existing row gaps; keep the viewport shadow gutters and header height unchanged.
+
 Ordinary portrait battle visual states belong to `mobile-battle-polish.css`. Skill actions have a raised resting shadow, a depressed selected/pressed state, no disabled shadow, and an explicit focus-visible outline. The owner must override both mobile flat-control resets and the shared skill glow (including its pseudo-element); desktop/tutorial/corrupted battles stay excluded. Verify computed styles after pointer release, not only the pressed frame.
 
 Development test controls belong to `RoomHeader`, never `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label`, and unchanged test action payloads. On mobile, controls stay in the same header row with 32px-wide, 44px-high targets; room metadata scrolls horizontally instead of wrapping; `RoomHeader.test.jsx` checks payloads, disabled clicks, and default absence.
