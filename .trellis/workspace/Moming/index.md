@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 134
+- **Total Sessions**: 135
 - **Last Active**: 2026-09-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~469 | Active |
+| `journal-3.md` | ~502 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 135 | 2026-09-20 | 统一专属窗口按钮第二批 | `43fe9319` | `codex/campus-home-handbook-polish` |
 | 134 | 2026-09-20 | 统一普通按钮状态第一批 | `5299298e` | `codex/campus-home-handbook-polish` |
 | 133 | 2026-09-20 | 禁止拖选按钮文字 | `a46a374a` | `codex/campus-home-handbook-polish` |
 | 132 | 2026-09-20 | 美化窗口加载状态 | b6391660 | `codex/campus-home-handbook-polish` |

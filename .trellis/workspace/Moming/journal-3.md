@@ -467,3 +467,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 135: 统一专属窗口按钮第二批
+
+**Date**: 2026-09-20
+**Task**: 统一专属窗口按钮第二批
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+33个履历资料、商城购买与招募操作按钮显式接入统一状态，移除约8.6KB旧样式及85处important。149项相关测试、lint、构建与构建CSS检查通过，真实履历和购买组件及招募语义色已预览；商城套件保留与本轮无关的既有首页宽度检查失败。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `43fe9319` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
