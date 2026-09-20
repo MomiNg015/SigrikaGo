@@ -49,6 +49,19 @@
   cursor: not-allowed;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row button {
+  --campus-control-shadow: none;
+  --campus-control-hover-shadow: none;
+  --campus-control-active-shadow: none;
+  --campus-control-border: color-mix(in srgb, var(--bright-ink) 35%, var(--bright-paper));
+
+  &[data-button-role="tool"] { --campus-control-border: #7db8e8; }
+  &[data-button-role="primary"] { --campus-control-border: #f08bad; }
+  &[data-button-role="danger"] {
+    --campus-control-border: color-mix(in srgb, var(--theme-danger) 65%, var(--bright-paper));
+  }
+}
+
 .friend-notice {
   width: fit-content;
   margin: 0 0 10px;
