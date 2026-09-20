@@ -6,15 +6,11 @@
 
 ## Overview
 
-### Battle action presentation
+### Battle development tools
 
-Portrait battle polish must retain the campus notebook grid, ink contours and semantic pastel controls. Improve paper/board depth and consistent states within that identity; do not substitute generic white surfaces and gray hairlines. Player slots allow their small shadows to paint into the existing row gaps; keep the viewport shadow gutters and header height unchanged.
+`RoomBattleStage` omits the operation-hint block in both desktop and mobile layouts, including tutorials. Keep actionable confirmations and tutorial choices. The mobile action panel has one row without the removed hint gap.
 
-Ordinary portrait battle visual states belong to `mobile-battle-polish.css`. Skill actions have a raised resting shadow, a depressed selected/pressed state, no disabled shadow, and an explicit focus-visible outline. The owner must override both mobile flat-control resets and the shared skill glow (including its pseudo-element); desktop/tutorial/corrupted battles stay excluded. Verify computed styles after pointer release, not only the pressed frame.
-
-Development test controls belong to `RoomHeader`, never `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label`, and unchanged test action payloads. On mobile, controls stay in the same header row with 32px-wide, 44px-high targets; room metadata scrolls horizontally instead of wrapping; `RoomHeader.test.jsx` checks payloads, disabled clicks, and default absence.
-
-`RoomBattleStage` does not render `OperationHint` in desktop or mobile layouts, including tutorial battles. Mobile `.mobile-action-panel` contains only the action panel; keep it to one grid row without an empty hint gap. Preserve actionable draw/scoring confirmations and tutorial choices. `RoomScreen.test.js` and `TutorialBattleScreen.test.jsx` lock the shared-stage removal.
+Development test controls belong to `RoomHeader`, not `ActionBar`. `RoomScreen` owns DEV/player/special-room visibility and phase/skill-preview disabling. Icon-only controls keep `title`, `aria-label` and unchanged action payloads. Mobile header controls remain on one row with 32x44 test buttons; metadata scrolls horizontally instead of wrapping. `RoomHeader.test.jsx` verifies payloads, disabled clicks and default absence.
 
 <!--
 Document your project's component conventions here.
