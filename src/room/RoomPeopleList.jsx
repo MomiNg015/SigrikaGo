@@ -114,8 +114,7 @@ function RoomPeopleList({
   }
 
   return (
-    <section className="room-people" ref={panelRef}>
-      <strong>房间成员</strong>
+    <section className="room-people" ref={panelRef} aria-label="房间成员">
       {error && <p className="room-people-error">{error}</p>}
       <div className="room-people-table">
         {people.map((person) => {
