@@ -368,3 +368,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 132: 美化窗口加载状态
+
+**Date**: 2026-09-20
+**Task**: 美化窗口加载状态
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+各玩家窗口统一纸页铅笔加载提示，局部紧凑版与减少动态效果支持。147项相关测试、lint、build及构建CSS检查通过，桌面与390px预览已核对。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD~1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
