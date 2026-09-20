@@ -23,6 +23,24 @@ afterEach(() => {
 });
 
 describe("RoomPeopleList floating actions", () => {
+  it("opens the shared bookmark profile outside the mobile dock", async () => {
+    social.loadProfile.mockResolvedValue({
+      id: "opponent-user", username: "ABCDEFGH", mode: "spark", relation: "none",
+      rank: "2段", rating: 1500, recentResults: [], characterStats: []
+    });
+    render(<main className="app-shell"><section className="mobile-room-dock">
+      <RoomPeopleList room={roomWithOpponent()} user={{ id: "self-user" }} characters={[]} token="token" />
+    </section></main>);
+    fireEvent.click(screen.getByText("ABCDEFGH").closest("button"));
+    fireEvent.click(screen.getByRole("button", { name: "详细信息" }));
+    await screen.findByRole("button", { name: "举报", exact: true });
+    const profile = document.querySelector(".user-profile-card");
+    expect(profile.classList.contains("window-sticker-host")).toBe(true);
+    expect(profile.classList.contains("window-bookmark-host")).toBe(true);
+    expect(profile.closest(".profile-modal-backdrop")).toBeTruthy();
+    expect(profile.closest(".mobile-room-dock")).toBeNull();
+  });
+
   it("portals member actions outside the clipped mobile dock", () => {
     render(
       <main className="app-shell player-theme-enabled theme-bright-school">

@@ -1325,5 +1325,8 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 ## Independent lazy overlay boundaries
 
+- Room member details use the same `UserProfileCard titleStickers` and `profile-modal-backdrop` as friend details, portaled outside the dock. Preserve battle replay restrictions.
+- Portrait battle dock tabs reserve the measured action-panel height. Other panels grow downward without resizing board/player rows; screen scrolling must keep overflow reachable. Hidden action content remains measurable but invisible and non-interactive.
+
 - Give every lazy business window in `AppOverlays` its own `Suspense` boundary. A pending sibling must never hide an already visible window or tear down its layout effects. Keep existing visibility state and close callbacks.
 - Regression coverage must defer first-time module resolution, assert that the original dialog remains accessible with the same DOM node and local state, then resolve and close the new dialog. `AppOverlays.dom.test.jsx` covers resume to achievements and personalization.

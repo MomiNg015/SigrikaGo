@@ -4,6 +4,7 @@ import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
+import { useMobileDockBaseline } from "./layout/useMobileDockBaseline.js";
 import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 
@@ -61,6 +62,7 @@ export default function RoomBattleStage({
   sigrikaCandyDuel = false
 }) {
   const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
+  const { viewportRef, dockRef, tabsRef, actionsRef } = useMobileDockBaseline(battleLayoutClassName === "mobile-battle-layout");
   const [floatingLayers, setFloatingLayers] = useState({});
   const bringFloatingLayerToFront = useCallback((layerId) => {
     if (!layerId) return;
@@ -213,14 +215,15 @@ export default function RoomBattleStage({
     const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
 
     return (
-      <section className="mobile-room-viewport mobile-battle-layout">
+      <section ref={viewportRef} className="mobile-room-viewport mobile-battle-layout" data-action-anchored>
         <div className="mobile-player-slot mobile-opponent-slot opponent-side">{opponentInfo}</div>
         <div className="mobile-board-viewport mobile-board-slot board-column">{boardPanel}</div>
         <div className="mobile-player-slot mobile-self-slot room-side">{selfInfo}</div>
         {selectedPanel && (
-          <section className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
+          <section ref={dockRef} className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
             <div
               className="mobile-tab-list"
+              ref={tabsRef}
               role="tablist"
               style={{ "--mobile-room-tab-count": panels.length + (storyLogPanel ? 1 : 0) }}
             >
@@ -245,6 +248,7 @@ export default function RoomBattleStage({
             {panels.map((panel) => (
               <div
                 key={panel.id}
+                ref={panel.id === "actions" ? actionsRef : undefined}
                 className="mobile-tab-panel"
                 role="tabpanel"
                 id={`mobile-room-panel-${panel.id}`}

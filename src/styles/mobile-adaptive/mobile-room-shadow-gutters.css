@@ -16,3 +16,32 @@
     padding: 6px 10px 12px 6px !important;
   }
 }
+
+/* Reserve the action tab's height; other tabs grow downward into screen scroll. */
+@media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+  :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) {
+    & .mobile-room-screen:has([data-action-anchored]) {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+
+    & .mobile-room-viewport[data-action-anchored] {
+      flex: 1 0 0px !important;
+      overflow: visible !important;
+      grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) var(--mobile-action-dock-height, auto) !important;
+
+      & .mobile-room-dock {
+        position: relative;
+        align-self: start;
+      }
+
+      & #mobile-room-panel-actions[hidden] {
+        display: block !important;
+        position: absolute;
+        inset-inline: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
+  }
+}

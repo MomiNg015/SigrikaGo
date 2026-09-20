@@ -172,8 +172,8 @@ function RoomPeopleList({
       </div>
       {profileUser && (
         <RoomPeopleFloatingLayer anchor={panelRef.current}>
-          <div className="modal-backdrop room-overlay-backdrop" onClick={() => setProfileUser(null)}>
-            <UserProfileCard
+          <div className="modal-backdrop profile-modal-backdrop room-overlay-backdrop" onClick={() => setProfileUser(null)}>
+            <UserProfileCard titleStickers
               user={profileUser}
               characters={characters}
               token={token}
