@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>普通按钮状态样板</title>
+<link rel="stylesheet" href="/src/styles.css">
+<style>
+.button-review { padding: 24px; }
+.button-review h1 { font-size: 24px; }
+.button-review .confirm-modal { width: 100%; max-width: 980px; margin: 20px auto; padding: 24px; }
+.review-rows { display: grid; gap: 20px; }
+.review-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.review-row > strong { width: 80px; }
+.review-row button { min-width: 88px; padding: 10px 14px; border: 2px solid; border-radius: 14px; }
+.review-note { max-width: 70ch; line-height: 1.6; }
+@media(max-width: 520px) { .button-review { padding: 12px; } .button-review .confirm-modal { padding: 16px; } .review-row > strong { width: 100%; } }
+</style></head><body><div class="app-shell player-theme-enabled theme-bright-school button-review">
+<section class="confirm-modal"><h1>普通按钮状态样板</h1><p class="review-note">使用项目实际样式。鼠标悬停、按住按钮或用 Tab 键切换焦点，比较五类操作的反馈。</p><div class="review-rows" id="review-rows"></div><p id="review-result" role="status">点击按钮可验证正常响应。</p></section>
+<section class="friends-modal" style="position:relative;width:100%;max-width:980px;margin:20px auto;padding:24px"><h2>好友菜单实组件</h2><div id="friends-preview"></div></section>
+</div>
+<script type="module">
+import React from 'react'; import {createRoot} from 'react-dom/client'; import FriendsList from '/src/modals/friends/FriendsList.jsx'; import {CHARACTERS} from '/src/shared/characters.js';
+const roles=[['primary','主要操作','确认'],['secondary','次要操作','返回'],['tool','工具操作','刷新'],['success','领取操作','领取'],['danger','危险操作','删除']];
+const list=document.getElementById('review-rows');
+for(const [role,title,label] of roles) {
+ const row=document.createElement('div'); row.className='review-row'; const heading=document.createElement('strong'); heading.textContent=title;row.append(heading);
+ for(const state of ['normal','disabled','busy']) { const button=document.createElement('button');button.type='button';button.dataset.buttonRole=role;button.textContent=state==='normal'?label:state==='busy'?'处理中':'不可用';button.disabled=state==='disabled';if(state==='busy'){button.setAttribute('aria-busy','true');button.setAttribute('aria-disabled','true');}button.addEventListener('click',()=>{if(state==='normal')document.getElementById('review-result').textContent=title+'：点击正常';});row.append(button); }list.append(row);
+}
+const noop=()=>{};
+createRoot(document.getElementById('friends-preview')).render(React.createElement(FriendsList,{actionRow:{id:'preview-user'},activeTab:'friends',characters:CHARACTERS,loading:false,rows:[{id:'preview-user',username:'样板好友',characterId:'sigrika',status:'online'}],onOpenConfirm:noop,onOpenProfile:noop,onRequestMatch:noop,onToggleAction:noop}));
+</script></body></html>

@@ -95,7 +95,7 @@ describe("FriendsModal mobile layout", () => {
     expect(html).not.toContain("密谈");
     expect(html).toContain(">详细信息</button>");
     expect(html).toContain(">解除好友</button>");
-    expect(html).toContain("<button type=\"button\" disabled=\"\">对局申请</button>");
+    expect(html).toMatch(/<button[^>]*data-button-role="primary"[^>]*disabled=""[^>]*>对局申请<\/button>/);
     expect(actionRowBlock).toContain("display: flex");
     expect(actionButtonBlock).toContain("flex: 1 1 0");
     expect(hudFriendCss).toContain(".friend-action-row button:disabled");

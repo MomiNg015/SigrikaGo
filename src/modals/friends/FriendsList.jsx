@@ -74,14 +74,14 @@ export default function FriendsList({
 function FriendActionPanel({ activeTab, row, onOpenConfirm, onOpenProfile, onRequestMatch }) {
   return (
     <div className="friend-action-row">
-      <button type="button" onClick={() => onOpenProfile(row)}>详细信息</button>
+      <button data-button-role="tool" type="button" onClick={() => onOpenProfile(row)}>详细信息</button>
       {activeTab === "friends" ? (
         <>
-          <button type="button" disabled={row.status !== "online"} onClick={() => onRequestMatch(row)}>对局申请</button>
-          <button type="button" onClick={() => onOpenConfirm("friend", row)}>解除好友</button>
+          <button data-button-role="primary" type="button" disabled={row.status !== "online"} onClick={() => onRequestMatch(row)}>对局申请</button>
+          <button data-button-role="danger" type="button" onClick={() => onOpenConfirm("friend", row)}>解除好友</button>
         </>
       ) : (
-        <button type="button" onClick={() => onOpenConfirm("blacklist", row)}>从黑名单解除</button>
+        <button data-button-role="secondary" type="button" onClick={() => onOpenConfirm("blacklist", row)}>从黑名单解除</button>
       )}
     </div>
   );

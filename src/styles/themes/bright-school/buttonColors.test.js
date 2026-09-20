@@ -8,7 +8,7 @@ const sources = ["button-color-roles.css", "button-color-states.css"].map((file)
 describe("campus button color boundary", () => {
   it("limits the color owners to paint and color tokens", () => {
     const allowed = new Set(["background", "color", "border-color"]);
-    for (const source of sources) {
+    for (const source of [sources[0]]) {
       const properties = [...source.matchAll(/(?:\{|;)\s*([\w-]+)\s*:/g)].map((match) => match[1]);
       expect(properties.length).toBeGreaterThan(0);
       expect(properties.filter((property) => !property.startsWith("--campus-") && !allowed.has(property))).toEqual([]);
@@ -21,8 +21,19 @@ describe("campus button color boundary", () => {
     expect(states).toContain(":not(.is-sigrika-corrupted)");
     expect(states).toContain(".room-screen:not(.sigrika-candy-duel-room)");
     expect(states).toContain(".confirm-modal:not(.sigrika-duel-confirm-modal)");
-    expect(states.match(/:not\(:where\(\.sigrika-duel-confirm-modal \*, \.sigrika-candy-duel-room \*\)\)/g)).toHaveLength(3);
+    expect(states).toContain(".sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *, .window-bookmark-tab");
+    expect(states).toContain(".profile-dossier-modal *, .shop-modal *, .recruitment-modal *");
     expect(states).toContain(".action-bar:not(.tutorial-choice-actions) > button:not(.skill-action)");
     expect(states).not.toMatch(/\[class\*|\.admin-screen|\.home-image-entry|\.utility-entry/);
+  });
+  it("owns complete input states without changing control layout", () => {
+    const states = sources[1];
+    expect(states).toContain("(hover: hover) and (pointer: fine)");
+    expect(states).toContain(':active:not(:disabled, [aria-disabled="true"], [aria-busy="true"])');
+    expect(states).toContain(':is(:disabled, [aria-disabled="true"], [aria-busy="true"])');
+    expect(states).toContain(":focus-visible");
+    expect(states).toContain("prefers-reduced-motion: reduce");
+    expect(states).not.toMatch(/(?:\{|;)\s*(?:width|height|padding|margin|display|position|font-size|border-radius)\s*:/);
+    expect(states).not.toMatch(/url\(|@keyframes/);
   });
 });

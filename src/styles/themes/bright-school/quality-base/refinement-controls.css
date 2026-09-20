@@ -33,50 +33,29 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .home-grid-featured > .home-utility-grid .utility-entry,
-  .action-bar button,
-  .decision-actions button,
   .settings-tabs button,
   .shop-tabs button,
   .theme-choice-button,
   .shop-pagination button,
   .skill-chip,
   .skill-action,
-  .icon-button
+  :where(.sigrika-candy-duel-room, .is-sigrika-corrupted) .action-bar button,
+  :where(.sigrika-duel-confirm-modal, .is-sigrika-corrupted) .decision-actions button,
+  .icon-button:not(:where(.home-screen *, .auth-panel *, .settings-modal *, .house-modal *, .friends-modal *, .watch-list-modal *, .leaderboard-modal *, .warehouse-modal *, .information-center-modal *, .message-board-modal *, .achievement-modal *, .personalization-modal *, .confirm-modal *, .result-modal *, .room-screen *)),
+  :where(.profile-dossier-modal, .shop-modal, .recruitment-modal, .sigrika-candy-duel-room, .sigrika-duel-confirm-modal, .is-sigrika-corrupted) .icon-button
 ) {
   transition:
     transform 160ms ease-out,
     box-shadow 160ms ease-out,
     background-color 160ms ease-out,
     border-color 160ms ease-out !important;
-}
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .home-grid-featured > .home-utility-grid .utility-entry,
-  .action-bar button,
-  .decision-actions button,
-  .settings-tabs button,
-  .shop-tabs button,
-  .theme-choice-button,
-  .shop-pagination button,
-  .skill-chip,
-  .skill-action,
-  .icon-button
-):hover {
-  transform: translateY(-2px) scale(1.02) !important;
-}
+  &:hover:not(:disabled, [aria-disabled="true"]) {
+    transform: translateY(-2px) scale(1.02) !important;
+  }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .home-grid-featured > .home-utility-grid .utility-entry,
-  .action-bar button,
-  .decision-actions button,
-  .settings-tabs button,
-  .shop-tabs button,
-  .theme-choice-button,
-  .shop-pagination button,
-  .skill-chip,
-  .skill-action,
-  .icon-button
-):active {
-  transform: translateY(1px) scale(0.98) !important;
-  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.72) !important;
+  &:active:not(:disabled, [aria-disabled="true"]) {
+    transform: translateY(1px) scale(0.98) !important;
+    box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.72) !important;
+  }
 }

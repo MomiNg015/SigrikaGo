@@ -1,4 +1,4 @@
-/* Explicit ordinary controls; no image entries, skill buttons or admin controls. */
+/* Single state owner for ordinary controls. Keep component dimensions and artwork. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.home-screen, .auth-panel, .settings-modal, .house-modal, .friends-modal, .watch-list-modal, .leaderboard-modal, .warehouse-modal, .information-center-modal, .message-board-modal, .achievement-modal, .personalization-modal, .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .room-screen:not(.sigrika-candy-duel-room)) :is(
   .primary-action,
   .login-submit-btn,
@@ -24,71 +24,56 @@
   .achievement-tabs > button,
   .announcement-tabs > button,
   .mobile-tab-button,
-  .room-toggles > .toggle
-):not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *)) {
+  .room-toggles > .toggle,
+  [data-button-role]
+):not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *, .window-bookmark-tab, .skill-action, .tutorial-choice-actions *, .tutorial-action-bar *, .onboarding-story-actions *, .profile-dossier-modal *, .shop-modal *, .recruitment-modal *)) {
   background: var(--campus-control-fill, var(--campus-button-paper)) !important;
   color: var(--campus-control-ink, var(--bright-ink)) !important;
-  border-color: var(--campus-control-border, var(--bright-border)) !important;
-}
+  border-color: var(--bright-border) !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  text-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: background-color 160ms ease-out, color 160ms ease-out,
+    border-color 160ms ease-out, transform 160ms ease-out, box-shadow 160ms ease-out !important;
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.home-screen, .auth-panel, .settings-modal, .house-modal, .friends-modal, .watch-list-modal, .leaderboard-modal, .warehouse-modal, .information-center-modal, .message-board-modal, .achievement-modal, .personalization-modal, .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .room-screen:not(.sigrika-candy-duel-room)) :is(
-  .primary-action,
-  .login-submit-btn,
-  .secondary-action,
-  .danger-action,
-  .icon-button,
-  .close-button,
-  .information-center-back-button,
-  .information-center-close-button,
-  .home-mobile-menu-panel > button,
-  .friend-search > button,
-  .mailbox-claim-button,
-  .mailbox-delete-button,
-  .pass-action,
-  .counting-action,
-  .resign-action,
-  .action-bar:not(.tutorial-choice-actions) > button:not(.skill-action),
-  .decision-actions > button,
-  .replay-bar > button,
-  .settings-tabs > button,
-  .friends-tabs > button,
-  .mode-tabs > button,
-  .achievement-tabs > button,
-  .announcement-tabs > button,
-  .mobile-tab-button,
-  .room-toggles > .toggle
-):not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *)):is(:hover, :focus-visible):not(:disabled):not([aria-disabled="true"]) {
-  background: var(--campus-control-hover, var(--campus-button-tool)) !important;
-}
+  & > :is(span, svg) { color: inherit !important; }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.home-screen, .auth-panel, .settings-modal, .house-modal, .friends-modal, .watch-list-modal, .leaderboard-modal, .warehouse-modal, .information-center-modal, .message-board-modal, .achievement-modal, .personalization-modal, .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .room-screen:not(.sigrika-candy-duel-room)) :is(
-  .primary-action,
-  .login-submit-btn,
-  .secondary-action,
-  .danger-action,
-  .icon-button,
-  .close-button,
-  .information-center-back-button,
-  .information-center-close-button,
-  .home-mobile-menu-panel > button,
-  .friend-search > button,
-  .mailbox-claim-button,
-  .mailbox-delete-button,
-  .pass-action,
-  .counting-action,
-  .resign-action,
-  .action-bar:not(.tutorial-choice-actions) > button:not(.skill-action),
-  .decision-actions > button,
-  .replay-bar > button,
-  .settings-tabs > button,
-  .friends-tabs > button,
-  .mode-tabs > button,
-  .achievement-tabs > button,
-  .announcement-tabs > button,
-  .mobile-tab-button,
-  .room-toggles > .toggle
-):not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *)):is(:disabled, [aria-disabled="true"]) {
-  background: var(--campus-button-disabled) !important;
-  color: var(--campus-button-disabled-ink) !important;
-  border-color: var(--campus-button-disabled-ink) !important;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+      background: var(--campus-control-hover, var(--campus-button-paper-hover)) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 3px 4px 0 var(--bright-border) !important;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bright-ink) !important;
+    outline-offset: 3px !important;
+  }
+
+  &:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+    background: color-mix(in srgb, var(--campus-control-fill, var(--campus-button-paper)) 90%, var(--bright-ink)) !important;
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0 var(--bright-border) !important;
+  }
+
+  &:is(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+    background: var(--campus-button-disabled) !important;
+    color: var(--campus-button-disabled-ink) !important;
+    border-color: var(--campus-button-disabled-ink) !important;
+    box-shadow: 1px 1px 0 var(--campus-button-disabled-ink) !important;
+    transform: none !important;
+    cursor: not-allowed;
+  }
+
+  &[aria-busy="true"] { cursor: progress; }
+
+  @media (prefers-reduced-motion: reduce) {
+    &, &:hover, &:active {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
 }

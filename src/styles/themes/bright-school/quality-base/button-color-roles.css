@@ -1,6 +1,7 @@
-/* Button color roles only: shape, layout, art and motion stay with existing owners. */
+/* Semantic palette; ordinary interaction states live in button-color-states.css. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) {
   --campus-button-paper: var(--bright-paper);
+  --campus-button-paper-hover: color-mix(in srgb, var(--bright-ink) 5%, var(--bright-paper));
   --campus-button-tool: color-mix(in srgb, var(--bright-blue) 28%, var(--bright-paper));
   --campus-button-tool-hover: color-mix(in srgb, var(--bright-blue) 52%, var(--bright-paper));
   --campus-button-selected: color-mix(in srgb, var(--bright-blue) 80%, var(--bright-paper));
@@ -13,12 +14,12 @@
   --campus-button-disabled-ink: color-mix(in srgb, var(--bright-ink) 74%, var(--bright-paper));
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.primary-action, .login-submit-btn, .decision-actions > button:not(.secondary-action)) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.primary-action, .login-submit-btn, .decision-actions > button:not(.secondary-action):not(.danger-action), [data-button-role="primary"]) {
   --campus-control-fill: var(--campus-button-primary);
   --campus-control-hover: var(--bright-pink);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.icon-button, .home-mobile-menu-panel > button, .friend-search > button, .counting-action, .replay-bar > button) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.icon-button, .home-mobile-menu-panel > button, .friend-search > button, .counting-action, .replay-bar > button, [data-button-role="tool"]) {
   --campus-control-fill: var(--campus-button-tool);
   --campus-control-hover: var(--campus-button-tool-hover);
 }
@@ -28,7 +29,7 @@
   --campus-control-hover: var(--campus-button-tool);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.mailbox-claim-button, .action-bar > .draw-action) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.mailbox-claim-button, .action-bar > .draw-action, [data-button-role="success"]) {
   --campus-control-fill: var(--campus-button-success);
   --campus-control-hover: var(--bright-mint);
 }
@@ -38,9 +39,14 @@
   --campus-control-hover: var(--bright-blue);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.danger-action, .resign-action, .mailbox-delete-button, .home-top-strip .logout-action) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.danger-action, .resign-action, .mailbox-delete-button, .home-top-strip .logout-action, [data-button-role="danger"]) {
   --campus-control-fill: var(--campus-button-danger);
   --campus-control-hover: var(--campus-button-danger-hover);
   --campus-control-ink: var(--campus-button-danger-ink);
   --campus-control-border: var(--campus-button-danger-ink);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.secondary-action, .close-button, .information-center-back-button, .information-center-close-button, [data-button-role="secondary"]) {
+  --campus-control-fill: var(--campus-button-paper);
+  --campus-control-hover: var(--campus-button-paper-hover);
 }
