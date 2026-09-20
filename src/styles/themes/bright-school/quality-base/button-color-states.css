@@ -64,7 +64,7 @@
     background: var(--campus-button-disabled) !important;
     color: var(--campus-button-disabled-ink) !important;
     border-color: var(--campus-button-disabled-ink) !important;
-    box-shadow: 1px 1px 0 var(--campus-button-disabled-ink) !important;
+    box-shadow: var(--campus-control-shadow, 1px 1px 0 var(--campus-button-disabled-ink)) !important;
     transform: none !important;
     cursor: not-allowed;
   }

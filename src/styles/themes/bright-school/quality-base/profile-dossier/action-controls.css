@@ -23,8 +23,14 @@
   text-shadow: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view {
   --resume-icon-size: 36px;
+  @media (max-width: 360px) and (orientation: portrait) {
+    --resume-icon-size: 32px;
+  }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
   & .profile-identity-actions {
     position: absolute;
     grid-area: auto;
@@ -45,7 +51,6 @@
   }
 
   @media (max-width: 360px) and (orientation: portrait) {
-    --resume-icon-size: 32px;
     & .profile-identity-actions { bottom: 2px; }
   }
 
@@ -63,15 +68,17 @@
     --campus-control-border: #7db8e8;
   }
 
-  & .resume-replay-action {
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-replay-button {
     --campus-control-fill: #e4f6f0;
     --campus-control-hover: #e4f6f0;
     --campus-control-ink: #245b4f;
     --campus-control-border: #73b79f;
-  }
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal.profile-dossier-modal .profile-resume-view-self button:is(.achievement-entry-action, .personalization-entry-action, .resume-replay-action) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal.profile-dossier-modal .profile-resume-view-self button:is(.achievement-entry-action, .personalization-entry-action, .resume-replay-action),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.profile-dossier-modal .profile-resume-view-social button.profile-replay-button {
   --campus-control-shadow: none;
   --campus-control-hover-shadow: none;
   --campus-control-active-shadow: none;
