@@ -302,3 +302,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 130: 精修文字书签与窗口空状态
+
+**Date**: 2026-09-20
+**Task**: 精修文字书签与窗口空状态
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+书签仅保留文字，嵌套标签明确 400 字重。统一玩家窗口空结果为静态手绘纸页和原提示文字，紧凑记录保留语义；修复空观战表格占位。179 项相关测试、lint、build、built CSS 通过，桌面及 320/390px 竖屏实测通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `35723a15` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
