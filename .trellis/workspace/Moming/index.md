@@ -31,7 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
-| 132 | 2026-09-20 | 美化窗口加载状态 | HEAD~1 | `codex/campus-home-handbook-polish` |
+| 132 | 2026-09-20 | 美化窗口加载状态 | b6391660 | `codex/campus-home-handbook-polish` |
 | 131 | 2026-09-20 | 修复引导立绘与加载首帧 | `60e59605` | `codex/campus-home-handbook-polish` |
 | 130 | 2026-09-20 | 精修文字书签与窗口空状态 | `35723a15` | `codex/campus-home-handbook-polish` |
 | 129 | 2026-09-20 | 恢复招募窗口内道具选择 | `b50c4e81` | `codex/campus-home-handbook-polish` |

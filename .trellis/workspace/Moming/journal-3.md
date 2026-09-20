@@ -388,7 +388,7 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 
 | Hash | Message |
 |------|---------|
-| `HEAD~1` | (see git log) |
+| `b6391660` | (see git log) |
 
 ### Testing
 
