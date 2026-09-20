@@ -123,12 +123,6 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         <header className="house-header resume-header window-sticker-header">
           <WindowTitleSticker titleKey="resume" id="resume-modal-title" />
           <div className="resume-header-actions">
-            <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
-              <Award size={16} />成就
-            </button>
-            <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
-              <Palette size={16} />个性化
-            </button>
             <p
               className="shop-wallet resume-wallet"
               title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
@@ -150,6 +144,16 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           stats={stats}
           recentResults={modeUser.recentResults}
           characterStats={characterStats}
+          identityActions={(
+            <>
+              <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
+                <Award size={20} aria-hidden="true" />
+              </button>
+              <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
+                <Palette size={20} aria-hidden="true" />
+              </button>
+            </>
+          )}
           recentAction={(
             <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => setShowReplays(true)}>
               <MonitorPlay size={18} aria-hidden="true" />

@@ -22,3 +22,50 @@
   stroke: currentColor !important;
   text-shadow: none !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
+  & .profile-resume-hero {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    grid-template-areas: "portrait identity" "portrait actions" !important;
+    row-gap: 8px !important;
+  }
+
+  & .profile-identity-actions {
+    display: flex !important;
+    justify-self: end !important;
+    align-self: end;
+    width: auto !important;
+    gap: 6px !important;
+
+    & .resume-mini-action {
+      display: inline-flex !important;
+      justify-content: center;
+      align-items: center;
+      width: 44px !important;
+      min-width: 44px !important;
+      height: 44px !important;
+      padding: 0 !important;
+    }
+  }
+
+  & .achievement-entry-action {
+    --campus-control-fill: #ffe4ee;
+    --campus-control-hover: #ffe4ee;
+    --campus-control-ink: #76314a;
+    border-color: #f08bad !important;
+  }
+
+  & .personalization-entry-action {
+    --campus-control-fill: #d9f0ff;
+    --campus-control-hover: #d9f0ff;
+    --campus-control-ink: #245f8c;
+    border-color: #7db8e8 !important;
+  }
+
+  & .resume-replay-action {
+    --campus-control-fill: #e4f6f0;
+    --campus-control-hover: #e4f6f0;
+    --campus-control-ink: #245b4f;
+    border-color: #73b79f !important;
+  }
+}

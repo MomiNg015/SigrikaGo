@@ -1325,6 +1325,8 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 ## Independent lazy overlay boundaries
 
+- Self-resume achievement and personalization actions use `identityActions`, icon-only with accessible labels, anchored to the identity card's lower right. Preserve the original pink/blue/green achievement/personalization/replay palette through local shared-button variables; keep social-profile actions unchanged.
+
 - Ordinary button labels default to `white-space: nowrap`. Friend action buttons must also stay on one row: compact portrait padding, gaps and font sizes rather than wrapping controls. Portrait leaderboard rows place rank, character portrait, username and statistics in that horizontal order; never stack the portrait beneath the rank. Pinned rows share the layout. Do not reintroduce bookmark-specific tall row rearrangements.
 
 - Desktop room headers auto-place optional utility groups in columns after the flexible metadata track. Never hard-code three tracks: development tools add a fourth group. Keep metadata and utility rows non-wrapping, with horizontal scrolling only for metadata.
