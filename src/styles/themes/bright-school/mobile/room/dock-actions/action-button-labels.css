@@ -33,14 +33,12 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room):not(:has(.tutorial-battle-screen-stage)) .mobile-tab-panel .action-bar .skill-action:not(:disabled) {
     --skill-button-shadow: color-mix(in srgb, var(--bright-ink) 65%, transparent);
-    background: var(--bright-pink-soft) !important;
     border: 2px solid var(--bright-ink) !important;
     border-radius: 14px !important;
     box-shadow: 0 3px 0 var(--skill-button-shadow) !important;
     transform: none !important;
 
     &.active {
-      background: var(--bright-pink) !important;
       box-shadow: inset 0 0 0 1px var(--bright-ink), 0 1px 0 var(--skill-button-shadow) !important;
       transform: translateY(2px) !important;
       outline: none !important;
