@@ -19,61 +19,6 @@
   grid-template-rows: minmax(0, 1fr) !important;
 }
 
-/* Reserve a readable player-name column beside the portrait bookmark gutter. */
-@media (max-width: 760px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) .leaderboard-row {
-    min-height: 104px !important;
-    height: auto !important;
-    grid-template-columns: 28px 36px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "rank avatar player"
-      "score score rate"
-      "record record record" !important;
-    gap: 6px 8px !important;
-    padding: 10px !important;
-
-    & .leaderboard-player,
-    & .leaderboard-player > strong,
-    & .leaderboard-player > span,
-    & .leaderboard-player .user-identity {
-      justify-items: start !important;
-      justify-self: start !important;
-      text-align: left !important;
-    }
-
-    & .leaderboard-player .user-identity-main {
-      justify-content: flex-start !important;
-    }
-
-    & .leaderboard-mobile-record {
-      justify-self: start !important;
-      gap: 12px !important;
-    }
-
-    & .leaderboard-mobile-record span {
-      padding: 0 !important;
-      background: transparent !important;
-    }
-
-    & > span:nth-of-type(5) {
-      background: transparent !important;
-      padding: 0 !important;
-    }
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) .leaderboard-row > b {
-    justify-self: start !important;
-    white-space: nowrap;
-
-    &::before {
-      content: "积分 ";
-      font-family: var(--font-ui-default);
-      font-size: 11px;
-      font-weight: 400;
-    }
-  }
-}
-
 @media (max-width: 360px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.window-bookmark-host:has(> .window-bookmark-rail) .profile-identity-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

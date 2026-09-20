@@ -1,7 +1,7 @@
 # Battle UI scoped rollback
 
 ## Final user-directed scope
-- Home follow-up: reorganize portrait ranking rows in a consistent reading order and prevent ordinary button text wrapping, especially friend action groups.
+- Home correction: friend buttons AND their text must stay on one row. Remove tall bookmark-specific ranking rearrangements and restore compact horizontal identity/statistic groups.
 - Desktop follow-up: keep metadata, development tools, utility buttons and exit aligned on one row; optional groups and long names must not increase header height.
 - Follow-up: member details match friend details; portrait dock tabs anchor to the action-tab baseline and grow downward without moving board/player information.
 - Subsequent explicit exception: restore portrait skill-button default/selected depth, preserving shared multicolor backgrounds and depressed selection without glow.

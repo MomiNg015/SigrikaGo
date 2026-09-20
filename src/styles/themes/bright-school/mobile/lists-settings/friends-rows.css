@@ -1,5 +1,19 @@
 /* Bright School portrait mobile friends row layout. */
 @media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {
+    margin-inline: 0;
+    padding: 4px;
+    gap: 4px;
+    flex-wrap: nowrap;
+
+    & button {
+      min-width: 0;
+      padding-inline: 2px !important;
+      font-size: clamp(11px, 3vw, 13px) !important;
+      white-space: nowrap;
+    }
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {
     min-width: 0 !important;

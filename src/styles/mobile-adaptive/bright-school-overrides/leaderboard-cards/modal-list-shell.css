@@ -18,11 +18,13 @@
     background:
       linear-gradient(135deg, rgba(255, 250, 240, 0.98), rgba(255, 246, 221, 0.96)) padding-box !important;
     min-height: 72px !important;
+    height: auto !important;
+    grid-template-rows: 20px 16px 16px !important;
     grid-template-areas:
-      "rank avatar player score"
-      "rank avatar player record"
-      "rank avatar player rate" !important;
-    grid-template-columns: 30px 42px minmax(0, 1fr) minmax(96px, auto) !important;
+      "rank player score"
+      "avatar player record"
+      "avatar player rate" !important;
+    grid-template-columns: 34px minmax(0, 1fr) minmax(86px, auto) !important;
     gap: 4px 7px !important;
     align-items: center !important;
     padding: 8px 8px 8px 0 !important;
@@ -45,11 +47,13 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
-    width: 40px !important;
-    height: 44px !important;
+    width: 30px !important;
+    height: 32px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
+    height: 20px !important;
+    min-height: 20px !important;
     align-self: center !important;
     justify-self: center !important;
   }
