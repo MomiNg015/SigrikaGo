@@ -24,7 +24,7 @@
       "rank avatar player score"
       "rank avatar player record"
       "rank avatar player rate" !important;
-    grid-template-columns: 24px 30px minmax(0, 1fr) minmax(86px, auto) !important;
+    grid-template-columns: 24px 46px minmax(0, 1fr) minmax(86px, auto) !important;
     gap: 4px !important;
     align-items: center !important;
     padding: 8px 8px 8px 0 !important;
@@ -47,8 +47,9 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
-    width: 30px !important;
-    height: 32px !important;
+    justify-self: end !important;
+    width: 40px !important;
+    height: 44px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
@@ -56,5 +57,11 @@
     min-height: 20px !important;
     align-self: center !important;
     justify-self: center !important;
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal {
+    padding-inline: 4px !important;
   }
 }

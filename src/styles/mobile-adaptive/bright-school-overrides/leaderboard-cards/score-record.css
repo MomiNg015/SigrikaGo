@@ -10,7 +10,7 @@
     align-self: center !important;
     padding: 1px 6px !important;
     border-radius: 999px !important;
-    background: rgba(255, 255, 255, 0.64) !important;
+    background: transparent !important;
     font-size: 11px !important;
     line-height: 1.15 !important;
   }
@@ -34,7 +34,7 @@
     gap: 2px !important;
     padding: 2px 1px !important;
     border-radius: 999px !important;
-    background: rgba(255, 255, 255, 0.56) !important;
+    background: transparent !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-mobile-record strong {

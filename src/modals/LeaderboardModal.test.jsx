@@ -250,10 +250,10 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain('"rank avatar player score"');
     expect(finalMobileCss).toContain('"rank avatar player record"');
     expect(finalMobileCss).toContain('"rank avatar player rate"');
-    expect(finalMobileCss).toContain("grid-template-columns: 24px 30px minmax(0, 1fr) minmax(86px, auto) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 24px 46px minmax(0, 1fr) minmax(86px, auto) !important");
     expect(finalMobileCss).toContain("padding: 8px 8px 8px 0 !important");
-    expect(finalMobileCss).toContain("width: 30px !important");
-    expect(finalMobileCss).toContain("height: 32px !important");
+    expect(finalMobileCss).toContain("width: 40px !important");
+    expect(finalMobileCss).toContain("height: 44px !important");
     expect(finalMobileCss).toContain(".leaderboard-player .user-identity");
     expect(finalMobileCss).toContain("justify-items: center !important");
     expect(finalMobileCss).toContain("justify-content: center !important");

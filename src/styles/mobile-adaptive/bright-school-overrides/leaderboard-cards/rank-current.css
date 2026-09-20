@@ -29,7 +29,7 @@
     min-height: 72px !important;
     width: 100% !important;
     min-width: 0 !important;
-    grid-template-columns: 24px 30px minmax(0, 1fr) minmax(86px, auto) !important;
+    grid-template-columns: 24px 46px minmax(0, 1fr) minmax(86px, auto) !important;
     gap: 4px !important;
     padding: 8px 8px 8px 0 !important;
     border-width: 2px !important;
