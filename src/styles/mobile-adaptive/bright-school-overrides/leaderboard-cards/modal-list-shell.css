@@ -21,11 +21,11 @@
     height: auto !important;
     grid-template-rows: 20px 16px 16px !important;
     grid-template-areas:
-      "rank player score"
-      "avatar player record"
-      "avatar player rate" !important;
-    grid-template-columns: 34px minmax(0, 1fr) minmax(86px, auto) !important;
-    gap: 4px 7px !important;
+      "rank avatar player score"
+      "rank avatar player record"
+      "rank avatar player rate" !important;
+    grid-template-columns: 24px 30px minmax(0, 1fr) minmax(86px, auto) !important;
+    gap: 4px !important;
     align-items: center !important;
     padding: 8px 8px 8px 0 !important;
     text-align: left !important;

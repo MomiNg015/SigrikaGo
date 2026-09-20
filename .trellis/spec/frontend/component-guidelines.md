@@ -1325,7 +1325,7 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 ## Independent lazy overlay boundaries
 
-- Ordinary button labels default to `white-space: nowrap`. Friend action buttons must also stay on one row: compact portrait padding, gaps and font sizes rather than wrapping controls. Portrait leaderboard rows group rank/avatar, identity and right-aligned statistics horizontally; pinned rows share the layout. Do not reintroduce bookmark-specific tall row rearrangements.
+- Ordinary button labels default to `white-space: nowrap`. Friend action buttons must also stay on one row: compact portrait padding, gaps and font sizes rather than wrapping controls. Portrait leaderboard rows place rank, character portrait, username and statistics in that horizontal order; never stack the portrait beneath the rank. Pinned rows share the layout. Do not reintroduce bookmark-specific tall row rearrangements.
 
 - Desktop room headers auto-place optional utility groups in columns after the flexible metadata track. Never hard-code three tracks: development tools add a fourth group. Keep metadata and utility rows non-wrapping, with horizontal scrolling only for metadata.
 

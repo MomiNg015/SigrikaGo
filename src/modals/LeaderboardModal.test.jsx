@@ -247,10 +247,10 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain("padding: 4px 6px 6px 0 !important");
     expect(finalMobileCss).toContain("padding-right: 6px !important");
     expect(finalMobileCss).toContain("padding-bottom: 6px !important");
-    expect(finalMobileCss).toContain('"rank player score"');
-    expect(finalMobileCss).toContain('"avatar player record"');
-    expect(finalMobileCss).toContain('"avatar player rate"');
-    expect(finalMobileCss).toContain("grid-template-columns: 34px minmax(0, 1fr) minmax(86px, auto) !important");
+    expect(finalMobileCss).toContain('"rank avatar player score"');
+    expect(finalMobileCss).toContain('"rank avatar player record"');
+    expect(finalMobileCss).toContain('"rank avatar player rate"');
+    expect(finalMobileCss).toContain("grid-template-columns: 24px 30px minmax(0, 1fr) minmax(86px, auto) !important");
     expect(finalMobileCss).toContain("padding: 8px 8px 8px 0 !important");
     expect(finalMobileCss).toContain("width: 30px !important");
     expect(finalMobileCss).toContain("height: 32px !important");
@@ -269,7 +269,7 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
     expect(finalMobileCss).toContain("align-content: start !important");
     expect(finalMobileCss).toContain("min-height: 72px !important");
-    expect(finalMobileCss).toContain("width: 34px !important");
+    expect(finalMobileCss).toContain("width: 24px !important");
     expect(finalMobileCss).toContain("font-size: 17px !important");
   });
 
