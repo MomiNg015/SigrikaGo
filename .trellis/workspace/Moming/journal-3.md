@@ -401,3 +401,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 133: 禁止拖选按钮文字
+
+**Date**: 2026-09-20
+**Task**: 禁止拖选按钮文字
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+共享button增加标准及WebKit文本选择限制，正文与输入框保持可选。77项样式测试、lint、构建及构建CSS检查通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a46a374a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
