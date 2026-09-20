@@ -434,3 +434,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 134: 统一普通按钮状态第一批
+
+**Date**: 2026-09-20
+**Task**: 统一普通按钮状态第一批
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+通用窗口和普通对弈按钮统一语义配色及完整输入状态，保留专属按钮外观，收敛旧动效规则。实际CSS及好友组件样板已验证桌面、390px竖屏、悬停和焦点；lint、相关窗口和样式测试、436项对弈回归、构建及构建CSS检查通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5299298e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
