@@ -38,7 +38,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     canConfirmSkillPoint,
     canSwitchView,
     displayRoom,
-    drawRequest,
     hasAnyStones,
     isLiveSpectator,
     isReplay,
@@ -175,7 +174,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         canSwitchView={canSwitchView}
         characters={characters}
         displayRoom={displayRoom}
-        drawRequest={drawRequest}
         handlePoint={handlePoint}
         handleBoardSurface={handleBoardSurface}
         handleScoringPoint={handleScoringPoint}

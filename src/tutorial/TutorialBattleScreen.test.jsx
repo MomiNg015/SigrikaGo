@@ -81,7 +81,7 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain('className="action-bar tutorial-action-bar tutorial-choice-actions"');
     expect(source).toContain('role="group"');
     expect(source).toContain('aria-label="请选择回答"');
-    expect(source).toContain("showOperationHint={!choicesVisible}");
+    expect(source).not.toContain("showOperationHint");
     expect(source).not.toContain("tutorial-battle-choice-scrim");
     expect(source).not.toContain("className=\"tutorial-battle-feedback\"");
     expect(source).not.toContain("tutorial-battle-choice-close");

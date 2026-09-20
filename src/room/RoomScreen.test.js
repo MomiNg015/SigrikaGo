@@ -920,7 +920,9 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers[\"story-log\"]}");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
-    expect(battleSource).toContain("<div className=\"room-side\">\n        {selfInfo}\n        {hintPanel}\n        {storyLogPanel}");
+    expect(battleSource).toContain("<div className=\"room-side\">\n        {selfInfo}\n        {storyLogPanel}");
+    expect(battleSource).not.toContain("OperationHint");
+    expect(battleSource).not.toContain("{hintPanel}");
     expect(battleSource).not.toContain("{membersPanel}\n        {hintPanel}\n      </div>");
     expect(firstFloatingLayerZ).toBeGreaterThan(140);
     expect(firstFloatingLayerZ).toBeLessThan(modalBackdropZ);

@@ -1,8 +1,8 @@
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-action-panel {
     display: grid !important;
-    grid-template-rows: minmax(0, auto) auto !important;
-    gap: 5px !important;
+    grid-template-rows: auto !important;
+    gap: 0 !important;
     min-height: 0 !important;
   }
 

@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
-import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
 import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
@@ -19,7 +18,6 @@ export default function RoomBattleStage({
   canSwitchView,
   characters,
   displayRoom,
-  drawRequest,
   handleBoardSurface,
   handlePoint,
   handleScoringPoint,
@@ -55,7 +53,6 @@ export default function RoomBattleStage({
   skillEffectsEnabled = true,
   skillPreview,
   showPeoplePanel = true,
-  showOperationHint = true,
   showTutorialLog = false,
   tutorialTargetPointId = "",
   tutorialAnyBoardTarget = false,
@@ -130,9 +127,6 @@ export default function RoomBattleStage({
       floatingLayerZ={floatingLayers.members}
       onFloatingLayerRequest={handleMembersFloatingLayer}
     />
-  );
-  const hintPanel = showOperationHint && !isReplay && role === "player" && (
-    <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
   );
   const boardPanel = (
     <div className="board-stage">
@@ -228,7 +222,7 @@ export default function RoomBattleStage({
 
   if (isMobileBattleLayout) {
     const panels = [
-      { id: "actions", label: "操作", content: <div className="mobile-action-panel">{hintPanel}{actionPanel}</div> },
+      { id: "actions", label: "操作", content: <div className="mobile-action-panel">{actionPanel}</div> },
       membersPanel && { id: "members", label: "成员", content: membersPanel }
     ].filter(Boolean);
     const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
@@ -293,7 +287,6 @@ export default function RoomBattleStage({
       </div>
       <div className="room-side">
         {selfInfo}
-        {hintPanel}
         {storyLogPanel}
       </div>
     </section>

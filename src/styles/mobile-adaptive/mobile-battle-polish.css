@@ -1,0 +1,62 @@
+/* Ordinary portrait battles: quiet information chrome, readable actions. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room):not(:has(.tutorial-battle-screen-stage)) {
+    & .player-info.active-turn {
+      background: var(--bright-paper) !important;
+      border-color: var(--bright-border) !important;
+    }
+
+    & .player-info .captures > * {
+      padding: 1px 2px !important;
+      border: 0 !important;
+      background: transparent !important;
+      border-radius: 0 !important;
+    }
+
+    & .player-info .digital-timer {
+      border-width: 1px !important;
+      border-radius: 8px !important;
+    }
+
+    & .player-info.active-turn .digital-timer {
+      background: var(--bright-mint) !important;
+      border-color: var(--bright-border) !important;
+    }
+
+    & .player-info .skill-chip {
+      font-size: 11px !important;
+      border-width: 1px !important;
+      border-radius: 8px !important;
+    }
+
+    & .mobile-tab-list {
+      gap: 6px !important;
+      padding: 4px 6px !important;
+    }
+
+    & .mobile-tab-button {
+      border-width: 1px !important;
+      border-radius: 8px !important;
+    }
+
+    & .mobile-tab-panel .action-bar:not(.replay-bar):not(.tutorial-choice-actions) {
+      &:has(.skill-action) {
+        grid-template-columns: 1fr 1fr 1.55fr 1fr 1fr !important;
+      }
+
+      & button {
+        border-width: 1px !important;
+        border-radius: 8px !important;
+      }
+
+      & .action-label {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+      }
+
+      & .skill-action {
+        border-width: 2px !important;
+      }
+    }
+  }
+}

@@ -631,6 +631,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/window-sticker-resume-header.css",
       "./mobile-adaptive/match-mode-title-layout.css",
       "./mobile-adaptive/mobile-room-shadow-gutters.css",
+      "./mobile-adaptive/mobile-battle-polish.css",
       "./mobile-adaptive/home-student-id.css",
       "./mobile-adaptive/guided-actions.css",
       "./mobile-adaptive/window-bookmarks.css",

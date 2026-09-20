@@ -6,6 +6,10 @@
 
 ## Overview
 
+### Battle action presentation
+
+`RoomBattleStage` does not render `OperationHint` in desktop or mobile layouts, including tutorial battles. Mobile `.mobile-action-panel` contains only the action panel; keep it to one grid row without an empty hint gap. Preserve actionable draw/scoring confirmations and tutorial choices. `RoomScreen.test.js` and `TutorialBattleScreen.test.jsx` lock the shared-stage removal.
+
 <!--
 Document your project's component conventions here.
 

@@ -753,7 +753,6 @@ export default function TutorialBattleScreen({
           canSwitchView={false}
           characters={characters}
           displayRoom={displayRoom}
-          drawRequest={null}
           handleBoardSurface={handleBoardSurface}
           handlePoint={handlePoint}
           handleScoringPoint={() => {}}
@@ -783,7 +782,6 @@ export default function TutorialBattleScreen({
           setSpectatorStep={() => {}}
           setViewColor={() => {}}
           showPeoplePanel={false}
-          showOperationHint={!choicesVisible}
           showTutorialLog
           showCoords={showCoords}
           showMoves={false}
