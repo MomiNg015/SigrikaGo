@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 130
+- **Total Sessions**: 131
 - **Last Active**: 2026-09-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~337 | Active |
+| `journal-3.md` | ~370 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 131 | 2026-09-20 | 修复引导立绘与加载首帧 | `60e59605` | `codex/campus-home-handbook-polish` |
 | 130 | 2026-09-20 | 精修文字书签与窗口空状态 | `35723a15` | `codex/campus-home-handbook-polish` |
 | 129 | 2026-09-20 | 恢复招募窗口内道具选择 | `b50c4e81` | `codex/campus-home-handbook-polish` |
 | 128 | 2026-09-19 | 修整书签窗口列表与分隔线 | `0997c67c` | `codex/campus-home-handbook-polish` |

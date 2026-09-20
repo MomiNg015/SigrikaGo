@@ -335,3 +335,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 131: 修复引导立绘与加载首帧
+
+**Date**: 2026-09-20
+**Task**: 修复引导立绘与加载首帧
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+教学无角色玩家复用剧情默认立绘并预加载；引导路由加载从零开始，各段进度按加载标识隔离。47项相关测试、lint、build通过，浏览器核对真实玩家组件立绘加载正常。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `60e59605` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
