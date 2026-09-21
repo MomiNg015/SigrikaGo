@@ -1,3 +1,4 @@
+import { ROW_SLASH_DISSOLVE_START, ROW_SLASH_DISSOLVE_DURATION } from "../shared/rowSlashPresentation.js";
 import { playSigrikaStar } from "./boardSigrikaEffect.js";
 import {
   LIBERTY_PURGE_SLASH_DRAW_MS,
@@ -771,7 +772,8 @@ function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) 
   const edge = new pixi.Graphics();
   const cuts = new pixi.Graphics();
   const sparks = new pixi.Graphics();
-  app.stage.addChild(omen, ink, edge, cuts, sparks);
+  const mist = new pixi.Graphics();
+  app.stage.addChild(omen, ink, edge, cuts, sparks, mist);
   const cutTargets = rowSlashCutTargets({ host, boardSize, pendingSkill, row });
   const startedAt = performance.now();
 
@@ -785,6 +787,18 @@ function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) 
     cuts.clear();
     sparks.clear();
 
+    mist.clear();
+    const dissolve = clamp01((progress - ROW_SLASH_DISSOLVE_START) / ROW_SLASH_DISSOLVE_DURATION);
+    if (dissolve > 0 && dissolve < 1) {
+      for (let index = 0; index < 32; index += 1) {
+        const seed = rowSlashSeed(index + 180);
+        const x = seed.radius * width + (seed.size - 0.5) * cellSize * dissolve;
+        const drift = (index % 2 ? 1 : -1) * cellSize * (0.15 + seed.delay * 0.8) * dissolve;
+        const half = cellSize * (0.08 + seed.size * 0.2) * (1 + dissolve);
+        mist.ellipse(x, y + drift, half, half * 0.18)
+          .fill({ color: index % 3 ? 0x286d76 : 0x5c9190, alpha: Math.sin(dissolve * Math.PI) * (1 - dissolve) * 0.34 });
+      }
+    }
     drawRowSlashOmen(omen, { width, height, cellSize, progress });
 
     const charge = clamp01((progress - 0.13) / 0.07) * (1 - clamp01((progress - 0.2) / 0.08));

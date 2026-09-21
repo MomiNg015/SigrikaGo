@@ -1,3 +1,4 @@
+import { ROW_SLASH_DISSOLVE_START, ROW_SLASH_DISSOLVE_DURATION } from "../shared/rowSlashPresentation.js";
 import { memo, useLayoutEffect, useMemo, useRef } from "react";
 import { COLORS, isPlayerColor } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
@@ -313,7 +314,6 @@ function Board({
         />}
       <BoardRowSlashOverlay
           boardSize={boardSize}
-          rowEffects={game.rowEffects}
           pendingSkill={game.pendingSkill}
           effectsEnabled={rowSlashEffectsEnabled}
           boardEffectDurationMs={skillBoardEffectDurationMs}
@@ -518,7 +518,6 @@ function roundBoardNumber(value) {
 
 function BoardRowSlashOverlay({
   boardSize,
-  rowEffects = [],
   pendingSkill = null,
   effectsEnabled = true,
   boardEffectDurationMs = 1800
@@ -554,15 +553,13 @@ function BoardRowSlashOverlay({
         castDurationMs
       }
     : null;
-  const effects = [
-    ...(pendingEffect ? [pendingEffect] : []),
-    ...(Array.isArray(rowEffects)
-      ? rowEffects.filter((effect) => !pendingEffect || effect?.effectType !== "row-slash" || effect.y !== pendingEffect.y)
-      : [])
-  ].filter((effect) => effect?.effectType === "row-slash" && Number.isInteger(effect.y));
+  const effects = pendingEffect ? [pendingEffect] : [];
   if (!effects.length) return null;
   return (
-    <div ref={overlayRef} className="board-row-effects" aria-hidden="true">
+    <div ref={overlayRef} className="board-row-effects" aria-hidden="true" style={{
+      "--row-dissolve-delay": `${Math.round(Number(boardEffectDurationMs) * ROW_SLASH_DISSOLVE_START)}ms`,
+      "--row-dissolve-duration": `${Math.round(Number(boardEffectDurationMs) * ROW_SLASH_DISSOLVE_DURATION)}ms`
+    }}>
       {effects.map((effect, index) => (
         <span
           key={`${effect.owner ?? "preview"}-${effect.y}-${effect.id ?? index}`}

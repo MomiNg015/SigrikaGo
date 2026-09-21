@@ -11,6 +11,7 @@
   position: absolute;
   inset: 0;
   z-index: 10;
+  animation: row-ink-disperse var(--row-dissolve-duration) ease-out calc(var(--skill-banner-duration) + var(--row-dissolve-delay)) forwards;
   pointer-events: none;
   overflow: visible;
   contain: layout paint;
@@ -75,18 +76,19 @@
     opacity: 0;
     clip-path: inset(0 100% 0 0);
     scale: 1 0.62;
-    filter: drop-shadow(0 0 0 rgba(232, 255, 248, 0));
   }
   42% {
     opacity: 0.94;
     clip-path: inset(0 18% 0 0);
     scale: 1 1.02;
-    filter: drop-shadow(0 0 22px rgba(232, 255, 248, 0.82)) drop-shadow(0 2px 3px rgba(13, 16, 18, 0.34));
   }
   100% {
     opacity: 0.9;
     clip-path: inset(0 0 0 0);
     scale: 1 1;
-    filter: drop-shadow(0 0 11px rgba(221, 255, 248, 0.64)) drop-shadow(0 2px 3px rgba(13, 16, 18, 0.34));
   }
+}
+
+@keyframes row-ink-disperse {
+  to { opacity: 0; filter: blur(3px); }
 }

@@ -8,6 +8,7 @@
 @media (prefers-reduced-motion: reduce) {
   .board-effects-layer,
   .board-effects-canvas,
+  .board-row-effects,
   .board-row-slash,
   .double-move-stone .stone,
   .double-move-stone .stone::before,

@@ -15,3 +15,9 @@ Final user correction: restore the complete pre-optimization Qiuyuan presentatio
 New scoped request: original sword effects are cut off at inner grid bounds. Move only Qiuyuan transient canvas and persistent scar to board-wrap, retaining real grid geometry and original visuals/timing. Cover coordinate margins and clip at wooden surface edges.
 
 Edge fix validation: 118 focused tests passed, including Board, Pixi lifecycle, registry, CSS debt and generated documentation. Additional Board ownership assertions passed. Lint/build passed. Real Board with coordinate margins checked at 1000x850 and 390x844: canvas and scar span the wooden surface while grid is inset; no mobile horizontal overflow or page errors.
+
+Latest request: hold the finishing stroke briefly then disperse its ink before the opponent can move. Retain 4000ms server resolution; complete visual fade at 3728ms. Render only pending slash, never resolved rowEffects. Reduced motion has no particle dispersion.
+
+Design hook reports unchanged color assertions in Board.test.js (#4a3736, #ff75b7, #ff1733). These are pre-existing regression fixtures outside this effect, classified as false positives; no palette edits or suppressions.
+
+Dissolve validation: 112 focused tests, lint and build passed. Real Board at 3400ms shows fading blurred ink; 3800ms opacity is zero; at 4200ms no row scar node exists despite resolved rowEffects. Original 4000ms authority remains unchanged.

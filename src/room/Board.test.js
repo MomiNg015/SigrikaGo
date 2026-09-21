@@ -813,14 +813,23 @@ describe("areBoardPropsEqual", () => {
     expect(markup).not.toContain("<i></i>");
   });
 
-  test("renders QiuYuan row slash as a continuous board overlay", () => {
+  test("does not resurrect a resolved row scar during the opponent turn", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: { phase: "playing", size: 13, points: createPoints(13), history: [],
+        rowEffects: [{ effectType: "row-slash", owner: "black", y: 6, id: "4,6" }] }
+    })));
+    expect(markup).not.toContain("board-row-slash");
+    expect(markup).not.toContain("board-row-effects");
+  });
+
+  test("renders QiuYuan row slash as a temporary continuous board overlay", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "playing",
         size: 13,
         points: createPoints(13),
         history: [],
-        rowEffects: [{ effectType: "row-slash", owner: "black", y: 6, id: "4,6" }]
+        pendingSkill: { id: "slash", effectType: "row-slash", targetId: "4,6", row: 6 }
       }
     })));
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
@@ -1002,6 +1011,9 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain("board-row-effects");
     expect((markup.match(/board-row-slash/g) ?? []).length).toBe(1);
     expect(markup).toContain("board-row-slash casting");
+    expect(markup).toContain("--row-dissolve-delay:1152ms");
+    expect(markup).toContain("--row-dissolve-duration:576ms");
+    expect(2000 + 1152 + 576).toBeLessThan(4000);
     expect(markup).toContain("--row-slash-cast-delay:342ms");
     expect(markup).toContain("--row-slash-cast-duration:396ms");
     expect(markup).toContain("row-slash-cut-pending");
