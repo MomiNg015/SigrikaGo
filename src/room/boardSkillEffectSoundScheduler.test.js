@@ -25,7 +25,7 @@ describe("boardSkillEffectSoundScheduler", () => {
 
     expect(scheduled).toEqual(timerIds);
     expect(setTimeoutFn).toHaveBeenNthCalledWith(1, expect.any(Function), 160);
-    expect(setTimeoutFn).toHaveBeenNthCalledWith(2, expect.any(Function), 960);
+    expect(setTimeoutFn).toHaveBeenNthCalledWith(2, expect.any(Function), 1160);
     expect(playSound).toHaveBeenNthCalledWith(1, "erase-point", "start", audioSettings);
     expect(playSound).toHaveBeenNthCalledWith(2, "erase-point", "impact", audioSettings);
   });

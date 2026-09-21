@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createPoints } from "../shared/game.js";
+import { SIGRIKA_BOUNDARY_REVEAL_MS, SIGRIKA_STAR_IMPACT_PROGRESS, SIGRIKA_SUNSPIRIT_REVEAL_PROGRESS } from "../shared/sigrikaPresentation.js";
 import Board from "./Board.jsx";
-import { areBoardPropsEqual, arePointButtonPropsEqual, erasedBoundaryGeometry, stoneOffsetForPoint } from "./Board.jsx";
+import { areBoardPropsEqual, arePointButtonPropsEqual, erasedBoundaryGeometry, pendingErasedBoundaryGeometry, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
   test("rerenders the board when handler references change so stable refs stay current", () => {
@@ -172,7 +173,7 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toMatch(/class="point\s+black[^"]*"[^>]*>[\s\S]*?<i><\/i>/);
   });
 
-  test("renders erased Sigrika field markers from the crater WebP asset at 1.5 board-cell scale", () => {
+  test("renders sleepy Sigrika Sunspirit markers from the existing WebP at 1.5 board-cell scale", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "playing",
@@ -610,12 +611,13 @@ describe("areBoardPropsEqual", () => {
     expect(markup).not.toContain('class="stone "><i');
   });
 
-  test("reveals Sigrika erased field marker at the meteor impact point during the pending animation", () => {
+  test("reveals Sigrika Sunspirit and presentation-only boundary at the shared star contact phase", () => {
+    const points = Object.freeze(createPoints(13).map((point) => Object.freeze(point)));
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "skill-preview",
         size: 13,
-        points: createPoints(13),
+        points,
         history: [],
         pendingSkill: {
           id: "sigrika-impact",
@@ -629,13 +631,84 @@ describe("areBoardPropsEqual", () => {
     })));
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
 
-    expect(markup).toContain("--erase-impact-marker-delay:3044ms");
+    expect(markup).toContain(`--erase-impact-marker-delay:${Math.round(2000 + 1800 * SIGRIKA_STAR_IMPACT_PROGRESS)}ms`);
+    expect(markup).toContain(`--sigrika-sunspirit-delay:${Math.round(2000 + 1800 * SIGRIKA_SUNSPIRIT_REVEAL_PROGRESS)}ms`);
+    expect(SIGRIKA_SUNSPIRIT_REVEAL_PROGRESS).toBeGreaterThan(SIGRIKA_STAR_IMPACT_PROGRESS);
+    expect(css).toContain("var(--sigrika-sunspirit-delay,");
+    expect(markup).toContain(`--erase-boundary-reveal-duration:${SIGRIKA_BOUNDARY_REVEAL_MS}ms`);
     expect(markup).toContain('class="void erase-impact-pending"');
+    expect(markup.match(/class="erased-boundary-cell erase-boundary-pending"/g)).toHaveLength(4);
+    expect(markup.match(/class="erased-boundary-line erase-boundary-pending"/g)).toHaveLength(4);
     expect(markup).not.toContain('class="point erased');
+    expect(points.every((point) => point.valid && !point.skillEffect)).toBe(true);
     expect(css).toContain(".void.erase-impact-pending");
     expect(css).toContain("erase-impact-marker-reveal");
     expect(css).toContain("opacity: 0");
     expect(css).not.toContain(".void.erase-impact-pending::before");
+  });
+
+  test.each([
+    { skillEffectsEnabled: false, effectsEnabled: true },
+    { skillEffectsEnabled: true, effectsEnabled: false }
+  ])("keeps resolved Sunspirits but omits pending visuals when effects are disabled: %j", ({ skillEffectsEnabled, effectsEnabled }) => {
+    const points = createPoints(13);
+    points.find((point) => point.id === "5,6").valid = false;
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      skillEffectsEnabled,
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points,
+        history: [],
+        pendingSkill: { id: "disabled-star", effectType: "erase-point", targetId: "6,6", effectsEnabled }
+      }
+    })));
+    const css = readFileSync(new URL("../styles/room/board/latest-touch-void.css", import.meta.url), "utf8");
+    const resolvedMarkerRule = css.match(/\.void\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(markup).toContain('class="void"');
+    expect(markup.match(/class="erased-boundary-cell"/g)).toHaveLength(4);
+    expect(markup).not.toContain("erase-impact-pending");
+    expect(markup).not.toContain("erase-boundary-pending");
+    expect(markup).not.toContain("erase-boundary-retiring");
+    expect(resolvedMarkerRule).not.toContain("animation:");
+  });
+
+  test("uses an opacity-only Sunspirit and boundary reveal at the static reduced-motion contact cue", () => {
+    const markerCss = readFileSync(new URL("../styles/room/board/latest-touch-void.css", import.meta.url), "utf8");
+    const boundaryCss = readFileSync(new URL("../styles/room/board/grid-scoring.css", import.meta.url), "utf8");
+    const boardCssEntry = readFileSync(new URL("../styles/room/board.css", import.meta.url), "utf8");
+    const reducedMarker = markerCss.split("@media (prefers-reduced-motion: reduce)")[1];
+    const opacityKeyframes = boundaryCss.match(/@keyframes sigrika-opacity-reveal\s*\{[\s\S]*?\n\}/)?.[0] ?? "";
+
+    expect(reducedMarker).toContain("translate: none");
+    expect(reducedMarker).toContain("scale: none");
+    expect(reducedMarker).toContain("sigrika-opacity-reveal 100ms linear var(--skill-banner-duration, 2000ms) forwards");
+    // The reduced-motion owner loads first; its extra owner class must beat the later shorthand.
+    expect(boardCssEntry.indexOf("latest-touch-void.css")).toBeLessThan(boardCssEntry.indexOf("grid-scoring.css"));
+    expect(boundaryCss).toMatch(/\.erase-boundary-pending,\r?\n\.erase-boundary-retiring/);
+    expect(reducedMarker).toContain(".erased-boundary-layer .erase-boundary-pending");
+    expect(reducedMarker).toContain(".erased-boundary-layer .erase-boundary-retiring");
+    expect(reducedMarker).toContain("animation-duration: 100ms");
+    expect(reducedMarker).toContain("animation-delay: var(--skill-banner-duration, 2000ms)");
+    expect(opacityKeyframes).toContain("opacity: 0");
+    expect(opacityKeyframes).toContain("opacity: 1");
+    expect(opacityKeyframes).not.toMatch(/transform|scale|rotate/);
+    expect(markerCss).not.toContain("erased-point-glow");
+  });
+
+  test("settles the Sunspirit through individual transforms so Bright School child guards preserve motion", () => {
+    const css = readFileSync(new URL("../styles/room/board/latest-touch-void.css", import.meta.url), "utf8");
+    const pendingRule = css.match(/\.void\.erase-impact-pending\s*\{[^}]+\}/)?.[0] ?? "";
+    const revealKeyframes = css.match(/@keyframes erase-impact-marker-reveal\s*\{[\s\S]*?\n\}/)?.[0] ?? "";
+
+    expect(pendingRule).toContain("translate: 0 -3%");
+    expect(pendingRule).toContain("scale: 1.025");
+    expect(revealKeyframes).toContain("translate: 0 -3%");
+    expect(revealKeyframes).toContain("scale: 1.025");
+    expect(revealKeyframes).toContain("translate: 0;");
+    expect(revealKeyframes).toContain("scale: 1;");
+    expect(`${pendingRule}${revealKeyframes}`).not.toMatch(/\btransform\s*:|!important/);
   });
 
   test("renders Voyage Star center point with only one centered star crater marker", () => {
@@ -853,6 +926,50 @@ describe("areBoardPropsEqual", () => {
       "line-v-5-5-7",
       "line-v-8-5-7"
     ]);
+  });
+
+  test("fades only new cells and boundary changes beside an existing Sunspirit without double paint", () => {
+    const points = createPoints(13);
+    points.find((point) => point.id === "5,6").valid = false;
+    points.forEach(Object.freeze);
+    Object.freeze(points);
+    const resolved = erasedBoundaryGeometry(points, 13);
+    const presented = pendingErasedBoundaryGeometry(points, 13, new Set(["6,6"]), resolved);
+
+    expect(presented.cells.filter((cell) => !cell.pending)).toEqual(resolved.cells);
+    expect(presented.cells.filter((cell) => cell.pending).map((cell) => cell.key).sort()).toEqual([
+      "cell-6-5", "cell-6-6"
+    ]);
+    expect(new Set(presented.cells.map((cell) => cell.key)).size).toBe(6);
+    expect(presented.lines.filter((line) => !line.phase).map((line) => line.key).sort()).toEqual([
+      "line-h-5-4-6", "line-h-7-4-6", "line-v-4-5-7"
+    ]);
+    expect(presented.lines.filter((line) => line.phase === "retiring").map((line) => line.key)).toEqual([
+      "line-v-6-5-7"
+    ]);
+    expect(presented.lines.filter((line) => line.phase === "pending").map((line) => line.key).sort()).toEqual([
+      "line-h-5-6-7", "line-h-7-6-7", "line-v-7-5-7"
+    ]);
+    expect(points.find((point) => point.id === "6,6").valid).toBe(true);
+
+    const resolvedPoints = points.map((point) => point.id === "6,6" ? { ...point, valid: false } : point);
+    const afterResolution = erasedBoundaryGeometry(resolvedPoints, 13);
+    expect(presented.cells.map((cell) => cell.key).sort()).toEqual(afterResolution.cells.map((cell) => cell.key).sort());
+    expect(afterResolution.lines.map((line) => line.key).sort()).toEqual([
+      "line-h-5-4-7", "line-h-7-4-7", "line-v-4-5-7", "line-v-7-5-7"
+    ]);
+    expect(pendingErasedBoundaryGeometry(resolvedPoints, 13, new Set(), afterResolution)).toBe(afterResolution);
+  });
+
+  test("bounds pending Sunspirit geometry at a corner and ignores missing point ids", () => {
+    const points = createPoints(13);
+    const corner = pendingErasedBoundaryGeometry(points, 13, new Set(["0,0"]));
+    const resolved = erasedBoundaryGeometry(points, 13);
+
+    expect(corner.cells.map((cell) => cell.key)).toEqual(["cell-0-0"]);
+    expect(corner.lines).toHaveLength(4);
+    expect(corner.lines.every((line) => line.phase === "pending")).toBe(true);
+    expect(pendingErasedBoundaryGeometry(points, 13, new Set(["missing"]), resolved)).toBe(resolved);
   });
 
   test("renders QiuYuan pending skill with a Pixi cast and synchronized persistent row scar", () => {

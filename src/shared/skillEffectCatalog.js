@@ -1,10 +1,12 @@
+import { SIGRIKA_STAR_IMPACT_PROGRESS } from "./sigrikaPresentation.js";
+
 export const SKILL_EFFECT_CATALOG = {
   "erase-point": {
     label: "抹除交叉点",
     targetRule: "empty-point",
     active: true,
     boardEffect: true,
-    soundCues: { startAt: 0.08, impactAt: 0.48 }
+    soundCues: { startAt: 0.08, impactAt: SIGRIKA_STAR_IMPACT_PROGRESS }
   },
   "flip-stone": {
     label: "棋子反色",

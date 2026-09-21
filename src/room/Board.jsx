@@ -2,6 +2,7 @@ import { memo, useMemo, useRef } from "react";
 import { COLORS, isPlayerColor } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
+import { SIGRIKA_BOUNDARY_REVEAL_MS, SIGRIKA_STAR_IMPACT_PROGRESS, SIGRIKA_SUNSPIRIT_REVEAL_PROGRESS } from "../shared/sigrikaPresentation.js";
 import BoardAmbientEffects, { hasColorIllusionFog } from "./BoardAmbientEffects.jsx";
 import BoardSkillEffects from "./BoardSkillEffects.jsx";
 import {
@@ -12,7 +13,6 @@ import {
   isStarPoint
 } from "./roomView.js";
 
-const SIGRIKA_ERASE_IMPACT_PROGRESS = 0.58;
 const AEMEATH_RAINBOW_CHANNELS = [
   { id: "red", x: "-176%", y: "-12%", color: "var(--aemeath-rainbow-red)", delay: "24ms" },
   { id: "orange", x: "-108%", y: "14%", color: "var(--aemeath-rainbow-orange)", delay: "38ms" },
@@ -134,6 +134,10 @@ function Board({
     game.pendingSkill?.targetId,
     skillEffectsEnabled
   ]);
+  const presentedErasedBoundaries = useMemo(
+    () => pendingErasedBoundaryGeometry(game.points, boardSize, pendingErasePointIds, erasedBoundaries),
+    [boardSize, erasedBoundaries, game.points, pendingErasePointIds]
+  );
   const voyageStarCraterPointIds = useMemo(() => new Set(
     (game.history ?? [])
       .filter((entry) => entry?.type === "skill" && entry.effectType === "voyage-star" && entry.id)
@@ -182,7 +186,7 @@ function Board({
   const skillBoardEffectDurationMs = Number(game.pendingSkill?.boardEffectDurationMs ?? 1800);
   const rowSlashEffectsEnabled = skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false;
   const eraseImpactMarkerDelayMs = Math.round(
-    skillBannerDurationMs + skillBoardEffectDurationMs * SIGRIKA_ERASE_IMPACT_PROGRESS
+    skillBannerDurationMs + skillBoardEffectDurationMs * SIGRIKA_STAR_IMPACT_PROGRESS
   );
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
@@ -198,7 +202,9 @@ function Board({
         "--size": boardSize,
         "--skill-banner-duration": `${skillBannerDurationMs}ms`,
         "--skill-board-effect-duration": `${skillBoardEffectDurationMs}ms`,
-        "--erase-impact-marker-delay": `${eraseImpactMarkerDelayMs}ms`
+        "--erase-impact-marker-delay": `${eraseImpactMarkerDelayMs}ms`,
+        "--sigrika-sunspirit-delay": `${Math.round(skillBannerDurationMs + skillBoardEffectDurationMs * SIGRIKA_SUNSPIRIT_REVEAL_PROGRESS)}ms`,
+        "--erase-boundary-reveal-duration": `${SIGRIKA_BOUNDARY_REVEAL_MS}ms`
       }}
     >
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
@@ -223,7 +229,7 @@ function Board({
             />
           ))}
         </svg>
-        <BoardErasedBoundaryOverlay geometry={erasedBoundaries} />
+        <BoardErasedBoundaryOverlay key={game.pendingSkill?.id ?? "resolved"} geometry={presentedErasedBoundaries} />
         <BoardSkillEffects
           boardSize={boardSize}
           pendingSkill={game.pendingSkill}
@@ -318,7 +324,7 @@ function BoardErasedBoundaryOverlay({ geometry }) {
       {geometry.cells.map((cell) => (
         <rect
           key={cell.key}
-          className="erased-boundary-cell"
+          className={`erased-boundary-cell${cell.pending ? " erase-boundary-pending" : ""}`}
           data-erased-point-id={cell.pointId}
           x={cell.x}
           y={cell.y}
@@ -329,7 +335,7 @@ function BoardErasedBoundaryOverlay({ geometry }) {
       {geometry.lines.map((line) => (
         <line
           key={line.key}
-          className="erased-boundary-line"
+          className={`erased-boundary-line${line.phase ? ` erase-boundary-${line.phase}` : ""}`}
           data-erased-point-id={line.pointId}
           x1={line.x1}
           y1={line.y1}
@@ -341,12 +347,12 @@ function BoardErasedBoundaryOverlay({ geometry }) {
   );
 }
 
-export function erasedBoundaryGeometry(points = [], boardSize = 13) {
+export function erasedBoundaryGeometry(points = [], boardSize = 13, pendingPointIds = new Set()) {
   const size = Math.max(1, Number(boardSize) || 13);
   const cells = new Map();
 
   for (const point of points) {
-    if (point?.valid !== false) continue;
+    if (point?.valid !== false && !pendingPointIds.has(point?.id)) continue;
     const x = Number(point.x);
     const y = Number(point.y);
     if (!Number.isInteger(x) || !Number.isInteger(y)) continue;
@@ -378,6 +384,50 @@ export function erasedBoundaryGeometry(points = [], boardSize = 13) {
     cells: [...cells.values()],
     lines: erasedBoundaryOutline([...cells.values()], size)
   };
+}
+
+export function pendingErasedBoundaryGeometry(points, boardSize, pendingPointIds, resolved = erasedBoundaryGeometry(points, boardSize)) {
+  if (!pendingPointIds?.size) return resolved;
+  const combined = erasedBoundaryGeometry(points, boardSize, pendingPointIds);
+  const resolvedCellKeys = new Set(resolved.cells.map((cell) => cell.key));
+  const addedCells = combined.cells.filter((cell) => !resolvedCellKeys.has(cell.key));
+  if (!addedCells.length) return resolved;
+
+  // Partition the existing and future outlines into shared/new/retiring segments.
+  // Shared cells and edges remain singly painted, including adjacent erased areas.
+  const before = boundaryUnitSegments(resolved.lines);
+  const after = boundaryUnitSegments(combined.lines);
+  return {
+    cells: [...resolved.cells, ...addedCells.map((cell) => ({ ...cell, pending: true }))],
+    lines: [
+      ...boundarySegmentPhase(before, (key) => after.has(key), boardSize),
+      ...boundarySegmentPhase(before, (key) => !after.has(key), boardSize, "retiring"),
+      ...boundarySegmentPhase(after, (key) => !before.has(key), boardSize, "pending")
+    ]
+  };
+}
+
+function boundaryUnitSegments(lines) {
+  const units = new Map();
+  for (const line of lines) {
+    const [, axis, fixedValue, startValue, endValue] = line.key.split("-");
+    const fixed = Number(fixedValue);
+    for (let start = Number(startValue); start < Number(endValue); start += 1) {
+      units.set(`${axis}-${fixed}-${start}`, { axis, fixed, start, pointId: line.pointId });
+    }
+  }
+  return units;
+}
+
+function boundarySegmentPhase(units, include, boardSize, phase = "") {
+  const groups = { h: new Map(), v: new Map() };
+  for (const [key, unit] of units) {
+    if (include(key)) addOutlineSegment(groups[unit.axis], unit.fixed, unit.start, unit.start + 1, unit.pointId);
+  }
+  return [
+    ...mergedOutlineSegments(groups.h, "h", boardSize),
+    ...mergedOutlineSegments(groups.v, "v", boardSize)
+  ].map((line) => ({ ...line, phase }));
 }
 
 function erasedBoundaryOutline(cells, size) {

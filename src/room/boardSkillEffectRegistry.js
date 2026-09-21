@@ -1,3 +1,4 @@
+import { playSigrikaStar } from "./boardSigrikaEffect.js";
 import {
   LIBERTY_PURGE_SLASH_DRAW_MS,
   LIBERTY_PURGE_SLASH_EXIT_MS,
@@ -31,11 +32,6 @@ const MORNYE_PROTOCOL_COLORS = Object.freeze({
 
 export function protocolTakeoverLockAlpha({ impact, residue, fade }) {
   return Math.min(1, impact * 1.3) * (1 - residue * 0.18) * fade;
-}
-
-export function meteorEraseCraterAlpha({ progress, craterProgress }) {
-  const exitFade = 1 - clamp01((progress - 0.84) / 0.14);
-  return craterProgress > 0 ? exitFade : 0;
 }
 
 export function playRegisteredBoardSkillEffect({
@@ -562,92 +558,6 @@ function playProtocolTakeover({ app, pixi, host, target, durationMs }) {
         color: index % 4 ? MORNYE_PROTOCOL_COLORS.ice : MORNYE_PROTOCOL_COLORS.lilac,
         alpha: 0.58 * (1 - burst)
       });
-    }
-  });
-}
-
-function playMeteorErase({ app, pixi, target, durationMs }) {
-  const aura = new pixi.Graphics();
-  const focus = new pixi.Graphics();
-  const meteor = new pixi.Graphics();
-  const trail = new pixi.Graphics();
-  const cracks = new pixi.Graphics();
-  const ring = new pixi.Graphics();
-  const crater = new pixi.Graphics();
-  const dust = Array.from({ length: 34 }, (_, index) => {
-    const colors = [0xfff0a8, 0xffbd68, 0xffffff, 0xe66b4d];
-    const particle = new pixi.Graphics()
-      .circle(0, 0, 1.4 + (index % 4) * 0.85)
-      .fill({ color: colors[index % colors.length], alpha: 0.92 });
-    particle.visible = false;
-    app.stage.addChild(particle);
-    return particle;
-  });
-  app.stage.addChild(focus, crater, cracks, ring, trail, aura, meteor);
-  const start = { x: target.x - 110, y: -48 };
-  const startedAt = performance.now();
-
-  app.ticker.add(() => {
-    const progress = clamp01((performance.now() - startedAt) / durationMs);
-    const anticipation = clamp01(progress / 0.22);
-    const fall = easeInCubic(Math.min(progress / 0.58, 1));
-    const impact = clamp01((progress - 0.46) / 0.38);
-    const craterProgress = clamp01((progress - 0.58) / 0.34);
-    const shake = impact > 0 && impact < 0.36 ? (1 - impact / 0.36) * 4 : 0;
-    const x = lerp(start.x, target.x, fall);
-    const y = lerp(start.y, target.y, fall);
-
-    app.stage.x = Math.sin(progress * 80) * shake;
-    app.stage.y = Math.cos(progress * 74) * shake * 0.7;
-    focus.clear();
-    if (progress < 0.64) {
-      focus.circle(target.x, target.y, 24 + anticipation * 10)
-        .fill({ color: 0xffe7a0, alpha: 0.06 + anticipation * 0.08 });
-    }
-    aura.clear();
-    if (progress < 0.55) {
-      aura.circle(target.x, target.y, 16 + Math.sin(progress * Math.PI * 10) * 2)
-        .stroke({ width: 2.5, color: 0xfff1b5, alpha: 0.22 + anticipation * 0.22 });
-    }
-    trail.clear();
-    if (progress < 0.66) {
-      for (let index = 0; index < 5; index += 1) {
-        const offset = index / 5;
-        const tx = lerp(start.x, target.x, clamp01(fall - offset * 0.12));
-        const ty = lerp(start.y, target.y, clamp01(fall - offset * 0.12));
-        trail.circle(tx - 14 * index, ty - 8 * index, 14 - index * 2)
-          .fill({ color: index % 2 ? 0xff8f5c : 0xfff1a8, alpha: 0.22 * (1 - offset) });
-      }
-    }
-    meteor.clear();
-    if (progress < 0.62) {
-      meteor.circle(x, y, 25).fill({ color: 0xffd978, alpha: 0.16 });
-      meteor.star(x, y, 5, 20, 7).fill({ color: 0xfff5b8, alpha: 1 });
-      meteor.star(x, y, 5, 11, 4).fill({ color: 0xffffff, alpha: 0.9 });
-      meteor.moveTo(x - 58, y - 36).lineTo(x, y).stroke({ width: 7, color: 0xff9f5a, alpha: 0.22 });
-      meteor.moveTo(x - 39, y - 24).lineTo(x, y).stroke({ width: 3, color: 0xffffff, alpha: 0.38 });
-    }
-    ring.clear();
-    if (impact) {
-      ring.circle(target.x, target.y, 8 + impact * 60).stroke({ width: 6, color: 0xffc95d, alpha: 0.64 * (1 - impact) });
-      ring.circle(target.x, target.y, 4 + impact * 36).stroke({ width: 2, color: 0xffffff, alpha: 0.42 * (1 - impact) });
-    }
-    crater.clear();
-    const craterAlpha = meteorEraseCraterAlpha({ progress, craterProgress });
-    crater.ellipse(target.x, target.y + 1, 9 + craterProgress * 15, 4 + craterProgress * 8).fill({ color: 0x4a4648, alpha: craterAlpha });
-    crater.ellipse(target.x - 2, target.y - 1, 5 + craterProgress * 8, 2 + craterProgress * 4).fill({ color: 0x86594b, alpha: 0.32 * craterProgress });
-    cracks.clear();
-    if (craterProgress) {
-      drawCracks(cracks, target, craterProgress);
-    }
-    for (const [index, particle] of dust.entries()) {
-      if (!impact) continue;
-      const angle = (Math.PI * 2 * index) / dust.length;
-      const distance = 22 + (index % 5) * 9;
-      particle.visible = true;
-      particle.x = target.x + Math.cos(angle) * impact * distance;
-      particle.y = target.y + Math.sin(angle) * impact * distance * 0.72;
-      particle.alpha = 1 - impact;
     }
   });
 }
@@ -1824,23 +1734,6 @@ function sprayEffectTargets({ host, boardSize, pendingSkill, target }) {
   return target ? [target] : [];
 }
 
-function drawCracks(graphics, target, progress) {
-  const cracks = [
-    { angle: -0.25, length: 24 },
-    { angle: 0.72, length: 19 },
-    { angle: 2.4, length: 18 },
-    { angle: 3.38, length: 22 },
-    { angle: 4.62, length: 15 }
-  ];
-  for (const crack of cracks) {
-    const length = crack.length * progress;
-    graphics
-      .moveTo(target.x, target.y)
-      .lineTo(target.x + Math.cos(crack.angle) * length, target.y + Math.sin(crack.angle) * length * 0.72)
-      .stroke({ width: 1.6, color: 0x3b2428, alpha: 0.44 * progress });
-  }
-}
-
 function lerp(start, end, progress) {
   return start + (end - start) * progress;
 }
@@ -1899,7 +1792,7 @@ export const BOARD_SKILL_EFFECT_RENDERERS = Object.freeze({
     play: playChangliDoubleMove,
     playReducedMotion: playReducedMotionChangliDoubleMove
   }),
-  "erase-point": Object.freeze({ play: playMeteorErase }),
+  "erase-point": Object.freeze({ play: playSigrikaStar }),
   "flip-stone": Object.freeze({
     assets: [DANEA_BUBBLE_IMAGE],
     play: playBubbleFlip

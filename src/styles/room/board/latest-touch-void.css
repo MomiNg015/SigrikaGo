@@ -53,47 +53,41 @@
   display: grid;
   place-items: center;
   background: center / contain no-repeat url("/assets/effects/sigrika-erased-field-marker.webp");
-  filter: drop-shadow(0 1px 2px rgba(74, 34, 14, 0.38)) drop-shadow(0 0 5px rgba(255, 137, 35, 0.42));
-  animation: erased-point-glow 1.35s ease-in-out infinite alternate;
+  filter: drop-shadow(0 1px 2px rgba(36, 73, 61, 0.28)) drop-shadow(0 0 4px rgba(153, 224, 183, 0.22));
   z-index: 3;
   pointer-events: none;
 }
 
 .void.erase-impact-pending {
   opacity: 0;
-  transform: scale(0.72) rotate(-10deg);
-  animation:
-    erase-impact-marker-reveal var(--erase-impact-marker-reveal-duration, 360ms) cubic-bezier(0.16, 1, 0.3, 1) var(--erase-impact-marker-delay, var(--skill-banner-duration, 2000ms)) forwards,
-    erased-point-glow 1.35s ease-in-out calc(var(--erase-impact-marker-delay, var(--skill-banner-duration, 2000ms)) + var(--erase-impact-marker-reveal-duration, 360ms)) infinite alternate;
+  translate: 0 -3%;
+  scale: 1.025;
+  animation: erase-impact-marker-reveal 300ms cubic-bezier(0.16, 1, 0.3, 1) var(--sigrika-sunspirit-delay, var(--skill-banner-duration, 2000ms)) forwards;
 }
 
 @keyframes erase-impact-marker-reveal {
   0% {
     opacity: 0;
-    transform: scale(0.72) rotate(-10deg);
-  }
-  44% {
-    opacity: 0.96;
-    transform: scale(1.08) rotate(2deg);
+    translate: 0 -3%;
+    scale: 1.025;
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-@keyframes erased-point-glow {
-  from {
-    filter: drop-shadow(0 1px 2px rgba(74, 34, 14, 0.34)) drop-shadow(0 0 4px rgba(255, 147, 42, 0.42));
-  }
-  to {
-    filter: drop-shadow(0 1px 2px rgba(74, 34, 14, 0.42)) drop-shadow(0 0 9px rgba(255, 121, 26, 0.62));
+    translate: 0;
+    scale: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .erased-boundary-layer .erase-boundary-pending,
+  .erased-boundary-layer .erase-boundary-retiring {
+    animation-duration: 100ms;
+    animation-delay: var(--skill-banner-duration, 2000ms);
+  }
+
   .void.erase-impact-pending {
-    animation-duration: 1ms !important;
-    animation-delay: var(--skill-banner-duration, 2000ms) !important;
+    translate: none;
+    scale: none;
+    animation: sigrika-opacity-reveal 100ms linear var(--skill-banner-duration, 2000ms) forwards;
   }
 }

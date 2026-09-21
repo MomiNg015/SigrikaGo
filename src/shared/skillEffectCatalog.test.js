@@ -63,7 +63,7 @@ describe("skillEffectCatalog", () => {
   });
 
   test("provides sound cue timing for animated board effects", () => {
-    expect(skillEffectSoundCues("erase-point")).toEqual({ startAt: 0.08, impactAt: 0.48 });
+    expect(skillEffectSoundCues("erase-point")).toEqual({ startAt: 0.08, impactAt: 0.58 });
     expect(skillEffectSoundCues("flip-stone")).toEqual({ startAt: 0.04, impactAt: 0.6 });
     expect(skillEffectSoundCues("random-blast")).toEqual({ startAt: 0.06, impactAt: 0.56 });
     expect(skillEffectSoundCues("protocol-takeover")).toEqual({ startAt: 0.05, impactAt: 0.5 });

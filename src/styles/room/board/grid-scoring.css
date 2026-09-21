@@ -50,6 +50,20 @@
   shape-rendering: geometricPrecision;
 }
 
+.erase-boundary-pending,
+.erase-boundary-retiring {
+  animation: sigrika-opacity-reveal var(--erase-boundary-reveal-duration, 200ms) linear var(--erase-impact-marker-delay, var(--skill-banner-duration, 2000ms)) both;
+}
+
+.erase-boundary-retiring {
+  animation-direction: reverse;
+}
+
+@keyframes sigrika-opacity-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .erased {
   pointer-events: none;
 }

@@ -5,7 +5,6 @@ import { SKILL_EFFECT_CATALOG } from "../shared/skillEffectCatalog.js";
 import {
   BOARD_SKILL_EFFECT_RENDERERS,
   boardSkillEffectAssetUrls,
-  meteorEraseCraterAlpha,
   protocolTakeoverLockAlpha,
   playRegisteredBoardSkillEffect
 } from "./boardSkillEffectRegistry.js";
@@ -148,8 +147,6 @@ describe("boardSkillEffectRegistry", () => {
   test("fades targeted transient renderer residue to transparent before cleanup", () => {
     expect(protocolTakeoverLockAlpha({ impact: 1, residue: 1, fade: 0 })).toBe(0);
     expect(protocolTakeoverLockAlpha({ impact: 1, residue: 0.5, fade: 0.25 })).toBeGreaterThan(0);
-    expect(meteorEraseCraterAlpha({ progress: 1, craterProgress: 1 })).toBe(0);
-    expect(meteorEraseCraterAlpha({ progress: 0.7, craterProgress: 0.4 })).toBeGreaterThan(0);
   });
 
   test("exposes renderer asset urls for banner-window preloading", () => {
@@ -243,7 +240,7 @@ describe("boardSkillEffectRegistry", () => {
 
   test("plays Lynae spray animation on every transformed point", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
-    const spraySource = registrySource.match(/function playSprayStone[\s\S]*?function drawCracks/)?.[0] ?? "";
+    const spraySource = registrySource.match(/function playSprayStone[\s\S]*?function lerp/)?.[0] ?? "";
 
     expect(BOARD_SKILL_EFFECT_RENDERERS["spray-stone"]).toMatchObject({
       play: expect.any(Function)
@@ -270,15 +267,6 @@ describe("boardSkillEffectRegistry", () => {
     expect(libertySource).not.toContain("slice(0, 7)");
     expect(libertySource).toContain("drawScissorSlash");
     expect(libertySource).toContain("0xff1733");
-  });
-
-  test("keeps Sigrika meteor impact crater dark during impact but fades before cleanup", () => {
-    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
-    const meteorSource = registrySource.match(/function playMeteorErase[\s\S]*?function playBubbleFlip/)?.[0] ?? "";
-
-    expect(meteorSource).toContain("const craterAlpha = meteorEraseCraterAlpha({ progress, craterProgress })");
-    expect(meteorSource).toContain("fill({ color: 0x4a4648, alpha: craterAlpha })");
-    expect(meteorSource).not.toContain("fill({ color: 0x000000");
   });
 
   test("plays QiuYuan row-slash as a Pixi ink-blade cast before the DOM row scar persists", () => {
