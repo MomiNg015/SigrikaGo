@@ -1342,3 +1342,5 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 
 - Give every lazy business window in `AppOverlays` its own `Suspense` boundary. A pending sibling must never hide an already visible window or tear down its layout effects. Keep existing visibility state and close callbacks.
 - Regression coverage must defer first-time module resolution, assert that the original dialog remains accessible with the same DOM node and local state, then resolve and close the new dialog. `AppOverlays.dom.test.jsx` covers resume to achievements and personalization.
+
+- Row-slash pending stones hide visually before rule resolution. Keep `.point.star.row-slash-cut-pending:not(.erased)::after` visible beneath the stone (star z-index 0/1, stone 2); Bright School must opt pending stars into its explicit star owner. Never expose star dots on erased points.

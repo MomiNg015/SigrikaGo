@@ -21,3 +21,7 @@ Latest request: hold the finishing stroke briefly then disperse its ink before t
 Design hook reports unchanged color assertions in Board.test.js (#4a3736, #ff75b7, #ff1733). These are pre-existing regression fixtures outside this effect, classified as false positives; no palette edits or suppressions.
 
 Dissolve validation: 112 focused tests, lint and build passed. Real Board at 3400ms shows fading blurred ink; 3800ms opacity is zero; at 4200ms no row scar node exists despite resolved rowEffects. Original 4000ms authority remains unchanged.
+
+Star-point regression: pending black/white classes outlive the visually removed stone and hide its underlying star until resolution. Opt pending non-erased stars into the base and Bright School star styles, below the stone.
+
+Validated on real Bright School portrait board before resolution: star display block/opacity 1 while stone opacity 0. Base hide rule excludes pending cuts, while erased remains hidden. Board/CSS/docs tests pass.

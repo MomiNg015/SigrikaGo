@@ -31,7 +31,7 @@
     0 0 22px rgba(113, 224, 209, 0.38) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.star:not(.black):not(.white):not(.erased)::after {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.star:is(:not(.black):not(.white), .row-slash-cut-pending):not(.erased)::after {
   content: "" !important;
   display: block !important;
   position: absolute !important;

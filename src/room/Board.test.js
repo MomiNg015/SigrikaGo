@@ -1156,7 +1156,8 @@ describe("areBoardPropsEqual", () => {
     expect(targetingBlock).not.toContain("bright-school-board-targeting-aura");
     expect(baseTargetingKeyframes).toContain("outline-color:");
     expect(baseTargetingKeyframes).not.toContain("box-shadow:");
-    expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::after");
+    expect(targetingBlock).toContain(".board .point.star:is(:not(.black):not(.white), .row-slash-cut-pending):not(.erased)::after");
+    expect(readCssWithImports(new URL("../styles/room.css", import.meta.url))).toContain(".point:is(.black, .white, .spray):not(.row-slash-cut-pending)::after");
     expect(targetingBlock).toContain("transform: translate(-50%, -50%) !important");
     expect(targetingBlock).toContain(".board-wrap.targeting .point.previewable::before");
     expect(targetingBlock).not.toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");

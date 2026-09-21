@@ -79,9 +79,7 @@
   z-index: 0;
 }
 
-.point.black::after,
-.point.white::after,
-.point.spray::after,
+.point:is(.black, .white, .spray):not(.row-slash-cut-pending)::after,
 .point.erased::after {
   display: none;
 }
