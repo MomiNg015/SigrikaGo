@@ -7,3 +7,5 @@ Design hook review: rgba(47, 127, 134, 0.18) intentionally reuses the existing Q
 Validation: 118 tests across Board, registry, timing, audio, CSS inventory, and generated docs passed. Full lint passed. Production build and built-CSS contracts passed. Real Board screenshots checked at desktop 1000x850 and portrait 390x844, including reduced motion; no mobile overflow or page errors. Gameplay resolution remains unchanged.
 
 Second visual iteration: user found the final cut too thin. Replace the main blade with a three-layer tapered 2.8-cell ink slash and swept broad tip; hold its completed silhouette until progress 0.50 before contraction. Keep the two thin omens and all contact timings intact.
+
+Third iteration: user rejected the wide solid wedge as an energy cannon. Restore drawRowSlashInkBrush and drawRowSlashLeadingEdge exactly from 4da090f1, preserving the improved shared contact timing, earlier omen retreat, and stone-only fragments.

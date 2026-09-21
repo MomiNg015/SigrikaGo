@@ -1241,34 +1241,12 @@ function drawRowSlashCharge(graphics, { y, cellSize, charge }) {
 }
 
 function drawRowSlashInkBrush(graphics, { width, y, cellSize, headX, progress, alpha }) {
-  const brushHeight = cellSize * 2.8;
+  const brushHeight = cellSize * 1.8;
   const left = -cellSize * 0.7;
   const right = Math.min(width + cellSize * 0.7, headX);
   const slashLength = Math.max(0, right - left);
   const centerX = left + slashLength / 2;
   if (slashLength <= 0) return;
-  // A broad, tapered ink blade distinguishes the finishing cut from the thin omens.
-  // Keep its tip on headX so the shared stone-contact timing remains exact.
-  const shoulder = Math.max(left, right - Math.min(slashLength * 0.22, cellSize * 1.3));
-  for (const layer of [
-    { spread: 1, color: 0x286d76, opacity: 0.38 },
-    { spread: 0.68, color: 0xbffff5, opacity: 0.52 },
-    { spread: 0.36, color: 0xffffff, opacity: 0.88 }
-  ]) {
-    const half = brushHeight * 0.5 * layer.spread;
-    graphics.poly([
-      left, y - half * 0.08,
-      left + slashLength * 0.2, y - half * 0.34,
-      left + slashLength * 0.43, y - half * 0.24,
-      left + slashLength * 0.7, y - half * 0.76,
-      shoulder, y - half,
-      right, y,
-      shoulder, y + half * 0.78,
-      left + slashLength * 0.63, y + half * 0.56,
-      left + slashLength * 0.37, y + half * 0.22,
-      left, y + half * 0.08
-    ]).fill({ color: layer.color, alpha: layer.opacity * alpha });
-  }
   drawRowSlashInkSmears(graphics, {
     x: centerX,
     y,
@@ -1293,7 +1271,7 @@ function drawRowSlashInkBrush(graphics, { width, y, cellSize, headX, progress, a
     y,
     angle: 0,
     length: slashLength,
-    width: Math.max(4, cellSize * 0.22),
+    width: Math.max(3, cellSize * 0.1),
     color: 0xffffff,
     alpha: 0.86 * alpha
   });
@@ -1329,10 +1307,15 @@ function drawRowSlashInkBrush(graphics, { width, y, cellSize, headX, progress, a
 
 function drawRowSlashLeadingEdge(graphics, { x, y, cellSize, alpha }) {
   if (alpha <= 0) return;
-  graphics.moveTo(x - cellSize * 0.72, y - cellSize * 1.36)
-    .quadraticCurveTo(x + cellSize * 0.1, y - cellSize * 0.42, x, y)
-    .quadraticCurveTo(x - cellSize * 0.1, y + cellSize * 0.56, x - cellSize * 0.68, y + cellSize * 1.16)
-    .stroke({ width: Math.max(3, cellSize * 0.1), color: 0xffffff, alpha: 0.96 * alpha });
+  graphics.poly([
+    x - cellSize * 0.18, y - cellSize * 0.78,
+    x + cellSize * 0.32, y - cellSize * 0.2,
+    x + cellSize * 0.2, y + cellSize * 0.76,
+    x - cellSize * 0.26, y + cellSize * 0.18
+  ]).fill({ color: 0xffffff, alpha: 0.42 * alpha });
+  graphics.moveTo(x - cellSize * 0.18, y - cellSize * 0.72)
+    .lineTo(x + cellSize * 0.2, y + cellSize * 0.72)
+    .stroke({ width: Math.max(2.4, cellSize * 0.08), color: 0xffffff, alpha: 0.86 * alpha });
 }
 
 function drawRowSlashInkSparks(graphics, { width, y, cellSize, headX, progress, alpha }) {
