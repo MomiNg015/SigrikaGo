@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useLayoutEffect, useMemo, useRef } from "react";
 import { COLORS, isPlayerColor } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
@@ -230,20 +230,13 @@ function Board({
           ))}
         </svg>
         <BoardErasedBoundaryOverlay key={game.pendingSkill?.id ?? "resolved"} geometry={presentedErasedBoundaries} />
-        <BoardSkillEffects
+        {game.pendingSkill?.effectType !== "row-slash" && <BoardSkillEffects
           boardSize={boardSize}
           pendingSkill={game.pendingSkill}
           audioSettings={audioSettings}
           prewarm={game.skillEnabled !== false && skillEffectsEnabled !== false}
           effectsEnabled={skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false}
-        />
-        <BoardRowSlashOverlay
-          boardSize={boardSize}
-          rowEffects={game.rowEffects}
-          pendingSkill={game.pendingSkill}
-          effectsEnabled={rowSlashEffectsEnabled}
-          boardEffectDurationMs={skillBoardEffectDurationMs}
-        />
+        />}
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
@@ -311,6 +304,20 @@ function Board({
           />
         ))}
       </div>
+      {game.pendingSkill?.effectType === "row-slash" && <BoardSkillEffects
+          boardSize={boardSize}
+          pendingSkill={game.pendingSkill}
+          audioSettings={audioSettings}
+          prewarm={game.skillEnabled !== false && skillEffectsEnabled !== false}
+          effectsEnabled={skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false}
+        />}
+      <BoardRowSlashOverlay
+          boardSize={boardSize}
+          rowEffects={game.rowEffects}
+          pendingSkill={game.pendingSkill}
+          effectsEnabled={rowSlashEffectsEnabled}
+          boardEffectDurationMs={skillBoardEffectDurationMs}
+        />
       {showCoords && <div className="coord-col coord-right">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-row coord-bottom">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
     </div>
@@ -516,6 +523,23 @@ function BoardRowSlashOverlay({
   effectsEnabled = true,
   boardEffectDurationMs = 1800
 }) {
+  const overlayRef = useRef(null);
+  useLayoutEffect(() => {
+    const overlay = overlayRef.current;
+    const board = overlay?.parentElement?.querySelector(".board");
+    if (!board) return undefined;
+    const update = () => {
+      const frame = overlay.getBoundingClientRect();
+      const grid = board.getBoundingClientRect();
+      overlay.style.setProperty("--row-grid-top", `${grid.top - frame.top}px`);
+      overlay.style.setProperty("--row-grid-height", `${grid.height}px`);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(board);
+    observer.observe(overlay);
+    return () => observer.disconnect();
+  });
   const pendingRow = rowSlashPendingRow(pendingSkill);
   const castDelayMs = Math.round(Number(boardEffectDurationMs) * 0.19);
   const castDurationMs = Math.round(Number(boardEffectDurationMs) * 0.22);
@@ -538,13 +562,13 @@ function BoardRowSlashOverlay({
   ].filter((effect) => effect?.effectType === "row-slash" && Number.isInteger(effect.y));
   if (!effects.length) return null;
   return (
-    <div className="board-row-effects" aria-hidden="true">
+    <div ref={overlayRef} className="board-row-effects" aria-hidden="true">
       {effects.map((effect, index) => (
         <span
           key={`${effect.owner ?? "preview"}-${effect.y}-${effect.id ?? index}`}
           className={`board-row-slash ${effect.casting ? "casting" : ""}`}
           style={{
-            "--row-y": `${((effect.y + 0.5) / boardSize) * 100}%`,
+            "--row-y": `calc(var(--row-grid-top, 0px) + var(--row-grid-height, 100%) * ${(effect.y + 0.5) / boardSize})`,
             ...(effect.casting
               ? {
                   "--row-slash-cast-delay": `${effect.castDelayMs}ms`,

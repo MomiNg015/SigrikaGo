@@ -11,3 +11,7 @@ Second visual iteration: user found the final cut too thin. Replace the main bla
 Third iteration: user rejected the wide solid wedge as an energy cannon. Restore drawRowSlashInkBrush and drawRowSlashLeadingEdge exactly from 4da090f1, preserving the improved shared contact timing, earlier omen retreat, and stone-only fragments.
 
 Final user correction: restore the complete pre-optimization Qiuyuan presentation, not only the blade artwork. All production files and their tests are restored exactly to 4da090f1, including timings, omen persistence, main sweep, scar reveal and appearance, fragments, and audio cues. Remove the added qiuyuanPresentation module. The prior iterations are superseded.
+
+New scoped request: original sword effects are cut off at inner grid bounds. Move only Qiuyuan transient canvas and persistent scar to board-wrap, retaining real grid geometry and original visuals/timing. Cover coordinate margins and clip at wooden surface edges.
+
+Edge fix validation: 118 focused tests passed, including Board, Pixi lifecycle, registry, CSS debt and generated documentation. Additional Board ownership assertions passed. Lint/build passed. Real Board with coordinate margins checked at 1000x850 and 390x844: canvas and scar span the wooden surface while grid is inset; no mobile horizontal overflow or page errors.

@@ -21,7 +21,7 @@
   left: -18%;
   right: -18%;
   top: var(--row-y);
-  height: calc(180% / var(--size));
+  height: calc(var(--row-grid-height, 100%) * 1.8 / var(--size));
   transform-origin: 0 50%;
   --row-slash-y-offset: clamp(6px, 1.8vw, 13px);
   translate: 0 calc(-50% + var(--row-slash-y-offset));

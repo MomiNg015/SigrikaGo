@@ -832,7 +832,7 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain(".board-row-slash");
     expect(css).toContain("left: -18%");
     expect(css).toContain("right: -18%");
-    expect(css).toContain("height: calc(180% / var(--size))");
+    expect(css).toContain("height: calc(var(--row-grid-height, 100%) * 1.8 / var(--size))");
     expect(css).toContain("pointer-events: none");
     expect(css).toContain("radial-gradient(ellipse at 16% 34%");
     expect(css).toContain("clip-path: inset(0 0 0 0)");
@@ -996,6 +996,9 @@ describe("areBoardPropsEqual", () => {
 
     expect(markup).toContain("board-effects-layer");
     expect(markup).toContain('data-effect-type="row-slash"');
+    // Both layers follow the inner grid instead of being clipped inside it.
+    expect(markup.indexOf('class="board-effects-layer"')).toBeGreaterThan(markup.lastIndexOf('data-point-id='));
+    expect(markup.indexOf('class="board-row-effects"')).toBeGreaterThan(markup.lastIndexOf('data-point-id='));
     expect(markup).toContain("board-row-effects");
     expect((markup.match(/board-row-slash/g) ?? []).length).toBe(1);
     expect(markup).toContain("board-row-slash casting");
@@ -1094,13 +1097,13 @@ describe("areBoardPropsEqual", () => {
 
   test("Bright School guard keeps row slash containers from becoming paper panels", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
-    const rowEffectsBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-effects\.board-row-effects\s*\{[^}]+\}/)?.[0] ?? "";
-    const rowSlashBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash\s*\{[^}]+\}/)?.[0] ?? "";
-    const rowSlashBeforeAfterBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash::before,[\s\S]*?\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash::after\s*\{[^}]+\}/)?.[0] ?? "";
-    const rowSlashAfterBlockStart = css.lastIndexOf(".theme-bright-school.theme-bright-school .board .board-row-slash.board-row-slash::after");
+    const rowEffectsBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board-wrap \.board-row-effects\.board-row-effects\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board-wrap \.board-row-slash\.board-row-slash\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashBeforeAfterBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board-wrap \.board-row-slash\.board-row-slash::before,[\s\S]*?\.theme-bright-school\.theme-bright-school \.board-wrap \.board-row-slash\.board-row-slash::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashAfterBlockStart = css.lastIndexOf(".theme-bright-school.theme-bright-school .board-wrap .board-row-slash.board-row-slash::after");
     const rowSlashAfterBlock = rowSlashAfterBlockStart >= 0 ? css.slice(rowSlashAfterBlockStart, css.indexOf("}", rowSlashAfterBlockStart) + 1) : "";
 
-    expect(rowEffectsBlock).toContain(".board .board-row-effects.board-row-effects");
+    expect(rowEffectsBlock).toContain(".board-wrap .board-row-effects.board-row-effects");
     expect(rowEffectsBlock).toContain("background: transparent !important");
     expect(rowEffectsBlock).toContain("background-color: transparent !important");
     expect(rowEffectsBlock).toContain("background-image: none !important");
@@ -1108,7 +1111,7 @@ describe("areBoardPropsEqual", () => {
     expect(rowEffectsBlock).toContain("box-shadow: none !important");
     expect(rowEffectsBlock).toContain("overflow: visible !important");
     expect(rowEffectsBlock).toContain("clip-path: none !important");
-    expect(rowSlashBlock).toContain(".board .board-row-slash.board-row-slash");
+    expect(rowSlashBlock).toContain(".board-wrap .board-row-slash.board-row-slash");
     expect(rowSlashBlock).toContain("background:");
     expect(rowSlashBlock).toContain("radial-gradient(ellipse at 16% 34%");
     expect(rowSlashBlock).toContain("100% 10px no-repeat");

@@ -761,10 +761,11 @@ function playSprayStone({ app, pixi, host, boardSize, pendingSkill, target, dura
 function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
   const width = host.clientWidth;
   const height = host.clientHeight;
-  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
+  const grid = host.parentElement?.querySelector?.(".board")?.getBoundingClientRect();
+  const cellSize = Math.min(grid?.width ?? width, grid?.height ?? height) / Math.max(1, boardSize);
   const row = rowSlashRow(pendingSkill);
   if (!Number.isInteger(row)) return;
-  const y = ((row + 0.5) / boardSize) * height;
+  const y = pointCenterForHost(`0,${row}`, { boardSize, host }).y;
   const omen = new pixi.Graphics();
   const ink = new pixi.Graphics();
   const edge = new pixi.Graphics();
@@ -836,8 +837,9 @@ function playReducedMotionRowSlash({ app, pixi, host, boardSize, pendingSkill, d
   const height = host.clientHeight;
   const row = rowSlashRow(pendingSkill);
   if (!Number.isInteger(row)) return;
-  const y = ((row + 0.5) / boardSize) * height;
-  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
+  const y = pointCenterForHost(`0,${row}`, { boardSize, host }).y;
+  const grid = host.parentElement?.querySelector?.(".board")?.getBoundingClientRect();
+  const cellSize = Math.min(grid?.width ?? width, grid?.height ?? height) / Math.max(1, boardSize);
   const flash = new pixi.Graphics();
   app.stage.addChild(flash);
   const startedAt = performance.now();
