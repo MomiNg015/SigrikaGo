@@ -6,12 +6,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .board-row-slash.casting,
-  .row-slash-cut-pending .stone,
-  .row-slash-cut-pending .stone::after {
-    animation-delay: var(--skill-banner-duration, 2000ms) !important;
-  }
-
   .board-effects-layer,
   .board-effects-canvas,
   .board-row-slash,

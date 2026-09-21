@@ -9,3 +9,5 @@ Validation: 118 tests across Board, registry, timing, audio, CSS inventory, and 
 Second visual iteration: user found the final cut too thin. Replace the main blade with a three-layer tapered 2.8-cell ink slash and swept broad tip; hold its completed silhouette until progress 0.50 before contraction. Keep the two thin omens and all contact timings intact.
 
 Third iteration: user rejected the wide solid wedge as an energy cannon. Restore drawRowSlashInkBrush and drawRowSlashLeadingEdge exactly from 4da090f1, preserving the improved shared contact timing, earlier omen retreat, and stone-only fragments.
+
+Final user correction: restore the complete pre-optimization Qiuyuan presentation, not only the blade artwork. All production files and their tests are restored exactly to 4da090f1, including timings, omen persistence, main sweep, scar reveal and appearance, fragments, and audio cues. Remove the added qiuyuanPresentation module. The prior iterations are superseded.

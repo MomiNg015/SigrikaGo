@@ -1,4 +1,3 @@
-import { QIUYUAN_SLASH_START } from "./qiuyuanPresentation.js";
 import { SIGRIKA_STAR_IMPACT_PROGRESS } from "./sigrikaPresentation.js";
 
 export const SKILL_EFFECT_CATALOG = {
@@ -49,7 +48,7 @@ export const SKILL_EFFECT_CATALOG = {
     targetRule: "any-point",
     active: true,
     boardEffect: true,
-    soundCues: { startAt: 0.04, impactAt: QIUYUAN_SLASH_START }
+    soundCues: { startAt: 0.04, impactAt: 0.46 }
   },
   "spray-stone": {
     label: "流光溢彩",
