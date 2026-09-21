@@ -1,6 +1,7 @@
 export const QIUYUAN_SLASH_START = 0.24;
 export const QIUYUAN_SLASH_DURATION = 0.16;
-export const QIUYUAN_SCAR_START = QIUYUAN_SLASH_START + QIUYUAN_SLASH_DURATION;
+// Hold the completed broad slash for a beat before it contracts into the scar.
+export const QIUYUAN_SCAR_START = 0.5;
 export const QIUYUAN_SCAR_SETTLE = 0.2;
 
 const clamp = (value) => Math.min(1, Math.max(0, value));

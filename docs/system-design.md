@@ -424,4 +424,4 @@
 
 普通按钮第二批统一：履历/资料、商城/服装购买与确认、招募操作通过显式 `data-button-role` 接入同一状态所有者；移除对应旧配色与动效，保留商品卡、商店路牌、招募道具选择、钱包和窗口布局。
 
-- 仇远演出：交错起势、刀锋同步切子、细墨收势；时间契约见 [前端架构](./system-design/02-frontend-architecture.md)，音效与资源见 [资源与音频](./system-design/05-assets-audio-preload.md)。
+- 仇远演出：细刃交错起势、宽幅水墨主斩、刀锋同步切子、停锋后收势；时间契约见 [前端架构](./system-design/02-frontend-architecture.md)，音效与资源见 [资源与音频](./system-design/05-assets-audio-preload.md)。

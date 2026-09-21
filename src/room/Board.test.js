@@ -842,7 +842,7 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain("animation: row-slash-strike 360ms");
     expect(css).toContain(".board-row-slash.casting");
     expect(css).toContain("animation-duration: var(--row-slash-cast-duration, 360ms)");
-    expect(css).toContain("animation-delay: calc(var(--skill-banner-duration, 2000ms) + var(--row-slash-cast-delay, 720ms))");
+    expect(css).toContain("animation-delay: calc(var(--skill-banner-duration, 2000ms) + var(--row-slash-cast-delay, 900ms))");
     expect(css).toContain("100% 10px no-repeat");
     expect(css).toContain("100% 8px no-repeat");
     expect(css).toContain("@keyframes row-slash-strike");
@@ -997,7 +997,7 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain("board-row-effects");
     expect((markup.match(/board-row-slash/g) ?? []).length).toBe(1);
     expect(markup).toContain("board-row-slash casting");
-    expect(markup).toContain("--row-slash-cast-delay:720ms");
+    expect(markup).toContain("--row-slash-cast-delay:900ms");
     expect(markup).toContain("--row-slash-cast-duration:360ms");
     expect(markup).toContain("row-slash-cut-pending");
     expect(markup).toContain("--row-slash-cut-delay:441ms");

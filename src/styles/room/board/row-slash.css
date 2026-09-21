@@ -42,7 +42,7 @@
 .board-row-slash.casting {
   opacity: 0;
   animation-duration: var(--row-slash-cast-duration, 360ms);
-  animation-delay: calc(var(--skill-banner-duration, 2000ms) + var(--row-slash-cast-delay, 720ms));
+  animation-delay: calc(var(--skill-banner-duration, 2000ms) + var(--row-slash-cast-delay, 900ms));
 }
 
 .board-row-slash::before,
