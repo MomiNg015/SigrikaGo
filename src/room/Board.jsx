@@ -1,3 +1,4 @@
+import { qiuyuanContactProgress, QIUYUAN_SCAR_START, QIUYUAN_SCAR_SETTLE } from "../shared/qiuyuanPresentation.js";
 import { memo, useMemo, useRef } from "react";
 import { COLORS, isPlayerColor } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
@@ -261,7 +262,7 @@ function Board({
           const pendingEffectStyle = pendingRowSlashPointIds.has(point.id) && point.stone
             ? {
                 "--row-slash-cut-delay": `${Math.round(
-                  420 + (point.x / Math.max(1, boardSize - 1)) * 300
+                  skillBoardEffectDurationMs * qiuyuanContactProgress(point.x, boardSize)
                 )}ms`
               }
             : undefined;
@@ -517,8 +518,8 @@ function BoardRowSlashOverlay({
   boardEffectDurationMs = 1800
 }) {
   const pendingRow = rowSlashPendingRow(pendingSkill);
-  const castDelayMs = Math.round(Number(boardEffectDurationMs) * 0.19);
-  const castDurationMs = Math.round(Number(boardEffectDurationMs) * 0.22);
+  const castDelayMs = Math.round(Number(boardEffectDurationMs) * QIUYUAN_SCAR_START);
+  const castDurationMs = Math.round(Number(boardEffectDurationMs) * QIUYUAN_SCAR_SETTLE);
   const pendingEffect = effectsEnabled !== false && Number.isInteger(pendingRow)
     ? {
         effectType: "row-slash",

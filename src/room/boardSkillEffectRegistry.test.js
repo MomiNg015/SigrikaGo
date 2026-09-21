@@ -287,11 +287,11 @@ describe("boardSkillEffectRegistry", () => {
     expect(rowSlashSource).toContain("drawRowSlashInkSparks");
     expect(rowSlashSource).toContain("drawRowSlashStoneCut");
     expect(rowSlashSource).toContain("rowSlashCutTargets");
-    expect(rowSlashSource).toContain("const main = easeOutCubic(clamp01((progress - 0.19) / 0.22))");
-    expect(rowSlashSource).toContain("0.23 + xProgress * 0.17");
+    expect(rowSlashSource).toContain("const main = qiuyuanSlashTravel(progress)");
+    expect(rowSlashSource).toContain("progress - point.contactProgress");
     expect(registrySource).toContain("drawRowSlashOmenBrush");
     expect(registrySource).toContain("travelDuration: 0.17");
-    expect(registrySource).toContain("const fadeOut = 1 - clamp01((progress - 0.54) / 0.18)");
+    expect(registrySource).toContain("const fadeOut = (1 - clamp01((progress - 0.22) / 0.12)) * 0.78");
     expect(registrySource).toContain("const sweep = easeOutCubic(clamp01(raw))");
     expect(registrySource).toContain("(Math.PI / 3)");
     expect(registrySource).toContain("reveal: sweep");

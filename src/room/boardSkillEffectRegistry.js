@@ -1,3 +1,4 @@
+import { qiuyuanSlashTravel, qiuyuanContactProgress, qiuyuanCutPointIds, QIUYUAN_SLASH_START, QIUYUAN_SCAR_START, QIUYUAN_SCAR_SETTLE } from "../shared/qiuyuanPresentation.js";
 import { playSigrikaStar } from "./boardSigrikaEffect.js";
 import {
   LIBERTY_PURGE_SLASH_DRAW_MS,
@@ -776,8 +777,10 @@ function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) 
 
   app.ticker.add(() => {
     const progress = clamp01((performance.now() - startedAt) / durationMs);
-    const main = easeOutCubic(clamp01((progress - 0.19) / 0.22));
-    const inkFade = 1 - clamp01((progress - 0.66) / 0.12);
+    const main = qiuyuanSlashTravel(progress);
+    const inkFade = 1 - clamp01((progress - QIUYUAN_SCAR_START) / QIUYUAN_SCAR_SETTLE);
+    ink.scale.y = 1 - clamp01((progress - QIUYUAN_SCAR_START) / QIUYUAN_SCAR_SETTLE) * 0.65;
+    ink.y = y * (1 - ink.scale.y);
     omen.clear();
     ink.clear();
     edge.clear();
@@ -786,7 +789,7 @@ function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) 
 
     drawRowSlashOmen(omen, { width, height, cellSize, progress });
 
-    const charge = clamp01((progress - 0.13) / 0.07) * (1 - clamp01((progress - 0.2) / 0.08));
+    const charge = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - QIUYUAN_SLASH_START) / 0.04));
     if (charge > 0) {
       drawRowSlashCharge(ink, { y, cellSize, charge });
     }
@@ -818,8 +821,7 @@ function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) 
     }
 
     for (const [index, point] of cutTargets.entries()) {
-      const xProgress = point.x / Math.max(1, width);
-      const local = clamp01((progress - (0.23 + xProgress * 0.17)) / 0.075);
+      const local = clamp01((progress - point.contactProgress) / 0.09);
       if (!local) continue;
       drawRowSlashStoneCut(cuts, {
         point,
@@ -1094,11 +1096,12 @@ function rowSlashRow(pendingSkill) {
 }
 
 function rowSlashCutTargets({ host, boardSize, pendingSkill, row }) {
-  const pointIds = Array.isArray(pendingSkill?.affectedPointIds) && pendingSkill.affectedPointIds.length
-    ? pendingSkill.affectedPointIds
-    : Array.from({ length: boardSize }, (_, x) => `${x},${row}`);
+  const pointIds = qiuyuanCutPointIds(pendingSkill).filter((id) => Number(String(id).split(",")[1]) === row);
   return pointIds
-    .map((pointIdValue) => pointCenterForHost(pointIdValue, { boardSize, host }))
+    .map((pointIdValue) => ({
+      ...pointCenterForHost(pointIdValue, { boardSize, host }),
+      contactProgress: qiuyuanContactProgress(Number(String(pointIdValue).split(",")[0]), boardSize)
+    }))
     .filter(Boolean)
     .sort((left, right) => left.x - right.x);
 }
@@ -1108,7 +1111,7 @@ function drawRowSlashOmen(graphics, { width, height, cellSize, progress }) {
     { start: 0.02, travelDuration: 0.17, seedIndex: 112, direction: 1 },
     { start: 0.1, travelDuration: 0.17, seedIndex: 137, direction: -1 }
   ];
-  const fadeOut = 1 - clamp01((progress - 0.54) / 0.18);
+  const fadeOut = (1 - clamp01((progress - 0.22) / 0.12)) * 0.78;
   for (const [index, flash] of flashes.entries()) {
     const raw = (progress - flash.start) / flash.travelDuration;
     if (raw <= 0 || fadeOut <= 0) continue;
@@ -1238,7 +1241,7 @@ function drawRowSlashCharge(graphics, { y, cellSize, charge }) {
 }
 
 function drawRowSlashInkBrush(graphics, { width, y, cellSize, headX, progress, alpha }) {
-  const brushHeight = cellSize * 1.8;
+  const brushHeight = cellSize * 1.3;
   const left = -cellSize * 0.7;
   const right = Math.min(width + cellSize * 0.7, headX);
   const slashLength = Math.max(0, right - left);
@@ -1309,7 +1312,7 @@ function drawRowSlashLeadingEdge(graphics, { x, y, cellSize, alpha }) {
     x + cellSize * 0.32, y - cellSize * 0.2,
     x + cellSize * 0.2, y + cellSize * 0.76,
     x - cellSize * 0.26, y + cellSize * 0.18
-  ]).fill({ color: 0xffffff, alpha: 0.42 * alpha });
+  ]).fill({ color: 0xffffff, alpha: 0.78 * alpha });
   graphics.moveTo(x - cellSize * 0.18, y - cellSize * 0.72)
     .lineTo(x + cellSize * 0.2, y + cellSize * 0.72)
     .stroke({ width: Math.max(2.4, cellSize * 0.08), color: 0xffffff, alpha: 0.86 * alpha });

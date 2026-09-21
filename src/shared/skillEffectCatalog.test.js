@@ -68,7 +68,7 @@ describe("skillEffectCatalog", () => {
     expect(skillEffectSoundCues("random-blast")).toEqual({ startAt: 0.06, impactAt: 0.56 });
     expect(skillEffectSoundCues("protocol-takeover")).toEqual({ startAt: 0.05, impactAt: 0.5 });
     expect(skillEffectSoundCues("voyage-star")).toEqual({ startAt: 0.05, impactAt: 0.42 });
-    expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.46 });
+    expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.24 });
     expect(skillEffectSoundCues("spray-stone")).toEqual({ startAt: 0.04, impactAt: 0.58 });
     expect(skillEffectSoundCues("liberty-purge")).toEqual({ startAt: 0.04, impactAt: 0.5 });
     expect(skillEffectSoundCues("double-move")).toEqual({ startAt: 0.05, impactAt: 0.44 });
