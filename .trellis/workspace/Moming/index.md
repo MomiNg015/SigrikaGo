@@ -31,7 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
-| 139 | 2026-09-22 | Default stones in handbook decoration tab | HEAD~1 | `codex/mobile-battle-polish` |
+| 139 | 2026-09-22 | Default stones in handbook decoration tab | 3475ca95 | `codex/mobile-battle-polish` |
 | 138 | 2026-09-22 | Restore handbook before today's redesign | `abefce4b` | `codex/mobile-battle-polish` |
 | 137 | 2026-09-22 | Refine handbook crop and compact roster | `ee9ed77c` | `codex/mobile-battle-polish` |
 | 136 | 2026-09-22 | Handbook right-page student IDs | `3baddd73` | `codex/mobile-battle-polish` |
