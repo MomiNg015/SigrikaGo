@@ -500,3 +500,36 @@ AppOverlays共用Suspense导致新窗口首次加载时隐藏履历；拆为每�
 ### Next Steps
 
 - None - task complete
+
+
+## Session 136: Handbook right-page student IDs
+
+**Date**: 2026-09-22
+**Task**: Handbook right-page student IDs
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Implemented themed student IDs, left bookmarks and original-cover opening into the right book page. Verified desktop and three portrait widths, nested overlays, keyboard actions and reduced motion. 85 focused assertions, lint, build, built CSS, portraits, snapshot and generated docs passed; four unrelated existing full-suite assertions remain. Preserved other WIP; local preview and evidence remain under .codex-run/handbook-qa.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3baddd73` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
