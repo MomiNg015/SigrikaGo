@@ -566,3 +566,36 @@ Removed cover animation and cropped out binding/left page. Restored compact port
 ### Next Steps
 
 - None - task complete
+
+
+## Session 138: Restore handbook before today's redesign
+
+**Date**: 2026-09-22
+**Task**: Restore handbook before today's redesign
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Restored original handbook window/card owners from 5db4f892, removed generated book/card assets and dedicated sizing, retained left character/decoration bookmarks with direct-child panels. 84 focused tests, lint, build and built CSS passed; desktop and 360/390px browser checks passed. Four pre-existing unrelated suite failures remain. Other working-tree changes preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `abefce4b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
