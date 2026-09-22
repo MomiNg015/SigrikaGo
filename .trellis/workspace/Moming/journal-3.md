@@ -533,3 +533,36 @@ Implemented themed student IDs, left bookmarks and original-cover opening into t
 ### Next Steps
 
 - None - task complete
+
+
+## Session 137: Refine handbook crop and compact roster
+
+**Date**: 2026-09-22
+**Task**: Refine handbook crop and compact roster
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Removed cover animation and cropped out binding/left page. Restored compact portrait-name-sortie cards with generated paper backgrounds. User-set desktop three columns and phone two columns verified at four viewport sizes; names/portraits remain contained and last cards reachable. 85 focused checks, lint, build and built CSS passed. Other WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ee9ed77c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

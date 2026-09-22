@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 136
+- **Total Sessions**: 137
 - **Last Active**: 2026-09-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~535 | Active |
+| `journal-3.md` | ~568 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 137 | 2026-09-22 | Refine handbook crop and compact roster | `ee9ed77c` | `codex/mobile-battle-polish` |
 | 136 | 2026-09-22 | Handbook right-page student IDs | `3baddd73` | `codex/mobile-battle-polish` |
 | 135 | 2026-09-20 | 统一专属窗口按钮第二批 | `43fe9319` | `codex/campus-home-handbook-polish` |
 | 134 | 2026-09-20 | 统一普通按钮状态第一批 | `5299298e` | `codex/campus-home-handbook-polish` |
