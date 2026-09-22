@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import HouseModal from "../HouseModal.jsx";
@@ -47,6 +47,30 @@ describe("member handbook pages", () => {
     expect(document.querySelector(".character-grid-container").parentElement.classList.contains("house-modal")).toBe(true);
     expect(screen.getByRole("img", { name: "暂无情报" })).toBeTruthy();
     expect(screen.queryByText("猪小仙")).toBeNull();
+  });
+
+  it("places default stones first and resets an equipped decoration through the existing action", async () => {
+    const user = userEvent.setup();
+    const { onApplyDecoration } = setup({ selectedStoneDecoration: "paw-stone" });
+    await user.click(screen.getByRole("tab", { name: "装饰" }));
+    const panel = screen.getByRole("tabpanel", { name: "装饰" });
+    const buttons = within(panel).getAllByRole("button");
+    expect(buttons.map(button => button.getAttribute("aria-label"))).toEqual(["默认棋子", "爪印棋子"]);
+    expect(within(panel).queryByRole("heading")).toBeNull();
+    expect(within(panel).queryByRole("button", { name: "恢复初始装饰" })).toBeNull();
+    expect(buttons[1].disabled).toBe(true);
+    await user.click(buttons[0]);
+    expect(onApplyDecoration).toHaveBeenCalledWith("");
+  });
+
+  it("keeps the default option selected when no decorations are owned", async () => {
+    const user = userEvent.setup();
+    setup({ ownedDecorations: [] });
+    await user.click(screen.getByRole("tab", { name: "装饰" }));
+    const button = screen.getByRole("button", { name: "默认棋子" });
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.queryByText("暂无装饰。")).toBeNull();
   });
 
   it("keeps the corrupted archive separate from normal book navigation", () => {

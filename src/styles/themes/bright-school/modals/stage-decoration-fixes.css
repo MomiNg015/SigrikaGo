@@ -34,7 +34,6 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box {
-  border-top: 2px dashed var(--bright-border) !important;
   border-radius: 0 !important;
   padding: 6px 12px 14px 6px !important;
 }

@@ -1,5 +1,3 @@
-import WindowEmptyState from "../WindowEmptyState.jsx";
-import { RotateCcw } from "lucide-react";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 
@@ -16,22 +14,18 @@ export default function HouseDecorationPicker({
     <section className="owned-decoration-section decoration-applied-box decorations-section" id={panelId}
       role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
       tabIndex={panelId ? 0 : undefined}>
-      <div className="owned-decoration-header">
-        <h3>装饰</h3>
-        {selectedStoneDecoration && (
-          <button
-            className="secondary-action compact-action decoration-reset-action"
-            disabled={applyingDecoration === "default"}
-            onClick={() => onApplyDecoration("")}
-            aria-label="恢复初始装饰"
-            title="恢复初始装饰"
-          >
-            <RotateCcw size={18} />
-          </button>
-        )}
-      </div>
       <div className="owned-decoration-list">
-        {ownedDecorations.length === 0 && <WindowEmptyState compact>暂无装饰。</WindowEmptyState>}
+        <button
+          className={`owned-decoration-chip ${!selectedStoneDecoration ? "selected" : ""}`}
+          disabled={!selectedStoneDecoration || applyingDecoration === "default"}
+          aria-label="默认棋子"
+          aria-pressed={!selectedStoneDecoration}
+          aria-busy={applyingDecoration === "default" || undefined}
+          title="默认棋子"
+          onClick={() => onApplyDecoration("")}
+        >
+          <StoneDecorationPreview />
+        </button>
         {ownedDecorations.map((decorationId) => {
           const decoration = getStoneDecoration(decorationId);
           const selected = selectedStoneDecoration === decorationId;
