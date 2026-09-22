@@ -27,7 +27,7 @@ export default function HouseCharacterGrid({
   const emptySlots = Array.from({ length: Math.max(0, 10 - characters.length) }, (_, index) => index);
 
   return (
-    <div className={`character-list character-grid-container${sigrikaCorrupted ? "" : " handbook-student-grid"}`}>
+    <div className={`character-list character-grid-container${sigrikaCorrupted ? "" : " handbook-character-grid"}`}>
       {characters.map((character) => {
         const characterId = canonicalCharacterId(character.id);
         const hideIntel = characterId === "baconbits" && !owned.has(characterId);
@@ -37,7 +37,7 @@ export default function HouseCharacterGrid({
         if (hideIntel) {
           return (
             <div
-              className={`character-card portrait-card unowned hidden-intel-card${sigrikaCorrupted ? "" : " handbook-unregistered-card"}`}
+              className="character-card portrait-card unowned hidden-intel-card"
               key={character.id}
               role="img"
               aria-label="暂无情报"
@@ -63,13 +63,13 @@ export default function HouseCharacterGrid({
           : null;
         return (
           <div
-            className={`character-card portrait-card ${sigrikaCorrupted ? "" : "handbook-student-card"} ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
+            className={`character-card portrait-card ${sigrikaCorrupted ? "" : "handbook-character-card"} ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
             key={character.id}
             onClick={() => {
               if (!sigrikaCorrupted) onOpenCharacterDetail(character);
             }}
             role={sigrikaCorrupted ? "img" : "button"}
-            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : `${displayName}的学生证`}
+            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : `${displayName}的角色卡片`}
             tabIndex={sigrikaCorrupted ? -1 : 0}
             data-ui-sound="none"
             style={{ ...characterThemeStyle(character), ...(corruptionCadence ? {
@@ -123,8 +123,6 @@ export default function HouseCharacterGrid({
                 <Flag size={18} />
               </button>
             )}
-            {!sigrikaCorrupted && <span className="handbook-card-school" aria-hidden="true">星炬学院</span>}
-            {!sigrikaCorrupted && <span className="handbook-card-kind" aria-hidden="true">学生证</span>}
             {itemEffectBadges.length > 0 && (
               <div
                 className={`character-item-effect-badges${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
@@ -188,7 +186,7 @@ export default function HouseCharacterGrid({
         );
       })}
       {emptySlots.map((slot) => (
-        <div className={`character-card portrait-card locked lock-character-card${sigrikaCorrupted ? "" : " handbook-unregistered-card"}`} key={`empty-${slot}`}>
+        <div className="character-card portrait-card locked lock-character-card" key={`empty-${slot}`}>
           <span className="locked-portrait lock-text-title text-display-accent">LOCK</span>
           <strong className="text-display-accent">LOADING... (x_x)</strong>
           <small className="text-display-accent">LOCK / LOADING... (x_x)</small>

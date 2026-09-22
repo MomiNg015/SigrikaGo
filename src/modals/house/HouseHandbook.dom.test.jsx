@@ -41,7 +41,10 @@ describe("member handbook pages", () => {
   it("uses the current palette, protects hidden identity, and isolates keyboard sortie from details", async () => {
     const user = userEvent.setup();
     const { onSelectCharacter } = setup();
-    const card = screen.getByRole("button", { name: "西格莉卡的学生证" });
+    const card = screen.getByRole("button", { name: "西格莉卡的角色卡片" });
+    expect(screen.queryByText("星炬学院")).toBeNull();
+    expect(screen.queryByText("学生证")).toBeNull();
+    expect(document.querySelector(".handbook-opening-cover")).toBeNull();
     expect(card.style.getPropertyValue("--character-theme-color")).toBe(CHARACTERS.sigrika.palette);
     expect(screen.getByRole("img", { name: "暂无情报" })).toBeTruthy();
     expect(screen.queryByText("猪小仙")).toBeNull();

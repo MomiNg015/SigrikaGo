@@ -158,10 +158,7 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   return (
     <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
       <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host window-bookmark-host handbook-modal"}`} onClick={(event) => event.stopPropagation()}>
-        {!sigrikaCorrupted && <>
-          <div className="handbook-open-art" aria-hidden="true" />
-          <div className="handbook-opening-cover" aria-hidden="true"><img src="/assets/home/book-entry.webp" alt="" /></div>
-        </>}
+        {!sigrikaCorrupted && <div className="handbook-open-art" aria-hidden="true" />}
         <button className="close-button" aria-label="关闭部员手册" onClick={closeHouseModal}><X size={20} /></button>
         <header className="house-header window-sticker-header">
           <WindowTitleSticker titleKey="handbook" enabled={!sigrikaCorrupted} />

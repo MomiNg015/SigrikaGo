@@ -53,7 +53,7 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
-<p>部员手册以用户绘制的 <code>book-entry.webp</code> 封面为视觉基准，短暂翻开后仅展示书本右侧内页；左侧共用书签切换“角色 / 装饰”，页面由内部滚动区承载。角色使用横版星炬学院学生证，照片沿用换装与道具效果解析，配色来自当前角色目录的 <code>palette</code>。翻开动效在减少动态效果模式下禁用；剧情损坏档案保持原有呈现与权限规则。素材、滚动及键盘交互约束见前端架构分篇。</p>
+<p>部员手册使用以用户封面为基准的右侧内页背景，精确裁掉中缝和左页，不播放翻书动画。左侧共用书签切换“角色 / 装饰”，页面由内部滚动区承载。角色恢复原版紧凑卡片，仅呈现立绘、姓名和出战按钮，增加手绘纸卡背景并沿用当前角色主题色；桌面三列、手机两列。剧情状态与详情浮层保持原有规则。</p>
 <p>好友操作区按钮保持单排文字按钮，取消默认、悬停、按下及禁用阴影；详情使用蓝色边框、对局申请使用粉色边框、解除好友使用柔和红色边框，普通解除操作使用中性色边框。禁用状态保留灰色提示。</p>
 <p>好友和房间成员“详细信息”中的对局回放按钮与履历共用圆形、无阴影及浅绿底／绿边样式；对局内回放禁用限制保持，禁用时仍使用灰色反馈且无阴影。</p>
 <p>履历三个圆形按钮的边框与旧配色一致：成就粉色、个性化蓝色、对局回放绿色；通过局部边框变量接入共享状态规则，避免被通用深色边框覆盖。</p>
@@ -2905,10 +2905,10 @@
 <ul>
 <li>The former home/house entry is now split into a clickable player plaque that opens “履历” for profile stats/replays and a “部员手册” entry for character and decoration management.</li>
 <ul>
-<li>The Bright School handbook reuses the user's <code>/assets/home/book-entry.webp</code> cover for a bounded, pointer-transparent 680ms opening animation, then shows only the right page of <code>/assets/handbook/open-book.webp</code>. The final <code>handbook-book.css</code> owner crops the decorative background without transforming or clipping the dialog ancestor; character details remain viewport overlays. Reduced motion omits the cover animation. <code>WindowBookmarkTabs</code> provides the left character/decoration rail; unique tab/panel IDs, roving focus and ArrowUp/ArrowDown/Home/End navigation preserve keyboard access. Hidden panels stay mounted, preserving pending decoration feedback, while <code>.handbook-pages</code> owns vertical scrolling and page-edge clearance.</li>
+<li>The Bright School handbook displays a static right page from <code>/assets/handbook/open-book.webp</code>. The final <code>handbook-book.css</code> owner uses right-aligned 212% image width, cropping beyond source x=811 of 1536px to remove the entire center binding and left-page remnants. Only the decorative art is clipped; the dialog ancestor is not transformed or clipped, so character details remain viewport overlays. There is no opening cover element or animation. <code>WindowBookmarkTabs</code> provides the left character/decoration rail with unique IDs and roving keyboard focus; <code>.handbook-pages</code> owns vertical scrolling and page-edge clearance.</li>
 </ul>
 <ul>
-<li><code>HouseCharacterGrid</code> uses <code>characterThemeStyle(character)</code> for each horizontal student ID, with costume/candy-aware photos on the left and live school/name text on the right. The shared <code>/assets/handbook/student-paper.webp</code> texture is multiplied over the current catalog palette. Desktop uses two columns; portrait phones use one, with automatic grid row sizing to avoid legacy 88px row overlap. Card activation ignores bubbled keyboard events from child actions. Hidden Baconbits identity and corruption rules remain enforced; the corrupted archive does not receive the normal book art, navigation or student-ID markup.</li>
+<li><code>HouseCharacterGrid</code> retains its original compact portrait/name/sortie layout, tinted through <code>characterThemeStyle(character)</code> and backed by <code>/assets/handbook/character-card-paper.webp</code>. It does not render school headings or student-ID labels. Desktop uses three columns with 132px rows; portrait phones use two columns with 128px rows and explicit image/name row assignments, overriding legacy image ordering and hidden labels. Portraits remain costume/candy-aware; contextual item effects, hidden Baconbits identity and the original corruption archive remain intact. Card activation ignores bubbled keyboard events from child actions.</li>
 </ul>
 </ul>
 <ul>

@@ -142,9 +142,9 @@ If an inherited HUD artifact still leaks through, add the smallest explicit sele
 
 ## Protected Surfaces
 
-### Member handbook student IDs
+### Compact member handbook cards
 
-`handbook-book.css` and `handbook-student-cards.css` are final owners loaded after shared bookmark/title rules. The normal handbook shows only the right book page; `.handbook-pages` scrolls inside the painted page, with bottom padding clearing stacked page edges. Reset both `grid-template-rows` and `grid-auto-rows` for the student-ID grid: inherited portrait 88px rows otherwise overlap 152px cards. Use current catalog palettes and the shared costume/candy portrait resolver. Do not transform or clip the shell: nested character dialogs must remain viewport-relative. Animate only the decorative cover child, with reduced-motion removal. Reuse `WindowBookmarkTabs`; normal tabs and artwork must not enter the corruption archive. Verify rendered desktop and 360/390/412px portrait layouts, last-card reachability, hidden identity, keyboard tabs and child sortie isolation.
+`handbook-book.css` and `handbook-character-cards.css` are final owners loaded after shared bookmark/title rules. Show only the right book page, using 212% right-aligned background width to exclude the center binding. Do not restore the removed cover-opening animation. `.handbook-pages` owns scrolling and page-edge clearance. Retain the original compact portrait/name/sortie markup with palette-tinted raster paper; do not add school headings or ID labels. Desktop has three columns/132px rows; phones have two columns/128px rows with explicit image row 1, name row 2 and order reset, otherwise legacy image ordering clips the portrait. Do not transform or clip the dialog shell: nested details remain viewport-relative. Reuse `WindowBookmarkTabs` and exclude the corruption archive from normal artwork/layout. Verify desktop and 360/390/412px phones, image bounds, visible names, last-card reachability and keyboard action isolation.
 
 Treat these as high-risk during cleanup:
 
