@@ -1,6 +1,7 @@
 import { VOICE_EFFECT_SETTINGS, boostedVoiceVolume, createAiryReverbImpulse } from "../shared/voiceEffects.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
+import { countdownVoiceOffset } from "./countdownVoiceTiming.js";
 
 export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioSettings.js";
 export {
@@ -64,16 +65,26 @@ const voiceBufferCache = new Map();
 const voicePromiseCache = new Map();
 let sharedVoiceContext = null;
 let activeVoicePlayback = null;
+let voiceRequestId = 0;
 
 export function playVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS, playbackOptions = {}) {
+  const requestId = ++voiceRequestId;
+  const requestedAt = performance.now();
+  const isCurrent = () => requestId === voiceRequestId
+    && (playbackOptions.maxStartDelayMs == null || performance.now() - requestedAt <= playbackOptions.maxStartDelayMs);
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;
-  playVoiceSoundWithEffects(src, boostedVoiceVolume(volume), playbackOptions).catch(() => {
-    playVoiceSoundFallback(src, boostedVoiceVolume(volume));
+  playVoiceSoundWithEffects(src, boostedVoiceVolume(volume), playbackOptions, isCurrent).catch(() => {
+    if (isCurrent()) playVoiceSoundFallback(src, boostedVoiceVolume(volume), isCurrent);
   });
+  return () => {
+    if (requestId !== voiceRequestId) return;
+    stopVoicePlayback();
+  };
 }
 
 export function stopVoicePlayback() {
+  voiceRequestId += 1;
   stopActiveVoicePlayback();
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
@@ -87,7 +98,10 @@ export function preloadVoiceSound(src) {
   const context = getVoiceAudioContext();
   if (!context) return Promise.resolve(null);
   const promise = fetch(src)
-    .then((response) => response.arrayBuffer())
+    .then((response) => {
+      if (!response.ok) throw new Error("Voice audio could not be loaded");
+      return response.arrayBuffer();
+    })
     .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
     .then((buffer) => {
       voiceBufferCache.set(src, buffer);
@@ -102,16 +116,7 @@ export function preloadVoiceSound(src) {
 }
 
 export function playPreloadedVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS, playbackOptions = {}) {
-  if (!voiceBufferCache.has(src)) {
-    playVoiceSound(src, audioSettings, playbackOptions);
-    return;
-  }
-  const volume = audioVolume(audioSettings, "voice");
-  if (volume <= 0) return;
-  const buffer = voiceBufferCache.get(src);
-  playVoiceBuffer(buffer, boostedVoiceVolume(volume), playbackOptions).catch(() => {
-    playVoiceSound(src, audioSettings, playbackOptions);
-  });
+  return playVoiceSound(src, audioSettings, playbackOptions);
 }
 
 function getVoiceAudioContext() {
@@ -127,20 +132,21 @@ function getVoiceAudioContext() {
   return sharedVoiceContext;
 }
 
-async function playVoiceSoundWithEffects(src, volume, playbackOptions) {
+async function playVoiceSoundWithEffects(src, volume, playbackOptions, isCurrent) {
   const context = getVoiceAudioContext();
   if (!context) throw new Error("Web Audio is not available");
-  if (context.state === "suspended") await context.resume();
-  const response = await fetch(src);
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = await context.decodeAudioData(arrayBuffer);
-  await playVoiceBuffer(buffer, volume, playbackOptions);
+  const buffer = voiceBufferCache.get(src) || await preloadVoiceSound(src);
+  if (!isCurrent()) return;
+  if (!buffer) throw new Error("Voice audio could not be decoded");
+  await playVoiceBuffer(buffer, volume, playbackOptions, isCurrent);
 }
 
-async function playVoiceBuffer(buffer, volume, playbackOptions = {}) {
+async function playVoiceBuffer(buffer, volume, playbackOptions, isCurrent) {
   const context = getVoiceAudioContext();
   if (!context) throw new Error("Web Audio is not available");
   if (context.state === "suspended") await context.resume();
+  if (!isCurrent()) return;
+  if (context.state !== "running") throw new Error("Voice audio context is suspended");
 
   const source = context.createBufferSource();
   source.buffer = buffer;
@@ -167,7 +173,7 @@ async function playVoiceBuffer(buffer, volume, playbackOptions = {}) {
   };
   stopActiveVoicePlayback();
   activeVoicePlayback = voiceHandle;
-  source.start();
+  source.start(0, playbackOptions.trimLeadingSilence ? countdownVoiceOffset(buffer) : 0);
   source.onended = release;
 }
 
@@ -216,7 +222,8 @@ function disconnectAudioNodes(nodes) {
   };
 }
 
-function playVoiceSoundFallback(src, volume) {
+function playVoiceSoundFallback(src, volume, isCurrent) {
+  if (typeof Audio === "undefined") return;
   stopActiveVoicePlayback();
   const audio = new Audio(src);
   audio.preload = "auto";
@@ -234,6 +241,10 @@ function playVoiceSoundFallback(src, volume) {
   audio.addEventListener("ended", release, { once: true });
   audio.addEventListener("pause", release, { once: true });
   audio.addEventListener("error", release, { once: true });
+  // Media loading can finish after the next tick or after the room unmounts.
+  audio.addEventListener("playing", () => {
+    if (!isCurrent()) audio.pause();
+  }, { once: true });
   audio.play().catch(() => {});
 }
 
@@ -249,6 +260,7 @@ function stopActiveVoicePlayback() {
 }
 
 export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  const requestId = ++voiceRequestId;
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;
   if (typeof window === "undefined") return;
@@ -260,4 +272,7 @@ export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   utterance.rate = 1.05;
   utterance.volume = volume;
   window.speechSynthesis.speak(utterance);
+  return () => {
+    if (requestId === voiceRequestId) stopVoicePlayback();
+  };
 }

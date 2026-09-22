@@ -4,6 +4,7 @@ import { effectiveSkillConfigForPlayer } from "../../shared/derivedSkills.js";
 import { skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation } from "../../shared/gameSkills.js";
 import { canPreviewPoint, replayGameAt, replayRoomAt } from "../roomView.js";
 import { effectiveRoomRole, roomGameInfoForPlayers } from "../roomState.js";
+import { useRoomCountdownClock } from "./useRoomCountdownClock.js";
 
 export function useRoomBoardView({ room, user, replayStep }) {
   const [spectatorStep, setSpectatorStep] = useState(null);
@@ -23,7 +24,8 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const boardGame = (isReplay || isLiveSpectator) && !(isLiveSpectator && boardStep >= liveStep && hasServerSpectatorView)
     ? gameViewForColor(rawBoardGame, viewColor)
     : rawBoardGame;
-  const displayRoom = isReplay ? replayRoomAt(room, replayStep, viewColor) : isLiveSpectator ? { ...room, game: boardGame } : room;
+  const timedRoom = useRoomCountdownClock(room, !isReplay && (boardStep == null || boardStep >= liveStep));
+  const displayRoom = isReplay ? replayRoomAt(room, replayStep, viewColor) : isLiveSpectator ? { ...timedRoom, game: boardGame } : timedRoom;
   const role = effectiveRoomRole(displayRoom, isReplay);
   const blackPlayer = displayRoom.players.find((p) => p.color === COLORS.black);
   const whitePlayer = displayRoom.players.find((p) => p.color === COLORS.white);

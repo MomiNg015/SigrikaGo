@@ -31,7 +31,7 @@ describe("system voice playback", () => {
     expect(playbackMocks.playPreloadedVoiceSound).toHaveBeenCalledWith(
       "/assets/voice/custom-countdown-5.ogg",
       audioSettings,
-      { reverb: false }
+      { reverb: false, trimLeadingSilence: true, maxStartDelayMs: 200 }
     );
   });
 

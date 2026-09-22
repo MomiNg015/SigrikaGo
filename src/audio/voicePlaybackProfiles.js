@@ -8,7 +8,9 @@ const STANDARD_VOICE_PLAYBACK = Object.freeze({
 });
 
 const COUNTDOWN_VOICE_PLAYBACK = Object.freeze({
-  reverb: false
+  reverb: false,
+  trimLeadingSilence: true,
+  maxStartDelayMs: 200
 });
 
 export function voicePlaybackOptions(profile = VOICE_PLAYBACK_PROFILES.standard) {

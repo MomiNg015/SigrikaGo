@@ -24,10 +24,18 @@ export function useRoomAudioEffects({
   const hiddenRevealSoundRef = useRef(null);
   const replayStepSoundRef = useRef(replayStep);
   const voiceRef = useRef({});
+  const countdownPlaybackRef = useRef(null);
   const preloadedCountdownRef = useRef("");
   const systemVoiceRef = useRef({});
   const seededAudioBaselineRef = useRef("");
   const suppressRoomVoices = shouldSuppressRoomVoices(displayRoom);
+  const clockPaused = displayRoom.players.every((player) => player.connected === false);
+  const countdownScope = `${displayRoom.code}:${displayRoom.game.phase}:${displayRoom.game.turn}:${displayRoom.game.history.length}:${activePlayer?.time?.periods}:${Boolean(activePlayer?.time?.unlimited)}:${Boolean(activePlayer?.time?.main > 0)}:${Boolean(activePlayer?.time?.periodRemaining > 10)}:${isReplay}:${suppressRoomVoices}:${clockPaused}`;
+
+  useEffect(() => () => {
+    countdownPlaybackRef.current?.();
+    countdownPlaybackRef.current = null;
+  }, [countdownScope]);
 
   useLayoutEffect(() => {
     if (!shouldSeedRoomAudioBaseline(room)) return;
@@ -79,7 +87,7 @@ export function useRoomAudioEffects({
   }, [displayRoom.game.points, displayRoom.game.history, isReplay, audioSettings]);
 
   useEffect(() => {
-    if (suppressRoomVoices || isReplay || !activePlayer || activePlayer.time?.unlimited) return;
+    if (suppressRoomVoices || clockPaused || isReplay || displayRoom.game.phase !== "playing" || !activePlayer || activePlayer.time?.unlimited) return;
     const timer = activePlayer.time;
     const periodKey = `${activePlayer.color}-periods`;
     const mainKey = `${activePlayer.color}-main`;
@@ -103,7 +111,8 @@ export function useRoomAudioEffects({
         voiceRef.current[countdownKey] = true;
         const countdownAnnouncement = nextCountdownAnnouncement({ seconds: timer.periodRemaining });
         if (countdownAnnouncement?.type === "voice") {
-          playSystemVoice(countdownAnnouncement.event, {
+          countdownPlaybackRef.current?.();
+          countdownPlaybackRef.current = playSystemVoice(countdownAnnouncement.event, {
             character: voiceCharacterForPlayer(activePlayer, characters),
             params: countdownAnnouncement.params,
             fallbackText: countdownAnnouncement.text,
@@ -115,25 +124,28 @@ export function useRoomAudioEffects({
     }
     voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
-  }, [activePlayer, characters, displayRoom.game.history.length, isReplay, audioSettings, suppressRoomVoices]);
+  }, [activePlayer, characters, displayRoom.game.history.length, displayRoom.game.phase, isReplay, audioSettings, suppressRoomVoices, clockPaused]);
 
   useEffect(() => {
-    if (suppressRoomVoices || isReplay || !activePlayer || activePlayer.time?.unlimited || !(activePlayer.time?.main <= 0)) return;
+    if (suppressRoomVoices || isReplay) return;
     const preloadSources = [];
-    for (let seconds = 10; seconds >= 1; seconds -= 1) {
-      const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {
-        character: voiceCharacterForPlayer(activePlayer, characters),
-        params: { seconds }
-      });
-      if (voice.type === "audio" && voice.src) preloadSources.push(voice.src);
+    for (const player of displayRoom.players) {
+      if (player.time?.unlimited) continue;
+      for (let seconds = 10; seconds >= 1; seconds -= 1) {
+        const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {
+          character: voiceCharacterForPlayer(player, characters),
+          params: { seconds }
+        });
+        if (voice.type === "audio" && voice.src) preloadSources.push(voice.src);
+      }
     }
-    const preloadKey = `${activePlayer.color}:${preloadSources.join("|")}`;
+    const preloadKey = preloadSources.join("|");
     if (!preloadSources.length || preloadedCountdownRef.current === preloadKey) return;
     preloadedCountdownRef.current = preloadKey;
-    for (const src of preloadSources) {
+    for (const src of new Set(preloadSources)) {
       preloadVoiceSound(src);
     }
-  }, [activePlayer, characters, isReplay, suppressRoomVoices]);
+  }, [displayRoom.players, characters, isReplay, suppressRoomVoices]);
 
   useEffect(() => {
     if (suppressRoomVoices) return;

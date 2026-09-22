@@ -7,9 +7,8 @@ export function playSystemVoice(event, { character, params, fallbackText, audioS
   const voice = resolveSystemVoice(event, { character: withCharacterSystemVoices(character), params });
   const playbackOptions = voicePlaybackOptions(playbackProfile);
   if (voice.type === "audio" && voice.src) {
-    playPreloadedVoiceSound(voice.src, audioSettings, playbackOptions);
-    return;
+    return playPreloadedVoiceSound(voice.src, audioSettings, playbackOptions);
   }
   const text = voice.text || fallbackText;
-  if (text) speakText(text, audioSettings);
+  if (text) return speakText(text, audioSettings);
 }

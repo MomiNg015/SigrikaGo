@@ -30,6 +30,13 @@ Questions to answer:
 
 ## Required Patterns
 
+### Countdown Voice Timing Contract
+
+- `useRoomCountdownClock(room, enabled)` owns the last-ten-second presentation timeline. Player clocks and `useRoomAudioEffects` must consume its same room projection. Accept +/-300 ms snapshot jitter without resetting phase; predict at most one tick beyond confirmation, clamp at one, and never infer period loss or timeout. Reset on room, turn, history length, period, phase, replay, both-player disconnection, increasing time or larger drift.
+- Countdown playback uses `{ reverb: false, trimLeadingSilence: true, maxStartDelayMs: 200 }`. `countdownVoiceOffset(buffer)` finds the earliest absolute amplitude >=0.01 across channels, retains 10 ms pre-roll, and caches by AudioBuffer. Do not trim against vowel-relative loudness, normalize gain, change speed or rewrite assets to fix timing.
+- Voice preload and playback share fetch/decode caches. Every new voice invalidates pending older requests; validate after decode and AudioContext resume. A countdown start delayed over 200 ms is dropped. Playback returns an owner-scoped cancellation callback; room lifecycle cleanup must not cancel a newer unrelated voice.
+- Required regressions: early and late snapshots preserve one-second steps; missing snapshots advance at most once; replay, reset and unmount cancel timers; quiet consonants survive onset detection; preload is shared; stale decode/resume does not start audio; cleanup does not stop newer playback. Cover all static character countdown mappings and retain TTS fallback behavior.
+
 <!-- Patterns that must always be used -->
 
 ### Desktop Minimum Viewport Gate Contract

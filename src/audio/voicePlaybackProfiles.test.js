@@ -10,7 +10,9 @@ describe("voice playback profiles", () => {
 
   it("keeps countdown clips dry", () => {
     expect(voicePlaybackOptions(VOICE_PLAYBACK_PROFILES.countdown)).toEqual({
-      reverb: false
+      reverb: false,
+      trimLeadingSilence: true,
+      maxStartDelayMs: 200
     });
   });
 });
