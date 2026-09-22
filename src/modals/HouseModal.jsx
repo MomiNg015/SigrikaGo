@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
@@ -13,6 +14,8 @@ import CharacterCostumeDialog from "./house/CharacterCostumeDialog.jsx";
 
 export default function HouseModal({ token, user, characterListView, audioSettings, musicTracks, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration, onUserChange, onNotice }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
+  const [handbookTab, setHandbookTab] = useState("characters");
+  const handbookId = useId();
   const [showCostumes, setShowCostumes] = useState(false);
   const [costumes, setCostumes] = useState([]);
   const [costumesLoading, setCostumesLoading] = useState(false);
@@ -25,6 +28,19 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   const itemEffects = user.itemEffects ?? {};
   const detailOwned = detailCharacter ? owned.has(canonicalCharacterId(detailCharacter.id)) : false;
   const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
+  const activeTab = sigrikaCorrupted ? "characters" : handbookTab;
+
+  function handleTabKeyDown(event) {
+    const tabs = [...event.currentTarget.querySelectorAll('[role="tab"]')];
+    const index = tabs.indexOf(event.target);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1
+      : event.key === "ArrowDown" ? (index + 1) % tabs.length
+        : event.key === "ArrowUp" ? (index + tabs.length - 1) % tabs.length : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    tabs[next].focus();
+    tabs[next].click();
+  }
 
   useEffect(() => {
     let alive = true;
@@ -122,34 +138,63 @@ export default function HouseModal({ token, user, characterListView, audioSettin
     }
   }
 
+  const characterGrid = (
+    <HouseCharacterGrid
+      audioSettings={audioSettings}
+      characters={characterListView}
+      itemEffects={itemEffects}
+      owned={owned}
+      selectedCharacter={selectedCharacter}
+      user={user}
+      candyEffectCancellationEnabled={import.meta.env.DEV && !sigrikaCorrupted}
+      cancellingCandyEffect={cancellingCandyEffect}
+      sigrikaCorrupted={sigrikaCorrupted}
+      onCancelCandyEffect={cancelCandyEffect}
+      onOpenCharacterDetail={openCharacterDetail}
+      onSelectCharacter={onSelectCharacter}
+    />
+  );
+
   return (
     <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
-      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host"}`} onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={closeHouseModal}><X size={20} /></button>
+      <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host window-bookmark-host handbook-modal"}`} onClick={(event) => event.stopPropagation()}>
+        {!sigrikaCorrupted && <>
+          <div className="handbook-open-art" aria-hidden="true" />
+          <div className="handbook-opening-cover" aria-hidden="true"><img src="/assets/home/book-entry.webp" alt="" /></div>
+        </>}
+        <button className="close-button" aria-label="关闭部员手册" onClick={closeHouseModal}><X size={20} /></button>
         <header className="house-header window-sticker-header">
           <WindowTitleSticker titleKey="handbook" enabled={!sigrikaCorrupted} />
         </header>
-        <HouseCharacterGrid
-          audioSettings={audioSettings}
-          characters={characterListView}
-          itemEffects={itemEffects}
-          owned={owned}
-          selectedCharacter={selectedCharacter}
-          user={user}
-          candyEffectCancellationEnabled={import.meta.env.DEV && !sigrikaCorrupted}
-          cancellingCandyEffect={cancellingCandyEffect}
-          sigrikaCorrupted={sigrikaCorrupted}
-          onCancelCandyEffect={cancelCandyEffect}
-          onOpenCharacterDetail={openCharacterDetail}
-          onSelectCharacter={onSelectCharacter}
-        />
-        {!sigrikaCorrupted && <HouseDecorationPicker
-          applyingDecoration={applyingDecoration}
-          decorationError={decorationError}
-          ownedDecorations={user.ownedDecorations ?? []}
-          selectedStoneDecoration={user.selectedStoneDecoration}
-          onApplyDecoration={applyDecoration}
-        />}
+        {!sigrikaCorrupted && <WindowBookmarkTabs className="handbook-tabs" aria-label="部员手册分类" onKeyDown={handleTabKeyDown}>
+          {[["characters", "角色"], ["decorations", "装饰"]].map(([id, label]) => (
+            <button key={id} type="button" role="tab" id={`${handbookId}-${id}-tab`}
+              aria-controls={`${handbookId}-${id}-panel`} aria-selected={activeTab === id}
+              tabIndex={activeTab === id ? 0 : -1} onClick={() => setHandbookTab(id)}>
+              {label}
+            </button>
+          ))}
+        </WindowBookmarkTabs>}
+        {sigrikaCorrupted ? characterGrid : (
+          <div className="handbook-pages">
+            <div className="handbook-page" role="tabpanel"
+              id={`${handbookId}-characters-panel`} aria-labelledby={`${handbookId}-characters-tab`}
+              hidden={activeTab !== "characters"} tabIndex={0}>
+              {characterGrid}
+            </div>
+            <div className="handbook-page" role="tabpanel"
+              id={`${handbookId}-decorations-panel`} aria-labelledby={`${handbookId}-decorations-tab`}
+              hidden={activeTab !== "decorations"} tabIndex={0}>
+              <HouseDecorationPicker
+                applyingDecoration={applyingDecoration}
+                decorationError={decorationError}
+                ownedDecorations={user.ownedDecorations ?? []}
+                selectedStoneDecoration={user.selectedStoneDecoration}
+                onApplyDecoration={applyDecoration}
+              />
+            </div>
+          </div>
+        )}
         {detailCharacter && (
           <CharacterDetailDialog
             character={detailCharacter}

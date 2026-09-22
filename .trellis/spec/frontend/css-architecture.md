@@ -142,6 +142,10 @@ If an inherited HUD artifact still leaks through, add the smallest explicit sele
 
 ## Protected Surfaces
 
+### Member handbook student IDs
+
+`handbook-book.css` and `handbook-student-cards.css` are final owners loaded after shared bookmark/title rules. The normal handbook shows only the right book page; `.handbook-pages` scrolls inside the painted page, with bottom padding clearing stacked page edges. Reset both `grid-template-rows` and `grid-auto-rows` for the student-ID grid: inherited portrait 88px rows otherwise overlap 152px cards. Use current catalog palettes and the shared costume/candy portrait resolver. Do not transform or clip the shell: nested character dialogs must remain viewport-relative. Animate only the decorative cover child, with reduced-motion removal. Reuse `WindowBookmarkTabs`; normal tabs and artwork must not enter the corruption archive. Verify rendered desktop and 360/390/412px portrait layouts, last-card reachability, hidden identity, keyboard tabs and child sortie isolation.
+
 Treat these as high-risk during cleanup:
 
 - `src/styles/room/board/**`

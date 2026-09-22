@@ -1,0 +1,118 @@
+/* Live character palettes tint the shared hand-painted paper; portraits remain costume-aware. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .handbook-student-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: auto !important;
+  align-content: start !important;
+  height: auto !important;
+  gap: 22px 36px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card {
+  --id-ink: color-mix(in srgb, var(--character-theme-color) 28%, #302b29);
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 42% minmax(0, 1fr) !important;
+  grid-template-rows: 30px 25px 1fr !important;
+  column-gap: 12px !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 174px !important;
+  aspect-ratio: 1.8 !important;
+  padding: 14px 16px !important;
+  color: var(--id-ink) !important;
+  background: url('/assets/handbook/student-paper.webp') center / 100% 100%, color-mix(in srgb, var(--character-theme-color) 25%, white) !important;
+  background-blend-mode: multiply !important;
+  border: 2px solid color-mix(in srgb, var(--character-theme-color) 60%, #5e5046) !important;
+  border-radius: 9px 12px 8px 11px !important;
+  box-shadow: 2px 3px 0 color-mix(in srgb, var(--id-ink) 22%, transparent) !important;
+  overflow: hidden !important;
+  clip-path: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card::after { content: none !important; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card > img {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 146px !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 4px !important;
+  align-self: stretch !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background: color-mix(in srgb, var(--character-theme-color) 9%, white) !important;
+  border: 1px solid color-mix(in srgb, var(--id-ink) 40%, transparent) !important;
+  border-radius: 3px !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card > :is(.handbook-card-school, .handbook-card-kind, strong) {
+  grid-column: 2;
+  display: block !important;
+  position: static !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  color: var(--id-ink) !important;
+  text-align: left !important;
+  text-shadow: none !important;
+  border: 0 !important;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  animation: none !important;
+}
+.handbook-card-school { grid-row: 1; font-size: 20px !important; white-space: nowrap; }
+.handbook-card-kind { grid-row: 2; font-size: 13px !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card > strong {
+  grid-row: 3;
+  font-size: 23px !important;
+  align-self: start;
+  padding-top: 6px !important;
+  padding-bottom: 30px !important;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card .sortie-button {
+  inset: auto 10px 8px auto !important;
+  width: 38px !important;
+  height: 32px !important;
+  min-width: 38px !important;
+  min-height: 32px !important;
+  padding: 5px !important;
+  transform: none !important;
+}
+.handbook-student-card .character-item-effect-badges { top: auto !important; bottom: 8px; left: 12px; }
+.handbook-student-card:focus-visible { outline: 3px solid var(--id-ink) !important; outline-offset: 3px; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .handbook-unregistered-card {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 174px !important;
+  aspect-ratio: 1.8 !important;
+  border-radius: 9px !important;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .handbook-student-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card { padding: 10px !important; column-gap: 10px !important; min-height: 152px !important; }
+  .handbook-card-school { font-size: 18px !important; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card > strong { font-size: 21px !important; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal.handbook-modal .character-card.portrait-card.handbook-student-card .sortie-button { width: 44px !important; height: 44px !important; }
+}

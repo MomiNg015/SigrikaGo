@@ -1,5 +1,6 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
+import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { CorruptionFragmentImage, CorruptionNoise, createCorruptionCadence } from "../../ui/CorruptionMarks.jsx";
 import {
@@ -26,7 +27,7 @@ export default function HouseCharacterGrid({
   const emptySlots = Array.from({ length: Math.max(0, 10 - characters.length) }, (_, index) => index);
 
   return (
-    <div className="character-list character-grid-container">
+    <div className={`character-list character-grid-container${sigrikaCorrupted ? "" : " handbook-student-grid"}`}>
       {characters.map((character) => {
         const characterId = canonicalCharacterId(character.id);
         const hideIntel = characterId === "baconbits" && !owned.has(characterId);
@@ -36,7 +37,7 @@ export default function HouseCharacterGrid({
         if (hideIntel) {
           return (
             <div
-              className="character-card portrait-card unowned hidden-intel-card"
+              className={`character-card portrait-card unowned hidden-intel-card${sigrikaCorrupted ? "" : " handbook-unregistered-card"}`}
               key={character.id}
               role="img"
               aria-label="暂无情报"
@@ -62,16 +63,16 @@ export default function HouseCharacterGrid({
           : null;
         return (
           <div
-            className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
+            className={`character-card portrait-card ${sigrikaCorrupted ? "" : "handbook-student-card"} ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
             key={character.id}
             onClick={() => {
               if (!sigrikaCorrupted) onOpenCharacterDetail(character);
             }}
             role={sigrikaCorrupted ? "img" : "button"}
-            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : undefined}
+            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : `${displayName}的学生证`}
             tabIndex={sigrikaCorrupted ? -1 : 0}
             data-ui-sound="none"
-            style={corruptionCadence ? {
+            style={{ ...characterThemeStyle(character), ...(corruptionCadence ? {
               "--corruption-card-delay": corruptionCadence.cardDelay,
               "--corruption-card-direction": corruptionCadence.cardDirection,
               "--corruption-card-duration": corruptionCadence.cardDuration,
@@ -93,15 +94,19 @@ export default function HouseCharacterGrid({
               "--corruption-slice-forward": corruptionCadence.sliceForward,
               "--corruption-slice-top": corruptionCadence.sliceTop,
               "--corruption-slice-y": corruptionCadence.sliceY
-            } : undefined}
+            } : {}) }}
             onKeyDown={(event) => {
-              if (!sigrikaCorrupted && (event.key === "Enter" || event.key === " ")) onOpenCharacterDetail(character);
+              if (!sigrikaCorrupted && event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+                event.preventDefault();
+                onOpenCharacterDetail(character);
+              }
             }}
           >
             {!sigrikaCorrupted && (
               <button
                 className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
                 title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
+                aria-label={disabledReason || (selectedCharacter === characterId ? "出战中" : `设${displayName}为出战`)}
                 data-ui-sound="confirm"
                 disabled={sortieDisabled}
                 onClick={(event) => {
@@ -118,6 +123,8 @@ export default function HouseCharacterGrid({
                 <Flag size={18} />
               </button>
             )}
+            {!sigrikaCorrupted && <span className="handbook-card-school" aria-hidden="true">星炬学院</span>}
+            {!sigrikaCorrupted && <span className="handbook-card-kind" aria-hidden="true">学生证</span>}
             {itemEffectBadges.length > 0 && (
               <div
                 className={`character-item-effect-badges${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
@@ -181,7 +188,7 @@ export default function HouseCharacterGrid({
         );
       })}
       {emptySlots.map((slot) => (
-        <div className="character-card portrait-card locked lock-character-card" key={`empty-${slot}`}>
+        <div className={`character-card portrait-card locked lock-character-card${sigrikaCorrupted ? "" : " handbook-unregistered-card"}`} key={`empty-${slot}`}>
           <span className="locked-portrait lock-text-title text-display-accent">LOCK</span>
           <strong className="text-display-accent">LOADING... (x_x)</strong>
           <small className="text-display-accent">LOCK / LOADING... (x_x)</small>
