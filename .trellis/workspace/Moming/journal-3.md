@@ -599,3 +599,36 @@ Restored original handbook window/card owners from 5db4f892, removed generated b
 ### Next Steps
 
 - None - task complete
+
+
+## Session 139: Default stones in handbook decoration tab
+
+**Date**: 2026-09-22
+**Task**: Default stones in handbook decoration tab
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Removed redundant decoration divider and heading/reset row. Added default black/white stones as first option with empty-ID reset, selected and pending semantics. 25 focused tests, lint, build and built CSS passed; desktop and portrait browser checks passed. Unrelated changes preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD~1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
