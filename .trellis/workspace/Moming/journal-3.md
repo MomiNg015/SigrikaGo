@@ -632,3 +632,36 @@ Removed redundant decoration divider and heading/reset row. Added default black/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 140: Synchronize countdown voice and clock
+
+**Date**: 2026-09-22
+**Task**: Synchronize countdown voice and clock
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Audited all 90 countdown clips for 9 characters. Added a shared bounded local countdown timeline, leading-silence offsets, shared voice preload/cache, stale-request deadlines and lifecycle cancellation. Relevant 192 tests and lint/build/asset/config gates pass. Full suite retains four unrelated UI assertion failures; documented limits and preserved existing WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ac35fe4d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
