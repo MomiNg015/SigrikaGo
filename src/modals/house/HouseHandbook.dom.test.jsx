@@ -38,23 +38,15 @@ describe("member handbook pages", () => {
     expect(screen.getByRole("tabpanel", { name: "装饰" })).toBeTruthy();
   });
 
-  it("uses the current palette, protects hidden identity, and isolates keyboard sortie from details", async () => {
-    const user = userEvent.setup();
-    const { onSelectCharacter } = setup();
-    const card = screen.getByRole("button", { name: "西格莉卡的角色卡片" });
+  it("restores the original card surface and protects hidden identity", () => {
+    setup();
     expect(screen.queryByText("星炬学院")).toBeNull();
     expect(screen.queryByText("学生证")).toBeNull();
-    expect(document.querySelector(".handbook-opening-cover")).toBeNull();
-    expect(card.style.getPropertyValue("--character-theme-color")).toBe(CHARACTERS.sigrika.palette);
+    expect(document.querySelector(".handbook-open-art")).toBeNull();
+    expect(document.querySelector(".handbook-character-card")).toBeNull();
+    expect(document.querySelector(".character-grid-container").parentElement.classList.contains("house-modal")).toBe(true);
     expect(screen.getByRole("img", { name: "暂无情报" })).toBeTruthy();
     expect(screen.queryByText("猪小仙")).toBeNull();
-    screen.getByRole("button", { name: "出战中" }).focus();
-    await user.keyboard("{Enter}");
-    expect(onSelectCharacter).toHaveBeenCalledOnce();
-    expect(document.querySelector(".character-details-modal")).toBeNull();
-    card.focus();
-    await user.keyboard(" ");
-    expect(document.querySelector(".character-details-modal")).toBeTruthy();
   });
 
   it("keeps the corrupted archive separate from normal book navigation", () => {

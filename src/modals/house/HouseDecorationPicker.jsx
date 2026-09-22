@@ -4,6 +4,8 @@ import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 
 export default function HouseDecorationPicker({
+  panelId,
+  labelledBy,
   applyingDecoration,
   decorationError,
   ownedDecorations,
@@ -11,7 +13,9 @@ export default function HouseDecorationPicker({
   onApplyDecoration
 }) {
   return (
-    <section className="owned-decoration-section decoration-applied-box decorations-section">
+    <section className="owned-decoration-section decoration-applied-box decorations-section" id={panelId}
+      role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
+      tabIndex={panelId ? 0 : undefined}>
       <div className="owned-decoration-header">
         <h3>装饰</h3>
         {selectedStoneDecoration && (

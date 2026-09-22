@@ -635,8 +635,6 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/guided-actions.css",
       "./mobile-adaptive/window-bookmarks.css",
       "./mobile-adaptive/window-empty-states.css",
-      "./mobile-adaptive/handbook-book.css",
-      "./mobile-adaptive/handbook-character-cards.css",
       "./mobile-adaptive/sigrika-corruption.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");

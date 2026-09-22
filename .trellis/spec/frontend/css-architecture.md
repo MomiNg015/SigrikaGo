@@ -142,9 +142,9 @@ If an inherited HUD artifact still leaks through, add the smallest explicit sele
 
 ## Protected Surfaces
 
-### Compact member handbook cards
+### Original handbook with left tabs
 
-`handbook-book.css` and `handbook-character-cards.css` are final owners loaded after shared bookmark/title rules. Show only the right book page, using 212% right-aligned background width to exclude the center binding. Do not restore the removed cover-opening animation. `.handbook-pages` owns scrolling and page-edge clearance. Retain the original compact portrait/name/sortie markup with palette-tinted raster paper; do not add school headings or ID labels. Desktop has three columns/132px rows; phones have two columns/128px rows with explicit image row 1, name row 2 and order reset, otherwise legacy image ordering clips the portrait. Do not transform or clip the dialog shell: nested details remain viewport-relative. Reuse `WindowBookmarkTabs` and exclude the corruption archive from normal artwork/layout. Verify desktop and 360/390/412px phones, image bounds, visible names, last-card reachability and keyboard action isolation.
+Keep the original handbook window and card owners. The generated book/card artwork and `handbook-book.css` / `handbook-character-cards.css` overrides were reverted at the user's request. Retain `WindowBookmarkTabs` only: active character and decoration panel roots must remain direct children of `HouseModal` so original scrolling and direct-child decoration cleanup selectors still match. Do not wrap them in an illustrated page or impose new column counts. Exclude the corruption archive from normal tabs; keep details and sortie voice lifecycle unchanged. Verify both tabs, keyboard navigation and content reachability on desktop and portrait phones.
 
 Treat these as high-risk during cleanup:
 

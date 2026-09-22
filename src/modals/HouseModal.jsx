@@ -140,6 +140,8 @@ export default function HouseModal({ token, user, characterListView, audioSettin
 
   const characterGrid = (
     <HouseCharacterGrid
+      panelId={sigrikaCorrupted ? undefined : `${handbookId}-characters-panel`}
+      labelledBy={sigrikaCorrupted ? undefined : `${handbookId}-characters-tab`}
       audioSettings={audioSettings}
       characters={characterListView}
       itemEffects={itemEffects}
@@ -158,7 +160,6 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   return (
     <div className={`modal-backdrop ${sigrikaCorrupted ? "sigrika-corruption-house-backdrop" : ""}`} onClick={closeHouseModal}>
       <section className={`house-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host window-bookmark-host handbook-modal"}`} onClick={(event) => event.stopPropagation()}>
-        {!sigrikaCorrupted && <div className="handbook-open-art" aria-hidden="true" />}
         <button className="close-button" aria-label="关闭部员手册" onClick={closeHouseModal}><X size={20} /></button>
         <header className="house-header window-sticker-header">
           <WindowTitleSticker titleKey="handbook" enabled={!sigrikaCorrupted} />
@@ -172,25 +173,16 @@ export default function HouseModal({ token, user, characterListView, audioSettin
             </button>
           ))}
         </WindowBookmarkTabs>}
-        {sigrikaCorrupted ? characterGrid : (
-          <div className="handbook-pages">
-            <div className="handbook-page" role="tabpanel"
-              id={`${handbookId}-characters-panel`} aria-labelledby={`${handbookId}-characters-tab`}
-              hidden={activeTab !== "characters"} tabIndex={0}>
-              {characterGrid}
-            </div>
-            <div className="handbook-page" role="tabpanel"
-              id={`${handbookId}-decorations-panel`} aria-labelledby={`${handbookId}-decorations-tab`}
-              hidden={activeTab !== "decorations"} tabIndex={0}>
-              <HouseDecorationPicker
-                applyingDecoration={applyingDecoration}
-                decorationError={decorationError}
-                ownedDecorations={user.ownedDecorations ?? []}
-                selectedStoneDecoration={user.selectedStoneDecoration}
-                onApplyDecoration={applyDecoration}
-              />
-            </div>
-          </div>
+        {activeTab === "characters" ? characterGrid : (
+          <HouseDecorationPicker
+            panelId={`${handbookId}-decorations-panel`}
+            labelledBy={`${handbookId}-decorations-tab`}
+            applyingDecoration={applyingDecoration}
+            decorationError={decorationError}
+            ownedDecorations={user.ownedDecorations ?? []}
+            selectedStoneDecoration={user.selectedStoneDecoration}
+            onApplyDecoration={applyDecoration}
+          />
         )}
         {detailCharacter && (
           <CharacterDetailDialog

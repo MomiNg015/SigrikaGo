@@ -1,4 +1,10 @@
 /* Content owns scrolling after its tab row moves outside the paper shell. */
+.handbook-tabs { display: flex; gap: 8px; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .house-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) {
   min-height: min(340px, var(--window-sticker-available-height)) !important;
 }

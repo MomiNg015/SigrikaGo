@@ -6,6 +6,7 @@ import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisa
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import HouseModal from "./HouseModal.jsx";
+import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
 import ResumeModal from "./ResumeModal.jsx";
 import { characterMusicSlots, CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 import { sortCharacterStatsByGames, splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
@@ -455,24 +456,9 @@ describe("deriveCharacterRecordStats", () => {
   });
 
   it("renders icon-only owned decorations with an accessible name in the house manual", () => {
-    const html = renderToStaticMarkup(createElement(HouseModal, {
-      user: {
-        id: 1,
-        username: "moming",
-        rank: "1段",
-        rating: 1000,
-        coins: 0,
-        ownedCharacters: ["sigrika"],
-        ownedDecorations: ["paw-stone"],
-        selectedCharacter: "sigrika"
-      },
-      records: [],
-      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } }],
-      audioSettings: {},
-      onClose: () => {},
-      onSelectCharacter: () => {},
-      onApplyDecoration: () => {},
-      onOpenReplay: () => {}
+    const html = renderToStaticMarkup(createElement(HouseDecorationPicker, {
+      ownedDecorations: ["paw-stone"],
+      onApplyDecoration: () => {}
     }));
 
     expect(html).toContain("owned-decoration-chip");

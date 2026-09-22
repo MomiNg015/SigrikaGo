@@ -1,6 +1,5 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { CorruptionFragmentImage, CorruptionNoise, createCorruptionCadence } from "../../ui/CorruptionMarks.jsx";
 import {
@@ -11,6 +10,8 @@ import {
 } from "./houseStats.js";
 
 export default function HouseCharacterGrid({
+  panelId,
+  labelledBy,
   audioSettings,
   characters,
   itemEffects,
@@ -27,7 +28,9 @@ export default function HouseCharacterGrid({
   const emptySlots = Array.from({ length: Math.max(0, 10 - characters.length) }, (_, index) => index);
 
   return (
-    <div className={`character-list character-grid-container${sigrikaCorrupted ? "" : " handbook-character-grid"}`}>
+    <div className="character-list character-grid-container" id={panelId}
+      role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
+      tabIndex={panelId ? 0 : undefined}>
       {characters.map((character) => {
         const characterId = canonicalCharacterId(character.id);
         const hideIntel = characterId === "baconbits" && !owned.has(characterId);
@@ -63,16 +66,16 @@ export default function HouseCharacterGrid({
           : null;
         return (
           <div
-            className={`character-card portrait-card ${sigrikaCorrupted ? "" : "handbook-character-card"} ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
+            className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
             key={character.id}
             onClick={() => {
               if (!sigrikaCorrupted) onOpenCharacterDetail(character);
             }}
             role={sigrikaCorrupted ? "img" : "button"}
-            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : `${displayName}的角色卡片`}
+            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : undefined}
             tabIndex={sigrikaCorrupted ? -1 : 0}
             data-ui-sound="none"
-            style={{ ...characterThemeStyle(character), ...(corruptionCadence ? {
+            style={corruptionCadence ? {
               "--corruption-card-delay": corruptionCadence.cardDelay,
               "--corruption-card-direction": corruptionCadence.cardDirection,
               "--corruption-card-duration": corruptionCadence.cardDuration,
@@ -94,19 +97,15 @@ export default function HouseCharacterGrid({
               "--corruption-slice-forward": corruptionCadence.sliceForward,
               "--corruption-slice-top": corruptionCadence.sliceTop,
               "--corruption-slice-y": corruptionCadence.sliceY
-            } : {}) }}
+            } : undefined}
             onKeyDown={(event) => {
-              if (!sigrikaCorrupted && event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
-                event.preventDefault();
-                onOpenCharacterDetail(character);
-              }
+              if (!sigrikaCorrupted && (event.key === "Enter" || event.key === " ")) onOpenCharacterDetail(character);
             }}
           >
             {!sigrikaCorrupted && (
               <button
                 className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
                 title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
-                aria-label={disabledReason || (selectedCharacter === characterId ? "出战中" : `设${displayName}为出战`)}
                 data-ui-sound="confirm"
                 disabled={sortieDisabled}
                 onClick={(event) => {
