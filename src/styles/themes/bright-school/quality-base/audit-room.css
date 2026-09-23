@@ -43,3 +43,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action {
   background: linear-gradient(135deg, #d3f2ec 0%, #ffe0ec 54%, #fff6dd 100%) !important;
 }
+
+/* Exhausted skill chips remain monochrome through theme and mobile resets. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen .skill-chip.spent {
+  filter: grayscale(1) !important;
+}

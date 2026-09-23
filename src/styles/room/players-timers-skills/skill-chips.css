@@ -44,6 +44,7 @@
 }
 
 .skill-chip.spent {
+  filter: grayscale(1);
   border-color: color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 42%, #cfc8d3);
   background:
     linear-gradient(105deg, color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 18%, rgba(255, 250, 231, 0.98)), rgba(255, 248, 236, 0.96), color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 14%, rgba(236, 244, 255, 0.96))) padding-box,
