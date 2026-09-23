@@ -1657,6 +1657,7 @@ describe("root CSS entry contract", () => {
       "./modals/profile-overview.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
+      "./modals/opening-duel.css",
       "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",

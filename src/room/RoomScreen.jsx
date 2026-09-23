@@ -237,7 +237,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         />
       )}
       {!isReplay && displayRoom.game.phase === GAME_PHASES.opening && (
-        <OpeningModal room={displayRoom} player={me} />
+        <OpeningModal key={`${displayRoom.code}:${displayRoom.openingEndsAt}`} room={displayRoom} player={me} characters={characters} />
       )}
       {skillBanner && <SkillBanner banner={skillBanner} characters={characters} audioSettings={audioSettings} />}
       {!isReplay && displayRoom.sigrikaCandyDuel?.presentation && (

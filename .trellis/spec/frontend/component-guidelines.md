@@ -6,6 +6,19 @@
 
 ## Overview
 
+### Opening duel presentation
+
+`OpeningModal({ room, player, characters })` delegates artwork to `OpeningDuelPresentation` and shares the same color, rule and countdown copy with its simple fallback. `RoomScreen` keys the opening by room code and `openingEndsAt` and unmounts it outside the opening phase.
+
+Use the first locally anchored `__openingEndsAt` for both copy and artwork. See [Opening Presentation Clock](../backend/opening-clock-contract.md); phone wall clocks may differ from the server. Incoming snapshots must not restart the mounted timeline.
+
+- `socketHandlers` owns the client-only `__openingPresentation` marker: arm on a fresh player `match:found`, retain across that room's snapshots, revoke on reconnect or resume. Never infer eligibility from remaining seconds alone or persist this marker on the server.
+- Place the local player on the right/lower self side and the opponent on the left/upper side; resolve background and username ink independently by stone color. Display the full username below the portrait, shrink measured text to fit a single line inside the diagonal safe area, and never ellipsize or clip it. Reuse the player portrait/catalog helpers and costume snapshot framing. Bots with `botProfile.portraitUrl` use that dedicated art even with null character identity (Zhunshibao); other players require actual character identity. Never invent a character for a no-character room.
+- Both portraits must be ready within 200ms and at least 900ms must remain. Otherwise keep the simple countdown for that opening. Image errors also fall back; loading must never delay the authoritative opening deadline.
+- Entrance lasts 500ms (opponent downward, self upward, slight overshoot). Start the 400ms horizontal curtain exit before `openingEndsAt`; remove the overlay at the deadline even if the next server snapshot is late. Reduced motion disables entrance translation and fades the panels instead.
+- Portal the cinematic to body with its dedicated `opening-duel.css` owner; do not apply ordinary modal card/theme selectors. Use two narrow full-height diagonal strips, not two opaque screen halves. Desktop strips cap at 360px each; portrait strips use 42% viewport width and place opponent art upper-left and self art lower-right. A separate 62% black scrim dims the entire underlying room and fades out alongside the 400ms exit; it is removed with the cinematic so no brightness state can leak after opening. Preserve faces and readable central copy.
+- Tests: `OpeningDuelPresentation.dom.test.jsx` verifies ordering, costume framing, deadlines, resource failure/timeout, simple fallback and rule copy; `socketHandlers.test.js` verifies fresh-match eligibility and reconnect cancellation. Browser QA covers desktop, 390x844 and 360x640, actual entry/exit transforms and reduced motion.
+
 ### Battle development tools
 
 Ordinary portrait skill actions retain the scoped tactile states in `action-button-labels.css`: 3px shadow at rest, depressed selected state without the old glow, and visible keyboard focus. Inherit shared multicolor default and selected backgrounds; never replace them with solid pink. Keep this exception isolated from other battle controls, desktop, tutorials and corrupted rooms.

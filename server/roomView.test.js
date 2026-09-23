@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { COLORS, GAME_PHASES, createGameState, getPoint, pointId } from "../src/shared/game.js";
 import { buildRoomView } from "./roomView.js";
 
@@ -44,6 +44,20 @@ function testRoom() {
 }
 
 describe("room view serialization", () => {
+  it("provides server time only during opening for device-independent countdowns", () => {
+    const clock = vi.spyOn(Date, "now").mockReturnValue(1000);
+    try {
+      const room = testRoom();
+      room.game.phase = GAME_PHASES.opening;
+      room.openingEndsAt = 4000;
+      expect(buildRoomView(room, room.players[0].user.id)).toMatchObject({ openingServerNow: 1000, openingEndsAt: 4000 });
+      room.game.phase = GAME_PHASES.playing;
+      expect(buildRoomView(room, room.players[0].user.id)).not.toHaveProperty("openingServerNow");
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
   it("exposes rating and match-source metadata", () => {
     const view = buildRoomView(testRoom(), "black-user");
 

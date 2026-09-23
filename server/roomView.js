@@ -65,6 +65,7 @@ export function buildRoomView(room, viewerId, options = {}) {
     gameViews: views,
     chat: room.chat,
     openingEndsAt: room.openingEndsAt,
+    ...(room.game.phase === GAME_PHASES.opening ? { openingServerNow: Date.now() } : {}),
     preload: room.preload
       ? {
           startedAt: room.preload.startedAt ?? null,

@@ -10,6 +10,35 @@ import { normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 
 describe("socket handlers", () => {
+  it("arms the opening only for a fresh match and retains it across opening snapshots", () => {
+    const deps = handlerDeps({ syncPendingMatchRoom });
+    const handlers = createSocketHandlers(deps);
+    const preloading = { code: "new", role: "player", game: { phase: "preloading" } };
+    handlers.matchFound(preloading);
+    expect(deps.matchSuccessRef.current.room.__openingPresentation).toBe(true);
+    deps.matchSuccessRef.current.countdownComplete = true;
+    handlers.roomUpdate({ ...preloading, game: { phase: "opening" } });
+    const opening = roomSetterResult(deps);
+    expect(opening.__openingPresentation).toBe(true);
+    deps.roomRef.current = opening;
+    handlers.socketReconnect();
+    expect(roomSetterResult(deps, 2, opening).__openingPresentation).toBe(false);
+    handlers.roomUpdate({ ...preloading, game: { phase: "opening" } });
+    expect(roomSetterResult(deps, 3, opening).__openingPresentation).not.toBe(true);
+  });
+
+  it("does not arm late joins or spectators and revokes a pending match on reconnect", () => {
+    const deps = handlerDeps({ syncPendingMatchRoom });
+    const handlers = createSocketHandlers(deps);
+    handlers.roomUpdate({ code: "late", role: "player", game: { phase: "opening" } });
+    expect(roomSetterResult(deps).__openingPresentation).not.toBe(true);
+    handlers.matchFound({ code: "watch", role: "spectator", game: { phase: "opening" } });
+    expect(deps.matchSuccessRef.current.room.__openingPresentation).not.toBe(true);
+    handlers.matchFound({ code: "new", role: "player", game: { phase: "preloading" } });
+    handlers.socketReconnect();
+    expect(deps.matchSuccessRef.current.room.__openingPresentation).toBe(false);
+  });
+
   it("stores match waiting payloads from the socket", () => {
     const deps = handlerDeps();
     const handlers = createSocketHandlers(deps);

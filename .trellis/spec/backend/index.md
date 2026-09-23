@@ -6,6 +6,8 @@
 
 ## Overview
 
+Opening countdown changes must follow [Opening Presentation Clock](./opening-clock-contract.md), including device-clock offset handling and the server phase boundary.
+
 This directory contains guidelines for backend development. Fill in each file with your project's specific conventions.
 
 ---

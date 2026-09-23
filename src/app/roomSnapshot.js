@@ -4,11 +4,14 @@ export function applyRoomSnapshot(currentRoom, incomingRoom) {
   return shareSnapshotValue(currentRoom, incomingRoom);
 }
 
-export function normalizeRoomSnapshot(room) {
+export function normalizeRoomSnapshot(room, receivedAt = Date.now()) {
   if (!room || typeof room !== "object") return room;
   const normalizedGame = normalizeGameSnapshot(room.game);
   const normalized = {
     ...room,
+    ...(room.game?.phase === "opening" && Number.isFinite(room.openingServerNow) && Number.isFinite(room.openingEndsAt)
+      ? { __openingEndsAt: room.__openingEndsAt ?? receivedAt + Math.max(0, room.openingEndsAt - room.openingServerNow) }
+      : {}),
     players: Array.isArray(room.players) ? room.players : [],
     spectators: Array.isArray(room.spectators) ? room.spectators : [],
     chat: Array.isArray(room.chat) ? room.chat : [],

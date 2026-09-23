@@ -36,6 +36,27 @@ export function createSocketHandlers({
 }) {
   let shouldAudioBaselineNextLiveSnapshot = false;
   let audioBaselineSnapshotKey = "";
+  let openingPresentationRoomCode = "";
+
+  function openingSnapshot(roomView) {
+    const room = normalizeRoomSnapshot(roomView);
+    return room?.code === openingPresentationRoomCode && room?.role === "player"
+      ? { ...room, __openingPresentation: true }
+      : room;
+  }
+
+  function cancelOpeningPresentation() {
+    openingPresentationRoomCode = "";
+    if (roomRef.current?.__openingPresentation) {
+      setRoom((current) => current?.__openingPresentation
+        ? { ...current, __openingPresentation: false }
+        : current);
+    }
+    const pending = matchSuccessRef.current?.room;
+    if (pending?.__openingPresentation) {
+      syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, { ...pending, __openingPresentation: false });
+    }
+  }
 
   function clearRoomUiState() {
     setRoom(null);
@@ -61,6 +82,7 @@ export function createSocketHandlers({
   return {
     socketReconnect: () => {
       shouldAudioBaselineNextLiveSnapshot = true;
+      cancelOpeningPresentation();
     },
     matchWaiting: (payload = {}) => {
       const nextMatchStart = normalizeMatchStart(payload);
@@ -71,7 +93,8 @@ export function createSocketHandlers({
       setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
     },
     matchFound: (roomView) => {
-      const normalizedRoomView = normalizeRoomSnapshot(roomView);
+      openingPresentationRoomCode = roomView?.role === "player" ? roomView.code : "";
+      const normalizedRoomView = openingSnapshot(roomView);
       closeAllOverlays();
       setReplayStep(null);
       setMatchStart(null);
@@ -85,7 +108,7 @@ export function createSocketHandlers({
       setMatchSuccess(transition);
     },
     roomUpdate: (roomView) => {
-      const normalizedRoomView = normalizeRoomSnapshot(roomView);
+      const normalizedRoomView = openingSnapshot(roomView);
       updateUser((current) => mergeCurrentUserFromRoom(current, normalizedRoomView));
       if (shouldCompletePendingMatch(matchSuccessRef.current, normalizedRoomView)) {
         setRoom((current) => applyRoomSnapshot(current, normalizedRoomView));
@@ -148,6 +171,7 @@ export function createSocketHandlers({
       setRoom((current) => applyRoomPatch(current, patch));
     },
     roomResume: (payload) => {
+      cancelOpeningPresentation();
       shouldAudioBaselineNextLiveSnapshot = false;
       if (handleMissingRoomResumePayload(payload, roomRef.current, {
         clearLastRoomCode,

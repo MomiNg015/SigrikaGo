@@ -1,5 +1,7 @@
 # 后端、HTTP API 与实时房间
 
+opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒时间），与原 `openingEndsAt` 共同表示剩余时长。`normalizeRoomSnapshot` 在接收时生成仅客户端使用的 `__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)`；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。
+
 本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。
 
 ## 当前结论

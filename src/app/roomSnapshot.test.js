@@ -2,6 +2,15 @@ import { describe, expect, test } from "vitest";
 import { applyRoomSnapshot, normalizeRoomSnapshot } from "./roomSnapshot.js";
 
 describe("applyRoomSnapshot", () => {
+  test("anchors opening deadlines to reception time instead of the device wall-clock offset", () => {
+    const snapshot = { game: { phase: "opening" }, openingServerNow: 1000, openingEndsAt: 4000 };
+    expect(normalizeRoomSnapshot(snapshot, 61000).__openingEndsAt).toBe(64000);
+    expect(normalizeRoomSnapshot(snapshot, -59000).__openingEndsAt).toBe(-56000);
+    const normalized = normalizeRoomSnapshot(snapshot, 61000);
+    expect(normalizeRoomSnapshot(normalized, 62000).__openingEndsAt).toBe(64000);
+    expect(normalizeRoomSnapshot({ ...snapshot, openingServerNow: 5000 }, 61000).__openingEndsAt).toBe(61000);
+  });
+
   test("returns the current room when a duplicate snapshot arrives with fresh object identities", () => {
     const current = roomSnapshot();
     const incoming = roomSnapshot();
