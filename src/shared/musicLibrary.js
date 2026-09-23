@@ -584,7 +584,15 @@ export function latestSkillPreview(room) {
   const latestSkill = [...(room.game.history ?? [])].reverse().find((entry) => entry.type === "skill");
   if (!latestSkill) return null;
   const player = (room.players ?? []).find((candidate) => candidate.color === latestSkill.color);
-  const characterId = canonicalCharacterId(player?.character?.id ?? player?.characterId ?? latestSkill.characterId ?? null);
+  // A handoff changes the player, not the identity that produced the last skill.
+  const skillIndex = room.game.history.lastIndexOf(latestSkill);
+  const skillRound = room.team
+    ? room.game.history.slice(0, skillIndex).findLast((entry) => entry.type === "team-round")?.round ?? 1
+    : null;
+  const skillMember = skillRound ? player?.teamLineup?.[skillRound - 1] : null;
+  const characterId = canonicalCharacterId(room.team
+    ? latestSkill.characterId ?? skillMember?.characterId ?? player?.characterId ?? null
+    : player?.character?.id ?? player?.characterId ?? latestSkill.characterId ?? null);
   if (!characterId) return null;
   return {
     characterId,

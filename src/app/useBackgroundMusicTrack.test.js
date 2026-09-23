@@ -6,6 +6,33 @@ import { SIGRIKA_CANDY_DUEL } from "../shared/sigrikaCandyArc.js";
 import { initialHomeEntryRandomState, nextHomeEntryRandomState, useBackgroundMusicTrack } from "./useBackgroundMusicTrack.js";
 
 describe("background music track hook helpers", () => {
+  it("keeps the last skill music through team handoffs until a new skill occurs", () => {
+    const lineup = ["sigrika", "aemeath", "nabomo"].map((characterId) => ({ characterId }));
+    const history = [{ type: "skill", color: "black" }];
+    const props = (round, phase = "playing") => ({
+      view: "room", user: {}, resultModalOpen: false,
+      room: { code: "team", mode: "team", team: { round }, players: [{ color: "black", characterId: lineup[round - 1].characterId, teamLineup: lineup }], game: { phase, history: [...history] } }
+    });
+    const { result, rerender } = renderHook(useBackgroundMusicTrack, { initialProps: props(1) });
+    const before = result.current;
+    expect(before).toBeTruthy();
+    history.push({ type: "team-round", round: 2 });
+    rerender(props(2, "opening"));
+    expect(result.current).toEqual(before);
+    rerender(props(2));
+    expect(result.current).toEqual(before);
+    history.push({ type: "team-round", round: 3 });
+    rerender(props(3, "opening"));
+    expect(result.current).toEqual(before);
+    history.push({ type: "skill", color: "black" });
+    rerender(props(3));
+    expect(result.current.id).not.toBe(before.id);
+    const resumed = renderHook(useBackgroundMusicTrack, { initialProps: props(3) });
+    expect(resumed.result.current).toEqual(result.current);
+    rerender(props(3, "finished"));
+    expect(result.current).toBeNull();
+  });
+
   it("keeps a home entry random value stable until the user leaves home", () => {
     const createRandom = vi.fn()
       .mockReturnValueOnce(0.25)
