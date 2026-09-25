@@ -59,7 +59,7 @@ const EXIT_CONFIRM_TITLE = "\u786e\u5b9a\u8981\u9000\u51fa\u6e38\u620f\u5417\uff
 const EXIT_CONFIRM_MESSAGE = "\u518d\u6b21\u786e\u8ba4\u540e\u5c06\u79bb\u5f00\u5f53\u524d\u6e38\u620f\u9875\u9762\u3002";
 const EXIT_CONFIRM_TEXT = "\u9000\u51fa\u6e38\u620f";
 
-export default function App() {
+export default function App({ initialCharacters = CHARACTERS, initialSiteSettings } = {}) {
   const initialSession = initialSessionState();
   const [token, setToken] = useState(initialSession.token);
   const [view, setView] = useState(initialSession.view);
@@ -88,7 +88,7 @@ export default function App() {
     setReplayStep,
     setRoom
   } = useRoomSessionState();
-  const [characters, setCharacters] = useState(CHARACTERS);
+  const [characters, setCharacters] = useState(initialCharacters);
   const [musicTracks, setMusicTracks] = useState(MUSIC_TRACKS);
   const [adminTab, setAdminTab] = useState("overview");
   const { incomingDuel, setIncomingDuel } = useIncomingDuelState();
@@ -281,7 +281,7 @@ export default function App() {
     view
   });
   const { handleRecruitmentStatusChange, recruitmentReady } = useRecruitmentReadyState({ token, user });
-  const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
+  const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState({ initialSettings: initialSiteSettings });
   const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
     incomingDuel,

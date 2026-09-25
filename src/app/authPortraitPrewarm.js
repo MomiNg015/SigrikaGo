@@ -73,7 +73,7 @@ export function resetAuthPortraitPrewarmForTests() {
   readyVersion = 0;
 }
 
-function markAuthPortraitReady(source) {
+export function markAuthPortraitReady(source) {
   if (!source || readyPortraitSources.has(source)) return;
   readyPortraitSources.add(source);
   readyVersion += 1;

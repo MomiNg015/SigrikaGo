@@ -6,6 +6,12 @@
 
 ## Overview
 
+### Site entry resource gate
+
+`index.html` owns a tiny image-free progress shell and critical inline CSS so the first paint does not depend on React, custom fonts or the application stylesheet. `main.jsx` waits for `startSiteEntry` before mounting `App`; do not clear storage or change session routing here. Keep the progress below 100 until both the application module and public resources settle. A failed application import exposes reload; asset failures/timeouts are tolerated.
+
+`preloadSiteEntry` loads public characters/settings, every built-in and public default portrait (including Baconbits), the login mascot, orange progress mascot and relevant fonts. Reuse the shared bounded image loader (four workers, eight seconds per item) and ready-portrait cache; never include account audio, music, shop or gameplay effect bundles. Public API/font failures use bounded fallback. Pass catalog/settings into App so its first loading frame uses the prepared data. Preserve the separate authenticated preload and cached-session recovery. Tests must cover readiness ordering, failure/timeout completion, public additions, successful-only portrait caching, reload, and desktop/portrait first paint.
+
 ### Match mode drilldown
 
 Child cards omit `MatchModeWatermark`; parent mode cards retain it. Capture challenge is entered only from the Spark child, while the Zhunshibao difficulty dialog offers the three ordinary practice difficulties and passes their IDs unchanged.

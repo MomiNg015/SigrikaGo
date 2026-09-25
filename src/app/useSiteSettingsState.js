@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { createSiteSettingsLoader } from "./siteSettingsCatalog.js";
 
-export function useSiteSettingsState() {
-  const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS);
+export function useSiteSettingsState({ initialSettings } = {}) {
+  const [siteSettings, setSiteSettings] = useState(initialSettings ?? DEFAULT_SITE_SETTINGS);
   const siteSettingsLoaderRef = useRef(createSiteSettingsLoader());
 
   const refreshSiteSettings = useCallback(async () => {
@@ -13,8 +13,8 @@ export function useSiteSettingsState() {
   }, []);
 
   useEffect(() => {
-    refreshSiteSettings();
-  }, [refreshSiteSettings]);
+    if (!initialSettings) refreshSiteSettings();
+  }, [initialSettings, refreshSiteSettings]);
 
   return { refreshSiteSettings, setSiteSettings, siteSettings };
 }

@@ -280,6 +280,7 @@ export async function preloadImageAssets(images = [], {
   loadImage = preloadImage,
   onLoaded = () => {},
   onSkipped = () => {},
+  onProgress = () => {},
   taskTimeoutMs = 3000
 } = {}) {
   const tasks = compactUnique(images).map((src) => taskWithSource(src, async () => {
@@ -287,7 +288,12 @@ export async function preloadImageAssets(images = [], {
     onLoaded(src);
     return result;
   }));
-  await runPreloadTasks(tasks, { concurrency, onSkipped, taskTimeoutMs });
+  let completed = 0;
+  if (!tasks.length) onProgress(1);
+  await runPreloadTasks(tasks, {
+    concurrency, onSkipped, taskTimeoutMs,
+    onComplete: () => onProgress(++completed / tasks.length)
+  });
 }
 
 function preloadImage(src) {
