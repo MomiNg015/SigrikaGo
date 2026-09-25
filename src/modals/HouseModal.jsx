@@ -64,7 +64,7 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   function openCharacterDetail(character) {
     setDetailCharacter(character);
     playUiDetailOpenSound(audioSettings);
-    playCharacterDetailVoice(character);
+    if (canonicalCharacterId(character.id) !== "mornye") playCharacterDetailVoice(character);
   }
 
   function playCharacterDetailVoice(character) {
