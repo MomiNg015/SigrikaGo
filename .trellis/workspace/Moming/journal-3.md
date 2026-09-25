@@ -822,3 +822,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 146: 初始加载页仅留进度
+
+**Date**: 2026-09-25
+**Task**: 初始加载页仅留进度
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+移除初始加载页正常提示文字，仅保留居中进度条与百分比；失败提示仍按需显示。2 项启动测试、6 项浏览器检查、相关 lint、build 通过。保留莫宁语音未提交修改及本地 Q 版图片。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f74291f1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
