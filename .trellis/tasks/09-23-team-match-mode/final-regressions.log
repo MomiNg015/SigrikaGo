@@ -1,0 +1,18 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/teamMatch.test.js server/roomCloseLifecycle.test.js server/practiceBotEngine.test.js src/app/socketHandlers.test.js src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/roomCloseLifecycle.test.js (8 tests) 17ms
+ ✓ src/app/socketHandlers.test.js (45 tests) 55ms
+ ✓ src/styles/styleContract.test.js (57 tests) 725ms
+ ✓ server/teamMatch.test.js (7 tests) 23ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 1017ms
+
+ Test Files  5 passed (5)
+      Tests  131 passed (131)
+   Start at  19:16:47
+   Duration  4.44s (transform 848ms, setup 0ms, collect 2.93s, tests 1.84s, environment 2ms, prepare 739ms)
+

@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 check:built-css
+> node scripts/check-built-css-contracts.mjs
+
+Built CSS contracts OK (AdminConsole-BmTk_mFw.css, TutorialBattleScreen-xOahuKah.css, index-BbYE7vDB.css)

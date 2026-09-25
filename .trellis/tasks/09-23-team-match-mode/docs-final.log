@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" docs/systemDesignHtml.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 56ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  19:20:03
+   Duration  2.79s (transform 46ms, setup 0ms, collect 52ms, tests 56ms, environment 0ms, prepare 122ms)
+

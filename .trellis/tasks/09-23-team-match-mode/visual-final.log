@@ -1,0 +1,12 @@
+
+Running 3 tests using 1 worker
+
+(node:14064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 1280 (3.1s)
+  ok 2 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 390 (1.8s)
+  ok 3 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 360 (1.5s)
+
+  3 passed (9.9s)

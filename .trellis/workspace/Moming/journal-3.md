@@ -789,3 +789,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 145: 进站资源加载页
+
+**Date**: 2026-09-25
+**Task**: 进站资源加载页
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+新增初始 HTML 极简进度条，在挂载应用前加载全部默认立绘、登录与加载页素材、字体和公开提示设置。6 项新单测、6 项浏览器检查、lint、build 和构建 CSS 通过；全量 2659 通过、7 项原有失败。莫宁语音及 Q 版图片保留未提交。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `708681bf` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

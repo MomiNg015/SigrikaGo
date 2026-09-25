@@ -1,0 +1,53 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/roomFactory.test.js server/roomMatchmakingQueue.test.js server/roomSkillResolution.test.js server/roomResultPersistence.test.js server/playerRoutes.test.js server/achievements.test.js src/room/roomView.test.js src/room/PlayerInfo.test.jsx src/room/audio/useRoomAudioEffects.test.jsx src/modals/ResumeModal.test.jsx src/modals/WatchModal.test.jsx src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ server/roomMatchmakingQueue.test.js (5 tests | 1 failed) 17ms
+   × roomMatchmakingQueue > queues unmatched players and reports counts by mode 12ms
+     → expected { spark: 1, standard: 1, …(2) } to deeply equal { spark: 1, standard: 1, gomoku: 1 }
+   ✓ roomMatchmakingQueue > matches only players in the same normalized mode 1ms
+   ✓ roomMatchmakingQueue > deduplicates by user id and socket id before joining 0ms
+   ✓ roomMatchmakingQueue > keeps incompatible players queued until a compatible player joins 0ms
+   ✓ roomMatchmakingQueue > removes queued players by user or socket and clears the queue 0ms
+ ✓ server/achievements.test.js (12 tests) 30ms
+ ✓ src/room/roomView.test.js (16 tests) 51ms
+ ✓ server/roomFactory.test.js (10 tests) 17ms
+ ✓ server/roomSkillResolution.test.js (17 tests) 26ms
+ ✓ server/playerRoutes.test.js (6 tests) 11ms
+ ✓ server/roomResultPersistence.test.js (6 tests) 18ms
+ ✓ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (16 tests) 164ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/roomMatchmakingQueue.test.js > roomMatchmakingQueue > queues unmatched players and reports counts by mode
+AssertionError: expected { spark: 1, standard: 1, …(2) } to deeply equal { spark: 1, standard: 1, gomoku: 1 }
+
+- Expected
++ Received
+
+  {
+    "gomoku": 1,
+    "spark": 1,
+    "standard": 1,
++   "team": 0,
+  }
+
+ ❯ server/roomMatchmakingQueue.test.js:21:34
+     19| 
+     20|     expect(queue.count()).toBe(3);
+     21|     expect(queue.countsByMode()).toEqual({ spark: 1, standard: 1, gomo…
+       |                                  ^
+     22|     expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark…
+     23|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 87 passed (88)
+   Start at  18:50:23
+   Duration  6.37s (transform 1.98s, setup 0ms, collect 7.50s, tests 334ms, environment 1.95s, prepare 1.57s)
+

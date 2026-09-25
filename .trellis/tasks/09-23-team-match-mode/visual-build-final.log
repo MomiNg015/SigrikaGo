@@ -1,0 +1,15 @@
+vite v6.4.3 building for production...
+transforming...
+
+__VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+__VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 2482 modules transformed.
+rendering chunks...
+computing gzip size...
+.codex-run/team-visual-build/tests/e2e/fixtures/team-match.html      0.56 kB │ gzip:   0.33 kB
+.codex-run/team-visual-build/assets/team-match-BbYE7vDB.css      1,247.93 kB │ gzip: 174.99 kB
+.codex-run/team-visual-build/assets/react-vendor-DHmYmwpq.js       193.81 kB │ gzip:  60.53 kB
+.codex-run/team-visual-build/assets/team-match-BulY8lKL.js         286.82 kB │ gzip:  88.56 kB
+.codex-run/team-visual-build/assets/pixi-vendor-BrWtQF1z.js        870.42 kB │ gzip: 249.96 kB
+✓ built in 8.94s

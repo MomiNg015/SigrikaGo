@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/teamMatch.test.js server/socketMatchEvents.test.js server/rooms.test.js src/room/audio/teamRoundVoice.test.jsx src/home/TeamLineupPicker.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/socketMatchEvents.test.js (9 tests) 24ms
+ ✓ server/teamMatch.test.js (7 tests) 40ms
+ ✓ server/rooms.test.js (44 tests) 351ms
+ ✓ src/room/audio/teamRoundVoice.test.jsx (3 tests) 39ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (3 tests) 543ms
+   ✓ team selection > orders selections, reorders and remembers the confirmed lineup  374ms
+
+ Test Files  5 passed (5)
+      Tests  66 passed (66)
+   Start at  19:14:27
+   Duration  6.38s (transform 1.75s, setup 0ms, collect 6.29s, tests 997ms, environment 3.04s, prepare 892ms)
+

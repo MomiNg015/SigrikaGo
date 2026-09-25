@@ -1,0 +1,15 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/room/audio/teamRoundVoice.test.jsx src/shared/preloadAssets.test.js src/shared/SkillDescription.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/shared/preloadAssets.test.js (23 tests) 109ms
+ ✓ src/room/audio/teamRoundVoice.test.jsx (2 tests) 34ms
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  18:57:03
+   Duration  7.51s (transform 523ms, setup 0ms, collect 1.46s, tests 144ms, environment 2.26s, prepare 383ms)
+

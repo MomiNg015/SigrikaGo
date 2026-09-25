@@ -1,0 +1,78 @@
+
+Running 3 tests using 1 worker
+
+(node:39892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 1280 (1.6s)
+(node:684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 390 (1.5s)
+(node:12196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 360 (1.6s)
+
+
+  1) [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 1280 ─────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      28 |       expect(metric.width).toBeGreaterThan(30);
+      29 |       expect(Math.max(...metric.cells) - Math.min(...metric.cells)).toBeLessThan(2);
+    > 30 |       expect(metric.gray).toBe(true);
+         |                           ^
+      31 |     }
+      32 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      33 |     await page.screenshot({ path: testInfo.outputPath("team-room.png"), fullPage: true });
+        at C:\codex\SigrikaGo\tests\e2e\team-match.spec.js:30:27
+
+    Error Context: test-results\team-match-team-lineup-and-portraits-at-1280-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 390 ──────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      28 |       expect(metric.width).toBeGreaterThan(30);
+      29 |       expect(Math.max(...metric.cells) - Math.min(...metric.cells)).toBeLessThan(2);
+    > 30 |       expect(metric.gray).toBe(true);
+         |                           ^
+      31 |     }
+      32 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      33 |     await page.screenshot({ path: testInfo.outputPath("team-room.png"), fullPage: true });
+        at C:\codex\SigrikaGo\tests\e2e\team-match.spec.js:30:27
+
+    Error Context: test-results\team-match-team-lineup-and-portraits-at-390-chromium\error-context.md
+
+  3) [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 360 ──────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      28 |       expect(metric.width).toBeGreaterThan(30);
+      29 |       expect(Math.max(...metric.cells) - Math.min(...metric.cells)).toBeLessThan(2);
+    > 30 |       expect(metric.gray).toBe(true);
+         |                           ^
+      31 |     }
+      32 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      33 |     await page.screenshot({ path: testInfo.outputPath("team-room.png"), fullPage: true });
+        at C:\codex\SigrikaGo\tests\e2e\team-match.spec.js:30:27
+
+    Error Context: test-results\team-match-team-lineup-and-portraits-at-360-chromium\error-context.md
+
+  3 failed
+    [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 1280 ──────────────
+    [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 390 ───────────────
+    [chromium] › tests\e2e\team-match.spec.js:8:3 › team lineup and portraits at 360 ───────────────
