@@ -16,7 +16,7 @@
       [data-entry-retry] { min-height: 44px; margin-top: 20px; padding: 8px 20px; border: 2px solid var(--entry-ink); border-radius: 8px; background: var(--entry-paper); color: var(--entry-ink); font: inherit; cursor: pointer; }
       [data-entry-retry]:focus-visible { outline: 2px solid var(--entry-ink); outline-offset: 4px; }
       [data-entry-retry]:hover { background: var(--entry-blue); }
-      [data-entry-retry][hidden] { display: none; }
+      [data-entry-status][hidden], [data-entry-retry][hidden] { display: none; }
       @media (prefers-reduced-motion: reduce) { [data-entry-fill] { transition: none; } }
     </style>
   </head>
@@ -24,7 +24,7 @@
     <div id="root">
       <main data-site-entry>
         <div data-entry-panel>
-          <p data-entry-status>正在准备页面…</p>
+          <p data-entry-status hidden></p>
           <div data-entry-track role="progressbar" aria-label="进站资源加载进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div data-entry-fill></div>
           </div>

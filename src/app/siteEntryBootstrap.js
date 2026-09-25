@@ -31,6 +31,7 @@ export async function startSiteEntry({
     if (status) {
       status.textContent = "页面加载失败，请刷新重试";
       status.setAttribute("role", "alert");
+      status.hidden = false;
     }
     if (retry) {
       retry.hidden = false;
