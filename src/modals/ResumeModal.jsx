@@ -14,6 +14,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   const [requestNonce, setRequestNonce] = useState(0);
   const [failedMode, setFailedMode] = useState("");
   const [showReplays, setShowReplays] = useState(false);
+  const [replayMode, setReplayMode] = useState("spark");
   const [profilesByKey, setProfilesByKey] = useState({});
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState("");
@@ -31,7 +32,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   const characterStats = profile?.characterStats ?? [];
   const replayPagination = useReplayPagination({
     enabled: showReplays,
-    endpoint: `/api/replays?mode=${encodeURIComponent(mode)}`,
+    endpoint: `/api/replays?mode=${encodeURIComponent(replayMode)}`,
     token
   });
 
@@ -155,7 +156,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
             </>
           )}
           recentAction={(
-            <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => setShowReplays(true)}>
+            <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => { setReplayMode(mode); setShowReplays(true); }}>
               <MonitorPlay size={18} aria-hidden="true" />
             </button>
           )}

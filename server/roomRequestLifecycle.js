@@ -7,6 +7,7 @@ import {
   applyScoringAction
 } from "./roomScoringFlow.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 
 export function createRoomRequestLifecycle({
   rooms,
@@ -48,6 +49,7 @@ export function createRoomRequestLifecycle({
     const context = roomActionContext(roomCode, userId, "观战者不能申请和棋");
     if (!context.ok) return context;
     const { room, player } = context;
+    if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能申请和棋" };
     if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) return { ok: false, error: "本局不提供和棋申请" };
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
     if (room.game.extraTurn) return { ok: false, error: "连下状态中不能申请和棋" };
@@ -65,6 +67,7 @@ export function createRoomRequestLifecycle({
     const context = roomActionContext(roomCode, userId, "观战者不能确认和棋");
     if (!context.ok) return context;
     const { room, player } = context;
+    if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能确认和棋" };
     if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) return { ok: false, error: "本局不提供和棋申请" };
     if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
     return applyDrawResponse({

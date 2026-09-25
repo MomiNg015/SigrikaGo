@@ -11,6 +11,10 @@ export function registerDuelSocketEvents(socket, {
   socket.on("duel:request", async ({ targetUserId, mode: modeInput } = {}) => {
     try {
       if (!admitDuel(socket, runtimeServiceState, metrics)) return;
+      if (modeInput === "team") {
+        socket.emit("error:toast", "队际赛暂不支持好友约战");
+        return;
+      }
       await refreshSocketUser(socket);
       await duelRequests.handleRequest(socket, String(targetUserId ?? ""), normalizeGameModeId(modeInput));
     } catch (error) {

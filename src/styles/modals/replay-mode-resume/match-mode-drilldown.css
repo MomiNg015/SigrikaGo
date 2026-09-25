@@ -1,0 +1,58 @@
+/* Animate wrappers, preserving the existing card interiors and practice hover. */
+.match-mode-drilldown {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  clip-path: inset(-24px -12px -12px -12px);
+}
+
+.match-mode-drilldown > .has-practice-entry {
+  grid-area: 1 / 1;
+  z-index: 2;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.match-mode-drilldown > .match-mode-sibling {
+  grid-column: 1;
+  align-self: start;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms;
+}
+
+.match-mode-drilldown > .match-mode-sibling-standard { grid-row: 2; }
+.match-mode-drilldown > .match-mode-sibling-gomoku { grid-row: 3; transition-delay: 35ms; }
+
+/* Reserve the expanded rows so the surrounding window does not jump. */
+.match-mode-submodes {
+  display: grid;
+  grid-area: 2 / 1 / 5;
+  gap: 12px;
+  padding: 8px;
+  margin: -8px 0;
+  overflow: clip;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 320ms;
+}
+
+.match-mode-submode {
+  position: relative;
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(calc(-100% - 12px));
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms;
+}
+
+.match-mode-submode:nth-child(2) { transform: translateY(calc(-200% - 24px)); }
+.match-mode-submode:nth-child(3) { transform: translateY(calc(-300% - 36px)); }
+.match-mode-drilldown.is-expanded > .has-practice-entry { transform: translateY(-12px); }
+.match-mode-drilldown.is-expanded > .match-mode-sibling { transform: translateX(calc(-100% - 24px)); opacity: 0; }
+.match-mode-drilldown.is-expanded > .match-mode-submodes { pointer-events: auto; visibility: visible; transition-delay: 0s; }
+.match-mode-drilldown.is-expanded .match-mode-submode { transform: translateY(0); opacity: 1; transition-delay: 120ms; }
+.match-mode-drilldown.is-expanded .match-mode-submode:nth-child(2) { transition-delay: 165ms; }
+.match-mode-drilldown.is-expanded .match-mode-submode:nth-child(3) { transition-delay: 210ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .match-mode-drilldown > .has-practice-entry,
+  .match-mode-drilldown > .match-mode-sibling,
+  .match-mode-submodes,
+  .match-mode-submode { transition: none; }
+}

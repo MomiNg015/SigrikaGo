@@ -43,6 +43,7 @@ export function derivePlayerRecordStats(user = {}, records = []) {
   let losses = 0;
   let draws = 0;
   for (const record of Array.isArray(records) ? records : []) {
+    if (record.mode === "team" || record.matchSource === "team") continue;
     const color = playerColorForRecord(user, record);
     const winner = recordWinnerColor(record);
     if (!color) continue;

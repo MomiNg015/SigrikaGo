@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/index.md","reason":"frontend checklist"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"stylesheet ownership"}
+{"file":".trellis/spec/frontend/window-title-stickers.md","reason":"title asset contract"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"mobile and lineup contracts"}

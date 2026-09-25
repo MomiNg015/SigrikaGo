@@ -55,6 +55,8 @@ import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 import { roomSpectatorAdmission, runtimeCapacityLimits } from "./runtimeServiceState.js";
 import { PRACTICE_RECORD_POLICY } from "../src/shared/practiceMode.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
+import { advanceTeamRound } from "./teamMatch.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 
 export { roomView };
@@ -76,6 +78,7 @@ const roomRuntime = createRoomRuntime({
   broadcastRoomToast,
   metrics: runtimeStabilityMetrics,
   throttleMs: ROOM_PERSIST_THROTTLE_MS,
+  beforeBroadcast: (io, room) => advanceTeamRound(room, { io, scheduleGameStart }),
   afterBroadcast: (io, room) => schedulePracticeRoomUpdate(room, io)
 });
 const {
@@ -107,9 +110,12 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   persistRoom,
   appendSystem,
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
+  onRecordSaved: (room, io) => {
+    if (isCaptureChallenge(room)) broadcastRoom(io, room);
+  },
   unregisterRoom: roomMembershipIndex.unregisterRoom,
   prepareCloseState: (room) => {
-    if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
+    if (room.mode === "team" || room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
       room.candyEffectUpdates ??= [];
       return room.candyEffectUpdates;
     }
@@ -158,6 +164,7 @@ const {
   scheduleRoomPreloadTimeout
 } = roomPreparationLifecycle;
 const roomSkillLifecycle = createRoomSkillLifecycle({
+  maybeAdvanceTeamRound: (room, io) => advanceTeamRound(room, { io, scheduleGameStart }),
   rooms,
   scheduleRoomTimeout,
   appendSystem,

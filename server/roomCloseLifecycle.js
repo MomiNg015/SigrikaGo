@@ -23,6 +23,7 @@ export function createRoomCloseLifecycle({
   saveGameRecord,
   unregisterRoom = () => {},
   prepareCloseState = () => {},
+  onRecordSaved = () => {},
   metrics = null,
   onSaveError = (error) => console.error("Failed to save game record", error),
   onDeleteError = (error) => console.error("Failed to delete persisted room", error),
@@ -31,7 +32,7 @@ export function createRoomCloseLifecycle({
   function scheduleRoomClose(roomCode, io) {
     const room = rooms.get(roomCode);
     if (!room) return;
-    requestRoomRecordSave(room);
+    requestRoomRecordSave(room, io);
     const closeDelay = roomCloseDelay(room);
     const nextClosesAt = now() + closeDelay;
     if (!room.closesAt || (room.game.winner?.invalid && room.closesAt > nextClosesAt)) {
@@ -41,9 +42,9 @@ export function createRoomCloseLifecycle({
     scheduleRoomTimeout(room, () => {
       const latest = rooms.get(roomCode);
       if (!latest) return;
-      if (!latest.game.winner?.invalid && !latest.recordSaved) {
+      if ((!latest.game.winner?.invalid || latest.mode === "team") && !latest.recordSaved) {
         latest.closesAt = now() + ROOM_RECORD_SAVE_RETRY_MS;
-        requestRoomRecordSave(latest);
+        requestRoomRecordSave(latest, io);
         persistRoom(latest, { force: true });
         scheduleRoomClose(roomCode, io);
         return;
@@ -58,7 +59,7 @@ export function createRoomCloseLifecycle({
     }, Math.max(0, room.closesAt - now()));
   }
 
-  function requestRoomRecordSave(room) {
+  function requestRoomRecordSave(room, io) {
     if (room.recordSaved || room.recordSavePromise) return;
     prepareCloseState(room);
     room.recordSavePromise = Promise.resolve(saveGameRecord(room))
@@ -69,6 +70,7 @@ export function createRoomCloseLifecycle({
       })
       .finally(() => {
         room.recordSavePromise = null;
+        if (room.recordSaved) onRecordSaved(room, io);
       });
   }
 
@@ -108,10 +110,11 @@ export function createRoomCloseLifecycle({
         invalid: true,
         invalidReason: "empty-room"
       };
-      latest.recordSaved = true;
+      latest.recordSaved = latest.mode !== "team";
       appendSystem(latest, "双方离开房间超过5分钟，对局无效。");
       persistRoom(latest, { force: true });
-      closeRoom(latest.code, io);
+      if (latest.mode === "team") scheduleRoomClose(latest.code, io);
+      else closeRoom(latest.code, io);
     }, delay);
     persistRoom(room, { force: true });
   }

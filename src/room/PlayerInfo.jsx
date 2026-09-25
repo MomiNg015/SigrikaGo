@@ -94,7 +94,14 @@ function PlayerInfo({
   const showPortrait = !sigrikaCandyDuel || isCorruptedBot || isCorruptedPlayer;
   const portraitContent = (
     <>
-      {hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
+      {player.teamLineup ? <div className="team-portrait-strip">
+        {player.teamLineup.map((entry, index) => {
+          const member = entry.character ? playerCharacterForDisplay(characters, { ...player, ...entry }) : null;
+          return <div key={index} className={`team-portrait-slot ${entry.status === "active" ? "is-active" : "is-inactive"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : ""}`}>
+            {member ? <div className="team-portrait-art"><img {...playerCandyPortraitProps(member, { ...player, ...entry })} alt={member.name} /></div> : <span className="team-portrait-mystery">?</span>}
+          </div>;
+        })}
+      </div> : hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
       {(isCorruptedPlayer || useTutorialPlayerPortrait) && (
         <img
           className={useTutorialPlayerPortrait ? "tutorial-player-portrait" : "sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"}
@@ -107,7 +114,7 @@ function PlayerInfo({
         : isBot && isNoCharacter && (botPortraitUrl
         ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
         : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
-      {hasCharacter && !sigrikaCandyDuel && <CharacterChainBadge user={player.user} characterId={character.id} />}
+      {hasCharacter && !sigrikaCandyDuel && !player.teamLineup && <CharacterChainBadge user={player.user} characterId={character.id} />}
       {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       {canSwitchView && (
         <span className="viewpoint-indicator" aria-hidden="true">
@@ -249,6 +256,7 @@ function PlayerInfo({
         >
           {tapTooltip.skill ? (
             <SkillDescription
+              mode={game.mode}
               description={tapTooltip.skill.description || "暂无技能说明。"}
               overclockText={formatSkillOverclock(tapTooltip.skill)}
               floatingLayerZ={floatingLayerZ}
@@ -288,6 +296,7 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
   return previousPlayer?.color === nextPlayer?.color
     && previousPlayer?.characterId === nextPlayer?.characterId
     && previousPlayer?.character === nextPlayer?.character
+    && previousPlayer?.teamLineup === nextPlayer?.teamLineup
     && previousPlayer?.isTutorialPlayer === nextPlayer?.isTutorialPlayer
     && previousPlayer?.isBot === nextPlayer?.isBot
     && previousPlayer?.botProfile?.portraitUrl === nextPlayer?.botProfile?.portraitUrl

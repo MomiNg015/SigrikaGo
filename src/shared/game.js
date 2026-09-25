@@ -195,6 +195,7 @@ export function activatePassiveSkill(state, color, skillOrCharacterId) {
 export function gameViewForColor(game, viewerColor) {
   const view = cloneState(game);
   const showColorIllusions = [
+    ...(view.mode === "team" ? [GAME_PHASES.opening] : []),
     GAME_PHASES.playing,
     GAME_PHASES.skillPreview,
     GAME_PHASES.drawRequested,
@@ -342,7 +343,7 @@ export function canStartSkill(state, skillOrCharacterId) {
 
 function opponentResolvedActiveSkill(state, color) {
   const rival = opponent(color);
-  return (state.history ?? []).some((entry) => (
+  return (state.history ?? []).slice(state.teamRoundStartHistoryIndex ?? 0).some((entry) => (
     entry?.type === "skill"
     && entry.color === rival
     && entry.effectType

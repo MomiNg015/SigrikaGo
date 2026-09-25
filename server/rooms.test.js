@@ -64,6 +64,7 @@ import {
   startInitialPassiveSkillNow
 } from "./rooms.js";
 import { SKILL_PREVIEW_DELAY_MS } from "./roomSkillResolution.js";
+import { resolveTeamLineup } from "./teamMatch.js";
 
 beforeEach(() => {
   prismaMocks.gameRecordCreate.mockReset();
@@ -201,6 +202,37 @@ describe("room game record persistence", () => {
     }) });
   });
 
+  test("hands off team characters after a real move and freezes both clocks throughout each presentation", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    for (const id of ["team-a", "team-b"]) {
+      const member = { ...user(id, "sigrika"), ownedCharacters: ["sigrika", "aemeath", "nabomo"] };
+      joinMatchmaking({ user: member, socketId: id, mode: "team", teamLineup: resolveTeamLineup(member, member.ownedCharacters).lineup }, io);
+    }
+    const room = findRoomForUser("team-a");
+    finishMatchPreload(room, io);
+    expect(room.openingEndsAt - Date.now()).toBe(5000);
+    vi.advanceTimersByTime(5000);
+    expect(room.game.phase).toBe(GAME_PHASES.playing);
+    for (const [threshold, round, characterId] of [[40, 2, "aemeath"], [80, 3, "nabomo"]]) {
+      room.game.moveNumber = threshold - 1;
+      const actor = room.players.find((player) => player.color === room.game.turn);
+      const point = threshold === 40 ? pointId(0, 0) : pointId(1, 0);
+      expect(handleGameAction(room.code, actor.user.id, { type: "move", pointId: point }, io).ok).toBe(true);
+      expect(room.team.round).toBe(round);
+      expect(room.players.every((player) => player.characterId === characterId)).toBe(true);
+      expect(room.game.phase).toBe(GAME_PHASES.opening);
+      const clocks = structuredClone(room.players.map((player) => player.time));
+      expect(handleGameAction(room.code, actor.user.id, { type: "pass" }, io).ok).toBe(false);
+      vi.advanceTimersByTime(4999);
+      expect(room.game.phase).toBe(GAME_PHASES.opening);
+      expect(room.players.map((player) => player.time)).toEqual(clocks);
+      vi.advanceTimersByTime(1);
+      expect(room.game.phase).toBe(GAME_PHASES.playing);
+      expect(getPoint(room.game, point).stone).toBe(actor.color);
+    }
+  });
+
   test("keeps matchmaking queues isolated by game mode", () => {
     const io = fakeIo();
     const firstRoom = joinMatchmaking({ user: user("standard-a", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
@@ -211,7 +243,7 @@ describe("room game record persistence", () => {
     expect(secondRoom).toBeNull();
     expect(thirdRoom).toBeNull();
     expect(matchmakingCount()).toBe(3);
-    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1 });
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1, team: 0 });
 
     const matched = joinMatchmaking({ user: user("standard-b", "denia"), socketId: "socket-c", mode: "standard" }, io);
 
@@ -219,7 +251,7 @@ describe("room game record persistence", () => {
     expect(matched.mode).toBe("standard");
     expect(matched.game.mode).toBe("standard");
     expect(matched.game.size).toBe(19);
-    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0, gomoku: 1 });
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0, gomoku: 1, team: 0 });
   });
 
   test("accepts standard mode moves on the full 19-line board", () => {

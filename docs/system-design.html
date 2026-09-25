@@ -53,13 +53,24 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<p>达妮娅候选继续按小尺寸 UI 可读性简化：链饰概括为线条、头发采用大束色块、衣褶与泡泡特效收敛；候选仍在美术迭代中。</p>
+<p>九名角色的 Q 版默认立绘候选正在独立制作，目标每人三种姿势，共 27 张透明 PNG。美术要求为约 3 头身、简练色块与克制细节；用户已指定两张西格莉卡样图作为画风基准，当前据此制作达妮娅的泡泡浮子三姿势候选。研究来源、外观核验与生成状态记录于<a href="../.trellis/tasks/09-24-nine-character-chibi-portraits/research/README.md">立绘研究索引</a>；本次仅交付候选素材，尚未替换运行时默认立绘。</p>
+<p>残星会售罄空状态的提示文字使用浅色纸白与轻微暗色文字阴影，确保在深红纹理背景上清晰可读；纸张插画和其他窗口的深色空状态文字保持原样。</p>
+<p>多选项卡窗口优先按侧边书签的实际总高度增高，包含标签、间距和上下留白；字体、标签数量或视口变化时重新测量。窗口受安全视口高度限制，仅在屏幕确实容纳不下全部标签时保留侧栏滚动，正文仍独立滚动。</p>
+<p>队际赛选人窗口用两条校园棕色虚线区分标题栏、Round 人选确定区和角色池；标题栏下方及人选区下方各一条，桌面和手机竖屏共用。</p>
 <p>对弈技能次数耗尽时，技能信息按钮整体灰度显示，覆盖背景、边框、图标和文字；桌面与手机竖屏一致，恢复次数后恢复原配色。</p>
+<p>对局回放窗口不设模式选项卡，沿用点击回放按钮时的模式；星炬回放查询同时包含星炬与队际赛，按时间统一分页。队际赛记录以左上角旗子角标区分，列表为外伸角标预留滚动边界空间。</p>
 <p>队际赛背景音乐从技能发生时的阶段阵容解析角色，换轮不再用新角色重解释旧技能；换轮前的曲目持续播放，直到新的技能或终局按既有规则切换，重连亦可从棋谱历史恢复。</p>
+<p>队际赛已接入星炬子入口：三名已拥有且可用的不同角色按序接力，独立 FIFO 匹配，13 路规则与整局用时沿用星炬。全局第 40／80 手达到阈值后，等待当前连下和技能结算完成再同步换人；每轮五秒对决演出暂停棋钟并播放己方当前角色出战语音，换轮维持原 BGM。桌面立绘采用纵向居中、左右裁切的大图和斜线分隔；选人按卡片点击顺序排列，选中保留卡片边框、呈浅绿色按下态与右上角实心圆序号，空位不显示“选择部员”文字，但固定预留名称区高度，选择和取消角色不改变窗口尺寸或位置。己方候场灰色、对手候场问号，观战双方候场均保密，终局公开完整阵容；首版仅保存棋谱，不计段位、金币与既有战绩。详见<a href="./system-design/03-backend-realtime-api.md#队际赛协议与阶段生命周期">队际赛协议与阶段生命周期</a>。</p>
+<p>星炬的三张模式子卡片不显示英文背景水印，父级三类对弈卡片仍保留原水印。吃子挑战赛仅保留在星炬子模式层；准时宝陪练难度窗口只提供入门、中级和高级。</p>
+<p>匹配模式窗口采用两层选择：点击星炬卡片后，父卡与准时宝陪练按钮一起上移，标准和五子棋卡片向左退出，下拉显示常规匹配、吃子挑战赛和队际赛。常规匹配沿用星炬队列，吃子挑战赛复用高级准时宝挑战入口；陪练在切换和展开期间始终可用。返回恢复第一层，重新打开重置选择；规则提示、原卡片颜色和内部样式保持，黑化剧情入口优先于普通选择。动效由独立外层容器负责，隐藏层不接收焦点，减少动态效果偏好下立即切换。</p>
+<p>吃子挑战赛入场时预热准时宝立绘，并在首场对决演出允许图片继续加载至截止时间前的安全窗口；赛事子卡片桌面悬停显示规则，移动端以右上角说明按钮打开浮窗，长说明在浮窗宽度内自然换行。队际赛选人窗口使用校园便签图片标题，窗口自身作为标题的定位基准，标题不随内容滚动，并在三个 Round 下显示 0-40、41-80、81 手至终局的阶段区间。</p>
 <p>对决开场按本地玩家视角定位：自己固定右侧／竖屏下侧，对手固定左侧／上侧；上下入场方向和左右退场方向跟随位置。条带底色继续按执棋颜色区分。立绘下方显示完整用户名，黑方白字、白方黑字，单行按实际文字宽度缩小字号，并为斜切边缘保留安全区域，不省略或裁切。</p>
 <p>开局展示不再直接比较设备时间与服务端绝对截止时间：opening 快照携带 <code>openingServerNow</code>，客户端接收时把剩余时长换算为本地 <code>__openingEndsAt</code>，倒计时和立绘演出共用同一固定期限。避免手机与服务器时钟存在偏差时，整段猜先提示被提前关闭；服务端进入 playing 仍立即卸载演出。</p>
 <p>准时宝对局的猜先演出使用 <code>botProfile.portraitUrl</code> 专用立绘；机器人没有角色 ID 不再视为缺少立绘。双方按本地玩家视角定位、按执棋颜色配色，继续沿用资源失败、旁观和重连时的简洁提示回退。</p>
 <p>猜先阶段采用两条全高、窄幅的黑白斜切立绘条，周围及中央仍可见棋盘和信息区；独立 62% 黑色遮罩统一降低底层明度，随最后 0.4 秒退场淡出并在开局恢复：左侧对手下落、右侧自己上升，约 0.5 秒落位并轻微回弹；执棋结果与倒计时直接叠于交界处。最后 0.4 秒向左右拉幕退场，在既有 <code>openingEndsAt</code> 时点完全移除。手机竖屏采用对手左上、自己右下构图。仅本次匹配且双方有角色的玩家播放，旁观、中途进入、重连及资源未及时就绪回退简洁提示；沿用角色外观、规则提示与现有声音，不改服务端开局节奏。</p>
 <p>移动端吃子排行榜的提子数跨越整行三条网格轨道并垂直居中，榜单和底部个人排名共用；普通排行榜保留积分、战绩和胜率的分行布局。</p>
+<p>准时宝陪练新增“吃子挑战赛！”：高级难度、双方合计 100 手，仅统计提子，禁用数子、和棋并取消 22 子认输。有效成绩与纪录角色独立持久化；吃子总榜按个人最高提子数并列排名，结算按本次成绩计算名次，首次成功完成或超越历史最好名次时显示红色盖章提示。排行榜空榜仍为四个左侧书签保留最低高度；坐标开关以同色、右下位移及缩小阴影表示开启。详见<a href="./system-design/03-backend-realtime-api.md#吃子挑战赛">后端与实时接口</a>和<a href="./system-design/04-data-model-and-domain.md#吃子挑战赛成绩">数据模型</a>。</p>
 <p>最后 10 秒的棋钟显示与角色读秒共用本地一秒节拍，以服务端快照持续校准，吸收到包前后 300ms 的抖动；最多提前估计一秒并停在 1，不在客户端推断超时或下一轮读秒。读秒音频复用下载与解码缓存，跳过片头静音并保留 10ms 起音余量；启动延迟超过 200ms、换手或离开房间时取消过期请求。详见<a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a>。</p>
 <p>部员手册恢复今天美化前的原有窗口与角色卡片样式，撤去生成书页、学生证背景和专用尺寸覆盖；仅保留左侧“角色 / 装饰”书签切换。装饰页移除重复虚线、分类标题与重置图标，列表首位始终提供默认黑白棋子，复用空装饰 ID 的恢复操作。两个内容区继续使用原有直接子元素与滚动样式，剧情状态、详情浮层和出战语音生命周期保持原有规则。</p>
 <p>好友操作区按钮保持单排文字按钮，取消默认、悬停、按下及禁用阴影；详情使用蓝色边框、对局申请使用粉色边框、解除好友使用柔和红色边框，普通解除操作使用中性色边框。禁用状态保留灰色提示。</p>
@@ -205,7 +216,7 @@
 <li>技能说明把固定超频与可复用文案语义分层：角色详情从基础/派生技能的 <code>costValue</code> 生成红字浅红底 <code>超频：X</code> 徽标，对局说明以红色 <code>超频：X</code> 独立首行展示，仇远、千咲等动态技能仍显示结构化基础值 <code>0</code>，动态公式留在正文。描述中的人工 <code>【特性词】</code> 引用由共享渲染器按原文顺序解析为可点击、可聚焦的下划线文本词条，保留原生按钮语义但显式清除主题按钮底板、边框和阴影；粗指针触控热区由绝对定位伪元素扩展，按钮本身保持 <code>min-height: 0</code> 和正文行高，不能撑大段落行距，未知词典项安全退化为普通文本。玩家端词典使用共享同步快照：确认过的内置词条作为首帧兜底，服务端成功响应后原子替换快照并通知所有已挂载说明；失败请求不进入永久缓存，保留最近成功值或内置兜底并自动重试，因此移动技能提示层临时挂载时不会先把已确认词条渲染成不可点击文字。手机角色详情由弹窗壳自身承担纵向滚动并从内容顶部排布，避免长技能说明被固定高度与 <code>overflow: hidden</code> 截断。对局与回放按角色 ID 优先读取当前前端角色目录的基础/派生展示文案，房间或回放快照只在目录缺失时兜底，派生技能仍保留快照中的次数和来源状态；词条说明从触发点锚定、视口钳制，并把房间浮层基准至少钳到移动技能说明壳的层级后再提升，确保解释层可见且关闭解释时保留下层技能详情。<code>SkillTrait</code> 是只承载名称/释义/排序的持久化文案模型，后台独立“特性词”页负责 CRUD、引用查看和受保护删除，角色基础/派生描述编辑器可在光标处插入；重命名在同一事务中精确替换引用，保存描述拒绝未知或重复词条，但特性词从不驱动技能规则、可用性、回合或结算。</li>
 </ul>
 <ul>
-<li>公告和邮箱是登录玩家的两个独立入口，但共用 <code>InformationCenterLayout</code> 阅读骨架、<code>ModalDialog</code> 可访问性边界与 <code>.information-center-prose</code> 正文节奏：桌面统一为约 1020px 的左侧列表/右侧阅读区，移动端在同一近全屏窗口内从列表进入详情并通过明确返回按钮回到原列表；窗口标题行只显示“公告”或“邮箱”和关闭/返回控件，不再显示副标题。两者的 44px header 控件与下方虚线在桌面保留 18px、移动保留 16px 间距，按钮阴影不得压线；桌面双栏统一使用 14px 间距、2px 语义外框和透明正文 article，列表以行分隔与克制选中框取代卡片阴影。公告继续保留分类 tabs、置顶/未读标签、未读点和类型信息，邮箱继续保持无可见状态提示的文本列表。桌面公告、更新日志和邮件加载完成后默认打开列表第一条，并沿用既有打开即已读路径；切换公告分类也会打开该分类第一条，桌面空列表显示“这里空空如也~”。移动端保持列表优先，只有点击条目后才进入详情并标记已读，空列表继续使用各领域简洁文案。共享 <code>MarkdownLiteContent</code> 安全支持段落/换行、无序与编号列表、<code>##</code>/<code>###</code> 小标题、<code>&gt;</code> 重点提示、分隔线、粗体和 http(s) 链接，不渲染原始 HTML。共享样式由 <code>src/styles/modals/information-center.css</code> 与最终 <code>src/styles/mobile-adaptive/information-center.css</code> 负责正文宽度/排版、尺寸、安全区、主从切换、约 260ms 的 transform/opacity 平滑减速动效和 reduced-motion；移动标题栏固定预留返回控件槽，避免切换时标题与关闭按钮重排。邮件详情以标题为第一锚点，发件人和时间合并为元信息行，纯文本邮件不渲染伪附件卡，真实附件和领取动作共用紧凑尾栏；公告使用弱化分类标记、固定字号标题和实体分隔线。后台管理、服务端 API、<code>AnnouncementEntry</code>/<code>AnnouncementRead</code> 与邮箱数据模型均不变。</li>
+<li>公告和邮箱是登录玩家的两个独立入口，但共用 <code>InformationCenterLayout</code> 阅读骨架、<code>ModalDialog</code> 可访问性边界与 <code>.information-center-prose</code> 正文节奏：桌面统一为约 1020px 的左侧列表/右侧阅读区，移动端在同一近全屏窗口内从列表进入详情并通过明确返回按钮回到原列表；窗口标题行只显示“公告”或“邮箱”和关闭/返回控件，不再显示副标题。两者的 44px header 控件与下方虚线在桌面保留 18px、移动保留 16px 间距，按钮阴影不得压线；桌面双栏统一使用 14px 间距、2px 语义外框和透明正文 article，列表以行分隔与克制选中框取代卡片阴影。公告分类选项卡显示“公告”和“日志”（后者对应 <code>changelog</code>，详情类型标记仍为“更新日志”），继续保留分类 tabs、置顶/未读标签、未读点和类型信息，邮箱继续保持无可见状态提示的文本列表。桌面公告、更新日志和邮件加载完成后默认打开列表第一条，并沿用既有打开即已读路径；切换公告分类也会打开该分类第一条，桌面空列表显示“这里空空如也~”。移动端保持列表优先，只有点击条目后才进入详情并标记已读，空列表继续使用各领域简洁文案。共享 <code>MarkdownLiteContent</code> 安全支持段落/换行、无序与编号列表、<code>##</code>/<code>###</code> 小标题、<code>&gt;</code> 重点提示、分隔线、粗体和 http(s) 链接，不渲染原始 HTML。共享样式由 <code>src/styles/modals/information-center.css</code> 与最终 <code>src/styles/mobile-adaptive/information-center.css</code> 负责正文宽度/排版、尺寸、安全区、主从切换、约 260ms 的 transform/opacity 平滑减速动效和 reduced-motion；移动标题栏固定预留返回控件槽，避免切换时标题与关闭按钮重排。邮件详情以标题为第一锚点，发件人和时间合并为元信息行，纯文本邮件不渲染伪附件卡，真实附件和领取动作共用紧凑尾栏；公告使用弱化分类标记、固定字号标题和实体分隔线。后台管理、服务端 API、<code>AnnouncementEntry</code>/<code>AnnouncementRead</code> 与邮箱数据模型均不变。</li>
 </ul>
 <ul>
 <li>首页公告未读红点在桌面顶栏和移动菜单里都属于公告按钮自身的状态标记；移动端必须像邮箱角标一样以按钮为定位上下文贴到右上角，不能作为菜单行末尾的静态 flex 内容。</li>
@@ -728,7 +739,7 @@
 <li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听 <code>denia-rainbow-bean-candy</code> 道具使用事件；只有达妮娅接受并吃下彩虹豆豆跳跳糖后才会触发并获得 100 金币，35% 拒绝分支不会触发，不回溯统计成就上线前发生过的使用记录。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅、爱弥斯和琳奈四名角色；<code>src/shared/rainbowBeanCandy.js</code> 统一登记道具 ID、支持角色与效果键，仓库目标选择和服务端效果常量共同消费这份契约，避免前端白名单漏掉已接入角色。四者均由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 520ms 的电子彩虹反馈：光源跟随棋子抖动后的实际视觉中心，七色细光沿棋盘横纵线向四个棋盘边缘传播，并以统一透明度遮罩从中心的高亮逐步衰减到边缘透明；沿途交叉点按距离依次点亮、亮度向外递减。明亮学园竖屏的全局 <code>max-width</code> 保护会由特效 owner 定点解除，避免光轨被裁成一格；效果不使用通用圆形彩虹环，也不改变棋子和围棋规则，并在她完成一盘有效对局后解除。琳奈接受后获得 <code>lynaeContraryVoice</code> 临时状态，只交换她的语音事件：读秒 10→1 与 1→10 成对倒置，剩余读秒 2↔1、开局↔开始读秒、出战↔技能、胜利↔失败，和棋及界面文字、计时与结算数据保持不变；完成一盘使用琳奈的有效对局后清除，结算房间通过 <code>completedItemEffects</code> 保留仅供本局胜负语音解析的完成时快照。四份默认脚本均使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，所有叙述节点保持空角色区域。</li>
+<li>彩虹豆豆跳跳糖当前支持西格莉卡、达妮娅、爱弥斯和琳奈四名角色；<code>src/shared/rainbowBeanCandy.js</code> 统一登记道具 ID、支持角色与效果键，仓库目标选择和服务端效果常量共同消费这份契约，避免前端白名单漏掉已接入角色。西格莉卡合法使用必定成功，不设糖果使用失败剧情；其余三者由服务端按 35% 概率进入不消费、不生效的拒绝剧情；爱弥斯接受后获得 <code>aemeathRainbowMove</code> 临时状态，对局中她的每次普通落子会在交叉点播放约 520ms 的电子彩虹反馈：光源跟随棋子抖动后的实际视觉中心，七色细光沿棋盘横纵线向四个棋盘边缘传播，并以统一透明度遮罩从中心的高亮逐步衰减到边缘透明；沿途交叉点按距离依次点亮、亮度向外递减。明亮学园竖屏的全局 <code>max-width</code> 保护会由特效 owner 定点解除，避免光轨被裁成一格；效果不使用通用圆形彩虹环，也不改变棋子和围棋规则，并在她完成一盘有效对局后解除。琳奈接受后获得 <code>lynaeContraryVoice</code> 临时状态，只交换她的语音事件：读秒 10→1 与 1→10 成对倒置，剩余读秒 2↔1、开局↔开始读秒、出战↔技能、胜利↔失败，和棋及界面文字、计时与结算数据保持不变；完成一盘使用琳奈的有效对局后清除，结算房间通过 <code>completedItemEffects</code> 保留仅供本局胜负语音解析的完成时快照。四角色的普通糖果剧情按《彩虹豆豆跳跳糖剧情.docx》同步台词、旁白与玩家选项；达妮娅、爱弥斯、琳奈使用 <code>accepted-start</code> / <code>rejected-start</code> 双起点，西格莉卡第 1–7 次入口共用文档中的成功剧情并保留第 8 次黑化及对弈恢复的独立流程。旁白及文档标记“角色区域留空”的节点均清空 <code>characterId</code> / <code>speakerName</code>，播放器保留立绘区域的布局空间，但不渲染图片、姓名标签或占位文字；从角色对白切入旁白时同步清空。代码默认、四份部署快照及本地已发布内容保持一致，已有云端数据库仍须按剧情 key 显式同步。</li>
 </ul>
 <ul>
 <li>新增内置成就“点亮语义！”使用 <code>mode_character_wins</code> 条件统计玩家使用西格莉卡在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>/assets/achievements/semantic-nameplate.png</code> 用户名背景；<code>seedBuiltinAchievements</code> 会让管理员默认达成所有内置成就并标记奖励已发放。</li>
@@ -2066,7 +2077,7 @@
 <li>匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 <code>opening</code> 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。</li>
 </ul>
 <ul>
-<li><code>OpeningDuelPresentation</code> 在猜先阶段以两条全高窄幅斜切条、自己右侧、对手左侧的立绘替代普通弹窗外框；桌面每条宽度为 min(26vw, 360px)，手机每条 42%，背景棋盘和信息区仍可见并由独立 62% 黑色遮罩统一压暗，遮罩随退场淡出恢复明度；双方相向上下入场约 500ms 并轻微回弹，中央直接显示执棋结果、规则和倒计时。手机竖屏对手偏左上、自己偏右下；条带底色按棋色，立绘下用户名使用黑方白字／白方黑字，单行测量缩字并保留斜切安全区以完整显示。<code>socketHandlers</code> 仅对当前 <code>match:found</code> 玩家会话添加客户端 <code>__openingPresentation</code> 标记，后续快照保留，重连或 resume 撤销；旁观和中途加入不补播。立绘复用 <code>playerCharacterForDisplay</code> / <code>playerCandyPortraitProps</code> 的外观与时装快照，任一方既无角色也无机器人专用立绘、图片失败、200ms 内未就绪或剩余时间不足 900ms 时回退原提示。演出 portal 到 body，使用独立黑白样式避免房间裁切和主题模态框覆盖；保留减少动态效果的淡出替代。左右拉幕持续 400ms，并在 <code>openingEndsAt</code> 前完成；到点移除覆盖层，离开 opening 也立即卸载，不延长服务端倒计时或添加音效。</li>
+<li><code>OpeningDuelPresentation</code> 在猜先阶段以两条全高窄幅斜切条、自己右侧、对手左侧的立绘替代普通弹窗外框；桌面每条宽度为 min(26vw, 360px)，手机每条 42%，背景棋盘和信息区仍可见并由独立 62% 黑色遮罩统一压暗，遮罩随退场淡出恢复明度；双方相向上下入场约 500ms 并轻微回弹，中央直接显示执棋结果、规则和倒计时。手机竖屏对手偏左上、自己偏右下；条带底色按棋色，立绘下用户名使用黑方白字／白方黑字，单行测量缩字并保留斜切安全区以完整显示。<code>socketHandlers</code> 仅对当前 <code>match:found</code> 玩家会话添加客户端 <code>__openingPresentation</code> 标记，后续快照保留，重连或 resume 撤销；旁观和中途加入不补播。立绘复用 <code>playerCharacterForDisplay</code> / <code>playerCandyPortraitProps</code> 的外观与时装快照，任一方既无角色也无机器人专用立绘、图片失败、普通对局 200ms 内未就绪、吃子挑战赛预热后最多等待 1500ms 仍未就绪，或剩余时间不足 900ms 时回退原提示。演出 portal 到 body，使用独立黑白样式避免房间裁切和主题模态框覆盖；保留减少动态效果的淡出替代。左右拉幕持续 400ms，并在 <code>openingEndsAt</code> 前完成；到点移除覆盖层，离开 opening 也立即卸载，不延长服务端倒计时或添加音效。</li>
 </ul>
 <ul>
 <li>匹配成功弹窗倒计时期间仍会接收服务端 <code>room:update</code>。前端会同步刷新匹配过渡状态和一个最新房间 ref，倒计时完成时优先使用该 ref 进入房间，避免服务端已推进到 <code>playing</code> 但客户端仍拿旧 <code>opening</code> 快照，导致棋钟不动、不能落子或开局语音不触发。</li>
@@ -2161,8 +2172,11 @@
 </ul>
 <ul>
 <li>技能类型：</li>
+<ul>
+<li><code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。</li>
 </ul>
-<p>- <code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。 星星落地后显露打瞌睡的日灵；结算后的无效点继续使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 作为 point-local 透明 WebP 日灵标记，以 150% 棋盘格尺寸显示。棋盘的 <code>erased-boundary-layer</code> 灰显周围格子、用一路线同粗细外边界线标出边界；演出层从星星接触时开始用 200ms 交叉淡化显现该区域，结算后交回权威边界，不提前改变点位规则。</p>
+</ul>
+<p>星星落地后显露打瞌睡的日灵；结算后的无效点继续使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 作为 point-local 透明 WebP 日灵标记，以 150% 棋盘格尺寸显示。棋盘的 <code>erased-boundary-layer</code> 灰显周围格子、用一路线同粗细外边界线标出边界；演出层从星星接触时开始用 200ms 交叉淡化显现该区域，结算后交回权威边界，不提前改变点位规则。</p>
 <ul>
 <li><code>flip-stone</code>：达妮娅主动技“泡影幻梦”，反转目标棋子颜色。</li>
 </ul>
@@ -3644,7 +3658,69 @@
 <p>同一适配器在玩家回合开始前做隐藏吻合度分析。开局前 20 个总手数不取样，随后只比较快照的下一次对应玩家普通落子；pass、至多两个合法点的强制局面、访问量不足、Top-2 目差与胜率近似等价、失效/错位快照都排除。普通信号要求最近 24 个有效落子满足 Top-1 ≥75%、Top-3 ≥92%、平均目损 ≤0.8、大失误至多 1 次和困难 AI 手至少 5 次，再由独立 6 手满足 5 次 Top-3、平均目损 ≤1.0 且单手不超过 3.0；极端信号严格按累计 35 个有效落子、Top-1 ≥90% 和困难 AI 手至少 6 次触发。困难 AI 手定义为 Top-1、policy prior 排名至少第 4 且相对 Top-2 领先至少 1.0 目。<code>sigrikaCandyDuel.aiAgreementAudit</code> 和待比较候选随 <code>PersistedRoom</code> 保存，<code>roomView</code> 只投影 <code>aiAgreementTriggered</code> / <code>aiAgreementEventSeq</code> 与当前净化后的 <code>presentation</code>，不发送比率、候选、胜率、目差、触发原因或内部演出阶段；触发仅作为剧情事件，禁止据此封禁或公开指控。</p>
 <p>特殊决战的剧情由 <code>practiceRoomAutomation</code> 的持久化演出阶段串行驱动，并且优先于该回合的 NPC 落子：首次轮到黑化西格莉卡时显示“那么，让你看看才能的差距吧。”和无效果“秘日六席”；真实吻合度信号触发时依次显示“为什么你所展示的力量，和那个禁忌的来源这么像...”“我懂了......我懂了！那么你也是恶啊！”“行吧，那就用恶的方式来结束这令人失望的一局吧。”和无效果“七宗罪”。每一步只更新 <code>sigrikaCandyDuel.presentation</code>、单调序号、内部阶段和必要的剧情/技能系统记录，经完整房间广播持久化；普通 NPC 计算阶段不再追加“西格莉卡？正在思考。”的 <code>npc-thinking</code> 记录，清场后才进入原 NPC 决策链。它从不写 <code>game.pendingSkill</code>、skillUses/costs/removals、棋盘、回合、手数或胜负，因此两项技能目前完全没有游戏效果。恢复旧快照会从下一阶段继续，不重复已完成台词或额外落子。</p>
 <p>Windows 本地运行按 <code>PRACTICE_ENGINE_PATH</code>、<code>%LOCALAPPDATA%\SigrikaGo\practice-engine\gnugo-3.8\gnugo.exe</code>、常见 <code>Program Files\GNUGo\bin\gnugo.exe</code>、系统 <code>PATH</code> 的优先级解析 GNU Go；开发者自行扫描和安装 Windows 二进制，仓库不提供自动下载器，也不在 <code>postinstall</code> 执行第三方程序。Linux 和生产仍固定以 <code>/usr/games/gnugo</code> 为默认值。</p>
-<p>练习配置随 <code>PersistedRoom</code> JSON 快照保存，不新增数据库 schema。<code>roomResultPersistence</code> 对 <code>recordPolicy=&quot;none&quot;</code> 直接把 <code>recordSaved</code> 置真且不创建 <code>GameRecord</code>、奖励或成长事务；<code>listWatchRooms()</code> 同时在内存和可选 read-model 路径过滤 <code>matchSource=&quot;practice&quot;</code>。练习房仍计入 <code>listActiveRooms()</code>，因此受 <code>MAX_ACTIVE_ROOMS</code> 容量上限约束。</p>
+<p>普通练习配置随 <code>PersistedRoom</code> JSON 快照保存；吃子挑战赛另有独立成绩表。<code>roomResultPersistence</code> 先处理吃子挑战赛的独立成绩，再对普通 <code>recordPolicy=&quot;none&quot;</code> 直接把 <code>recordSaved</code> 置真且不创建 <code>GameRecord</code>、奖励或成长事务；<code>listWatchRooms()</code> 同时在内存和可选 read-model 路径过滤 <code>matchSource=&quot;practice&quot;</code>。练习房仍计入 <code>listActiveRooms()</code>，因此受 <code>MAX_ACTIVE_ROOMS</code> 容量上限约束。</p>
+<h3>吃子挑战赛</h3>
+<ul>
+<li><code>practice:start</code> 在原参数上可加 <code>challenge: &quot;capture-challenge&quot;</code>，只接受高级难度。房间保持 Spark / practice / unrated / recordPolicy=none，另存随机唯一 <code>practice.challengeId</code>；该 ID 仅服务端使用。普通陪练与特殊决战不受影响。</li>
+</ul>
+<ul>
+<li>挑战使用现有 <code>moveNumber</code>：双方落子、停一手、消耗手数的技能及额外落子均计数。普通动作和技能演出落地后，满 100 手立即结束，先完成该手提子再统计，不触发下一回合被动。连下剩余回合清空。数子在前端禁用并在服务端拒绝；开发测试工具同样拒绝。原 22 子认输不适用于挑战。</li>
+</ul>
+<ul>
+<li>和棋申请及响应由客户端与服务端禁用；认输、超时、引擎异常等提前结束不上榜；可恢复断线沿用原手数。有效结束仅保存玩家 <code>captures</code>，不叠加 <code>skillRemovals</code>，不创建普通战绩、奖励、积分或段位变化。</li>
+</ul>
+<ul>
+<li>结算在 SQLite 事务中保存幂等回执及个人纪录，名次 = 1 + 其他玩家最高提子数严格高于本次的数量。个人最高纪录仅在严格更高时更新角色与服装快照；打平保留首次纪录角色。历史最好名次取历次有效结算名次的最小值，首次成功完成即标记 breakthrough；后续仅严格超越历史最好名次才标记 breakthrough。结果提示使用红色双线印章和 280ms 盖章入场，减少动态效果设置下直接显示。</li>
+</ul>
+<ul>
+<li>事务成功后才标记 <code>recordSaved</code> 并广播结果；失败沿用房间保存重试，过期但未保存的挑战房恢复时仍重试。回执固定首次计算的名次与突破标志，避免重连或重复保存重算。</li>
+</ul>
+<ul>
+<li><code>GET /api/leaderboard?mode=capture-challenge</code> 返回每人一行最高成绩：<code>id</code>、<code>username</code>、当前星炬 <code>rank</code>、并列名次 <code>ranking</code>、<code>captures</code>、<code>recordCharacter</code> 和 <code>costumeSnapshot</code>。按提子数降序，用户名和段位不参与名次；同分以用户 ID 稳定展示，排名采用 1、2、2、4。无赛季，0 提子有效完成也入榜。</li>
+</ul>
+<ul>
+<li>对局 header 展示当前手数 / 100 和提子；开局提示挑战规则。结算不判胜负、不播胜负／平局语音，显示“你这次提了x个子，位列总排名中的第x位，可喜可贺！”，突破时以主题红字显示“突破个人最高排名！”。榜单固定本人行仍展示最高提子纪录的当前名次。</li>
+</ul>
+<h2>队际赛协议与阶段生命周期</h2>
+<ul>
+<li><code>match:join({ mode: &quot;team&quot;, lineup: [characterId, characterId, characterId] }, ack)</code>：服务端刷新身份，校验拥有、启用、糖果禁用与三个 ID 不重复；不足三名可用部员返回「需要至少拥有3名部员才能参加」。候选配对时再次核对在线候选阵容；模式使用独立 FIFO 队列，不开放好友约战。</li>
+</ul>
+<ul>
+<li><code>team</code> 为独立可解析模式，棋盘、贴子、用时沿用星炬；不加入常规段位 <code>GAME_MODE_IDS</code>，避免创建队际赛段位与排行榜。观战和个人棋谱提供队际赛入口。</li>
+</ul>
+<ul>
+<li>服务端 <code>player.teamLineup</code> 保存三个角色与服装快照，<code>room.team</code> 保存当前 <code>round</code> 和实际 <code>rounds[].startMove</code>。持久化包含完整阵容；网络投影只给本人完整阵容，对手及观战者只见已登场成员。未公开成员不包含角色 ID、配置或服装。终局统一公开。</li>
+</ul>
+<ul>
+<li><code>advanceTeamRound()</code> 在正常落子／技能最终结算后、下一个被动开始前运行，广播前亦检查恢复后的阶段边界。全局 <code>moveNumber</code> 阈值固定为 40、80，不因前一轮连下顺延；存在 <code>extraTurn</code>、待结算技能或终局时不换人。双方同步换人，写入 <code>team-round</code> 棋谱事件，复用 <code>opening</code> 阶段及服务端 <code>openingEndsAt</code> 暂停棋钟五秒。</li>
+</ul>
+<ul>
+<li>新角色从自身完整技能次数与未触发被动状态开始；清空旧派生技能；<code>teamRoundStartHistoryIndex</code> 限定禁先只扫描本轮主动技能。已有棋盘效果、累计超频、棋子、提子、轮次执棋方及双方剩余棋钟不重置。退场被动停止产生新效果，已有棋盘标记按原生命周期保留。</li>
+</ul>
+<ul>
+<li>Round 1 与猜先合并；每轮通过既有 <code>OpeningDuelPresentation</code> 展示双方当前角色与 Round 名。重连仅恢复剩余演出时间。参赛者本地播放当前己方角色的 <code>sortie</code> 出战语音，每轮去重，不叠加普通 <code>gameStart</code> 语音，不为观战或棋谱播放出战语音。</li>
+</ul>
+<ul>
+<li><code>room.recordPolicy = &quot;replay-only&quot;</code>，结算保存 <code>mode/matchSource = &quot;team&quot;</code> 的完整终局快照，无用户奖励、积分、段位及角色战绩写入；个人统计和成就记录扫描排除队际赛。棋谱回放按 <code>team-round</code> 重建对应角色技能，避免用终局角色重放整局。</li>
+</ul>
+<ul>
+<li>选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘从左到右三等分，当前彩色，己方非当前灰色，对手候场问号；终局结算列出完整阵容与顺序。</li>
+</ul>
+<ul>
+<li>入队校验期间收到取消请求时，该次异步入队作废；候场阵容重新校验失败则发出 <code>match:left</code>，客户端退出匹配遮罩。观战列表的用户角色信息同样只投影当前出场角色。</li>
+</ul>
+<ul>
+<li>提前结束及双方离开五分钟的队际赛仍保存棋谱；保存失败时先重试再删除房间。重连演出沿用剩余期限，当前轮出战语音不补播，下轮正常播放。</li>
+</ul>
+<ul>
+<li><code>npx playwright test --config tests/e2e/team-match.config.js</code> 构建实际组件及样式的独立测试入口，无需测试账号或数据库，检查桌面、390px、360px 竖屏的选人排序、三格立绘、灰度、保密占位及溢出。</li>
+</ul>
+<ul>
+<li>队际赛换轮不切换 BGM：最新技能音乐按该技能发生阶段的阵容角色解析，不按换人后的当前角色解析；直到实际触发下一次技能或终局才沿用现有切换规则，重连同样从历史恢复。桌面三格立绘按容器高度放大、垂直居中、左右裁切并以略斜边界分隔，移动端维持原紧凑尺寸。选中卡片保留原有深色边框，取消外投影并使用浅绿色按下态；空阵容位不显示“选择部员”文字；右上角 1/2/3 实心圆采用细黑边、淡黄底、深黑数字。</li>
+</ul>
+<ul>
+<li>回放列表不设模式切换页签：打开时锁定所属模式；<code>listReplaySummaryPage</code> 的星炬查询使用 <code>mode in [spark, team]</code>，共享时间/ID 游标排序，其他模式仍精确过滤。队际赛只用左上角旗子角标标识，不额外占用时间栏文字；回放列表内边距为外伸角标保留空间。</li>
+</ul>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -4266,6 +4342,9 @@
 <ul>
 <li>Personal and public-profile replay lists use newest-first keyset pagination ordered by <code>(createdAt DESC, id DESC)</code>. Each response contains at most 50 summaries and an opaque <code>nextCursor</code>; clients may continue until the cursor is null, so old games remain readable without materializing the full history at once. Leaderboard and achievement compatibility aggregation still scan at most the newest 10,000 relevant records.</li>
 </ul>
+<h3>吃子挑战赛成绩</h3>
+<p><code>CaptureChallengeBest</code> 以 <code>userId</code> 为主键，保存个人最高 <code>captures</code>、对应 <code>characterId</code>、<code>costumeSnapshot</code> 与历史最佳 <code>bestRank</code>。仅严格超过最高提子数时替换成绩和角色；名次纪录独立维护。<code>captures</code> 索引供排名统计与排序。</p>
+<p><code>CaptureChallengeResult</code> 以服务器生成并写入房间快照的挑战 UUID 为主键，保存 <code>userId</code>、本局 <code>captures</code>、结算时 <code>rank</code>、<code>breakthrough</code> 与创建时间。事务内先查回执，再计算名次、更新最高纪录、创建回执；重试复用已保存结果。两表均随用户级联删除，不进入 GameRecord、普通战绩或成长统计。新增迁移 <code>20260923000000_capture_challenge</code>；<code>ensureCaptureChallengeSchema</code> 同步支持旧 SQLite 库的启动兼容路径。</p>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
 <p>本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。</p>

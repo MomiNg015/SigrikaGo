@@ -29,6 +29,7 @@ describe("replay summary pagination", () => {
       id: rows[49].id
     });
     expect(query.take).toBe(51);
+    expect(query.where.mode).toEqual({ in: ["spark", "team"] });
     expect(query.orderBy).toEqual([{ createdAt: "desc" }, { id: "desc" }]);
     expect(query.where.AND[0].OR).toEqual([
       { blackUserId: "user-1" },

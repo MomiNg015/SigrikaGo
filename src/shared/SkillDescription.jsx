@@ -12,11 +12,14 @@ export default function SkillDescription({
   description = "",
   overclockText = "",
   traits,
+  mode,
   floatingLayerZ,
   onPopoverOpenChange
 }) {
   const loadedTraits = usePublicSkillTraits();
-  const glossary = useMemo(() => skillTraitMap(traits ?? loadedTraits), [loadedTraits, traits]);
+  const glossary = useMemo(() => skillTraitMap((traits ?? loadedTraits).map((trait) => mode === "team" && trait.name === "禁先"
+    ? { ...trait, definition: "对手当前角色尚未在本阶段成功发动主动技能时，具有该特性的技能无法发动。每阶段重新判定。" }
+    : trait)), [loadedTraits, traits, mode]);
   const [openTrait, setOpenTrait] = useState(null);
   const popoverId = useId();
   const parts = useMemo(

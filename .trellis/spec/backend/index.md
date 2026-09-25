@@ -14,6 +14,8 @@ This directory contains guidelines for backend development. Fill in each file wi
 
 ## Guidelines Index
 
+Team relay matchmaking and stage handoffs follow [Team Match Contract](./team-match-contract.md).
+
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |

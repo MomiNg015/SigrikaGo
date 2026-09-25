@@ -10,7 +10,7 @@ function createSocket(user = { id: "user-a" }) {
     on: vi.fn((event, handler) => {
       handlers[event] = handler;
     }),
-    trigger: (event, payload) => handlers[event](payload)
+    trigger: (event, ...args) => handlers[event](...args)
   };
 }
 
@@ -33,6 +33,46 @@ function createDeps(overrides = {}) {
 }
 
 describe("socket match events", () => {
+  it("does not requeue a match cancelled while admission is awaiting user refresh", async () => {
+    let finishRefresh;
+    const deps = createDeps({ refreshSocketUser: () => new Promise((resolve) => { finishRefresh = resolve; }) });
+    const socket = createSocket();
+    registerMatchSocketEvents(socket, deps);
+    const pending = socket.trigger("match:join");
+    socket.trigger("match:leave");
+    finishRefresh();
+    await pending;
+    expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+  });
+
+  it("rejects unavailable team lineups before queue admission and acknowledges the reason", async () => {
+    const socket = createSocket({ id: "team-a", ownedCharacters: ["sigrika", "aemeath"] });
+    const deps = createDeps({ normalizeGameModeId: () => "team", characterSelectionData: async () => ({}) });
+    const ack = vi.fn();
+    registerMatchSocketEvents(socket, deps);
+    await socket.trigger("match:join", { mode: "team", lineup: ["sigrika", "aemeath", "nabomo"] }, ack);
+    expect(ack).toHaveBeenCalledWith({ ok: false, error: "需要至少拥有3名部员才能参加" });
+    expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+  });
+
+  it("revalidates a waiting opponent's ownership before pairing team lineups", async () => {
+    const lineup = ["sigrika", "aemeath", "nabomo"];
+    const socket = createSocket({ id: "team-a", ownedCharacters: lineup });
+    const waitingSocket = createSocket({ id: "team-b", ownedCharacters: lineup });
+    const candidate = { mode: "team", socketId: "socket-b", user: waitingSocket.user, teamLineup: lineup.map((characterId) => ({ characterId })) };
+    const deps = createDeps({
+      io: { sockets: { sockets: new Map([["socket-b", waitingSocket]]) } },
+      normalizeGameModeId: () => "team", characterSelectionData: async () => ({}),
+      listWaitingPlayers: () => [candidate],
+      refreshSocketUser: async (target) => { if (target === waitingSocket) target.user = { ...target.user, ownedCharacters: ["sigrika"] }; }
+    });
+    registerMatchSocketEvents(socket, deps);
+    await socket.trigger("match:join", { mode: "team", lineup });
+    expect(deps.leaveMatchmaking).toHaveBeenCalledWith("team-b");
+    expect(waitingSocket.emit).toHaveBeenCalledWith("match:left");
+    expect(deps.joinMatchmaking.mock.calls[0][0].teamLineup.map((entry) => entry.characterId)).toEqual(lineup);
+  });
+
   it("registers matchmaking join and leave handlers", () => {
     const socket = createSocket();
 

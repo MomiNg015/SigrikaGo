@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Swords } from "lucide-react";
 import { isPracticeRoom, practiceCaptureResignThreshold } from "../../shared/practiceMode.js";
+import { isCaptureChallenge } from "../../shared/captureChallenge.js";
 import { colorTextForPlayer, secondsUntilTimestamp } from "./lifecycleHelpers.js";
 import OpeningDuelPresentation from "./OpeningDuelPresentation.jsx";
 
@@ -10,7 +11,7 @@ export default function OpeningModal({ room, player, characters }) {
   const remaining = secondsUntilTimestamp(openingEndsAt ?? now, now);
   const colorText = colorTextForPlayer(player);
   const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
-  const practiceCaptureTarget = isPracticeRoom(room)
+  const practiceCaptureTarget = isPracticeRoom(room) && !isCaptureChallenge(room)
     ? practiceCaptureResignThreshold(room.practice)
     : null;
 
@@ -21,7 +22,9 @@ export default function OpeningModal({ room, player, characters }) {
 
   const copy = (
     <>
-      <h2>{colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
+      <h2>{room.team ? `Round ${room.team.round}` : colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
+      {room.team?.round === 1 && colorText && <p>本局你执{colorText}</p>}
+      {isCaptureChallenge(room) && <p className="practice-opening-rule">吃子挑战赛！双方共100手，只计提子，不可数子。</p>}
       {practiceCaptureTarget != null && (
         <p className="practice-opening-rule">吃掉准时宝{practiceCaptureTarget}颗棋子就算胜利！</p>
       )}

@@ -343,3 +343,10 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 - `GameRecord` owns composite indexes for `(blackUserId, createdAt)`, `(whiteUserId, createdAt)`, and `(mode, rated, createdAt)`. Prisma schema, migration SQL, and the startup compatibility guard must stay synchronized.
 - Personal and public-profile replay lists use newest-first keyset pagination ordered by `(createdAt DESC, id DESC)`. Each response contains at most 50 summaries and an opaque `nextCursor`; clients may continue until the cursor is null, so old games remain readable without materializing the full history at once. Leaderboard and achievement compatibility aggregation still scan at most the newest 10,000 relevant records.
+
+
+### 吃子挑战赛成绩
+
+`CaptureChallengeBest` 以 `userId` 为主键，保存个人最高 `captures`、对应 `characterId`、`costumeSnapshot` 与历史最佳 `bestRank`。仅严格超过最高提子数时替换成绩和角色；名次纪录独立维护。`captures` 索引供排名统计与排序。
+
+`CaptureChallengeResult` 以服务器生成并写入房间快照的挑战 UUID 为主键，保存 `userId`、本局 `captures`、结算时 `rank`、`breakthrough` 与创建时间。事务内先查回执，再计算名次、更新最高纪录、创建回执；重试复用已保存结果。两表均随用户级联删除，不进入 GameRecord、普通战绩或成长统计。新增迁移 `20260923000000_capture_challenge`；`ensureCaptureChallengeSchema` 同步支持旧 SQLite 库的启动兼容路径。

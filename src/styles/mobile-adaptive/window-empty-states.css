@@ -62,6 +62,12 @@
   text-align: center;
   overflow-wrap: anywhere;
 }
+/* Remnant Star's dark red storefront needs light copy, unlike paper windows. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state.costume-shop-empty .window-empty-label {
+  color: var(--bright-paper, #fffaf0) !important;
+  text-shadow: 0 1px 2px #24070f !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-empty-state.window-empty-compact {
   min-height: 88px !important;
   padding: 12px 8px !important;

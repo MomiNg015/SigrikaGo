@@ -1,6 +1,7 @@
 /* Replay lists, mode picker, resume header, and embedded character records. */
 @import "./replay-mode-resume/replay-list-table.css";
 @import "./replay-mode-resume/match-mode-tabs.css";
+@import "./replay-mode-resume/match-mode-drilldown.css";
 @import "./replay-mode-resume/practice-difficulty.css";
 @import "./replay-mode-resume/resume-modal-layout.css";
 @import "./replay-mode-resume/achievement-modal.css";

@@ -1,6 +1,6 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
-import { Crown, Handshake } from "lucide-react";
+import { Crown, Flag, Handshake } from "lucide-react";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { COLORS } from "../shared/game.js";
 import { recordWinnerColor } from "../shared/gameRecords.js";
@@ -36,7 +36,8 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
                 <Crown size={14} />
               </span>
             )}
-            {friendly && !isSigrikaCandyDuel && (
+            {record.mode === "team" && <span className="replay-corner-icon replay-team-icon" role="img" title="队际赛" aria-label="队际赛"><Flag size={16} aria-hidden="true" /></span>}
+            {friendly && !isSigrikaCandyDuel && record.mode !== "team" && (
               <span className="replay-corner-icon replay-friendly-icon" role="img" title="友谊对局" aria-label="友谊对局">
                 <Handshake size={16} aria-hidden="true" />
               </span>

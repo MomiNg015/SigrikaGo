@@ -8,6 +8,7 @@ import {
   resignGame
 } from "../src/shared/game.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { finishCaptureChallenge } from "./captureChallenge.js";
 
 export function applyStandardGameAction({
   room,
@@ -43,6 +44,7 @@ export function applyStandardGameAction({
   if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
   if (action.type === "resign") appendSystem(room, `${label}方认输。`);
 
+  finishCaptureChallenge(room);
   if (room.game.phase === GAME_PHASES.finished) {
     appendNotices(room, exposeHiddenHands(room.game));
     scheduleRoomClose(room.code, io);

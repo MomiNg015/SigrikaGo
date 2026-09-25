@@ -1,6 +1,7 @@
 import { COLORS, GAME_PHASES, randomLayout, restoreSkillUse } from "../src/shared/game.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { canUseDebugTestActions } from "./security.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 
 export const ROOM_TEST_ACTION_TYPES = new Set([
   "test-random-layout",
@@ -14,6 +15,7 @@ export function isRoomTestAction(action = {}) {
 
 export function handleRoomTestAction({ action = {}, env = process.env, player, room }) {
   if (!isRoomTestAction(action)) return null;
+  if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能使用测试工具" };
   if (!canUseDebugTestActions(env)) {
     return { ok: false, error: "测试工具仅开发环境可用" };
   }

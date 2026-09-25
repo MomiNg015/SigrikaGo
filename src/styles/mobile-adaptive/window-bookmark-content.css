@@ -6,7 +6,12 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .window-bookmark-host:has(> .window-bookmark-rail) {
-  min-height: min(340px, var(--window-sticker-available-height)) !important;
+  min-height: min(max(340px, var(--window-bookmark-required-height, 0px)), var(--window-sticker-available-height, calc(100dvh - 76px))) !important;
+}
+
+/* Four ranking bookmarks need room even when the selected board is empty. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .leaderboard-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  min-height: min(max(440px, var(--window-bookmark-required-height, 0px)), var(--window-sticker-available-height, calc(100dvh - 76px))) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .settings-modal.window-bookmark-host:has(> .window-bookmark-rail) {

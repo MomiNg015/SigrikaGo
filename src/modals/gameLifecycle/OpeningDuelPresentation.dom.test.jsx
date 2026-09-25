@@ -115,6 +115,18 @@ describe("opening duel presentation", () => {
     expect(document.querySelector(".opening-duel")).toBeNull();
   });
 
+  it("preserves capture challenge rules in the cinematic", () => {
+    render(<OpeningModal room={room({ matchSource: "practice", practice: { challenge: "capture-challenge" } })} player={player} />);
+    expect(screen.getByText("吃子挑战赛！双方共100手，只计提子，不可数子。")).toBeTruthy();
+  });
+
+  it("allows the capture bot portrait to finish loading after the ordinary 200ms grace", () => {
+    imageReady = false;
+    render(<OpeningModal room={room({ matchSource: "practice", practice: { challenge: "capture-challenge" } })} player={player} />);
+    act(() => vi.advanceTimersByTime(300));
+    act(() => images.forEach((image) => { image.complete = true; image.naturalWidth = 900; image.onload?.(); }));
+    expect(document.querySelector(".opening-duel")).toBeTruthy();
+  });
 
   it("falls back if a portrait fails to load", () => {
     imageReady = false;

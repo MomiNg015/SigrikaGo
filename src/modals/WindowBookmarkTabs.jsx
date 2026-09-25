@@ -22,6 +22,42 @@ export default function WindowBookmarkTabs({ children, className, ...props }) {
   }, []);
 
   useLayoutEffect(() => {
+    const rail = railRef.current;
+    if (!host || !rail) return undefined;
+    let active = true;
+    const measure = () => {
+      if (!active) return;
+      const style = getComputedStyle(rail);
+      const shellStyle = getComputedStyle(host);
+      const px = (value) => Number.parseFloat(value) || 0;
+      const tabs = [...rail.children];
+      // Sum intrinsic tab boxes rather than scrollHeight, which also includes
+      // spare rail space and would prevent the window shrinking after a resize.
+      const height = tabs.reduce((sum, tab) => sum + tab.offsetHeight, 0)
+        + Math.max(0, tabs.length - 1) * px(style.rowGap)
+        + px(style.paddingTop) + px(style.paddingBottom)
+        + px(style.top) + px(style.bottom)
+        + px(shellStyle.borderTopWidth) + px(shellStyle.borderBottomWidth);
+      const value = `${Math.ceil(height)}px`;
+      if (host.style.getPropertyValue("--window-bookmark-required-height") !== value) {
+        host.style.setProperty("--window-bookmark-required-height", value);
+      }
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(rail);
+    [...rail.children].forEach((tab) => observer?.observe(tab));
+    window.addEventListener("resize", measure);
+    document.fonts?.ready.then(measure);
+    return () => {
+      active = false;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      host.style.removeProperty("--window-bookmark-required-height");
+    };
+  }, [host, children]);
+
+  useLayoutEffect(() => {
     if (!host) return;
     const rail = railRef.current;
     const selected = rail?.querySelector('[aria-selected="true"]');

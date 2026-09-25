@@ -88,6 +88,7 @@ export function createSocketHandlers({
       const nextMatchStart = normalizeMatchStart(payload);
       setMatchStart((current) => sameMatchStart(current, nextMatchStart) ? current : nextMatchStart);
     },
+    matchLeft: () => setMatchStart(null),
     lobbyStats: (stats = {}) => {
       const nextStats = normalizeLobbyStats(stats);
       setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
@@ -303,6 +304,7 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   }
 
   socket.on("match:waiting", handlers.matchWaiting);
+  socket.on("match:left", handlers.matchLeft);
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
   socket.on("room:update", (roomView) => {

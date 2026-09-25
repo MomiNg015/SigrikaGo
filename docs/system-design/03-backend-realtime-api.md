@@ -225,4 +225,34 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 
 Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\practice-engine\gnugo-3.8\gnugo.exe`、常见 `Program Files\GNUGo\bin\gnugo.exe`、系统 `PATH` 的优先级解析 GNU Go；开发者自行扫描和安装 Windows 二进制，仓库不提供自动下载器，也不在 `postinstall` 执行第三方程序。Linux 和生产仍固定以 `/usr/games/gnugo` 为默认值。
 
-练习配置随 `PersistedRoom` JSON 快照保存，不新增数据库 schema。`roomResultPersistence` 对 `recordPolicy="none"` 直接把 `recordSaved` 置真且不创建 `GameRecord`、奖励或成长事务；`listWatchRooms()` 同时在内存和可选 read-model 路径过滤 `matchSource="practice"`。练习房仍计入 `listActiveRooms()`，因此受 `MAX_ACTIVE_ROOMS` 容量上限约束。
+普通练习配置随 `PersistedRoom` JSON 快照保存；吃子挑战赛另有独立成绩表。`roomResultPersistence` 先处理吃子挑战赛的独立成绩，再对普通 `recordPolicy="none"` 直接把 `recordSaved` 置真且不创建 `GameRecord`、奖励或成长事务；`listWatchRooms()` 同时在内存和可选 read-model 路径过滤 `matchSource="practice"`。练习房仍计入 `listActiveRooms()`，因此受 `MAX_ACTIVE_ROOMS` 容量上限约束。
+
+
+### 吃子挑战赛
+
+- `practice:start` 在原参数上可加 `challenge: "capture-challenge"`，只接受高级难度。房间保持 Spark / practice / unrated / recordPolicy=none，另存随机唯一 `practice.challengeId`；该 ID 仅服务端使用。普通陪练与特殊决战不受影响。
+- 挑战使用现有 `moveNumber`：双方落子、停一手、消耗手数的技能及额外落子均计数。普通动作和技能演出落地后，满 100 手立即结束，先完成该手提子再统计，不触发下一回合被动。连下剩余回合清空。数子在前端禁用并在服务端拒绝；开发测试工具同样拒绝。原 22 子认输不适用于挑战。
+- 和棋申请及响应由客户端与服务端禁用；认输、超时、引擎异常等提前结束不上榜；可恢复断线沿用原手数。有效结束仅保存玩家 `captures`，不叠加 `skillRemovals`，不创建普通战绩、奖励、积分或段位变化。
+- 结算在 SQLite 事务中保存幂等回执及个人纪录，名次 = 1 + 其他玩家最高提子数严格高于本次的数量。个人最高纪录仅在严格更高时更新角色与服装快照；打平保留首次纪录角色。历史最好名次取历次有效结算名次的最小值，首次成功完成即标记 breakthrough；后续仅严格超越历史最好名次才标记 breakthrough。结果提示使用红色双线印章和 280ms 盖章入场，减少动态效果设置下直接显示。
+- 事务成功后才标记 `recordSaved` 并广播结果；失败沿用房间保存重试，过期但未保存的挑战房恢复时仍重试。回执固定首次计算的名次与突破标志，避免重连或重复保存重算。
+- `GET /api/leaderboard?mode=capture-challenge` 返回每人一行最高成绩：`id`、`username`、当前星炬 `rank`、并列名次 `ranking`、`captures`、`recordCharacter` 和 `costumeSnapshot`。按提子数降序，用户名和段位不参与名次；同分以用户 ID 稳定展示，排名采用 1、2、2、4。无赛季，0 提子有效完成也入榜。
+- 对局 header 展示当前手数 / 100 和提子；开局提示挑战规则。结算不判胜负、不播胜负／平局语音，显示“你这次提了x个子，位列总排名中的第x位，可喜可贺！”，突破时以主题红字显示“突破个人最高排名！”。榜单固定本人行仍展示最高提子纪录的当前名次。
+
+
+## 队际赛协议与阶段生命周期
+
+- `match:join({ mode: "team", lineup: [characterId, characterId, characterId] }, ack)`：服务端刷新身份，校验拥有、启用、糖果禁用与三个 ID 不重复；不足三名可用部员返回「需要至少拥有3名部员才能参加」。候选配对时再次核对在线候选阵容；模式使用独立 FIFO 队列，不开放好友约战。
+- `team` 为独立可解析模式，棋盘、贴子、用时沿用星炬；不加入常规段位 `GAME_MODE_IDS`，避免创建队际赛段位与排行榜。观战和个人棋谱提供队际赛入口。
+- 服务端 `player.teamLineup` 保存三个角色与服装快照，`room.team` 保存当前 `round` 和实际 `rounds[].startMove`。持久化包含完整阵容；网络投影只给本人完整阵容，对手及观战者只见已登场成员。未公开成员不包含角色 ID、配置或服装。终局统一公开。
+- `advanceTeamRound()` 在正常落子／技能最终结算后、下一个被动开始前运行，广播前亦检查恢复后的阶段边界。全局 `moveNumber` 阈值固定为 40、80，不因前一轮连下顺延；存在 `extraTurn`、待结算技能或终局时不换人。双方同步换人，写入 `team-round` 棋谱事件，复用 `opening` 阶段及服务端 `openingEndsAt` 暂停棋钟五秒。
+- 新角色从自身完整技能次数与未触发被动状态开始；清空旧派生技能；`teamRoundStartHistoryIndex` 限定禁先只扫描本轮主动技能。已有棋盘效果、累计超频、棋子、提子、轮次执棋方及双方剩余棋钟不重置。退场被动停止产生新效果，已有棋盘标记按原生命周期保留。
+- Round 1 与猜先合并；每轮通过既有 `OpeningDuelPresentation` 展示双方当前角色与 Round 名。重连仅恢复剩余演出时间。参赛者本地播放当前己方角色的 `sortie` 出战语音，每轮去重，不叠加普通 `gameStart` 语音，不为观战或棋谱播放出战语音。
+- `room.recordPolicy = "replay-only"`，结算保存 `mode/matchSource = "team"` 的完整终局快照，无用户奖励、积分、段位及角色战绩写入；个人统计和成就记录扫描排除队际赛。棋谱回放按 `team-round` 重建对应角色技能，避免用终局角色重放整局。
+- 选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘从左到右三等分，当前彩色，己方非当前灰色，对手候场问号；终局结算列出完整阵容与顺序。
+- 入队校验期间收到取消请求时，该次异步入队作废；候场阵容重新校验失败则发出 `match:left`，客户端退出匹配遮罩。观战列表的用户角色信息同样只投影当前出场角色。
+- 提前结束及双方离开五分钟的队际赛仍保存棋谱；保存失败时先重试再删除房间。重连演出沿用剩余期限，当前轮出战语音不补播，下轮正常播放。
+- `npx playwright test --config tests/e2e/team-match.config.js` 构建实际组件及样式的独立测试入口，无需测试账号或数据库，检查桌面、390px、360px 竖屏的选人排序、三格立绘、灰度、保密占位及溢出。
+
+- 队际赛换轮不切换 BGM：最新技能音乐按该技能发生阶段的阵容角色解析，不按换人后的当前角色解析；直到实际触发下一次技能或终局才沿用现有切换规则，重连同样从历史恢复。桌面三格立绘按容器高度放大、垂直居中、左右裁切并以略斜边界分隔，移动端维持原紧凑尺寸。选中卡片保留原有深色边框，取消外投影并使用浅绿色按下态；空阵容位不显示“选择部员”文字；右上角 1/2/3 实心圆采用细黑边、淡黄底、深黑数字。
+
+- 回放列表不设模式切换页签：打开时锁定所属模式；`listReplaySummaryPage` 的星炬查询使用 `mode in [spark, team]`，共享时间/ID 游标排序，其他模式仍精确过滤。队际赛只用左上角旗子角标标识，不额外占用时间栏文字；回放列表内边距为外伸角标保留空间。

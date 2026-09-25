@@ -10,7 +10,7 @@ import { ModalActionButton } from "./modalComponents.jsx";
 
 const KINDS = Object.freeze([
   { id: "announcement", label: "\u516c\u544a", mobileEmptyText: "\u6682\u65e0\u516c\u544a" },
-  { id: "changelog", label: "\u66f4\u65b0\u65e5\u5fd7", mobileEmptyText: "\u6682\u65e0\u66f4\u65b0\u65e5\u5fd7" }
+  { id: "changelog", label: "\u66f4\u65b0\u65e5\u5fd7", tabLabel: "\u65e5\u5fd7", mobileEmptyText: "\u6682\u65e0\u66f4\u65b0\u65e5\u5fd7" }
 ]);
 const PAGE_SIZE = 20;
 
@@ -226,7 +226,7 @@ export default function AnnouncementModal({
                 onClick={() => selectKind(kind.id)}
                 onKeyDown={(event) => handleTabKeyDown(event, index)}
               >
-                <span>{kind.label}</span>
+                <span>{kind.tabLabel ?? kind.label}</span>
                 {unreadByKind[kind.id] && <i className="announcement-unread-dot" aria-hidden="true" />}
               </button>
             ))}

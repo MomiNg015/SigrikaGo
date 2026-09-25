@@ -28,9 +28,21 @@ export function useRoomAudioEffects({
   const preloadedCountdownRef = useRef("");
   const systemVoiceRef = useRef({});
   const seededAudioBaselineRef = useRef("");
+  const teamVoiceRef = useRef("");
   const suppressRoomVoices = shouldSuppressRoomVoices(displayRoom);
   const clockPaused = displayRoom.players.every((player) => player.connected === false);
   const countdownScope = `${displayRoom.code}:${displayRoom.game.phase}:${displayRoom.game.turn}:${displayRoom.game.history.length}:${activePlayer?.time?.periods}:${Boolean(activePlayer?.time?.unlimited)}:${Boolean(activePlayer?.time?.main > 0)}:${Boolean(activePlayer?.time?.periodRemaining > 10)}:${isReplay}:${suppressRoomVoices}:${clockPaused}`;
+
+  useEffect(() => {
+    if (!displayRoom.team || isReplay || role !== "player" || !me || displayRoom.game.phase !== "opening") return;
+    const key = `${displayRoom.code}:${displayRoom.team.round}`;
+    if (teamVoiceRef.current === key) return;
+    teamVoiceRef.current = key;
+    if (shouldSeedRoomAudioBaseline(room)) return;
+    playSystemVoice(SYSTEM_VOICE_EVENTS.sortie, {
+      character: voiceCharacterForPlayer(me, characters), audioSettings
+    });
+  }, [displayRoom.code, displayRoom.team, displayRoom.game.phase, isReplay, role, me, characters, audioSettings, room]);
 
   useEffect(() => () => {
     countdownPlaybackRef.current?.();
@@ -148,7 +160,7 @@ export function useRoomAudioEffects({
   }, [displayRoom.players, characters, isReplay, suppressRoomVoices]);
 
   useEffect(() => {
-    if (suppressRoomVoices) return;
+    if (suppressRoomVoices || displayRoom.team) return;
     if (!shouldPlayGameStartVoice({ isReplay, role, phase: displayRoom.game.phase })) return;
     const gameStartMessage = displayRoom.chat.findLast?.((message) => message.kind === "game-start");
     if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
@@ -158,7 +170,7 @@ export function useRoomAudioEffects({
       params: { mode: displayRoom.mode },
       audioSettings
     });
-  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, isReplay, role, me, characters, audioSettings, suppressRoomVoices]);
+  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, displayRoom.team, isReplay, role, me, characters, audioSettings, suppressRoomVoices]);
 }
 
 export function shouldSuppressRoomVoices(room) {

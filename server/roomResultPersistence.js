@@ -1,4 +1,6 @@
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
+import { saveCaptureChallengeResult } from "./captureChallenge.js";
 import { PRACTICE_MATCH_SOURCE, PRACTICE_RECORD_POLICY } from "../src/shared/practiceMode.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { DEFAULT_RANK, normalizeRank, rankToStep, serializeRecentResults } from "../src/shared/rankProgression.js";
@@ -29,6 +31,7 @@ import {
 
 export async function saveGameRecord({ prisma, room }) {
   if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return;
+  if (isCaptureChallenge(room)) return saveCaptureChallengeResult({ prisma, room });
   if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === PRACTICE_MATCH_SOURCE) {
     room.recordSaved = true;
     room.game.resultRewards = null;
@@ -36,6 +39,10 @@ export async function saveGameRecord({ prisma, room }) {
   }
   if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) {
     await saveSigrikaCandyDuelRecord({ prisma, room });
+    return;
+  }
+  if (room.mode === "team") {
+    await saveTeamGameRecord({ prisma, room });
     return;
   }
   if (room.game.winner?.invalid) {
@@ -182,6 +189,28 @@ export async function saveGameRecord({ prisma, room }) {
     ...candyEffectAssetOperations()
   ]);
   if (rated) noteRatedPair({ black, white, mode });
+}
+
+async function saveTeamGameRecord({ prisma, room }) {
+  const black = room.players.find((p) => p.color === COLORS.black);
+  const white = room.players.find((p) => p.color === COLORS.white);
+  if (!black || !white) return;
+  room.recordSaved = true;
+  room.game.resultRewards = null;
+  try {
+    await prisma.gameRecord.create({ data: {
+      roomCode: room.code, blackUserId: black.user.id, whiteUserId: white.user.id,
+      blackName: black.user.username, whiteName: white.user.username,
+      blackCharacter: black.characterId, whiteCharacter: white.characterId,
+      resultText: room.game.winner?.text ?? "对局结束",
+      ...gameResultMetadata(room.game.winner),
+      rated: false, matchSource: "team", mode: "team", moveCount: room.game.moveNumber,
+      snapshot: JSON.stringify(roomView(room, black.user.id)), snapshotVersion: 2
+    } });
+  } catch (error) {
+    room.recordSaved = false;
+    throw error;
+  }
 }
 
 async function saveSigrikaCandyDuelRecord({ prisma, room }) {

@@ -1,4 +1,5 @@
 import { COLORS, GAME_PHASES, gameViewForColor } from "../src/shared/game.js";
+import { publicMatchPlayerUser, publicTeamLineup } from "./teamMatch.js";
 
 export function buildRoomView(room, viewerId, options = {}) {
   const gameView = options.gameView ?? gameViewForColor;
@@ -17,6 +18,7 @@ export function buildRoomView(room, viewerId, options = {}) {
     rated: room.rated !== false,
     matchSource: room.matchSource ?? (room.rated === false ? "private" : "matchmaking"),
     recordPolicy: room.recordPolicy ?? "full",
+    ...(room.team ? { team: room.team } : {}),
     unlimitedTime: Boolean(room.unlimitedTime),
     sigrikaCandyDuel: room.sigrikaCandyDuel
       ? {
@@ -35,6 +37,7 @@ export function buildRoomView(room, viewerId, options = {}) {
       ? {
           botId: room.practice.botId,
           difficulty: room.practice.difficulty,
+          ...(room.practice.challenge ? { challenge: room.practice.challenge, result: room.practice.result ?? null } : {}),
           captureResignThreshold: room.practice.captureResignThreshold,
           humanColor: room.practice.humanColor,
           botColor: room.practice.botColor
@@ -43,7 +46,8 @@ export function buildRoomView(room, viewerId, options = {}) {
     viewerId,
     role,
     players: room.players.map((player) => ({
-      user: player.user,
+      user: publicMatchPlayerUser(room, player),
+      ...(room.team ? { teamLineup: publicTeamLineup(room, player, viewerId) } : {}),
       completedItemEffects: player.completedItemEffects ?? null,
       color: player.color,
       characterId: player.characterId,

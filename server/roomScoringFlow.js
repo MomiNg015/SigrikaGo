@@ -15,8 +15,10 @@ import {
 } from "../src/shared/game.js";
 import { isPracticeRoom } from "../src/shared/practiceMode.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 
 export function applyCountingRequest({ room, player, userId, now = Date.now(), appendSystem, scheduleCountingTimeout, io }) {
+  if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能申请数子" };
   room.game.phase = GAME_PHASES.countingRequested;
   suspendUnexposedHiddenHands(room.game);
   room.game.scoring = prepareScoringState(room.game, createScoringState());
@@ -47,6 +49,7 @@ export function applyCountingResponse({ room, player, userId, accepted, appendSy
 }
 
 export function applyDrawRequest({ room, player, userId, now = Date.now(), appendSystem, scheduleDrawTimeout, io }) {
+  if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能申请和棋" };
   room.game.phase = GAME_PHASES.drawRequested;
   room.game.drawRequest = {
     requestedBy: userId,
@@ -59,6 +62,7 @@ export function applyDrawRequest({ room, player, userId, now = Date.now(), appen
 }
 
 export function applyDrawResponse({ room, player, userId, accepted, appendSystem, broadcastToast, scheduleRoomClose, io }) {
+  if (isCaptureChallenge(room)) return { ok: false, error: "吃子挑战赛不能确认和棋" };
   if (room.game.drawRequest?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
 
   if (!accepted) {

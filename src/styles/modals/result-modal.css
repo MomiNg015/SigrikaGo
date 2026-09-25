@@ -35,6 +35,11 @@
   text-align: center;
 }
 
+.result-modal .result-summary .capture-challenge-breakthrough {
+  color: #c0182d;
+  font-weight: 800;
+}
+
 .result-winner {
   display: grid;
   justify-items: center;

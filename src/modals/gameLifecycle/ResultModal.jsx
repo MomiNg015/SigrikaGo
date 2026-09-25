@@ -7,6 +7,7 @@ import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { COLORS } from "../../shared/game.js";
 import { isPracticeRoom } from "../../shared/practiceMode.js";
+import { isCaptureChallenge } from "../../shared/captureChallenge.js";
 import { resolveResultSound } from "../../shared/musicLibrary.js";
 import {
   formatSignedDelta,
@@ -31,19 +32,21 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   } : null;
   const reward = resultRewardForRoom(room, user);
   const isPractice = isPracticeRoom(room);
+  const isChallenge = isCaptureChallenge(room);
+  const challengeComplete = isChallenge && room.game.winner?.reason === "capture-challenge";
   const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
   const isSigrikaCandyDuelOwner = isSigrikaCandyDuel && Boolean(currentPlayer);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
   const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
   const userLost = Boolean(winnerColor && currentPlayer && currentPlayer.color !== winnerColor);
-  const outcome = isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
-  const outcomeLabel = outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
+  const outcome = isChallenge ? "challenge" : isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
+  const outcomeLabel = isChallenge ? (challengeComplete ? "挑战完成" : "挑战未完成") : outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
   const showPortrait = !isSigrikaCandyDuel && Boolean(displayPlayer && character);
   const resultClasses = [
     `result-modal${isSigrikaCandyDuel ? " sigrika-corruption-result-modal" : ""}`,
-    winnerColor === COLORS.black ? "black-win" : "",
-    isDraw ? "draw-result" : "",
+    !isChallenge && winnerColor === COLORS.black ? "black-win" : "",
+    !isChallenge && isDraw ? "draw-result" : "",
     `result-outcome-${outcome}`,
     showPortrait ? "has-result-portrait" : "no-result-portrait"
   ].filter(Boolean).join(" ");
@@ -51,15 +54,15 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const playedResultVoiceRef = useRef(false);
 
   useEffect(() => {
-    if (playedResultSoundRef.current) return;
+    if (playedResultSoundRef.current || isChallenge) return;
     const sound = resolveResultSound(room, user);
     if (!sound) return;
     playedResultSoundRef.current = true;
     playEffectSound(sound, audioSettings);
-  }, [room, user, audioSettings]);
+  }, [room, user, audioSettings, isChallenge]);
 
   useEffect(() => {
-    if (playedResultVoiceRef.current) return;
+    if (playedResultVoiceRef.current || isChallenge) return;
     const event = resultVoiceEventForRoom(room, user);
     if (!event) return;
     playedResultVoiceRef.current = true;
@@ -67,7 +70,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
       character: voiceCharacter,
       audioSettings
     });
-  }, [room, user, voiceCharacter, audioSettings]);
+  }, [room, user, voiceCharacter, audioSettings, isChallenge]);
 
   return (
     <div className={`modal-backdrop ${isSigrikaCandyDuel ? "sigrika-corruption-result-backdrop" : ""}`} onClick={isSigrikaCandyDuel ? undefined : onClose}>
@@ -101,10 +104,16 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         )}
         <div className="result-summary">
           <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
-          <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
+          <p className="result-detail-text" aria-live="polite">{isChallenge && !challengeComplete
+            ? "本次挑战未满100手，成绩不计入排行榜。"
+            : room.game.winner?.text ?? "对局结束"}</p>
+          {isChallenge && room.practice.result?.breakthrough && <p className="capture-challenge-breakthrough" role="status">突破个人最高排名！</p>}
           {!isSigrikaCandyDuel && !isPractice && isFriendlyMatch && (
-            <p className="result-match-note">友谊对局 · 不计入积分与段位</p>
+            <p className="result-match-note">{room.team ? "队际赛 · 不计段位、金币与胜率" : "友谊对局 · 不计入积分与段位"}</p>
           )}
+          {room.team && <div className="team-result-lineups">
+            {room.players.map((player) => <p key={player.color}><strong>{player.color === "black" ? "黑方" : "白方"}</strong> {player.teamLineup?.map((member) => member.character?.name ?? "?").join(" → ")}</p>)}
+          </div>}
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>

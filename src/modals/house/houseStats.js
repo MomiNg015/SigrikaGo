@@ -46,6 +46,7 @@ export function deriveCharacterRecordStats(user = {}, records = [], characters =
   const characterMap = new Map(characters.map((character) => [canonicalCharacterId(character.id), character]));
   const stats = new Map();
   for (const record of Array.isArray(records) ? records : []) {
+    if (record.mode === "team" || record.matchSource === "team") continue;
     const color = playerColorForReplayRecord(user, record);
     if (!color) continue;
     const characterId = canonicalCharacterId(color === COLORS.black ? record.blackCharacter : record.whiteCharacter);

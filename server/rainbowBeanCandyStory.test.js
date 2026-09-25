@@ -36,7 +36,7 @@ describe("rainbow bean candy story", () => {
     }
   });
 
-  it("ships Sigrika framework slots and the existing authored outcomes for other characters", () => {
+  it("ships the document scenes while preserving Sigrika's separate corruption and recovery arc", () => {
     const sigrika = defaultRainbowBeanCandyStoryDraft("sigrika").nodes;
     const denia = defaultRainbowBeanCandyStoryDraft("denia").nodes;
     const aemeath = defaultRainbowBeanCandyStoryDraft("aemeath").nodes;
@@ -52,18 +52,35 @@ describe("rainbow bean candy story", () => {
     expect(denia).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "accepted-rays", text: expect.stringContaining("双眼和嘴巴里喷射而出") }),
       expect.objectContaining({ id: "accepted-chase", text: expect.stringContaining("三道乱晃的彩虹射线") }),
-      expect.objectContaining({ id: "rejected-sleep", text: expect.stringContaining("糖果被完整地退了回来") })
+      expect.objectContaining({ id: "rejected-sleep", text: "达妮娅趴在桌子上，把脸埋在了臂弯中。" })
     ]));
     expect(aemeath).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: "accepted-ripple", text: "棋子接触交叉点的瞬间，一圈七彩像素光纹“啪”地绽开，沿着棋盘线飞快扩散。" }),
+      expect.objectContaining({ id: "accepted-ripple", text: "棋子接触交叉点的瞬间，一圈七彩像素光纹“啪”地绽开，沿着棋盘线飞快扩散，然后消失。" }),
       expect.objectContaining({ id: "accepted-name", text: "好！这个状态就叫——彩虹落子模式！" }),
       expect.objectContaining({ id: "rejected-title", text: "诶，别走呀？标题我都想好了——《{username}的整蛊糖果首秀》！真的不考虑一下吗？" })
     ]));
     expect(lynae).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: "accepted-correct", text: "不是！我刚才明明想说难吃！" }),
+      expect.objectContaining({ id: "accepted-correct", text: "不是！我刚才明明想说的是难吃！" }),
       expect.objectContaining({ id: "accepted-boring", text: "这颗糖很无聊——不对，是无聊！非常无聊！" }),
-      expect.objectContaining({ id: "rejected-boundary", text: "我喜欢惊喜，但不喜欢别人替我决定惊喜什么时候爆开。" }),
-      expect.objectContaining({ id: "rejected-finish", text: "琳奈继续给棋罐喷上新的颜色。彩虹豆豆跳跳糖被完整地退了回来。" })
+      expect.objectContaining({ id: "accepted-cover-mouth", text: "琳奈突然捂住了嘴，朝你挤眉弄眼。", characterId: "", speakerName: "" }),
+      expect.objectContaining({ id: "rejected-boundary", text: "哼哼，类似的惊喜我见多了。" }),
+      expect.objectContaining({ id: "rejected-interest", nextNodeId: "" })
     ]));
+    expect(sigrika.some((node) => node.id.startsWith("rejected-"))).toBe(false);
+    for (let useCount = 1; useCount <= 7; useCount += 1) {
+      const script = selectRainbowBeanCandyStoryBranch(
+        defaultRainbowBeanCandyStoryDraft("sigrika"), "accepted", { characterId: "sigrika", useCount }
+      );
+      const nodes = new Map(script.nodes.map((node) => [node.id, node]));
+      const visited = new Set();
+      let node = nodes.get(script.startNodeId);
+      while (node) {
+        expect(visited.has(node.id)).toBe(false);
+        visited.add(node.id);
+        expect(node.text).not.toContain("占位");
+        node = nodes.get(node.options[0]?.nextNodeId || node.nextNodeId);
+      }
+      expect(visited.has("shared-effect-unavailable")).toBe(true);
+    }
   });
 });

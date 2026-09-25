@@ -24,22 +24,23 @@ describe("Prisma migration baseline verification", () => {
     );
   });
 
-  it("keeps one full SQLite baseline as the active migration history", () => {
+  it("keeps the SQLite baseline followed by incremental migrations covering the current schema", () => {
     const migrationsRoot = path.join(repositoryRoot, "prisma", "migrations");
     const migrationDirectories = fs.readdirSync(migrationsRoot, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name);
-    const migrationSql = fs.readFileSync(
-      path.join(migrationsRoot, BASELINE_MIGRATION, "migration.sql"),
+      .map((entry) => entry.name).sort();
+    const migrationSql = migrationDirectories.map((migration) => fs.readFileSync(
+      path.join(migrationsRoot, migration, "migration.sql"),
       "utf8"
-    );
+    )).join("\n");
     const schema = fs.readFileSync(path.join(repositoryRoot, "prisma", "schema.prisma"), "utf8");
     const modelNames = [...schema.matchAll(/^model\s+(\w+)\s+\{/gm)].map((match) => match[1]);
     const migrationLock = fs.readFileSync(path.join(migrationsRoot, "migration_lock.toml"), "utf8");
 
-    expect(migrationDirectories).toEqual([BASELINE_MIGRATION]);
+    expect(migrationDirectories[0]).toBe(BASELINE_MIGRATION);
+    expect(migrationDirectories).toContain("20260923000000_capture_challenge");
     for (const modelName of modelNames) {
-      expect(migrationSql).toContain(`CREATE TABLE "${modelName}"`);
+      expect(migrationSql).toMatch(new RegExp(`CREATE TABLE (?:IF NOT EXISTS )?"${modelName}"`));
     }
     expect(migrationLock).toContain('provider = "sqlite"');
   });

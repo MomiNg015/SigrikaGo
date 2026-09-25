@@ -68,6 +68,7 @@ export function createPlayerRouteHandlers({
         ]
       },
       select: {
+        mode: true,
         blackUserId: true,
         whiteUserId: true,
         winnerColor: true,

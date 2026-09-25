@@ -308,7 +308,7 @@ export async function evaluateAchievementsForUser({ prisma, userId, triggerEvent
     prisma.userAchievement.findMany({ where: { userId } }),
     prisma.achievementCounter.findMany({ where: { userId } }),
     prisma.gameRecord.findMany({
-      where: { OR: [{ blackUserId: userId }, { whiteUserId: userId }] },
+      where: { mode: { not: "team" }, OR: [{ blackUserId: userId }, { whiteUserId: userId }] },
       select: {
         blackUserId: true,
         whiteUserId: true,

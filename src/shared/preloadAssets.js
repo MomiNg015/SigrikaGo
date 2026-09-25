@@ -117,7 +117,9 @@ export function battlePreloadAssets({
   skillVoices = CHARACTER_SKILL_VOICES,
   systemVoices = CHARACTER_SYSTEM_VOICES
 } = {}) {
-  const players = room?.players ?? [];
+  const players = (room?.players ?? []).flatMap((player) => [player, ...(player.teamLineup ?? [])
+    .filter((member) => member.characterId)
+    .map((member) => ({ ...player, ...member, teamLineup: undefined }))]);
   const skillEnabled = gameModeSkillEnabled(room?.mode ?? room?.game?.mode);
   const characterIds = compactUnique(players.map((player) => canonicalCharacterId(
     player.character?.id ?? player.characterId

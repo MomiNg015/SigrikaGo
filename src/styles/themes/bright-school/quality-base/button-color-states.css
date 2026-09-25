@@ -25,6 +25,7 @@
   .announcement-tabs > button,
   .mobile-tab-button,
   .room-toggles > .toggle,
+  .room-mobile-menu-panel > .coordinate-toggle,
   [data-button-role]
 ):not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *, .window-bookmark-tab, .skill-action, .tutorial-choice-actions *, .tutorial-action-bar *, .onboarding-story-actions *, .profile-dossier-modal *, .shop-modal *, .recruitment-modal *)),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.profile-dossier-modal, .profile-report-dialog, .profile-blacklist-dialog, .shop-modal, .shop-item-detail-modal, .costume-equip-prompt-modal, .recruitment-modal) button[data-button-role]:not(:where(.sigrika-duel-confirm-modal *, .sigrika-candy-duel-room *)) {
@@ -70,6 +71,12 @@
   }
 
   &[aria-busy="true"] { cursor: progress; }
+
+  &.coordinate-toggle:is([aria-pressed="true"], :active):not(:disabled) {
+    background: var(--campus-control-fill, var(--campus-button-paper)) !important;
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0 var(--bright-border) !important;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     &, &:hover, &:active {

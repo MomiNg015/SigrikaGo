@@ -13,6 +13,7 @@ import {
   PRACTICE_DIFFICULTIES
 } from "../src/shared/practiceMode.js";
 import { choosePracticeAction, obviousDeadBotGroups } from "./practiceBotDecision.js";
+import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 import { legalPracticeGtpVertices, practiceBotEngine } from "./practiceBotEngine.js";
 import {
   SIGRIKA_CANDY_DUEL,
@@ -91,7 +92,7 @@ export function createPracticeRoomAutomation({
       const presentationInstruction = nextSigrikaPresentationInstruction(room);
       if (presentationInstruction) return presentationInstruction;
       const human = humanPlayer(room);
-      if (!room.sigrikaCandyDuel && Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
+      if (!room.sigrikaCandyDuel && !isCaptureChallenge(room) && Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
         return { type: "resign", delayMs: 120 };
       }
       return { type: "play", delayMs: randomDelay(difficulty.delayMs, random) };

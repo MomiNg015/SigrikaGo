@@ -229,9 +229,11 @@ export default function StoryPlayerModal({
               fetchPriority="high"
             />
           )}
-          <div>
-            <span>{node.speakerName || character.name}</span>
-          </div>
+          {(node.speakerName || character.name) && (
+            <div>
+              <span>{node.speakerName || character.name}</span>
+            </div>
+          )}
         </div>
 
         <div
@@ -335,6 +337,7 @@ function currentNodeText(node) {
 
 function resolveCharacter(characterId, characters) {
   const id = String(characterId ?? "").trim();
+  if (!id) return {};
   const catalog = storyPortraitCatalog(characters);
   const direct = catalog[id] ?? {};
   const byName = Object.values(catalog).find((character) => {

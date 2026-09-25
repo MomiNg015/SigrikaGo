@@ -18,7 +18,7 @@ describe("roomMatchmakingQueue", () => {
     expect(queue.join(player("gomoku-a", "socket-c", "gomoku")).matched).toBe(false);
 
     expect(queue.count()).toBe(3);
-    expect(queue.countsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1 });
+    expect(queue.countsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1, team: 0 });
     expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark-a", "standard-a", "gomoku-a"]);
   });
 

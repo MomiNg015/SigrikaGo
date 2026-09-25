@@ -110,7 +110,7 @@ describe("ActionBar helpers", () => {
     expect(markup).toContain('<button class="pass-action">');
     expect(markup).toContain('<button class="resign-action">');
     expect(markup).toContain(">数子</span>");
-    expect(battleStageSource).toContain("countingEnabled={!sigrikaCandyDuel}");
+    expect(battleStageSource).toContain("countingEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}");
   });
 
   it("keeps Bright School skill targeting visibly active", () => {

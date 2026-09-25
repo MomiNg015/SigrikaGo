@@ -23,6 +23,7 @@ import {
 import { gameModeFamily } from "../src/shared/gameModes.js";
 import { getCachedPublicSiteSettings } from "./siteSettings.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
+import { finishCaptureChallenge } from "./captureChallenge.js";
 
 export function createPendingSkillResolution({
   pendingSkillId,
@@ -61,6 +62,7 @@ export function createRoomSkillLifecycle({
   resetByoYomi,
   scheduleRoomClose,
   broadcastRoom,
+  maybeAdvanceTeamRound = () => false,
   randomId = () => crypto.randomUUID()
 }) {
   function beginPendingSkillPreview({
@@ -138,6 +140,7 @@ export function createRoomSkillLifecycle({
   }
 
   function maybeStartPassiveSkill(room, io) {
+    if (maybeAdvanceTeamRound(room, io)) return false;
     if (room.game.phase !== GAME_PHASES.playing || room.game.pendingSkill) return false;
     const player = room.players.find((candidate) => candidate.color === room.game.turn);
     const skill = player?.character?.skill ?? CHARACTERS[player?.characterId]?.skill;
@@ -181,6 +184,7 @@ export function createRoomSkillLifecycle({
     const player = latest.players.find((candidate) => candidate.color === resolution.playerColor);
     if (player) resetByoYomi(player);
     appendNotices(latest, resolution.notices ?? []);
+    finishCaptureChallenge(latest);
     if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
     else if (!latest.game.extraTurn) maybeStartPassiveSkill(latest, io);
     broadcastRoom(io, latest);

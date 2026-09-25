@@ -21,6 +21,7 @@ const TITLES = {
   report: "举报用户",
   blacklist: "加入黑名单",
   practice: "准时宝陪练",
+  "team-lineup": "队际赛",
   "match-mode": "选择对弈模式"
 };
 

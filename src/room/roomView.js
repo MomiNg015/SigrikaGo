@@ -170,6 +170,7 @@ function validRuns(isValid, size = BOARD_SIZE) {
 
 export function replayRoomAt(room, step, viewColor = COLORS.black) {
   const game = replayGameAt(room, step);
+  const teamRound = game.teamRound ?? 1;
   const replayGame = {
     ...game,
     phase: room.game.phase === GAME_PHASES.finished ? GAME_PHASES.finished : game.phase,
@@ -177,6 +178,7 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
   };
   const replayPlayers = room.players.map((player) => ({
     ...player,
+    ...(room.team ? teamReplayPlayer(player, teamRound) : {}),
     captures: 0,
     skillRemovals: 0,
     time: player.time ?? { main: 0, byoYomi: 30, periodRemaining: 30, periods: 0 }
@@ -189,6 +191,7 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
 
   return {
     ...room,
+    ...(room.team ? { team: { ...room.team, round: teamRound } } : {}),
     role: "spectator",
     players: replayPlayers,
     game: gameViewForColor(replayGame, viewColor),
@@ -197,15 +200,29 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
 }
 
 export function replayGameAt(room, step) {
-  let game = createGameState(room.game.players, { mode: room.game.mode ?? room.mode });
+  let players = room.team ? room.players.map((p) => teamReplayPlayer(p, 1)) : room.game.players;
+  let game = createGameState(players, { mode: room.game.mode ?? room.mode });
+  if (room.team) game.teamRound = 1;
   for (const entry of room.game.history.slice(0, step)) {
     let result = null;
+    if (entry.type === "team-round" && room.team) {
+      players = room.players.map((p) => teamReplayPlayer(p, entry.round));
+      const fresh = createGameState(players, { mode: "team" });
+      game.players = players;
+      game.skillUses = fresh.skillUses;
+      game.passives = fresh.passives;
+      game.derivedSkills = {};
+      game.teamRound = entry.round;
+      game.teamRoundStartHistoryIndex = game.history.length;
+      game.history.push(entry);
+      continue;
+    }
     if (entry.type === "move") result = playMove(game, entry.color, entry.id, {
       colorIllusion: Object.hasOwn(entry, "colorIllusion") ? entry.colorIllusion : null
     });
     if (entry.type === "pass") result = passMove(game, entry.color);
     if (entry.type === "skill") {
-      const player = room.players.find((candidate) => candidate.color === entry.color);
+      const player = (room.team ? players : room.players).find((candidate) => candidate.color === entry.color);
       const skill = player?.character?.skill ?? player?.characterId;
       if (entry.effectType === "color-illusion-passive") {
         result = activatePassiveSkill(game, entry.color, skill);
@@ -232,6 +249,18 @@ export function replayGameAt(room, step) {
     if (result?.ok) game = result.state;
   }
   return game;
+}
+
+function teamReplayPlayer(player, round) {
+  const member = player.teamLineup?.[round - 1];
+  return {
+    ...player,
+    ...(member?.character ? { characterId: member.characterId, character: member.character, costumeSnapshot: member.costumeSnapshot } : {}),
+    teamLineup: player.teamLineup?.map((entry, index) => ({
+      ...entry,
+      status: !entry.character ? "hidden" : index === round - 1 ? "active" : index < round - 1 ? "finished" : "waiting"
+    }))
+  };
 }
 
 function replayVoyageStarFromHistory(game, entry, player) {

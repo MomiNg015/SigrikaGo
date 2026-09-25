@@ -3,6 +3,16 @@ import { GAME_PHASES } from "../src/shared/game.js";
 import { createRoomRestoreLifecycle } from "./roomRestoreLifecycle.js";
 
 describe("room restore lifecycle", () => {
+  test("retries unsaved expired challenge results instead of deleting the room", () => {
+    const closeRoom = vi.fn();
+    const scheduleRoomClose = vi.fn();
+    const lifecycle = createLifecycle({ closeRoom, scheduleRoomClose, now: () => 5000 });
+    const room = testRoom({ matchSource: "practice", practice: { challenge: "capture-challenge" },
+      recordSaved: false, game: { phase: GAME_PHASES.finished }, closesAt: 4000 });
+    expect(lifecycle.resumeRoomTimers(room, "io")).toBe(true);
+    expect(scheduleRoomClose).toHaveBeenCalledWith(room.code, "io");
+    expect(closeRoom).not.toHaveBeenCalled();
+  });
   test("closes expired finished rooms during restore", () => {
     const closeRoom = vi.fn();
     const scheduleRoomClose = vi.fn();

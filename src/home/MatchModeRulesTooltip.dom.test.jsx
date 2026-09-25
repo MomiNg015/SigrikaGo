@@ -49,6 +49,8 @@ describe("mode rules hover", () => {
     fireEvent.pointerDown(document.body);
     expect(screen.queryByRole("tooltip")).toBeNull();
     fireEvent.click(modeButton);
+    expect(onStartMatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /常规匹配.*匹配中/ }));
     expect(onStartMatch).toHaveBeenCalledWith("spark");
   });
 });

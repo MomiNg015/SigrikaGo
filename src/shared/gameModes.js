@@ -1,6 +1,13 @@
 export const GAME_MODE_IDS = ["spark", "standard", "gomoku"];
 
 export const GAME_MODES = {
+  team: {
+    id: "team", title: "队际赛", shortTitle: "队际赛", englishLabel: "TEAM MATCH",
+    iconUrl: "/assets/match-modes/mode-spark.png", family: "go", boardSize: 13,
+    komi: 2.75, skillEnabled: true,
+    time: { main: 5 * 60, byoYomi: 30, periods: 3 },
+    rulesText: "13路 · 5分钟30秒3次 · 黑贴2又3/4子"
+  },
   spark: {
     id: "spark",
     title: "星炬对弈",
@@ -55,7 +62,7 @@ export const GAME_MODES = {
 };
 
 export function normalizeGameModeId(mode) {
-  return GAME_MODE_IDS.includes(mode) ? mode : "spark";
+  return mode === "team" || GAME_MODE_IDS.includes(mode) ? mode : "spark";
 }
 
 export function gameModeById(mode) {

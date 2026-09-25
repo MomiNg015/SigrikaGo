@@ -5,7 +5,7 @@ import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { RefreshCw, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/client.js";
-import { modeOrderedEntries } from "../shared/gameModes.js";
+import { modeOrderedEntries, gameModeById } from "../shared/gameModes.js";
 import WatchRoomRow, {
   joinWatchRoomFromList,
   statusTextForWatchRoom,
@@ -87,7 +87,7 @@ export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };
 function ModeTabs({ mode, onModeChange }) {
   return (
     <WindowBookmarkTabs className="mode-tabs window-mode-tabs" role="tablist" aria-label="对弈模式">
-      {modeOrderedEntries().map((entry) => {
+      {[...modeOrderedEntries(), gameModeById("team")].map((entry) => {
         return (
           <button
             key={entry.id}

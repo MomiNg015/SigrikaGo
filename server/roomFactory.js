@@ -15,6 +15,8 @@ import {
 } from "../src/shared/practiceMode.js";
 import { SIGRIKA_CANDY_DUEL } from "../src/shared/sigrikaCandyArc.js";
 import { createSigrikaAiAgreementAudit } from "./sigrikaAiAgreement.js";
+import { CAPTURE_CHALLENGE_MODE } from "../src/shared/captureChallenge.js";
+import { initializeTeamRoom } from "./teamMatch.js";
 
 export const MATCH_SUCCESS_DELAY_MS = 3000;
 export const OPENING_NOTICE_DELAY_MS = 3000;
@@ -43,7 +45,7 @@ export function createRoom(first, second, {
   })), { mode });
   game.phase = GAME_PHASES.preloading;
   const preloadDeadlineAt = createdAt + MATCH_PRELOAD_TIMEOUT_MS;
-  return {
+  return initializeTeamRoom({
     code: randomRoomCode({ isCodeTaken, random }),
     mode,
     rated: rated !== false,
@@ -71,17 +73,18 @@ export function createRoom(first, second, {
     timeoutIds: [],
     lastTick: now(),
     recordSaved: false
-  };
+  });
 }
 
 export function createPracticeRoom(player, {
   difficulty: difficultyInput = "beginner",
+  challenge = null,
   playerColor = "random",
   isCodeTaken = () => false,
   now = Date.now,
   random = Math.random
 } = {}) {
-  const difficulty = practiceDifficulty(difficultyInput) ?? practiceDifficulty("beginner");
+  const difficulty = practiceDifficulty(challenge === CAPTURE_CHALLENGE_MODE ? "advanced" : difficultyInput) ?? practiceDifficulty("beginner");
   const humanColor = playerColor === "random"
     ? (random() >= 0.5 ? COLORS.black : COLORS.white)
     : playerColor;
@@ -136,7 +139,8 @@ export function createPracticeRoom(player, {
       humanColor,
       difficulty: difficulty.id,
       captureResignThreshold: difficulty.captureResignThreshold,
-      deadAnalysisRequestId: null
+      deadAnalysisRequestId: null,
+      ...(challenge === CAPTURE_CHALLENGE_MODE ? { challenge, challengeId: crypto.randomUUID() } : {})
     },
     players,
     spectators: [],
@@ -242,6 +246,15 @@ export function createSigrikaCandyDuelRoom(player, options = {}) {
 }
 
 export function toRoomPlayer(player, color, mode = "spark") {
+  if (mode === "team") {
+    const first = player.teamLineup?.[0];
+    if (!first || player.teamLineup.length !== 3) throw new Error("Invalid team lineup");
+    return {
+      ...toRoomPlayer({ ...player, user: { ...player.user, selectedCharacter: first.characterId, characterConfig: first.character } }, color, "spark"),
+      teamLineup: structuredClone(player.teamLineup),
+      costumeSnapshot: structuredClone(first.costumeSnapshot)
+    };
+  }
   const characterId = player.user.selectedCharacter;
   const equippedCostume = player.user.equippedCostumes?.[characterId] ?? null;
   return {

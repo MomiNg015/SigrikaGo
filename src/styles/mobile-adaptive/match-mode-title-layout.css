@@ -74,9 +74,16 @@
 }
 
 .match-mode-rules-tooltip .match-mode-rules {
+  min-width: 0;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
+}
+
+.match-mode-rules-tooltip .match-mode-rule-line {
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
 }
 
 @media (max-width: 768px), (hover: none), (pointer: coarse) {

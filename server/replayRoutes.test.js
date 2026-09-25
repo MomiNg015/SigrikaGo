@@ -36,7 +36,7 @@ describe("personal replay route", () => {
     expect(PERSONAL_REPLAY_PAGE_SIZE).toBe(50);
     expect(query.take).toBe(PERSONAL_REPLAY_PAGE_SIZE + 1);
     expect(query.orderBy).toEqual([{ createdAt: "desc" }, { id: "desc" }]);
-    expect(query.where.mode).toBe("spark");
+    expect(query.where.mode).toEqual({ in: ["spark", "team"] });
     expect(query.where.AND[0].OR).toEqual([
       { blackUserId: "user-1" },
       { whiteUserId: "user-1" }

@@ -6,15 +6,26 @@
 
 ## Overview
 
+### Match mode drilldown
+
+Child cards omit `MatchModeWatermark`; parent mode cards retain it. Capture challenge is entered only from the Spark child, while the Zhunshibao difficulty dialog offers the three ordinary practice difficulties and passes their IDs unchanged.
+
+Capture and team child cards reuse the rules tooltip: desktop hover and a separate mobile information button. Long prose must wrap inside the portal using `.match-mode-rules-tooltip .match-mode-rule-line`; override the legacy phone `nowrap !important` rule only in this owner. Browser checks must assert content scroll width as well as the tooltip bounding box.
+
+`MatchModePicker` expands Spark locally before queue submission. Only the 常规匹配 child calls `onSelect("spark")`; 吃子挑战赛 calls the existing practice flow with `{ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random" }`. Team mode opens the owned three-character lineup picker; see the team match contract. Keep the original Spark wrapper mounted with its practice shortcut, rules control and queue count; the shortcut must remain visible and interactive in both layers. Corrupted-story mode bypasses drilldown.
+
+Animate wrappers in `match-mode-drilldown.css`, preserving existing card colors, typography, watermarks and hover styling. Reserve grid rows to avoid shell jumps, budget clipping for shadows and the overhanging practice image, and provide reduced motion. Hidden children/siblings use `inert` and `aria-hidden`. Return restores Spark focus; reopening resets the layer. Escape dismisses rules before collapsing, and a nested practice dialog owns its Escape. `MatchModeExpansion.dom.test.jsx` covers payloads, practice preservation, return/reset and corruption lockout.
+
 ### Opening duel presentation
 
 `OpeningModal({ room, player, characters })` delegates artwork to `OpeningDuelPresentation` and shares the same color, rule and countdown copy with its simple fallback. `RoomScreen` keys the opening by room code and `openingEndsAt` and unmounts it outside the opening phase.
 
 Use the first locally anchored `__openingEndsAt` for both copy and artwork. See [Opening Presentation Clock](../backend/opening-clock-contract.md); phone wall clocks may differ from the server. Incoming snapshots must not restart the mounted timeline.
 
+- Team matches explicitly replay this presentation for each five-second round, including spectators and remaining-time reconnects. Ordinary matches retain the following fresh-match restriction.
 - `socketHandlers` owns the client-only `__openingPresentation` marker: arm on a fresh player `match:found`, retain across that room's snapshots, revoke on reconnect or resume. Never infer eligibility from remaining seconds alone or persist this marker on the server.
 - Place the local player on the right/lower self side and the opponent on the left/upper side; resolve background and username ink independently by stone color. Display the full username below the portrait, shrink measured text to fit a single line inside the diagonal safe area, and never ellipsize or clip it. Reuse the player portrait/catalog helpers and costume snapshot framing. Bots with `botProfile.portraitUrl` use that dedicated art even with null character identity (Zhunshibao); other players require actual character identity. Never invent a character for a no-character room.
-- Both portraits must be ready within 200ms and at least 900ms must remain. Otherwise keep the simple countdown for that opening. Image errors also fall back; loading must never delay the authoritative opening deadline.
+- Ordinary portraits must be ready within 200ms and at least 900ms must remain. Capture challenges allow up to 1500ms of loading grace, capped to reserve the same 900ms entrance/exit budget; battle preload includes the bot portrait. Otherwise keep the simple countdown for that opening. Image errors also fall back; loading must never delay the authoritative opening deadline.
 - Entrance lasts 500ms (opponent downward, self upward, slight overshoot). Start the 400ms horizontal curtain exit before `openingEndsAt`; remove the overlay at the deadline even if the next server snapshot is late. Reduced motion disables entrance translation and fades the panels instead.
 - Portal the cinematic to body with its dedicated `opening-duel.css` owner; do not apply ordinary modal card/theme selectors. Use two narrow full-height diagonal strips, not two opaque screen halves. Desktop strips cap at 360px each; portrait strips use 42% viewport width and place opponent art upper-left and self art lower-right. A separate 62% black scrim dims the entire underlying room and fades out alongside the 400ms exit; it is removed with the cinematic so no brightness state can leak after opening. Preserve faces and readable central copy.
 - Tests: `OpeningDuelPresentation.dom.test.jsx` verifies ordering, costume framing, deadlines, resource failure/timeout, simple fallback and rule copy; `socketHandlers.test.js` verifies fresh-match eligibility and reconnect cancellation. Browser QA covers desktop, 390x844 and 360x640, actual entry/exit transforms and reduced motion.
@@ -1357,3 +1368,7 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 - Regression coverage must defer first-time module resolution, assert that the original dialog remains accessible with the same DOM node and local state, then resolve and close the new dialog. `AppOverlays.dom.test.jsx` covers resume to achievements and personalization.
 
 - Row-slash pending stones hide visually before rule resolution. Keep `.point.star.row-slash-cut-pending:not(.erased)::after` visible beneath the stone (star z-index 0/1, stone 2); Bright School must opt pending stars into its explicit star owner. Never expose star dots on erased points.
+
+### Team lineup geometry
+
+Keep the name row mounted and reserve the same two-line height in empty and occupied slots. Removing placeholder copy must not remove layout space. Browser regression checks compare dialog x/y/width/height at zero, one, two and three selections and after deselection on desktop and portrait phones.

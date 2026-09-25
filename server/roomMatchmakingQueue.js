@@ -1,7 +1,7 @@
 import { GAME_MODE_IDS, normalizeGameModeId } from "../src/shared/gameModes.js";
 
 export function createRoomMatchmakingQueue({
-  gameModeIds = GAME_MODE_IDS,
+  gameModeIds = [...GAME_MODE_IDS, "team"],
   normalizeModeId = normalizeGameModeId
 } = {}) {
   let waitingPlayers = [];

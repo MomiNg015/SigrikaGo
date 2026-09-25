@@ -4,6 +4,31 @@ import { describe, expect, it, vi } from "vitest";
 import StoryPlayerModal from "./StoryPlayerModal.jsx";
 
 describe("StoryPlayerModal interactions", () => {
+  it("clears the entire portrait area when character dialogue advances to narration", () => {
+    const { container, unmount } = render(
+      <StoryPlayerModal
+        script={{
+          startNodeId: "character",
+          nodes: [
+            { id: "character", characterId: "aemeath", speakerName: "爱弥斯", text: "再来一次！", nextNodeId: "narration" },
+            { id: "narration", characterId: "", speakerName: "", text: "新的彩虹光纹随之炸开。", nextNodeId: "" }
+          ]
+        }}
+        characters={{ aemeath: { name: "爱弥斯", portraitUrl: "/aemeath.webp" } }}
+        portraitNodes={[]}
+        typewriterDisabled
+      />
+    );
+    const portrait = container.querySelector(".onboarding-story-portrait");
+    expect(portrait.querySelector("img")).not.toBeNull();
+    expect(portrait.textContent).toBe("爱弥斯");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(portrait.childElementCount).toBe(0);
+    expect(portrait.textContent).toBe("");
+    expect(container.textContent).toContain("新的彩虹光纹随之炸开。");
+    unmount();
+  });
+
   it("reveals the full current line when the portrait area is clicked", () => {
     const text = "这是一句仍在逐字显示的剧情文本。";
     const { container } = render(

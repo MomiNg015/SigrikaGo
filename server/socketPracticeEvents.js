@@ -1,4 +1,5 @@
 import { isPracticePlayerColor, requestedPracticeDifficulty } from "../src/shared/practiceMode.js";
+import { CAPTURE_CHALLENGE_MODE } from "../src/shared/captureChallenge.js";
 
 const INVALID_OPTIONS = "练习设置无效";
 
@@ -15,7 +16,8 @@ export function registerPracticeSocketEvents(socket, {
 }) {
   socket.on("practice:start", async (payload = {}, acknowledge) => {
     const difficulty = requestedPracticeDifficulty(payload.difficulty);
-    if (!difficulty || !isPracticePlayerColor(payload.playerColor)) {
+    if (!difficulty || !isPracticePlayerColor(payload.playerColor)
+      || (payload.challenge != null && (payload.challenge !== CAPTURE_CHALLENGE_MODE || difficulty.id !== "advanced"))) {
       acknowledge?.({ ok: false, error: INVALID_OPTIONS, code: "invalid_practice_options" });
       return;
     }
@@ -46,7 +48,8 @@ export function registerPracticeSocketEvents(socket, {
       const room = createPracticeRoom(
         { user: socket.user, socketId: socket.id, mode: "spark" },
         io,
-        { difficulty: difficulty.id, playerColor: payload.playerColor }
+        { difficulty: difficulty.id, playerColor: payload.playerColor,
+          ...(payload.challenge ? { challenge: payload.challenge } : {}) }
       );
       acknowledge?.({ ok: true, roomCode: room.code });
       broadcastLobbyStats();

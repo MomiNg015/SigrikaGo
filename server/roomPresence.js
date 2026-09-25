@@ -1,3 +1,5 @@
+import { publicMatchPlayerUser } from "./teamMatch.js";
+
 export function roomParticipants(room) {
   return [...(room?.players ?? []), ...(room?.spectators ?? [])];
 }
@@ -18,7 +20,7 @@ export function watchPlayerSummary(room, color) {
   const player = room?.players?.find((candidate) => candidate.color === color);
   if (!player) return null;
   return {
-    user: player.user,
+    user: publicMatchPlayerUser(room, player),
     characterId: player.characterId,
     character: player.character,
     connected: Boolean(player.socketId),

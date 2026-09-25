@@ -74,6 +74,7 @@ export function roomPersistenceSnapshot(room) {
     privateOwnerUserId: room.privateOwnerUserId ?? null,
     sigrikaCandyDuel: room.sigrikaCandyDuel ?? null,
     practice: room.practice ?? null,
+    team: room.team ?? null,
     players: room.players.map((player) => ({
       ...player,
       socketId: null

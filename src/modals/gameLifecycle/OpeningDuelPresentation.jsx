@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { playerCandyPortraitProps, playerCharacterForDisplay } from "../../room/PlayerInfo.jsx";
+import { isCaptureChallenge } from "../../shared/captureChallenge.js";
 
 const ENTRY_MS = 500;
 const EXIT_MS = 400;
@@ -24,11 +25,15 @@ export default function OpeningDuelPresentation({ room, player, characters, dead
   const [portraits] = useState(() => openingPortraits(room, characters));
   const [timeline, setTimeline] = useState(null);
   const [failed, setFailed] = useState(false);
-  const eligible = room.__openingPresentation === true && room.role === "player"
-    && Boolean(player) && portraits.every(Boolean);
+  const eligible = (Boolean(room.team) || room.__openingPresentation === true && room.role === "player")
+    && (Boolean(room.team) || Boolean(player)) && portraits.every(Boolean);
   const endsAt = Number(deadline ?? room.openingEndsAt);
   const blackSrc = portraits[0]?.src;
   const whiteSrc = portraits[1]?.src;
+
+  const [assetGraceMs] = useState(() => isCaptureChallenge(room)
+    ? Math.min(1500, Math.max(ASSET_GRACE_MS, endsAt - Date.now() - ENTRY_MS - EXIT_MS))
+    : ASSET_GRACE_MS);
 
   useEffect(() => {
     if (!eligible || !Number.isFinite(endsAt) || endsAt - Date.now() < ENTRY_MS + EXIT_MS) return undefined;
@@ -37,7 +42,7 @@ export default function OpeningDuelPresentation({ room, player, characters, dead
     const timeout = setTimeout(() => {
       disposed = true;
       setFailed(true);
-    }, ASSET_GRACE_MS);
+    }, assetGraceMs);
     const ready = () => {
       if (disposed || !images.every((image) => image.complete && image.naturalWidth > 0)) return;
       clearTimeout(timeout);
@@ -60,7 +65,7 @@ export default function OpeningDuelPresentation({ room, player, characters, dead
       clearTimeout(timeout);
       images.forEach((image) => { image.onload = null; image.onerror = null; });
     };
-  }, [eligible, endsAt, blackSrc, whiteSrc]);
+  }, [eligible, endsAt, blackSrc, whiteSrc, assetGraceMs]);
 
   const [ended, setEnded] = useState(() => Number.isFinite(endsAt) && Date.now() >= endsAt);
   useEffect(() => {
@@ -74,7 +79,7 @@ export default function OpeningDuelPresentation({ room, player, characters, dead
   const content = (
     <div className="opening-duel" style={{ "--opening-hold": `${timeline.holdMs}ms`, "--opening-exit": `${EXIT_MS}ms` }}>
       {portraits.map(({ color, name, username, src, style }) => (
-        <div key={color} className={`opening-duel-panel opening-duel-${color} opening-duel-${color === player.color ? "self" : "opponent"}`}>
+        <div key={color} className={`opening-duel-panel opening-duel-${color} opening-duel-${color === (player?.color ?? "black") ? "self" : "opponent"}`}>
           <div className="opening-duel-portrait">
             <img src={src} style={style} alt={`${color === "black" ? "黑" : "白"}方：${name}`} draggable="false" onError={() => setFailed(true)} />
             <OpeningUsername name={username} />

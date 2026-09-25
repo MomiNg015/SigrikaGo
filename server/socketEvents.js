@@ -24,6 +24,7 @@ export function registerSocketEvents(socket, deps) {
     leaveMatchmaking: deps.leaveMatchmaking,
     broadcastLobbyStats: deps.broadcastLobbyStats,
     normalizeGameModeId: deps.normalizeGameModeId,
+    isUserInActiveRoom: deps.isUserInActiveRoom,
     runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });

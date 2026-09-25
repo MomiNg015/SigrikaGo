@@ -17,6 +17,16 @@ function createResponse() {
 }
 
 describe("public and lobby route handlers", () => {
+  it("serves capture records without reading ordinary rated game records", async () => {
+    const handlers = createPublicRouteHandlers({ prisma: { captureChallengeBest: {
+      findMany: async () => [{ userId: "a", captures: 0, characterId: "denia", costumeSnapshot: "null",
+        user: { username: "record owner", rank: "3段", modeStats: [{ mode: "spark", rank: "5段" }] } }]
+    } }, listWatchRooms: () => [] });
+    const res = createResponse();
+    await handlers.leaderboard({ query: { mode: "capture-challenge" } }, res);
+    expect(res.body.players).toEqual([{ id: "a", username: "record owner", rank: "5段", ranking: 1,
+      captures: 0, recordCharacter: "denia", costumeSnapshot: null }]);
+  });
   it("returns a simple health payload", () => {
     const handlers = createPublicRouteHandlers({
       prisma: {},

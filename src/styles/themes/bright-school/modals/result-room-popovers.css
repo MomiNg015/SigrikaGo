@@ -17,6 +17,11 @@
   overflow: hidden !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .result-modal .result-summary .capture-challenge-breakthrough {
+  color: #c0182d !important;
+  font-weight: 800;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-modal.no-result-portrait {
   grid-template-columns: 1fr !important;
 }

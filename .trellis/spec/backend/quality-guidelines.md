@@ -230,6 +230,8 @@ Correct:
 - `useInventoryItem({ prisma, userId, itemId, characterId, random = Math.random })` returns `{ user, items, item, effectText, storyScript, target, itemUseOutcome }`; Sigrika always returns `accepted`, while the other supported characters retain the random outcome. The returned `user` is a complete `publicUser()` projection because the warehouse passes it directly to `onUserChange`.
 - `RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35` and the ordinary stable story entries are `accepted-start` / `rejected-start` in `server/rainbowBeanCandyStory.js`. Sigrika instead uses `use-1-start` through `use-7-start` plus `corruption-start`.
 - Candy narration nodes use `{ speakerName: "", characterId: "" }`; blank identity means the story window character region stays empty.
+- The supplied candy document defines seven ordinary scenes: Sigrika success only, and success/rejection for Denia, Aemeath and Lynae. Sigrika's `use-1-start` through `use-7-start` share that success scene; its separate corruption and duel-recovery nodes are not candy rejection scenes.
+- `StoryPlayerModal` must leave a blank-identity portrait container without image or name-label children, including when transitioning from a named character. Document markers for narration or an empty character area are not displayed as speaker names.
 - Supported effect keys are `sigrikaCandyDisabled`, `deniaRainbowGlow`, `aemeathRainbowMove`, and `lynaeContraryVoice`.
 - `src/shared/rainbowBeanCandy.js` is the shared frontend/backend registry for the candy item id, supported character ids, effect keys, and active-state labels. Warehouse target availability must consume this registry instead of maintaining a local character whitelist.
 - `POST /api/items/rainbow-bean-candy/effects/:characterId/cancel` returns `{ user }`; because the frontend passes that value to `onUserChange`, this must be a complete `publicUser()` projection with `equippedCostumes`, not a relation-free partial user.
@@ -282,6 +284,7 @@ Correct:
 
 #### 6. Tests Required
 - `server/rainbowBeanCandyStory.test.js` locks the probability boundary, stable start ids, Word-authored lines, and blank narrator identity.
+- `src/modals/StoryPlayerModal.dom.test.jsx` verifies that advancing from a character line to narration removes all portrait-container children while keeping narration text in the dialogue region.
 - `server/items.test.js` asserts accepted Sigrika writes, accepted/rejected settlement for Denia, Aemeath, and Lynae, and multi-character equipped-costume preservation on both accepted and rejected responses.
 - `server/sigrikaCandyArc.test.js` asserts Sigrika's persistent count/phase transitions, mandatory corruption boundary, result-specific recovery, reset, the candy cancellation guard for missing/development versus production `NODE_ENV`, and equipped-costume preservation in the returned user projection.
 - `server/roomItemEffects.test.js` asserts Aemeath and Lynae effects clear after a valid matching-character game, survive a valid game played as another character, and preserve Lynae's result-only completion snapshot.

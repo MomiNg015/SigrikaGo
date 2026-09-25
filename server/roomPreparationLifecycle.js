@@ -1,6 +1,7 @@
 import { GAME_PHASES } from "../src/shared/game.js";
 import { MATCH_PRELOAD_TIMEOUT_MS, OPENING_NOTICE_DELAY_MS } from "./roomFactory.js";
 import { roomParticipants } from "./roomPresence.js";
+import { TEAM_ROUND_DURATION_MS } from "../src/shared/teamMatch.js";
 
 export const MATCH_PRELOAD_TIMEOUT_MESSAGE = "一方加载超时，匹配中止";
 
@@ -57,7 +58,7 @@ export function createRoomPreparationLifecycle({
       requiredCount: preloadRequiredCount(room),
       completedAt: now()
     };
-    room.openingEndsAt = now() + OPENING_NOTICE_DELAY_MS;
+    room.openingEndsAt = now() + (room.team ? TEAM_ROUND_DURATION_MS : OPENING_NOTICE_DELAY_MS);
     appendSystem(room, "双方资源加载完成，准备进入对局。", { kind: "match-preload-complete" });
     broadcastRoom(io, room);
     scheduleGameStart(room, io);

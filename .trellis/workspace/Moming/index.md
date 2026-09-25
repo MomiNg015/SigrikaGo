@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 140
-- **Last Active**: 2026-09-22
+- **Total Sessions**: 144
+- **Last Active**: 2026-09-24
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~667 | Active |
+| `journal-3.md` | ~791 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,10 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 144 | 2026-09-24 | 残星会售罄提示对比度 | - | `codex/mobile-battle-polish` |
+| 143 | 2026-09-24 | 窗口优先增高展示全部标签 | - | `codex/mobile-battle-polish` |
+| 142 | 2026-09-24 | 队际赛分区虚线 | - | `codex/mobile-battle-polish` |
+| 141 | 2026-09-24 | 赛事说明与队际赛标题验证修正 | - | `codex/mobile-battle-polish` |
 | 140 | 2026-09-22 | Synchronize countdown voice and clock | `ac35fe4d` | `codex/mobile-battle-polish` |
 | 139 | 2026-09-22 | Default stones in handbook decoration tab | 3475ca95 | `codex/mobile-battle-polish` |
 | 138 | 2026-09-22 | Restore handbook before today's redesign | `abefce4b` | `codex/mobile-battle-polish` |

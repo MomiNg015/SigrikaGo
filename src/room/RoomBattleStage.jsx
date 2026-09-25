@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
+import { isCaptureChallenge } from "../shared/captureChallenge.js";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
@@ -157,7 +158,7 @@ export default function RoomBattleStage({
       skillName={selfSkill?.name}
       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
-      countingEnabled={!sigrikaCandyDuel}
+      countingEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}
       hasAnyStones={hasAnyStones}
       opponentConnected={opponentConnected}
       scoring={scoring}
@@ -165,7 +166,7 @@ export default function RoomBattleStage({
       replayMax={liveStep}
       replayMode={roomViewStatus?.controlMode ?? (isReplay ? "replay" : "spectator")}
       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
-      drawEnabled={!sigrikaCandyDuel}
+            drawEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}
       onPass={onPass}
       onCountingRequest={onCountingRequest}
       onDrawRequest={onDrawRequest}

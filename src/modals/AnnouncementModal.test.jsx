@@ -81,7 +81,7 @@ describe("AnnouncementModal information center", () => {
     announcementTab.focus();
     await user.keyboard("{ArrowRight}");
 
-    expect(within(tabs).getByRole("tab", { name: "更新日志" }).getAttribute("aria-selected")).toBe("true");
+    expect(within(tabs).getByRole("tab", { name: "日志" }).getAttribute("aria-selected")).toBe("true");
     expect(await screen.findByText("完整更新正文")).toBeTruthy();
     expect(api).toHaveBeenCalledWith(
       "/api/announcements/changelog-1/read",

@@ -1509,7 +1509,8 @@ describe("root CSS entry contract", () => {
       "./room/board.css",
       "./room/actions-requests.css",
       "./room/people-floating-replay.css",
-      "./room/chat-responsive.css"
+      "./room/chat-responsive.css",
+      "./room/team-match.css"
     ]);
     expect(tutorialBattleSource).toContain('import "../styles/room/tutorial-battle-screen.css";');
     expect(cssImports(tutorialBattleEntry)).toEqual([
@@ -1772,6 +1773,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(replayModeResumeEntry)).toEqual([
       "./replay-mode-resume/replay-list-table.css",
       "./replay-mode-resume/match-mode-tabs.css",
+      "./replay-mode-resume/match-mode-drilldown.css",
       "./replay-mode-resume/practice-difficulty.css",
       "./replay-mode-resume/resume-modal-layout.css",
       "./replay-mode-resume/achievement-modal.css",

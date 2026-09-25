@@ -82,6 +82,34 @@ function lifecycleFor(rooms, overrides = {}) {
 }
 
 describe("roomCloseLifecycle", () => {
+  test("retries an early team replay save before deleting the room", async () => {
+    vi.useFakeTimers();
+    const room = testRoom({ mode: "team", recordSaved: false, game: { phase: GAME_PHASES.finished, winner: { invalid: true } } });
+    const rooms = new Map([[room.code, room]]);
+    const saveGameRecord = vi.fn().mockRejectedValueOnce(new Error("temporary database failure"))
+      .mockImplementationOnce(async (target) => { target.recordSaved = true; });
+    const { lifecycle, calls } = lifecycleFor(rooms, { saveGameRecord });
+    lifecycle.scheduleRoomClose(room.code, "io");
+    await vi.advanceTimersByTimeAsync(INVALID_ROOM_CLOSE_DELAY_MS);
+    expect(saveGameRecord).toHaveBeenCalledTimes(2);
+    expect(calls.deleted).toEqual([]);
+    await vi.advanceTimersByTimeAsync(ROOM_RECORD_SAVE_RETRY_MS);
+    expect(calls.deleted).toEqual([room.code]);
+  });
+
+  test("saves the team replay when both players abandon the game", async () => {
+    vi.useFakeTimers();
+    const room = testRoom({ mode: "team", recordSaved: false, game: { phase: GAME_PHASES.playing } });
+    const rooms = new Map([[room.code, room]]);
+    const { lifecycle, calls } = lifecycleFor(rooms, { arePlayersDisconnected: () => true });
+    lifecycle.scheduleEmptyActiveRoomClose(room, "io");
+    await vi.advanceTimersByTimeAsync(EMPTY_ACTIVE_ROOM_CLOSE_MS);
+    expect(calls.saved).toEqual([room.code]);
+    expect(room.game.phase).toBe(GAME_PHASES.finished);
+    await vi.advanceTimersByTimeAsync(INVALID_ROOM_CLOSE_DELAY_MS);
+    expect(calls.deleted).toEqual([room.code]);
+  });
+
   afterEach(() => {
     vi.useRealTimers();
   });

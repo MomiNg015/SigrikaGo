@@ -74,5 +74,6 @@ describe("window bookmark tabs", () => {
     await act(async () => { app.classList.add("is-sigrika-corrupted"); });
     expect(screen.getByRole("tablist").className).toBe("profile-mode-tabs");
     expect(next.container.querySelector(".window-bookmark-rail")).toBeNull();
+    expect(screen.getByRole("dialog").style.getPropertyValue("--window-bookmark-required-height")).toBe("");
   });
 });

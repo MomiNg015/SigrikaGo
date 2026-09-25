@@ -164,3 +164,7 @@
   margin-top: 0;
   padding: 9px 13px;
 }
+
+/* Keep protruding corner badges inside the scrollable content bounds. */
+.replay-dialog-list-scroll .replay-table { padding: 8px; }
+.replay-team-icon { background: var(--bright-cream, #fff6dd); color: var(--bright-ink, #3d2b25); border: 1px solid currentColor; }

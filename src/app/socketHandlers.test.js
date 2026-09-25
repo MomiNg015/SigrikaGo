@@ -10,6 +10,11 @@ import { normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 
 describe("socket handlers", () => {
+  it("clears waiting when the server invalidates a queued team lineup", () => {
+    const deps = handlerDeps();
+    createSocketHandlers(deps).matchLeft();
+    expect(deps.setMatchStart).toHaveBeenCalledWith(null);
+  });
   it("arms the opening only for a fresh match and retains it across opening snapshots", () => {
     const deps = handlerDeps({ syncPendingMatchRoom });
     const handlers = createSocketHandlers(deps);

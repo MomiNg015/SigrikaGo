@@ -12,6 +12,20 @@ function createSocket() {
 }
 
 describe("practice socket events", () => {
+  it("accepts only the advanced capture challenge and passes its mode to the factory", async () => {
+    const socket = createSocket();
+    const acknowledge = vi.fn();
+    const createPracticeRoom = vi.fn(() => ({ code: "24680" }));
+    registerPracticeSocketEvents(socket, { io: {}, refreshSocketUser: vi.fn(), createPracticeRoom,
+      isUserInActiveRoom: () => false, leaveMatchmaking: vi.fn() });
+    for (const options of [{ difficulty: "beginner", challenge: "capture-challenge" }, { difficulty: "advanced", challenge: "fake" }]) {
+      await socket.trigger("practice:start", { ...options, playerColor: "random" }, acknowledge);
+      expect(acknowledge).toHaveBeenLastCalledWith(expect.objectContaining({ ok: false }));
+    }
+    expect(createPracticeRoom).not.toHaveBeenCalled();
+    await socket.trigger("practice:start", { difficulty: "advanced", challenge: "capture-challenge", playerColor: "random" }, acknowledge);
+    expect(createPracticeRoom).toHaveBeenCalledWith(expect.anything(), {}, { difficulty: "advanced", challenge: "capture-challenge", playerColor: "random" });
+  });
   it("creates an authoritative practice room and acknowledges its code", async () => {
     const socket = createSocket();
     const acknowledge = vi.fn();

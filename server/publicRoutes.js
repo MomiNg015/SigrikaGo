@@ -4,6 +4,8 @@ import { USER_ASSET_RELATION_SELECT } from "./db.js";
 import { listPublicCharacterResponse } from "./characters.js";
 import { createFeedbackMessage } from "./feedback.js";
 import { buildLeaderboard } from "./leaderboard.js";
+import { listCaptureChallengeLeaderboard } from "./captureChallenge.js";
+import { CAPTURE_CHALLENGE_MODE } from "../src/shared/captureChallenge.js";
 import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { listShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
@@ -65,6 +67,10 @@ export function createPublicRouteHandlers({
   }
 
   async function leaderboard(req, res) {
+    if (req.query.mode === CAPTURE_CHALLENGE_MODE) {
+      res.json({ players: await listCaptureChallengeLeaderboard(prisma) });
+      return;
+    }
     const mode = normalizeMode(req.query.mode);
     const [users, records] = await Promise.all([
       prisma.user.findMany({

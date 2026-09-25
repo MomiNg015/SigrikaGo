@@ -22,7 +22,7 @@ const cases = [
   ["排行榜", LeaderboardModal, {}, "标准"],
   ["观战", WatchModal, {}, "标准"],
   ["好友", FriendsModal, {}, "黑名单"],
-  ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "更新日志"],
+  ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "日志"],
   ["详细资料", UserProfileCard, { titleStickers: true }, "标准"]
 ];
 

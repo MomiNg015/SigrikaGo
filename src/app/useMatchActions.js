@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 import { GAME_PHASES } from "../shared/game.js";
+import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
+import { PRACTICE_BOT_PORTRAIT_URL } from "../shared/practiceMode.js";
 import { SIGRIKA_CANDY_DUEL_AVAILABILITY } from "../shared/sigrikaCandyArc.js";
 import { emitGameActionWithAck } from "./gameActionDelivery.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
@@ -17,15 +19,17 @@ export function useMatchActions({
   setRoom,
   setView
 }) {
-  const startMatch = useCallback((mode = "spark") => {
+  const startMatch = useCallback((mode = "spark", lineup) => {
     startMatchTransition({
       mode,
+      lineup,
+      showToast,
       preloadPlayableReady: defaultPreloadPlayableReady,
       setMatchStart,
       setMatchSuccess,
       socket
     });
-  }, [setMatchStart, setMatchSuccess, socket]);
+  }, [setMatchStart, setMatchSuccess, socket, showToast]);
 
   const startPractice = useCallback((options) => {
     startPracticeTransition({
@@ -155,6 +159,10 @@ export function startPracticeTransition({
   showToast = () => {},
   socket
 }) {
+  if (options?.challenge === CAPTURE_CHALLENGE_MODE && typeof Image !== "undefined") {
+    const portrait = new Image();
+    portrait.src = PRACTICE_BOT_PORTRAIT_URL;
+  }
   try {
     void preloadPlayableReady({ includePixi: true, mode: "spark", reason: "practice-start" });
   } catch {
@@ -171,6 +179,8 @@ export function startPracticeTransition({
 
 export function startMatchTransition({
   mode = "spark",
+  lineup,
+  showToast = () => {},
   now = Date.now,
   preloadPlayableReady = defaultPreloadPlayableReady,
   setMatchStart,
@@ -184,7 +194,13 @@ export function startMatchTransition({
   }
   setMatchSuccess(null);
   setMatchStart({ startedAt: now(), mode });
-  socket?.emit("match:join", { mode });
+  if (mode === "team") {
+    socket?.emit("match:join", { mode, lineup }, (ack = {}) => {
+      if (ack.ok) return;
+      setMatchStart(null);
+      showToast(ack.error || "暂时无法开始队际赛", "error");
+    });
+  } else socket?.emit("match:join", { mode });
 }
 
 export function matchSuccessCountdownCompletedTransition(matchSuccess, latestTransition = matchSuccess) {

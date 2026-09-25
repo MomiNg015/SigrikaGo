@@ -22,6 +22,7 @@ export function formatSignedDelta(value) {
 }
 
 export function resultRewardForRoom(room, user) {
+  if (room.mode === "team") return null;
   const currentPlayer = resultPlayerForRoom(room, user);
   if (!currentPlayer) return null;
   if (isPracticeRoom(room) || room.recordPolicy === PRACTICE_RECORD_POLICY) return null;

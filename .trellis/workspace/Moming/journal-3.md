@@ -665,3 +665,127 @@ Audited all 90 countdown clips for 9 characters. Added a shared bounded local co
 ### Next Steps
 
 - None - task complete
+
+
+## Session 141: 赛事说明与队际赛标题验证修正
+
+**Date**: 2026-09-24
+**Task**: 赛事说明与队际赛标题验证修正
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Validated existing capture entrance, event hints and team round labels. Fixed tooltip wrapping, title positioning and 2px mobile backdrop scroll. 154 targeted tests and 6 browser checks passed; lint and docs generation passed. Uncommitted, preserving existing WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 142: 队际赛分区虚线
+
+**Date**: 2026-09-24
+**Task**: 队际赛分区虚线
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Added dashed separators below header and selected Round lineup. 57 style tests and 3 browser viewport checks passed; screenshot inspected and system-design HTML regenerated. No commit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 143: 窗口优先增高展示全部标签
+
+**Date**: 2026-09-24
+**Task**: 窗口优先增高展示全部标签
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Measure actual bookmark demand and grow host up to safe viewport; update on fonts, resizing and children changes. 70 targeted tests, responsive browser check and lint passed. Docs/spec synced; no commit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 144: 残星会售罄提示对比度
+
+**Date**: 2026-09-24
+**Task**: 残星会售罄提示对比度
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+Scoped light text override for costume-shop empty label, preserving other paper windows. Desktop/mobile computed style and screenshot checked. 83 tests passed; one existing ShopModal width assertion conflicts with committed home layout. Docs generated; no commit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

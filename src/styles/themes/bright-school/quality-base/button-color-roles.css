@@ -34,7 +34,7 @@
   --campus-control-hover: var(--bright-mint);
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.settings-tabs > button, .friends-tabs > button, .mode-tabs > button, .achievement-tabs > button, .announcement-tabs > button, .mobile-tab-button, .room-toggles > .toggle):where(.active, [aria-selected="true"], [aria-pressed="true"]) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :where(.settings-tabs > button, .friends-tabs > button, .mode-tabs > button, .achievement-tabs > button, .announcement-tabs > button, .mobile-tab-button, .room-toggles > .toggle):not(.coordinate-toggle):where(.active, [aria-selected="true"], [aria-pressed="true"]) {
   --campus-control-fill: var(--campus-button-selected);
   --campus-control-hover: var(--bright-blue);
 }

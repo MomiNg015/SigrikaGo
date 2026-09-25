@@ -33,6 +33,11 @@
   scrollbar-gutter: stable;
 }
 
+.leaderboard-table.capture-leaderboard {
+  --leaderboard-grid-columns: 62px 82px minmax(116px, 1fr) minmax(64px, 0.55fr) minmax(64px, 0.55fr);
+  min-width: 0;
+}
+
 .leaderboard-heading,
 .leaderboard-row {
   display: grid;

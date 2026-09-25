@@ -7,7 +7,7 @@ export async function listReplaySummaryPage({ prisma, userId, mode: modeInput = 
   const cursorValue = decodeReplayCursor(cursor);
   const records = await prisma.gameRecord.findMany({
     where: {
-      mode,
+      mode: mode === "spark" ? { in: ["spark", "team"] } : mode,
       AND: [
         {
           OR: [

@@ -65,6 +65,19 @@ function automationHarness(room, {
 }
 
 describe("practice room automation", () => {
+  it("keeps the advanced challenge playing after 22 captures", async () => {
+    const room = createPracticeRoom(player(), { difficulty: "advanced", challenge: "capture-challenge", playerColor: "black" });
+    room.game.phase = GAME_PHASES.playing;
+    room.game.turn = COLORS.white;
+    room.game.captures.black = 30;
+    const harness = automationHarness(room);
+    harness.automation.schedule(room, {});
+    await harness.run();
+    expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(harness.practiceEngine.search).toHaveBeenCalledOnce();
+    expect(harness.handleGameAction).toHaveBeenCalledOnce();
+    expect(harness.scheduleRoomClose).not.toHaveBeenCalled();
+  });
   for (const difficulty of ["beginner", "intermediate", "advanced"]) {
     it(`makes ${difficulty} resign at 22 ordinary captures without early-invalid marking`, async () => {
       const room = createPracticeRoom(player(), { difficulty, playerColor: "black", random: () => 0 });

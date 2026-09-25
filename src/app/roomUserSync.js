@@ -1,5 +1,6 @@
 export function mergeCurrentUserFromRoom(currentUser, room) {
   if (!currentUser || !room?.players) return currentUser;
+  if (room.mode === "team") return currentUser;
   const roomUser = room.players.find((player) => player.user?.id === currentUser.id)?.user;
   if (!roomUser) return currentUser;
   return sameUserPayload(currentUser, roomUser) ? currentUser : { ...currentUser, ...roomUser };

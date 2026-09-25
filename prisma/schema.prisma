@@ -60,6 +60,31 @@ model User {
   mailboxMessages   MailboxMessage[]
   mailboxBatches    MailboxBatch[] @relation("MailboxAdminBatches")
   announcementReads AnnouncementRead[]
+  captureChallengeBest CaptureChallengeBest?
+  captureChallengeResults CaptureChallengeResult[]
+}
+
+model CaptureChallengeBest {
+  userId          String @id
+  captures        Int
+  characterId     String
+  costumeSnapshot String @default("null")
+  bestRank        Int
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([captures])
+}
+
+model CaptureChallengeResult {
+  id           String @id
+  userId       String
+  captures     Int
+  rank         Int
+  breakthrough Boolean
+  createdAt    DateTime @default(now())
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model RecruitmentTask {

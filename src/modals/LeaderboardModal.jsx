@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 import { modeOrderedEntries } from "../shared/gameModes.js";
+import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 import { ModalDialog } from "./modalComponents.jsx";
 
 export default function LeaderboardModal({ token, user, characters, onClose }) {
@@ -14,9 +15,10 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const isCapture = mode === CAPTURE_CHALLENGE_MODE;
   const currentUserIndex = players.findIndex((player) => isLeaderboardCurrentUser(player, user));
-  const currentUserRank = currentUserIndex >= 0 ? currentUserIndex + 1 : null;
-  const currentUserPlayer = currentUserRank ? players[currentUserIndex] : null;
+  const currentUserPlayer = currentUserIndex >= 0 ? players[currentUserIndex] : null;
+  const currentUserRank = currentUserPlayer ? (isCapture ? currentUserPlayer.ranking : currentUserIndex + 1) : null;
 
   useEffect(() => {
     let alive = true;
@@ -49,24 +51,27 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
         {error && <p className="form-error admin-action-error">{error}</p>}
         {!loading && !error && players.length === 0 && <WindowEmptyState>暂无上榜用户。</WindowEmptyState>}
         {!loading && !error && players.length > 0 && (
-          <div className="leaderboard-table">
+          <div className={`leaderboard-table${isCapture ? " capture-leaderboard" : ""}`}>
             <div className="leaderboard-heading">
               <span>排名</span>
-              <span>常用角色</span>
+              <span>{isCapture ? "纪录角色" : "常用角色"}</span>
               <span>用户名</span>
               <span>段位</span>
-              <span>积分</span>
+              <span>{isCapture ? "提子数" : "积分"}</span>
+              {!isCapture && <>
               <span>总对局数</span>
               <span>胜局数</span>
               <span>负局数</span>
               <span>胜率</span>
+              </>}
             </div>
             <div className="leaderboard-list">
               {players.map((player, index) => (
                 <LeaderboardRow
                   key={player.id}
                   player={player}
-                  rank={index + 1}
+                  rank={isCapture ? player.ranking : index + 1}
+                  captureChallenge={isCapture}
                   characters={characters}
                   highlight={isLeaderboardCurrentUser(player, user)}
                 />
@@ -78,6 +83,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
                 <LeaderboardRow
                   player={currentUserPlayer}
                   rank={currentUserRank}
+                  captureChallenge={isCapture}
                   characters={characters}
                   highlight
                   pinned
@@ -102,7 +108,7 @@ export function isLeaderboardCurrentUser(player, user) {
 function ModeTabs({ mode, onModeChange }) {
   return (
     <WindowBookmarkTabs className="mode-tabs" role="tablist" aria-label="对弈模式">
-      {modeOrderedEntries().map((entry) => (
+      {[...modeOrderedEntries(), { id: CAPTURE_CHALLENGE_MODE, shortTitle: "吃子赛" }].map((entry) => (
         <button
           key={entry.id}
           type="button"

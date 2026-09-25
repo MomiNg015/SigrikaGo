@@ -1,3 +1,4 @@
+import { ensureCaptureChallengeSchema } from "./captureChallengeSchema.js";
 import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements.js";
 import { ensureAnnouncementSchema } from "./announcements.js";
 import { ensureOnboardingStorySchema } from "./onboardingStory.js";
@@ -37,6 +38,7 @@ export const SERVER_SCHEMA_TASK_ORDER = Object.freeze([
   "ensureLoginSessionSchema",
   "ensureGameModeSchema",
   "ensureMailboxSchema",
+  "ensureCaptureChallengeSchema",
   "ensureSigrikaCandyArcSchema"
 ]);
 
@@ -67,6 +69,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureLoginSessionSchema",
   "ensureGameModeSchema",
   "ensureMailboxSchema",
+  "ensureCaptureChallengeSchema",
   "ensureSigrikaCandyArcSchema"
 ]);
 
@@ -85,6 +88,7 @@ function createServerSchemaTasks({
   ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
   ensureSocialSchema: ensureSocialSchemaTask,
   ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+  ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask,
   ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
 }) {
   return {
@@ -102,6 +106,7 @@ function createServerSchemaTasks({
     ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
     ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+    ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask,
     ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
   };
 }
@@ -128,6 +133,7 @@ export async function ensureServerSchema({
   ensureCostumeSchema: ensureCostumeSchemaTask = ensureCostumeSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask = ensureCaptureChallengeSchema,
   ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask = ensureSigrikaCandyArcSchema
 }) {
   const tasks = createServerSchemaTasks({
@@ -145,6 +151,7 @@ export async function ensureServerSchema({
     ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
     ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+    ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask,
     ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
   });
 
@@ -171,6 +178,7 @@ export async function initializeServerData({
   seedDefaultStoryScripts: seedDefaultStoryScriptsTask = seedDefaultStoryScripts,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask = ensureCaptureChallengeSchema,
   ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask = ensureSigrikaCandyArcSchema,
   seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
   migrateBuiltinPortraitAssets: migrateBuiltinPortraitAssetsTask = migrateBuiltinPortraitAssets,
@@ -200,6 +208,7 @@ export async function initializeServerData({
       ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
       ensureSocialSchema: ensureSocialSchemaTask,
       ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
+      ensureCaptureChallengeSchema: ensureCaptureChallengeSchemaTask,
       ensureSigrikaCandyArcSchema: ensureSigrikaCandyArcSchemaTask
     }),
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,

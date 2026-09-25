@@ -167,3 +167,49 @@ sudo ./deploy/update-production.sh
   filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important;
 }
 ```
+
+
+## Capture challenge exception
+
+### 1. Scope / Trigger
+
+Apply when modifying challenge entry, counting, action completion, persistence, or leaderboard/result presentation.
+
+### 2. Signatures
+
+- `practice:start({ difficulty: "advanced", playerColor: "random", challenge: "capture-challenge" })`
+- `GET /api/leaderboard?mode=capture-challenge` returns `{ players: [{ id, username, rank, ranking, captures, recordCharacter, costumeSnapshot }] }`.
+- `CaptureChallengeBest(userId PK, captures, characterId, costumeSnapshot, bestRank)` and `CaptureChallengeResult(id PK, userId, captures, rank, breakthrough, createdAt)`.
+
+### 3. Contracts
+
+`challenge: "capture-challenge"` is an advanced-only practice variant. It retains the no ordinary record/progression boundary but writes dedicated `CaptureChallengeBest` and idempotent `CaptureChallengeResult` rows. Use the shared `isCaptureChallenge` predicate; never infer this mode from advanced difficulty alone.
+
+- Complete at existing moveNumber 100 after the action/skill resolution and before the next passive turn. Include final captures, clear extra turns, block counting and draw requests/responses on both client/server, block debug actions, and skip the ordinary capture-resign threshold.
+- Only explicit capture-challenge completion qualifies. Early resignation, timeout, draw or engine failure earns no score; resumable rooms retain counters and server-only UUID.
+- Compare an attempt against other users' personal bests, excluding its owner's existing row. Ties use competition ranking. Update best captures and its character/costume only on a strict increase; preserve the first record character on ties.
+- Historical best rank is the minimum of completed-attempt ranks. First successful completion establishes it and always marks a breakthrough, including zero captures; later completions require a strictly better historical rank. Persist result receipt and best row atomically; set recordSaved only after success and broadcast the settled rank. Restore/retry must reuse the receipt.
+- Tests cover final-move captures, pass and skill completion, ordinary-practice isolation, no counting/debug bypass, no 22-capture resignation, zero/tie/lower scores, record character retention, historical ranks, SQLite transactions, repeated settlement, snapshot restore and result/leaderboard UI.
+
+
+### 4. Validation & Error Matrix
+
+- Unknown challenge or non-advanced challenge -> invalid_practice_options, no room.
+- Counting/draw/debug action -> rejected without mutating the challenge.
+- Early finish -> no best/result rows; ordinary no-progression close.
+- Database failure -> recordSaved remains false; retain and retry the finished room.
+- Replay of a saved UUID -> return its original rank/flag without repeating best updates.
+
+### 5. Good / Base / Bad Cases
+
+Good: a 100th action captures a stone, then completes and includes it in the score. Base: zero captures still establishes a first record with breakthrough. Bad: saving before the skill resolves, reusing normal rated records, replacing the record character on a tie, or counting the owner's historical best against their attempt.
+
+### 6. Tests Required
+
+`captureChallenge.test.js` exercises SQLite transactions, last-action captures, skill/snapshot restore and rank/character rules. Socket, route, automation, restore, close, and DOM tests verify boundary contracts. Verify fresh migrations and baseline adoption against disposable databases; render the picker, leaderboard and result at desktop and portrait sizes.
+
+### 7. Wrong vs Correct
+
+Wrong: `rank = allRecords.filter(row => row.captures >= captures).length + 1` counts ties and the player's own record.
+
+Correct: transactionally count best rows with `userId: { not: userId }` and `captures: { gt: captures }`, then add one. Save that rank in a UUID-keyed receipt before marking the room saved.
