@@ -855,3 +855,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 147: 莫宁卡片介绍语音改为手动播放
+
+**Date**: 2026-09-25
+**Task**: 莫宁卡片介绍语音改为手动播放
+**Branch**: `codex/mobile-battle-polish`
+
+### Summary
+
+点击莫宁角色卡片不再自动播放介绍语音，保留手动播放、打开音效与出战语音。此前 5 项部员手册 DOM 测试和 lint 通过，本次提交核对了范围及差异检查。Q 版图片保持本地未提交。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b9a34179` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 146
+- **Total Sessions**: 147
 - **Last Active**: 2026-09-25
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~857 | Active |
+| `journal-3.md` | ~890 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 147 | 2026-09-25 | 莫宁卡片介绍语音改为手动播放 | `b9a34179` | `codex/mobile-battle-polish` |
 | 146 | 2026-09-25 | 初始加载页仅留进度 | `f74291f1` | `codex/mobile-battle-polish` |
 | 145 | 2026-09-25 | 进站资源加载页 | `708681bf` | `codex/mobile-battle-polish` |
 | 144 | 2026-09-24 | 残星会售罄提示对比度 | - | `codex/mobile-battle-polish` |
