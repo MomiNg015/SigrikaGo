@@ -1,6 +1,6 @@
 export const CONTENT_SECURITY_POLICY_DIRECTIVES = Object.freeze({
   defaultSrc: Object.freeze(["'self'"]),
-  scriptSrc: Object.freeze(["'self'"]),
+  scriptSrc: Object.freeze(["'self'", "'wasm-unsafe-eval'"]),
   workerSrc: Object.freeze(["'self'", "blob:"]),
   styleSrc: Object.freeze(["'self'", "'unsafe-inline'"]),
   imgSrc: Object.freeze(["'self'", "data:", "blob:"]),

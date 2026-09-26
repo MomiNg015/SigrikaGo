@@ -19,6 +19,8 @@
     "test:stability": "node scripts/run-playwright-suite.mjs stability",
     "verify:battle-fixes": "node scripts/verify-battle-fixes.mjs",
     "verify:zhizi": "node scripts/verify-zhizi-katago.mjs",
+    "verify:practice-wasm": "node scripts/verify-practice-wasm.mjs",
+    "test:e2e:practice": "playwright test --config tests/e2e/local-practice.config.js",
     "verify:stability": "node scripts/verify-stability.mjs",
     "verify:capacity": "node scripts/verify-capacity.mjs",
     "verify:migrations": "node scripts/verify-migration-baseline.mjs",

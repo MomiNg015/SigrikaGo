@@ -37,6 +37,7 @@ export function buildRoomView(room, viewerId, options = {}) {
       ? {
           botId: room.practice.botId,
           difficulty: room.practice.difficulty,
+          engineBackend: room.practice.engineBackend ?? "server",
           ...(room.practice.challenge ? { challenge: room.practice.challenge, result: room.practice.result ?? null } : {}),
           captureResignThreshold: room.practice.captureResignThreshold,
           humanColor: room.practice.humanColor,

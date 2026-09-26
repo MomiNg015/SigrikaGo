@@ -1,0 +1,2 @@
+# Preserve the generated engine's manifest checksum on Windows checkouts.
+public/engines/gnugo-3.8/gnugo.js text eol=lf

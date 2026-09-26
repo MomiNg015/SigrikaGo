@@ -5,6 +5,15 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/practice/**/*.js",
+  "src/shared/localPractice.js",
+  "src/shared/practiceBotPosition.js",
+  "src/shared/practiceBotDecision.js",
+  "server/localPracticeEngine*.js",
+  "scripts/verify-practice-wasm.mjs",
+  "tests/e2e/local-practice*.js",
+  "tests/e2e/fixtures/local-practice.js",
+  "tests/e2e/fixtures/local-practice-server.mjs",
   "scripts/playwrightTestDatabase.mjs",
   "scripts/start-e2e-environment.mjs",
   "scripts/start-stability-server.mjs",
@@ -18,7 +27,7 @@ const maintainedFiles = [
 ];
 
 export default [
-  { ignores: ["dist/**", "node_modules/**", ".tmp/**", ".trellis/**", ".codex-temp/**"] },
+  { ignores: ["dist/**", "node_modules/**", ".tmp/**", ".trellis/**", ".codex-temp/**", ".codex-run/**", ".worktrees/**", "public/engines/**"] },
   {
     files: maintainedFiles,
     ...js.configs.recommended,

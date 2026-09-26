@@ -3,6 +3,32 @@ import { COLORS, GAME_PHASES } from "../src/shared/game.js";
 import { createRoomClockLifecycle } from "./roomClockLifecycle.js";
 
 describe("room clock lifecycle", () => {
+  test("pauses a local bot/device without a false timeout loss, and expires an abandoned room", () => {
+    const room = playableRoom({ main: 1, periods: 0 });
+    room.matchSource = "practice";
+    room.practice = { engineBackend: "browser", botColor: room.game.turn };
+    const scheduled = [];
+    const scheduleRoomClose = vi.fn();
+    vi.spyOn(Date, "now").mockReturnValue(1000);
+    const lifecycle = createLifecycle({ rooms: new Map([[room.code, room]]),
+      scheduleRoomInterval: (_room, cb) => scheduled.push(cb), scheduleRoomClose });
+    lifecycle.startGameClock(room, {});
+    vi.mocked(Date.now).mockReturnValue(31_000);
+    scheduled[0]();
+    expect(room.game.phase).toBe("playing");
+    expect(room.players[0].time.main).toBe(1);
+    room.practice.botColor = "white";
+    room.localPracticeSeenAt = 31_000;
+    room.localPracticePausedAt = 31_000;
+    vi.mocked(Date.now).mockReturnValue(33_000);
+    scheduled[0]();
+    expect(room.players[0].time.main).toBe(1);
+    vi.mocked(Date.now).mockReturnValue(31_000 + 15 * 60_000);
+    scheduled[0]();
+    expect(room.game.winner.reason).toBe("practice-device-unavailable");
+    expect(room.game.winner.winnerColor).toBeNull();
+    expect(scheduleRoomClose).toHaveBeenCalledOnce();
+  });
   afterEach(() => {
     vi.restoreAllMocks();
   });

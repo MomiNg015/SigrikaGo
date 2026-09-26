@@ -1,5 +1,6 @@
 import { isPracticePlayerColor, requestedPracticeDifficulty } from "../src/shared/practiceMode.js";
 import { CAPTURE_CHALLENGE_MODE } from "../src/shared/captureChallenge.js";
+import { LOCAL_PRACTICE_VERSION, LOCAL_PRACTICE_BACKEND } from "../src/shared/localPractice.js";
 
 const INVALID_OPTIONS = "练习设置无效";
 
@@ -11,10 +12,18 @@ export function registerPracticeSocketEvents(socket, {
   leaveMatchmaking,
   broadcastLobbyStats = () => {},
   practiceEngineReady = async () => ({ ok: true }),
+  localPracticeEngine = null,
   runtimeServiceState = null,
   metrics = null
 }) {
+  socket.on("practice:compute", (payload, acknowledge) => {
+    acknowledge?.(localPracticeEngine?.request(socket, payload) ?? { ok: false, code: "local_practice_unavailable" });
+  });
+  socket.on("practice:computed", (payload, acknowledge) => {
+    acknowledge?.(localPracticeEngine?.submit(socket, payload, io) ?? { ok: false, code: "local_practice_unavailable" });
+  });
   socket.on("practice:start", async (payload = {}, acknowledge) => {
+    payload ??= {};
     const difficulty = requestedPracticeDifficulty(payload.difficulty);
     if (!difficulty || !isPracticePlayerColor(payload.playerColor)
       || (payload.challenge != null && (payload.challenge !== CAPTURE_CHALLENGE_MODE || difficulty.id !== "advanced"))) {
@@ -33,7 +42,12 @@ export function registerPracticeSocketEvents(socket, {
         acknowledge?.({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
         return;
       }
-      if (difficulty.strategy === "gnugo") {
+      const local = payload.engineVersion === LOCAL_PRACTICE_VERSION;
+      if (localPracticeEngine && !local) {
+        acknowledge?.({ ok: false, code: "local_practice_version", error: "请刷新页面，加载本机陪练引擎后重试" });
+        return;
+      }
+      if (!local && difficulty.strategy === "gnugo") {
         const engineStatus = await practiceEngineReady().catch(() => ({ ok: false }));
         if (!engineStatus?.ok) {
           acknowledge?.({
@@ -49,6 +63,7 @@ export function registerPracticeSocketEvents(socket, {
         { user: socket.user, socketId: socket.id, mode: "spark" },
         io,
         { difficulty: difficulty.id, playerColor: payload.playerColor,
+          ...(local ? { engineBackend: LOCAL_PRACTICE_BACKEND } : {}),
           ...(payload.challenge ? { challenge: payload.challenge } : {}) }
       );
       acknowledge?.({ ok: true, roomCode: room.code });

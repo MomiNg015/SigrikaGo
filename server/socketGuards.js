@@ -7,6 +7,7 @@ const RECOVERY_SOCKET_EVENTS = new Set(["room:resume", "room:preload-ready"]);
 const MUTATING_SOCKET_EVENTS = new Set([
   "match:join",
   "practice:start",
+  "practice:computed",
   "duel:request",
   "duel:respond",
   "game:action",

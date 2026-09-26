@@ -5,6 +5,7 @@ import {
   resultWithInvalidFlagForGame
 } from "../src/shared/game.js";
 import { tickPlayerClock } from "./roomClockTiming.js";
+import { isLocalPractice, LOCAL_PRACTICE_PRESENCE_MS, LOCAL_PRACTICE_IDLE_MS } from "../src/shared/localPractice.js";
 
 export function createRoomClockLifecycle({
   rooms,
@@ -20,6 +21,7 @@ export function createRoomClockLifecycle({
 }) {
   function startGameClock(room, io) {
     room.lastTick = Date.now();
+    if (isLocalPractice(room)) room.localPracticeSeenAt ??= room.lastTick;
     if (room.unlimitedTime) return;
     scheduleRoomInterval(room, () => {
       if (!rooms.has(room.code)) {
@@ -36,6 +38,20 @@ export function createRoomClockLifecycle({
         return;
       }
       const now = Date.now();
+      if (isLocalPractice(room)) {
+        const idleMs = now - (room.localPracticePausedAt ?? room.localPracticeSeenAt ?? room.createdAt ?? now);
+        if (idleMs >= LOCAL_PRACTICE_IDLE_MS) {
+          room.game.phase = GAME_PHASES.finished;
+          room.game.winner = { winnerColor: null, reason: "practice-device-unavailable", text: "本机陪练长时间未恢复，本局已结束。" };
+          scheduleRoomClose(room.code, io);
+          broadcastRoom(io, room);
+          return;
+        }
+        if (room.localPracticePausedAt != null || idleMs >= LOCAL_PRACTICE_PRESENCE_MS || room.game.turn === room.practice.botColor) {
+          room.lastTick = now;
+          return;
+        }
+      }
       const elapsed = Math.max(1, Math.floor((now - room.lastTick) / 1000));
       if (elapsed <= 0) return;
       room.lastTick = now;

@@ -144,6 +144,7 @@ describe("room view serialization", () => {
     const view = buildRoomView(room, "black-user");
 
     expect(view.practice).toEqual({
+      engineBackend: "server",
       botId: "zhunshibao",
       difficulty: "beginner",
       captureResignThreshold: 22,

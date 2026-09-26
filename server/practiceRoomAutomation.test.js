@@ -65,6 +65,16 @@ function automationHarness(room, {
 }
 
 describe("practice room automation", () => {
+  it.each([null, "capture-challenge"])("leaves browser bot search to the device (%s)", async (challenge) => {
+    const room = createPracticeRoom(player(), { difficulty: "advanced", challenge, playerColor: "black", engineBackend: "browser" });
+    room.game.phase = GAME_PHASES.playing;
+    room.game.turn = COLORS.white;
+    const harness = automationHarness(room);
+    expect(harness.automation.schedule(room, {})).toBe(false);
+    await harness.run();
+    expect(harness.practiceEngine.search).not.toHaveBeenCalled();
+    expect(harness.handleGameAction).not.toHaveBeenCalled();
+  });
   it("keeps the advanced challenge playing after 22 captures", async () => {
     const room = createPracticeRoom(player(), { difficulty: "advanced", challenge: "capture-challenge", playerColor: "black" });
     room.game.phase = GAME_PHASES.playing;

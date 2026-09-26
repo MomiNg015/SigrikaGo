@@ -28,6 +28,7 @@ import {
   shouldAnalyzeSigrikaHumanTurn
 } from "./sigrikaAiAgreement.js";
 import { zhiziKataGoEngine } from "./zhiziKataGoEngine.js";
+import { isLocalPractice } from "../src/shared/localPractice.js";
 
 const SIGRIKA_DIALOGUE_HOLD_MS = 1800;
 const SIGRIKA_SKILL_HOLD_MS = 2100;
@@ -95,6 +96,7 @@ export function createPracticeRoomAutomation({
       if (!room.sigrikaCandyDuel && !isCaptureChallenge(room) && Number(room.game.captures?.[human.color] ?? 0) >= practiceCaptureResignThreshold(room.practice)) {
         return { type: "resign", delayMs: 120 };
       }
+      if (isLocalPractice(room)) return null;
       return { type: "play", delayMs: randomDelay(difficulty.delayMs, random) };
     }
     if (room.game.phase === GAME_PHASES.countingRequested && room.game.scoring?.requestedBy !== bot.user.id) {

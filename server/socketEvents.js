@@ -68,6 +68,7 @@ export function registerSocketEvents(socket, deps) {
     leaveMatchmaking: deps.leaveMatchmaking,
     broadcastLobbyStats: deps.broadcastLobbyStats,
     practiceEngineReady: deps.practiceEngineReady,
+    localPracticeEngine: deps.localPracticeEngine,
     runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });

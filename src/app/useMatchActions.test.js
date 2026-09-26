@@ -3,10 +3,26 @@ import {
   matchSuccessCountdownCompletedTransition,
   startMatchTransition,
   startPracticeTransition,
+  cancelPracticeStart,
   startSigrikaDuelTransition
 } from "./useMatchActions.js";
 
 describe("match success action helpers", () => {
+  it("does not create a room after engine loading fails or the player cancels", async () => {
+    const socket = { emit: vi.fn() };
+    const showToast = vi.fn();
+    const args = { options: { difficulty: "advanced", playerColor: "random" },
+      preloadPlayableReady: vi.fn(), setMatchStart: vi.fn(), setMatchSuccess: vi.fn(), socket, showToast };
+    await startPracticeTransition({ ...args, prepareEngine: () => Promise.reject(new Error("download")) });
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("加载失败"), "error");
+    let finish;
+    const starting = startPracticeTransition({ ...args, prepareEngine: () => new Promise((resolve) => { finish = resolve; }) });
+    cancelPracticeStart(socket);
+    finish();
+    await starting;
+    expect(socket.emit).not.toHaveBeenCalled();
+  });
   it("preloads playable resources for the selected mode before joining matchmaking", () => {
     const preloadPlayableReady = vi.fn();
     const setMatchStart = vi.fn();
@@ -49,13 +65,14 @@ describe("match success action helpers", () => {
     });
   });
 
-  it("starts practice through its acknowledged socket contract", () => {
+  it("starts practice through its acknowledged socket contract", async () => {
     const setMatchStart = vi.fn();
     const setMatchSuccess = vi.fn();
     const socket = { emit: vi.fn() };
-    startPracticeTransition({
+    await startPracticeTransition({
       options: { difficulty: "beginner", playerColor: "random" },
       now: () => 55,
+      prepareEngine: vi.fn().mockResolvedValue(),
       preloadPlayableReady: vi.fn(),
       setMatchStart,
       setMatchSuccess,
@@ -65,7 +82,7 @@ describe("match success action helpers", () => {
     expect(setMatchStart).toHaveBeenCalledWith({ startedAt: 55, mode: "spark", practice: true });
     expect(socket.emit).toHaveBeenCalledWith(
       "practice:start",
-      { difficulty: "beginner", playerColor: "random" },
+      { difficulty: "beginner", playerColor: "random", engineVersion: "gnugo-3.8-v1" },
       expect.any(Function)
     );
   });

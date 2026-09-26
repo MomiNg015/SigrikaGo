@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { playDoorbellSound } from "../audio/playback.jsx";
 import { applyRoomClock } from "./roomClock.js";
 import { connectGameSocket } from "./gameSocket.js";
+import { installLocalPracticeController } from "../practice/localPracticeController.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 import { mergeCurrentUserFromRoom } from "./roomUserSync.js";
 import {
@@ -73,7 +74,11 @@ export function useGameSocketConnection({
       onSocketReconnect
     });
     setSocket(nextSocket);
-    return () => nextSocket.close();
+    const stopLocalPractice = installLocalPracticeController(nextSocket, {
+      getRoom: () => roomRef.current ?? matchSuccessRef.current?.room,
+      showToast
+    });
+    return () => { stopLocalPractice(); nextSocket.close(); };
   }, [
     audioSettingsRef,
     closeAllOverlays,

@@ -78,6 +78,7 @@ export function createRoom(first, second, {
 
 export function createPracticeRoom(player, {
   difficulty: difficultyInput = "beginner",
+  engineBackend = "server",
   challenge = null,
   playerColor = "random",
   isCodeTaken = () => false,
@@ -115,6 +116,7 @@ export function createPracticeRoom(player, {
   };
   const createdAt = now();
   const players = humanColor === COLORS.black ? [human, bot] : [bot, human];
+  if (engineBackend === "browser") bot.time.unlimited = true;
   const game = createGameState(players.map((entry) => ({
     userId: entry.user.id,
     color: entry.color,
@@ -132,6 +134,7 @@ export function createPracticeRoom(player, {
     matchSource: PRACTICE_MATCH_SOURCE,
     recordPolicy: PRACTICE_RECORD_POLICY,
     practice: {
+      engineBackend,
       botId: PRACTICE_BOT_ID,
       botActorId,
       botColor,

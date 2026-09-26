@@ -50,6 +50,7 @@ import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
 import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
 import { createPracticeRoomAutomation } from "./practiceRoomAutomation.js";
+import { createLocalPracticeEngine } from "./localPracticeEngine.js";
 import { zhiziKataGoEngine } from "./zhiziKataGoEngine.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
@@ -282,6 +283,7 @@ const roomActionLifecycle = createRoomActionLifecycle({
   maybeStartPassiveSkill
 });
 export const { handleGameAction } = roomActionLifecycle;
+export const localPracticeEngine = createLocalPracticeEngine({ getRoom, handleGameAction, broadcastRoom });
 const practiceRoomAutomation = createPracticeRoomAutomation({
   rooms,
   scheduleRoomTimeout,

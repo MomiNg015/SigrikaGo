@@ -12,6 +12,24 @@ function createSocket() {
 }
 
 describe("practice socket events", () => {
+  it.each(["beginner", "intermediate", "advanced"])("admits a prepared local %s engine without probing the server", async (difficulty) => {
+    const socket = createSocket();
+    const createPracticeRoom = vi.fn(() => ({ code: "24680" }));
+    const practiceEngineReady = vi.fn().mockResolvedValue({ ok: false });
+    const localPracticeEngine = { request: vi.fn(), submit: vi.fn() };
+    const ack = vi.fn();
+    registerPracticeSocketEvents(socket, { io: {}, refreshSocketUser: vi.fn(), createPracticeRoom,
+      isUserInActiveRoom: () => false, leaveMatchmaking: vi.fn(), practiceEngineReady, localPracticeEngine });
+    const challenge = difficulty === "advanced" ? { challenge: "capture-challenge" } : {};
+    await socket.trigger("practice:start", { difficulty, playerColor: "random", ...challenge, engineVersion: "gnugo-3.8-v1" }, ack);
+    expect(practiceEngineReady).not.toHaveBeenCalled();
+    expect(createPracticeRoom).toHaveBeenCalledWith(expect.anything(), {}, { difficulty, playerColor: "random", ...challenge, engineBackend: "browser" });
+    expect(ack).toHaveBeenCalledWith({ ok: true, roomCode: "24680" });
+    createPracticeRoom.mockClear();
+    await socket.trigger("practice:start", { difficulty, playerColor: "random" }, ack);
+    expect(ack).toHaveBeenLastCalledWith(expect.objectContaining({ code: "local_practice_version" }));
+    expect(createPracticeRoom).not.toHaveBeenCalled();
+  });
   it("accepts only the advanced capture challenge and passes its mode to the factory", async () => {
     const socket = createSocket();
     const acknowledge = vi.fn();

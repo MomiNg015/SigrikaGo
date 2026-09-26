@@ -6,6 +6,13 @@ import { SIGRIKA_CANDY_DUEL_AVAILABILITY } from "../shared/sigrikaCandyArc.js";
 import { emitGameActionWithAck } from "./gameActionDelivery.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
 import { preloadPlayableReady as defaultPreloadPlayableReady } from "./playableReadyPreload.js";
+import { practiceEngineClient } from "../practice/practiceEngineClient.js";
+import { LOCAL_PRACTICE_VERSION } from "../shared/localPractice.js";
+
+const pendingPracticeStarts = new WeakMap();
+export function cancelPracticeStart(socket) {
+  if (socket) pendingPracticeStarts.delete(socket);
+}
 
 export function useMatchActions({
   matchSuccess,
@@ -55,6 +62,7 @@ export function useMatchActions({
   }, [setMatchStart, setMatchSuccess, showToast, socket]);
 
   const cancelMatch = useCallback(() => {
+    cancelPracticeStart(socket);
     socket?.emit("match:leave");
     setMatchStart(null);
   }, [setMatchStart, socket]);
@@ -150,15 +158,23 @@ export function startSigrikaDuelTransition({
   });
 }
 
-export function startPracticeTransition({
+export async function startPracticeTransition({
   options,
   now = Date.now,
   preloadPlayableReady = defaultPreloadPlayableReady,
+  prepareEngine = (difficulty) => practiceEngineClient.ensureReady(difficulty),
   setMatchStart,
   setMatchSuccess,
   showToast = () => {},
   socket
 }) {
+  if (!socket || socket.connected === false) {
+    showToast("连接尚未就绪，请稍后重试", "warning");
+    return;
+  }
+  const attempt = {};
+  const connectionId = socket.id;
+  pendingPracticeStarts.set(socket, attempt);
   if (options?.challenge === CAPTURE_CHALLENGE_MODE && typeof Image !== "undefined") {
     const portrait = new Image();
     portrait.src = PRACTICE_BOT_PORTRAIT_URL;
@@ -170,7 +186,23 @@ export function startPracticeTransition({
   }
   setMatchSuccess(null);
   setMatchStart({ startedAt: now(), mode: "spark", practice: true });
-  socket?.emit("practice:start", options, (ack = {}) => {
+  try {
+    await prepareEngine(options.difficulty);
+  } catch {
+    if (pendingPracticeStarts.get(socket) !== attempt) return;
+    pendingPracticeStarts.delete(socket);
+    setMatchStart(null);
+    showToast("本机陪练引擎加载失败，请检查网络后重试，或使用新版浏览器。", "error");
+    return;
+  }
+  if (pendingPracticeStarts.get(socket) !== attempt) return;
+  pendingPracticeStarts.delete(socket);
+  if (socket.connected === false || socket.id !== connectionId) {
+    setMatchStart(null);
+    showToast("连接已变化，请重新开始陪练", "warning");
+    return;
+  }
+  socket.emit("practice:start", { ...options, engineVersion: LOCAL_PRACTICE_VERSION }, (ack = {}) => {
     if (ack.ok) return;
     setMatchStart(null);
     showToast(ack.error || "暂时无法开始人机练习", "error");

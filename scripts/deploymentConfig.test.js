@@ -39,7 +39,10 @@ describe("production deployment templates", () => {
       .map(([name, values]) => `${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}${values.length ? ` ${values.join(" ")}` : ""}`)
       .join("; ");
 
-    expect(config).toContain("script-src 'self'; worker-src 'self' blob:");
+    expect(config).toContain("script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:");
+    expect(config).toContain("location /engines/");
+    expect(config).toContain("application/wasm wasm");
+    expect(CONTENT_SECURITY_POLICY_DIRECTIVES.scriptSrc).not.toContain("'unsafe-eval'");
     expect(config).not.toContain("script-src 'self' blob:");
     expect(config).toContain(`add_header Content-Security-Policy "${csp}" always;`);
   });
