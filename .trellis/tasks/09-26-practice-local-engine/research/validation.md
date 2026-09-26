@@ -65,3 +65,9 @@ npm run check
 
 Emscripten 必须为 4.0.10；构建脚本会检查版本及源包摘要。第三方源码、GPL 许可证、最小补丁和构建脚本随 `/engines/gnugo-3.8/` 分发。
 浏览器测试使用独立端口及临时 SQLite，未使用玩家数据库。原始日志保存在 `.codex-run/practice-local/`。
+
+## 不限时棋钟显示修复
+
+`TimeBar` 将所有 `time.unlimited` 都渲染成旧黑化剧情的故障字符；普通主题没有对应的隐藏／叠层样式，导致 `--:--` 与 `8?:?8` 同时出现。本地机器人启用不限时后暴露此问题。
+
+改为通用“不限时”标签和单个 `--:--`，移除该分支的剧情效果标记。服务端计时规则不变。`TimeBar.test.js` 与 `roomClockLifecycle.test.js` 共 9 项通过，`npm run lint` 通过，已生成系统设计 HTML。本次未重跑全量测试；此前记录的全量检查失败仍需独立处理。

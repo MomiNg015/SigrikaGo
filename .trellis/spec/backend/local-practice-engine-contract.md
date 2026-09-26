@@ -54,6 +54,9 @@ socket.emit("practice:computed", { roomCode, jobId, positionVersion,
 - Poll every 1.5 seconds while visible/connected. Hidden/disconnect/leave cancels
   work and fences late replies. `active:false` revokes the lease and pauses clocks;
   missing heartbeat pauses after 10 seconds. Bot has unlimited thinking clock.
+  `TimeBar` renders that player's unlimited clock as a neutral “不限时” label
+  and one `--:--` value; the flag must not imply story corruption effects or
+  claim that the human player's clock is also unlimited.
   Connected idle rooms end neutrally after 15 minutes without a challenge score.
   Existing disconnected-room cleanup remains authoritative. Foreground/reconnect
   requests current work; process restart does not restore old leases.

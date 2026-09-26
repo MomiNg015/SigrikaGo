@@ -3,10 +3,10 @@ import { formatClock } from "./roomView.js";
 export default function TimeBar({ time }) {
   if (time?.unlimited) {
     return (
-      <div className="timer digital-timer unlimited-corrupted-timer" aria-label="本局不限时">
+      <div className="timer digital-timer unlimited-time" aria-label="不限时">
+        <div className="timer-label">不限时</div>
         <div className="timer-digits text-clock-value" aria-hidden="true">
-          <span className="timer-primary unlimited-clock-normal">--:--</span>
-          <span className="timer-primary unlimited-clock-glitch">8?:?8</span>
+          <span className="timer-primary">--:--</span>
         </div>
         <div className="timer-track" aria-hidden="true"><span style={{ width: "100%" }} /></div>
       </div>

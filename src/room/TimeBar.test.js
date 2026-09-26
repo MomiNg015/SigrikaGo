@@ -17,14 +17,17 @@ describe("TimeBar", () => {
       .toContain("final-byo-yomi");
   });
 
-  it("renders the special duel as an unlimited corrupted digital clock", () => {
-    const html = renderTimeBar({ unlimited: true });
+  it("renders an unlimited local bot clock without story corruption effects", () => {
+    const html = renderTimeBar({ unlimited: true, main: 300, byoYomi: 30, periods: 3 });
 
-    expect(html).toContain("unlimited-corrupted-timer");
-    expect(html).toContain("8?:?8");
-    expect(html).toContain('aria-label="本局不限时"');
-    expect(html).not.toContain("时间数据损坏");
-    expect(html).not.toContain(">本局不限时<");
+    expect(html).toContain('class="timer-label">不限时</div>');
+    expect(html).toContain('class="timer-primary">--:--</span>');
+    expect(html).toContain('aria-label="不限时"');
+    expect(html).not.toContain("corrupted");
+    expect(html).not.toContain("unlimited-clock-");
+    expect(html).not.toContain("8?:?8");
+    expect(html).not.toContain("5:00");
+    expect(html).not.toContain("读秒");
   });
 
   it("keeps a zero-period 30-minute clock in main-time mode without byo-yomi", () => {
