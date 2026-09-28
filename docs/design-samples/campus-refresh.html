@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>星炬学园 · 手绘界面改造样板</title><link rel="stylesheet" href="campus-refresh.css"></head>
+<body>
+<div class="preview-bar"><span>设计样板</span><nav aria-label="样板页面"><button data-view="home" aria-current="page">主界面</button><button data-view="profile">履历</button><button data-view="friends">好友</button><button data-view="inventory">仓库</button></nav><span class="demo-label">演示数据</span></div>
+<main class="campus">
+<header class="masthead"><a class="brand" href="#" aria-label="星炬学园首页"><img src="../../public/assets/home/home-header-sigrika-still.webp" alt=""><span>星炬学园</span></a><div class="header-actions"><span class="coin">◈ 2,480</span><button data-demo="公告">公告</button><button data-demo="邮箱">邮箱</button><button data-demo="设置">设置</button></div></header>
+<section class="club-desk" aria-label="社团活动桌">
+<div class="desk-scene">
+<aside class="member-corner"><button class="student-card art-link" data-view="profile" aria-label="查看我的履历"><img class="student-shell" src="../../public/assets/home/student-id-hanging.webp" alt="手绘学生证"><img class="student-photo" src="../../public/assets/characters/portraits/sigrika.webp" alt="西格莉卡"><span class="student-name">木漏れ日</span></button><div class="member-caption"><strong>西格莉卡</strong><span>三段 <em>·</em> 1,286 积分</span><button class="text-action" data-view="profile">履历</button></div></aside>
+<section class="play-corner"><button class="match-art art-link" data-demo="选择对弈模式" aria-label="开始对弈"><img src="../../public/assets/home/fantasy-match-entry.webp" alt="对弈入口"></button></section>
+<aside class="notebook-corner"><button class="manual-art art-link" data-demo="部员手册" aria-label="打开部员手册"><img src="../../public/assets/home/book-entry.webp" alt="部员手册"></button><button class="practice-note" data-demo="准时宝陪练" aria-label="准时宝陪练"><img src="../../public/assets/home/home-practice-zhunshibao.webp" alt="准时宝陪练"></button></aside>
+</div>
+<nav class="illustrated-dock" aria-label="主界面功能入口">
+<button class="art-link" data-demo="商店" aria-label="商店"><img src="../../public/assets/home/home-utility-shop.webp" alt="商店"></button>
+<button class="art-link" data-view="inventory" aria-label="仓库"><img src="../../public/assets/home/home-utility-warehouse.webp" alt="仓库"></button>
+<button class="art-link" data-demo="部员招募" aria-label="招募"><img src="../../public/assets/home/home-utility-recruitment.webp" alt="招募"></button>
+<button class="art-link" data-demo="排行榜" aria-label="排行榜"><img src="../../public/assets/home/home-utility-leaderboard.webp" alt="排行榜"></button>
+<button class="art-link" data-demo="观战" aria-label="观战"><img src="../../public/assets/home/home-utility-watch.webp" alt="观战"></button>
+<button class="art-link" data-view="friends" aria-label="好友"><img src="../../public/assets/home/home-utility-friends.webp" alt="好友"></button>
+</nav></section>
+</main>
+<dialog id="window" aria-labelledby="panel-title"><div class="window-paper"><header class="window-header"><div class="window-label"><h2 id="panel-title">履历</h2></div><nav class="window-nav" aria-label="窗口切换"><button data-view="profile">履历</button><button data-view="friends">好友</button><button data-view="inventory">仓库</button></nav><button class="close-window" aria-label="关闭窗口">×</button></header><div id="panel-body"></div></div></dialog>
+<div id="toast" role="status" hidden></div>
+<svg class="filter-defs" aria-hidden="true"><defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs></svg>
+<script src="../../node_modules/roughjs/bundled/rough.js"></script><script src="campus-refresh.js"></script>
+</body></html>
