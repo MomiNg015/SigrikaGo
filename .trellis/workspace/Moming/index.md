@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 148
+- **Total Sessions**: 149
 - **Last Active**: 2026-09-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~923 | Active |
+| `journal-3.md` | ~956 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 149 | 2026-09-29 | 主界面引导对话布局调整 | `1ee638fc` | `codex/battle-paper-panels` |
 | 148 | 2026-09-29 | 主界面引导与一次性招新邮件 | `c246177c` | `codex/battle-paper-panels` |
 | 147 | 2026-09-25 | 莫宁卡片介绍语音改为手动播放 | `b9a34179` | `codex/mobile-battle-polish` |
 | 146 | 2026-09-25 | 初始加载页仅留进度 | `f74291f1` | `codex/mobile-battle-polish` |

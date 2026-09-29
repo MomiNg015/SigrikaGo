@@ -921,3 +921,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 149: 主界面引导对话布局调整
+
+**Date**: 2026-09-29
+**Task**: 主界面引导对话布局调整
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+移除底部按钮，右上角图标跳过，普通对话顶部、行动对话跟随目标，用户回复独立居中。30项测试、lint、桌面和390/360竖屏完整浏览器流程通过；更新系统设计及HTML，保留无关改动。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ee638fc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
