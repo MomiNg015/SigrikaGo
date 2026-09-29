@@ -9,6 +9,10 @@
   overflow: visible !important;
 
   & .player-meta {
+    position: relative;
+    z-index: 2;
+    margin: -8px 24px 0 0;
+    rotate: -2deg;
     display: grid !important;
     grid-template-columns: auto minmax(0, 1fr) auto auto !important;
     grid-template-rows: auto !important;
@@ -29,15 +33,19 @@
 
   & .player-clock-panel {
     display: grid;
+    grid-template-columns: minmax(0, 1fr) 52px;
+    align-items: center;
     min-width: 0;
     --clock-wash: var(--bright-sheet);
     background: linear-gradient(125deg, color-mix(in srgb, var(--bright-paper) 65%, transparent), transparent 65%), repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--bright-ink) 3%, transparent) 3px 4px), var(--clock-wash);
     border: 2px solid var(--bright-border);
     border-radius: 14px;
     translate: 3px 3px;
-    padding: 10px;
+    margin: -5px 0 0 14px;
+    padding: 18px 14px 22px;
     gap: 8px;
   }
+  & .player-clock-panel:not(:has(.captures)) { grid-template-columns: minmax(0, 1fr); }
 
   &.active-turn .player-clock-panel {
     --clock-wash: #fff0a6;
@@ -49,7 +57,7 @@
     display: grid !important;
     grid-area: auto !important;
     grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto auto !important;
+    grid-template-rows: auto auto !important;
     gap: 6px !important;
     padding: 0 !important;
     background: transparent !important;
@@ -58,20 +66,26 @@
   }
 
   & .timer-label { display: block !important; grid-area: auto !important; text-align: left !important; }
-  & .timer-digits { grid-area: auto !important; justify-content: center !important; }
-  & .timer-primary { font-family: Arial, sans-serif !important; font-size: clamp(30px, 3.5vw, 48px) !important; font-variant-numeric: tabular-nums; }
-  & .timer-track { grid-area: auto !important; width: 100% !important; height: 3px !important; }
+  & .timer-digits { grid-area: auto !important; justify-content: flex-start !important; }
+  & .timer-primary { font-family: Arial, sans-serif !important; font-size: clamp(36px, 4vw, 56px) !important; font-weight: 700 !important; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
+  & .timer-track { display: none !important; }
 
   & .captures {
     display: flex !important;
+    flex-direction: column;
     grid-area: auto !important;
     margin: 0 !important;
-    padding: 7px 0 0 !important;
+    padding: 0 0 0 10px !important;
     gap: 0 !important;
-    border-top: 1px solid color-mix(in srgb, var(--bright-ink) 20%, transparent);
+    border-left: 1px dashed color-mix(in srgb, var(--bright-ink) 20%, transparent);
     overflow: visible !important;
   }
   & .captures > * {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+    white-space: nowrap;
+    font-size: 11px !important;
     flex: 1;
     min-width: 0 !important;
     min-height: 28px !important;
@@ -81,8 +95,8 @@
     border-radius: 0 !important;
     box-shadow: none !important;
   }
-  & .captures > * + * { border-left: 1px solid color-mix(in srgb, var(--bright-ink) 20%, transparent) !important; }
-  & .skill-chip-wrap { min-width: 0; margin-top: 3px; }
+  & .captures > * + * { border-left: 0 !important; }
+  & .skill-chip-wrap { min-width: 0; margin: -18px 12px 8px 30px; }
   & .skill-chip {
     display: flex !important;
     width: 100%;
@@ -94,8 +108,13 @@
     border-radius: 8px 8px 14px 8px !important;
     background: linear-gradient(110deg, color-mix(in srgb, var(--skill-chip-accent) 25%, var(--bright-paper)), color-mix(in srgb, var(--skill-chip-accent) 60%, var(--bright-paper))) !important;
     box-shadow: 2px 3px 0 var(--bright-border) !important;
+    rotate: 2deg;
   }
   & .skill-chip > svg { flex: none; width: 18px !important; height: 18px !important; max-width: none !important; box-sizing: content-box !important; padding-right: 9px; border-right: 1px solid color-mix(in srgb, var(--bright-ink) 25%, transparent); }
   & .player-skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   & .player-skill-count { border-left: 1px dashed var(--bright-muted); padding-left: 8px; white-space: pre; }
+  &.self .player-meta { margin: -8px 0 0 24px; rotate: 2deg; }
+  &.self .player-clock-panel { margin: -5px 14px 0 0; }
+  &.self .skill-chip-wrap { margin: -18px 30px 8px 12px; }
+  &.self .skill-chip { rotate: -2deg; }
 }
