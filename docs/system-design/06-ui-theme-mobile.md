@@ -1,5 +1,9 @@
 # UI 主题、移动端与交互体验
 
+`RoomHeader` 的 `.room-code-label` 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 `matchSource=practice` 显示“人机”，其余读取棋种 `shortTitle`。保留房间代码和特殊剧情 `ERROR`；`.move-count` 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈的信息卡在 `room/player-status.css` 内统一拥有棋钟深度：`.active-turn` 使用 `3px 3px` 棕色硬阴影及零位移，其余卡片无阴影并向右下移动 3px，视觉占位保持一致；优先级覆盖手机原有扁平卡片规则，黑化剧情保留独立外观。
+
+常规玩家 `ActionBar` 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 `disabled` 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。`room-people-table` 的滚动区域内保留上／右／下／左 `2px 6px 6px 2px` 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。
+
 ## 玩家窗口左侧书签选项卡
 
 `ResumeModal`、`SettingsModal`、`AchievementModal`、`LeaderboardModal`、`WatchModal`、`FriendsModal`和 `AnnouncementModal` 显式声明 `window-bookmark-host`，对应分类/模式控件使用 `WindowBookmarkTabs`；`UserProfileCard` 仅在首页好友入口启用 `titleStickers` 时接入，房间内保持原布局。组件保留原按钮 ID、`aria-controls`、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 `.app-shell` 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 `ShopTabs` 和 `GachaModal` 没有现行入口，不为样式推广重新启用。

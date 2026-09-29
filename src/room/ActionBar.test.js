@@ -93,13 +93,20 @@ describe("ActionBar helpers", () => {
     expect(decisionGate).not.toContain("GAME_PHASES.resultReview");
   });
 
-  it("hides pass and counting controls for gomoku mode", () => {
-    const source = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
-    const battleStageSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-
-    expect(source).toContain("gameModeFamily(mode) === \"gomoku\"");
-    expect(source).toContain("showGoControls");
-    expect(battleStageSource).toContain("mode={displayRoom.game.mode}");
+  it.each([
+    [{ drawEnabled: false }, ["draw-action"]],
+    [{ countingEnabled: false, drawEnabled: false }, ["counting-action", "draw-action"]],
+    [{ skillEnabled: false }, ["skill-action"]],
+    [{ mode: "gomoku", skillEnabled: false }, ["pass-action", "counting-action", "skill-action"]]
+  ])("retains five player controls with unavailable actions disabled: %j", (overrides, disabledClasses) => {
+    const markup = renderToStaticMarkup(createElement(ActionBar, actionBarProps(overrides)));
+    const buttons = markup.match(/<button\b[^>]*>/g);
+    expect(buttons).toHaveLength(5);
+    for (const className of disabledClasses) {
+      expect(buttons.find((button) => button.includes(className))).toContain('disabled=""');
+    }
+    expect(buttons.find((button) => button.includes("resign-action"))).not.toContain("disabled");
+    if (overrides.skillEnabled === false) expect(markup).toContain(">技能</span>");
   });
 
   it("keeps the Sigrika duel counting control visible but natively disabled", () => {

@@ -1,5 +1,9 @@
 # Quality Guidelines
 
+- Ordinary Bright School room player cards are an exception to mobile flat-card styling: the existing `active-turn` state raises the card with a 3px hard shadow; inactive cards move 3px right/down with no shadow. The theme room owner must win against portrait resets without changing layout dimensions or corrupted-duel styling. Room headers replace the room-code prefix with the mode short label (capture challenge before practice before game mode), and the move badge contains only the current move count.
+
+- Ordinary player `ActionBar` retains all five controls in every game mode. Unsupported pass/count/skill/draw actions use native `disabled`, never conditional removal; spectator, dead-stone decision, and tutorial override bars retain their own layouts. Test five-control rendering for practice, capture challenge, standard Go, and gomoku.
+
 > Code quality standards for frontend development.
 
 ---

@@ -16,6 +16,17 @@
   overflow: visible !important;
 }
 
+/* Keep the painted footprint stable as the inactive clock card is pressed in. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info:not(.active-turn) {
+  box-shadow: none !important;
+  translate: 3px 3px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info.active-turn {
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  translate: 0 0;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character {
   width: 100% !important;
   height: var(--side-portrait) !important;

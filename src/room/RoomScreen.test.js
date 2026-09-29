@@ -247,7 +247,7 @@ describe("RoomScreen helpers", () => {
     expect(source).toContain("presentation={displayRoom.sigrikaCandyDuel.presentation}");
   });
 
-  it("keeps the ordinary room-code label while replacing the special duel value with ERROR", () => {
+  it("uses the mode label while replacing the special duel room value with ERROR", () => {
     const specialMarkup = renderToStaticMarkup(createElement(RoomHeader, {
       room: { code: "SIG01", sigrikaCandyDuel: { ownerUserId: "u1" } },
       showUtilityControls: false
@@ -258,9 +258,9 @@ describe("RoomScreen helpers", () => {
     }));
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
 
-    expect(specialMarkup).toContain("房间号ERROR");
+    expect(specialMarkup).toContain("星炬ERROR");
     expect(specialMarkup).not.toContain("PRIVATE // DATA CORRUPTED");
-    expect(ordinaryMarkup).toContain("房间号AB123");
+    expect(ordinaryMarkup).toContain("星炬AB123");
     expect(source).toContain('className={isSigrikaCandyDuel ? "sigrika-candy-duel-room" : ""}');
   });
 

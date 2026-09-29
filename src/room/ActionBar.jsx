@@ -66,36 +66,33 @@ function ActionBar({
     );
   }
   const isGomoku = gameModeFamily(mode) === "gomoku";
-  const showGoControls = !isGomoku;
   return (
     <nav className="action-bar">
-      {showGoControls && <button className="pass-action" onClick={onPass} disabled={phase !== "playing" || skillLocked}>
+      <button className="pass-action" onClick={onPass} disabled={isGomoku || phase !== "playing" || skillLocked}>
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
-      </button>}
-      {showGoControls && <button
+      </button>
+      <button
         className="counting-action"
         onClick={onCountingRequest}
-        disabled={!countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}
-        title={!countingEnabled ? "该对局无法数子" : undefined}
+        disabled={isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}
+        title={isGomoku || !countingEnabled ? "该对局无法数子" : undefined}
       >
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
-      </button>}
-      {skillEnabled && (
+      </button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable}
+        disabled={!skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />
-        <span className="action-label mobile-action-button-label">{skillName} · {skillUses}</span>
+        <span className="action-label mobile-action-button-label">{skillEnabled ? `${skillName} · ${skillUses ?? 0}` : "技能"}</span>
       </button>
-      )}
-      {drawEnabled && <button className="draw-action" onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
+      <button className="draw-action" onClick={onDrawRequest} disabled={!drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
-      </button>}
+      </button>
       <button className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
     </nav>
   );

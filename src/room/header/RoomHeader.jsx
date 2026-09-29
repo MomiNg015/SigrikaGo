@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
 import TestTools from "../actionBar/TestTools.jsx";
-import { isCaptureChallenge, CAPTURE_CHALLENGE_MOVE_LIMIT } from "../../shared/captureChallenge.js";
+import { isCaptureChallenge } from "../../shared/captureChallenge.js";
+import { gameModeById } from "../../shared/gameModes.js";
 
 export default function RoomHeader({
   room,
@@ -18,6 +19,11 @@ export default function RoomHeader({
   onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const modeLabel = isCaptureChallenge(room)
+    ? "吃子赛"
+    : room.matchSource === "practice"
+      ? "人机"
+      : gameModeById(room.game?.mode).shortTitle;
   const closeMobileMenu = (action) => () => {
     setMobileMenuOpen(false);
     action?.();
@@ -27,15 +33,13 @@ export default function RoomHeader({
     <header className="room-header">
       <div className="room-title-stack">
         <p className="room-title-line">
-          <span className="room-code-label">房间号{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
+          <span className="room-code-label">{modeLabel}{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
           {room.team && <span className="room-info-tag">Round {room.team.round}</span>}
           {roomGameInfo && (
             <>
               <span className="room-info-tag black-side">黑方：{roomGameInfo.black}</span>
               <span className="room-info-tag white-side">白方：{roomGameInfo.white}</span>
-              <span className="room-info-tag move-count">{isCaptureChallenge(room)
-                ? `吃子赛 ${room.game.moveNumber} / ${CAPTURE_CHALLENGE_MOVE_LIMIT}手 · 提子${room.game.captures?.[room.practice.humanColor] ?? 0}`
-                : roomGameInfo.moves}</span>
+              <span className="room-info-tag move-count">{roomGameInfo.moves}</span>
             </>
           )}
         </p>

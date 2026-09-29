@@ -27,7 +27,8 @@
   display: grid;
   gap: 4px;
   overflow-y: auto;
-  padding-right: 2px;
+  /* Keep button hover lift and right/bottom hard shadows inside the scroller. */
+  padding: 2px 6px 6px 2px;
 }
 
 .room-person-wrap {

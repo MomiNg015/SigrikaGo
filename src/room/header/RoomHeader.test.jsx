@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import RoomHeader from "./RoomHeader.jsx";
@@ -33,5 +35,27 @@ describe("header test tools", () => {
       fireEvent.click(button);
     }
     expect(onGameAction).not.toHaveBeenCalled();
+  });
+});
+
+describe("room header labels", () => {
+  it.each([
+    ["spark", {}, "星炬"],
+    ["standard", {}, "标准"],
+    ["gomoku", {}, "五子棋"],
+    ["spark", { matchSource: "practice", practice: {} }, "人机"],
+    ["spark", { matchSource: "practice", practice: { challenge: "capture-challenge", humanColor: "black" } }, "吃子赛"],
+    ["team", { team: { round: 2 } }, "队际赛"]
+  ])("labels %s %j and keeps the move badge free of mode and capture details", (mode, extra, label) => {
+    const markup = renderToStaticMarkup(createElement(RoomHeader, {
+      room: { code: "AB123", game: { mode, moveNumber: 42, captures: { black: 22 } }, ...extra },
+      roomGameInfo: { black: "黑方玩家", white: "白方玩家", moves: "42手" },
+      showUtilityControls: false
+    }));
+    expect(markup).toContain(`<span class="room-code-label">${label}AB123</span>`);
+    expect(markup).toContain('<span class="room-info-tag move-count">42手</span>');
+    expect(markup).not.toContain("房间号");
+    expect(markup).not.toContain("提子22");
+    expect(markup).not.toContain("100手");
   });
 });
