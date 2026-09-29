@@ -987,3 +987,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 151: 引导纯浮层与准时宝避让
+
+**Date**: 2026-09-29
+**Task**: 引导纯浮层与准时宝避让
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+移除引导对窗口布局的全部覆盖，所有高亮按钮包括准时宝参与对话框避让。34项相关测试通过，追加准时宝断言后14项复测通过；lint和三尺寸完整浏览器测试通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3629f935` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 150
+- **Total Sessions**: 151
 - **Last Active**: 2026-09-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~989 | Active |
+| `journal-3.md` | ~1022 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 151 | 2026-09-29 | 引导纯浮层与准时宝避让 | `3629f935` | `codex/battle-paper-panels` |
 | 150 | 2026-09-29 | 开发模式主界面引导重播 | `aab5500e` | `codex/battle-paper-panels` |
 | 149 | 2026-09-29 | 主界面引导对话布局调整 | `1ee638fc` | `codex/battle-paper-panels` |
 | 148 | 2026-09-29 | 主界面引导与一次性招新邮件 | `c246177c` | `codex/battle-paper-panels` |
