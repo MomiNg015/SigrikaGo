@@ -2,6 +2,7 @@
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { HOME_ONBOARDING_STEPS } from "./homeOnboardingScript.js";
 import HomeOnboarding from "./HomeOnboarding.jsx";
 
 beforeEach(() => {
@@ -26,7 +27,7 @@ describe("home guide interaction boundary", () => {
     </>);
     fireEvent.click(screen.getByText("购买"));
     expect(purchase).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByText("点击任意位置继续"));
+    fireEvent.click(container.querySelector(".home-guide-advance-plane"));
     fireEvent.click(container.querySelector(".home-guide-advance-plane"));
     expect(container.querySelector(".home-guide-target")).not.toBeNull();
     fireEvent.click(screen.getByText("真实手册"));
@@ -35,7 +36,7 @@ describe("home guide interaction boundary", () => {
     expect(finish).not.toHaveBeenCalled();
     fireEvent.click(container.querySelector(".home-guide-target"));
     expect(open).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByText("跳过引导"));
+    fireEvent.click(screen.getByRole("button", { name: "跳过引导" }));
     expect(finish).toHaveBeenCalledWith("skipped");
   });
 
@@ -45,11 +46,32 @@ describe("home guide interaction boundary", () => {
     const dialogue = container.querySelector(".tutorial-battle-dialogue");
     fireEvent.click(dialogue);
     expect(container.querySelector("p").textContent).toBe("对了，之前光聊围棋了，还没向你介绍我们围棋部呢。");
-    expect(screen.getByText("点击任意位置继续")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "点击任意位置继续" })).toBeNull();
     fireEvent.click(dialogue);
     expect(screen.getByText("正在准备介绍的窗口…")).toBeTruthy();
     // Missing target never advances or consumes the tour, but skip is always available.
     fireEvent.click(container.querySelector(".home-guide-advance-plane"));
     expect(screen.getByText("正在准备介绍的窗口…")).toBeTruthy();
   });
+});
+
+it("centers the reply without the NPC dialogue and keeps only an icon skip control", () => {
+  const { container } = render(<>
+    <button data-home-guide="handbook">handbook</button><button data-home-guide="sigrika-card">sigrika</button>
+    <button data-home-guide="match">match</button><button data-home-guide="practice">practice</button><button data-home-guide="resume">resume</button>
+    <div className="house-modal character-details-modal match-mode-modal resume-modal" />
+    <HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />
+  </>);
+  expect(container.querySelector(".home-guide-panel").style.top).toBe("66px");
+  const skip = screen.getByRole("button", { name: "跳过引导" });
+  expect(skip.textContent).toBe("");
+  expect(skip.querySelector("svg")).not.toBeNull();
+  for (const step of HOME_ONBOARDING_STEPS) {
+    if (step.choice) break;
+    fireEvent.click(container.querySelector(step.action ? ".home-guide-target" : ".home-guide-advance-plane"));
+  }
+  expect(container.querySelector(".tutorial-battle-dialogue")).toBeNull();
+  expect(container.querySelector(".home-guide-choice-panel button").textContent).toContain("其它部员呢");
+  fireEvent.click(container.querySelector(".home-guide-choice"));
+  expect(container.querySelector(".tutorial-battle-dialogue")).not.toBeNull();
 });

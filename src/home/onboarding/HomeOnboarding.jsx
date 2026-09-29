@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { SkipForward } from "lucide-react";
 import NpcDialogue from "../../tutorial/NpcDialogue.jsx";
 import { prefersReducedMotion } from "../../tutorial/TypewriterText.jsx";
 import { HOME_ONBOARDING_STEPS, HOME_ONBOARDING_WINDOWS } from "./homeOnboardingScript.js";
@@ -51,15 +52,15 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
 
   useLayoutEffect(() => {
     const measure = () => {
-      const height = panelRef.current?.getBoundingClientRect().height || 200;
+      const height = step.choice ? 0 : panelRef.current?.getBoundingClientRect().height || 200;
       setPanelHeight(height);
       document.documentElement.style.setProperty("--home-guide-panel-height", `${height + 28}px`);
     };
     measure();
     const observer = new ResizeObserver(measure);
-    observer.observe(panelRef.current);
+    if (panelRef.current) observer.observe(panelRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [step.choice]);
 
   useEffect(() => {
     let frame;
@@ -147,13 +148,22 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     setIndex((value) => value + 1);
   };
   const height = geometry?.height || window.innerHeight;
-  const topPanel = !step.window && rect && rect.bottom > height - panelHeight - 28;
-  const besidePanel = topPanel && rect.top < panelHeight + 28 && rect.left >= 320;
-  const panelStyle = besidePanel ? { left: 14, top: 14, bottom: "auto", transform: "none", width: Math.min(440, rect.left - 28) } : undefined;
+  const width = geometry?.width || window.innerWidth;
+  const panelWidth = Math.min(560, width - 28);
+  const minimumTop = 66;
+  let panelTop = minimumTop;
+  let panelLeft = (width - panelWidth) / 2;
+  if (step.action && rect) {
+    const below = rect.bottom + 16;
+    const above = rect.top - panelHeight - 16;
+    panelTop = below + panelHeight <= height - 14 ? below : Math.max(minimumTop, above);
+    panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
+  }
+  const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth };
   const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
 
   return (
-    <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" tabIndex={-1}
+    <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" data-step={step.id} tabIndex={-1}
       onClick={(event) => { if (!event.target.closest("button")) advance(); }}
       onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); advance(); } }}>
       <svg className="home-guide-scrim" aria-hidden="true" width="100%" height="100%">
@@ -164,17 +174,20 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       {rect && step.action && <button className="home-guide-target" type="button" aria-label={`点击${targetRef.current?.getAttribute("aria-label") || step.target}继续引导`}
         disabled={saving || Boolean(error)} onClick={activateTarget}
         style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
-      <div ref={panelRef} style={panelStyle} className={`home-guide-panel${topPanel ? " is-top" : ""}`}>
+      <button className="home-guide-skip" type="button" aria-label="跳过引导" title="跳过引导" disabled={saving} onClick={() => finish("skipped")}>
+        <SkipForward size={22} aria-hidden="true" />
+      </button>
+      {step.choice ? <div className="home-guide-choice-panel">
+        <button type="button" className="home-guide-choice" onClick={() => { if (!saving && !error) setIndex((value) => value + 1); }} disabled={saving || Boolean(error)}>{step.choice}</button>
+      </div> : <div ref={panelRef} style={panelStyle} className="home-guide-panel">
         <NpcDialogue bubble={{ id: step.id, text, portrait: character.portrait, palette: character.color, speakerName: "西格莉卡" }} revealAll={revealed} />
-        <div className="home-guide-controls">
-          {error ? <><span role="alert">{error}</span><button type="button" onClick={() => finish(retryOutcome)} disabled={saving}>重试保存并领取邮件</button></>
-            : step.choice ? <button type="button" className="home-guide-choice" onClick={() => setIndex((value) => value + 1)} disabled={saving}>{step.choice}</button>
-              : <button type="button" onClick={advance} disabled={saving || !ready || (revealed && step.action)}>
-                {saving ? "正在送出招新物资…" : !ready ? "正在准备介绍的窗口…" : !revealed ? "点击显示全文" : step.action ? "点击亮框中的位置" : "点击任意位置继续"}
-              </button>}
-          <button className="home-guide-skip" type="button" disabled={saving} onClick={() => finish("skipped")}>跳过引导</button>
-        </div>
-      </div>
+        {!ready && <span className="home-guide-status" role="status">正在准备介绍的窗口…</span>}
+      </div>}
+      {(error || saving) && <div className="home-guide-feedback">
+        {error ? <><span role="alert">{error}</span><button type="button" onClick={() => finish(retryOutcome)} disabled={saving}>重试保存并领取邮件</button></>
+          : <span role="status">正在送出招新物资…</span>}
+      </div>}
+
     </div>
   );
 }

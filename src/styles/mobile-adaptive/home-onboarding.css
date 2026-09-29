@@ -65,15 +65,12 @@
 
 .home-guide-panel {
   position: absolute;
-  bottom: max(14px, env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
+  top: max(66px, env(safe-area-inset-top));
   width: min(560px, calc(100% - 28px));
   max-height: calc(100dvh - 28px);
   overflow-y: auto;
 }
 
-.home-guide-panel.is-top { bottom: auto; top: max(14px, env(safe-area-inset-top)); }
 .home-guide-panel .tutorial-battle-dialogue {
   position: relative;
   inset: auto;
@@ -83,37 +80,54 @@
   margin: 0;
 }
 
-.home-guide-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 4px 4px;
+.app-shell .home-onboarding .home-guide-skip {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2;
 }
 
-.home-guide-controls button {
+.home-guide-choice-panel,
+.home-guide-feedback {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100% - 28px));
+}
+
+.home-guide-choice-panel .home-guide-choice {
+  width: 100%;
   min-height: 44px;
+  padding: 16px 20px;
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
-.home-guide-controls > :first-child { flex: 1; }
-.home-guide-controls [role="alert"] { flex-basis: 100%; color: white; }
-.home-guide-controls .home-guide-choice { text-align: left; flex-basis: 100%; }
-.home-guide-controls .home-guide-skip { margin-left: auto; }
+.home-guide-feedback { top: auto; bottom: 14px; transform: translateX(-50%); }
+.home-guide-status,
+.home-guide-feedback { color: white; }
+.home-guide-feedback button { min-height: 44px; }
 
 /* Reserve real layout space for dialogue rather than covering the window. */
 .home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop,
-.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal-backdrop {
-  padding-top: max(12px, env(safe-area-inset-top)) !important;
-  padding-bottom: var(--home-guide-panel-height, 228px) !important;
+.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal-backdrop,
+.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
+  padding-top: calc(var(--home-guide-panel-height, 228px) + 66px) !important;
+  padding-bottom: 16px !important;
   align-items: flex-start !important;
 }
 
 .home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.house-modal.resume-modal, .house-modal, .character-details-modal, .match-mode-modal, .recruitment-modal, .shop-modal, .mailbox-modal) {
-  --window-sticker-available-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 64px);
+  --window-sticker-available-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 100px);
   min-height: 0 !important;
-  max-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 64px) !important;
+  max-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 100px) !important;
 }
 
 @keyframes home-guide-focus {

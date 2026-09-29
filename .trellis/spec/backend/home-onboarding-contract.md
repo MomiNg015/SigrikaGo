@@ -13,7 +13,7 @@ Changes to the fixed home tour, initial story exit, or introductory reward settl
 - A conditional active-to-terminal update and both mailbox inserts share one transaction. Rewards are server constants, not request parameters. Never use notice state as reward eligibility.
 - Share NpcDialogue and TypewriterText with teaching battles. Keep fixed home script separate from the generic story editor.
 - Spotlight uses stable data-home-guide targets and real existing callbacks. Only the tour-owned activation may cross the input guard. Practice is explanatory only. Missing targets wait, with skip always accessible.
-- A modal step reserves dialogue space. Mobile mailbox reveals the real menu. Escape cannot close underlying windows. Account changes invalidate in-flight responses.
+- Ordinary dialogue sits at the top; action dialogue follows above/below its target. The icon-only skip stays top-right. Player replies replace the NPC dialogue and are viewport-centered. A modal step reserves dialogue space. Mobile mailbox reveals the real menu. Escape cannot close underlying windows. Account changes invalidate in-flight responses.
 
 ## Validation / Errors
 Invalid outcome -> 400. Finish before start -> 409. Terminal replay -> awarded false, no new mail. Failed second insert -> rollback first insert and terminal state. API failure -> retry without consuming the tour.

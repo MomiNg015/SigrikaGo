@@ -18,6 +18,14 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await expect(page.getByRole("dialog", { name: "主界面引导" })).toBeVisible();
     await expect.poll(async () => (await page.locator(".home-guide-scrim").boundingBox())?.height).toBe(viewport.height);
     for (const step of HOME_ONBOARDING_STEPS) {
+      await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", step.id);
+      if (step.choice) {
+        await expect(page.locator(".tutorial-battle-dialogue")).toHaveCount(0);
+        const reply = await page.locator(".home-guide-choice-panel").boundingBox();
+        expect(Math.abs(reply.y + reply.height / 2 - viewport.height / 2)).toBeLessThan(2);
+        await page.getByRole("button", { name: step.choice, exact: true }).click();
+        continue;
+      }
       if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
       if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
       await expect(page.getByText("正在准备介绍的窗口…", { exact: true })).toHaveCount(0);
@@ -26,6 +34,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);
+      if (!step.action) expect(panel.y).toBeLessThan(100);
       if (target) await expect.poll(async () => {
         const a = await page.locator(".home-guide-spotlight").boundingBox();
         const b = await page.locator(".home-guide-panel").boundingBox();
@@ -42,7 +51,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         await page.locator(".home-guide-target").click();
       }
       else if (step.choice) await page.getByRole("button", { name: step.choice, exact: true }).click();
-      else await page.getByRole("button", { name: "点击任意位置继续", exact: true }).click();
+      else await page.locator(".tutorial-battle-dialogue").click();
     }
     await expect(page.getByTestId("outcome")).toHaveText("completed");
     await expect(page.locator(".home-onboarding")).toHaveCount(0);
