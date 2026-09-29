@@ -1,5 +1,5 @@
 /* Final Bright School battle owner: portrait stage, identity ticket, clock and skill. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room):not(.mobile-room-screen) .player-info[data-paper-player] {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
