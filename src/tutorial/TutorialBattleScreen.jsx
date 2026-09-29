@@ -1,3 +1,6 @@
+import NpcDialogue from "./NpcDialogue.jsx";
+import { canAnimateTypewriter, prefersReducedMotion } from "./TypewriterText.jsx";
+export { TypewriterText } from "./TypewriterText.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calculator, Flag, MessageCircle, Play, Sparkles } from "lucide-react";
 import "../styles/room/tutorial-battle-screen.css";
@@ -833,69 +836,16 @@ function TutorialBattleDirector({
 }) {
   return (
     <div className="tutorial-battle-director" aria-live="polite">
-      {npcBubble && (
-        <section
-          className={`tutorial-battle-dialogue ${npcBubble.closing ? "closing" : ""}`}
-          style={npcBubble.palette ? { "--tutorial-npc-color": npcBubble.palette } : undefined}
-        >
-          {npcBubble.portrait && <img src={npcBubble.portrait} alt="" aria-hidden="true" fetchPriority="high" />}
-          <div>
-            <strong>{npcBubble.speakerName}</strong>
-            <p><TypewriterText key={npcBubble.id} revealAll={revealedNpcBubbleId === npcBubble.id} text={npcBubble.text} /></p>
-          </div>
-        </section>
-      )}
+      <NpcDialogue bubble={npcBubble} revealAll={revealedNpcBubbleId === npcBubble?.id} />
     </div>
   );
 }
 
-export function TypewriterText({ text, revealAll = false }) {
-  const fullText = String(text ?? "");
-  const [visibleText, setVisibleText] = useState(() => (
-    canAnimateTypewriter() && !prefersReducedMotion() && !revealAll ? "" : fullText
-  ));
-
-  useEffect(() => {
-    if (!fullText || !canAnimateTypewriter() || prefersReducedMotion() || revealAll) {
-      setVisibleText(fullText);
-      return undefined;
-    }
-
-    let index = 0;
-    let timeoutId = null;
-    setVisibleText("");
-
-    const reveal = () => {
-      index += 1;
-      setVisibleText(fullText.slice(0, index));
-      if (index < fullText.length) {
-        timeoutId = window.setTimeout(reveal, 28);
-      }
-    };
-
-    timeoutId = window.setTimeout(reveal, 80);
-    return () => {
-      if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, [fullText, revealAll]);
-
-  return visibleText;
-}
 
 function npcDialogueTypewriterDurationMs(node) {
   const text = String(node?.text ?? node?.prompt ?? "");
   if (!text || !canAnimateTypewriter() || prefersReducedMotion()) return 0;
   return 80 + (text.length * 28);
-}
-
-function canAnimateTypewriter() {
-  return typeof window !== "undefined" && typeof window.setTimeout === "function";
-}
-
-function prefersReducedMotion() {
-  return canAnimateTypewriter() && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 }
 
 export function TutorialActionPanel({

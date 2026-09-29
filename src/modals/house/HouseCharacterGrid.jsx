@@ -66,6 +66,7 @@ export default function HouseCharacterGrid({
           : null;
         return (
           <div
+            data-home-guide={characterId === "sigrika" ? "sigrika-card" : undefined}
             className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
             key={character.id}
             onClick={() => {

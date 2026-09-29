@@ -493,3 +493,9 @@
 - 仇远刀光覆盖整块棋盘木面（含坐标栏），最后一斩停留后散墨退场，在对手回合前清空视觉残留，详见 [前端架构](./system-design/02-frontend-architecture.md)。
 
 - 仇远横斩时，星位保留在待移除棋子下方；棋子淡出后立即露出星位，不等待规则结算。
+
+## 主界面引导与招新邮件
+
+主界面引导在首次剧情／教学结束或跳过后接续，已有账号补一次。固定台词按部员手册、西格莉卡详情、对局与准时宝、履历、招募、商店、邮箱介绍真实窗口；复用教学 NPC 对话展示，并以独立输入层和矩形聚焦阻止真实匹配、购买、招募和附件领取。移动邮箱先展开现有菜单，聊天框与窗口预留空间。支持独立跳过；未结束时刷新从头重播，不增加重看入口。
+
+服务端 `User.homeOnboardingStatus` 保存 pending/active/completed/skipped，`homeOnboardingFinishedAt` 记录结束，`onboardingExitedAt` 区分剧情已退出与仅自动展示。新迁移只在首次添加退出字段时给旧自动展示账号补退出时间，避免把未来中断的新用户误判为已教学。认证接口 GET `/api/home-onboarding`、POST `/api/home-onboarding/start`、POST `/api/home-onboarding/finish`（`outcome: completed|skipped`）提供状态、启动和结束。结束事务以 active 状态条件更新取得唯一发奖权，并发送学院海报和电台广播券各 3 个的两封西格莉卡邮件；任一邮件失败全部回滚，重复请求不再发奖。原迎新邮件保留，其提示延后到主界面引导结算。相关测试与实现约束见 `.trellis/spec/backend/home-onboarding-contract.md`。

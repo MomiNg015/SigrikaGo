@@ -4,7 +4,7 @@ const HOUSE_MANUAL_IMAGE = "/assets/home/book-entry.webp";
 
 export function HouseManualEntry({ onOpenHouse, sigrikaCorrupted = false }) {
   return (
-    <button className={`home-image-entry house-manual-entry hologram-entry${sigrikaCorrupted ? " is-corruption-access-point" : ""}`} data-ui-sound="none" onClick={onOpenHouse} aria-label="部员手册">
+    <button data-home-guide="handbook" className={`home-image-entry house-manual-entry hologram-entry${sigrikaCorrupted ? " is-corruption-access-point" : ""}`} data-ui-sound="none" onClick={onOpenHouse} aria-label="部员手册">
       <span className="home-entry-motion" aria-hidden="true">
         <img
           className={sigrikaCorrupted ? "house-manual-corruption-source" : undefined}
@@ -36,6 +36,7 @@ export function MatchEntry({ onStartMatch, onPreloadPlayableReady, sigrikaCorrup
         onFocus={onPreloadPlayableReady}
         onPointerEnter={onPreloadPlayableReady}
         aria-label="星炬对弈"
+        data-home-guide="match"
       >
         <span className="home-entry-motion" aria-hidden="true">
           <img src="/assets/home/fantasy-match-entry.webp" alt="" decoding="async" />

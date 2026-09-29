@@ -184,8 +184,8 @@ describe("TutorialBattleScreen runtime integration", () => {
     const source = readSource();
     const css = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
 
-    expect(source).toContain("--tutorial-npc-color");
-    expect(source).toContain("npcBubble.palette");
+    expect(readFileSync(new URL("./NpcDialogue.jsx", import.meta.url), "utf8")).toContain("--tutorial-npc-color");
+    expect(source).toContain("<NpcDialogue bubble={npcBubble}");
     expect(css).toContain("var(--tutorial-npc-color");
     expect(css).toContain("color-mix(in srgb, var(--tutorial-npc-color");
   });
@@ -232,7 +232,7 @@ describe("TutorialBattleScreen runtime integration", () => {
 
     expect(source).toContain("setNpcBubble(nextBubble)");
     expect(source).toContain("portrait: character.portrait");
-    expect(source).toContain("npcBubble.portrait && <img src={npcBubble.portrait}");
+    expect(readFileSync(new URL("./NpcDialogue.jsx", import.meta.url), "utf8")).toContain("bubble.portrait && <img src={bubble.portrait}");
     expect(source).not.toContain("setNpcBubble((latest) => latest?.id === current.id ? nextBubble : latest)");
     expect(source).toContain("preloadImageAssets(tutorialPortraitUrls, { concurrency: 4 })");
   });
@@ -240,9 +240,9 @@ describe("TutorialBattleScreen runtime integration", () => {
   it("types NPC bubble text while leaving the speaker name immediate", () => {
     const source = readSource();
 
-    expect(source).toContain("<strong>{npcBubble.speakerName}</strong>");
-    expect(source).toContain("revealAll={revealedNpcBubbleId === npcBubble.id}");
-    expect(source).toContain("export function TypewriterText");
+    expect(readFileSync(new URL("./NpcDialogue.jsx", import.meta.url), "utf8")).toContain("<strong>{bubble.speakerName}</strong>");
+    expect(source).toContain("revealAll={revealedNpcBubbleId === npcBubble?.id}");
+    expect(readFileSync(new URL("./TypewriterText.jsx", import.meta.url), "utf8")).toContain("export function TypewriterText");
     expect(source).toContain("prefersReducedMotion()");
     expect(source).toContain("onRevealText={revealNpcBubbleText}");
   });

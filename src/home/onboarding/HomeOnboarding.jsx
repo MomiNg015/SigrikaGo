@@ -1,0 +1,180 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import NpcDialogue from "../../tutorial/NpcDialogue.jsx";
+import { prefersReducedMotion } from "../../tutorial/TypewriterText.jsx";
+import { HOME_ONBOARDING_STEPS, HOME_ONBOARDING_WINDOWS } from "./homeOnboardingScript.js";
+
+export function visibleGuideTarget(selector) {
+  return [...document.querySelectorAll(selector)].find((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 && !element.closest('[aria-hidden="true"], [inert]')
+      && getComputedStyle(element).visibility !== "hidden";
+  });
+}
+
+export default function HomeOnboarding({ character, overlaySetters, saving, error, onFinish }) {
+  const [index, setIndex] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const [geometry, setGeometry] = useState(null);
+  const [panelHeight, setPanelHeight] = useState(200);
+  const [retryOutcome, setRetryOutcome] = useState("completed");
+  const rootRef = useRef(null);
+  const panelRef = useRef(null);
+  const dispatching = useRef(false);
+  const targetRef = useRef(null);
+  const step = HOME_ONBOARDING_STEPS[index];
+  const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
+  const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
+  const rect = geometry?.id === step.id ? geometry.rect : null;
+  const ready = !selector || Boolean(rect);
+
+  const invoke = (element) => {
+    if (!element) return;
+    dispatching.current = true;
+    try { element.click(); } finally { dispatching.current = false; }
+  };
+
+  useEffect(() => {
+    setRevealed(!step.text || prefersReducedMotion());
+    if (!step.text || prefersReducedMotion()) return;
+    const timer = window.setTimeout(() => setRevealed(true), 80 + step.text.length * 28);
+    return () => window.clearTimeout(timer);
+  }, [step]);
+
+  useLayoutEffect(() => {
+    for (const [name, setter] of Object.entries(HOME_ONBOARDING_WINDOWS)) {
+      if (name !== step.window) overlaySetters[setter]?.(false);
+    }
+    // The phone has the same mailbox action inside its existing header menu.
+    const menu = visibleGuideTarget('[data-home-guide="mobile-menu"]');
+    if (menu && (menu.getAttribute("aria-expanded") === "true") !== (step.target === "mailbox")) invoke(menu);
+  }, [overlaySetters, step]);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const height = panelRef.current?.getBoundingClientRect().height || 200;
+      setPanelHeight(height);
+      document.documentElement.style.setProperty("--home-guide-panel-height", `${height + 28}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(panelRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let frame;
+    let scrolledElement;
+    const measure = () => {
+      const target = selector ? visibleGuideTarget(selector) : null;
+      targetRef.current = target;
+      if (target && target !== scrolledElement && step.target) {
+        target.scrollIntoView?.({ block: "start", inline: "nearest", behavior: "instant" });
+        scrolledElement = target;
+      }
+      const bounds = target?.getBoundingClientRect();
+      const width = document.documentElement.clientWidth || window.innerWidth;
+      const height = window.visualViewport?.height || window.innerHeight;
+      const next = bounds ? {
+        left: Math.max(6, bounds.left - 5), top: Math.max(6, bounds.top - 5),
+        right: Math.min(width - 6, bounds.right + 5), bottom: Math.min(height - 6, bounds.bottom + 5)
+      } : null;
+      const usable = next && next.right > next.left && next.bottom > next.top ? next : null;
+      setGeometry((current) => {
+        const value = { id: step.id, rect: usable, width, height };
+        return JSON.stringify(current) === JSON.stringify(value) ? current : value;
+      });
+      frame = requestAnimationFrame(measure);
+    };
+    measure();
+    return () => cancelAnimationFrame(frame);
+  }, [selector, step]);
+
+  useEffect(() => {
+    const previousFocus = document.activeElement;
+    document.documentElement.classList.add("home-guide-running");
+    rootRef.current?.focus();
+    const blockOutside = (event) => {
+      if (dispatching.current) return;
+      if (!rootRef.current?.contains(event.target)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+    const keyboard = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      } else if (event.key === "Tab") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const buttons = [...rootRef.current.querySelectorAll("button:not(:disabled)")];
+        const current = buttons.indexOf(document.activeElement);
+        buttons[(current + (event.shiftKey ? buttons.length - 1 : 1)) % buttons.length]?.focus();
+      } else blockOutside(event);
+    };
+    const focus = (event) => {
+      if (!dispatching.current && !rootRef.current?.contains(event.target)) rootRef.current?.focus();
+    };
+    const events = ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchmove", "wheel", "contextmenu", "keyup"];
+    for (const name of events) window.addEventListener(name, blockOutside, { capture: true, passive: false });
+    window.addEventListener("keydown", keyboard, true);
+    document.addEventListener("focusin", focus, true);
+    return () => {
+      for (const name of events) window.removeEventListener(name, blockOutside, true);
+      window.removeEventListener("keydown", keyboard, true);
+      document.removeEventListener("focusin", focus, true);
+      document.documentElement.classList.remove("home-guide-running");
+      document.documentElement.style.removeProperty("--home-guide-panel-height");
+      for (const setter of Object.values(HOME_ONBOARDING_WINDOWS)) overlaySetters[setter]?.(false);
+      const menu = visibleGuideTarget('[data-home-guide="mobile-menu"]');
+      if (menu?.getAttribute("aria-expanded") === "true") menu.click();
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+  }, [overlaySetters]);
+
+  const finish = (outcome) => { setRetryOutcome(outcome); onFinish(outcome); };
+  const advance = () => {
+    if (saving || error || !ready) return;
+    if (!revealed) { setRevealed(true); return; }
+    if (step.action || step.choice) return;
+    if (index === HOME_ONBOARDING_STEPS.length - 1) finish("completed");
+    else setIndex((value) => value + 1);
+  };
+  const activateTarget = () => {
+    if (!revealed) { setRevealed(true); return; }
+    if (!ready || saving || error || !targetRef.current?.isConnected) return;
+    invoke(targetRef.current);
+    setIndex((value) => value + 1);
+  };
+  const height = geometry?.height || window.innerHeight;
+  const topPanel = !step.window && rect && rect.bottom > height - panelHeight - 28;
+  const besidePanel = topPanel && rect.top < panelHeight + 28 && rect.left >= 320;
+  const panelStyle = besidePanel ? { left: 14, top: 14, bottom: "auto", transform: "none", width: Math.min(440, rect.left - 28) } : undefined;
+  const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
+
+  return (
+    <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" tabIndex={-1}
+      onClick={(event) => { if (!event.target.closest("button")) advance(); }}
+      onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); advance(); } }}>
+      <svg className="home-guide-scrim" aria-hidden="true" width="100%" height="100%">
+        <path fillRule="evenodd" d={`M0,0 H${geometry?.width || window.innerWidth} V${height} H0 Z ${hole}`} />
+      </svg>
+      <div className="home-guide-advance-plane" aria-hidden="true" />
+      {rect && <div key={step.id} className="home-guide-spotlight" aria-hidden="true" style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
+      {rect && step.action && <button className="home-guide-target" type="button" aria-label={`点击${targetRef.current?.getAttribute("aria-label") || step.target}继续引导`}
+        disabled={saving || Boolean(error)} onClick={activateTarget}
+        style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
+      <div ref={panelRef} style={panelStyle} className={`home-guide-panel${topPanel ? " is-top" : ""}`}>
+        <NpcDialogue bubble={{ id: step.id, text, portrait: character.portrait, palette: character.color, speakerName: "西格莉卡" }} revealAll={revealed} />
+        <div className="home-guide-controls">
+          {error ? <><span role="alert">{error}</span><button type="button" onClick={() => finish(retryOutcome)} disabled={saving}>重试保存并领取邮件</button></>
+            : step.choice ? <button type="button" className="home-guide-choice" onClick={() => setIndex((value) => value + 1)} disabled={saving}>{step.choice}</button>
+              : <button type="button" onClick={advance} disabled={saving || !ready || (revealed && step.action)}>
+                {saving ? "正在送出招新物资…" : !ready ? "正在准备介绍的窗口…" : !revealed ? "点击显示全文" : step.action ? "点击亮框中的位置" : "点击任意位置继续"}
+              </button>}
+          <button className="home-guide-skip" type="button" disabled={saving} onClick={() => finish("skipped")}>跳过引导</button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -247,6 +247,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                 <button
                   aria-label="准时宝陪练"
                   className="practice-entry-button"
+                  data-home-guide="practice"
                   type="button"
                   disabled={sigrikaCorrupted}
                   onClick={() => setPracticeDifficultyOpen(true)}

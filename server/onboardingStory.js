@@ -70,6 +70,13 @@ export async function ensureOnboardingStorySchema(client) {
     "welcomeMailNoticeShownAt",
     'ALTER TABLE "User" ADD COLUMN "welcomeMailNoticeShownAt" DATETIME'
   );
+  await addUserColumnIfMissing(client, "homeOnboardingStatus", 'ALTER TABLE "User" ADD COLUMN "homeOnboardingStatus" TEXT NOT NULL DEFAULT \'pending\'');
+  await addUserColumnIfMissing(client, "homeOnboardingFinishedAt", 'ALTER TABLE "User" ADD COLUMN "homeOnboardingFinishedAt" DATETIME');
+  const columns = client.$queryRawUnsafe ? await client.$queryRawUnsafe('PRAGMA table_info("User")') : [];
+  if (!columns.some((column) => column.name === "onboardingExitedAt")) {
+    await client.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN "onboardingExitedAt" DATETIME');
+    await client.$executeRawUnsafe('UPDATE "User" SET "onboardingExitedAt" = "onboardingAutoShownAt" WHERE "onboardingAutoShownAt" IS NOT NULL');
+  }
 }
 
 export function validateOnboardingStoryScript(input = {}, { publishing = false } = {}) {
@@ -120,7 +127,7 @@ export async function getPlayerOnboardingStory({ prisma, user }) {
   if (!script) return { script: null, autoEligible: false };
   return {
     script,
-    autoEligible: Boolean(user?.onboardingRequired && !user?.onboardingAutoShownAt)
+    autoEligible: Boolean(user?.onboardingRequired || (user?.onboardingAutoShownAt && !user?.onboardingExitedAt && !user?.onboardingCompletedAt))
   };
 }
 

@@ -34,6 +34,9 @@ model User {
   onboardingAutoShownAt DateTime?
   onboardingCompletedAt DateTime?
   welcomeMailNoticeShownAt DateTime?
+  onboardingExitedAt DateTime?
+  homeOnboardingStatus String @default("pending")
+  homeOnboardingFinishedAt DateTime?
   sigrikaCandyUseCount Int @default(0)
   sigrikaCandyPhase String @default("normal")
   sigrikaCandyOutcome String @default("")

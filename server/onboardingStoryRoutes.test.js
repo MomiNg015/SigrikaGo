@@ -49,18 +49,30 @@ describe("onboarding story route handlers", () => {
 
   it("atomically records the one-time welcome-mail notice after onboarding exits", async () => {
     const markWelcomeMailNoticeShownFn = vi.fn(async () => ({ ok: true, showNotice: true }));
-    const handlers = createOnboardingStoryRouteHandlers({ prisma: {}, markWelcomeMailNoticeShownFn });
-    const req = { user: { id: "user-1" } };
+    const prisma = { user: { updateMany: vi.fn(async () => ({ count: 1 })) } };
+    const handlers = createOnboardingStoryRouteHandlers({ prisma, markWelcomeMailNoticeShownFn });
+    const req = { user: { id: "user-1", homeOnboardingStatus: "completed" } };
     const res = responseCollector();
 
     await handlers.markExited(req, res);
 
     expect(markWelcomeMailNoticeShownFn).toHaveBeenCalledWith({
-      prisma: {},
+      prisma,
       userId: "user-1",
       now: expect.any(Date)
     });
     expect(res.body).toEqual({ ok: true, showNotice: true });
+  });
+
+  it("records story exit but defers welcome notice until the home tour settles", async () => {
+    const prisma = { user: { updateMany: vi.fn(async () => ({ count: 1 })) } };
+    const markWelcomeMailNoticeShownFn = vi.fn();
+    const handlers = createOnboardingStoryRouteHandlers({ prisma, markWelcomeMailNoticeShownFn });
+    const res = responseCollector();
+    await handlers.markExited({ user: { id: "new", homeOnboardingStatus: "pending" } }, res);
+    expect(prisma.user.updateMany).toHaveBeenCalledWith({ where: { id: "new", onboardingExitedAt: null }, data: { onboardingExitedAt: expect.any(Date) } });
+    expect(markWelcomeMailNoticeShownFn).not.toHaveBeenCalled();
+    expect(res.body).toEqual({ ok: true, showNotice: false });
   });
 
   it("returns domain errors as JSON", async () => {

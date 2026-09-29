@@ -78,7 +78,7 @@ export default function HomeHeader({
           <Newspaper size={20} />
           {announcementUnread && <span className="announcement-badge-dot" />}
         </button>
-        <button className="icon-button mailbox-action" type="button" aria-label={mailboxLabel} title="邮箱" onClick={onOpenMailbox}>
+        <button data-home-guide="mailbox" className="icon-button mailbox-action" type="button" aria-label={mailboxLabel} title="邮箱" onClick={onOpenMailbox}>
           <Mail size={20} />
           {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
         </button>
@@ -102,6 +102,7 @@ export default function HomeHeader({
           aria-label={mobileMenuOpen ? "关闭首页菜单" : "打开首页菜单"}
           aria-expanded={mobileMenuOpen}
           aria-controls="home-mobile-menu-panel"
+          data-home-guide="mobile-menu"
           title="选项"
           onClick={() => setMobileMenuOpen((open) => !open)}
         >
@@ -113,7 +114,7 @@ export default function HomeHeader({
             公告
             {announcementUnread && <span className="announcement-badge-dot" />}
           </button>
-          <button className="home-mobile-mailbox-action" type="button" onClick={closeMobileMenu(onOpenMailbox)}>
+          <button data-home-guide="mailbox" className="home-mobile-mailbox-action" type="button" onClick={closeMobileMenu(onOpenMailbox)}>
             <Mail size={18} />
             邮箱
             {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}

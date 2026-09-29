@@ -1,0 +1,52 @@
+import { test, expect } from "@playwright/test";
+import { HOME_ONBOARDING_STEPS } from "../../src/home/onboarding/homeOnboardingScript.js";
+
+for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
+  test(`complete real-window home tour ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.route("**/api/**", async (route) => {
+      const url = route.request().url();
+      const data = url.includes("mailbox") ? { messages: [], unreadCount: 0, badgeCount: 0 }
+        : url.includes("recruitment") ? { items: [], utilities: [], task: null }
+          : url.includes("profile") ? { profile: { username: "新部员", characterStats: [], rating: 1000 } }
+            : { items: [] };
+      await route.fulfill({ json: data });
+    });
+    await page.goto("/tests/e2e/fixtures/home-onboarding.html");
+    await expect(page.getByRole("dialog", { name: "主界面引导" })).toBeVisible();
+    await expect.poll(async () => (await page.locator(".home-guide-scrim").boundingBox())?.height).toBe(viewport.height);
+    for (const step of HOME_ONBOARDING_STEPS) {
+      if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
+      if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
+      await expect(page.getByText("正在准备介绍的窗口…", { exact: true })).toHaveCount(0);
+      const target = step.target || step.surface ? await page.locator(".home-guide-spotlight").boundingBox() : null;
+      const panel = await page.locator(".home-guide-panel").boundingBox();
+      expect(panel.x).toBeGreaterThanOrEqual(0);
+      expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
+      expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);
+      if (target) await expect.poll(async () => {
+        const a = await page.locator(".home-guide-spotlight").boundingBox();
+        const b = await page.locator(".home-guide-panel").boundingBox();
+        return Math.min(Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y),
+          Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
+      }, { message: `${step.id} spotlight overlaps dialogue` }).toBeLessThanOrEqual(1);
+      if (["handbook", "sigrika", "skill", "practice", "recruitment-intro", "shop-intro", "mailbox"].includes(step.id)) {
+        await page.screenshot({ path: testInfo.outputPath(`${step.id}.png`) });
+      }
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog", { name: "主界面引导" })).toBeVisible();
+      if (step.action) {
+        await expect(page.locator(".home-guide-target")).toHaveCSS("opacity", "0");
+        await page.locator(".home-guide-target").click();
+      }
+      else if (step.choice) await page.getByRole("button", { name: step.choice, exact: true }).click();
+      else await page.getByRole("button", { name: "点击任意位置继续", exact: true }).click();
+    }
+    await expect(page.getByTestId("outcome")).toHaveText("completed");
+    await expect(page.locator(".home-onboarding")).toHaveCount(0);
+    expect(await page.evaluate(() => Boolean(window.__unexpectedAction))).toBe(false);
+    expect(errors).toEqual([]);
+  });
+}

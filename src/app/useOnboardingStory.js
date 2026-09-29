@@ -6,6 +6,7 @@ import { AEMEATH_WELCOME_MAIL_TOAST } from "../shared/aemeathAcquisition.js";
 const NO_SCRIPT_MESSAGE = "\u6682\u65e0\u5df2\u53d1\u5e03\u7684\u65b0\u624b\u5f15\u5bfc";
 
 export function useOnboardingStory({
+  onStoryExited,
   openStoryPlayer,
   overlaySetters,
   showToast,
@@ -29,13 +30,14 @@ export function useOnboardingStory({
 
   const markExited = useCallback(async () => {
     if (!token) return;
+    if (onStoryExited) { onStoryExited(); return; }
     try {
       const data = await api("/api/onboarding-story/exited", { method: "POST", token });
       if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST, "mail");
     } catch {
       // The mailbox badge still exposes the mail if this informational toast cannot be recorded.
     }
-  }, [showToast, token]);
+  }, [onStoryExited, showToast, token]);
 
   const openStory = useCallback(async ({ manual = false } = {}) => {
     if (!token) return;

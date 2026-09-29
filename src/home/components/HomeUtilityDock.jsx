@@ -84,6 +84,7 @@ export default function HomeUtilityDock({
           aria-label={title}
           className={`home-entry utility-entry utility-image-entry ${className} utility-tone-${tone} ${key === "recruitment" && recruitmentReady ? "has-alert" : ""}`}
           data-ui-sound="none"
+          data-home-guide={key}
           disabled={disabled}
           key={key}
           onClick={handlers[handler]}

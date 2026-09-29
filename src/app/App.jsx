@@ -35,6 +35,8 @@ import { preloadPlayableReady } from "./playableReadyPreload.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
 import { useOnboardingStory } from "./useOnboardingStory.js";
+import { useHomeOnboarding } from "../home/onboarding/useHomeOnboarding.js";
+import HomeOnboarding from "../home/onboarding/HomeOnboarding.jsx";
 import { useMatchSessionState } from "./useMatchSessionState.js";
 import { useOverlayState } from "./useOverlayState.js";
 import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
@@ -272,7 +274,16 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     user,
     view
   });
+  const homeOnboarding = useHomeOnboarding({
+    token, userId: user?.id,
+    available: view === "home" && !activeStoryPlayer.script && !tutorialBattleSession
+      && !matchStart && !matchSuccess && !resultModalOpen && !incomingDuel
+      && !user?.sigrikaCandyArc?.corrupted && !sigrikaCorruptionTransitioning,
+    overlaysOpen: Object.values(overlayState).some(Boolean),
+    overlaySetters, refreshMailboxSummary, showToast
+  });
   const { openOnboardingStory } = useOnboardingStory({
+    onStoryExited: homeOnboarding.onStoryExited,
     openStoryPlayer,
     overlaySetters,
     showToast,
@@ -479,6 +490,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
   });
   const dismissTopModal = useCallback(() => {
     if (recruitmentInteractionLocked) return;
+    if (homeOnboarding.active) return;
     if (topModalKey === "result" && room?.sigrikaCandyDuel) return;
     if ((topModalKey === "storyPlayer" || topModalKey === "onboardingStory") && activeStoryPlayer.dismissible === false) return;
     switch (topModalKey) {
@@ -503,6 +515,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     closeResultModal,
     overlaySetters,
     recruitmentInteractionLocked,
+    homeOnboarding.active,
     room?.sigrikaCandyDuel,
     topModalKey
   ]);
@@ -654,6 +667,8 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
         )}
         <AppRoutes {...routeProps} />
         <AppOverlays {...appOverlayProps} />
+        {homeOnboarding.active && <HomeOnboarding key={user.id} character={characters.sigrika ?? CHARACTERS.sigrika}
+          overlaySetters={overlaySetters} saving={homeOnboarding.saving} error={homeOnboarding.error} onFinish={homeOnboarding.finish} />}
         <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
       </DesktopViewportGate>
     </div>

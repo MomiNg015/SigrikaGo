@@ -39,6 +39,11 @@ export function createOnboardingStoryRouteHandlers({
 
   async function markExited(req, res) {
     try {
+      await prisma.user.updateMany({ where: { id: req.user.id, onboardingExitedAt: null }, data: { onboardingExitedAt: new Date() } });
+      if (!["completed", "skipped"].includes(req.user.homeOnboardingStatus)) {
+        res.json({ ok: true, showNotice: false });
+        return;
+      }
       res.json(await markWelcomeMailNoticeShownFn({
         prisma,
         userId: req.user.id,
