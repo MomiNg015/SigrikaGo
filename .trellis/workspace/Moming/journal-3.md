@@ -954,3 +954,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 150: 开发模式主界面引导重播
+
+**Date**: 2026-09-29
+**Task**: 开发模式主界面引导重播
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+开发模式每次剧情退出接续重播主界面引导，正式模式保持一次性；保留幂等发奖，重复结束不显示新邮件提示。18项测试和lint通过，设计文档已生成。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aab5500e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
