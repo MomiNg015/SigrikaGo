@@ -8,44 +8,6 @@
   gap: 10px !important;
   overflow: visible !important;
 
-  & .portrait-wrap:not(.no-character):not(:has(.team-portrait-strip)) {
-    height: var(--side-portrait) !important;
-    min-height: 0 !important;
-    width: 100% !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    isolation: isolate;
-    clip-path: none !important;
-    padding: 0 !important;
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 20% 8% 0;
-      background: color-mix(in srgb, var(--player-accent) 24%, var(--bright-paper));
-      border: 1px solid var(--bright-border);
-      border-radius: 48% 48% 8px 8px;
-      rotate: -5deg;
-      z-index: -1;
-    }
-
-    & > img {
-      width: 100% !important;
-      height: 115% !important;
-      max-height: none !important;
-      object-fit: contain !important;
-      position: absolute;
-      bottom: 0;
-      border: 0 !important;
-      border-radius: 0 !important;
-      background: transparent !important;
-      box-shadow: none !important;
-    }
-  }
-
   & .player-meta {
     display: grid !important;
     grid-template-columns: auto minmax(0, 1fr) auto auto !important;
@@ -54,7 +16,7 @@
     gap: 6px !important;
     min-width: 0;
     padding: 9px 10px !important;
-    background: color-mix(in srgb, var(--player-accent) 12%, var(--bright-paper)) !important;
+    background: linear-gradient(110deg, var(--bright-paper), color-mix(in srgb, var(--player-accent) 16%, var(--bright-paper))) !important;
     border: 1px solid var(--bright-border) !important;
     border-radius: 8px 14px 4px 4px !important;
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--bright-ink) 20%, transparent) !important;
@@ -68,7 +30,8 @@
   & .player-clock-panel {
     display: grid;
     min-width: 0;
-    background: var(--bright-sheet);
+    --clock-wash: var(--bright-sheet);
+    background: linear-gradient(125deg, color-mix(in srgb, var(--bright-paper) 65%, transparent), transparent 65%), repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--bright-ink) 3%, transparent) 3px 4px), var(--clock-wash);
     border: 2px solid var(--bright-border);
     border-radius: 14px;
     translate: 3px 3px;
@@ -77,7 +40,7 @@
   }
 
   &.active-turn .player-clock-panel {
-    background: #fff0a6;
+    --clock-wash: #fff0a6;
     box-shadow: 3px 3px 0 var(--bright-border);
     translate: 0 0;
   }
@@ -129,9 +92,10 @@
     padding: 7px 10px !important;
     border: 1px solid var(--bright-border) !important;
     border-radius: 8px 8px 14px 8px !important;
-    background: color-mix(in srgb, var(--skill-chip-accent) 45%, var(--bright-paper)) !important;
+    background: linear-gradient(110deg, color-mix(in srgb, var(--skill-chip-accent) 25%, var(--bright-paper)), color-mix(in srgb, var(--skill-chip-accent) 60%, var(--bright-paper))) !important;
     box-shadow: 2px 3px 0 var(--bright-border) !important;
   }
+  & .skill-chip > svg { flex: none; width: 18px !important; height: 18px !important; max-width: none !important; box-sizing: content-box !important; padding-right: 9px; border-right: 1px solid color-mix(in srgb, var(--bright-ink) 25%, transparent); }
   & .player-skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   & .player-skill-count { border-left: 1px dashed var(--bright-muted); padding-left: 8px; white-space: pre; }
 }

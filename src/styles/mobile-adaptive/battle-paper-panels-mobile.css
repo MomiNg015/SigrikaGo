@@ -1,35 +1,44 @@
 /* Portrait rows reserve the breakout art and pressed-clock shadow inside their slot. */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
-    --mobile-room-player-strip-height: 130px !important;
+    --mobile-room-player-strip-height: 158px !important;
+    --mobile-room-board-size: min(calc(100vw - 32px), 390px) !important;
 
     & .mobile-room-viewport[data-action-anchored] {
-      min-height: calc(538px + var(--mobile-action-dock-height, 119px)) !important;
-      grid-template-rows: 130px minmax(254px, 1fr) 130px var(--mobile-action-dock-height, auto) !important;
+      flex: 0 0 auto !important;
+      height: auto !important;
+      min-height: 0 !important;
+      grid-template-rows: max-content max-content max-content max-content !important;
+      align-content: start !important;
+      gap: 16px !important;
     }
 
+    & .mobile-board-viewport { height: auto !important; min-height: var(--mobile-room-board-size) !important; align-self: start !important; }
+    & .board-stage { height: var(--mobile-room-board-size) !important; max-height: none !important; }
+    & .mobile-player-slot { height: auto !important; min-height: var(--mobile-room-player-strip-height) !important; }
+
     & .player-info[data-paper-player] {
-      height: 130px !important;
-      min-height: 130px !important;
+      height: 158px !important;
+      min-height: 158px !important;
       max-height: none !important;
-      grid-template-columns: 88px minmax(0, 1fr) !important;
-      grid-template-rows: 29px 53px 29px !important;
+      grid-template-columns: 106px minmax(0, 1fr) !important;
+      grid-template-rows: 32px 64px 32px !important;
       grid-template-areas: "portrait meta" "portrait clock" "portrait skill" !important;
-      padding: 8px 6px 5px 0 !important;
+      padding: 14px 6px 6px 0 !important;
       gap: 5px 8px !important;
 
       & .portrait-wrap:not(.no-character):not(:has(.team-portrait-strip)) {
         grid-area: portrait !important;
-        height: 98px !important;
+        height: 120px !important;
         align-self: end;
         margin-bottom: 4px;
-        & > img { height: 124px !important; }
+        & > img { height: 154px !important; }
       }
       & .portrait-wrap { grid-area: portrait !important; }
       & .player-meta {
         grid-area: meta !important;
         padding: 3px 6px !important;
-        height: 29px !important;
+        height: 32px !important;
         grid-template-columns: minmax(0, 1fr) auto auto !important;
         gap: 4px !important;
       }
@@ -48,6 +57,7 @@
       & .timer-label { font-size: 9px !important; }
       & .timer-digits { justify-content: flex-end !important; }
       & .timer-primary { font-size: 24px !important; }
+      & .battle-character-label { font-size: 11px; padding: 3px 7px; bottom: -2px; left: 5px; }
       & .timer-track { grid-column: 1 / -1 !important; }
       & .captures {
         flex-direction: column;
@@ -67,7 +77,7 @@
         border: 0 !important;
       }
       & .skill-chip-wrap { grid-area: skill !important; margin: 0; }
-      & .skill-chip { min-height: 27px !important; height: 27px !important; padding: 2px 7px !important; font-size: 12px !important; }
+      & .skill-chip { min-height: 32px !important; height: 32px !important; padding: 2px 7px !important; font-size: 12px !important; }
     }
   }
 }

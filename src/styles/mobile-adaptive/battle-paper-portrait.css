@@ -1,0 +1,60 @@
+/* Breakout character artwork and its paper name label. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+  & .portrait-wrap:not(.no-character):not(:has(.team-portrait-strip)) {
+    height: clamp(180px, 20vw, 250px) !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    isolation: isolate;
+    clip-path: none !important;
+    padding: 0 !important;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 20% 8% 0;
+      background: radial-gradient(ellipse at 25% 15%, var(--bright-paper), transparent 70%), repeating-linear-gradient(135deg, transparent 0 12px, color-mix(in srgb, var(--player-accent) 12%, transparent) 12px 13px), color-mix(in srgb, var(--player-accent) 28%, var(--bright-paper));
+      border: 1px solid var(--bright-border);
+      border-radius: 48% 48% 8px 8px;
+      rotate: -5deg;
+      box-shadow: 5px 6px 0 color-mix(in srgb, var(--player-accent) 30%, transparent);
+      z-index: -1;
+    }
+
+    & > img {
+      width: 118% !important;
+      max-width: none !important;
+      left: -9%;
+      height: 115% !important;
+      max-height: none !important;
+      object-fit: contain !important;
+      position: absolute;
+      bottom: 0;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      filter: drop-shadow(0 5px 0 color-mix(in srgb, var(--bright-ink) 14%, transparent));
+    }
+  }
+
+  & .battle-character-label {
+    display: block;
+    position: absolute;
+    bottom: -3px;
+    left: 10px;
+    z-index: 2;
+    padding: 5px 12px;
+    background: var(--bright-paper);
+    border: 1px solid var(--bright-border);
+    box-shadow: 2px 2px 0 var(--bright-border);
+    rotate: -5deg;
+    font-family: var(--font-window-title);
+    font-size: 16px;
+  }
+
+}

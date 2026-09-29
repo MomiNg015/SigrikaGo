@@ -115,6 +115,7 @@ function PlayerInfo({
         ? <img className="practice-bot-portrait-image" src={botPortraitUrl} alt={player.botProfile?.name ?? "准时宝"} />
         : <span className="practice-bot-portrait" aria-label="准时宝">准</span>)}
       {hasCharacter && !sigrikaCandyDuel && !player.teamLineup && <CharacterChainBadge user={player.user} characterId={character.id} />}
+      {hasCharacter && !sigrikaCandyDuel && !player.teamLineup && <span className="battle-character-label" aria-hidden="true">{character.name}</span>}
       {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       {canSwitchView && (
         <span className="viewpoint-indicator" aria-hidden="true">
