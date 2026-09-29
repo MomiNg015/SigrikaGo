@@ -888,3 +888,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 148: 主界面引导与一次性招新邮件
+
+**Date**: 2026-09-29
+**Task**: 主界面引导与一次性招新邮件
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+实现固定主界面引导、输入隔离、三尺寸适配及事务发奖。68项专项测试、lint、构建与资源检查通过；全量仍有8项无关失败。浏览器三尺寸通过，保留一次桌面点击偶发失败记录。所有收尾检查串行单worker；保留无关工作区改动。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c246177c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
