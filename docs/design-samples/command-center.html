@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>星炬学园 · 作战指挥室</title><link rel="stylesheet" href="command-center.css"></head>
+<body>
+<main class="command-room">
+  <div class="environment" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+  <header class="hud-top">
+    <a class="brand" href="#" aria-label="星炬学园大厅"><svg viewBox="0 0 60 60" aria-hidden="true"><path d="M30 4 48 15 48 39 30 53 12 39 12 15Z M30 4V53 M12 15 48 39 M48 15 12 39 M4 28H56"/></svg><div><strong>星炬学园</strong><small>STARTORCH / COMMAND</small></div></a>
+    <div class="location"><i></i>作战指挥室<span>TACTICAL DECK</span></div>
+    <nav class="top-actions" aria-label="系统入口"><span class="balance"><svg viewBox="0 0 24 24"><path d="m12 3 8 9-8 9-8-9Z M4 12h16"/></svg>2,480</span><button data-panel="mail" aria-label="邮箱"><span data-icon="mail"></span><b class="unread"></b></button><button data-panel="notice" aria-label="公告"><span data-icon="notice"></span></button><button data-panel="settings" aria-label="设置"><span data-icon="settings"></span></button></nav>
+  </header>
+  <section class="identity" aria-label="我的档案"><button class="profile" data-panel="profile"><span class="avatar-shell"><img src="../../public/assets/characters/portraits/sigrika.webp" alt="西格莉卡"></span><span><small>围棋部 / MEMBER</small><strong>木漏れ日</strong><em>三段 <span>／ 1,286 积分</span></em></span><span class="tiny-arrow">↗</span></button><div class="identity-bottom"><span><i></i>西格莉卡 · 出战中</span><button data-panel="members">更换部员 <b>›</b></button></div></section>
+  <section class="dispatch"><div class="section-cap"><span>学院通讯</span><small>01 / 03</small></div><button class="dispatch-item" data-panel="notice"><span class="dispatch-mark">✦</span><div><small>围棋部公告</small><strong>新的对局，已准备就绪</strong></div><b>↗</b></button><div class="dispatch-lines"><span></span><span></span><span></span></div></section>
+  <div class="scene-caption" aria-hidden="true"><span class="reticle">＋</span><span>全息推演台<small>HOLOGRAPHIC GOBAN</small></span><span class="caption-line"></span></div>
+  <section class="operations" aria-label="对弈入口"><div class="operation-heading"><span class="crosshair">⌖</span><span>对弈部署<small>MATCH OPERATIONS</small></span><b>READY</b></div>
+    <button class="launch" data-panel="match"><span class="launch-grid" aria-hidden="true"></span><span class="launch-top"><small>星炬 · 标准 · 五子棋</small><span>↗</span></span><strong>开始对弈</strong><span class="launch-bottom"><span>选择模式 / 寻找对手</span><svg viewBox="0 0 60 20" aria-hidden="true"><path d="M1 10H55 M44 1l11 9-11 9"/></svg></span></button>
+    <button class="secondary-op" data-panel="practice"><span class="op-symbol" data-icon="practice"></span><span><strong>准时宝陪练</strong><small>独立训练 / 自由练习</small></span><b>›</b></button>
+    <button class="secondary-op" data-panel="room"><span class="op-symbol" data-icon="room"></span><span><strong>好友对弈</strong><small>创建房间 / 邀请好友</small></span><b>›</b></button>
+    <button class="handbook" data-panel="members"><span data-icon="members"></span><strong>部员手册</strong><span>查看出战档案 ↗</span></button>
+  </section>
+  <footer class="bottom-hud"><nav class="dock" aria-label="功能入口"><button data-panel="shop"><span data-icon="shop"></span><strong>商店</strong><small>STORE</small></button><button data-panel="inventory"><span data-icon="inventory"></span><strong>仓库</strong><small>INVENTORY</small></button><button data-panel="recruit"><span data-icon="recruit"></span><strong>部员招募</strong><small>RECRUIT</small></button><span class="dock-divider"></span><button data-panel="ranking"><span data-icon="ranking"></span><strong>排行榜</strong><small>RANKING</small></button><button data-panel="watch"><span data-icon="watch"></span><strong>观战</strong><small>SPECTATE</small></button><button data-panel="friends"><span data-icon="friends"></span><strong>好友</strong><small>FRIENDS</small></button></nav><div class="footline"><span>星炬科技 / 作战指挥室</span><span>视觉样板 · 演示数据</span><button id="clean-view">隐藏界面 <kbd>H</kbd></button></div></footer>
+  <button class="restore" hidden>显示界面 <kbd>H</kbd></button>
+</main>
+<dialog aria-labelledby="panel-title" id="panel"><div class="panel-frame"><header><div><small>STARTORCH / TERMINAL</small><h2 id="panel-title"></h2></div><button id="close-panel" aria-label="关闭窗口">×</button></header><div id="panel-content"></div><footer>界面演示 · 未连接游戏服务器</footer></div></dialog>
+<div id="toast" role="status" hidden></div><script src="command-center.js"></script>
+</body></html>
