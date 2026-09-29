@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>移动端 · 纸贴棋钟</title>
+  <link rel="stylesheet" href="./battle-sticker-clock.css">
+</head>
+<body>
+  <!-- Independent mobile concept. Generated paper textures carry no baked-in text.
+       Clock values and actions are local demonstrations, not game state. -->
+  <main class="battle">
+    <header><span>星炬 · 0826</span><span><b id="move-count">42</b> 手</span><button id="reset" aria-label="重置样板">↺</button></header>
+    <section class="player active" data-color="black" aria-label="黑方信息">
+      <div class="portrait-back"></div><img class="portrait" src="/assets/sigrika_centered.webp" alt="西格莉卡">
+      <div class="clock-panel"><div class="clock"><small>主时间</small><strong>4:45</strong><div class="time-track"><i></i></div><small>30秒 × 3</small></div></div>
+      <div class="sticker identity"><i class="stone black"></i><b>moming</b><span>7段</span><span>826分</span></div>
+      <button class="sticker skill" aria-label="使用星辉符文">星辉符文</button>
+      <div class="sticker counter capture">提子 <b>3</b></div><div class="sticker counter remove">除子 <b>0</b></div><div class="sticker overclock">超频 <b>0</b></div>
+    </section>
+    <div class="board-wrap"><svg id="board" viewBox="0 0 520 520" aria-label="对弈棋盘"></svg></div>
+    <section class="player" data-color="white" aria-label="白方信息">
+      <div class="portrait-back"></div><img class="portrait" src="/assets/characters/portraits/denia.webp" alt="达妮娅">
+      <div class="clock-panel"><div class="clock"><small>主时间</small><strong>5:12</strong><div class="time-track"><i></i></div><small>30秒 × 3</small></div></div>
+      <div class="sticker identity"><i class="stone white"></i><b>准时宝</b><span>高级陪练</span><span>人机</span></div>
+      <button class="sticker skill" aria-label="使用泡影幻梦">泡影幻梦</button>
+      <div class="sticker counter capture">提子 <b>1</b></div><div class="sticker counter remove">除子 <b>0</b></div><div class="sticker overclock">超频 <b>0</b></div>
+    </section>
+    <nav aria-label="对弈操作"><button id="pass">弃手</button><button disabled>数子</button><button id="main-skill">星辉符文</button><button disabled>和棋</button><button disabled>认输</button></nav>
+  </main>
+  <script type="module" src="./battle-sticker-clock.js"></script>
+</body>
+</html>
