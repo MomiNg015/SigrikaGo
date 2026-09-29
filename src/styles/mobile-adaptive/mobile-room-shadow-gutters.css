@@ -20,12 +20,18 @@
 /* Reserve the action tab's height; other tabs grow downward into screen scroll. */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
   :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) {
+    /* The turn shadow/pressed offset extends 3px beyond each player slot. */
+    & .mobile-room-screen:not(.sigrika-candy-duel-room) .mobile-player-slot {
+      overflow: visible !important;
+    }
+
     & .mobile-room-screen:has([data-action-anchored]) {
       overflow-y: auto !important;
       overflow-x: hidden !important;
     }
 
     & .mobile-room-viewport[data-action-anchored] {
+      padding: 0 5px 6px 0 !important;
       flex: 1 0 0px !important;
       overflow: visible !important;
       grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) var(--mobile-action-dock-height, auto) !important;

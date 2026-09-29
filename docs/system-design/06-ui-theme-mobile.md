@@ -1,5 +1,7 @@
 # UI 主题、移动端与交互体验
 
+竖屏对弈新增棋钟深度后，最终 `mobile-room-shadow-gutters.css` 必须覆盖 `mobile-player-slot` 的旧 `overflow: hidden !important`，普通房间改为 `overflow: visible`；动作区锚定的视口在全部竖屏移动断点统一采用 `0 5px 6px 0` 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 `RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo` 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。
+
 `RoomHeader` 的 `.room-code-label` 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 `matchSource=practice` 显示“人机”，其余读取棋种 `shortTitle`。保留房间代码和特殊剧情 `ERROR`；`.move-count` 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈的信息卡在 `room/player-status.css` 内统一拥有棋钟深度：`.active-turn` 使用 `3px 3px` 棕色硬阴影及零位移，其余卡片无阴影并向右下移动 3px，视觉占位保持一致；优先级覆盖手机原有扁平卡片规则，黑化剧情保留独立外观。
 
 常规玩家 `ActionBar` 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 `disabled` 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。`room-people-table` 的滚动区域内保留上／右／下／左 `2px 6px 6px 2px` 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。
