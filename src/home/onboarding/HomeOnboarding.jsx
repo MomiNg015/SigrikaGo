@@ -12,6 +12,20 @@ export function visibleGuideTarget(selector) {
   });
 }
 
+export function revealGuideTarget(target) {
+  const bounds = target.getBoundingClientRect();
+  let clipped = bounds.top < 6 || bounds.bottom > window.innerHeight - 6
+    || bounds.left < 6 || bounds.right > window.innerWidth - 6;
+  for (let parent = target.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+    const style = getComputedStyle(parent);
+    const box = parent.getBoundingClientRect();
+    if (/(auto|scroll|hidden)/.test(style.overflowY) && parent.scrollHeight > parent.clientHeight) {
+      clipped ||= bounds.top < box.top || bounds.bottom > box.bottom;
+    }
+  }
+  if (clipped) target.scrollIntoView?.({ block: "nearest", inline: "nearest", behavior: "instant" });
+}
+
 export default function HomeOnboarding({ character, overlaySetters, saving, error, onFinish }) {
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -68,7 +82,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       const target = selector ? visibleGuideTarget(selector) : null;
       targetRef.current = target;
       if (target && target !== scrolledElement && step.target) {
-        target.scrollIntoView?.({ block: "start", inline: "nearest", behavior: "instant" });
+        revealGuideTarget(target);
         scrolledElement = target;
       }
       const bounds = target?.getBoundingClientRect();
@@ -99,6 +113,13 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
         event.stopImmediatePropagation();
       }
     };
+    const blockScroll = (event) => {
+      const panel = event.target.closest?.(".home-guide-panel");
+      if (!panel || panel.scrollHeight <= panel.clientHeight) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
     const keyboard = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -108,7 +129,12 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
         event.stopImmediatePropagation();
         const buttons = [...rootRef.current.querySelectorAll("button:not(:disabled)")];
         const current = buttons.indexOf(document.activeElement);
-        buttons[(current + (event.shiftKey ? buttons.length - 1 : 1)) % buttons.length]?.focus();
+        buttons[(current + (event.shiftKey ? buttons.length - 1 : 1)) % buttons.length]?.focus({ preventScroll: true });
+      } else if (event.key === " " && rootRef.current?.contains(event.target)) {
+        // Let the focused guide control handle Space without scrolling the page.
+        if (event.target === rootRef.current) event.preventDefault();
+      } else if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+        blockScroll(event);
       } else blockOutside(event);
     };
     const focus = (event) => {
@@ -116,10 +142,14 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     };
     const events = ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchmove", "wheel", "contextmenu", "keyup"];
     for (const name of events) window.addEventListener(name, blockOutside, { capture: true, passive: false });
+    window.addEventListener("wheel", blockScroll, { capture: true, passive: false });
+    window.addEventListener("touchmove", blockScroll, { capture: true, passive: false });
     window.addEventListener("keydown", keyboard, true);
     document.addEventListener("focusin", focus, true);
     return () => {
       for (const name of events) window.removeEventListener(name, blockOutside, true);
+      window.removeEventListener("wheel", blockScroll, true);
+      window.removeEventListener("touchmove", blockScroll, true);
       window.removeEventListener("keydown", keyboard, true);
       document.removeEventListener("focusin", focus, true);
       for (const setter of Object.values(HOME_ONBOARDING_WINDOWS)) overlaySetters[setter]?.(false);

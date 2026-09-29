@@ -30,6 +30,16 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
       await expect(page.getByText("正在准备介绍的窗口…", { exact: true })).toHaveCount(0);
       const target = step.target || step.surface ? await page.locator(".home-guide-spotlight").boundingBox() : null;
+      const scrollBefore = await page.evaluate(() => [window.scrollY, document.querySelector(".app-shell").scrollTop]);
+      await page.mouse.move(8, viewport.height - 8);
+      await page.mouse.wheel(0, 240);
+      expect(await page.evaluate(() => [window.scrollY, document.querySelector(".app-shell").scrollTop])).toEqual(scrollBefore);
+      if (step.target) await expect.poll(async () => page.evaluate(targetName => {
+        const actual = [...document.querySelectorAll(`[data-home-guide="${targetName}"]`)]
+          .map(el => el.getBoundingClientRect()).find(rect => rect.width && rect.height);
+        const highlight = document.querySelector(".home-guide-spotlight").getBoundingClientRect();
+        return Math.max(Math.abs(highlight.y - Math.max(6, actual.y - 5)), Math.abs(highlight.x - Math.max(6, actual.x - 5)));
+      }, step.target), { message: `${step.id} tracks its actual target` }).toBeLessThan(2);
       const panel = await page.locator(".home-guide-panel").boundingBox();
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);

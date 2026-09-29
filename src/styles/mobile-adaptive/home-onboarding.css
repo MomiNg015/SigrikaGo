@@ -18,6 +18,7 @@
   padding: 0;
   border: 0;
   border-radius: 0;
+  touch-action: none;
   box-shadow: none;
   background: transparent;
   transform: none;
@@ -69,6 +70,8 @@
   width: min(560px, calc(100% - 28px));
   max-height: calc(100dvh - 28px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .home-guide-panel .tutorial-battle-dialogue {

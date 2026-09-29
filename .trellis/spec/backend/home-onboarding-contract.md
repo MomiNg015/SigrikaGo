@@ -30,3 +30,6 @@ Correct: transactionally claim `homeOnboardingStatus = active` with updateMany a
 
 ## Development replay
 Vite DEV permits a session-local replay after each story exit, including terminal accounts. Never reset server reward state. Terminal finish returns awarded false; do not show a new-mail toast. Production retains one-time behavior. Bind replay requests to account identity and defer to normal availability guards.
+
+## Scroll ownership
+Visible targets must not trigger scrolling. Clipped targets use nearest alignment, never block:start. Guide gestures cannot scroll the page; long dialogue may scroll internally without chaining. Focus uses preventScroll. Browser checks compare highlight coordinates to the real resume/mailbox targets after wheel input.

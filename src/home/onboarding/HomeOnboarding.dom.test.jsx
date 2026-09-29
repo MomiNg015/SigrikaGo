@@ -3,7 +3,7 @@ import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HOME_ONBOARDING_STEPS } from "./homeOnboardingScript.js";
-import HomeOnboarding from "./HomeOnboarding.jsx";
+import HomeOnboarding, { revealGuideTarget } from "./HomeOnboarding.jsx";
 
 beforeEach(() => {
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
@@ -75,4 +75,21 @@ it("centers the reply without the NPC dialogue and keeps only an icon skip contr
   expect(container.querySelector(".home-guide-choice-panel button").textContent).toContain("其它部员呢");
   fireEvent.click(container.querySelector(".home-guide-choice"));
   expect(container.querySelector(".tutorial-battle-dialogue")).not.toBeNull();
+});
+
+it("does not scroll visible targets and only reveals clipped targets with nearest alignment", () => {
+  const target = document.createElement("button");
+  target.scrollIntoView = vi.fn();
+  revealGuideTarget(target);
+  expect(target.scrollIntoView).not.toHaveBeenCalled();
+  target.getBoundingClientRect = () => ({ top: -80, bottom: -30, left: 30, right: 80 });
+  revealGuideTarget(target);
+  expect(target.scrollIntoView).toHaveBeenCalledWith({ block: "nearest", inline: "nearest", behavior: "instant" });
+});
+
+it("blocks wheel and touch scrolling on the guide plane", () => {
+  const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />);
+  const plane = container.querySelector(".home-guide-advance-plane");
+  expect(fireEvent.wheel(plane, { deltaY: 300 })).toBe(false);
+  expect(fireEvent.touchMove(plane)).toBe(false);
 });
