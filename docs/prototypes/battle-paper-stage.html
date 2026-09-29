@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>立体纸剧场 · 对弈信息区样板</title>
+  <link rel="stylesheet" href="./battle-paper-stage.css">
+</head>
+<body>
+<!-- Design assumption: retain Bright School paper and original transparent character art.
+     The portrait crosses a separate backdrop; identity, clock and controls stay in front.
+     Demo only: local moves and skills do not invoke game rules or APIs. -->
+<header class="demo-bar">
+  <div class="demo-heading"><span class="demo-index">星炬棋社 · 视觉试作</span><h1>立体纸剧场<span>对弈信息区</span></h1></div>
+  <div class="demo-controls"><button id="turn-toggle">切换行棋方 ↔</button><button id="depth-toggle" aria-pressed="true">立绘出框：开</button><button id="effect-toggle">试试技能 ✦</button></div>
+</header>
+<main>
+  <div class="match-top"><span><i class="tiny-star">✦</i> 星炬 <small>NO. A7K29</small></span><span class="move-info"><b id="move-count">42</b> 手 <i></i> 常规对弈</span><span class="match-caption">星炬棋社 · 午后的对局</span></div>
+  <section class="arena" aria-label="对弈视觉样板">
+    <article class="player player-black active" data-color="black" aria-label="对手信息">
+      <div class="scene"><span class="scene-word" aria-hidden="true">SIGRIKA</span><div class="orbit" aria-hidden="true"></div><span class="art-spark spark-one" aria-hidden="true">✦</span><span class="art-spark spark-two" aria-hidden="true">✧</span><img class="character" src="../../public/assets/sigrika_centered.webp" alt="西格莉卡"><span class="character-label">西格莉卡 <small>星辉的记录者</small></span></div>
+      <div class="info-paper"><div class="identity"><span class="stone black"></span><div><h2>对手玩家</h2><span class="rank">7段 <span>·</span> 826分</span></div><span class="turn-sticker">正在思考</span></div>
+        <div class="clock"><span class="clock-caption">主时间 <small>30秒 × 3次</small></span><strong>04<span>:</span>38</strong><div class="time-track"><i></i></div></div>
+        <div class="stats"><span>提子 <b>12</b></span><span>除子 <b>03</b></span><span>超频 <b>00</b></span></div>
+        <button class="skill" data-player="black"><span class="skill-icon">✦</span><span>星辉符文<small>让星光落在棋盘上</small></span><b>1<small>次</small></b></button>
+      </div><span class="player-foot">OPPONENT <i></i> 执黑</span>
+    </article>
+    <section class="board-area" aria-label="点击棋盘试下并切换回合"><div class="board-heading"><span>十三路 · 星炬</span><span id="turn-label" aria-live="polite">黑方行棋</span></div><div class="board-frame"><svg id="board" viewBox="0 0 520 520" role="group" aria-label="样板棋盘"></svg><div class="skill-burst" aria-hidden="true"><span>✦</span><strong>星辉符文</strong></div></div><div class="board-note"><span class="note-line"></span>每一步，都是新的故事<span class="note-line"></span></div>
+      <nav class="actions" aria-label="样板对弈操作"><button id="pass">弃手</button><button disabled>数子</button><button id="main-skill">✦ 技能</button><button disabled>和棋</button><button id="reset">重置样板</button></nav>
+    </section>
+    <article class="player player-white" data-color="white" aria-label="我的信息">
+      <div class="scene"><span class="scene-word" aria-hidden="true">DENIA</span><div class="orbit" aria-hidden="true"></div><span class="art-spark spark-one" aria-hidden="true">✧</span><span class="art-spark spark-two" aria-hidden="true">✦</span><img class="character" src="../../public/assets/characters/portraits/denia.webp" alt="达妮娅"><span class="character-label">达妮娅 <small>在泡影中做一个梦</small></span></div>
+      <div class="info-paper"><div class="identity"><span class="stone white"></span><div><h2>moming</h2><span class="rank">7段 <span>·</span> 826分</span></div><span class="turn-sticker">等待对方</span></div>
+        <div class="clock"><span class="clock-caption">主时间 <small>30秒 × 3次</small></span><strong>03<span>:</span>52</strong><div class="time-track"><i></i></div></div>
+        <div class="stats"><span>提子 <b>08</b></span><span>除子 <b>02</b></span><span>超频 <b>01</b></span></div>
+        <button class="skill" data-player="white"><span class="skill-icon">✧</span><span>泡影幻梦<small>未落下的，是梦的形状</small></span><b>1<small>次</small></b></button>
+      </div><span class="player-foot">YOUR SIDE <i></i> 执白</span>
+    </article>
+  </section>
+  <footer><span>立绘越过背板，信息浮在前景。</span><span>独立视觉样板 · 点击棋盘可试下，不连接真实对局</span></footer>
+</main>
+<script src="./battle-paper-stage.js"></script>
+</body></html>
