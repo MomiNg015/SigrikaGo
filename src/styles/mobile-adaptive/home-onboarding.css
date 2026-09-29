@@ -115,21 +115,6 @@
 .home-guide-feedback { color: white; }
 .home-guide-feedback button { min-height: 44px; }
 
-/* Reserve real layout space for dialogue rather than covering the window. */
-.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop,
-.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal-backdrop,
-.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.modal-backdrop, .nested-modal-backdrop):has(> .window-sticker-host) {
-  padding-top: calc(var(--home-guide-panel-height, 228px) + 66px) !important;
-  padding-bottom: 16px !important;
-  align-items: flex-start !important;
-}
-
-.home-guide-running .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.house-modal.resume-modal, .house-modal, .character-details-modal, .match-mode-modal, .recruitment-modal, .shop-modal, .mailbox-modal) {
-  --window-sticker-available-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 100px);
-  min-height: 0 !important;
-  max-height: calc(100dvh - var(--home-guide-panel-height, 228px) - 100px) !important;
-}
-
 @keyframes home-guide-focus {
   from { opacity: 0; transform: scale(1.06); }
   to { opacity: 1; transform: scale(1); }

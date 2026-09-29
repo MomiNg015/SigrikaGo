@@ -54,7 +54,6 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     const measure = () => {
       const height = step.choice ? 0 : panelRef.current?.getBoundingClientRect().height || 200;
       setPanelHeight(height);
-      document.documentElement.style.setProperty("--home-guide-panel-height", `${height + 28}px`);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -92,8 +91,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
 
   useEffect(() => {
     const previousFocus = document.activeElement;
-    document.documentElement.classList.add("home-guide-running");
-    rootRef.current?.focus();
+    rootRef.current?.focus({ preventScroll: true });
     const blockOutside = (event) => {
       if (dispatching.current) return;
       if (!rootRef.current?.contains(event.target)) {
@@ -114,7 +112,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       } else blockOutside(event);
     };
     const focus = (event) => {
-      if (!dispatching.current && !rootRef.current?.contains(event.target)) rootRef.current?.focus();
+      if (!dispatching.current && !rootRef.current?.contains(event.target)) rootRef.current?.focus({ preventScroll: true });
     };
     const events = ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchmove", "wheel", "contextmenu", "keyup"];
     for (const name of events) window.addEventListener(name, blockOutside, { capture: true, passive: false });
@@ -124,12 +122,10 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       for (const name of events) window.removeEventListener(name, blockOutside, true);
       window.removeEventListener("keydown", keyboard, true);
       document.removeEventListener("focusin", focus, true);
-      document.documentElement.classList.remove("home-guide-running");
-      document.documentElement.style.removeProperty("--home-guide-panel-height");
       for (const setter of Object.values(HOME_ONBOARDING_WINDOWS)) overlaySetters[setter]?.(false);
       const menu = visibleGuideTarget('[data-home-guide="mobile-menu"]');
       if (menu?.getAttribute("aria-expanded") === "true") menu.click();
-      if (previousFocus?.isConnected) previousFocus.focus();
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
     };
   }, [overlaySetters]);
 
@@ -153,7 +149,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const minimumTop = 66;
   let panelTop = minimumTop;
   let panelLeft = (width - panelWidth) / 2;
-  if (step.action && rect) {
+  if (step.target && rect) {
     const below = rect.bottom + 16;
     const above = rect.top - panelHeight - 16;
     panelTop = below + panelHeight <= height - 14 ? below : Math.max(minimumTop, above);

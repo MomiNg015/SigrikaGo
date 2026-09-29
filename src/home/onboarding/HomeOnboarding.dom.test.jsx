@@ -68,6 +68,7 @@ it("centers the reply without the NPC dialogue and keeps only an icon skip contr
   expect(skip.querySelector("svg")).not.toBeNull();
   for (const step of HOME_ONBOARDING_STEPS) {
     if (step.choice) break;
+    if (step.id === "practice") expect(container.querySelector(".home-guide-panel").style.top).toBe("171px");
     fireEvent.click(container.querySelector(step.action ? ".home-guide-target" : ".home-guide-advance-plane"));
   }
   expect(container.querySelector(".tutorial-battle-dialogue")).toBeNull();

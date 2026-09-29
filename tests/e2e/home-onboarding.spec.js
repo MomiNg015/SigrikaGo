@@ -34,13 +34,19 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);
-      if (!step.action) expect(panel.y).toBeLessThan(100);
-      if (target) await expect.poll(async () => {
+      if (!step.target) expect(panel.y).toBeLessThan(100);
+      if (target && step.target) await expect.poll(async () => {
         const a = await page.locator(".home-guide-spotlight").boundingBox();
         const b = await page.locator(".home-guide-panel").boundingBox();
         return Math.min(Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y),
           Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
       }, { message: `${step.id} spotlight overlaps dialogue` }).toBeLessThanOrEqual(1);
+      if (step.surface) {
+        const windowRect = await page.locator(step.surface).first().boundingBox();
+        await page.locator(".home-onboarding").evaluate(el => { el.style.visibility = "hidden"; });
+        expect(await page.locator(step.surface).first().boundingBox()).toEqual(windowRect);
+        await page.locator(".home-onboarding").evaluate(el => { el.style.removeProperty("visibility"); });
+      }
       if (["handbook", "sigrika", "skill", "practice", "recruitment-intro", "shop-intro", "mailbox"].includes(step.id)) {
         await page.screenshot({ path: testInfo.outputPath(`${step.id}.png`) });
       }
