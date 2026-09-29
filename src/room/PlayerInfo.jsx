@@ -126,7 +126,8 @@ function PlayerInfo({
   return (
     <aside
       className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${isPracticeBot ? "practice-bot-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
-      style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
+      data-paper-player={!sigrikaCandyDuel ? "" : undefined}
+      style={{ "--player-accent": character?.palette || "var(--bright-blue)", ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {}) }}
     >
       {showPortrait && (canSwitchView ? (
         <button
@@ -153,36 +154,38 @@ function PlayerInfo({
         {!sigrikaCandyDuel && player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
         {showNoCharacterRatingPlaceholder && <span className="meta-tag rating-tag meta-placeholder" aria-hidden="true" />}
       </div>
-      <TimeBar time={player.time} />
-      {showGoStats && <div className="captures">
-        <span><strong>提子</strong>{player.captures}</span>
-        {showSkillStats && <button
-          type="button"
-          className="info-stat removal-stat capture-control"
-          data-mobile-tooltip-trigger
-          data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
-          title={PLAYER_INFO_TOOLTIPS.skillRemovals}
-          onMouseEnter={requestFloatingLayer}
-          onFocus={requestFloatingLayer}
-          onClick={(event) => {
-            requestFloatingLayer();
-            openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
-          }}
-        ><strong>除子</strong>{skillRemovals}</button>}
-        {showSkillStats && <button
-          type="button"
-          className="info-stat cost-stat capture-control"
-          data-mobile-tooltip-trigger
-          data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
-          title={PLAYER_INFO_TOOLTIPS.overclock}
-          onMouseEnter={requestFloatingLayer}
-          onFocus={requestFloatingLayer}
-          onClick={(event) => {
-            requestFloatingLayer();
-            openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
-          }}
-        ><strong>超频</strong>{skillCost}</button>}
-      </div>}
+      <div className="player-clock-panel">
+        <TimeBar time={player.time} />
+        {showGoStats && <div className="captures">
+          <span><strong>提子</strong>{player.captures}</span>
+          {showSkillStats && <button
+            type="button"
+            className="info-stat removal-stat capture-control"
+            data-mobile-tooltip-trigger
+            data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
+            title={PLAYER_INFO_TOOLTIPS.skillRemovals}
+            onMouseEnter={requestFloatingLayer}
+            onFocus={requestFloatingLayer}
+            onClick={(event) => {
+              requestFloatingLayer();
+              openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
+            }}
+          ><strong>除子</strong>{skillRemovals}</button>}
+          {showSkillStats && <button
+            type="button"
+            className="info-stat cost-stat capture-control"
+            data-mobile-tooltip-trigger
+            data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
+            title={PLAYER_INFO_TOOLTIPS.overclock}
+            onMouseEnter={requestFloatingLayer}
+            onFocus={requestFloatingLayer}
+            onClick={(event) => {
+              requestFloatingLayer();
+              openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
+            }}
+          ><strong>超频</strong>{skillCost}</button>}
+        </div>}
+      </div>
       {skillEnabled && hasCharacter && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
         onMouseLeave={() => {
@@ -219,7 +222,8 @@ function PlayerInfo({
           }}
         >
           <Sparkles size={16} />
-          {character.skill.name} · {skillUses}
+          <span className="player-skill-name">{character.skill.name}</span>
+          <span className="player-skill-count"> · {skillUses}</span>
         </button>
         <div className="skill-detail-panel" aria-hidden={!skillDetailOpen}>
           <SkillDescription

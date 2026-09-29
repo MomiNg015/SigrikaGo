@@ -53,9 +53,9 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
-<p>对弈信息区“立体纸剧场”独立交互样板见 <code>docs/prototypes/battle-paper-stage.html</code>：保留校园纸面、本地透明角色图与棕色硬阴影，以背板、出框立绘和前景身份／棋钟／技能纸形成层次。第二版将原大白卡拆为浅色身份铭牌、深色实体棋钟及角色色技能按钮；提子／除子／超频并入棋钟底座，时间改用清晰等宽数字。桌面双侧角色、手机竖屏横向信息条均可预览；支持出框对照、换手、试下、技能演示及重置，仅使用本地模拟数据，未接入正式对弈组件。</p>
+<p>对弈信息区“立体纸剧场”已接入普通 Bright School 对弈：保留出框角色立绘，信息拆为身份铭牌、棋钟统计面板与角色色技能按钮。棋钟平时沿用米色，当前行棋方变黄并抬起显示硬阴影，另一方下沉 3px；手机竖屏使用 130px 信息条，短屏允许页面滚动以保留棋盘最小尺寸及阴影空间。独立交互样板仍见 <code>docs/prototypes/battle-paper-stage.html</code>。</p>
 <p>竖屏对弈信息卡的外层 <code>mobile-player-slot</code> 允许阴影与按下位移溢出，动作区锚定视口统一预留右侧 5px、底部 6px；配合卡片间距完整展示回合棋钟阴影，不压缩卡片内容。</p>
-<p>对弈 Header 的房间号前缀显示当前模式（星炬、标准、五子棋、人机、吃子赛、队际赛），手数标签只显示当前手数。普通校园对弈双方信息卡复用回合状态实现棋钟按键反馈：行棋方保留右下阴影，非行棋方下沉 3px 并去掉阴影，桌面与手机竖屏一致。</p>
+<p>对弈 Header 的房间号前缀显示当前模式（星炬、标准、五子棋、人机、吃子赛、队际赛），手数标签只显示当前手数。普通校园对弈的回合反馈集中在棋钟统计面板，人物与身份铭牌保持稳定。</p>
 <p>常规对弈功能区固定保留弃手、数子、技能、和棋、认输五个按钮；棋种或模式不支持的操作保留灰色禁用占位。房间成员列表在滚动容器内预留悬停与右下硬阴影空间，避免首尾行阴影裁切。</p>
 <p>科技风第二轮主界面采用用户选定的“科幻作战指挥室”，入口 <code>docs/design-samples/command-center.html</code>：独立生成的舱体场景包含轨道舷窗与中央全息棋盘，DOM 界面承担身份区、对弈部署、陪练、好友房间、部员手册和底部功能导航；手机竖屏独立重排，支持隐藏界面查看场景。模式选择、部员更换、房间号校验与第二项主题设置均为本地样板，不启动真实匹配或写入正式偏好；素材和生成提示词记录在 <code>docs/design-samples/command-center-notes.md</code>。第一轮三套方向保留作对照，尚未接入运行时和后台。</p>
 <p>星炬科技界面探索入口为 <code>docs/design-samples/startorch.html</code>：提供白昼学院、深空终端、轨道观测站三种方向，各包含大厅、13 路对弈、部员手册和界面设置样板，适配桌面及手机竖屏。设置样板将科技风置于第二项；现有运行时 <code>club-standard</code> 占位项和后台管理保持不变，待视觉方向选定后再接入。样板使用本地立绘与演示数据，提供角色出战选择、棋盘落子／重置、模式弹窗，不连接 API 或写入正式主题偏好。设计参考与运行方式见 <code>docs/design-samples/startorch-notes.md</code>。</p>
@@ -4979,7 +4979,7 @@
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
 <p>竖屏对弈新增棋钟深度后，最终 <code>mobile-room-shadow-gutters.css</code> 必须覆盖 <code>mobile-player-slot</code> 的旧 <code>overflow: hidden !important</code>，普通房间改为 <code>overflow: visible</code>；动作区锚定的视口在全部竖屏移动断点统一采用 <code>0 5px 6px 0</code> 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 <code>RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo</code> 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。</p>
-<p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈的信息卡在 <code>room/player-status.css</code> 内统一拥有棋钟深度：<code>.active-turn</code> 使用 <code>3px 3px</code> 棕色硬阴影及零位移，其余卡片无阴影并向右下移动 3px，视觉占位保持一致；优先级覆盖手机原有扁平卡片规则，黑化剧情保留独立外观。</p>
+<p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 <code>mobile-adaptive/battle-paper-panels.css</code> 与 <code>battle-paper-panels-mobile.css</code> 拆分身份、棋钟和技能面板。<code>PlayerInfo</code> 的 <code>player-clock-panel</code> 包含原计时器和统计，其他主题使用 <code>display: contents</code> 保留原布局；黑化剧情不启用新外观。棋钟常态使用 <code>--bright-sheet</code> 米色，<code>.active-turn</code> 使用既有黄色 <code>#fff0a6</code>、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏预留 130px 信息条及至少 254px 棋盘行，短屏向下滚动，不能让棋盘最小高度穿入上下信息条。</p>
 <p>常规玩家 <code>ActionBar</code> 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 <code>disabled</code> 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。<code>room-people-table</code> 的滚动区域内保留上／右／下／左 <code>2px 6px 6px 2px</code> 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。</p>
 <h2>玩家窗口左侧书签选项卡</h2>
 <p><code>ResumeModal</code>、<code>SettingsModal</code>、<code>AchievementModal</code>、<code>LeaderboardModal</code>、<code>WatchModal</code>、<code>FriendsModal</code>和 <code>AnnouncementModal</code> 显式声明 <code>window-bookmark-host</code>，对应分类/模式控件使用 <code>WindowBookmarkTabs</code>；<code>UserProfileCard</code> 仅在首页好友入口启用 <code>titleStickers</code> 时接入，房间内保持原布局。组件保留原按钮 ID、<code>aria-controls</code>、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 <code>.app-shell</code> 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 <code>ShopTabs</code> 和 <code>GachaModal</code> 没有现行入口，不为样式推广重新启用。</p>

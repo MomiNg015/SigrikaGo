@@ -12,7 +12,7 @@
   "assignee": "Moming",
   "createdAt": "2026-09-29",
   "completedAt": null,
-  "branch": null,
+  "branch": "codex/battle-paper-panels",
   "base_branch": "master",
   "worktree_path": null,
   "commit": null,

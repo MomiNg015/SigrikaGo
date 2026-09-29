@@ -16,6 +16,19 @@ const noop = () => {};
 const characters = {};
 
 describe("PlayerInfo labels", () => {
+  it.each(["spark", "standard", "gomoku"])("keeps timer semantics and mode counters inside the %s clock", (mode) => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, {
+      player: { color: COLORS.black, characterId: "sigrika", user: { username: "玩家", rank: "7段", rating: 826 }, captures: 2, time: { unlimited: true } },
+      game: { mode, phase: "playing", turn: COLORS.black, skillUses: { black: 1 } },
+      characters: CHARACTERS,
+      isActiveTurn: true
+    }));
+    expect(markup).toContain('data-paper-player=""');
+    expect(markup).toContain('class="player-clock-panel"><div class="timer');
+    expect(markup).toContain('aria-label="不限时"');
+    expect(markup.includes('class="captures"')).toBe(mode !== "gomoku");
+  });
+
   it("defines hover explanations for skill removal and overclock counters", () => {
     expect(PLAYER_INFO_TOOLTIPS.skillRemovals).toBe(
       "除子：因技能影响而从棋盘上移除的对方棋子数。数目时+除子*1的数值。"

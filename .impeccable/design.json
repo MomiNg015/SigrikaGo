@@ -1,9 +1,14 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-31T20:17:00.0000000+08:00",
+  "generatedAt": "2026-09-29T11:40:00+08:00",
   "title": "Design System: SigrikaGo Bright School",
   "extensions": {
     "colorMeta": {
+      "active-clock": {
+        "role": "accent",
+        "displayName": "Active Battle Clock",
+        "canonical": "#fff0a6"
+      },
       "paper": {
         "role": "neutral",
         "displayName": "Notebook Paper",

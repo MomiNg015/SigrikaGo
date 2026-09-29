@@ -11,7 +11,12 @@ colors:
   notebook-blue: "#9ad3de"
   club-mint: "#bfe8dd"
   danger: "#c0182d"
+  active-clock: "#fff0a6"
 typography:
+  battle-clock:
+    fontFamily: "Arial, sans-serif"
+    fontWeight: 700
+    lineHeight: 1.15
   display:
     fontFamily: "Sigrika Accent Latin, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontWeight: 400
@@ -35,6 +40,7 @@ typography:
     lineHeight: 1.35
     letterSpacing: "0"
 rounded:
+  paper-corner: "4px"
   control: "8px"
   action: "14px"
   panel: "16px"

@@ -1,4 +1,6 @@
 /* Room player cards and result status badges. */
+.player-clock-panel { display: contents; }
+
 .player-info {
   padding: clamp(10px, 1.1vw, 14px);
   display: grid;
