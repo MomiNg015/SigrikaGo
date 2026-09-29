@@ -1,8 +1,8 @@
 /* Portrait rows reserve the breakout art and pressed-clock shadow inside their slot. */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
-    --mobile-room-player-strip-height: 158px !important;
-    --mobile-room-board-size: min(calc(100vw - 32px), 390px) !important;
+    --mobile-room-player-strip-height: 94px !important;
+    --mobile-room-board-size: min(calc(100vw - 32px), clamp(260px, calc(100dvh - 414px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)), 390px)) !important;
 
     & .mobile-room-viewport[data-action-anchored] {
       flex: 0 0 auto !important;
@@ -10,7 +10,7 @@
       min-height: 0 !important;
       grid-template-rows: max-content max-content max-content max-content !important;
       align-content: start !important;
-      gap: 16px !important;
+      gap: 8px !important;
     }
 
     & .mobile-board-viewport { height: auto !important; min-height: var(--mobile-room-board-size) !important; align-self: start !important; }
@@ -18,69 +18,77 @@
     & .mobile-player-slot { height: auto !important; min-height: var(--mobile-room-player-strip-height) !important; }
 
     & .player-info[data-paper-player] {
-      height: 158px !important;
-      min-height: 158px !important;
+      height: 94px !important;
+      min-height: 94px !important;
       max-height: none !important;
-      grid-template-columns: 106px minmax(0, 1fr) !important;
-      grid-template-rows: 32px 64px 32px !important;
-      grid-template-areas: "portrait meta" "portrait clock" "portrait skill" !important;
-      padding: 14px 6px 6px 0 !important;
-      gap: 5px 8px !important;
+      grid-template-columns: 66px minmax(0, 1fr) 108px !important;
+      grid-template-rows: 40px 30px !important;
+      grid-template-areas: "portrait meta clock" "portrait skill clock" !important;
+      padding: 10px 6px 9px 0 !important;
+      gap: 5px 6px !important;
 
       & .portrait-wrap:not(.no-character):not(:has(.team-portrait-strip)) {
         grid-area: portrait !important;
-        height: 120px !important;
+        height: 70px !important;
         align-self: end;
         margin-bottom: 4px;
-        & > img { height: 154px !important; }
+        & > img { height: 90px !important; }
       }
       & .portrait-wrap { grid-area: portrait !important; }
       & .player-meta {
         grid-area: meta !important;
         padding: 3px 6px !important;
-        height: 32px !important;
-        grid-template-columns: minmax(0, 1fr) auto auto !important;
+        height: 40px !important;
+        grid-template-columns: auto 1fr !important;
+        grid-template-rows: 22px 12px !important;
         gap: 4px !important;
-        margin: 0 14px 0 -8px !important;
-        rotate: -1.5deg !important;
+        margin: 0 !important;
+        rotate: 0deg !important;
       }
       & .player-clock-panel {
         grid-area: clock;
-        grid-template-columns: minmax(0, 1fr) auto;
-        padding: 5px 8px;
-        gap: 7px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: 1fr auto;
+        align-self: stretch;
+        padding: 5px 6px;
+        gap: 3px;
         border-radius: 8px;
         margin: 0 !important;
       }
       & .player-clock-panel:not(:has(.captures)) { grid-template-columns: minmax(0, 1fr); }
-      & .player-meta .name-button { grid-area: 1 / 1 !important; }
-      & .player-meta .rank-tag { grid-area: 1 / 2 !important; }
-      & .player-meta .rating-tag { grid-area: 1 / 3 !important; }
+      & .player-meta .name-button { grid-area: 1 / 1 / 2 / -1 !important; }
+      & .player-meta .rank-tag { grid-area: 2 / 1 !important; }
+      & .player-meta .rating-tag { grid-area: 2 / 2 !important; }
       & .digital-timer { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto !important; gap: 0 !important; }
+      & .player-meta .name-button { justify-self: stretch !important; }
+      & .player-meta .rating-tag { justify-self: start; }
+      & .skill-chip > svg { width: 13px !important; height: 13px !important; padding-right: 4px; }
+      & .player-skill-count { padding-left: 4px; }
       & .timer-label { font-size: 9px !important; }
       & .timer-digits { justify-content: flex-start !important; }
-      & .timer-primary { font-size: 30px !important; line-height: 1 !important; letter-spacing: -1px; }
-      & .battle-character-label { font-size: 11px; padding: 3px 7px; bottom: -2px; left: 5px; }
+      & .timer-primary { font-size: 29px !important; line-height: 1 !important; letter-spacing: -1px; }
+      & .battle-character-label { font-size: 9px; padding: 2px 4px; bottom: -2px; left: 5px; }
       & .timer-track { grid-column: 1 / -1 !important; }
       & .captures {
-        flex-direction: column;
+        flex-direction: row;
+        gap: 4px !important;
         justify-content: center;
-        padding: 0 0 0 7px !important;
-        border-top: 0;
-        border-left: 1px solid color-mix(in srgb, var(--bright-ink) 20%, transparent);
+        padding: 3px 0 0 !important;
+        border-top: 1px dashed color-mix(in srgb, var(--bright-ink) 20%, transparent);
+        border-left: 0;
       }
       & .captures > * {
         display: flex !important;
         justify-content: space-between !important;
-        gap: 7px !important;
+        gap: 2px !important;
         min-height: 0 !important;
         padding: 0 !important;
-        font-size: 9px !important;
+        font-size: 8px !important;
         line-height: 12px !important;
         border: 0 !important;
       }
-      & .skill-chip-wrap { grid-area: skill !important; margin: -10px 8px 0 18px !important; }
-      & .skill-chip { min-height: 32px !important; height: 32px !important; padding: 2px 7px !important; font-size: 12px !important; }
+      & .skill-chip-wrap { grid-area: skill !important; margin: 0 !important; }
+      & .skill-chip { min-height: 30px !important; height: 30px !important; padding: 2px 7px !important; font-size: 11px !important; rotate: 0deg !important; }
     }
   }
 }
