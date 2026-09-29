@@ -501,3 +501,5 @@
 服务端 `User.homeOnboardingStatus` 保存 pending/active/completed/skipped，`homeOnboardingFinishedAt` 记录结束，`onboardingExitedAt` 区分剧情已退出与仅自动展示。新迁移只在首次添加退出字段时给旧自动展示账号补退出时间，避免把未来中断的新用户误判为已教学。认证接口 GET `/api/home-onboarding`、POST `/api/home-onboarding/start`、POST `/api/home-onboarding/finish`（`outcome: completed|skipped`）提供状态、启动和结束。结束事务以 active 状态条件更新取得唯一发奖权，并发送学院海报和电台广播券各 3 个的两封西格莉卡邮件；任一邮件失败全部回滚，重复请求不再发奖。原迎新邮件保留，其提示延后到主界面引导结算。相关测试与实现约束见 `.trellis/spec/backend/home-onboarding-contract.md`。
 
 主界面引导不再显示底部继续按钮，点击背景或台词继续；跳过以右上角独立图标按钮呈现。普通西格莉卡台词位于上方，要求点击的步骤按目标实时位置放到其上方或下方；真实窗口为上方台词预留空间。用户回复步骤隐藏 NPC 对话，只在视口正中显示回复选项，保留失败重试反馈。
+
+开发环境（Vite `import.meta.env.DEV`）每次完成或跳过剧情引导后均可接续重播主界面引导。已完成账号仅重播客户端展示，不重置服务端状态；结束仍使用幂等结算接口，不重复发奖或提示新邮件。正式构建维持一次性规则。

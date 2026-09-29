@@ -27,3 +27,6 @@ SQLite tests assert concurrent writes, rollback, fixed attachments and story eli
 ## Wrong vs Correct
 Wrong: read a nullable reward timestamp, insert mails, then update status outside a transaction.
 Correct: transactionally claim `homeOnboardingStatus = active` with updateMany and insert both mails only when count is one.
+
+## Development replay
+Vite DEV permits a session-local replay after each story exit, including terminal accounts. Never reset server reward state. Terminal finish returns awarded false; do not show a new-mail toast. Production retains one-time behavior. Bind replay requests to account identity and defer to normal availability guards.

@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useHomeOnboarding } from "./useHomeOnboarding.js";
 import { api } from "../../api/client.js";
 vi.mock("../../api/client.js", () => ({ api: vi.fn() }));
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+beforeEach(() => vi.stubEnv("DEV", false));
+afterEach(() => { cleanup(); vi.clearAllMocks(); vi.unstubAllEnvs(); });
 function props() {
   return { token: "t", userId: "u", available: true, overlaysOpen: false,
     overlaySetters: {}, refreshMailboxSummary: vi.fn(async () => {}), showToast: vi.fn() };
@@ -64,4 +65,45 @@ describe("home tour lifecycle", () => {
       "/api/onboarding-story/exited", "/api/home-onboarding", "/api/home-onboarding/start"
     ]);
   });
+});
+
+it.each(["completed", "skipped"])("development replays after each story exit for %s accounts without awarding again", async (status) => {
+  vi.stubEnv("DEV", true);
+  api.mockResolvedValue({ status, eligible: false, awarded: false });
+  const initial = props();
+  const { result, rerender } = renderHook(useHomeOnboarding, { initialProps: initial });
+  await act(async () => {});
+  expect(result.current.active).toBe(false);
+  for (const outcome of ["completed", "skipped"]) {
+    rerender({ ...initial, available: false });
+    act(() => result.current.onStoryExited());
+    expect(result.current.active).toBe(false);
+    rerender(initial);
+    await waitFor(() => expect(result.current.active).toBe(true));
+    await act(() => result.current.finish(outcome));
+    expect(result.current.active).toBe(false);
+  }
+  expect(api.mock.calls.filter(([path]) => path.endsWith("/start"))).toHaveLength(0);
+  expect(api.mock.calls.filter(([path]) => path.endsWith("/finish"))).toHaveLength(2);
+  expect(initial.showToast).not.toHaveBeenCalled();
+});
+
+it("production does not replay a settled tour after story exit", async () => {
+  api.mockResolvedValue({ status: "completed", eligible: false });
+  const { result } = renderHook(useHomeOnboarding, { initialProps: props() });
+  await act(async () => {});
+  await act(async () => result.current.onStoryExited());
+  expect(result.current.active).toBe(false);
+  expect(api.mock.calls.some(([path]) => path.endsWith("/start"))).toBe(false);
+});
+
+it("does not transfer a pending development replay to another account", async () => {
+  vi.stubEnv("DEV", true);
+  api.mockResolvedValue({ status: "completed", eligible: false });
+  const initial = props();
+  const { result, rerender } = renderHook(useHomeOnboarding, { initialProps: { ...initial, available: false } });
+  act(() => result.current.onStoryExited());
+  rerender({ ...initial, userId: "other", token: "other" });
+  await act(async () => {});
+  expect(result.current.active).toBe(false);
 });
