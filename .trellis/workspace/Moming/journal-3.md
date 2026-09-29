@@ -1020,3 +1020,36 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 152: 移动引导滚动与高亮偏移修复
+
+**Date**: 2026-09-29
+**Task**: 移动引导滚动与高亮偏移修复
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+移除逐步强制置顶，裁切目标才nearest滚动；遮罩阻止触摸滚轮背景滚动，长台词独立滚动，focus preventScroll。36项测试、lint与三尺寸完整浏览器流程通过，含铭牌邮箱坐标检查。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `211a07cd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
