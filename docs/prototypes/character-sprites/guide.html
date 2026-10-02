@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>剧情引导 · 完整构图样板</title>
+  <link rel="stylesheet" href="./sample.css">
+  <link rel="stylesheet" href="./battle.css">
+  <link rel="stylesheet" href="./guide.css">
+  <script src="./catalog-data.js" defer></script>
+  <script src="./guide-data.js" defer></script>
+  <script src="./battle.js" defer></script>
+  <script src="./guide.js" defer></script>
+</head>
+<body class="guide-page">
+  <header class="guide-sample-header">
+    <div><a href="./index.html#story">返回场景样板</a><h1>剧情引导 · 构图样板</h1></div>
+    <div class="guide-sizes" aria-label="样板尺寸">
+      <button data-action="size" data-value="desktop" aria-pressed="true">桌面</button>
+      <button data-action="size" data-value="phone" aria-pressed="false">390 竖屏</button>
+      <button data-action="size" data-value="small" aria-pressed="false">360 竖屏</button>
+    </div>
+  </header>
+  <label class="guide-quick-select">情境<select id="guide-quick-select" aria-label="选择预览情境"></select></label>
+  <main class="guide-workspace">
+    <section class="guide-preview" aria-label="剧情引导样板">
+      <div id="guide-frame" class="guide-frame"></div>
+      <p class="guide-boundary">真实引导台词与选项 · 本地交互样板</p>
+    </section>
+    <aside class="guide-controls" aria-label="样板场景设置">
+      <h2>查看情境</h2>
+      <div id="guide-scenarios" class="guide-scenarios"></div>
+      <dl class="guide-node-detail"><dt>当前节点</dt><dd id="guide-node-id"></dd><dt>表情</dt><dd id="guide-expression"></dd></dl>
+      <label class="guide-checkbox"><input id="guide-typewriter" type="checkbox" checked>对白逐字显示</label>
+      <button data-action="replay" class="guide-replay">重看当前情境</button>
+      <p id="guide-design-note" class="guide-design-note"></p>
+    </aside>
+  </main>
+  <div id="guide-toast" class="sample-toast" role="status" hidden></div>
+</body>
+</html>

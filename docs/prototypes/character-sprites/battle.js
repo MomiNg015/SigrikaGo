@@ -22,7 +22,7 @@
     const stars = [[3, 3], [9, 3], [6, 6], [3, 9], [9, 9]].map(([x, y]) => `<circle cx="${30 + x * 27}" cy="${30 + y * 27}" r="2.3" />`).join('');
     const coordinates = [...letters].map((letter, i) => `<text x="${30 + i * 27}" y="17">${letter}</text><text x="13" y="${33 + i * 27}">${13 - i}</text>`).join('');
     const pieces = stones.map(([x, y, color], index) => {
-      const latest = index === stones.length - 1;
+      const latest = state.lastMovePointId ? `${x},${y}` === state.lastMovePointId : index === stones.length - 1;
       const cx = 30 + x * 27;
       const cy = 30 + y * 27;
       return `<g><circle cx="${cx + .7}" cy="${cy + 1.6}" r="12.2" fill="#503b29" opacity=".18" /><circle cx="${cx}" cy="${cy}" r="11.8" fill="url(#sprite-stone-${color === 'white' ? 'white' : 'black'})" stroke="${color === 'white' ? '#b3a891' : '#262c2f'}" stroke-width=".6" />${latest ? `<circle cx="${cx}" cy="${cy}" r="3" fill="none" stroke="${color === 'white' ? '#b76376' : '#ffe9a2'}" stroke-width="1.6" />` : ''}</g>`;
@@ -30,14 +30,15 @@
     const hits = [];
     for (let y = 0; y < 13; y += 1) {
       for (let x = 0; x < 13; x += 1) {
+        const invalid = state.invalidPoints?.includes(`${x},${y}`);
         const occupied = stones.some((stone) => stone[0] === x && stone[1] === y);
-        hits.push(`<button class="battle-intersection" style="left:${(30 + x * 27) / 384 * 100}%;top:${(30 + y * 27) / 384 * 100}%" data-action="board-move" data-x="${x}" data-y="${y}" aria-label="${letters[x]}${13 - y}${occupied ? '，已有棋子' : '，落子'}" ${occupied ? 'disabled' : ''}></button>`);
+        hits.push(`<button class="battle-intersection" style="left:${(30 + x * 27) / 384 * 100}%;top:${(30 + y * 27) / 384 * 100}%" data-action="board-move" data-x="${x}" data-y="${y}" aria-label="${letters[x]}${13 - y}${invalid ? '，交叉点已抹除' : occupied ? '，已有棋子' : '，落子'}" ${occupied || invalid ? 'disabled' : ''}></button>`);
       }
     }
     return `<div class="battle-board turn-${state.turn || 'black'}" aria-label="13路围棋棋盘，可点击交叉点演示落子">
       <svg viewBox="0 0 384 384" role="img" aria-label="13路棋盘与示例棋子">
         <defs><radialGradient id="sprite-stone-black" cx="32%" cy="25%"><stop offset="0" stop-color="#576064"/><stop offset=".58" stop-color="#272d30"/><stop offset="1" stop-color="#151a1d"/></radialGradient><radialGradient id="sprite-stone-white" cx="32%" cy="22%"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f6f2e7"/><stop offset="1" stop-color="#ded8c8"/></radialGradient></defs>
-        <g class="battle-board-coordinates" text-anchor="middle">${coordinates}</g><g class="battle-grid-lines" fill="none">${lines}</g><g fill="#6b5942">${stars}</g>${pieces}
+        <g class="battle-board-coordinates" text-anchor="middle">${coordinates}</g><g class="battle-grid-lines" fill="none">${lines}</g><g fill="#6b5942">${stars}</g>${pieces}${(state.invalidPoints || []).map(pointId => { const [x, y] = pointId.split(',').map(Number); return `<circle cx="${30 + x * 27}" cy="${30 + y * 27}" r="10" fill="var(--paper)"/><path d="M${24 + x * 27} ${24 + y * 27}l12 12m-12 0l12-12" stroke="var(--ink)" opacity=".5"/>`; }).join('')}
       </svg>${hits.join('')}
     </div>`;
   }
@@ -55,6 +56,9 @@
       ${own ? `<button class="battle-skill-button ${state.skillUsed ? 'is-used' : ''}" data-action="cast-skill" ${state.skillUsed ? 'disabled' : ''}><span>✦</span> ${state.skillUsed ? '已使用' : '发动技能'}</button>` : '<span class="battle-skill-label">◇ 泡影幻梦</span>'}
     </aside>`;
   }
+
+  // Shared only by the offline guide sample; this is not the runtime Go engine.
+  window.SpriteScenes.renderGuideBoard = board;
 
   window.SpriteScenes.renderBattle = function (ctx) {
     const { state, art } = ctx;
