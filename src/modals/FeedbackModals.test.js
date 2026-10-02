@@ -20,7 +20,7 @@ describe("FeedbackModals helpers", () => {
   it("uses semantic rating typography for challenger rating but not the duel countdown", () => {
     const source = readFileSync(new URL("./FeedbackModals.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain('<span className="text-rating-value">{request.from.rating}分</span>');
+    expect(source).toContain('<RankProgress {...request.from} />');
     expect(source).toContain("<b>{seconds}s</b>");
   });
 

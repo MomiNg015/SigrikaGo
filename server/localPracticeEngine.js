@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
-import { GAME_PHASES, gameViewForColor } from "../src/shared/game.js";
+import { GAME_PHASES } from "../src/shared/game.js";
+import { practiceBotView } from "./practiceBotView.js";
 import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 import { practiceDifficulty, practiceCaptureResignThreshold } from "../src/shared/practiceMode.js";
 import { isLocalPractice, LOCAL_PRACTICE_VERSION, LOCAL_PRACTICE_LEASE_MS } from "../src/shared/localPractice.js";
@@ -52,7 +53,7 @@ export function createLocalPracticeEngine({ getRoom, handleGameAction, broadcast
     if (previous?.job && previous.version === version && previous.socketId === socket.id && previous.expiresAt > now()) {
       return { ok: true, job: previous.job };
     }
-    const view = gameViewForColor(room.game, room.practice.botColor);
+    const view = practiceBotView(room.game, room.practice.botColor);
     const difficulty = practiceDifficulty(room.practice.difficulty);
     const legalVertices = legalPracticeGtpVertices(view, room.practice.botColor);
     const job = {

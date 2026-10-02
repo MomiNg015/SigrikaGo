@@ -6,6 +6,31 @@ import {
 } from "./replayPagination.js";
 
 describe("replay summary pagination", () => {
+  it.each(["spark", "standard", "gomoku", "team"])("filters historical invalid %s records without exposing snapshots", async (mode) => {
+    const records = [
+      { ...replayRecord(0), mode, snapshot: JSON.stringify({ game: { winner: { invalid: true } } }, null, 2) },
+      { ...replayRecord(1), mode, rated: false, snapshot: JSON.stringify({ game: { winner: { invalid: false } } }) }
+    ];
+    const page = await listReplaySummaryPage({ prisma: { gameRecord: { findMany: async () => records } }, userId: "user-1", mode });
+    expect(page.records.map((r) => r.id)).toEqual([records[1].id]);
+    expect(page.records[0]).not.toHaveProperty("snapshot");
+    expect(page.nextCursor).toBeNull();
+  });
+
+  it("fills a valid page past an entire invalid batch and keeps a valid continuation cursor", async () => {
+    const invalid = Array.from({ length: 51 }, (_, i) => ({ ...replayRecord(i), snapshot: JSON.stringify({ game: { winner: { invalid: true } } }) }));
+    const valid = Array.from({ length: 51 }, (_, i) => ({ ...replayRecord(i + 51), snapshot: "{}" }));
+    const queries = [];
+    const page = await listReplaySummaryPage({ prisma: { gameRecord: { findMany: async (query) => {
+      queries.push(query);
+      return queries.length === 1 ? invalid : valid;
+    } } }, userId: "user-1" });
+    expect(queries).toHaveLength(2);
+    expect(queries[1].where.AND[1].OR[1].id.lt).toBe(invalid.at(-1).id);
+    expect(page.records.map((r) => r.id)).toEqual(valid.slice(0, 50).map((r) => r.id));
+    expect(decodeReplayCursor(page.nextCursor).id).toBe(valid[49].id);
+  });
+
   it("returns fifty records and an opaque cursor for the next older page", async () => {
     let query = null;
     const rows = Array.from({ length: REPLAY_PAGE_SIZE + 1 }, (_, index) => replayRecord(index));

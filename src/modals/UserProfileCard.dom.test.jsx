@@ -88,7 +88,9 @@ describe("UserProfileCard dossier interactions", () => {
     expect(within(actions).queryByRole("button", { name: "个性化" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
-    const totalSummary = screen.getByText("总对局").closest(".profile-summary-item");
+    const totalSummary = screen.getByText("战绩").closest(".profile-summary-item");
+    expect(within(totalSummary).getByLabelText("总对局 10局")).toBeTruthy();
+    expect([...totalSummary.querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
     const replayButton = within(totalSummary).getByRole("button", { name: "对局回放" });
     expect(replayButton.textContent).toBe("");
     expect(screen.getByLabelText("最近十盘").querySelector(".profile-rank-results")).toBeTruthy();
@@ -172,7 +174,7 @@ describe("UserProfileCard dossier interactions", () => {
     renderProfile();
 
     fireEvent.click(screen.getByRole("tab", { name: "标准" }));
-    expect(screen.getByText("10局")).toBeTruthy();
+    expect(screen.getByLabelText("总对局 10局")).toBeTruthy();
     expect(screen.getByText("正在载入标准战绩，当前仍显示星炬。")).toBeTruthy();
     expect(screen.getAllByRole("tab").every((tab) => tab.getAttribute("aria-disabled") === "true")).toBe(true);
     fireEvent.click(screen.getByRole("tab", { name: "五子棋" }));
@@ -181,7 +183,7 @@ describe("UserProfileCard dossier interactions", () => {
     request.reject(new Error("模式资料加载失败"));
     await waitFor(() => expect(screen.getByText("模式资料加载失败")).toBeTruthy());
     expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByText("10局")).toBeTruthy();
+    expect(screen.getByLabelText("总对局 10局")).toBeTruthy();
     expect(screen.getByRole("button", { name: "重新加载" })).toBeTruthy();
   });
 
@@ -257,7 +259,7 @@ describe("UserProfileCard dossier interactions", () => {
 
     expect(screen.getByText("一位名字非常非常长的学院成员")).toBeTruthy();
     expect(document.querySelector(".user-identity-nameplate-background").getAttribute("style")).toContain("nameplate-long.png");
-    expect(screen.getByText("0局")).toBeTruthy();
+    expect(screen.getByLabelText("总对局 0局")).toBeTruthy();
     expect(screen.getByText("0.0%")).toBeTruthy();
     expect(within(screen.getByLabelText("最近胜负")).getByText("暂无")).toBeTruthy();
     expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无");

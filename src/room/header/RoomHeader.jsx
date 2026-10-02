@@ -3,6 +3,7 @@ import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "lucide-
 import TestTools from "../actionBar/TestTools.jsx";
 import { isCaptureChallenge } from "../../shared/captureChallenge.js";
 import { gameModeById } from "../../shared/gameModes.js";
+import { roomMatchClassification } from "../../shared/matchClassification.js";
 
 export default function RoomHeader({
   room,
@@ -19,6 +20,7 @@ export default function RoomHeader({
   onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const matchClassification = roomMatchClassification(room);
   const modeLabel = isCaptureChallenge(room)
     ? "吃子赛"
     : room.matchSource === "practice"
@@ -33,7 +35,7 @@ export default function RoomHeader({
     <header className="room-header">
       <div className="room-title-stack">
         <p className="room-title-line">
-          <span className="room-code-label">{modeLabel}{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
+          <span className={`room-code-label${matchClassification ? ` match-classification-tag is-${matchClassification.id}` : ""}`} title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${room.code}` : undefined}>{modeLabel}{" "}{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
           {room.team && <span className="room-info-tag">Round {room.team.round}</span>}
           {roomGameInfo && (
             <>

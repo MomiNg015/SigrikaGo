@@ -17,7 +17,7 @@ describe("room rewards", () => {
     expect(applyUserReward(user, { rating: 20, coins: 50 }, { wins: 1 })).toMatchObject({
       wins: 3,
       losses: 3,
-      rating: 1020,
+      rating: 0, stars: 3,
       rank: "3段",
       modeStats: {
         spark: expect.objectContaining({ recentResults: ["win", "loss", "win"] })
@@ -37,11 +37,11 @@ describe("room rewards", () => {
       { rating: -20, coins: 20 }
     );
 
-    expect(winner.user).toMatchObject({ wins: 1, rating: 1020, coins: 50 });
-    expect(loser.user).toMatchObject({ losses: 1, rating: 980, coins: 20 });
+    expect(winner.user).toMatchObject({ wins: 1, rating: 0, stars: 3, coins: 50 });
+    expect(loser.user).toMatchObject({ losses: 1, rating: 0, stars: 1, coins: 20 });
   });
 
-  it("promotes and clears the recent window after the seventh win", () => {
+  it("promotes from full stars and preserves recent match history", () => {
     const user = {
       wins: 6,
       losses: 1,
@@ -50,7 +50,7 @@ describe("room rewards", () => {
       modeStats: {
         spark: {
           rating: 1000,
-          rank: "3段",
+          rank: "3段", stars: 4,
           recentResults: ["win", "win", "loss", "win", "win", "win", "win"],
           wins: 6,
           losses: 1,
@@ -62,9 +62,9 @@ describe("room rewards", () => {
 
     const nextUser = applyUserReward(user, { rating: 20, coins: 50 }, { wins: 1 });
 
-    expect(nextUser.rating).toBe(1120);
-    expect(nextUser.modeStats.spark.rating).toBe(1120);
-    expect(nextUser.modeStats.spark.recentResults).toEqual([]);
+    expect(nextUser.rating).toBe(0);
+    expect(nextUser.modeStats.spark.rating).toBe(0);
+    expect(nextUser.modeStats.spark.recentResults).toEqual([...user.modeStats.spark.recentResults, "win"]);
     expect(nextUser.modeStats.spark.rank).not.toBe(user.modeStats.spark.rank);
   });
 
@@ -81,9 +81,9 @@ describe("room rewards", () => {
     };
 
     expect(applyUserReward(user, { rating: 6, coins: 0 }, { draws: 1 })).toMatchObject({
-      rating: 1006,
+      rating: 0,
       modeStats: {
-        spark: expect.objectContaining({ rating: 1006, draws: 1, recentResults: ["win", "loss"] })
+        spark: expect.objectContaining({ rating: 0, draws: 1, recentResults: ["win", "loss"] })
       }
     });
   });

@@ -50,7 +50,7 @@ export const USER_ASSET_RELATION_SELECT = {
       }
     }
   },
-  modeStats: { select: { mode: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true } }
+  modeStats: { select: { mode: true, stars: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true } }
 };
 
 export async function ensureGameModeSchema(client = prisma) {
@@ -60,7 +60,8 @@ export async function ensureGameModeSchema(client = prisma) {
       "id" TEXT NOT NULL PRIMARY KEY,
       "userId" TEXT NOT NULL,
       "mode" TEXT NOT NULL,
-      "rating" INTEGER NOT NULL DEFAULT 1000,
+      "rating" INTEGER NOT NULL DEFAULT 0,
+      "stars" INTEGER NOT NULL DEFAULT 2,
       "rank" TEXT NOT NULL DEFAULT '3段',
       "recentResults" TEXT NOT NULL DEFAULT '',
       "wins" INTEGER NOT NULL DEFAULT 0,
@@ -73,6 +74,13 @@ export async function ensureGameModeSchema(client = prisma) {
   `);
   await client.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "UserModeStats_userId_mode_key" ON "UserModeStats"("userId", "mode")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "UserModeStats_mode_rating_idx" ON "UserModeStats"("mode", "rating")`);
+
+  for (const table of ["User", "UserModeStats"]) {
+    const columns = await client.$queryRawUnsafe('PRAGMA table_info("' + table + '")');
+    if (!columns.some((column) => column.name === "stars")) {
+      await client.$executeRawUnsafe('ALTER TABLE "' + table + '" ADD COLUMN "stars" INTEGER NOT NULL DEFAULT 2');
+    }
+  }
 
   const modeStatsColumns = await client.$queryRawUnsafe(`PRAGMA table_info("UserModeStats")`);
   const hasModeRank = modeStatsColumns.some((column) => column.name === "rank");
@@ -136,13 +144,13 @@ export async function ensureGameModeSchema(client = prisma) {
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_whiteUserId_createdAt_idx" ON "GameRecord"("whiteUserId", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_mode_rated_createdAt_idx" ON "GameRecord"("mode", "rated", "createdAt")`);
   await client.$executeRawUnsafe(`
-    INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "wins", "losses", "draws", "createdAt", "updatedAt")
-    SELECT "id" || ':spark', "id", 'spark', "rating", "wins", "losses", 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "rank", "stars", "wins", "losses", "draws", "createdAt", "updatedAt")
+    SELECT "id" || ':spark', "id", 'spark', "rating", "rank", "stars", "wins", "losses", 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
     FROM "User"
   `);
   await client.$executeRawUnsafe(`
     INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "rank", "recentResults", "wins", "losses", "draws", "createdAt", "updatedAt")
-    SELECT "id" || ':gomoku', "id", 'gomoku', 1000, '3段', '', 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    SELECT "id" || ':gomoku', "id", 'gomoku', 0, '3段', '', 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
     FROM "User"
   `);
 }
@@ -254,6 +262,7 @@ export function publicUser(user) {
     status: user.status ?? "active",
     rank: publicUserRank(user),
     rating: user.rating,
+    stars: user.stars ?? 2,
     wins: user.wins,
     losses: user.losses,
     modeStats: publicModeStats(user),
@@ -269,7 +278,8 @@ export function publicUser(user) {
 function publicModeStats(user) {
   const rows = modeStatsRows(user.modeStats);
   const stats = Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, {
-    rating: mode === "spark" ? Number(user.rating ?? 1000) : 1000,
+    rating: mode === "spark" ? Number(user.rating ?? 0) : 0,
+    stars: mode === "spark" ? Number(user.stars ?? 2) : 2,
     rank: mode === "spark" ? normalizeRank(user.rank ?? DEFAULT_RANK) : DEFAULT_RANK,
     recentResults: [],
     wins: mode === "spark" ? Number(user.wins ?? 0) : 0,
@@ -280,6 +290,7 @@ function publicModeStats(user) {
     const mode = normalizeGameModeId(row.mode);
     if (!stats[mode]) continue;
     stats[mode] = {
+      stars: Number(row.stars ?? stats[mode].stars),
       rating: Number(row.rating ?? stats[mode].rating),
       rank: normalizeRank(row.rank ?? stats[mode].rank),
       recentResults: parseRecentResults(row.recentResults),

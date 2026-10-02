@@ -6,7 +6,7 @@
   inset: 0;
   overflow: hidden;
   background: color-mix(in srgb, var(--bright-blue) 14%, var(--bright-paper));
-  border-block: 1px solid var(--bright-border);
+  border: 0;
 }
 .team-portrait-slot:nth-child(1) {
   --team-art-left: -18.333%;

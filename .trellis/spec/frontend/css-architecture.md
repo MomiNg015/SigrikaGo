@@ -30,9 +30,11 @@ Portrait shop dialogue must clear desktop bottom anchoring before using auto hei
 
 ### Portrait social-profile records
 
-Self and social dossiers share the compact record presentation: no visible character-record or recent-ten heading, centered single-row recent results, and an accessible icon-only replay button in the total-games summary. Shared record selectors target `.profile-resume-view`, not only `.profile-resume-view-self`; context-specific identity actions and scroll ownership stay separate. Lock both surfaces with DOM tests so a self-profile polish cannot silently leave social details on the old markup.
+Self and social dossiers share the compact record presentation: no visible character-record or recent-ten heading, centered single-row recent results, and an accessible icon-only replay button in the record summary. The shared record card keeps replay in its header, then shows total games, wins, losses, draws and win rate in five aligned columns with values above labels and a separator before the rate; rank and record occupy two desktop columns (1:1.5), and each spans the full summary row on portrait mobile. Rank and record titles share typography, line height and color; do not vary title colors by card position. Shared record selectors target `.profile-resume-view`, not only `.profile-resume-view-self`; context-specific identity actions and scroll ownership stay separate. Lock both surfaces with DOM tests so a self-profile polish cannot silently leave social details on the old markup.
 
 At widths up to 768px, `.user-profile-modal .profile-resume-view-social` owns vertical body scrolling. The social record panel and character section use natural block height; `.profile-character-table-scroll` has automatic height, no maximum height, and visible overflow inside that body scroller. Do not compress it into a residual `minmax(0,1fr)` row: identity, social actions, mode tabs and the recent-results summary can consume all available height. Verify the last record is reachable at 360x640 with and without title stickers. Preserve self-resume and desktop scrolling contracts.
+
+Empty character records retain the ordinary framed `.profile-character-section`, with a compact `WindowEmptyState` nested inside it. Never put the borderless empty-state class on the section itself or collapse the residual grid row. Empty social/bookmark bodies use a growing flex record panel on narrow screens; populated social records keep natural height and the existing body scroller. Verify empty-to-populated mode changes at desktop and portrait sizes.
 
 ### Hanging student ID and handbook spacing
 
@@ -259,7 +261,7 @@ Mobile player tap tooltips portal to the nearest `.app-shell`, preserving theme 
 
 ### Empty records and guided actions
 
-For both profile contexts, empty character records retain the `.profile-character-section` card shell and add `.profile-character-empty` for a compact centered label instead of the header/table/scroller. The empty record panel uses natural rows; populated table scrolling stays unchanged.
+For both profile contexts, empty character records retain the `.profile-character-section` card shell and add `.profile-character-empty` for a compact centered label instead of the header/table/scroller. The empty frame stretches through the remaining body height, with its borderless empty-state content nested inside. Use a growing flex panel for narrow social/bookmark body scrollers; populated table scrolling stays unchanged.
 
 `mobile-adaptive/guided-actions.css` owns soft gold paper fills, 3px campus-weight borders, restrained shadows, left-aligned copy and trailing chevrons, with a masked localized animated edge highlight for enabled story-footer and tutorial action buttons. Exclude native and ARIA disabled controls. Keep the pseudo-element content/display explicit to beat room resets; reduced-motion selectors must match the enabled selector specificity. Preserve long-choice wrapping, board target rings and skip/close semantics. Check computed pseudo content and reduced-motion animation, not animation-name alone.
 
@@ -270,6 +272,13 @@ Story modal grids reserve an `auto` final action track rather than a fractional 
 Story continue/finish controls keep width: 100% without a fixed maximum width, filling the same footer as the choices.
 
 Story and battle continue/continue-now controls share the 18px outline Play glyph with aria-hidden. Explicit continue choices use it too; ordinary replies retain MessageCircle.
+
+### Ranked/friendly match badges
+Opening labels and room-code tags share match-classification-tag and the late rank-progress.css owner. The room code needs the Bright School room-header-scoped selector to beat existing important paper tint rules. Rated uses a pale pink/red mix; friendly uses mint; both retain ink text and textual accessible classification. The 2026-10-01 CSS baseline adds 2313 normalized bytes, four important declarations in one existing file, and eight existing-palette/result-color occurrences for the requested record summary, replay circle and match badges.
+
+Room member rows use three unequal columns: stone (20px), name (1.6fr), and rank (minmax(4em, 1fr)); all contents align left. Spectators retain the empty stone cell for column alignment. Portrait paper-player metadata restores the existing color-badge in column 1, username in column 2 and rank in column 3; do not add duplicate stone markers or re-hide the badge through older mobile rules. The bounded follow-up adds 485 CSS bytes and seven important overrides in the existing portrait owner.
+
+The approved unequal three-column member-row refinement adds 86 normalized CSS bytes in the existing owner, without new colors or important declarations.
 
 ### Portrait board geometry
 Keep board-stage and board-wrap square through width plus aspect-ratio, with height:auto. Use explicit minmax(0,1fr) tracks on the board slot and stage: min(100%,size) inside auto intrinsic grid tracks can collapse the board. Test both ordinary 320-900px portrait widths and a constrained 280px parent. Team portraits use the approved staggered-paper B design: disable the ordinary arched backing and use three separate diagonal paper masks in fixed lineup order. Mobile team rows are 108px high with 88–108px wide, 96px high artwork; single portraits keep their original geometry. Keep images upright inside masks; only finished slots become grayscale, and hidden slots never resolve an image.

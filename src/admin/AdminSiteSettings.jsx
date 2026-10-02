@@ -140,54 +140,8 @@ function RatingRulesEditor({ value, onChange }) {
 
   return (
     <fieldset className="admin-settings-fieldset rating-rules-fieldset">
-      <legend>积分与友谊对局</legend>
-      <div className="admin-settings-grid">
-        <label>
-          <AdminFieldLabel text="Elo K 值" tip="同分胜负默认约 20 分；数值越高，单局积分波动越大。" />
-          <input type="number" min="10" max="80" value={rules.elo.kFactor} onChange={(event) => update(["elo", "kFactor"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="胜负最小变动" tip="胜负局最低积分变化；和棋不套最低变动。" />
-          <input type="number" min="0" max="20" value={rules.elo.deltaMin} onChange={(event) => update(["elo", "deltaMin"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="胜负最大变动" tip="单局基础 Elo 变化上限，段位差修正后仍可能进一步衰减或加重。" />
-          <input type="number" min="20" max="80" value={rules.elo.deltaMax} onChange={(event) => update(["elo", "deltaMax"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="升降段积分" tip="最近十盘触发升段或降段时，额外增加或扣除的积分。" />
-          <input type="number" min="0" max="500" value={rules.rankChangeRatingDelta} onChange={(event) => update(["rankChangeRatingDelta"], Number(event.target.value))} />
-        </label>
-      </div>
-
-      <label className="admin-toggle-row">
-        <input type="checkbox" checked={rules.rankGapAdjustment.enabled} onChange={(event) => update(["rankGapAdjustment", "enabled"], event.target.checked)} />
-        <span>启用段位差积分修正</span>
-      </label>
-      <label className="admin-toggle-row">
-        <input type="checkbox" checked={rules.antiBoost.enabled} onChange={(event) => update(["antiBoost", "enabled"], event.target.checked)} />
-        <span>启用同对手防刷衰减</span>
-      </label>
-
-      <div className="admin-settings-grid">
-        <label>
-          <AdminFieldLabel text="防刷窗口小时" tip="同一对玩家同一模式在该时间窗口内重复对局会被计数。" />
-          <input type="number" min="1" max="168" value={rules.antiBoost.windowHours} onChange={(event) => update(["antiBoost", "windowHours"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="正常计分局数" tip="窗口内前 N 局正常计分。" />
-          <input type="number" min="0" max="50" value={rules.antiBoost.fullScoreGames} onChange={(event) => update(["antiBoost", "fullScoreGames"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="衰减截止局数" tip="从正常局数之后到该局数前使用衰减倍率；达到后积分为 0。" />
-          <input type="number" min="0" max="100" value={rules.antiBoost.reducedScoreGames} onChange={(event) => update(["antiBoost", "reducedScoreGames"], Number(event.target.value))} />
-        </label>
-        <label>
-          <AdminFieldLabel text="衰减倍率" tip="例如 0.25 表示只结算 25% 积分。" />
-          <input type="number" min="0" max="1" step="0.05" value={rules.antiBoost.reducedMultiplier} onChange={(event) => update(["antiBoost", "reducedMultiplier"], Number(event.target.value))} />
-        </label>
-      </div>
-
+      <legend>段位与友谊对局</legend>
+      <p>九段以下采用星数制；九段每胜加200分、每负减250分。星数与积分不受对手段位或重复对局次数影响。</p>
       <div className="admin-settings-grid">
         <label>
           <AdminFieldLabel text="友谊胜利金币" tip="私人/好友/房间号对局每日奖励额度内的胜利金币。" />

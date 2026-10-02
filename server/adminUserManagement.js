@@ -1,3 +1,4 @@
+import { normalizeRankProgress } from "../src/shared/rankProgression.js";
 import bcrypt from "bcryptjs";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 import { publicUser } from "./db.js";
@@ -14,6 +15,7 @@ import {
 const EDITABLE_USER_FIELDS = new Set([
   "role",
   "rating",
+  "stars",
   "coins",
   "ownedCharacters",
   "ownedItems",
@@ -29,9 +31,9 @@ export function sanitizeUserUpdate(body = {}) {
     if (key === "role" && [USER_ROLES.player, USER_ROLES.admin].includes(value)) {
       data.role = value;
     }
-    if (key === "rating") {
+    if (key === "rating" || key === "stars") {
       const rating = parseIntegerInput(value);
-      if (rating != null) data.rating = rating;
+      if (rating != null && rating >= 0) data[key] = rating;
     }
     if (key === "coins") {
       const coins = parseIntegerInput(value);
@@ -97,6 +99,16 @@ export async function updateUserProfile({ prisma, adminUser, userId, body }) {
     if (!before) throw routeError(404, "User not found");
     if (before.role === USER_ROLES.admin && data.role && data.role !== USER_ROLES.admin) {
       await assertNotLastActiveAdmin(tx, before.id);
+    }
+    if (Object.hasOwn(data, "rating") || Object.hasOwn(data, "stars")) {
+      const progress = normalizeRankProgress({ ...before, ...data });
+      data.rating = progress.rating;
+      data.stars = progress.stars;
+      await tx.userModeStats.upsert({
+        where: { userId_mode: { userId, mode: "spark" } },
+        create: { userId, mode: "spark", ...progress },
+        update: progress
+      });
     }
     const after = await tx.user.update({
       where: { id: userId },

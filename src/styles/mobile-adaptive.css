@@ -49,6 +49,7 @@
 @import "./mobile-adaptive/window-empty-states.css";
 @import "./mobile-adaptive/sigrika-corruption.css";
 
+@import "./mobile-adaptive/rank-progress.css";
 @import "./mobile-adaptive/home-onboarding.css";
 
 @import "./mobile-adaptive/battle-info-typography.css";

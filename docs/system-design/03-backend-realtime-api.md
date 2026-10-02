@@ -6,6 +6,8 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 
 ## 当前结论
 
+- 西格莉卡彩虹豆豆跳跳糖不再按 `NODE_ENV=production` 禁用；库存返回空 `disabledCharacterReasons`，合法使用仍在同一事务中扣除道具、应用效果并累计次数。仓库不再注入黑化测试跳转选项，正常第八次剧情与生产环境拒绝调试接口保持。
+
 - `server/index.js` 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 `server/serverStartup.js`，具体 HTTP 领域逻辑已逐步拆到 `*Routes.js` 和领域模块，Socket 连接事件套件已由 `server/socketEvents.js` 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 `server/socket*Events.js` 分组模块维护。
 - `server/socketPracticeEvents.js` owns `practice:start`：参数为 `{ difficulty: "beginner" | "intermediate" | "advanced", playerColor: "black" | "white" | "random", engineVersion: "gnugo-3.8-v1", challenge?: "capture-challenge" }`，ack 为 `{ ok, roomCode?, error?, code? }`。前端先完成本地引擎初始化，服务端刷新认证用户、执行容量与活跃房检查，并校验版本；旧客户端返回 `local_practice_version`，三档新房均不探测服务器 GNU Go。创建 Spark / unrated / practice / recordPolicy=none 房间，持久化并安全投影 `practice.engineBackend="browser"`，保留难度、执色及提子阈值；虚拟准时宝已 ready、无正式角色／技能／socket／社交身份，内部 bot actor id 不投影。`practice:compute` 与 `practice:computed` 只接受房主当前连接，具体见本地陪练引擎。
 - Realtime room behavior is composed in `server/rooms.js`; `server/roomMembershipIndex.js` maintains userId/socketId to roomCode indexes for active-room checks, `room:resume`, and `disconnect` cleanup so growing room counts do not force full scans.
@@ -67,11 +69,11 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 - Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
 
 - Result rewards:
-  - Only random matchmaking rooms are rated; direct/private duel rooms are friendly matches. Friendly matches do not update rating, rank windows, leaderboard/profile stats, or recent ten-game results, but they are still persisted as replays and marked with `rated=false` plus `matchSource=duel`.
-  - Rated rating deltas use `src/shared/ratingRules.js`: Elo expected score with configurable K, min/max clamps, rank-gap decay, and optional anti-boost repeat-opponent decay from `SiteSetting.ratingRules`. Rating can go negative.
-  - Rank movement still uses the last ten rated decisive results; 7 wins promote, 8 losses demote, draws are ignored. Each promotion/demotion applies a configurable fixed rating delta, default `100`.
+  - Random matchmaking rooms are rated only when their initial mode ranks are at most two adjacent rank steps apart; direct/private duels and wider-rank matchmaking are friendly matches. The queue chooses the closest eligible mode rank and expands after both participants wait 15 seconds, with a server-owned retry that revalidates admission and blacklists. Friendly matches do not update stars, points, rank windows, leaderboard/profile stats, or recent ten-game results, but still persist replays with `rated=false` and their original `matchSource` (`duel` or `matchmaking`). The room flag is frozen at creation and drives opening/header labels and settlement.
+  - Rated progression uses `src/shared/rankProgression.js`: 4/6/8-star capacities below ninth dan; ninth dan enters at 1000 points and changes by +200/-250 with a zero floor. No Elo, rank-gap or repeat-opponent multiplier applies. `SiteSetting.ratingRules` retains friendly coin settings only.
+  - A full-star win promotes and a zero-star loss demotes; reaching the boundary itself does not move rank. New rank receives half its capacity. Ninth dan at zero demotes to eighth dan/four stars on the next loss. Draws preserve progression. Recent ten decisive results are display history, not a rank trigger.
   - Coin rewards for rated games remain uncapped by day. Friendly matches use configurable win/loss/draw coin values and grant coins only for the first configured number of friendly games per user per server day, default 3 days counted by Asia/Shanghai.
-  - The result modal displays settled rating/coin deltas from `room.game.resultRewards[userId]`; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.
+  - The result modal displays settled rank with stars/ninth-dan points and coin deltas from `room.game.resultRewards[userId]`; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.
 - Home layout:
   - The home screen prioritizes "星炬对弈" as the largest primary action.
   - "棋舍" is a secondary profile/character entry with the selected portrait vertically centered beside player info.
@@ -84,7 +86,7 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
   - "解除好友" and "从黑名单解除" use a shared confirmation panel and persist through `UserRelationship`. Adding a friend automatically removes/overwrites blacklist state for that target, and adding to blacklist overwrites friend state.
   - Admin HTTP adds `/api/admin/user-reports` for the "用户举报" tab. It returns the latest 100 user reports in reverse chronological order and is read-only until a future one-way admin mail system defines report handling/status feedback.
   - "对局申请" is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; `duel:request` first checks whether the target has blacklisted the requester, silently suppressing `duel:incoming` for that target and sending the requester a normal delayed rejection. Otherwise it delivers `duel:incoming`, `duel:respond` accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.
-  - The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.
+  - Profile rank help explains the star ladder and ninth-dan points; rating is no longer a separate field.
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
   - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `sortie.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable; `timeout.ogg` is no longer part of the expected pack because timeout has no standalone audio.
@@ -219,7 +221,7 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 
 `src/practice/` 负责模块 Worker、WASM 调用与对局控制器。入门复用 `src/shared/practiceBotDecision.js`；中级和高级／吃子挑战赛执行 GNU Go 3.8 level 5／10。浏览器先初始化再申请房间；中高级按需加载 `/engines/gnugo-3.8/gnugo.js` 与 `gnugo.wasm`，每手使用新实例但复用已编译模块，保持原生每手新进程的状态隔离。引擎 cache 8 MB，WASM 初始内存 64 MB、上限 256 MB；主线程看门狗在初始化 60 秒或单次搜索 30 秒后终止 Worker。计算异常重建后再试一次，仍失败则提示暂停／刷新；不降低难度、不自动转云端，也不通过机器人认输制造挑战成绩。入门最低出手间隔 1200 ms，中高级 650 ms，服务端同时检查。
 
-`server/localPracticeEngine.js` 发放 60 秒计算租约：绑定用户、当前 socket、房间、随机 jobId 和完整 `game` 状态哈希，不能只依赖手数。服务端用 `gameViewForColor(botColor)` 生成可见 SGF 与正式 `playMove` 合法点白名单；入门另发机器人视角规则状态。SGF 保持 `SZ[13]`、`KM[2.75]`、`RU[Chinese]`，中高级经 `restricted_genmove` 出招；无合法点直接 pass。隐藏手、色彩幻象、中立点和技能禁入按原投影／合法性契约处理。客户端只回 `{ jobId, positionVersion, action }`，服务器拒绝旧连接、旧局面、错误阶段、非法动作，以自身 bot 身份调用 `handleGameAction` 并广播。已接受 job 的重复回包只补成功 ACK，不再落子；客户端丢 ACK 时重发同一结果，不重新搜索。客户端成绩、计分或 bot 身份不可信；不做引擎防篡改或服务器重新搜索，这是本项目当前明确接受的取舍。
+`server/localPracticeEngine.js` 发放 60 秒计算租约：绑定用户、当前 socket、房间、随机 jobId 和完整 `game` 状态哈希，不能只依赖手数。服务端用 `practiceBotView(game, botColor)` 去除颜色伪装，再按原暗手可见性生成 SGF 与正式 `playMove` 合法点白名单；入门另发机器人视角规则状态。SGF 保持 `SZ[13]`、`KM[2.75]`、`RU[Chinese]`，中高级经 `restricted_genmove` 出招；无合法点直接 pass。娜波摩色彩幻象不改变机器人计算中的真实棋色；隐藏手、中立点和技能禁入按原投影／合法性契约处理。旧服务端准时宝使用相同视角，黑化西格莉卡仍走原专属投影。客户端只回 `{ jobId, positionVersion, action }`，服务器拒绝旧连接、旧局面、错误阶段、非法动作，以自身 bot 身份调用 `handleGameAction` 并广播。已接受 job 的重复回包只补成功 ACK，不再落子；客户端丢 ACK 时重发同一结果，不重新搜索。客户端成绩、计分或 bot 身份不可信；不做引擎防篡改或服务器重新搜索，这是本项目当前明确接受的取舍。
 
 控制器前台联网时每 1.5 秒请求／续报当前状态。隐藏页主动报告 `active:false` 并终止 Worker，服务器撤销任务、暂停棋钟；心跳失联 10 秒也暂停，浏览器恢复后按当前状态重新计算。机器人思考不消耗棋钟；人类正常前台回合仍计时。连接尚在但连续 15 分钟未恢复时中性结束，不产生挑战赛成绩；断线房继续受原有空房回收约束。后台状态、租约和成功回执只存运行时；持久化仅保留执行后端，刷新、重新连接或服务重启均重新派工。
 
@@ -268,3 +270,22 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 - 队际赛换轮不切换 BGM：最新技能音乐按该技能发生阶段的阵容角色解析，不按换人后的当前角色解析；直到实际触发下一次技能或终局才沿用现有切换规则，重连同样从历史恢复。桌面三格立绘按容器高度放大、垂直居中、左右裁切并以略斜边界分隔，移动端维持原紧凑尺寸。选中卡片保留原有深色边框，取消外投影并使用浅绿色按下态；空阵容位不显示“选择部员”文字；右上角 1/2/3 实心圆采用细黑边、淡黄底、深黑数字。
 
 - 回放列表不设模式切换页签：打开时锁定所属模式；`listReplaySummaryPage` 的星炬查询使用 `mode in [spark, team]`，共享时间/ID 游标排序，其他模式仍精确过滤。队际赛只用左上角旗子角标标识，不额外占用时间栏文字；回放列表内边距为外伸角标保留空间。
+
+## Rank progression persistence
+
+- `UserModeStats.stars` persists each mode independently; `User.stars/rank/rating` mirror spark. `rating` is zero below ninth dan. Room/user/profile/leaderboard projections preserve stars.
+- `20260930090000_rank_stars` is an incremental migration, not a rewrite of deployed history. `migrateRankStars` runs after schema tasks, stores pre-reset user stats, legacy rating achievements and active room snapshots in a private SiteSetting receipt, preserves Nabomo ownership, then resets all three modes to third dan/two stars. Historical games, coins and earned achievements remain.
+- Legacy rating-achievement conditions migrate to numeric rank thresholds using the former rating-to-rank mapping; new conditions use `rank`. Nabomo is permanently persisted on first spark sixth-dan settlement.
+- Result saving shares concurrent requests for a room and restores in-memory user progression after transaction failure so a retry cannot award stars twice. Star/rank/point state writes atomically with the game record. Result payload includes `rankAfter`, `starsAfter`, `ratingAfter` and star delta; match history remains independent.
+
+- 普通排行榜返回 `ranking`：段位、星数/九段积分、未舍入胜率、胜场数依次降序，四项相等采用竞争排名（1、1、3），用户名与 ID 仅稳定并列条目的展示顺序，不影响名次。
+
+
+### 匹配等待计时
+
+`match:waiting` 返回 `{ startedAt, serverNow, mode }`。两项时间均来自服务端，客户端接收时以 `receivedAt - max(0, serverNow - startedAt)` 生成本地开始时间，避免设备时钟偏差污染秒数及 15 秒放宽提示。自动重试保留原排队起点，新一轮匹配使用新起点；旧服务端缺少 `serverNow` 时兼容原时间字段。服务器队列和放宽定时器仍是权威。
+
+
+### 无效对局与回放可见性
+
+`saveGameRecord` 在所有模式分支之前检查 `game.winner.invalid`，无效结束仅标记结算已处理并清空结果奖励，不写入回放或成长记录。历史记录由 `replayValidity.isInvalidReplay` 解析保存快照中的同一标记，兼容旧的“对局无效”结果文本；不按手数或 `rated=false` 推断无效。个人与他人共用回放分页每批最多读取 51 条，读取快照仅用于有效性判断；跳过无效项后继续以原 createdAt/id 游标扫描，最多返回 50 条有效摘要和有效末项游标，响应不包含快照。管理员列表同样过滤，个人／管理员详情直接访问无效记录均返回 404。保留历史原始数据，不执行数据库删除或迁移。

@@ -36,6 +36,7 @@ describe("server startup", () => {
     const ensureSigrikaCandyArcSchema = task("ensureSigrikaCandyArcSchema");
     const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
     const migrateBuiltinPortraitAssets = task("migrateBuiltinPortraitAssets");
+    const migrateRankStars = task("migrateRankStars");
     const migrateLegacyAemeathOwnership = task("migrateLegacyAemeathOwnership");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
@@ -67,6 +68,7 @@ describe("server startup", () => {
       ensureSigrikaCandyArcSchema,
       seedAdminDefaultConfig,
       migrateBuiltinPortraitAssets,
+      migrateRankStars,
       migrateLegacyAemeathOwnership,
       seedBuiltinAchievements,
       cleanupLegacyDeniaCharacterData,
@@ -103,7 +105,8 @@ describe("server startup", () => {
       "ensureGameModeSchema",
       "ensureMailboxSchema",
       "ensureCaptureChallengeSchema",
-      "ensureSigrikaCandyArcSchema"
+      "ensureSigrikaCandyArcSchema",
+      "migrateRankStars"
     ]);
     expect(calls).toEqual(SERVER_STARTUP_TASK_ORDER);
   });

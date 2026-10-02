@@ -642,6 +642,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/window-bookmarks.css",
       "./mobile-adaptive/window-empty-states.css",
       "./mobile-adaptive/sigrika-corruption.css",
+      "./mobile-adaptive/rank-progress.css",
       "./mobile-adaptive/home-onboarding.css",
       "./mobile-adaptive/battle-info-typography.css"
     ]);

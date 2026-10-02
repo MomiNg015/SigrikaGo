@@ -78,6 +78,8 @@ export function createPublicRouteHandlers({
           id: true,
           username: true,
           rating: true,
+          rank: true,
+          stars: true,
           selectedCharacter: true,
           itemEffects: true,
           ...USER_ASSET_RELATION_SELECT

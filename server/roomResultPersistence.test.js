@@ -6,7 +6,7 @@ import {
   modeStatsUpsertOperation,
   saveGameRecord
 } from "./roomResultPersistence.js";
-import { createSigrikaCandyDuelRoom } from "./roomFactory.js";
+import { createRoom, createSigrikaCandyDuelRoom } from "./roomFactory.js";
 
 function roomPlayer(color, overrides = {}) {
   return {
@@ -32,6 +32,7 @@ function fakePrisma() {
     gameRecord: { create: vi.fn() },
     userModeStats: { upsert: vi.fn() },
     user: { update: vi.fn() },
+    userCharacter: { upsert: vi.fn() },
     userProgressLedger: { create: vi.fn() },
     userItemEffect: {
       deleteMany: vi.fn(),
@@ -42,6 +43,72 @@ function fakePrisma() {
 }
 
 describe("roomResultPersistence", () => {
+  test("distant matchmaking uses friendly rewards without changing rank or record counters", async () => {
+    const prisma = fakePrisma();
+    const room = createRoom(
+      { user: { id: "friendly-high", username: "high", selectedCharacter: "sigrika", rank: "9段", rating: 1000, stars: 0, wins: 7, losses: 3 } },
+      { user: { id: "friendly-low", username: "low", selectedCharacter: "sigrika", rank: "3段", rating: 0, stars: 4, wins: 4, losses: 2 } },
+      { rated: false, matchSource: "matchmaking", random: () => 0.75 }
+    );
+    const before = room.players.map(({ user }) => ({ rank: user.rank, stars: user.stars, rating: user.rating, wins: user.wins, losses: user.losses }));
+    room.game.phase = GAME_PHASES.finished;
+    room.game.winner = { winnerColor: COLORS.black, text: "黑胜" };
+    await saveGameRecord({ prisma, room });
+    room.players.forEach(({ user }, index) => expect(user).toMatchObject(before[index]));
+    expect(prisma.userModeStats.upsert).not.toHaveBeenCalled();
+    expect(prisma.gameRecord.create).toHaveBeenCalledWith({ data: expect.objectContaining({ rated: false, matchSource: "matchmaking", blackRatingDelta: 0, whiteRatingDelta: 0, blackCoinsDelta: 20, whiteCoinsDelta: 10 }) });
+  });
+
+  function promotionRoom(mode = "spark") {
+    const players = ["winner", "loser"].map((id) => ({ user: {
+      id, username: id, selectedCharacter: "sigrika", rank: "5段", stars: 6, rating: 0,
+      ownedCharacters: ["sigrika"], modeStats: {
+        spark: { rank: "5段", stars: 6, rating: 0 },
+        standard: { rank: "5段", stars: 6, rating: 0 }
+      }
+    } }));
+    const room = createRoom(...players, { random: () => 0.75, modeInput: mode });
+    room.game.phase = GAME_PHASES.finished;
+    room.game.winner = { winnerColor: COLORS.black, text: "黑胜" };
+    return room;
+  }
+
+  test("shares concurrent settlement and permanently awards the spark six-dan unlock", async () => {
+    const prisma = fakePrisma();
+    const room = promotionRoom();
+    await Promise.all([saveGameRecord({ prisma, room }), saveGameRecord({ prisma, room })]);
+    await saveGameRecord({ prisma, room });
+    expect(prisma.gameRecord.create).toHaveBeenCalledTimes(1);
+    expect(room.players[0].user).toMatchObject({ rank: "6段", stars: 3, rating: 0 });
+    expect(room.players[0].user.ownedCharacters).toContain("nabomo");
+    expect(prisma.userCharacter.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: { userId: "winner", characterSlug: "nabomo", source: "rank" }
+    }));
+    expect(room.players[0].user.modeStats.standard).toMatchObject({ rank: "5段", stars: 6 });
+  });
+
+  test("restores in-memory progress on transaction failure so retry advances only once", async () => {
+    const prisma = fakePrisma();
+    prisma.$transaction.mockRejectedValueOnce(new Error("database busy"));
+    const room = promotionRoom();
+    await expect(saveGameRecord({ prisma, room })).rejects.toThrow("database busy");
+    expect(room.recordSaved).toBe(false);
+    expect(room.players[0].user).toMatchObject({ rank: "5段", stars: 6 });
+    expect(room.players[0].user.ownedCharacters).not.toContain("nabomo");
+    await saveGameRecord({ prisma, room });
+    expect(room.players[0].user).toMatchObject({ rank: "6段", stars: 3 });
+    expect(room.game.resultRewards.winner).toMatchObject({ rankAfter: "6段", starsAfter: 3 });
+  });
+
+  test("standard promotion neither changes spark progression nor unlocks Nabomo", async () => {
+    const prisma = fakePrisma();
+    const room = promotionRoom("standard");
+    await saveGameRecord({ prisma, room });
+    expect(room.players[0].user.modeStats.standard).toMatchObject({ rank: "6段", stars: 3 });
+    expect(room.players[0].user.modeStats.spark).toMatchObject({ rank: "5段", stars: 6 });
+    expect(prisma.userCharacter.upsert).not.toHaveBeenCalled();
+  });
+
   test("does not create records or rewards for practice rooms", async () => {
     const prisma = fakePrisma();
     const room = {
@@ -60,9 +127,15 @@ describe("roomResultPersistence", () => {
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
-  test("marks invalid finished rooms as saved without database writes", async () => {
+  test.each([
+    { mode: "spark" }, { mode: "standard" }, { mode: "gomoku" }, { mode: "team" },
+    { mode: "spark", matchSource: "practice" },
+    { mode: "spark", matchSource: "sigrika-corruption-duel" },
+    { mode: "spark", practice: { challenge: "capture-challenge" } }
+  ])("marks invalid finished rooms as saved before all mode branches: %j", async (options) => {
     const prisma = fakePrisma();
     const room = {
+      ...options,
       recordSaved: false,
       game: {
         phase: GAME_PHASES.finished,
@@ -74,6 +147,7 @@ describe("roomResultPersistence", () => {
     await saveGameRecord({ prisma, room });
 
     expect(room.recordSaved).toBe(true);
+    expect(room.game.resultRewards).toBeNull();
     expect(prisma.gameRecord.create).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
@@ -164,7 +238,7 @@ describe("roomResultPersistence", () => {
         modeStats: {
           standard: {
             rating: 1300,
-            rank: "6段",
+            rank: "6段", stars: 2,
             recentResults: ["win", "loss"],
             wins: 9,
             losses: 10,
@@ -183,15 +257,15 @@ describe("roomResultPersistence", () => {
         userId: "player-1",
         mode: "standard",
         rating: 1300,
-        rank: "6段",
+        rank: "6段", stars: 2,
         recentResults: "win,loss",
         wins: 9,
         losses: 10,
         draws: 11
       },
       update: {
-        rating: { increment: 20 },
-        rank: "6段",
+        rating: 1300,
+        rank: "6段", stars: 2,
         recentResults: "win,loss",
         wins: { increment: 1 }
       }

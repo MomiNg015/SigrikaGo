@@ -5,6 +5,7 @@ import { applyStandardGameAction } from "./roomGameActions.js";
 import { gameViewForColor, getPoint } from "../src/shared/game.js";
 import { LOCAL_PRACTICE_VERSION, LOCAL_PRACTICE_LEASE_MS } from "../src/shared/localPractice.js";
 import { roomPersistenceSnapshot, hydratePersistedRoom } from "./roomStatePersistence.js";
+import { practiceBotView } from "./practiceBotView.js";
 
 function fixture(options = {}) {
   const socket = { id: "socket-1", user: { id: "human" } };
@@ -30,6 +31,23 @@ function fixture(options = {}) {
 }
 
 describe("local practice authority", () => {
+  it.each(["beginner", "intermediate", "advanced"])("ignores Nabomo color illusions for %s without changing the human view", (difficulty) => {
+    const f = fixture({ difficulty });
+    const stone = getPoint(f.room.game, "1,1");
+    stone.stone = "white";
+    stone.colorIllusion = { owner: "white", visibleAs: "black" };
+    const before = structuredClone(f.room.game);
+    const { job } = f.request();
+    if (difficulty === "beginner") {
+      expect(getPoint(job.view, "1,1").stone).toBe("white");
+      expect(getPoint(job.view, "1,1").colorIllusion).toBeNull();
+    } else {
+      expect(job.sgf).toContain("AW[bb]");
+      expect(job.sgf).not.toContain("AB[bb]");
+    }
+    expect(getPoint(gameViewForColor(f.room.game, "black"), "1,1").stone).toBe("black");
+    expect(f.room.game).toEqual(before);
+  });
   it("reuses the current lease and applies a reply exactly once through the formal action path", () => {
     const f = fixture();
     const { job } = f.request();
@@ -63,7 +81,7 @@ describe("local practice authority", () => {
 
   it("sends the projected rule state only for the beginner heuristic", () => {
     const f = fixture({ difficulty: "beginner" });
-    expect(f.request().job.view).toEqual(gameViewForColor(f.room.game, f.room.practice.botColor));
+    expect(f.request().job.view).toEqual(practiceBotView(f.room.game, f.room.practice.botColor));
     expect(f.request().job).not.toHaveProperty("sgf");
   });
 

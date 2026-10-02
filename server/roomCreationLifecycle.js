@@ -1,4 +1,6 @@
 import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
+import { RATED_RANK_DISTANCE, rankDistance } from "../src/shared/matchClassification.js";
+import { modeStatsForUser } from "./roomFactory.js";
 import { createPracticeRoom as buildPracticeRoom, createRoom, createSigrikaCandyDuelRoom as buildSigrikaCandyDuelRoom } from "./roomFactory.js";
 
 export function createRoomCreationLifecycle({
@@ -20,7 +22,10 @@ export function createRoomCreationLifecycle({
     const first = match.opponent;
     const room = createRoom(first, match.player, {
       modeInput: match.mode,
-      rated: true,
+      rated: match.mode !== "team" && rankDistance(
+        modeStatsForUser(first.user, match.mode).rank,
+        modeStatsForUser(match.player.user, match.mode).rank
+      ) <= RATED_RANK_DISTANCE,
       matchSource: "matchmaking",
       isCodeTaken: isRoomCodeTaken
     });

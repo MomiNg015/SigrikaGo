@@ -84,6 +84,7 @@ export function roomPeople(room) {
     username: player.user.username,
     rank: player.user.rank,
     rating: player.user.rating,
+    stars: player.user.stars,
     ...(player.isBot || player.user?.isBot ? { isBot: true } : {}),
     achievementEquipment: player.user.achievementEquipment ?? null,
     achievementEquipmentAssets: player.user.achievementEquipmentAssets ?? null,
@@ -97,6 +98,7 @@ export function roomPeople(room) {
     username: spectator.user.username,
     rank: spectator.user.rank,
     rating: spectator.user.rating,
+    stars: spectator.user.stars,
     achievementEquipment: spectator.user.achievementEquipment ?? null,
     achievementEquipmentAssets: spectator.user.achievementEquipmentAssets ?? null
   }));

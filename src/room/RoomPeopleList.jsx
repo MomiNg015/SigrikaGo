@@ -134,14 +134,13 @@ function RoomPeopleList({
                 aria-expanded={activeMenu?.id === person.id}
                 onClick={(event) => openPersonMenu(person.id, event)}
               >
-                <span className="room-person-name">
+                <span className="room-person-color">
                   {person.color && <i className={`room-color-dot ${person.color}`} aria-label={person.color === COLORS.black ? "执黑" : "执白"} />}
+                </span>
+                <span className="room-person-name">
                   <UserIdentity user={person} compact showNameplate={false} />
                 </span>
-                <span>{person.rank}</span>
-                {person.rating == null
-                  ? <span className="text-rating-value">人机</span>
-                  : <span className="text-rating-value">{person.rating}分</span>}
+                <span className="room-person-rank">{person.rank}</span>
               </button>
               {activeMenu?.id === person.id && (
                 <RoomPeopleFloatingLayer anchor={panelRef.current}>
@@ -247,6 +246,7 @@ function samePeopleUser(previous, next) {
   return previous?.id === next?.id
     && previous?.username === next?.username
     && previous?.rank === next?.rank
+    && previous?.stars === next?.stars
     && previous?.rating === next?.rating
     && previous?.isBot === next?.isBot
     && previous?.achievementEquipment === next?.achievementEquipment

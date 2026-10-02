@@ -1,5 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { registerMatchSocketEvents } from "./socketMatchEvents.js";
+import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
+
+afterEach(() => vi.useRealTimers());
 
 function createSocket(user = { id: "user-a" }) {
   const handlers = {};
@@ -33,6 +36,44 @@ function createDeps(overrides = {}) {
 }
 
 describe("socket match events", () => {
+  it.each(["match", "cancel", "disconnect", "blocked"])("automatically retries distant matching safely: %s", async (action) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    const queue = createRoomMatchmakingQueue();
+    const matched = [];
+    const deps = createDeps({
+      now: Date.now,
+      normalizeGameModeId: (mode) => mode,
+      listWaitingPlayers: () => queue.list(),
+      leaveMatchmaking: (id) => queue.removeUser(id),
+      hasBlacklistBetween: vi.fn(async () => action === "blocked"),
+      joinMatchmaking: (player, _io, options) => {
+        const match = queue.join(player, options);
+        if (match.matched) matched.push(match);
+        return match.matched ? match : null;
+      }
+    });
+    const first = createSocket({ id: "a", rank: "3段" });
+    const second = createSocket({ id: "b", rank: "7段" });
+    second.id = "socket-b";
+    registerMatchSocketEvents(first, deps);
+    registerMatchSocketEvents(second, deps);
+    await first.trigger("match:join", { mode: "spark" });
+    await vi.advanceTimersByTimeAsync(1000);
+    await second.trigger("match:join", { mode: "spark" });
+    if (action === "cancel") second.trigger("match:leave");
+    if (action === "disconnect") {
+      second.connected = false;
+      second.trigger("disconnect");
+      queue.removeSocket(second.id);
+    }
+    await vi.advanceTimersByTimeAsync(14000);
+    expect(matched).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(matched).toHaveLength(action === "match" ? 1 : 0);
+    expect(first.emit).toHaveBeenCalledWith("match:waiting", { startedAt: 1000, serverNow: 1000, mode: "spark" });
+  });
+
   it("does not requeue a match cancelled while admission is awaiting user refresh", async () => {
     let finishRefresh;
     const deps = createDeps({ refreshSocketUser: () => new Promise((resolve) => { finishRefresh = resolve; }) });
@@ -98,7 +139,7 @@ describe("socket match events", () => {
       deps.io,
       expect.objectContaining({ canPair: expect.any(Function) })
     );
-    expect(socket.emit).toHaveBeenCalledWith("match:waiting", { startedAt: 12345, mode: "standard" });
+    expect(socket.emit).toHaveBeenCalledWith("match:waiting", { startedAt: 12345, serverNow: 12345, mode: "standard" });
     expect(deps.broadcastLobbyStats).toHaveBeenCalledTimes(1);
   });
 

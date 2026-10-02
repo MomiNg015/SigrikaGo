@@ -64,6 +64,17 @@ function createLifecycle(overrides = {}) {
 }
 
 describe("room creation lifecycle", () => {
+  test.each([["5段", true], ["6段", false]])("freezes matchmaking classification against opponent %s", (rank, rated) => {
+    const opponent = { ...queuedPlayer("alice", "socket-a"), user: user("alice", { rank: "3段" }) };
+    const player = { ...queuedPlayer("bob", "socket-b"), user: user("bob", { rank }) };
+    const { lifecycle } = createLifecycle({ matchmakingQueue: { join: () => ({ matched: true, opponent, player, mode: "spark" }) } });
+    const room = lifecycle.joinMatchmaking(player, fakeIo());
+    expect(room.rated).toBe(rated);
+    expect(room.matchSource).toBe("matchmaking");
+    room.players[0].user.rank = "9段";
+    expect(room.rated).toBe(rated);
+  });
+
   test("keeps unmatched matchmaking joins queued without creating a room", () => {
     const player = queuedPlayer("alice", "socket-a");
     const { lifecycle, deps } = createLifecycle({

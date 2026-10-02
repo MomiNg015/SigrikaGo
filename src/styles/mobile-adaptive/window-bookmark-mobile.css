@@ -56,6 +56,16 @@
     max-height: none !important;
     overflow: visible !important;
   }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.resume-modal, .user-profile-modal).window-bookmark-host:has(> .window-bookmark-rail) .profile-record-panel.is-empty {
+    display: flex !important;
+    flex: 1 0 auto !important;
+    flex-direction: column;
+  }
+
+  .window-bookmark-host .profile-record-panel.is-empty > .profile-character-empty {
+    flex: 1 0 auto;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1100px) {

@@ -2,11 +2,19 @@ import { describe, expect, it } from "vitest";
 import { buildLeaderboard } from "./leaderboard.js";
 
 describe("leaderboard", () => {
-  it("lists users with finished games, sorted by rating, and picks the most used character", () => {
+  it.each(["3段", "9段"])("orders equal %s progress by exact win rate then wins and shares rankings", (rank) => {
+    const users = ["a", "b", "c", "d", "e"].map((id) => ({ id, username: id, rank, stars: 2, rating: 1000 }));
+    const games = (id, wins, total) => Array.from({ length: total }, (_, index) => ({
+      blackUserId: id, whiteUserId: "outsider", winnerColor: index < wins ? "black" : "white", resultText: index < wins ? "黑中盘胜" : "白中盘胜"
+    }));
+    const rows = buildLeaderboard(users, [...games("a", 1, 3), ...games("b", 1, 2), ...games("c", 2, 4), ...games("d", 2, 4), ...games("e", 3, 4)]);
+    expect(rows.map(({ id, ranking }) => [id, ranking])).toEqual([["e", 1], ["c", 2], ["d", 2], ["b", 4], ["a", 5]]);
+  });
+  it("lists users with finished games, sorted by rank progress, and picks the most used character", () => {
     const users = [
-      { id: "u1", username: "alice", rating: 1040, selectedCharacter: "sigrika" },
-      { id: "u2", username: "bob", rating: 1000, selectedCharacter: "danea" },
-      { id: "u3", username: "cora", rating: 1080, selectedCharacter: "aemeath" },
+      { id: "u1", username: "alice", rating: 1040, stars: 3, selectedCharacter: "sigrika" },
+      { id: "u2", username: "bob", rating: 1000, stars: 2, selectedCharacter: "danea" },
+      { id: "u3", username: "cora", rating: 1080, stars: 4, selectedCharacter: "aemeath" },
       { id: "u4", username: "idle", rating: 1200, selectedCharacter: "sigrika" }
     ];
     const records = [
@@ -37,7 +45,8 @@ describe("leaderboard", () => {
       {
         id: "u3",
         username: "cora",
-        rating: 1080,
+        ranking: 1,
+        rating: 1080, stars: 4,
         rank: "3段",
         itemEffects: {},
         equippedCostumes: {},
@@ -52,7 +61,8 @@ describe("leaderboard", () => {
       {
         id: "u1",
         username: "alice",
-        rating: 1040,
+        ranking: 2,
+        rating: 1040, stars: 3,
         rank: "3段",
         itemEffects: {},
         equippedCostumes: {},
@@ -67,7 +77,8 @@ describe("leaderboard", () => {
       {
         id: "u2",
         username: "bob",
-        rating: 1000,
+        ranking: 3,
+        rating: 1000, stars: 2,
         rank: "3段",
         itemEffects: {},
         equippedCostumes: {},
@@ -86,7 +97,7 @@ describe("leaderboard", () => {
     const users = [{
       id: "u1",
       username: "alice",
-      rating: 1040,
+      rating: 1040, stars: 3,
       selectedCharacter: "denia",
       itemEffects: JSON.stringify({ legacyEffect: true }),
       userItemEffects: [
@@ -110,10 +121,10 @@ describe("leaderboard", () => {
       {
         id: "u1",
         username: "alice",
-        rating: 1040,
+        rating: 1040, stars: 3,
         selectedCharacter: "sigrika",
         modeStats: [
-          { mode: "spark", rating: 1040, rank: "3段", wins: 2, losses: 1, draws: 0 },
+          { mode: "spark", rating: 1040, stars: 3, rank: "3段", wins: 2, losses: 1, draws: 0 },
           { mode: "standard", rating: 1120, rank: "4段", wins: 1, losses: 0, draws: 0 }
         ]
       },
@@ -171,8 +182,8 @@ describe("leaderboard", () => {
 
   it("ignores unrated friendly records", () => {
     const users = [
-      { id: "u1", username: "alice", rating: 1040, selectedCharacter: "sigrika" },
-      { id: "u2", username: "bob", rating: 1000, selectedCharacter: "danea" }
+      { id: "u1", username: "alice", rating: 1040, stars: 3, selectedCharacter: "sigrika" },
+      { id: "u2", username: "bob", rating: 1000, stars: 2, selectedCharacter: "danea" }
     ];
     const records = [
       {

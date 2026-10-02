@@ -65,6 +65,20 @@ function automationHarness(room, {
 }
 
 describe("practice room automation", () => {
+  it("searches actual Nabomo stone colors in legacy practice rooms", async () => {
+    const room = createPracticeRoom(player(), { difficulty: "advanced", playerColor: "black" });
+    room.game.phase = GAME_PHASES.playing;
+    room.game.turn = COLORS.white;
+    const stone = room.game.points.find((point) => point.id === "1,1");
+    stone.stone = "black";
+    stone.colorIllusion = { owner: "black", visibleAs: "white" };
+    const harness = automationHarness(room);
+    harness.automation.schedule(room, {});
+    await harness.run();
+    const searched = harness.practiceEngine.search.mock.calls[0][0];
+    expect(searched.points.find((point) => point.id === "1,1").stone).toBe("black");
+    expect(stone.colorIllusion.visibleAs).toBe("white");
+  });
   it.each([null, "capture-challenge"])("leaves browser bot search to the device (%s)", async (challenge) => {
     const room = createPracticeRoom(player(), { difficulty: "advanced", challenge, playerColor: "black", engineBackend: "browser" });
     room.game.phase = GAME_PHASES.playing;

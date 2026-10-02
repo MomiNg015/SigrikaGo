@@ -97,9 +97,8 @@ describe("site settings defaults", () => {
     });
 
     const rules = JSON.parse(settings.ratingRules);
-    expect(rules.elo.kFactor).toBe(80);
-    expect(rules.elo.deltaMax).toBe(20);
-    expect(rules.antiBoost.enabled).toBe(true);
+    expect(rules.elo).toBeUndefined();
+    expect(rules.antiBoost).toBeUndefined();
     expect(rules.privateRewards.dailyRewardLimit).toBe(3);
   });
 

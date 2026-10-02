@@ -17,6 +17,14 @@ function createResponse() {
 }
 
 describe("personal replay route", () => {
+  it.each(["spark", "standard", "gomoku", "team"])("does not serve an invalid historical %s replay by id", async (mode) => {
+    const handlers = createReplayRouteHandlers({ prisma: { gameRecord: { findUnique: async () => ({
+      id: "invalid", mode, snapshot: JSON.stringify({ game: { winner: { invalid: true } } })
+    }) } } });
+    const res = createResponse();
+    await handlers.getReplay({ params: { id: "invalid" } }, res);
+    expect(res.statusCode).toBe(404);
+  });
   it("bounds personal replay history queries", async () => {
     let query = null;
     const handlers = createReplayRouteHandlers({

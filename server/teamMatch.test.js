@@ -89,10 +89,11 @@ describe("team match contract", () => {
     expect(restored.team).toEqual(state.team);
     expect(restored.players[0].teamLineup).toEqual(state.players[0].teamLineup);
   });
-  it("saves replay only even for an early finish, without writing user rewards", async () => {
+  it("saves a valid team replay without writing user rewards", async () => {
     const state = room();
     state.game.phase = "finished";
-    state.game.winner = { winnerColor: "black", reason: "resign", text: "黑胜", invalid: true };
+    state.game.moveNumber = 20;
+    state.game.winner = { winnerColor: "black", reason: "resign", text: "黑胜" };
     const prisma = { gameRecord: { create: vi.fn().mockResolvedValue({}) }, user: { update: vi.fn() } };
     await saveGameRecord({ prisma, room: state });
     expect(prisma.gameRecord.create).toHaveBeenCalledOnce();
@@ -100,6 +101,16 @@ describe("team match contract", () => {
     const data = prisma.gameRecord.create.mock.calls[0][0].data;
     expect(data).toMatchObject({ mode: "team", rated: false, matchSource: "team" });
     expect(JSON.parse(data.snapshot).players[1].teamLineup[2].characterId).toBe("nabomo");
+  });
+  it("does not save invalid team replays or user rewards", async () => {
+    const state = room();
+    state.game.phase = "finished";
+    state.game.winner = { winnerColor: "black", reason: "resign", text: "黑胜", invalid: true };
+    const prisma = { gameRecord: { create: vi.fn() }, user: { update: vi.fn() } };
+    await saveGameRecord({ prisma, room: state });
+    expect(state.recordSaved).toBe(true);
+    expect(prisma.gameRecord.create).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
   it("replays the correct characters and independent skill state on both sides of a boundary", () => {
     const state = room();

@@ -35,3 +35,7 @@ Good: convert remaining duration at snapshot reception. Base: old-server fallbac
 Wrong: `Date.now() >= room.openingEndsAt` is treated as authoritative expiry on every phone.
 
 Correct: compare against the locally anchored remaining duration; let the authoritative phase transition win.
+
+## Match waiting clock
+
+`match:waiting` carries `{ startedAt, serverNow, mode }`. Normalize at receipt with `receivedAt - max(0, serverNow - startedAt)`; both wire timestamps use the server clock. Queue age survives the 15-second retry; a fresh match receives a fresh origin. Legacy payloads retain their old `startedAt` fallback. Never let client display time control pairing or expansion. `socketHandlers.test.js` covers positive/negative 60-second skew, retry age, and fresh starts; `socketMatchEvents.test.js` covers the wire timestamp pair.

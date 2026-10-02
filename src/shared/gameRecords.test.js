@@ -30,7 +30,7 @@ describe("shared game record helpers", () => {
       wins: 1,
       losses: 2,
       draws: 1,
-      rating: 980
+      rating: 0
     });
   });
 
@@ -64,7 +64,7 @@ describe("shared game record helpers", () => {
       wins: 0,
       losses: 1,
       draws: 1,
-      rating: 980
+      rating: 0
     });
   });
 

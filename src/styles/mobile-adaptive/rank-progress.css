@@ -1,0 +1,94 @@
+.rank-progress {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.rank-progress .rank-progress-stars {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 12px);
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.rank-progress .rank-progress-stars[data-capacity="6"] {
+  grid-template-columns: repeat(3, 12px);
+}
+
+.rank-progress .rank-star {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: transparent;
+  opacity: 0.35;
+}
+
+.rank-progress .rank-star.is-earned {
+  color: var(--bright-ink, #3d2b25);
+  fill: var(--bright-yellow, #fff0a6);
+  opacity: 1;
+}
+
+.rank-progress-status { font-size: 0.7em; }
+
+.app-shell .profile-resume-view .profile-summary-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+}
+
+@media (min-width: 769px) {
+  .app-shell .leaderboard-modal .ranked-leaderboard .leaderboard-heading,
+  .app-shell .leaderboard-modal .ranked-leaderboard .leaderboard-row {
+    grid-template-columns: 48px 48px minmax(100px, 1fr) minmax(120px, 1fr) repeat(4, minmax(48px, 0.6fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell .profile-resume-view .profile-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .profile-resume-view .profile-summary-item {
+    grid-column: 1 / -1;
+  }
+}
+
+.leaderboard-player .rank-progress,
+.leaderboard-player .rank-progress > span {
+  width: auto;
+  max-width: none;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.match-classification-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.app-shell .match-classification-tag.is-rated,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-header .room-code-label.is-rated {
+  background: color-mix(in srgb, var(--bright-pink, #ff9ebb) 38%, var(--bright-sheet, #fffaf0)) !important;
+  color: var(--bright-ink, #3d2b25) !important;
+}
+
+.app-shell .match-classification-tag.is-friendly,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-header .room-code-label.is-friendly {
+  background: color-mix(in srgb, var(--bright-mint, #bfe8dd) 65%, var(--bright-sheet, #fffaf0)) !important;
+  color: var(--bright-ink, #3d2b25) !important;
+}
+
+.opening-modal .match-classification-tag,
+.opening-duel-copy .match-classification-tag {
+  margin-bottom: 8px;
+}
+
+.match-expansion-notice { line-height: 1.6; }

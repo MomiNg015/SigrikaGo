@@ -215,6 +215,7 @@ function userForMode(user, mode) {
   return {
     ...user,
     rating: stats.rating,
+    stars: stats.stars ?? 2,
     rank: stats.rank ?? user.rank ?? "3段",
     recentResults: stats.recentResults ?? [],
     wins: stats.wins,

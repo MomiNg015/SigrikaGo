@@ -120,7 +120,7 @@ describe("capture challenge SQLite persistence", () => {
     prisma = new PrismaClient({ datasources: { db: { url: `file:${join(directory, "test.db").replaceAll("\\", "/")}` } } });
     await prisma.$executeRawUnsafe('CREATE TABLE "User" ("id" TEXT PRIMARY KEY, "username" TEXT, "rank" TEXT)');
     await prisma.$executeRawUnsafe(`CREATE TABLE "UserModeStats" (
-      "id" TEXT PRIMARY KEY, "userId" TEXT, "mode" TEXT, "rating" INTEGER, "rank" TEXT,
+      "id" TEXT PRIMARY KEY, "userId" TEXT, "mode" TEXT, "rating" INTEGER, "stars" INTEGER DEFAULT 2, "rank" TEXT,
       "recentResults" TEXT, "wins" INTEGER, "losses" INTEGER, "draws" INTEGER, "createdAt" DATETIME, "updatedAt" DATETIME
     )`);
     await ensureCaptureChallengeSchema(prisma);

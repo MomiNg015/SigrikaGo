@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { isInvalidReplay } from "./replayValidity.js";
 import { readFile, unlink } from "node:fs/promises";
 import { Router } from "express";
 import {
@@ -418,7 +419,7 @@ export function createAdminRouter({
       take: 100
     });
     res.json({
-      records: records.map((record) => ({
+      records: records.filter((record) => !isInvalidReplay(record)).map((record) => ({
         id: record.id,
         roomCode: record.roomCode,
         blackName: record.blackName,
@@ -434,7 +435,7 @@ export function createAdminRouter({
 
   router.get("/replays/:id", async (req, res) => {
     const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
-    if (!record) {
+    if (!record || isInvalidReplay(record)) {
       res.status(404).json({ error: "棋谱不存在" });
       return;
     }

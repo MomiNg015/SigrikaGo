@@ -2388,3 +2388,11 @@ Correct:
 ```jsx
 <HomeHeader siteTitle={siteSettings.homeTitle} siteVersion={siteSettings.homeVersion} />
 ```
+
+
+## Invalid replay contract
+
+- `saveGameRecord({ prisma, room })` checks `room.game.winner.invalid` before every specialized mode branch; invalid games mark `recordSaved` and clear `resultRewards` without database writes.
+- `isInvalidReplay(record)` reads `snapshot.game.winner.invalid` (serialized or object snapshot), with exact legacy `resultText === "对局无效"` fallback. Never classify all unrated/friendly games or all short games as invalid.
+- Personal/social paginated summaries filter bounded 51-row batches before the 50-valid-row page boundary; cursor stays composite createdAt/id and snapshot must not reach the summary response. Admin lists filter too; both detail APIs return 404 for invalid records. No historical rows are deleted.
+- Validate all modes, full invalid batches, cursor advancement, valid unrated retention, and direct detail denial in replayPagination/replayRoutes/adminRoutes/roomResultPersistence tests.

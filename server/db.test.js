@@ -32,13 +32,13 @@ describe("publicUser", () => {
       role: "admin",
       status: "active",
       rank: "3段",
-      rating: 1000,
+      rating: 1000, stars: 2,
       wins: 1,
       losses: 2,
       modeStats: {
-        spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 },
-        gomoku: { rating: 1000, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 }
+        spark: { rating: 1000, stars: 2, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, stars: 2, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 },
+        gomoku: { rating: 0, stars: 2, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       blueGems: 0,
@@ -80,7 +80,7 @@ describe("publicUser", () => {
     expect(publicUser(user).ownedCharacters).not.toContain("baconbits");
   });
 
-  it("automatically unlocks Nabomo when rating reaches 1400", () => {
+  it("does not dynamically unlock Nabomo from legacy rating", () => {
     const user = {
       id: "u1",
       username: "player",
@@ -100,7 +100,7 @@ describe("publicUser", () => {
       ownedDecorations: ""
     };
 
-    expect(publicUser(user).ownedCharacters).toContain("nabomo");
+    expect(publicUser(user).ownedCharacters).not.toContain("nabomo");
   });
 
   it("merges structured asset relations with legacy fields when they are loaded", () => {

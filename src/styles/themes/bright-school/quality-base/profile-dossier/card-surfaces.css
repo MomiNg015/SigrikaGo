@@ -55,20 +55,8 @@
   border-left: 2px solid var(--profile-dossier-card-border) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(1) .profile-summary-label {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item .profile-summary-label {
   color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-pink)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(2) .profile-summary-label {
-  color: color-mix(in srgb, var(--bright-ink) 70%, var(--bright-blue)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(3) .profile-summary-label {
-  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-mint)) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item:nth-child(4) .profile-summary-label {
-  color: color-mix(in srgb, var(--bright-ink) 76%, var(--bright-pink)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-recent-section {

@@ -109,6 +109,7 @@ describe("auth route handlers", () => {
 
     expect(res.statusCode).toBe(200);
     expect(createdUsers).toEqual([{
+      rank: "3段", stars: 2, rating: 0,
       username: "alice",
       passwordHash: "hash:secret12:10",
       onboardingRequired: true,

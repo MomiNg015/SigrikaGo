@@ -55,10 +55,11 @@ describe("RoomPeopleList memo comparison", () => {
     }))).toBe(false);
   });
 
-  it("marks room member ratings with semantic rating typography", () => {
+  it("shows only the member rank name", () => {
     const source = readFileSync(new URL("./RoomPeopleList.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain('className="text-rating-value">{person.rating}分');
+    expect(source).toContain('<span className="room-person-rank">{person.rank}</span>');
+    expect(source).not.toContain("RankProgress");
   });
 });
 

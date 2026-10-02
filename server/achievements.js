@@ -1,3 +1,4 @@
+import { rankToStep } from "../src/shared/rankProgression.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { writeAudit } from "./adminAudit.js";
@@ -666,8 +667,8 @@ function isAchievementMet(achievement, context) {
       const stat = context.modeStats.find((row) => row.mode === params.mode);
       return Number(stat?.wins ?? 0) >= threshold;
     }
-    case "rating":
-      return Math.max(Number(context.user.rating ?? 0), ...context.modeStats.map((row) => Number(row.rating ?? 0))) >= threshold;
+    case "rank":
+      return Math.max(rankToStep(context.user.rank), ...context.modeStats.map((row) => rankToStep(row.rank))) >= Number(params.value ?? params.count ?? 1);
     case "owned_character_count":
       return context.ownedCharacters.length >= threshold;
     case "owned_decoration_count":
@@ -882,7 +883,7 @@ function achievementConditionTypes() {
     "wins",
     "mode_games",
     "mode_wins",
-    "rating",
+    "rank",
     "owned_character_count",
     "owned_decoration_count",
     "owned_music_count",

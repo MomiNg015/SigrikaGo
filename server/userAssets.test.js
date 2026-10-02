@@ -202,7 +202,7 @@ describe("user asset list helpers", () => {
     })).toEqual({
       selectedCharacter: "denia",
       selectedStoneDecoration: "paw-stone",
-      ownedCharacters: ["baconbits", "denia", "aemeath", "sigrika", "nabomo"],
+      ownedCharacters: ["baconbits", "denia", "aemeath", "sigrika"],
       ownedItems: [
         { itemId: "dream-ticket", quantity: 3 },
         { itemId: "legacy-item", quantity: 9 }

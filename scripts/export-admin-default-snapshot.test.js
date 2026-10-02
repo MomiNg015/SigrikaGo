@@ -1,6 +1,20 @@
 import { describe, expect, it } from "vitest";
 
 describe("admin default snapshot export", () => {
+  it("drops obsolete Elo settings and private migration receipts from exports", async () => {
+    const { buildAdminDefaultConfig } = await import("./export-admin-default-snapshot.mjs");
+    const prisma = snapshotPrisma();
+    prisma.siteSetting.findMany = async () => [
+      { key: "ratingRules", value: JSON.stringify({ kFactor: 32, privateRewards: { winCoins: 15 } }) },
+      { key: "migration.rank-stars-v1", value: "private receipt" }
+    ];
+    const config = await buildAdminDefaultConfig(prisma);
+    expect(config.siteSettings).toHaveLength(1);
+    expect(JSON.parse(config.siteSettings[0].value)).toEqual({ privateRewards: {
+      winCoins: 15, lossCoins: 10, drawCoins: 10, dailyRewardLimit: 3
+    } });
+  });
+
   it("serializes non-user admin configuration with catalog credit fields", async () => {
     const { buildAdminDefaultConfig } = await import("./export-admin-default-snapshot.mjs");
     const config = await buildAdminDefaultConfig(snapshotPrisma());

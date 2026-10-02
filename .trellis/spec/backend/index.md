@@ -21,6 +21,7 @@ Team relay matchmaking and stage handoffs follow [Team Match Contract](./team-ma
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
+| [Rank Progression Contract](./rank-progression-contract.md) | Star tiers, ninth-dan points, migration, settlement and display | Filled |
 | [Database Guidelines](./database-guidelines.md) | ORM patterns, queries, migrations | Partially filled |
 | [Error Handling](./error-handling.md) | Error types, handling strategies | To fill |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |

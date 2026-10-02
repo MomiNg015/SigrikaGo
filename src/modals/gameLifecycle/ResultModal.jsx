@@ -1,3 +1,4 @@
+import RankProgress from "../../shared/RankProgress.jsx";
 import { useEffect, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
@@ -37,7 +38,8 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
   const isSigrikaCandyDuelOwner = isSigrikaCandyDuel && Boolean(currentPlayer);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
-  const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
+  const progressDelta = reward?.rank || reward?.stars || reward?.rating || 0;
+  const ratingRewardClass = `result-reward-tile result-reward-rating ${progressDelta < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
   const userLost = Boolean(winnerColor && currentPlayer && currentPlayer.color !== winnerColor);
   const outcome = isChallenge ? "challenge" : isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
@@ -116,7 +118,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
           </div>}
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
-              <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>
+              <span className={ratingRewardClass}><strong>段位{reward.rank > 0 ? " · 晋级" : reward.rank < 0 ? " · 降级" : ""}</strong><RankProgress showStatus rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
               <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}

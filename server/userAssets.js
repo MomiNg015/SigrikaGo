@@ -5,9 +5,6 @@ import { toCostumePayload } from "../src/shared/costumes.js";
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia"];
 const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan", "mornye", "changli", "chisa"];
-const RATING_UNLOCKS = [
-  { characterId: "nabomo", rating: 1400 }
-];
 const RANK_UNLOCKS = [];
 
 export function parseAssetList(value, { normalize = (item) => item } = {}) {
@@ -107,9 +104,6 @@ export function legacyUserAssetsToStructuredRows(user) {
 export function publicUserAssets(user) {
   const ownedCharacters = new Set(publicOwnedCharacters(user));
   for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
-  for (const unlock of RATING_UNLOCKS) {
-    if ((user?.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
-  }
   if (user?.role === "admin") {
     for (const characterId of ADMIN_ONLY_CHARACTER_IDS) ownedCharacters.add(characterId);
     for (const unlock of RANK_UNLOCKS) ownedCharacters.add(unlock.characterId);

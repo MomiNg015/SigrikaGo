@@ -52,7 +52,7 @@ describe("room header labels", () => {
       roomGameInfo: { black: "黑方玩家", white: "白方玩家", moves: "42手" },
       showUtilityControls: false
     }));
-    expect(markup).toContain(`<span class="room-code-label">${label}AB123</span>`);
+    expect(markup).toContain(`>${label} AB123</span>`);
     expect(markup).toContain('<span class="room-info-tag move-count">42手</span>');
     expect(markup).not.toContain("房间号");
     expect(markup).not.toContain("提子22");

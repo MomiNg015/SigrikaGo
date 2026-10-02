@@ -19,7 +19,7 @@ Use authoritative opening deadlines for every five-second stage. Freeze play and
 
 Persist all three members privately. Project unrevealed opponent/spectator slots as null identity/configuration/costume. Reveal all on finish. Never spread the private lineup into game players or public users. The player's account default character must not change with handoff.
 
-Settlement saves the terminal replay only, including early finishes, and never changes rank, coins or existing record metrics. Replay must interpret round events and restore the character at that step.
+Settlement saves valid terminal replays only; winner.invalid skips replay creation in every mode, and never changes rank, coins or existing record metrics. Replay must interpret round events and restore the character at that step.
 
 ## Validation & Error Matrix
 

@@ -1,7 +1,8 @@
+import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useRef } from "react";
-import { CircleGauge, Gamepad2, HelpCircle, Star, Trophy } from "lucide-react";
+import { Gamepad2, HelpCircle, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import { characterThemeStyle, findCharacter } from "../shared/characterDisplay.js";
@@ -87,18 +88,22 @@ export default function ProfileResumeView({
               emphasis
               icon={<Trophy size={17} />}
               label="段位"
-              value={user.rank ?? "未定段"}
-              tip="每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。"
+              value={<RankProgress rank={user.rank} stars={user.stars} rating={user.rating} />}
+              tip="每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
             />
-            <ProfileSummaryItem
-              emphasis
-              icon={<Star size={17} />}
-              label="积分"
-              value={`${finiteRecordNumber(stats?.rating ?? user.rating) ?? 0}分`}
-              tip="对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
-            />
-            <ProfileSummaryItem icon={<Gamepad2 size={17} />} label="总对局" value={`${normalizedStats.totalGames}局`} action={recentAction} />
-            <ProfileSummaryItem icon={<CircleGauge size={17} />} label="胜率" value={winRate} />
+            <div className="profile-summary-item profile-record-card">
+              <div className="profile-record-header">
+                <span className="profile-summary-label"><Gamepad2 size={17} />战绩</span>
+                {recentAction}
+              </div>
+              <dl className="profile-record-metrics">
+                <div className="profile-record-metric" aria-label={`总对局 ${normalizedStats.totalGames}局`}><dt>总对局</dt><dd>{normalizedStats.totalGames}</dd></div>
+                <div className="profile-record-metric is-win"><dt>胜</dt><dd>{normalizedStats.wins}</dd></div>
+                <div className="profile-record-metric is-loss"><dt>负</dt><dd>{normalizedStats.losses}</dd></div>
+                <div className="profile-record-metric is-draw"><dt>和</dt><dd>{normalizedStats.draws}</dd></div>
+                <div className="profile-record-metric is-rate"><dt>胜率</dt><dd>{winRate}</dd></div>
+              </dl>
+            </div>
           </div>
           <section className="profile-recent-section" aria-label="最近十盘">
             <RecentResultMarkers results={recentResults} className="profile-rank-results" />
@@ -106,9 +111,11 @@ export default function ProfileResumeView({
         </section>
 
         {records.length === 0 ? (
-          <WindowEmptyState as="section" compact className="profile-character-section profile-character-empty" aria-label="角色战绩">
-            <span className="recent-result-empty">暂无</span>
-          </WindowEmptyState>
+          <section className="profile-character-section profile-character-empty" aria-label="角色战绩">
+            <WindowEmptyState compact>
+              <span className="recent-result-empty">暂无</span>
+            </WindowEmptyState>
+          </section>
         ) : (
           <section className="profile-character-section" aria-label="角色战绩">
             <div className="profile-character-table-head" aria-hidden="true">

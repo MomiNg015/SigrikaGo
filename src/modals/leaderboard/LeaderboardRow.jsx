@@ -1,3 +1,4 @@
+import RankProgress from "../../shared/RankProgress.jsx";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
@@ -22,10 +23,10 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
         <strong>
           <UserIdentity user={player} compact />
         </strong>
-        <span>{player.rank}</span>
+        <span><RankProgress {...player} /></span>
       </div>
-      <span>{player.rank}</span>
-      <b className="text-rating-value" aria-label={captureChallenge ? `提子数 ${player.captures}` : undefined}>{captureChallenge ? `${player.captures}子` : player.rating}</b>
+      <span><RankProgress {...player} /></span>
+      {captureChallenge && <b className="text-rating-value" aria-label={`提子数 ${player.captures}`}>{player.captures}子</b>}
       {!captureChallenge && <>
       <div className="leaderboard-mobile-record" aria-label={`战绩 胜${player.wins} 负${player.losses} 和${draws}`}>
         <span><strong>胜</strong>{player.wins}</span>

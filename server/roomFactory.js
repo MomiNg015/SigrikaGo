@@ -295,6 +295,7 @@ export function userForRoomMode(user, mode) {
   return {
     ...user,
     rating: stats.rating,
+    stars: stats.stars ?? 2,
     rank: stats.rank,
     wins: stats.wins,
     losses: stats.losses
@@ -308,7 +309,8 @@ export function modeStatsForUser(user, mode) {
       : null
   );
   return {
-    rating: Number(stats?.rating ?? (mode === "spark" ? user?.rating : 1000) ?? 1000),
+    rating: Number(stats?.rating ?? (mode === "spark" ? user?.rating : 0) ?? 0),
+    stars: Number(stats?.stars ?? (mode === "spark" ? user?.stars : 2) ?? 2),
     rank: normalizeRank(stats?.rank ?? (mode === "spark" ? user?.rank : DEFAULT_RANK)),
     recentResults: parseRecentResults(stats?.recentResults),
     wins: Number(stats?.wins ?? (mode === "spark" ? user?.wins : 0) ?? 0),

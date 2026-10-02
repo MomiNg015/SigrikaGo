@@ -53,6 +53,9 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<p>所有模式的无效对局（<code>game.winner.invalid</code>）均不生成回放记录，检查先于队际赛、陪练和特殊剧情分支。本人、他人及后台回放列表过滤历史无效快照，按 ID 读取无效回放返回 404；玩家列表按有效记录补足分页，友谊对局不因未计分而被过滤。</p>
+<p>移动端时钟卡随回合切换呈现抬起／压下状态，队际赛头像斜切纸片取消上下边框碎线。匹配等待事件附带 <code>serverNow</code>，客户端用服务器已等待时长换算本地起点，避免设备时钟偏差造成初始计时跳到十几秒；排队放宽仍由服务端控制。</p>
+<p>对局开场语音按房间、事件与玩家在当前页面会话内去重（最多保留 128 条），窗口尺寸限制导致界面卸载重建不会重播；恢复快照同步登记已发生的开场事件。准时宝普通陪练与吃子挑战赛统一忽略娜波摩颜色伪装、按真实棋色计算，其他暗手可见性与玩家展示保持原规则。</p>
 <p>移动端纸贴棋钟独立样板见 <code>docs/prototypes/battle-sticker-clock.html</code>：保留出框立绘，米色／回合黄色棋钟右侧显示时间和读条；身份浅蓝纸贴、提子与除子浅米绿纸贴、超频粉红纸贴，以轻微倾斜跨出面板上下边缘。技能使用彩色蜡笔涂鸦素材，用尽只变灰并禁用，保留技能名，不追加状态文字。四张透明 PNG 素材配合 DOM 文案；支持本地试下、弃手、技能使用和重置，不改变正式对弈组件或 API。</p>
 <p>对弈信息区“立体纸剧场”已接入普通 Bright School 对弈：保留出框角色立绘，信息拆为错位搭叠的身份铭牌、棋钟统计面板与角色色技能签；隐藏粗进度条，时间数字与右侧统计组成棋钟。棋钟平时沿用米色，当前行棋方变黄并抬起显示硬阴影，另一方下沉 3px；手机竖屏保留 94px 立绘占位，恢复大改前的两行信息卡；卡片左端插入立绘背后，身份／时间在上、统计／技能在下，整卡以米色／回合黄色及阴影反馈。行间距 8px，棋盘仍按屏宽、动态视口和安全区共同限高，优先一屏显示。独立交互样板仍见 <code>docs/prototypes/battle-paper-stage.html</code>。</p>
 <p>竖屏对弈信息卡的外层 <code>mobile-player-slot</code> 允许阴影与按下位移溢出，动作区锚定视口统一预留右侧 5px、底部 6px；配合卡片间距完整展示回合棋钟阴影，不压缩卡片内容。</p>
@@ -61,6 +64,8 @@
 <p>科技风第二轮主界面采用用户选定的“科幻作战指挥室”，入口 <code>docs/design-samples/command-center.html</code>：独立生成的舱体场景包含轨道舷窗与中央全息棋盘，DOM 界面承担身份区、对弈部署、陪练、好友房间、部员手册和底部功能导航；手机竖屏独立重排，支持隐藏界面查看场景。模式选择、部员更换、房间号校验与第二项主题设置均为本地样板，不启动真实匹配或写入正式偏好；素材和生成提示词记录在 <code>docs/design-samples/command-center-notes.md</code>。第一轮三套方向保留作对照，尚未接入运行时和后台。</p>
 <p>星炬科技界面探索入口为 <code>docs/design-samples/startorch.html</code>：提供白昼学院、深空终端、轨道观测站三种方向，各包含大厅、13 路对弈、部员手册和界面设置样板，适配桌面及手机竖屏。设置样板将科技风置于第二项；现有运行时 <code>club-standard</code> 占位项和后台管理保持不变，待视觉方向选定后再接入。样板使用本地立绘与演示数据，提供角色出战选择、棋盘落子／重置、模式弹窗，不连接 API 或写入正式主题偏好。设计参考与运行方式见 <code>docs/design-samples/startorch-notes.md</code>。</p>
 <p>整体界面改造样板入口为 <code>docs/design-samples/campus-refresh.html</code>，包含主界面、履历、好友和仓库，共用克制的纸面与铅笔描边，删除额外台词、氛围文案和便签装饰。主界面保留现有学生证、对弈入口、手册、吉祥物、陪练与六张功能入口插画；窗口不复用主界面画框。履历样板单独采用 850px 紧凑纸面、放大角色立绘、连续统计栏和密排战绩表；竖屏压缩身份区并保留正文滚动。手机竖屏采用身份与手册在上、对弈插画居中、功能入口两列的独立排布；窗口固定标题与关闭按钮，正文独立滚动，仓库采用两列物品与顶部详情。所有数据及交互均在独立样板内模拟，正式组件和 API 不变，运行方式见同目录 README。</p>
+<p>履历与他人详细信息的校园档案视觉探索见 <code>docs/prototypes/profile-dossier.html</code>：独立 HTML 样板对齐现有 Bright School 弹窗的米白方格纸面、深棕描边、右下硬阴影、外贴标题、左侧彩色书签与米白圆角方形关闭按钮，不使用主界面的背景或木框素材。内部采用横向身份卡、描边统计卡和战绩条目；标题与书签保留手写字体，正文和数字对齐实际窗口字体，保留本地角色立绘，通过现有 Rough.js 为窗口轮廓、按钮、页签、分隔线和战绩标记绘制固定种子的手绘笔触。提供身份、模式与空状态切换，适配桌面及手机竖屏。样板使用虚构战绩，不连接 API，不替换现有运行时界面；从仓库根目录启动静态服务可预览。</p>
+<p>角色立绘候选仍独立于运行时资源：2026-09-26 的达妮娅三版按用户指定西格莉卡样图重绘，保留关键服饰细节，面部采用清醒温柔的神态，延续泡泡浮棋子主题；研究与提示词记录于 <code>.trellis/tasks/09-24-nine-character-chibi-portraits/research/</code>。</p>
 <p>准时宝普通陪练与吃子挑战赛中，本地机器人棋钟以“不限时”和单行 <code>--:--</code> 显示，不套用旧剧情的故障字符或闪烁效果；玩家一侧仍按原规则计时。</p>
 <p>本地陪练的预编译引擎脚本通过同源绝对 URL 加载，避免 Vite 开发模式为根路径动态导入追加 <code>?import</code> 并拒绝 <code>public</code> 资源。陪练浏览器回归测试同时覆盖开发模式和生产构建的出招、刷新恢复及加载失败重试。</p>
 <p>准时宝普通陪练与吃子挑战赛的新对局统一由玩家浏览器计算：入门使用 Worker 内的共享启发式，中级／高级及挑战赛使用 GNU Go 3.8 WASM level 5／10。服务端发放绑定当前连接和局面的计算任务，校验回包并负责正式落子、100 手挑战赛结算和排名；切后台、计算失败或断线不会伪造机器人认输。旧房保留原后端，黑化西格莉卡专属引擎保持独立。引擎按需下载，附带源码、许可证与可复现构建脚本；详见<a href="./system-design/03-backend-realtime-api.md#本地陪练引擎">本地陪练引擎</a>。</p>
@@ -82,7 +87,7 @@
 <p>开局展示不再直接比较设备时间与服务端绝对截止时间：opening 快照携带 <code>openingServerNow</code>，客户端接收时把剩余时长换算为本地 <code>__openingEndsAt</code>，倒计时和立绘演出共用同一固定期限。避免手机与服务器时钟存在偏差时，整段猜先提示被提前关闭；服务端进入 playing 仍立即卸载演出。</p>
 <p>准时宝对局的猜先演出使用 <code>botProfile.portraitUrl</code> 专用立绘；机器人没有角色 ID 不再视为缺少立绘。双方按本地玩家视角定位、按执棋颜色配色，继续沿用资源失败、旁观和重连时的简洁提示回退。</p>
 <p>猜先阶段采用两条全高、窄幅的黑白斜切立绘条，周围及中央仍可见棋盘和信息区；独立 62% 黑色遮罩统一降低底层明度，随最后 0.4 秒退场淡出并在开局恢复：左侧对手下落、右侧自己上升，约 0.5 秒落位并轻微回弹；执棋结果与倒计时直接叠于交界处。最后 0.4 秒向左右拉幕退场，在既有 <code>openingEndsAt</code> 时点完全移除。手机竖屏采用对手左上、自己右下构图。仅本次匹配且双方有角色的玩家播放，旁观、中途进入、重连及资源未及时就绪回退简洁提示；沿用角色外观、规则提示与现有声音，不改服务端开局节奏。</p>
-<p>移动端吃子排行榜的提子数跨越整行三条网格轨道并垂直居中，榜单和底部个人排名共用；普通排行榜保留积分、战绩和胜率的分行布局。</p>
+<p>移动端吃子排行榜的提子数跨越整行三条网格轨道并垂直居中，榜单和底部个人排名共用；普通排行榜合并段位与星数/九段积分，保留战绩和胜率。</p>
 <p>准时宝陪练新增“吃子挑战赛！”：高级难度、双方合计 100 手，仅统计提子，禁用数子、和棋并取消 22 子认输。有效成绩与纪录角色独立持久化；吃子总榜按个人最高提子数并列排名，结算按本次成绩计算名次，首次成功完成或超越历史最好名次时显示红色盖章提示。排行榜空榜仍为四个左侧书签保留最低高度；坐标开关以同色、右下位移及缩小阴影表示开启。详见<a href="./system-design/03-backend-realtime-api.md#吃子挑战赛">后端与实时接口</a>和<a href="./system-design/04-data-model-and-domain.md#吃子挑战赛成绩">数据模型</a>。</p>
 <p>最后 10 秒的棋钟显示与角色读秒共用本地一秒节拍，以服务端快照持续校准，吸收到包前后 300ms 的抖动；最多提前估计一秒并停在 1，不在客户端推断超时或下一轮读秒。读秒音频复用下载与解码缓存，跳过片头静音并保留 10ms 起音余量；启动延迟超过 200ms、换手或离开房间时取消过期请求。详见<a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a>。</p>
 <p>部员手册恢复今天美化前的原有窗口与角色卡片样式，撤去生成书页、学生证背景和专用尺寸覆盖；仅保留左侧“角色 / 装饰”书签切换。装饰页移除重复虚线、分类标题与重置图标，列表首位始终提供默认黑白棋子，复用空装饰 ID 的恢复操作。两个内容区继续使用原有直接子元素与滚动样式，剧情状态、详情浮层和出战语音生命周期保持原有规则。</p>
@@ -91,7 +96,7 @@
 <p>履历三个圆形按钮的边框与旧配色一致：成就粉色、个性化蓝色、对局回放绿色；通过局部边框变量接入共享状态规则，避免被通用深色边框覆盖。</p>
 <p>履历的成就与个性化入口为纯图标圆形按钮，独立定位于身份卡片右下角，不参与用户名网格排版，保留 title 和无障碍名称；成就为原粉色、个性化为原浅蓝色，履历对局回放为原浅绿色。三个按钮均无阴影，直径为 36px，极窄屏为 32px。共享按钮状态通过局部阴影变量支持这一例外，其余按钮不变。</p>
 <p>移动排行榜常用角色立绘为 40×44px，与序号保留 10px 间距；胜、负、和及胜率标签使用透明底色。极窄屏收紧排行窗口内边距，为用户名保留空间。</p>
-<p>移动排行移除书签引入的强制增高和跨行重排，采用紧凑横向布局：序号、常用角色头像、用户名依次排列，积分战绩与胜率集中右侧；固定本人排名共用布局，保留前三名底图。普通按钮文字默认单行；好友操作按钮始终保持同一排，移动端收紧间距与内边距、适配字号，按钮及内部文字都不换行。</p>
+<p>移动排行移除书签引入的强制增高和跨行重排，采用紧凑横向布局：序号、常用角色头像、用户名依次排列，段位后附星数或九段积分，战绩与胜率集中右侧；固定本人排名共用布局，保留前三名底图。普通按钮文字默认单行；好友操作按钮始终保持同一排，移动端收紧间距与内边距、适配字号，按钮及内部文字都不换行。</p>
 <p>房间成员面板直接展示成员列表，不再显示重复的“房间成员”标题；区域保留无障碍名称。</p>
 <p>桌面对弈 header 使用单行自动列：房间信息占剩余宽度，测试工具、常规功能与退出按钮按实际显示数量各占内容列。信息过长时仅信息区域横向滚动，不挤压按钮或增加 header 高度；移动端沿用现有独立布局。</p>
 <p>成员列表的“详细信息”复用好友资料的标题贴纸、书签窗口和背景层，继续通过 portal 避免操作区裁切。移动竖屏对弈以“操作”页实测高度保留底部网格行；切换选项卡不会重新分配棋盘和双方信息区高度，较高内容向下展开并允许页面滚动。隐藏的操作页仅参与尺寸测量，不接收交互。</p>
@@ -99,7 +104,7 @@
 <p>桌面端与移动端对弈不再渲染独立“操作提示”区块；行动按钮、和棋／数子确认及剧情选项保留，移动操作面板直接呈现行动区。</p>
 <p>开发环境的随机布局、恢复技能和进入读秒测试工具移至对弈页右上 header，使用带 title 和无障碍名称的纯图标按钮；手机 header 保持单行，测试图标采用 32px 宽、44px 高的紧凑排列，房间信息单行横向滚动。底部行动栏不再承载测试工具，生产环境、观战回放及特殊对局不显示，技能演出或非行棋阶段保持禁用。</p>
 <p>对弈引导未指定角色的用户侧使用黑化西格莉卡剧情中的默认玩家立绘，仅改变展示，不填入角色 ID 或技能；指定教学角色及 NPC 保持原展示。该立绘随教学立绘集合预加载。引导路由懒加载等待页从 0 开始，不复用首页已完成的资源进度；每段教学过渡读条按 loading ID 隔离状态，首帧不会闪现上一阶段的满进度。</p>
-<p>玩家窗口空状态使用 <code>WindowEmptyState</code>：轻量手绘纸页配原有提示文字，去掉重复的粗虚线和厚重卡片边框；履历战绩、装饰及窄列表使用紧凑版。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历和服装商店。加载与错误保留独立反馈；空观战列表不绘制空表头，提示在窗口内容区居中。</p>
+<p>玩家窗口空状态使用 <code>WindowEmptyState</code>：轻量手绘纸页配原有提示文字，去掉重复的粗虚线和厚重卡片边框；履历战绩的提示、装饰及窄列表使用紧凑版；履历和详细资料的角色战绩外框独立保留，并填满正文剩余高度。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历和服装商店。加载与错误保留独立反馈；空观战列表不绘制空表头，提示在窗口内容区居中。</p>
 <p><code>AppOverlays</code> 的懒加载窗口各自使用独立 <code>Suspense</code> 边界。履历打开成就、个性化等新窗口时，仅新窗口等待模块加载，已打开窗口保持可见及原有状态，不会闪隐后一起重现。</p>
 <p>玩家常规校园主题窗口统一使用左侧手绘书签选项卡：履历、设置、成就、排行榜、观战、好友、首页玩家详细资料和公告。外轮廓为不随 SVG 缩放变细的 2.5px 描边，文字使用霞鹜字体；桌面单行横排、手机单列竖排，招募道具选择保留在窗口内操作栏，展示图标、名称、数量及选中状态，不接入侧边书签。<code>WindowBookmarkTabs</code> 将书签挂载到显式启用窗口外层，内部内容与书签分别滚动，保留原回调和加载禁用状态，书签内部隐藏图标及装饰点，仅显示常规字重文字，观战书签仅显示模式名称。手机窗口受安全视口限制，履历与详细资料随内容收高；黑化、其他主题、房间内资料及底部功能栏保持原控件。当前商城的双店铺切换不改，未接入现行入口的旧商城分类和扭蛋组件不重新启用。</p>
 <p>手机首页以匹配插画为主体：挂式学生证布局内匹配入口向两侧各扩展 16px，高度为 <code>clamp(248px, 70vw, 300px)</code>；顶部栏取消旧最小高度并收紧内边距，六项功能区使用三行 <code>max(52px, 13.5vw)</code> 的实际行高，移除旧逐行上移偏移。底板保留末行图片与阴影所需的底部留白，短屏自然滚动，桌面布局保持原样。</p>
@@ -113,9 +118,9 @@
 <p>剧情窗口的“继续／完成”按钮铺满操作区整行，不再限制为 280px；底部操作行按实际内容高度占位，选项换行后仍保留窗口内边距；选项列表高度上限为 <code>min(34dvh, 260px)</code>，超出时内部滚动，并预留按钮流光、焦点框与阴影空间。</p>
 <p>宽屏首页的学生证横向位置由 <code>HomeStage</code> 根据中央内容区左缘及内边距计算，取该位置与木板原 8% 挂点中更靠内的一侧；部员手册随后居中于学生证与对弈入口之间。窗口变化时同步重新计算，手机竖屏清除桌面定位变量，保留既有布局。</p>
 <p>观战选项卡的房间数标签保持等宽等高，并禁止 Flex 收缩，防止窄屏或标签内容挤压时圆形变成椭圆。</p>
-<p>桌面端履历与详细资料的段位、积分、总对局、胜率四张摘要卡片采用等宽布局、统一内边距和数值字号，标题与数值分别对齐；总对局右侧保留回放按钮，移动端沿用原有两列紧凑布局。履历与详细资料的角色战绩为空时，保留卡片底色、边框、圆角和阴影，在卡片内居中显示紧凑的“暂无”标签；仅隐藏表头及表格内容，不预留大块空白。剧情与对弈引导操作按钮采用柔金色纸签底、与校园控件一致的 3px 描边和轻阴影，回复选项配对话图标、左对齐文字与右箭头；多选项在桌面使用等高网格行，手机竖屏单列等宽并按文字自然增高；仅可用按钮边缘的一小段彩光持续流动。禁用状态不显示流光，减少动态效果时保留静态高光。最终样式由 <code>mobile-adaptive/guided-actions.css</code> 管理，保留原有按钮交互与竖屏换行。</p>
+<p>桌面端履历与详细资料的段位（附星数或九段积分）、总对局、胜率三张摘要卡片采用适配内容的布局、统一内边距和数值字号，标题与数值分别对齐；总对局右侧保留回放按钮，移动端段位卡占满一行，总对局与胜率在下一行平分两列。履历与详细资料的角色战绩为空时，保留卡片底色、边框、圆角和阴影，在卡片内居中显示紧凑的“暂无”标签；仅隐藏表头及表格内容，战绩外框填满窗口正文剩余高度；空状态插画嵌入外框内部，避免通用空状态样式清除边框。剧情与对弈引导操作按钮采用柔金色纸签底、与校园控件一致的 3px 描边和轻阴影，回复选项配对话图标、左对齐文字与右箭头；多选项在桌面使用等高网格行，手机竖屏单列等宽并按文字自然增高；仅可用按钮边缘的一小段彩光持续流动。禁用状态不显示流光，减少动态效果时保留静态高光。最终样式由 <code>mobile-adaptive/guided-actions.css</code> 管理，保留原有按钮交互与竖屏换行。</p>
 <p>云端测试期间，<code>NODE_ENV=production</code> 下彩虹豆豆跳跳糖禁止对西格莉卡使用。<code>server/items.js</code> 统一提供 <code>disabledCharacterReasons</code> 库存字段及服务端 403 校验，仓库按该字段禁用目标并显示“暂不可用”；校验早于剧情读取、扣道具和用户状态写入。本地开发与其他角色保持原规则，已有剧情恢复和取消效果能力保留。详见 <a href="./deployment.md#环境变量">部署环境说明</a>。</p>
-<p>履历与他人详细信息共用同一套精简战绩呈现：不显示“角色战绩”和“最近十盘”可见标题，保留语义区域名称；最近十盘居中显示一行结果，回放入口统一为“总对局”右侧的 44px 图标按钮。共用摘要、表头与手机列宽样式覆盖 self/social 两种上下文，社交操作及各自滚动方式保持独立。</p>
+<p>履历与他人详细信息共用同一套精简战绩呈现：不显示“角色战绩”和“最近十盘”可见标题，保留语义区域名称；最近十盘居中显示一行结果，回放入口位于战绩卡标题右侧，保留 44px 图标按钮；统计行依次显示总对局、胜、负、和、胜率，数值在上、标签在下，段位与战绩标题统一字号、字重、行高和颜色。共用摘要、表头与手机列宽样式覆盖 self/social 两种上下文，社交操作及各自滚动方式保持独立。</p>
 <p>手机端他人“详细信息”由 <code>.profile-resume-view-social</code> 统一承担正文纵向滚动，角色战绩区与表格按内容自然撑高，避免资料、社交操作和摘要占满短视口后把列表压到零高。窗口标题仍留在正文外，支持普通标题与纸签标题；自己的履历及桌面布局保持既有滚动方式。</p>
 <p>首页学生证进一步统一为铅笔描边与水粉手绘质感，包含挂钩、铆钉和卡套边缘；它作为木板容器的直接子元素挂在原左侧位置上方的木板上沿，使用挂点与轻投影体现垂挂。绝对定位显式清除旧 <code>grid-area: player</code>，避免父网格把证件挤到右上角；桌面与手机使用自适应宽度，内容网格预留垂挂空间，部员手册位于其右侧稍低处。</p>
 <p>学生证在精细指针悬停时以挂钩顶端（素材的 <code>50.8% 2%</code>）为轴逆时针旋转 3°，使用 220ms 过渡；禁用及减少动态效果状态不旋转。<code>HomeStage</code> 通过 ResizeObserver 读取铭牌右缘和对弈入口左缘，将桌面手册中心定位在两者中点；窗口或容器尺寸变化时重新计算，仅写入手册的横向偏移变量，保留对弈入口与功能区位置；手机端手册左移 12px 并靠首行底部排列，首行垂挂预留缩短 20px，使手册、学生证和下方对弈入口更紧凑。</p>
@@ -124,6 +129,10 @@
 <p>移动端对弈的技能/数值点击说明挂载到 <code>.app-shell</code> 浮层，避开玩家卡片与棋盘容器裁切，并保留主题和浮层顺序；竖屏对弈视口与操作滚动区预留右下阴影空间。引导误点提示统一为“请在黄圈位置落子”。房间页不显示关闭倒计时，也不再运行显示用秒级计时器；服务端 5 分钟关闭逻辑保持不变。 移动端剧情对弈引导的回复选项由专属按钮规则显式设置 <code>height: auto</code>，覆盖普通操作按钮的固定高度；长文本换行后自然撑高，保留现有最小点击高度和外层操作区滚动。</p>
 <p>移动端竖屏首页六个功能图片按钮采用两列三行紧凑网格，每行至少 52px，按实际行高压缩留白，不再对第二、三行单独施加位移；<code>entries-utility-footer.css</code> 保留图片宽度和按钮动效。</p>
 <p>普通校园主题对弈模式卡片只显示单行模式标题与匹配人数，背景英文完整显示，背景模式图标隐藏。规则不在按钮内展示：仅在宽度超过 768px 且具备精细指针悬停能力时，于鼠标旁显示规则浮窗，跟随移动并避让视口边缘；移出、点击、滚动、改变窗口大小或 Escape 关闭，移动端在卡片右上角提供独立的 22px 小 ⓘ（图标 16px），绝对定位、不改变卡片布局；点击切换规则浮窗，点击空白处关闭，不触发匹配。<code>mobile-adaptive/match-mode-title-layout.css</code> 负责最终布局，模式选择与陪练入口行为保持原样。 本文档是系统设计入口。详细设计已经按主题拆分到 <code>docs/system-design/</code>，修改架构、运行行为、资源体系、样式主题、部署方式或技术债时，应更新入口摘要或对应分篇，并运行 <code>npm run docs:system-design</code> 同步 HTML。</p>
+<h2>段位星数与九段积分（2026-09-30）</h2>
+<p>星炬、标准、五子棋独立采用星数段位：18级至三段上限4星，四至六段6星，七至八段8星。胜加一星、负减一星；以对局前状态判断，满星再胜晋级、零星再负降级，变段后获得目标段位一半星数。18级零星不再下降，和棋不改变进度。每次进入九段均为1000分，胜加200、负减250，最低0分；零分再负降至八段4星。旧 Elo、段位差修正、重复对手积分衰减和升降段额外加扣分退出结算。</p>
+<p>新旧账号均从三段2星起步。独立增量迁移增加 <code>User.stars</code>、<code>UserModeStats.stars</code> 并将 <code>rating</code> 默认值改为0；该兼容字段仅存九段积分；后台默认配置导出清除旧 Elo 参数并排除私有迁移凭据。启动数据迁移在一个事务内保存私有 <code>migration.rank-stars-v1</code> 回滚凭据、保留已获得角色和成就、重置各模式及恢复中的对局快照；重复启动不重复重置。娜波摩首次星炬升六段永久解锁。部署须先备份数据库，执行 <code>prisma migrate deploy</code>，再启动新服务；恢复旧版需停服恢复对应数据库备份，不删除迁移标记来代替回滚。</p>
+<p>前端通过共享 <code>RankProgress</code> 在段位后显示星数或九段积分，移除独立积分区域。四星一行，六星两行各三颗，八星两行各四颗，显示已获得与空星。排行榜先按段位降序，同段再按积分或星数降序，同值以用户名和ID稳定排序。履历、详细资料、对局名牌、人员列表、邀请、结算和后台共用展示；友谊、练习、挑战和队际赛保留原有不计段位边界。</p>
 <h2>阅读顺序</h2>
 <p>普通校园主题主界面纸签窗口的关闭、刷新、回退等标题栏图标按钮统一为 36px 方形，同排文字按钮统一为 36px 高并保留文字所需宽度；绝对定位关闭按钮距顶部 6px、右侧 16px，增加按钮与窗口边框之间的留白。履历标题贴纸脱离文档流，定位容器保持窗口全宽以保留原始贴纸尺寸，右上成就、金币和关闭控件统一 36px 高、顶部对齐；不再为贴纸预留手机标题栏空行。</p>
 <p>登录后的资源加载页在进度条下方显示带下划线的小字“（首次加载需要1-3分钟，请耐心等待哦~）”，复用现有加载状态文字样式；该提示仅用于登录后预加载入口。</p>
@@ -542,7 +551,7 @@
 <li>Bright School card/list surfaces that keep hard paper shadows inside scroll or clipped modal shells reserve explicit right/bottom shadow bleed at the content layer instead of changing the shadow style. The house manual character grid, leaderboard rows and pinned current row, warehouse item grid, shop left information panel, and friends list keep their existing visuals while their desktop and mobile owner CSS gives the trailing and lower edges enough padding/scroll-padding for shadows to render.</li>
 </ul>
 <ul>
-<li><code>ProfileResumeView</code> is the single self/social profile renderer. It explicitly orders mode tabs as 星炬、标准、五子棋 and owns the identity hero, four-item summary, recent form, and fixed 角色/对局/胜/负/和/胜率 table. The near-fullscreen desktop shell contains a centered dossier capped at 1160px; only <code>.profile-resume-view</code>, record-panel/overview rails, secondary-action rail, and the mode-tab wrapper stay transparent. Bright School renders the hero and character section as large cream cards, each statistic as an independent medium card, recent results as its own medium card, and each semantic character row as one short-shadow 7% palette-tinted cream card painted across its six cells. Identity and record portraits use an outer visible carrier plus an inner <code>.profile-portrait-mask</code>; within this dossier, portrait paint ignores scene-specific costume enlargement/offset, stays centered, and uses 80% <code>object-fit: contain</code> sizing so intrinsic proportions are preserved. Character-record masks are additionally borderless and transparent, while any chain badge remains a sibling outside the mask. Summary values use the normal UI face with tabular digits; the stylized <code>text-rating-value</code> face is deliberately not reused because its crossbar treatment reduces large summary-number legibility. Self context keeps “成就、个性化、金币、关闭” in that header order with 44px controls and a 56px header; social context exposes top-hero “点赞、加好友、加入黑名单、举报” icon controls in that order, with only the like count visible. Self context places an accessible icon-only replay button on the right of the total-games card, removes the recent-results heading and character-section title, stretches the desktop recent-results card to match the adjacent summary group while keeping portrait results compact, horizontally centers the result markers (including partial and empty records), and uses a compact 20px aligned column header; social context places replay beside the “最近十盘” heading. Both contexts instantiate the same portaled <code>HouseReplayDialog</code>; the social footer no longer owns relation actions or a relationship label. Mode requests preserve the last successful tab and matching content until success, expose loading/retry feedback, reject duplicate requests, and ignore stale mode/user responses. Tabs use tablist/tabpanel linkage plus roving keyboard focus, and every outer or nested sheet uses <code>ModalDialog</code> focus/Escape behavior.</li>
+<li><code>ProfileResumeView</code> is the single self/social profile renderer. It explicitly orders mode tabs as 星炬、标准、五子棋 and owns the identity hero, three-item summary (rank progress, total games, win rate), recent form, and fixed 角色/对局/胜/负/和/胜率 table. The near-fullscreen desktop shell contains a centered dossier capped at 1160px; only <code>.profile-resume-view</code>, record-panel/overview rails, secondary-action rail, and the mode-tab wrapper stay transparent. Bright School renders the hero and character section as large cream cards, each statistic as an independent medium card, recent results as its own medium card, and each semantic character row as one short-shadow 7% palette-tinted cream card painted across its six cells. Identity and record portraits use an outer visible carrier plus an inner <code>.profile-portrait-mask</code>; within this dossier, portrait paint ignores scene-specific costume enlargement/offset, stays centered, and uses 80% <code>object-fit: contain</code> sizing so intrinsic proportions are preserved. Character-record masks are additionally borderless and transparent, while any chain badge remains a sibling outside the mask. Summary values use the normal UI face with tabular digits; the stylized <code>text-rating-value</code> face is deliberately not reused because its crossbar treatment reduces large summary-number legibility. Self context keeps “成就、个性化、金币、关闭” in that header order with 44px controls and a 56px header; social context exposes top-hero “点赞、加好友、加入黑名单、举报” icon controls in that order, with only the like count visible. Self context places an accessible icon-only replay button on the right of the total-games card, removes the recent-results heading and character-section title, stretches the desktop recent-results card to match the adjacent summary group while keeping portrait results compact, horizontally centers the result markers (including partial and empty records), and uses a compact 20px aligned column header; social context places replay beside the “最近十盘” heading. Both contexts instantiate the same portaled <code>HouseReplayDialog</code>; the social footer no longer owns relation actions or a relationship label. Mode requests preserve the last successful tab and matching content until success, expose loading/retry feedback, reject duplicate requests, and ignore stale mode/user responses. Tabs use tablist/tabpanel linkage plus roving keyboard focus, and every outer or nested sheet uses <code>ModalDialog</code> focus/Escape behavior.</li>
 </ul>
 <ul>
 <li>Desktop replay-list tables reserve a non-ellipsizing, left-aligned time column for full zh-CN timestamps, while mobile replay lists keep the card-style layout, left-align the replay time, and use final Bright School portrait overrides. The shared standalone replay dialog keeps its title/close area fixed and uses <code>.replay-dialog-list-scroll</code> as the bounded desktop/mobile scroll and pagination owner; its inner table is overflow-visible. Player-facing Bright School internal list/grid scroll owners hide scrollbar chrome while preserving mouse, keyboard, touch, and momentum scrolling.</li>
@@ -581,7 +590,7 @@
 <li>Desktop resume and profile modals keep the near-fullscreen outer window fixed inside the viewport with hidden outer overflow. The centered <code>.profile-resume-view</code> is capped at 1160px; <code>.profile-record-panel</code> assigns explicit <code>status / overview / characters / actions</code> areas, so missing optional status markup cannot shift the long character table into an intrinsic row. Desktop and portrait both display a transparent/borderless/shadowless <code>.profile-character-table-head</code> outside <code>.profile-character-table-scroll</code>, collapse the duplicate semantic <code>thead</code> visually while retaining accessibility, and let only the character rows scroll; no sticky header is used, so transparent header text cannot overlap rows. The social profile’s visible “角色战绩” heading uses the shared window-title font and <code>1.5rem</code> size. The labelled row scroller hides native scrollbar chrome without disabling wheel, touch, or keyboard scrolling, preserves trailing scroll padding, and keeps the blacklist footer visible. Desktop character rows retain table layout with a 70px rhythm; portrait rows remain native table rows at 60px, keep all six columns and headers on one line, allocate explicit widths to protect the win-rate column, and allow only the character name itself to ellipsize. The social title and close control share an explicit 44px header grid track on desktop and portrait layouts. Bright School's final profile owner is imported last in <code>qa-guard.css</code> after older commerce/mobile/effect owners, clears terminal-system leakage only from <code>.profile-character-table</code>, and leaves the separate house-manual <code>.character-record-row</code> contract untouched. Character detail headers separately reserve right-side space so the compact BGM player cannot collide with the close button.</li>
 </ul>
 <ul>
-<li>履历积分问号说明明确提示：对局积分根据对手实力动态增减，友谊赛不会增减积分；段位问号说明最近十盘的升降规则。两种提示均向统计卡下方展开，所在卡片在 hover/focus 时抬升层级；移动端聚焦触发器后按提示框实际边界微调 <code>.profile-record-panel</code> 的滚动位置，并由履历最终移动规则覆盖误命中的房屋资料 fixed-tooltip 样式，保证提示框完整位于资料窗口内容区且不被模式选项卡或后续卡片裁切。该说明只修正用户可见文案与展示行为，不改变结算逻辑。</li>
+<li>履历/详细信息统计区使用段位、战绩两张卡：战绩合并总对局数、胜负和局数与胜率（胜局数除以总对局数，零局为 0.0%），标题栏显示“战绩 · 共 N 局”并在右上保留对局回放入口；回放按钮的 flex 基准与宽高统一复用成就/个性化的 <code>--resume-icon-size</code>（通常 36px，360px 及以下竖屏为 32px），保持正圆；内部胜、负、和、胜率四列对齐，数字在上、标签在下，胜率前使用淡竖线区分比例，手机保持四列。桌面两卡宽度比为 1:1.5，竖屏各占一整行。履历取消独立积分卡，段位问号文案为“每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数”。提示向统计卡下方展开，所在卡片在 hover/focus 时抬升层级；移动端聚焦触发器后按提示框实际边界微调 <code>.profile-record-panel</code> 的滚动位置，并由履历最终移动规则覆盖误命中的房屋资料 fixed-tooltip 样式，保证提示框完整位于资料窗口内容区且不被模式选项卡或后续卡片裁切。结算遵循共享星数状态机。</li>
 </ul>
 <ul>
 <li>Self and social profiles share the same “最近十盘” section and result-marker layout, and both place replay beside that section heading with vertical center alignment.</li>
@@ -881,7 +890,7 @@
 <li>后端新增 <code>StoryScript</code> 通用模型和 <code>server/storyScripts.js</code> 领域层。脚本包含 <code>key/title/triggerType/triggerParamsJson</code>、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空、节点演出效果枚举、选项出现时间非负数字、选项选择后等待非负数字和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 <code>nextNodeId</code> 为空，表示选择该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。每个选项可配置 <code>revealDelaySeconds</code>，为空时等正文展示完毕后出现，数字则从进入当前节点开始计时后单独出现；也可配置 <code>transitionDelaySeconds</code>，为空时选择后即时进入目标。对弈节点还会规范化节点推进字段 <code>manualContinueEnabled</code>、<code>autoContinueEnabled</code> 和 <code>autoContinueDelaySeconds</code>。</li>
 </ul>
 <ul>
-<li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到受支持角色时，服务端在同一事务内先校验使用资格：达妮娅、阿梅茜与莱娜仍以可测试随机源按 35% 拒绝 / 65% 接受结算；西格莉卡不进行拒绝判定，每次合法使用必定接受、消耗道具并递增账号级 <code>sigrikaCandyUseCount</code>。普通角色脚本继续使用 <code>accepted-start</code> / <code>rejected-start</code>；西格莉卡第 1–7 次分别进入 <code>use-1-start</code> 至 <code>use-7-start</code> 后汇入现有通用效果尾段，第 8 次进入 <code>corruption-start</code>。本地开发构建会在第 1–7 次起始节点并列保留“继续当前剧情”和“【测试】直接跳到第 8 次（黑化剧情）”：后者调用非生产服务端接口，权威写入 <code>n = 8 / corruption-story</code> 后在同一播放器进入 <code>corruption-start</code>；生产前端不注入选项，生产接口以 404 隐藏。接受分支和该调试跳转都会返回完整用户资产关联，前端整体替换状态后仍保留所有已装备服装、立绘与构图参数。剧情仍按 <code>{ itemId, characterId }</code> 查找，其中 <code>itemId</code> 必须使用稳定的 <code>ShopItem.targetId</code>（例如 <code>rainbow-bean-candy</code>），不能使用后台商城行主键；查询和发布冲突检查会把历史商城行主键规范化回 <code>targetId</code>。没有已发布脚本时，接受分支继续回退旧 <code>effectText</code>。</li>
+<li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到受支持角色时，服务端在同一事务内先校验使用资格：达妮娅、阿梅茜与莱娜仍以可测试随机源按 35% 拒绝 / 65% 接受结算；西格莉卡不进行拒绝判定，每次合法使用必定接受、消耗道具并递增账号级 <code>sigrikaCandyUseCount</code>。普通角色脚本继续使用 <code>accepted-start</code> / <code>rejected-start</code>；西格莉卡第 1–7 次分别进入 <code>use-1-start</code> 至 <code>use-7-start</code> 后汇入现有通用效果尾段，第 8 次进入 <code>corruption-start</code>。西格莉卡糖果在生产与开发环境均可使用；仓库直接播放服务端返回的剧情，不注入跳转黑化的测试选项。正常第八次剧情照常触发；既有调试接口仍仅限非生产服务端。接受分支和该调试跳转都会返回完整用户资产关联，前端整体替换状态后仍保留所有已装备服装、立绘与构图参数。剧情仍按 <code>{ itemId, characterId }</code> 查找，其中 <code>itemId</code> 必须使用稳定的 <code>ShopItem.targetId</code>（例如 <code>rainbow-bean-candy</code>），不能使用后台商城行主键；查询和发布冲突检查会把历史商城行主键规范化回 <code>targetId</code>。没有已发布脚本时，接受分支继续回退旧 <code>effectText</code>。</li>
 </ul>
 <ul>
 <li>西格莉卡第 8 次剧情高潮把持久化状态推进为黑化待决战，并以根级深度灰度、独立 pointer-transparent damage field 和交互锁限制原界面：真实界面会间歇出现反相横向切片、不同步撕裂、块状丢帧、短促黑场和档案读取失败碎片；header 除桌面/移动端“引导”按钮外仍保留命中，“引导”使用原生禁用并在按钮现有范围内叠加红叉，已开浮层的关闭/导航控件继续可用；首页只开放部员手册和匹配入口。所有共享全屏加载调用都把当前用户传给 <code>AssetPreloadScreen</code>；黑化时该边界在既有立绘槽位显示 <code>SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET</code>，不渲染随机/固定角色立绘、同槽位缺图转圈或角色配置加载台词，但继续显示显式通用标题、资源状态、进度条、小橘子和普通 Tip。黑化 overlay 只负责 pointer-transparent 故障视觉，不再占用共享 BGM 暂停请求；<code>resolveBackgroundMusic()</code> 在黑化主页固定返回 -150 cents light 处理的 <code>sigrika_corruption_home_loop.ogg</code>。进入 <code>SIGRIKA_CANDY_DUEL.matchSource</code> 特殊房后，入口、猜先和西格莉卡开场台词阶段返回空曲目；安全投影的 <code>sigrikaCandyDuel.musicStarted</code> 从 <code>秘日六席</code> 演出开始时变为 true，随后才固定返回 -250 cents 加错位影声的 <code>sigrika_corruption_duel_once.ogg → sigrika_corruption_duel_loop.ogg</code>，并在演出清空或刷新后继续。该特殊分支优先于普通战斗曲和技能曲，不会在静音阶段错误回退。匹配成功、结果弹窗和已结束房间仍按原合同静音，恢复正常用户态后重新进入普通曲目解析；登录预加载仅为黑化用户加入主页专曲，特殊房 battle preload 仅凭 <code>matchSource</code> 加入决战 once/loop，SFX、voice 与角色音乐预览使用的共享暂停机制不变。黑化用户态下，西格莉卡在手册卡片/详情、黑化与恢复剧情中统一解析为 <code>SIGRIKA_CORRUPTED_PORTRAIT_ASSET</code>，其优先级高于已装备服装且不继承服装构图；特殊房/回放的 NPC 位与假技能演出直接复用该常量，玩家位改用 <code>SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET</code>，不泄露普通出战角色立绘或连锁徽标。手册和匹配白名单弹窗显式高于故障场，保证仅西格莉卡卡片保持彩色且红色“与西格莉卡？决战”成为唯一饱和焦点；其余角色模糊、所有角色卡片不可交互，匹配窗仅灰度化非决战内容并禁用四个普通入口。该入口创建或续接全服唯一一间 13 路特殊 Spark 房，贴 2.75 目、随机执色、双方无技能、无和棋申请、无提子自动认输，真人与西格莉卡？分别使用 30 分钟主时间且不进入读秒；别人占用时模式选择窗以浅黄色 <code>西格莉卡？正在对局中。。。</code> 提供唯一专属观战入口，特殊房仍不进入通用观战列表、禁止房间码绕过加入并关闭聊天输入。NPC 决策在同一回合依次尝试智子云 KataGo、GNU Go 10、GNU Go 5、入门启发式与安全 pass。结果只保存带专属标记的普通棋谱，不写段位、统计、货币、成长、任务、成就或奖励；房主结果继续进入胜/负恢复剧情，观战者确认后离房返回模式选择窗。恢复完成或跳过后统一清除效果并把计数/阶段/结果/房间号复位。黑化进度、特殊房元数据和隐藏吻合度审计均可跨刷新、断线和服务重启恢复。</li>
@@ -939,6 +948,9 @@
 <p>开发环境（Vite <code>import.meta.env.DEV</code>）每次完成或跳过剧情引导后均可接续重播主界面引导。已完成账号仅重播客户端展示，不重置服务端状态；结束仍使用幂等结算接口，不重复发奖或提示新邮件。正式构建维持一次性规则。</p>
 <p>主界面引导聊天框为纯覆盖层：移除引导期间对弹窗背景 padding、对齐方式及窗口高度的覆盖，也不再向页面写入对话框高度变量。介绍整窗时允许台词覆盖窗口；所有高亮按钮（包括只介绍、不点击的准时宝）均参与聊天框避让，不挤压或移动窗口。</p>
 <p>主界面引导不再逐步强制置顶滚动：目标已在视野内时不滚动，被视口或内部滚动容器裁切时才以 nearest 最小滚动显露。引导遮罩拦截触摸、滚轮及滚动键的背景滚动，长台词区域可独立滚动且不向页面传递；键盘聚焦使用 preventScroll，避免移动端铭牌和邮箱高亮随页面漂移。</p>
+<ul>
+<li>匹配升降级分类：星炬、标准、五子棋按当前模式段位优先匹配段位最近玩家，差不超过 2 个等级计升降级对局（1级与1段视为相邻）；双方等待满 15 秒后放宽范围，并显示“（段位相近的玩家较少...开始自动匹配段位较远的玩家）”。服务器自动重试且保留原排队时间，重新核验准入、登录与黑名单，取消/断线使重试失效。建房时冻结 <code>rated</code>；超过 2 段为友谊对局，沿用友谊金币奖励，不计排位胜负或星数/积分。猜先标题上方及房间号分别使用浅红升降级、浅绿友谊标识；练习、特殊剧情和队际赛独立规则不变。对弈信息区及成员行仅显示段位名称；成员行使用棋色、用户名、段位三列，列宽为 <code>20px / 1.6fr / minmax(4em, 1fr)</code>，三列内容全部左对齐；观战者保留空棋色列以维持纵向对齐。左上模式名称与房间号以空格分隔，手机竖屏信息区恢复黑白棋标识并置于用户名前。排行榜依次按段位、星数/九段积分、精确胜率、胜场数排序，全部相同采用 1、1、3 式并列名次；接口返回 <code>ranking</code>，列表与我的排名统一读取。</li>
+</ul>
 <ul>
 <li>移动竖屏棋盘统一由最终 <code>battle-paper-panels-mobile.css</code> 控制：舞台宽度取棋盘目标尺寸并限制在父容器内，高度由 1:1 比例推导；外框同样为正方形，横纵坐标轨道一致。舞台和父网格使用 <code>minmax(0, 1fr)</code> 防止百分比内在尺寸循环或宽度挤压造成棋盘变形，覆盖 760/768/900px 断点差异。队际赛采用已选 B「错落纸片」：取消单人拱形底板，三张独立浅色斜边纸片从左到右固定第一、第二、第三出场；角色保持直立，当前位浅黄、退场灰显、未揭晓问号，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px，头像宽随屏宽在88–108px间适配、高96px；复用服装/立绘解析并保持服务端隐藏成员边界。</li>
 </ul>
@@ -2201,7 +2213,7 @@
 <li>角色技能逻辑由代码管理：后台仅编辑基础技能和已有派生技能的名称、描述、超频，不能修改效果、目标、次数、回合行为、参数、启用状态或增删技能。派生技由各基础技能自己的 <code>params.derivedSkills[]</code> 显式声明；启动任务 <code>cleanupLegacyDerivedSkillLeak</code> 通过一次性 marker 清理旧后台草稿误注入到非爱弥斯角色的默认“远航星”，随后 <code>seedCharacters</code> 可补齐代码中新增加但数据库缺失的派生定义而不覆盖已有内容。</li>
 </ul>
 <ul>
-<li>娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 <code>User.rating</code> 自动补充 <code>nabomo</code> 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 <code>modeStats.rank</code>（缺省时回退 <code>User.rank</code>）自动补充 <code>lynae</code>，管理员用户不受段位限制直接拥有。</li>
+<li>娜波摩首次星炬升上六段时永久获得；对局结算持久化角色所有权，降段与本次段位重置不收回。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 <code>modeStats.rank</code>（缺省时回退 <code>User.rank</code>）自动补充 <code>lynae</code>，管理员用户不受段位限制直接拥有。</li>
 </ul>
 <ul>
 <li>技能类型：</li>
@@ -2436,7 +2448,7 @@
 <li>按 <code>rating</code> 降序排序。</li>
 </ul>
 <ul>
-<li>每行展示 <code>UserModeStats.rank</code> 中存储的模式段位；排行榜仍按当前模式 <code>rating</code> 降序排序，但段位不再由积分实时派生。</li>
+<li>每行展示 <code>UserModeStats.rank</code> 中存储的模式段位；排行榜按模式段位降序，同段再按星数或九段积分降序。</li>
 </ul>
 <ul>
 <li>从棋谱统计总对局数、胜局数、负局数、和棋数。</li>
@@ -2448,7 +2460,7 @@
 <li>“常用角色”按棋谱中该用户使用次数最多的角色计算。</li>
 </ul>
 <ul>
-<li>自己的履历与他人详细资料共用 <code>ProfileResumeView</code>：模式资料仍读取当前模式持久化 <code>rating</code> 与棋谱派生的胜负和数据，页签渲染层显式锁定为“星炬、标准、五子棋”，胜率由胜局/总局派生。近全屏桌面外壳内使用上限 1160px 的居中档案主体，共享身份页眉、段位/积分/总对局/胜率摘要、最近十盘和语义化角色成绩表；主体结构层保持透明以连续露出外层档案纸纹。自己的身份区只提供“个性化”，页眉右侧依次保留“成就、金币、关闭”，他人资料身份区提供“点赞、加好友、举报”，而“加入黑名单”留在底部低优先级关系区并先二次确认。桌面资料体以显式命名网格区固定摘要、角色滚动区与底部操作，长角色列表不会再把黑名单推到窗口外；资料标题与关闭按钮共享对齐轨道。两类入口的对局回放统一复用 portaled <code>HouseReplayDialog</code>，作为 <code>.app-shell</code> 下的独立顶层弹窗打开，关闭后保留下层档案并恢复焦点。模式切换在成功前保持旧页签与旧资料对齐，显示载入/重试状态、锁定重复请求并忽略过期响应；举报失败保留输入并在嵌套弹窗内展示。所有弹窗继续使用 <code>ModalDialog</code> 的 Escape、焦点循环和关闭后焦点恢复合同；接口和数据库结构不变。</li>
+<li>自己的履历与他人详细资料共用 <code>ProfileResumeView</code>：模式资料仍读取当前模式持久化 <code>rating</code> 与棋谱派生的胜负和数据，页签渲染层显式锁定为“星炬、标准、五子棋”，胜率由胜局/总局派生。近全屏桌面外壳内使用上限 1160px 的居中档案主体，共享身份页眉、段位（附星数或九段积分）/总对局/胜率摘要、最近十盘和语义化角色成绩表；主体结构层保持透明以连续露出外层档案纸纹。自己的身份区只提供“个性化”，页眉右侧依次保留“成就、金币、关闭”，他人资料身份区提供“点赞、加好友、举报”，而“加入黑名单”留在底部低优先级关系区并先二次确认。桌面资料体以显式命名网格区固定摘要、角色滚动区与底部操作，长角色列表不会再把黑名单推到窗口外；资料标题与关闭按钮共享对齐轨道。两类入口的对局回放统一复用 portaled <code>HouseReplayDialog</code>，作为 <code>.app-shell</code> 下的独立顶层弹窗打开，关闭后保留下层档案并恢复焦点。模式切换在成功前保持旧页签与旧资料对齐，显示载入/重试状态、锁定重复请求并忽略过期响应；举报失败保留输入并在嵌套弹窗内展示。所有弹窗继续使用 <code>ModalDialog</code> 的 Escape、焦点循环和关闭后焦点恢复合同；接口和数据库结构不变。</li>
 </ul>
 <h3>后台管理</h3>
 <ul>
@@ -2549,7 +2561,7 @@
 <li><code>SkillBanner</code>: 技能演出浮层。</li>
 </ul>
 <ul>
-<li><code>ResultModal</code>: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。黑化西格莉卡特殊局是显式例外：实际 Portal 弹窗由 <code>.sigrika-corruption-result-backdrop .sigrika-corruption-result-modal</code> 限制为最大 <code>360px</code>、内容自适应高度，唯一“继续”动作保持至少 <code>44px</code> 高；面板复用特殊局红黑 token、保持无立绘，不显示“不计入成长/战绩/奖励”提示，并在 <code>resultVoiceEventForRoom</code> 决策边界返回空事件，因此暂不播放胜/负/和角色结果语音。</li>
+<li><code>ResultModal</code>: 对局结果弹窗；当前用户是房间玩家时展示结算后段位（星数或九段积分）与金币变化。结果弹窗在当前视口水平/垂直居中，桌面默认宽度为视口 50%、高度为视口 40%，避免覆盖整条棋盘区域。黑化西格莉卡特殊局是显式例外：实际 Portal 弹窗由 <code>.sigrika-corruption-result-backdrop .sigrika-corruption-result-modal</code> 限制为最大 <code>360px</code>、内容自适应高度，唯一“继续”动作保持至少 <code>44px</code> 高；面板复用特殊局红黑 token、保持无立绘，不显示“不计入成长/战绩/奖励”提示，并在 <code>resultVoiceEventForRoom</code> 决策边界返回空事件，因此暂不播放胜/负/和角色结果语音。</li>
 </ul>
 <ul>
 <li>黑化西格莉卡房间通过 <code>.room-screen.sigrika-candy-duel-room</code> 成为根级灰度合同的局部彩色例外，普通房与其它黑化页面不受影响。最终 <code>mobile-adaptive/sigrika-corruption.css</code> 将该例外拆为 atmosphere、panels、timers、controls、icons、secondary surfaces、mobile readability、portaled system log、lifecycle、replay/result 与 presentation 小 owner：提高大面积炭红表面的明度、弱化普通面板边界，强红只表达房间号、回合、危险操作和技能演出；自然色棋盘与棋子不变。特殊匹配成功标题为 <code>正在踏入深渊。。。</code>，普通匹配标题不变。双方使用 30 分钟主时间和零读秒棋钟；双方固定显示提子/除子/超频，房间号为 <code>房间号ERROR</code>，数子原生禁用，行动栏以 <code>pass-action</code> / <code>resign-action</code> 区分中性与危险动作。<code>room-icons.css</code> 只选择房间头部、行动栏与系统记录的 Lucide 图标，直接设置浅色或禁用色 stroke，不污染棋盘 SVG。<code>room-mobile-readability.css</code> 锁定回放手数、移动菜单子文字、系统记录角标、小号统计标题、视角标记和移动说明浮层；Portal 弹出的特殊房系统记录以 <code>.sigrika-duel-system-log</code> 语义类脱离 room root 后继续匹配 <code>room-system-log.css</code>，不能回落到普通 Bright School 纸张样式。精细指针桌面高度不超过 820px 时只收缩 <code>--board-size</code>，不压缩玩家卡或倒计时。黑/白立绘槽由特殊 owner 分别固定为炭黑红与浅血粉白，NPC 未知技能槽用房间 + 玩家卡选择器覆盖主题米白渐变。猜先与退出确认由独立 <code>room-lifecycle.css</code> owner 控制，最大宽度分别为 460px / 420px，并清除主题宽屏、滚动及深色按钮文字赢家；猜先的 <code>Swords</code> 图标通过专用类提升为 <code>56px</code> 浅色描边红底圆标。特殊房进入、猜先和西格莉卡开场台词阶段保持 BGM 静音；安全房间投影的 <code>sigrikaCandyDuel.musicStarted</code> 从 <code>秘日六席</code> 技能阶段起变为 true，<code>useBackgroundMusicTrack</code> 才开始决战 once/loop，并在演出清空或刷新后继续。<code>ChatBox</code> 只在特殊房过滤旧 <code>npc-thinking</code> 记录，正常房间与其它系统记录不变。<code>ReplayList</code> 保留普通五列和时间首位，不渲染特殊标题/标签；淡血红特殊行在时间单元格内挂载绝对定位的无文字 <code>Crown</code> 标识，避免改变顶层网格子项顺序，并按用户执色映射官方黑化 NPC 与匿名玩家立绘。普通未计分好友回放的 <code>Handshake</code> 同样作为时间单元内的绝对定位左上角角标，保留“友谊对局”可访问名称但不再挤占时间戳宽度。<code>SigrikaDuelPresentation</code> 的 NPC 台词保留头像 + 姓名 + 正文双列结构，但气泡只使用一个连续红黑背景；假技能横幅也只由最外层提供鲜艳红黑渐变，头像和文字子区透明无边框。Portal 直属节点仍由 atmosphere owner 设置 <code>filter: none !important</code>。</li>
@@ -2583,7 +2595,7 @@
 <li><code>derivePlayerRecordStats</code> / <code>recordWinnerColor</code>: 位于 <code>src/shared/gameRecords.js</code>，前后端共用棋谱胜负与战绩推导逻辑，优先基于 <code>winnerColor</code> 结构化字段，旧记录回退到 <code>resultText</code> 文本前缀。</li>
 </ul>
 <ul>
-<li><code>resultRewardDelta</code>: 位于 <code>src/shared/resultRewards.js</code>，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 <code>+20</code>、负 <code>-20</code>、和 <code>0</code>，金币胜 <code>+50</code>、负 <code>+20</code>、和 <code>0</code>。</li>
+<li><code>resultRewardDelta</code>: 位于 <code>src/shared/resultRewards.js</code>，集中维护结果奖励差值，供后端持久化与前端结果展示共用；竞技进度由 <code>rankProgression</code> 决定，九段胜 <code>+200</code>、负 <code>-250</code>（零分另判降段）；金币胜 <code>+50</code>、负 <code>+20</code>、和 <code>0</code>。</li>
 </ul>
 <ul>
 <li><code>buildCharacterDraft</code> / <code>characterDraftToBody</code>: 位于 <code>src/shared/adminDrafts.js</code>，后台角色表单数据转换。</li>
@@ -2671,10 +2683,10 @@
 </ul>
 <h3>后端通用逻辑</h3>
 <ul>
-<li><code>publicUser</code>: 用户公开字段白名单，并返回模式级 <code>modeStats.{spark,standard,gomoku}</code>，其中包含 <code>rating/rank/recentResults/wins/losses/draws</code>。</li>
+<li><code>publicUser</code>: 用户公开字段白名单，并返回模式级 <code>modeStats.{spark,standard,gomoku}</code>，其中包含 <code>rating/rank/stars/recentResults/wins/losses/draws</code>。</li>
 </ul>
 <ul>
-<li><code>applyRankProgression</code>: 位于 <code>src/shared/rankProgression.js</code>，前后端共用的段位升降级规则。胜负局会更新当前模式窗口，胜 7 盘升段/级、负 8 盘降段/级，并在触发后清空窗口。</li>
+<li><code>applyRankProgression</code>: 位于 <code>src/shared/rankProgression.js</code>，前后端共用的段位升降级规则。仅升降级对局更新当前模式星数/九段积分；满星再胜升段、零星再负降段，新段位半星，九段按独立积分规则处理。匹配友谊对局沿用不计成长规则。</li>
 </ul>
 <ul>
 <li><code>makeAuth</code>: HTTP 鉴权与管理员中间件。</li>
@@ -2695,7 +2707,7 @@
 <li><code>buildLeaderboard</code>: 排行榜统计。</li>
 </ul>
 <ul>
-<li><code>ratingDeltaForResult</code>: 根据 <code>winnerColor</code> 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。</li>
+<li>对局记录只读取存储的九段积分，不再按胜负次数推算旧积分。</li>
 </ul>
 <ul>
 <li><code>safeUploadFilename</code>: 上传文件名清洗。</li>
@@ -2911,7 +2923,7 @@
 <li><code>ChatBox.jsx</code> owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (<code>type === &quot;chat&quot;</code>) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height. Chat names and message bodies keep <code>pre-wrap</code> plus emergency word breaks so long text, URLs, and unspaced input wrap inside the popover on desktop and mobile.</li>
 </ul>
 <ul>
-<li><code>PlayerInfo.jsx</code> owns player portrait, rank/rating tags, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses <code>cost-stat</code> and is forced to red text across themes, including broad theme reset layers. Skill detail panels and stat hover/click tooltips consume the desktop room floating-layer z-index variable, so the most recently hovered, focused, or clicked player tip can rise above chat and member popovers instead of relying on a fixed z-index. <code>RoomBattleStage</code> uses a bounded two-level promotion model: ordinary room fallbacks top out at <code>140</code>, and only the latest interacted surface receives <code>141</code>; this keeps an untouched chat or member surface below the first skill hover without allowing repeated interactions to climb past the modal backdrop at <code>160</code>.</li>
+<li><code>PlayerInfo.jsx</code> owns player portrait, combined rank progress, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses <code>cost-stat</code> and is forced to red text across themes, including broad theme reset layers. Skill detail panels and stat hover/click tooltips consume the desktop room floating-layer z-index variable, so the most recently hovered, focused, or clicked player tip can rise above chat and member popovers instead of relying on a fixed z-index. <code>RoomBattleStage</code> uses a bounded two-level promotion model: ordinary room fallbacks top out at <code>140</code>, and only the latest interacted surface receives <code>141</code>; this keeps an untouched chat or member surface below the first skill hover without allowing repeated interactions to climb past the modal backdrop at <code>160</code>.</li>
 </ul>
 <ul>
 <li><code>RoomPeopleList.jsx</code> owns the fixed-height room member list and member action popover. Member rows reuse <code>UserIdentity</code> for the username, title, and emblem but pass <code>showNameplate={false}</code>, so the fixed desktop name column prioritizes the complete legal username instead of reserving the fixed-ratio username-background/nameplate slot; player strips and opened profile details keep their full identity presentation. Clicking a member records the click coordinates and opens a fixed-position action panel from that point toward the upper right, matching the room chat popover behavior instead of expanding inside the scrollable member list. The popover uses the shared room floating-layer z-index variable in both base CSS and Bright School theme overrides, so whichever of chat, skill tips, stat tips, or member actions was opened/interacted with last renders in front. It uses a light theme-matched paper/backdrop panel behind the action buttons, while unavailable actions, including self-targeted social actions and the currently unimplemented private-chat action, must be real disabled buttons and render as gray across themes.</li>
@@ -2979,7 +2991,7 @@
 <li>Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.</li>
 </ul>
 <ul>
-<li>The resume stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.</li>
+<li>Resume shows rank plus stars or ninth-dan points in one summary card, with a help tip for promotion/demotion rules. The separate rating card is removed.</li>
 </ul>
 <ul>
 <li>Counting request is disabled while the board has no stones.</li>
@@ -3048,7 +3060,7 @@
 <li>Spectators leaving a room use the explicit <code>room:leave</code> socket event. The server removes that socket from <code>room.spectators</code>, leaves the Socket.IO room, appends a spectator-leave system message, and broadcasts the updated room so room members and the watch list no longer count that spectator.</li>
 </ul>
 <ul>
-<li>The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard. The heading and row cells share one CSS grid template on desktop, while the heading and pinned row reserve the same end gutter as the scrollable list so Windows scrollbars do not shift the data columns away from their labels. On phone-width layouts the heading is hidden and each row becomes a compact card with rank/avatar/player/score lanes; the rank badge and portrait stay small, the username/rank block is left-aligned, rating is the dominant right-side value, and the right metrics lane shows both win rate and explicit win/loss/draw chips. The pinned current-user row uses the same compact card contract as list rows, and the phone table grid reserves only an auto-height row for that pinned block.</li>
+<li>The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard. The heading and row cells share one CSS grid template on desktop, while the heading and pinned row reserve the same end gutter as the scrollable list so Windows scrollbars do not shift the data columns away from their labels. On phone-width layouts the heading is hidden and each row becomes a compact card with rank/avatar/player/record lanes; the rank badge and portrait stay small, the username/rank block is left-aligned, stars or ninth-dan points follow the rank, and the right metrics lane shows both win rate and explicit win/loss/draw chips. The pinned current-user row uses the same compact card contract as list rows, and the phone table grid reserves only an auto-height row for that pinned block.</li>
 </ul>
 <ul>
 <li><code>roomView.players[]</code> now carries <code>connected</code> and <code>disconnectedAt</code>. Player disconnects add a system notice and show a centered <code>断线中</code> badge on that player's portrait until the player reconnects or the game finishes; reconnecting appends a reconnect system notice and clears the badge. Disconnect, reconnect, spectator join/resume, and room leave broadcasts use lightweight <code>presence:update</code> patches for existing participants; the socket that just joined or resumed still receives an authoritative <code>room:update</code> first, then the continuous patch advances its revision.</li>
@@ -3219,11 +3231,17 @@
 <ul>
 <li>Leaderboard, watch-list, personalization、公告信息中心、邮箱信息中心和个性化选择器已迁移到该边界。公告/邮箱在其上复用 <code>InformationCenterLayout</code>，并保持各自业务和视觉域所有权。</li>
 </ul>
+<ul>
+<li>对弈信息区 <code>PlayerInfo</code> 只显示段位名称；排行榜仍显示完整星数/积分，并读取服务端 <code>ranking</code> 保持并列名次与固定“我的排名”一致。开场和房间号通过 <code>roomMatchClassification</code> 读取冻结的 <code>rated</code> 标志，分别显示浅红升降级、浅绿友谊标签；普通匹配满15秒追加扩大段位范围提示。</li>
+</ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
 <p>opening 阶段房间快照增加 <code>openingServerNow</code>（发送时服务端毫秒时间），与原 <code>openingEndsAt</code> 共同表示剩余时长。<code>normalizeRoomSnapshot</code> 在接收时生成仅客户端使用的 <code>__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)</code>；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。</p>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
 <h2>当前结论</h2>
+<ul>
+<li>西格莉卡彩虹豆豆跳跳糖不再按 <code>NODE_ENV=production</code> 禁用；库存返回空 <code>disabledCharacterReasons</code>，合法使用仍在同一事务中扣除道具、应用效果并累计次数。仓库不再注入黑化测试跳转选项，正常第八次剧情与生产环境拒绝调试接口保持。</li>
+</ul>
 <ul>
 <li><code>server/index.js</code> 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 <code>server/serverStartup.js</code>，具体 HTTP 领域逻辑已逐步拆到 <code>*Routes.js</code> 和领域模块，Socket 连接事件套件已由 <code>server/socketEvents.js</code> 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 <code>server/socket*Events.js</code> 分组模块维护。</li>
 </ul>
@@ -3375,19 +3393,19 @@
 <ul>
 <li>Result rewards:</li>
 <ul>
-<li>Only random matchmaking rooms are rated; direct/private duel rooms are friendly matches. Friendly matches do not update rating, rank windows, leaderboard/profile stats, or recent ten-game results, but they are still persisted as replays and marked with <code>rated=false</code> plus <code>matchSource=duel</code>.</li>
+<li>Random matchmaking rooms are rated only when their initial mode ranks are at most two adjacent rank steps apart; direct/private duels and wider-rank matchmaking are friendly matches. The queue chooses the closest eligible mode rank and expands after both participants wait 15 seconds, with a server-owned retry that revalidates admission and blacklists. Friendly matches do not update stars, points, rank windows, leaderboard/profile stats, or recent ten-game results, but still persist replays with <code>rated=false</code> and their original <code>matchSource</code> (<code>duel</code> or <code>matchmaking</code>). The room flag is frozen at creation and drives opening/header labels and settlement.</li>
 </ul>
 <ul>
-<li>Rated rating deltas use <code>src/shared/ratingRules.js</code>: Elo expected score with configurable K, min/max clamps, rank-gap decay, and optional anti-boost repeat-opponent decay from <code>SiteSetting.ratingRules</code>. Rating can go negative.</li>
+<li>Rated progression uses <code>src/shared/rankProgression.js</code>: 4/6/8-star capacities below ninth dan; ninth dan enters at 1000 points and changes by +200/-250 with a zero floor. No Elo, rank-gap or repeat-opponent multiplier applies. <code>SiteSetting.ratingRules</code> retains friendly coin settings only.</li>
 </ul>
 <ul>
-<li>Rank movement still uses the last ten rated decisive results; 7 wins promote, 8 losses demote, draws are ignored. Each promotion/demotion applies a configurable fixed rating delta, default <code>100</code>.</li>
+<li>A full-star win promotes and a zero-star loss demotes; reaching the boundary itself does not move rank. New rank receives half its capacity. Ninth dan at zero demotes to eighth dan/four stars on the next loss. Draws preserve progression. Recent ten decisive results are display history, not a rank trigger.</li>
 </ul>
 <ul>
 <li>Coin rewards for rated games remain uncapped by day. Friendly matches use configurable win/loss/draw coin values and grant coins only for the first configured number of friendly games per user per server day, default 3 days counted by Asia/Shanghai.</li>
 </ul>
 <ul>
-<li>The result modal displays settled rating/coin deltas from <code>room.game.resultRewards[userId]</code>; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.</li>
+<li>The result modal displays settled rank with stars/ninth-dan points and coin deltas from <code>room.game.resultRewards[userId]</code>; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.</li>
 </ul>
 </ul>
 <ul>
@@ -3426,7 +3444,7 @@
 <li>&quot;对局申请&quot; is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; <code>duel:request</code> first checks whether the target has blacklisted the requester, silently suppressing <code>duel:incoming</code> for that target and sending the requester a normal delayed rejection. Otherwise it delivers <code>duel:incoming</code>, <code>duel:respond</code> accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.</li>
 </ul>
 <ul>
-<li>The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.</li>
+<li>Profile rank help explains the star ladder and ninth-dan points; rating is no longer a separate field.</li>
 </ul>
 </ul>
 <ul>
@@ -3688,7 +3706,7 @@
 <p>练习房继续使用同一 <code>match:found</code>、资源 ready、opening、权威 action ack、技能演出、数子和 <code>room:resume</code> 通路。新房的搜索在玩家设备运行，<code>practiceRoomAutomation</code> 跳过其 <code>play</code> 调度，仍处理提满阈值认输、求和、数子、死子确认和结果复核。三档新普通房都显式持久化普通提子阈值 22；旧 <code>beginner</code> 快照缺字段时保持 11，旧 <code>basic</code> 缺字段时为 22，<code>skillRemovals</code> 从不计入。吃子挑战赛使用自己的 100 手边界。</p>
 <h3>本地陪练引擎</h3>
 <p><code>src/practice/</code> 负责模块 Worker、WASM 调用与对局控制器。入门复用 <code>src/shared/practiceBotDecision.js</code>；中级和高级／吃子挑战赛执行 GNU Go 3.8 level 5／10。浏览器先初始化再申请房间；中高级按需加载 <code>/engines/gnugo-3.8/gnugo.js</code> 与 <code>gnugo.wasm</code>，每手使用新实例但复用已编译模块，保持原生每手新进程的状态隔离。引擎 cache 8 MB，WASM 初始内存 64 MB、上限 256 MB；主线程看门狗在初始化 60 秒或单次搜索 30 秒后终止 Worker。计算异常重建后再试一次，仍失败则提示暂停／刷新；不降低难度、不自动转云端，也不通过机器人认输制造挑战成绩。入门最低出手间隔 1200 ms，中高级 650 ms，服务端同时检查。</p>
-<p><code>server/localPracticeEngine.js</code> 发放 60 秒计算租约：绑定用户、当前 socket、房间、随机 jobId 和完整 <code>game</code> 状态哈希，不能只依赖手数。服务端用 <code>gameViewForColor(botColor)</code> 生成可见 SGF 与正式 <code>playMove</code> 合法点白名单；入门另发机器人视角规则状态。SGF 保持 <code>SZ[13]</code>、<code>KM[2.75]</code>、<code>RU[Chinese]</code>，中高级经 <code>restricted_genmove</code> 出招；无合法点直接 pass。隐藏手、色彩幻象、中立点和技能禁入按原投影／合法性契约处理。客户端只回 <code>{ jobId, positionVersion, action }</code>，服务器拒绝旧连接、旧局面、错误阶段、非法动作，以自身 bot 身份调用 <code>handleGameAction</code> 并广播。已接受 job 的重复回包只补成功 ACK，不再落子；客户端丢 ACK 时重发同一结果，不重新搜索。客户端成绩、计分或 bot 身份不可信；不做引擎防篡改或服务器重新搜索，这是本项目当前明确接受的取舍。</p>
+<p><code>server/localPracticeEngine.js</code> 发放 60 秒计算租约：绑定用户、当前 socket、房间、随机 jobId 和完整 <code>game</code> 状态哈希，不能只依赖手数。服务端用 <code>practiceBotView(game, botColor)</code> 去除颜色伪装，再按原暗手可见性生成 SGF 与正式 <code>playMove</code> 合法点白名单；入门另发机器人视角规则状态。SGF 保持 <code>SZ[13]</code>、<code>KM[2.75]</code>、<code>RU[Chinese]</code>，中高级经 <code>restricted_genmove</code> 出招；无合法点直接 pass。娜波摩色彩幻象不改变机器人计算中的真实棋色；隐藏手、中立点和技能禁入按原投影／合法性契约处理。旧服务端准时宝使用相同视角，黑化西格莉卡仍走原专属投影。客户端只回 <code>{ jobId, positionVersion, action }</code>，服务器拒绝旧连接、旧局面、错误阶段、非法动作，以自身 bot 身份调用 <code>handleGameAction</code> 并广播。已接受 job 的重复回包只补成功 ACK，不再落子；客户端丢 ACK 时重发同一结果，不重新搜索。客户端成绩、计分或 bot 身份不可信；不做引擎防篡改或服务器重新搜索，这是本项目当前明确接受的取舍。</p>
 <p>控制器前台联网时每 1.5 秒请求／续报当前状态。隐藏页主动报告 <code>active:false</code> 并终止 Worker，服务器撤销任务、暂停棋钟；心跳失联 10 秒也暂停，浏览器恢复后按当前状态重新计算。机器人思考不消耗棋钟；人类正常前台回合仍计时。连接尚在但连续 15 分钟未恢复时中性结束，不产生挑战赛成绩；断线房继续受原有空房回收约束。后台状态、租约和成功回执只存运行时；持久化仅保留执行后端，刷新、重新连接或服务重启均重新派工。</p>
 <p><code>scripts/build-practice-wasm.py --emsdk &lt;path&gt;</code> 固定 Emscripten 4.0.10 与 GNU Go 源码 SHA-256，从上游完整模式库构建，修正旧源码的重复 tentative definitions 及空数组排序指针下溢；不修改搜索算法。<code>public/engines/gnugo-3.8/</code> 随站点发布二进制、GPL 许可证、对应源码、构建脚本和摘要 manifest。Nginx 为引擎路径返回真实 404、正确 WASM MIME、gzip 和缓存再验证；CSP 增加 <code>wasm-unsafe-eval</code>，构建禁用动态 JS 求值。引擎变更须同步重建产物并提升 <code>LOCAL_PRACTICE_VERSION</code>。<code>npm run verify:practice-wasm</code> 校验产物并运行代表局面，<code>npm run test:e2e:practice</code> 验证生产 Worker／CSP、真实服务端落子、刷新恢复与下载失败。</p>
 <p>历史快照缺少 <code>engineBackend</code> 时继续按 <code>server</code> 恢复：入门服务器启发式，GNU Go level 5／10／旧 basic level 1 仍有全局一个子进程、8 MB cache、3.5／5／2 秒超时与 busy 重试；连续三次非 busy 失败仍走旧局的明确认输策略。这些限制不再约束新本地房。原生 GNU Go 与生产路径预检仍为旧房恢复和黑化西格莉卡后备引擎保留。</p>
@@ -3760,6 +3778,26 @@
 <ul>
 <li>回放列表不设模式切换页签：打开时锁定所属模式；<code>listReplaySummaryPage</code> 的星炬查询使用 <code>mode in [spark, team]</code>，共享时间/ID 游标排序，其他模式仍精确过滤。队际赛只用左上角旗子角标标识，不额外占用时间栏文字；回放列表内边距为外伸角标保留空间。</li>
 </ul>
+<h2>Rank progression persistence</h2>
+<ul>
+<li><code>UserModeStats.stars</code> persists each mode independently; <code>User.stars/rank/rating</code> mirror spark. <code>rating</code> is zero below ninth dan. Room/user/profile/leaderboard projections preserve stars.</li>
+</ul>
+<ul>
+<li><code>20260930090000_rank_stars</code> is an incremental migration, not a rewrite of deployed history. <code>migrateRankStars</code> runs after schema tasks, stores pre-reset user stats, legacy rating achievements and active room snapshots in a private SiteSetting receipt, preserves Nabomo ownership, then resets all three modes to third dan/two stars. Historical games, coins and earned achievements remain.</li>
+</ul>
+<ul>
+<li>Legacy rating-achievement conditions migrate to numeric rank thresholds using the former rating-to-rank mapping; new conditions use <code>rank</code>. Nabomo is permanently persisted on first spark sixth-dan settlement.</li>
+</ul>
+<ul>
+<li>Result saving shares concurrent requests for a room and restores in-memory user progression after transaction failure so a retry cannot award stars twice. Star/rank/point state writes atomically with the game record. Result payload includes <code>rankAfter</code>, <code>starsAfter</code>, <code>ratingAfter</code> and star delta; match history remains independent.</li>
+</ul>
+<ul>
+<li>普通排行榜返回 <code>ranking</code>：段位、星数/九段积分、未舍入胜率、胜场数依次降序，四项相等采用竞争排名（1、1、3），用户名与 ID 仅稳定并列条目的展示顺序，不影响名次。</li>
+</ul>
+<h3>匹配等待计时</h3>
+<p><code>match:waiting</code> 返回 <code>{ startedAt, serverNow, mode }</code>。两项时间均来自服务端，客户端接收时以 <code>receivedAt - max(0, serverNow - startedAt)</code> 生成本地开始时间，避免设备时钟偏差污染秒数及 15 秒放宽提示。自动重试保留原排队起点，新一轮匹配使用新起点；旧服务端缺少 <code>serverNow</code> 时兼容原时间字段。服务器队列和放宽定时器仍是权威。</p>
+<h3>无效对局与回放可见性</h3>
+<p><code>saveGameRecord</code> 在所有模式分支之前检查 <code>game.winner.invalid</code>，无效结束仅标记结算已处理并清空结果奖励，不写入回放或成长记录。历史记录由 <code>replayValidity.isInvalidReplay</code> 解析保存快照中的同一标记，兼容旧的“对局无效”结果文本；不按手数或 <code>rated=false</code> 推断无效。个人与他人共用回放分页每批最多读取 51 条，读取快照仅用于有效性判断；跳过无效项后继续以原 createdAt/id 游标扫描，最多返回 50 条有效摘要和有效末项游标，响应不包含快照。管理员列表同样过滤，个人／管理员详情直接访问无效记录均返回 404。保留历史原始数据，不执行数据库删除或迁移。</p>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -5002,6 +5040,7 @@
 <p>竖屏对弈新增棋钟深度后，最终 <code>mobile-room-shadow-gutters.css</code> 必须覆盖 <code>mobile-player-slot</code> 的旧 <code>overflow: hidden !important</code>，普通房间改为 <code>overflow: visible</code>；动作区锚定的视口在全部竖屏移动断点统一采用 <code>0 5px 6px 0</code> 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 <code>RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo</code> 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。</p>
 <p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 <code>mobile-adaptive/battle-paper-panels.css</code> 与 <code>battle-paper-panels-mobile.css</code> 拆分身份、棋钟和技能面板。<code>PlayerInfo</code> 的 <code>player-clock-panel</code> 包含原计时器和统计，其他主题使用 <code>display: contents</code> 保留原布局；黑化剧情不启用新外观。棋钟常态使用 <code>--bright-sheet</code> 米色，<code>.active-turn</code> 使用既有黄色 <code>#fff0a6</code>、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；<code>battle-paper-panels.css</code> 仅作用于非 mobile-room-screen，手机的 <code>player-clock-panel</code> 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。</p>
 <p>常规玩家 <code>ActionBar</code> 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 <code>disabled</code> 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。<code>room-people-table</code> 的滚动区域内保留上／右／下／左 <code>2px 6px 6px 2px</code> 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。</p>
+<p>履历与详细资料无角色战绩时，<code>.profile-character-section</code> 保留校园卡片边框、底色和阴影，内部嵌套紧凑 <code>WindowEmptyState</code>。外框沿桌面剩余 grid 行或竖屏正文 flex 剩余空间延伸到底部；有记录时保持原表格滚动。</p>
 <h2>玩家窗口左侧书签选项卡</h2>
 <p><code>ResumeModal</code>、<code>SettingsModal</code>、<code>AchievementModal</code>、<code>LeaderboardModal</code>、<code>WatchModal</code>、<code>FriendsModal</code>和 <code>AnnouncementModal</code> 显式声明 <code>window-bookmark-host</code>，对应分类/模式控件使用 <code>WindowBookmarkTabs</code>；<code>UserProfileCard</code> 仅在首页好友入口启用 <code>titleStickers</code> 时接入，房间内保持原布局。组件保留原按钮 ID、<code>aria-controls</code>、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 <code>.app-shell</code> 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 <code>ShopTabs</code> 和 <code>GachaModal</code> 没有现行入口，不为样式推广重新启用。</p>
 <p>书签以简短不规则 SVG 纸边与淡色底呈现，外轮廓使用 2.5px 描边和 <code>vector-effect: non-scaling-stroke</code>，避免手机窄幅缩放把侧边线压细；内部铅笔线保持纤细。书签内部仅呈现文字，SVG/图片图标与装饰点隐藏；标签及嵌套文字显式使用 400 字重并避免合成加粗。文字引用 <code>--font-window-title</code> 对应的 <code>LXGWMarkerGothic-Regular.ttf</code>，不将文字烘焙进图片。书签列右沿对齐窗口外边框，尾端不覆盖窗口边线；未选中项尾端使用窄幅渐变暗部表现插入纸页的层次。选中项向外伸出，桌面悬停小幅平移，减少动态效果偏好关闭过渡。书签保留 tab 语义，纵列使用上下方向键及 Home/End，加载期间不会触发模式切换；未接入时保留原有横向键盘操作。</p>
@@ -5528,9 +5567,11 @@
 <h2>玩家窗口空状态</h2>
 <p><code>WindowEmptyState</code> 保留调用方原有文案与语义容器，以 <code>aria-hidden</code> 的手绘纸页替代重复的粗虚线卡片。普通校园主题使用透明无边框容器、深墨色常规霞鹜文字与静态纸页；其他主题隐藏插画，保留文字。<code>window-empty-states.css</code> 在书签样式后、黑化样式前加载，显式覆盖旧空状态容器、伪元素和 SVG 的强规则。</p>
 <p>普通空状态最小高度 154px，紧凑版为 88px；后者用于履历战绩、装饰区及公告/邮件列表。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历战绩、装饰与服装商店。加载提示与错误状态不复用空结果插画；观战只有存在房间时渲染表格，空结果不留空表头，也不会在加载失败时同时显示暂无房间。接入书签的观战窗口移除旧选项卡网格轨道，使正文/空状态在剩余内容区布局。</p>
+<h2>Star rank presentation (2026-09-30)</h2>
+<p><code>RankProgress</code> owns rank plus progress on player/profile/leaderboard/result/invitation/admin surfaces. Four slots form one row, six form two rows of three, and eight form two rows of four. Empty slots remain outlined and earned slots filled using the existing school palette. Ninth dan renders points inline instead of stars. The former separate rating field/column is removed. The final <code>mobile-adaptive/rank-progress.css</code> owner preserves this geometry under the theme cascade; current and pinned leaderboard rows share the same component. Profile summaries now contain rank, total games and win rate.</p>
 <h3>棋盘比例与队际赛头像</h3>
-<p>竖屏 <code>board-stage</code> 宽度仍取 <code>--mobile-room-board-size</code>，<code>max-width:100%</code> 随父容器收缩；舞台与 <code>board-wrap</code> 均使用 <code>height:auto</code>、<code>aspect-ratio:1</code>，父槽及舞台显式收缩网格轨道，防止旧固定高度与不同断点宽度形成非等比棋盘。队际赛采用 B「错落纸片」：独立斜边纸片轻微错落，浅黄／浅绿／浅粉纸面配棕色细边和轻硬阴影，关闭单人拱形底板。三张直立图片按出场顺序各自裁切，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px、头像高96px，宽度为clamp(88px,27.7vw,108px)，为三位角色保留可辨识空间；普通单人布局保持不变。隐藏角色只显示问号，退场角色灰显。</p>
-<p>移动端普通对弈信息区采用紧凑 A 独立卡片，由 <code>battle-paper-player-mobile.css</code> 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 <code>battle-paper-skill-mobile.css</code>。身份卡随棋色显示黑底浅字或浅底深字；只有当前回合时钟卡变黄；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面和黑化剧情保持原布局。</p>
+<p>竖屏 <code>board-stage</code> 宽度仍取 <code>--mobile-room-board-size</code>，<code>max-width:100%</code> 随父容器收缩；舞台与 <code>board-wrap</code> 均使用 <code>height:auto</code>、<code>aspect-ratio:1</code>，父槽及舞台显式收缩网格轨道，防止旧固定高度与不同断点宽度形成非等比棋盘。队际赛采用 B「错落纸片」：独立斜边纸片轻微错落，浅黄／浅绿／浅粉纸面配轻硬阴影，不绘制上下边框以免斜切产生黑色碎线，关闭单人拱形底板。三张直立图片按出场顺序各自裁切，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px、头像高96px，宽度为clamp(88px,27.7vw,108px)，为三位角色保留可辨识空间；普通单人布局保持不变。隐藏角色只显示问号，退场角色灰显。</p>
+<p>移动端普通对弈信息区采用紧凑 A 独立卡片，由 <code>battle-paper-player-mobile.css</code> 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 <code>battle-paper-skill-mobile.css</code>。身份卡随棋色显示黑底浅字或浅底深字；当前回合时钟卡变黄并抬起（4px底部硬阴影），非当前回合下移3px并保留1px底部阴影与内阴影，形成压下状态；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面和黑化剧情保持原布局。</p>
 <p>移动双行卡片统一补足内部留白：身份6×7px、时钟6×9px、统计5px、技能5×7px。名牌背景用户名不再被棋色字色覆盖，沿用名牌配套颜色和文字阴影；仅普通用户名与段位随身份卡变色。<code>battle-paper-nameplate-mobile.css</code> 将名牌限制在用户名列内，消除嵌套默认内边距，避免名牌裁切与重复留白。</p>
 <p>移动身份卡通过 BattleUserIdentity 测量可用空间与原始名牌尺寸，使用统一scale等比缩放完整用户名组件，不省略或换行。名牌保留原始宽高比；特别长的名字先在名牌文字安全区内调整字号。ResizeObserver及字体加载完成后重新计算，桌面不启用缩放。</p>
 <p>移动身份卡显式使用单行网格并垂直居中；隐藏无角色人机／教程沿用的空积分占位，避免额外隐式行将用户名推离卡片中心。桌面占位规则保持不变。</p>
@@ -5541,7 +5582,7 @@
 <p>桌面棋钟采用左右镜像的1.5度纸片倾斜，统计卡轻微交错倾斜并使用同色硬阴影，延续身份卡和技能卡的错落风格。移动布局不变。</p>
 <p>移动端对弈信息区时钟、读秒次数、提子／除子／超频数值、技能次数和段位使用400常规字重，保留WuWa数字字体，避免合成粗体。</p>
 <p>---</p>
-<p># 性能、技术债与扩展路线</p>
+<h1>性能、技术债与扩展路线</h1>
 <p>本文记录技术债优先级、后续扩展建议、实时性能和高频交互优化。新增性能优化、技术债清理、扩展路线或架构风险时优先更新本分篇。</p>
 <h2>当前结论</h2>
 <ul>

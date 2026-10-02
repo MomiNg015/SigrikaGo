@@ -29,6 +29,7 @@ import {
 } from "./sigrikaAiAgreement.js";
 import { zhiziKataGoEngine } from "./zhiziKataGoEngine.js";
 import { isLocalPractice } from "../src/shared/localPractice.js";
+import { practiceBotView } from "./practiceBotView.js";
 
 const SIGRIKA_DIALOGUE_HOLD_MS = 1800;
 const SIGRIKA_SKILL_HOLD_MS = 2100;
@@ -124,7 +125,9 @@ export function createPracticeRoomAutomation({
     } else if (instruction.type === "resign") {
       result = resignForCaptureThreshold(room, bot, io);
     } else if (instruction.type === "play") {
-      const view = gameViewForColor(room.game, bot.color);
+      const view = room.sigrikaCandyDuel
+        ? gameViewForColor(room.game, bot.color)
+        : practiceBotView(room.game, bot.color);
       const difficulty = practiceDifficulty(room.practice.difficulty) ?? PRACTICE_DIFFICULTIES.beginner;
       const decision = room.sigrikaCandyDuel
         ? await chooseSigrikaAction(room, view, bot.color)

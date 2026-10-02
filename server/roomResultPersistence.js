@@ -5,7 +5,6 @@ import { PRACTICE_MATCH_SOURCE, PRACTICE_RECORD_POLICY } from "../src/shared/pra
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { DEFAULT_RANK, normalizeRank, rankToStep, serializeRecentResults } from "../src/shared/rankProgression.js";
 import {
-  antiBoostMultiplierForRepeatCount,
   outcomeForPlayer,
   privateCoinsForOutcome,
   ratingRulesFromSettings
@@ -29,8 +28,30 @@ import {
   progressLedgerCreateOperations
 } from "./userProgressLedger.js";
 
-export async function saveGameRecord({ prisma, room }) {
+const pendingResults = new WeakMap();
+
+export function saveGameRecord({ prisma, room }) {
+  if (pendingResults.has(room)) return pendingResults.get(room);
+  const players = room.players.map((player) => ({ player, user: player.user }));
+  const saved = room.recordSaved;
+  const rewards = room.game.resultRewards;
+  const operation = saveGameRecordOnce({ prisma, room }).catch((error) => {
+    for (const entry of players) entry.player.user = entry.user;
+    room.recordSaved = saved;
+    room.game.resultRewards = rewards;
+    throw error;
+  }).finally(() => pendingResults.delete(room));
+  pendingResults.set(room, operation);
+  return operation;
+}
+
+async function saveGameRecordOnce({ prisma, room }) {
   if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return;
+  if (room.game.winner?.invalid) {
+    room.recordSaved = true;
+    room.game.resultRewards = null;
+    return;
+  }
   if (isCaptureChallenge(room)) return saveCaptureChallengeResult({ prisma, room });
   if (room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === PRACTICE_MATCH_SOURCE) {
     room.recordSaved = true;
@@ -43,10 +64,6 @@ export async function saveGameRecord({ prisma, room }) {
   }
   if (room.mode === "team") {
     await saveTeamGameRecord({ prisma, room });
-    return;
-  }
-  if (room.game.winner?.invalid) {
-    room.recordSaved = true;
     return;
   }
   const black = room.players.find((player) => player.color === COLORS.black);
@@ -110,11 +127,10 @@ export async function saveGameRecord({ prisma, room }) {
       [white.color, playerProgressSnapshot(white, mode)]
     ]);
     if (rated) {
-      const antiBoostMultiplier = repeatOpponentMultiplier({ black, white, mode, rules: ratingRules });
       applyRatedRewards([
         { player: black, opponent: white, recordDelta: { draws: 1 } },
         { player: white, opponent: black, recordDelta: { draws: 1 } }
-      ], null, { mode, ratingRules, antiBoostMultiplier });
+      ], null, { mode, ratingRules });
     } else {
       applyUnratedReward({ player: black, outcome: "draw", rules: ratingRules });
       applyUnratedReward({ player: white, outcome: "draw", rules: ratingRules });
@@ -144,7 +160,6 @@ export async function saveGameRecord({ prisma, room }) {
       ...candyEffectAssetOperations()
     ];
     await prisma.$transaction(operations);
-    if (rated) noteRatedPair({ black, white, mode });
     return;
   }
 
@@ -155,11 +170,10 @@ export async function saveGameRecord({ prisma, room }) {
     [loser.color, playerProgressSnapshot(loser, mode)]
   ]);
   if (rated) {
-    const antiBoostMultiplier = repeatOpponentMultiplier({ black, white, mode, rules: ratingRules });
     applyRatedRewards([
       { player: winner, opponent: loser, recordDelta: { wins: 1 } },
       { player: loser, opponent: winner, recordDelta: { losses: 1 } }
-    ], winnerColor, { mode, ratingRules, antiBoostMultiplier });
+    ], winnerColor, { mode, ratingRules });
   } else {
     applyUnratedReward({ player: winner, outcome: "win", rules: ratingRules });
     applyUnratedReward({ player: loser, outcome: "loss", rules: ratingRules });
@@ -188,7 +202,6 @@ export async function saveGameRecord({ prisma, room }) {
     ]),
     ...candyEffectAssetOperations()
   ]);
-  if (rated) noteRatedPair({ black, white, mode });
 }
 
 async function saveTeamGameRecord({ prisma, room }) {
@@ -290,12 +303,11 @@ async function saveSigrikaCandyDuelRecord({ prisma, room }) {
   room.game.resultRewards = null;
 }
 
-function applyRatedRewards(entries, winnerColor, { mode, ratingRules, antiBoostMultiplier }) {
+function applyRatedRewards(entries, winnerColor, { mode, ratingRules }) {
   const rewards = entries.map(({ player, opponent }) => resultRewardDelta(player.color, winnerColor, {
     self: modeStatsForUser(player.user, mode),
     opponent: modeStatsForUser(opponent.user, mode),
     rules: ratingRules,
-    antiBoostMultiplier
   }));
   entries.forEach(({ player, recordDelta }, index) => {
     player.user = applyUserReward(player.user, rewards[index], recordDelta, { mode, rules: ratingRules });
@@ -332,7 +344,7 @@ export function applyDrawResultToRoomUser(player, mode) {
   };
 }
 
-export function modeStatsUpsertOperation(player, mode, { ratingDelta = 0, winsDelta = 0, lossesDelta = 0, drawsDelta = 0 } = {}) {
+export function modeStatsUpsertOperation(player, mode, { winsDelta = 0, lossesDelta = 0, drawsDelta = 0 } = {}) {
   return {
     where: {
       userId_mode: {
@@ -343,16 +355,18 @@ export function modeStatsUpsertOperation(player, mode, { ratingDelta = 0, winsDe
     create: {
       userId: player.user.id,
       mode,
-      rating: Number(player.user.modeStats?.[mode]?.rating ?? player.user.rating ?? 1000),
+      rating: Number(player.user.modeStats?.[mode]?.rating ?? player.user.rating ?? 0),
       rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
+      stars: Number(player.user.modeStats?.[mode]?.stars ?? 2),
       recentResults: serializeRecentResults(player.user.modeStats?.[mode]?.recentResults),
       wins: Math.max(0, Number(player.user.modeStats?.[mode]?.wins ?? player.user.wins ?? 0)),
       losses: Math.max(0, Number(player.user.modeStats?.[mode]?.losses ?? player.user.losses ?? 0)),
       draws: Math.max(0, Number(player.user.modeStats?.[mode]?.draws ?? 0))
     },
     update: {
-      rating: { increment: ratingDelta },
+      rating: Number(player.user.modeStats?.[mode]?.rating ?? 0),
       rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
+      stars: Number(player.user.modeStats?.[mode]?.stars ?? 2),
       recentResults: serializeRecentResults(player.user.modeStats?.[mode]?.recentResults),
       ...(winsDelta ? { wins: { increment: winsDelta } } : {}),
       ...(lossesDelta ? { losses: { increment: lossesDelta } } : {}),
@@ -397,6 +411,10 @@ function fillSettlement(settlement, player, before, mode) {
   const currentStats = modeStatsForUser(player.user, mode);
   settlement[player.color] = {
     rating: Number(currentStats.rating ?? 0) - Number(before.rating ?? 0),
+    stars: Number(currentStats.stars ?? 2) - Number(before.stars ?? 2),
+    rankAfter: currentStats.rank,
+    starsAfter: currentStats.stars,
+    ratingAfter: currentStats.rating,
     coins: Number(player.user.coins ?? 0) - Number(before.coins ?? 0),
     rank: rankToStep(currentStats.rank) - Number(before.rankStep ?? rankToStep(currentStats.rank)),
     rewardLimitReached: Boolean(player.user.privateRewardLimitReached)
@@ -424,13 +442,26 @@ function userUpdateOperations(prisma, player, mode, settlement, recordDelta = {}
   const data = {
     ...(mode === "spark" && recordDelta.winsDelta ? { wins: { increment: recordDelta.winsDelta } } : {}),
     ...(mode === "spark" && recordDelta.lossesDelta ? { losses: { increment: recordDelta.lossesDelta } } : {}),
-    ...(mode === "spark" && settlement.rating ? { rating: { increment: settlement.rating }, rank: player.user.rank } : {}),
-    ...(mode === "spark" && settlement.rank && !settlement.rating ? { rank: player.user.rank } : {}),
+    ...(mode === "spark" && settlement.rankAfter ? {
+      rating: settlement.ratingAfter, rank: settlement.rankAfter, stars: settlement.starsAfter
+    } : {}),
     ...(settlement.coins ? { coins: { increment: settlement.coins } } : {}),
     ...extraData
   };
-  if (!Object.keys(data).length) return [];
-  return [prisma.user.update({
+  const earnedNabomo = mode === "spark" && rankToStep(player.user.rank) >= 6;
+  const unlockOperations = earnedNabomo && prisma.userCharacter?.upsert ? [prisma.userCharacter.upsert({
+    where: { userId_characterSlug: { userId: player.user.id, characterSlug: "nabomo" } },
+    create: { userId: player.user.id, characterSlug: "nabomo", source: "rank" },
+    update: {}
+  })] : [];
+  if (earnedNabomo) {
+    const owned = new Set(Array.isArray(player.user.ownedCharacters) ? player.user.ownedCharacters : String(player.user.ownedCharacters ?? "").split(",").filter(Boolean));
+    owned.add("nabomo");
+    data.ownedCharacters = [...owned].join(",");
+    player.user.ownedCharacters = [...owned];
+  }
+  if (!Object.keys(data).length) return unlockOperations;
+  return [...unlockOperations, prisma.user.update({
     where: { id: player.user.id },
     data
   })];
@@ -441,6 +472,7 @@ function playerProgressSnapshot(player, mode) {
   return {
     mode,
     rating: Number(stats.rating ?? 0),
+    stars: Number(stats.stars ?? 2),
     rankStep: rankToStep(stats.rank),
     coins: Number(player.user.coins ?? 0)
   };
@@ -454,31 +486,7 @@ function loadRatingRules() {
   return ratingRulesFromSettings(getCachedPublicSiteSettings());
 }
 
-const ratedPairHistory = [];
 const privateRewardUsage = new Map();
-
-function repeatOpponentMultiplier({ black, white, mode, rules }) {
-  if (!rules.antiBoost.enabled) return 1;
-  const since = Date.now() - rules.antiBoost.windowHours * 60 * 60 * 1000;
-  pruneRatedPairHistory(since);
-  const key = pairKey(black.user.id, white.user.id, mode);
-  const repeatCount = ratedPairHistory.filter((entry) => entry.key === key).length;
-  return antiBoostMultiplierForRepeatCount(repeatCount, rules);
-}
-
-function noteRatedPair({ black, white, mode }) {
-  ratedPairHistory.push({ key: pairKey(black.user.id, white.user.id, mode), at: Date.now() });
-}
-
-function pruneRatedPairHistory(since) {
-  while (ratedPairHistory.length && ratedPairHistory[0].at < since) {
-    ratedPairHistory.shift();
-  }
-}
-
-function pairKey(firstUserId, secondUserId, mode) {
-  return [mode, ...[firstUserId, secondUserId].sort()].join(":");
-}
 
 function privateRewardLimitReached({ player, rules }) {
   const limit = rules.privateRewards.dailyRewardLimit;

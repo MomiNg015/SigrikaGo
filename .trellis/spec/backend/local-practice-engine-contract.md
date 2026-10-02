@@ -37,7 +37,9 @@ socket.emit("practice:computed", { roomCode, jobId, positionVersion,
 - Only the authenticated human's current socket can request or submit. A lease
   lasts 60 seconds and binds the job id, socket, and SHA-256 of the whole game
   state (skills may change a board without increasing `moveNumber`).
-- SGF and whitelist come from `gameViewForColor(botColor)` and formal `playMove`.
+- SGF and whitelist come from `practiceBotView(game, botColor)` and formal `playMove`.
+  This strips color illusions before projection, preserving actual stone colors
+  and the existing hidden-hand visibility. All difficulty paths use this view.
   Only beginner receives a projected rule-state object for the shared heuristic.
   Neither worker receives an arbitrary GTP command from a client. Server replies
   never include unprojected board state. Client returns only a move or pass.

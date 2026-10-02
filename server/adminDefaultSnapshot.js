@@ -41,7 +41,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "key": "ratingRules",
-      "value": "{\n  \"elo\": {\n    \"kFactor\": 40,\n    \"deltaMin\": 4,\n    \"deltaMax\": 36\n  },\n  \"rankChangeRatingDelta\": 100,\n  \"rankGapAdjustment\": {\n    \"enabled\": true,\n    \"steps\": [\n      {\n        \"minGap\": 0,\n        \"rewardMultiplier\": 1,\n        \"normalPenaltyMultiplier\": 1,\n        \"highRankUpsetPenaltyMultiplier\": 1\n      },\n      {\n        \"minGap\": 2,\n        \"rewardMultiplier\": 0.75,\n        \"normalPenaltyMultiplier\": 0.75,\n        \"highRankUpsetPenaltyMultiplier\": 1.25\n      },\n      {\n        \"minGap\": 4,\n        \"rewardMultiplier\": 0.5,\n        \"normalPenaltyMultiplier\": 0.5,\n        \"highRankUpsetPenaltyMultiplier\": 1.5\n      },\n      {\n        \"minGap\": 6,\n        \"rewardMultiplier\": 0.25,\n        \"normalPenaltyMultiplier\": 0.25,\n        \"highRankUpsetPenaltyMultiplier\": 2\n      }\n    ]\n  },\n  \"antiBoost\": {\n    \"enabled\": true,\n    \"windowHours\": 24,\n    \"fullScoreGames\": 3,\n    \"reducedScoreGames\": 6,\n    \"reducedMultiplier\": 0.25,\n    \"modeOverrides\": {}\n  },\n  \"privateRewards\": {\n    \"winCoins\": 20,\n    \"lossCoins\": 10,\n    \"drawCoins\": 10,\n    \"dailyRewardLimit\": 3\n  }\n}"
+      "value": "{\n  \"privateRewards\": {\n    \"winCoins\": 20,\n    \"lossCoins\": 10,\n    \"drawCoins\": 10,\n    \"dailyRewardLimit\": 3\n  }\n}"
     },
     {
       "key": "recruitmentConfig",

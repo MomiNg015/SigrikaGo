@@ -11,12 +11,12 @@ describe("result rewards", () => {
   it("awards win, loss, and draw rating and coin deltas", () => {
     expect(resultRewardDelta(COLORS.black, COLORS.black)).toEqual({
       outcome: "win",
-      rating: 20,
+      rating: 0,
       coins: COIN_WIN_DELTA
     });
     expect(resultRewardDelta(COLORS.white, COLORS.black)).toEqual({
       outcome: "loss",
-      rating: -20,
+      rating: 0,
       coins: COIN_LOSS_DELTA
     });
     expect(resultRewardDelta(COLORS.black, null)).toEqual({
@@ -45,7 +45,7 @@ describe("result rewards", () => {
       opponent: { rating: 1000, rank: "3段" }
     })).toMatchObject({
       outcome: "win",
-      rating: 5,
+      rating: 200,
       coins: COIN_WIN_DELTA
     });
   });

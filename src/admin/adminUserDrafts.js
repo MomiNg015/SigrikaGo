@@ -4,6 +4,7 @@ export function buildUserDraft(user) {
     role: user.role ?? "player",
     rank: user.rank ?? "3段",
     rating: user.rating ?? 0,
+    stars: user.stars ?? 2,
     coins: user.coins ?? 0,
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
     ownedItemsText: (user.ownedItems ?? []).map((item) => `${item.itemId}:${item.quantity}`).join("\n"),

@@ -10,6 +10,20 @@ import { normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 
 describe("socket handlers", () => {
+  it.each([60000, -60000])("anchors queue elapsed time to the client clock with %s ms skew", (skew) => {
+    let localNow = 100000 + skew;
+    const deps = handlerDeps({ now: () => localNow });
+    const handlers = createSocketHandlers(deps);
+    handlers.matchWaiting({ startedAt: 100000, serverNow: 100000, mode: "spark" });
+    expect(matchStartSetterResult(deps).startedAt).toBe(localNow);
+    localNow += 15000;
+    handlers.matchWaiting({ startedAt: 100000, serverNow: 115000, mode: "spark" });
+    const update = deps.setMatchStart.mock.calls[1][0];
+    expect(localNow - update(null).startedAt).toBe(15000);
+    localNow += 5000;
+    handlers.matchWaiting({ startedAt: 120000, serverNow: 120000, mode: "spark" });
+    expect(deps.setMatchStart.mock.calls[2][0](null).startedAt).toBe(localNow);
+  });
   it("clears waiting when the server invalidates a queued team lineup", () => {
     const deps = handlerDeps();
     createSocketHandlers(deps).matchLeft();

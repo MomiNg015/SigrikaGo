@@ -6,11 +6,6 @@ export const GAME_RESULT_REASONS = {
   unknown: "unknown"
 };
 
-export const RATING_BASE = 1000;
-export const RATING_WIN_DELTA = 20;
-export const RATING_LOSS_DELTA = -20;
-export const RATING_DRAW_DELTA = 0;
-
 const LEGACY_MOJIBAKE_DRAW_TEXT = "\u935c\u5c7e\ue5d0";
 
 export function gameResultMetadata(winner = null) {
@@ -60,14 +55,8 @@ export function derivePlayerRecordStats(user = {}, records = []) {
     wins,
     losses,
     draws,
-    rating: Number.isFinite(user.rating) ? user.rating : RATING_BASE + wins * RATING_WIN_DELTA + losses * RATING_LOSS_DELTA
+    rating: Number.isFinite(user.rating) ? user.rating : 0
   };
-}
-
-export function ratingDeltaForResult(playerColor, winnerColor) {
-  const winner = normalizeWinnerColor(winnerColor);
-  if (!winner) return RATING_DRAW_DELTA;
-  return playerColor === winner ? RATING_WIN_DELTA : RATING_LOSS_DELTA;
 }
 
 function recordIsDraw(record = {}) {

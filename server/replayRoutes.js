@@ -1,4 +1,5 @@
 import express from "express";
+import { isInvalidReplay } from "./replayValidity.js";
 import { listReplaySummaryPage, REPLAY_PAGE_SIZE } from "./replayPagination.js";
 
 export const PERSONAL_REPLAY_PAGE_SIZE = REPLAY_PAGE_SIZE;
@@ -15,7 +16,7 @@ export function createReplayRouteHandlers({ prisma }) {
 
   async function getReplay(req, res) {
     const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
-    if (!record) {
+    if (!record || isInvalidReplay(record)) {
       res.status(404).json({ error: "\u68cb\u8c31\u4e0d\u5b58\u5728" });
       return;
     }

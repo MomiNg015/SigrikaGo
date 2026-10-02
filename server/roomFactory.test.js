@@ -259,7 +259,7 @@ describe("roomFactory", () => {
 
   test("falls back to standard mode defaults without writing legacy stats", () => {
     expect(modeStatsForUser(user("standard-user"), "standard")).toMatchObject({
-      rating: 1000,
+      rating: 0, stars: 2,
       rank: "3段",
       wins: 0,
       losses: 0,

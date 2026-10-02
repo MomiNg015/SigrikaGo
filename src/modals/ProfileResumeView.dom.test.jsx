@@ -6,11 +6,25 @@ import ProfileResumeView from "./ProfileResumeView.jsx";
 afterEach(cleanup);
 
 describe("profile character record empty state", () => {
-  it.each(["self", "social"])("collapses empty records and restores the table in %s profiles", (context) => {
+  it.each(["self", "social"])("shows complete mode stats and zero-game defaults in %s profiles", (context) => {
+    const props = { context, user: { username: "测试部员" }, characters: [], mode: "spark", stats: { totalGames: 10, wins: 6, losses: 3, draws: 1 } };
+    const { rerender } = render(<ProfileResumeView {...props} />);
+    const summary = () => screen.getByText("战绩").closest(".profile-summary-item");
+    expect(within(summary()).getByLabelText("总对局 10局")).toBeTruthy();
+    expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
+    expect(document.querySelectorAll(".profile-summary-item")).toHaveLength(2);
+    rerender(<ProfileResumeView {...props} mode="standard" stats={{}} />);
+    expect(within(summary()).getByLabelText("总对局 0局")).toBeTruthy();
+    expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["0", "0", "0", "0", "0.0%"]);
+  });
+
+  it.each(["self", "social"])("preserves the empty record frame and restores the table in %s profiles", (context) => {
     const props = { context, user: { username: "测试部员", characterId: "sigrika" }, characters: [], mode: "spark", stats: {} };
     const { rerender } = render(<ProfileResumeView {...props} />);
     const empty = screen.getByLabelText("角色战绩");
     expect(empty.classList.contains("profile-character-section")).toBe(true);
+    expect(empty.classList.contains("window-empty-state")).toBe(false);
+    expect(empty.querySelector(".window-empty-state")).toBeTruthy();
     expect(empty.querySelector(".profile-character-table-head")).toBeNull();
     expect(empty.textContent).toBe("暂无");
     expect(empty.querySelector(".recent-result-empty")).toBeTruthy();

@@ -16,7 +16,8 @@ model User {
   banReason          String?
   bannedAt           DateTime?
   rank               String   @default("3段")
-  rating             Int      @default(1000)
+  rating             Int      @default(0)
+  stars              Int      @default(2)
   wins               Int      @default(0)
   losses             Int      @default(0)
   coins              Int      @default(300)
@@ -129,7 +130,8 @@ model UserModeStats {
   id        String   @id @default(cuid())
   userId    String
   mode      String
-  rating    Int      @default(1000)
+  rating    Int      @default(0)
+  stars     Int      @default(2)
   rank      String   @default("3段")
   recentResults String @default("")
   wins      Int      @default(0)

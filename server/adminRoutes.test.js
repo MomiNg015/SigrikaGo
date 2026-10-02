@@ -129,7 +129,7 @@ describe("admin route helpers", () => {
   });
 
   it("updates user profiles and audit logs in the same transaction", async () => {
-    const { prisma, calls, auditWrites } = transactionPrisma();
+    const { prisma, calls, auditWrites } = transactionPrisma({ user: { ...userFixture(), rank: "9段", stars: 0 } });
 
     const result = await updateUserProfile({
       prisma,
@@ -139,10 +139,11 @@ describe("admin route helpers", () => {
     });
 
     expect(result.user.rating).toBe(1150);
-    expect(result.user.rank).toBe("18级");
+    expect(result.user.rank).toBe("9段");
     expect(calls).toEqual([
       "transaction",
       "tx.user.findUnique",
+      "tx.userModeStats.upsert",
       "tx.user.update",
       ["tx.userProgressLedger.create", expect.objectContaining({
         metric: "rating",
@@ -288,6 +289,15 @@ describe("admin user routes", () => {
       moveCount: 42,
       createdAt: "2026-01-01T00:00:00.000Z"
     }]);
+  });
+
+  it("hides invalid historical replays from admin lists and detail", async () => {
+    const invalid = { id: "invalid", snapshot: JSON.stringify({ game: { winner: { invalid: true } } }) };
+    const prisma = { gameRecord: { findMany: async () => [invalid], findUnique: async () => invalid } };
+    const list = await requestAdminRoute(prisma, "/users/user-1/replays", { method: "GET" });
+    expect(list.body.records).toEqual([]);
+    const detail = await requestAdminRoute(prisma, "/replays/invalid", { method: "GET" });
+    expect(detail.status).toBe(404);
   });
 
   it("lets admins read any replay snapshot by id", async () => {
@@ -1313,6 +1323,7 @@ function transactionPrisma(options = {}) {
     throw new Error("mutation must use the transaction client");
   };
   const tx = {
+    userModeStats: { upsert: async () => { calls.push("tx.userModeStats.upsert"); } },
     user: {
       findUnique: async () => {
         calls.push("tx.user.findUnique");

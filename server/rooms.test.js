@@ -153,35 +153,35 @@ describe("room game record persistence", () => {
     expect(result.ok).toBe(true);
     expect(result.room.players.find((player) => player.user.id === "winner").user).toMatchObject({
       wins: 1,
-      rating: 1020,
+      rating: 0, stars: 3,
       coins: 50
     });
     expect(result.room.players.find((player) => player.user.id === "loser").user).toMatchObject({
       losses: 1,
-      rating: 980,
+      rating: 0, stars: 1,
       coins: 20
     });
     const savedSnapshot = JSON.parse(prismaMocks.gameRecordCreate.mock.calls[0][0].data.snapshot);
     expect(savedSnapshot.players.find((player) => player.user.id === "winner").user).toMatchObject({
       wins: 1,
-      rating: 1020,
+      rating: 0, stars: 3,
       coins: 50
     });
     expect(savedSnapshot.players.find((player) => player.user.id === "loser").user).toMatchObject({
       losses: 1,
-      rating: 980,
+      rating: 0, stars: 1,
       coins: 20
     });
     expect(prismaMocks.userUpdate).toHaveBeenCalledTimes(2);
     const updatesByUserId = new Map(prismaMocks.userUpdate.mock.calls.map(([operation]) => [operation.where.id, operation]));
     expect(updatesByUserId.get("winner").data).toMatchObject({
       wins: { increment: 1 },
-      rating: { increment: 20 },
+      rating: 0, stars: 3,
       coins: { increment: 50 }
     });
     expect(updatesByUserId.get("loser").data).toMatchObject({
       losses: { increment: 1 },
-      rating: { increment: -20 },
+      rating: 0, stars: 1,
       coins: { increment: 20 }
     });
     expect(prismaMocks.userProgressLedgerCreate).toHaveBeenCalledWith({ data: expect.objectContaining({
@@ -195,7 +195,7 @@ describe("room game record persistence", () => {
     expect(prismaMocks.userProgressLedgerCreate).toHaveBeenCalledWith({ data: expect.objectContaining({
       userId: "loser",
       metric: "rating",
-      delta: -20,
+      delta: -1000,
       reason: "game.result",
       refType: "room",
       refId: room.code
@@ -359,7 +359,7 @@ describe("room game record persistence", () => {
 
     expect(result.ok).toBe(true);
     expect(prismaMocks.gameRecordCreate).toHaveBeenCalledTimes(1);
-    expect(prismaMocks.userUpdate).not.toHaveBeenCalled();
+    expect(prismaMocks.userUpdate.mock.calls.every(([query]) => !query.data.coins)).toBe(true);
     expect(prismaMocks.userModeStatsUpsert).toHaveBeenCalledTimes(2);
     expect(prismaMocks.userModeStatsUpsert).toHaveBeenCalledWith(expect.objectContaining({
       where: { userId_mode: { userId: "draw-alice", mode: "spark" } },

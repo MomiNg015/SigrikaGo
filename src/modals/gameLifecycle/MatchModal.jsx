@@ -4,6 +4,7 @@ import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { gameModeById } from "../../shared/gameModes.js";
 import { secondsSinceStarted } from "./lifecycleHelpers.js";
+import { MATCH_EXPANSION_DELAY_MS } from "../../shared/matchClassification.js";
 
 export default function MatchModal({ user, startedAt, mode = "spark", onCancel, characters, specialDuel = false }) {
   const [now, setNow] = useState(Date.now());
@@ -25,6 +26,9 @@ export default function MatchModal({ user, startedAt, mode = "spark", onCancel, 
         <h2>{specialDuel ? "正在锁定西格莉卡？" : `${gameMode.title}匹配中`}</h2>
         <p className="quiet-text">{specialDuel ? "MATCH DATA CORRUPTED" : gameMode.rulesText}</p>
         <p>{secondsSinceStarted(startedAt, now)} 秒</p>
+        {!specialDuel && mode !== "team" && now - startedAt >= MATCH_EXPANSION_DELAY_MS && (
+          <p className="quiet-text match-expansion-notice" role="status">（段位相近的玩家较少...开始自动匹配段位较远的玩家）</p>
+        )}
         {!specialDuel && <button onClick={onCancel}>取消匹配</button>}
       </section>
     </div>

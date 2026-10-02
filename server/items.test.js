@@ -27,37 +27,8 @@ const EQUIPPED_COSTUME_FIXTURE = [
 describe("items", () => {
   afterEach(() => vi.unstubAllEnvs());
 
-  it("blocks production Sigrika candy before any state or story writes and exposes the restriction", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    const updates = [];
-    const structuredWrites = [];
-    const prisma = inventoryPrisma({
-      ownedItems: JSON.stringify({ "rainbow-bean-candy": 2 }),
-      ownedCharacters: "sigrika,denia",
-      targetId: "rainbow-bean-candy",
-      itemTargetType: "character",
-      updates,
-      structuredWrites
-    });
-    const before = await listItemInventory({ prisma, userId: "user-1" });
-    expect(before.items[0].disabledCharacterReasons).toEqual({
-      sigrika: "西格莉卡的糖果剧情尚未开放，暂不可使用"
-    });
-    const storyRead = vi.spyOn(prisma.storyScript, "findMany");
-    await expect(useInventoryItem({ prisma, userId: "user-1", itemId: "rainbow-bean-candy", characterId: "sigrika" }))
-      .rejects.toMatchObject({ status: 403, message: before.items[0].disabledCharacterReasons.sigrika });
-    expect(updates).toEqual([]);
-    expect(structuredWrites).toEqual([]);
-    expect(storyRead).not.toHaveBeenCalled();
-    expect(await listItemInventory({ prisma, userId: "user-1" })).toEqual(before);
-
-    const result = await useInventoryItem({ prisma, userId: "user-1", itemId: "rainbow-bean-candy", characterId: "denia", random: () => 0.9 });
-    expect(result.user.itemEffects.deniaRainbowGlow).toBe(true);
-    expect(result.items[0].quantity).toBe(1);
-  });
-
-  it("keeps Sigrika candy available in local development", async () => {
-    vi.stubEnv("NODE_ENV", "development");
+  it.each(["production", "development"])("allows Sigrika candy in %s", async (nodeEnv) => {
+    vi.stubEnv("NODE_ENV", nodeEnv);
     const prisma = inventoryPrisma({
       ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
       ownedCharacters: "sigrika,denia",
@@ -68,6 +39,8 @@ describe("items", () => {
     expect(inventory.items[0].disabledCharacterReasons).toEqual({});
     const result = await useInventoryItem({ prisma, userId: "user-1", itemId: "rainbow-bean-candy", characterId: "sigrika", random: () => 0 });
     expect(result.user.itemEffects.sigrikaCandyDisabled).toBe(true);
+    expect(result.user.sigrikaCandyArc).toMatchObject({ useCount: 1, phase: "normal" });
+    expect(result.items).toEqual([]);
   });
 
   it("parses legacy csv inventory and json quantity inventory", () => {

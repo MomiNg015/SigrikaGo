@@ -1,32 +1,40 @@
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { isInvalidReplay } from "./replayValidity.js";
 
 export const REPLAY_PAGE_SIZE = 50;
 
 export async function listReplaySummaryPage({ prisma, userId, mode: modeInput = "spark", cursor = "" }) {
   const mode = normalizeGameModeId(modeInput);
-  const cursorValue = decodeReplayCursor(cursor);
-  const records = await prisma.gameRecord.findMany({
-    where: {
-      mode: mode === "spark" ? { in: ["spark", "team"] } : mode,
-      AND: [
-        {
-          OR: [
-            { blackUserId: userId },
-            { whiteUserId: userId }
-          ]
-        },
-        ...(cursorValue ? [{
-          OR: [
-            { createdAt: { lt: cursorValue.createdAt } },
-            { createdAt: cursorValue.createdAt, id: { lt: cursorValue.id } }
-          ]
-        }] : [])
-      ]
-    },
-    select: replaySummarySelect(),
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    take: REPLAY_PAGE_SIZE + 1
-  });
+  let cursorValue = decodeReplayCursor(cursor);
+  const records = [];
+  while (records.length <= REPLAY_PAGE_SIZE) {
+    const batch = await prisma.gameRecord.findMany({
+      where: {
+        mode: mode === "spark" ? { in: ["spark", "team"] } : mode,
+        AND: [
+          {
+            OR: [
+              { blackUserId: userId },
+              { whiteUserId: userId }
+            ]
+          },
+          ...(cursorValue ? [{
+            OR: [
+              { createdAt: { lt: cursorValue.createdAt } },
+              { createdAt: cursorValue.createdAt, id: { lt: cursorValue.id } }
+            ]
+          }] : [])
+        ]
+      },
+      select: replaySummarySelect(),
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: REPLAY_PAGE_SIZE + 1
+    });
+    records.push(...batch.filter((record) => !isInvalidReplay(record)));
+    if (batch.length < REPLAY_PAGE_SIZE + 1) break;
+    const last = batch.at(-1);
+    cursorValue = { createdAt: last.createdAt, id: last.id };
+  }
   const hasMore = records.length > REPLAY_PAGE_SIZE;
   const pageRecords = records.slice(0, REPLAY_PAGE_SIZE);
   const lastRecord = pageRecords.at(-1);
@@ -58,6 +66,7 @@ export function decodeReplayCursor(cursor) {
 
 function replaySummarySelect() {
   return {
+    snapshot: true,
     id: true,
     roomCode: true,
     blackUserId: true,
@@ -94,8 +103,9 @@ function replaySummarySelect() {
 }
 
 function toReplaySummary(record) {
+  const { snapshot: _snapshot, ...summary } = record;
   return {
-    ...record,
+    ...summary,
     rated: record.rated !== false,
     matchSource: record.matchSource ?? (record.rated === false ? "private" : "matchmaking"),
     blackRatingDelta: record.blackRatingDelta ?? 0,

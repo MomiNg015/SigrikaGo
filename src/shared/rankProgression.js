@@ -4,51 +4,68 @@ export const MIN_RANK = "18级";
 export const RANK_RESULT_WIN = "win";
 export const RANK_RESULT_LOSS = "loss";
 export const RANK_WINDOW_LIMIT = 10;
-export const RANK_PROMOTION_WINS = 7;
-export const RANK_DEMOTION_LOSSES = 8;
+export const DEFAULT_STARS = 2;
+export const NINE_DAN_ENTRY_POINTS = 1000;
 
 const MIN_STEP = -18;
 const MAX_STEP = 9;
 
-export function applyRankProgression({ rank = DEFAULT_RANK, recentResults = [], outcome = "" } = {}) {
-  const normalizedRank = normalizeRank(rank);
-  const normalizedOutcome = normalizeRankOutcome(outcome);
-  if (!normalizedOutcome) {
-    return {
-      rank: normalizedRank,
-      recentResults: normalizeRecentResults(recentResults),
-      triggered: false,
-      direction: ""
-    };
-  }
+export function rankStarLimit(rank = DEFAULT_RANK) {
+  const step = rankToStep(rank);
+  return step >= 9 ? 0 : step >= 7 ? 8 : step >= 4 ? 6 : 4;
+}
 
-  const nextResults = [...normalizeRecentResults(recentResults), normalizedOutcome].slice(-RANK_WINDOW_LIMIT);
-  const wins = nextResults.filter((result) => result === RANK_RESULT_WIN).length;
-  const losses = nextResults.filter((result) => result === RANK_RESULT_LOSS).length;
-
-  if (wins >= RANK_PROMOTION_WINS) {
-    return {
-      rank: promoteRank(normalizedRank),
-      recentResults: [],
-      triggered: true,
-      direction: "up"
-    };
-  }
-  if (losses >= RANK_DEMOTION_LOSSES) {
-    return {
-      rank: demoteRank(normalizedRank),
-      recentResults: [],
-      triggered: true,
-      direction: "down"
-    };
-  }
-
+export function normalizeRankProgress({ rank = DEFAULT_RANK, stars, rating = 0 } = {}) {
+  rank = normalizeRank(rank);
+  const limit = rankStarLimit(rank);
+  const integer = (value, fallback) => Number.isFinite(Number(value)) ? Math.trunc(Number(value)) : fallback;
   return {
-    rank: normalizedRank,
-    recentResults: nextResults,
-    triggered: false,
-    direction: ""
+    rank,
+    stars: limit ? Math.max(0, Math.min(limit, integer(stars ?? limit / 2, limit / 2))) : 0,
+    rating: limit ? 0 : Math.max(0, Math.min(2147483647, integer(rating, 0)))
   };
+}
+
+export function rankMatchStatus(progress) {
+  const state = normalizeRankProgress(progress);
+  if (state.rank === MAX_RANK) return state.rating === 0 ? "demotion" : "";
+  if (state.stars === rankStarLimit(state.rank)) return "promotion";
+  return state.stars === 0 && state.rank !== MIN_RANK ? "demotion" : "";
+}
+
+export function compareRankProgress(a, b) {
+  return rankToStep(b.rank) - rankToStep(a.rank)
+    || (a.rank === MAX_RANK ? Number(b.rating ?? 0) - Number(a.rating ?? 0) : Number(b.stars ?? DEFAULT_STARS) - Number(a.stars ?? DEFAULT_STARS));
+}
+
+export function applyRankProgression({ rank = DEFAULT_RANK, stars, rating = 0, recentResults = [], outcome = "" } = {}) {
+  const before = normalizeRankProgress({ rank, stars, rating });
+  const result = normalizeRankOutcome(outcome);
+  const next = { ...before, recentResults: normalizeRecentResults(recentResults), triggered: false, direction: "" };
+  if (!result) return next;
+  next.recentResults = [...next.recentResults, result].slice(-RANK_WINDOW_LIMIT);
+  const won = result === RANK_RESULT_WIN;
+  let destination = before.rank;
+  if (before.rank === MAX_RANK) {
+    if (!won && before.rating === 0) destination = demoteRank(before.rank);
+    else next.rating = Math.min(2147483647, Math.max(0, before.rating + (won ? 200 : -250)));
+  } else if (won && before.stars === rankStarLimit(before.rank)) {
+    destination = promoteRank(before.rank);
+  } else if (!won && before.stars === 0) {
+    destination = demoteRank(before.rank);
+  } else {
+    next.stars = before.stars + (won ? 1 : -1);
+  }
+  if (destination !== before.rank) {
+    Object.assign(next, {
+      rank: destination,
+      stars: rankStarLimit(destination) / 2,
+      rating: destination === MAX_RANK ? NINE_DAN_ENTRY_POINTS : 0,
+      triggered: true,
+      direction: won ? "up" : "down"
+    });
+  }
+  return next;
 }
 
 export function promoteRank(rank = DEFAULT_RANK) {

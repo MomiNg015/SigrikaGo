@@ -10,6 +10,44 @@ function player(id, socketId, mode = "spark") {
 }
 
 describe("roomMatchmakingQueue", () => {
+  test("waits for both distant players to reach 15 seconds without resetting queue time", () => {
+    let time = 1000;
+    const queue = createRoomMatchmakingQueue({ now: () => time });
+    const first = { ...player("a", "a"), user: { id: "a", rank: "3段" } };
+    const second = { ...player("b", "b"), user: { id: "b", rank: "6段" } };
+    queue.join(first);
+    time = 2000;
+    expect(queue.join(second).matched).toBe(false);
+    time = 16000;
+    expect(queue.join(first).matched).toBe(false);
+    expect(queue.list().find((entry) => entry.user.id === "a").queuedAt).toBe(1000);
+    time = 17000;
+    expect(queue.join(second).matched).toBe(true);
+    expect(queue.count()).toBe(0);
+  });
+
+  test("prefers the closest eligible rank, uses mode ranks and includes a distance of two", () => {
+    const queue = createRoomMatchmakingQueue();
+    const ranked = (id, rank) => ({ ...player(id, id, "standard"), user: { id, rank: "9段", modeStats: { standard: { rank } } } });
+    queue.join(ranked("far", "5段"));
+    queue.join(ranked("near", "4段"), { canPair: () => false });
+    expect(queue.join(ranked("new", "3段")).opponent.user.id).toBe("near");
+    expect(queue.join(ranked("boundary", "3段")).opponent.user.id).toBe("far");
+  });
+
+  test("preserves blacklist filtering after expansion", () => {
+    let time = 0;
+    const queue = createRoomMatchmakingQueue({ now: () => time });
+    const first = { ...player("a", "a"), user: { id: "a", rank: "1段" } };
+    const second = { ...player("b", "b"), user: { id: "b", rank: "9段" } };
+    queue.join(first);
+    queue.join(second);
+    time = 15000;
+    expect(queue.join(first, { canPair: () => false }).matched).toBe(false);
+    queue.removeSocket("b");
+    expect(queue.join(first).matched).toBe(false);
+  });
+
   test("queues unmatched players and reports counts by mode", () => {
     const queue = createRoomMatchmakingQueue();
 

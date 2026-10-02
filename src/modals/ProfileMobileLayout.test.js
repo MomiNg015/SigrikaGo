@@ -4,6 +4,16 @@ import { readFileSync } from "node:fs";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("profile mobile layout contracts", () => {
+  it("lets empty record frames grow in ordinary and bookmark profile bodies", () => {
+    const emptyCss = readCssWithImports(new URL("../styles/mobile-adaptive/window-sticker-resume-header.css", import.meta.url));
+    const bookmarkCss = readCssWithImports(new URL("../styles/mobile-adaptive/window-bookmark-mobile.css", import.meta.url));
+    expect(emptyCss).toContain("align-self: stretch;");
+    expect(emptyCss).not.toContain("grid-template-rows: auto auto auto auto;");
+    expect(emptyCss).toContain(".profile-resume-view-social .profile-record-panel.is-empty");
+    expect(bookmarkCss).toContain(".profile-record-panel.is-empty {");
+    expect(bookmarkCss).toContain("flex: 1 0 auto !important;");
+  });
+
   it("keeps transparent structure around the themed cards and long-record footer in explicit desktop rows", () => {
     const dossierCss = readFileSync(
       new URL("../styles/modals/profile-hero-cleanup.css", import.meta.url),
@@ -12,23 +22,23 @@ describe("profile mobile layout contracts", () => {
     const overviewCss = readFileSync(
       new URL("../styles/modals/profile-overview.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const recordsCss = readFileSync(
       new URL("../styles/modals/profile-character-records.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const nestedCss = readFileSync(
       new URL("../styles/modals/nested-profile.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const themeOwnerCss = readFileSync(
       new URL("../styles/themes/bright-school/quality-base/profile-dossier/surfaces-portraits.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const cardSurfaceCss = readFileSync(
       new URL("../styles/themes/bright-school/quality-base/profile-dossier/card-surfaces.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
 
     expect(dossierCss).toContain('grid-template-areas:\n    "status"\n    "overview"\n    "characters"\n    "actions"');
     expect(dossierCss).toContain(".profile-resume-view {\n  position: relative;");
@@ -95,11 +105,11 @@ describe("profile mobile layout contracts", () => {
     const portraitHeaderCss = readFileSync(
       new URL("../styles/mobile-adaptive/bright-school-portrait/resume-modal-layout/header-grid.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const characterRecordsCss = readFileSync(
       new URL("../styles/mobile-adaptive/mobile-profile-records/character-record-list.css", import.meta.url),
       "utf8"
-    );
+    ).replace(/\r\n/g, "\n");
     const characterRecordCardsCss = readFileSync(
       new URL("../styles/mobile-adaptive/mobile-profile-records/character-record-cards.css", import.meta.url),
       "utf8"

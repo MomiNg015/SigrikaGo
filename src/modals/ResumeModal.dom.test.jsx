@@ -63,15 +63,14 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("cell", { name: "3" })).toBeTruthy();
     expect(screen.getByRole("cell", { name: "2" })).toBeTruthy();
     expect(screen.getAllByText("58.3%")).toHaveLength(2);
-    expect(screen.getByText("1260分")).toBeTruthy();
+    expect(screen.getByText("4段")).toBeTruthy();
     expect(document.querySelectorAll(".profile-portrait-mask")).toHaveLength(2);
     expect(document.querySelector(".profile-hero-portrait > .profile-portrait-mask > img")).toBeTruthy();
     expect(document.querySelector(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask > img")).toBeTruthy();
+    expect(screen.queryByText("积分", { exact: true })).toBeNull();
+    expect(screen.getByLabelText("4段 3/6星")).toBeTruthy();
     expect(screen.getByRole("tooltip", {
-      name: "对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
-    })).toBeTruthy();
-    expect(screen.getByRole("tooltip", {
-      name: "每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。"
+      name: "赢一盘加一星，输一盘减一星；满星或零星后的下一盘决定升降段，变段后获得一半星数。九段胜加200分、负减250分，零分再输降段。和棋不变。"
     })).toBeTruthy();
     expect(document.querySelector(".profile-resume-hero .profile-identity-actions")).toBeTruthy();
     expect(screen.getByRole("button", { name: "成就" }).textContent).toBe("");
@@ -127,9 +126,9 @@ describe("ResumeModal authoritative record stats", () => {
       />
     );
 
-    await waitFor(() => expect(screen.getByText("1260分")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
     fireEvent.click(screen.getByRole("tab", { name: "标准" }));
-    expect(screen.getByText("1260分")).toBeTruthy();
+    expect(screen.getByText("4段")).toBeTruthy();
     expect(screen.getByText("正在载入标准战绩，当前仍显示星炬。")).toBeTruthy();
     expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getAllByRole("tab").every((tab) => tab.getAttribute("aria-disabled") === "true")).toBe(true);
@@ -146,7 +145,7 @@ describe("ResumeModal authoritative record stats", () => {
         characterStats: []
       }
     });
-    await waitFor(() => expect(screen.getByText("1420分")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("5段")).toBeTruthy());
     expect(screen.getByRole("tab", { name: "标准" }).getAttribute("aria-selected")).toBe("true");
   });
 
@@ -179,13 +178,13 @@ describe("ResumeModal authoritative record stats", () => {
       />
     );
 
-    await waitFor(() => expect(screen.getByText("1260分")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
     fireEvent.click(screen.getByRole("tab", { name: "标准" }));
     failedRequest.reject(new Error("标准模式加载失败"));
 
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("标准模式加载失败"));
     expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByText("1260分")).toBeTruthy();
+    expect(screen.getByText("4段")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "重新加载" }));
     expect(api).toHaveBeenCalledTimes(3);
@@ -200,7 +199,7 @@ describe("ResumeModal authoritative record stats", () => {
       }
     });
 
-    await waitFor(() => expect(screen.getByText("1500分")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("6段")).toBeTruthy());
     expect(screen.getByRole("tab", { name: "标准" }).getAttribute("aria-selected")).toBe("true");
   });
 
@@ -228,7 +227,7 @@ describe("ResumeModal authoritative record stats", () => {
       />
     );
 
-    await waitFor(() => expect(screen.getByText("1260分")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
     const sparkTab = screen.getByRole("tab", { name: "星炬" });
     const panel = screen.getByRole("tabpanel");
     expect(sparkTab.getAttribute("aria-controls")).toBe(panel.id);

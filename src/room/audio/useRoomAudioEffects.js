@@ -8,6 +8,7 @@ import { VOICE_PLAYBACK_PROFILES } from "../../audio/voicePlaybackProfiles.js";
 import { voiceCharacterForPlayer } from "../roomView.js";
 import { applyRoomAudioBaseline, buildRoomAudioBaseline, shouldSeedRoomAudioBaseline } from "../roomAudioBaseline.js";
 import { shouldPlayGameStartVoice } from "../roomState.js";
+import { claimOpeningVoice } from "./openingVoiceLedger.js";
 
 export function useRoomAudioEffects({
   activePlayer,
@@ -38,6 +39,8 @@ export function useRoomAudioEffects({
     const key = `${displayRoom.code}:${displayRoom.team.round}`;
     if (teamVoiceRef.current === key) return;
     teamVoiceRef.current = key;
+    const claimed = claimOpeningVoice(JSON.stringify(["team", key, me.user?.id]));
+    if (!claimed) return;
     if (shouldSeedRoomAudioBaseline(room)) return;
     playSystemVoice(SYSTEM_VOICE_EVENTS.sortie, {
       character: voiceCharacterForPlayer(me, characters), audioSettings
@@ -54,13 +57,15 @@ export function useRoomAudioEffects({
     const baselineKey = `${room.code}:${room.game.history.length}:${room.chat?.length ?? 0}`;
     if (seededAudioBaselineRef.current === baselineKey) return;
     seededAudioBaselineRef.current = baselineKey;
+    const startMessage = room.chat?.findLast?.((message) => message.kind === "game-start");
+    if (startMessage) claimOpeningVoice(JSON.stringify(["start", room.code, startMessage.id, me?.user?.id]));
     applyRoomAudioBaseline({
       soundMoveRef,
       hiddenRevealSoundRef,
       voiceRef,
       systemVoiceRef
     }, buildRoomAudioBaseline(room));
-  }, [room]);
+  }, [room, me?.user?.id]);
 
   useEffect(() => {
     const boardSoundAction = latestBoardSoundAction(displayRoom.game.history);
@@ -165,12 +170,13 @@ export function useRoomAudioEffects({
     const gameStartMessage = displayRoom.chat.findLast?.((message) => message.kind === "game-start");
     if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
     systemVoiceRef.current.gameStart = gameStartMessage.id;
+    if (!claimOpeningVoice(JSON.stringify(["start", displayRoom.code, gameStartMessage.id, me?.user?.id]))) return;
     playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
       character: voiceCharacterForPlayer(me, characters),
       params: { mode: displayRoom.mode },
       audioSettings
     });
-  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, displayRoom.team, isReplay, role, me, characters, audioSettings, suppressRoomVoices]);
+  }, [displayRoom.code, displayRoom.chat, displayRoom.game.phase, displayRoom.mode, displayRoom.team, isReplay, role, me, characters, audioSettings, suppressRoomVoices]);
 }
 
 export function shouldSuppressRoomVoices(room) {

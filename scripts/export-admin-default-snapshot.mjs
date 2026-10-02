@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
+import { normalizeRatingRules, RATING_RULES_SETTING_KEY } from "../src/shared/ratingRules.js";
 
 const DEFAULT_OUTPUT = "server/adminDefaultSnapshot.js";
 
@@ -100,6 +101,9 @@ export function renderAdminDefaultSnapshot(config, { generatedAt = new Date() } 
 }
 
 function siteSettingSnapshot(row) {
+  if (row.key === RATING_RULES_SETTING_KEY) {
+    return { key: row.key, value: JSON.stringify(normalizeRatingRules(row.value), null, 2) };
+  }
   return pick(row, ["key", "value"]);
 }
 

@@ -1,5 +1,4 @@
 import { COLORS } from "./game.js";
-import { ratingDeltaForResult } from "./gameRecords.js";
 import { calculateRatingDelta, outcomeForPlayer } from "./ratingRules.js";
 
 export const COIN_WIN_DELTA = 50;
@@ -20,18 +19,18 @@ export function resultRewardDelta(playerColor, winnerColor, options = {}) {
   if (!normalizedWinner) {
     return {
       outcome: "draw",
-      rating: options.self && options.opponent
-        ? calculateRatingDelta({ self: options.self, opponent: options.opponent, outcome, rules: options.rules, antiBoostMultiplier: options.antiBoostMultiplier })
-        : ratingDeltaForResult(normalizedPlayer, normalizedWinner),
+      rating: options.self
+        ? calculateRatingDelta({ self: options.self, outcome })
+        : 0,
       coins: COIN_DRAW_DELTA
     };
   }
   const won = normalizedPlayer === normalizedWinner;
   return {
     outcome: won ? "win" : "loss",
-    rating: options.self && options.opponent
-      ? calculateRatingDelta({ self: options.self, opponent: options.opponent, outcome, rules: options.rules, antiBoostMultiplier: options.antiBoostMultiplier })
-      : ratingDeltaForResult(normalizedPlayer, normalizedWinner),
+    rating: options.self
+      ? calculateRatingDelta({ self: options.self, outcome })
+      : 0,
     coins: won ? COIN_WIN_DELTA : COIN_LOSS_DELTA
   };
 }

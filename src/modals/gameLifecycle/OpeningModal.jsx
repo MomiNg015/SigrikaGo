@@ -4,12 +4,14 @@ import { isPracticeRoom, practiceCaptureResignThreshold } from "../../shared/pra
 import { isCaptureChallenge } from "../../shared/captureChallenge.js";
 import { colorTextForPlayer, secondsUntilTimestamp } from "./lifecycleHelpers.js";
 import OpeningDuelPresentation from "./OpeningDuelPresentation.jsx";
+import { roomMatchClassification } from "../../shared/matchClassification.js";
 
 export default function OpeningModal({ room, player, characters }) {
   const [now, setNow] = useState(Date.now());
   const [openingEndsAt] = useState(() => room.__openingEndsAt ?? room.openingEndsAt);
   const remaining = secondsUntilTimestamp(openingEndsAt ?? now, now);
   const colorText = colorTextForPlayer(player);
+  const matchClassification = roomMatchClassification(room);
   const isSigrikaCandyDuel = Boolean(room.sigrikaCandyDuel);
   const practiceCaptureTarget = isPracticeRoom(room) && !isCaptureChallenge(room)
     ? practiceCaptureResignThreshold(room.practice)
@@ -22,6 +24,7 @@ export default function OpeningModal({ room, player, characters }) {
 
   const copy = (
     <>
+      {matchClassification && <span className={`match-classification-tag is-${matchClassification.id}`}>{matchClassification.label}</span>}
       <h2>{room.team ? `Round ${room.team.round}` : colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
       {room.team?.round === 1 && colorText && <p>本局你执{colorText}</p>}
       {isCaptureChallenge(room) && <p className="practice-opening-rule">吃子挑战赛！双方共100手，只计提子，不可数子。</p>}

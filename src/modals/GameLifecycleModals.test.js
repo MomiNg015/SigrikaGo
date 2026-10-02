@@ -111,15 +111,15 @@ describe("GameLifecycleModals helpers", () => {
   it("uses semantic rating typography only for rating reward values", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain('<span className="text-rating-value">{formatSignedDelta(reward.rating)}</span>');
+    expect(source).toContain('<RankProgress showStatus rank={reward.rankAfter');
     expect(source).toContain('className="result-reward-tile result-reward-coins"');
     expect(source).toContain("<strong>金币</strong>{formatSignedDelta(reward.coins)}");
   });
 
-  it("marks result reward cards with signed rating and coin classes", () => {
+  it("marks result reward cards with signed progress and coin classes", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain('reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"');
+    expect(source).toContain('progressDelta < 0 ? "result-reward-negative" : "result-reward-nonnegative"');
     expect(source).toContain("className={ratingRewardClass}");
     expect(source).toContain("result-reward-tile result-reward-rating");
     expect(source).not.toContain("result-reward-card");

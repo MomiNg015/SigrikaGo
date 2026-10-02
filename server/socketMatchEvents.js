@@ -2,6 +2,7 @@ const SOCKET_AUTH_EXPIRED_MESSAGE = "\u767b\u5f55\u72b6\u6001\u5df2\u5931\u6548\
 
 import { createCharacterSelectionData } from "./playerRoutes.js";
 import { resolveTeamLineup } from "./teamMatch.js";
+import { MATCH_EXPANSION_DELAY_MS } from "../src/shared/matchClassification.js";
 
 export function registerMatchSocketEvents(socket, {
   io,
@@ -20,12 +21,25 @@ export function registerMatchSocketEvents(socket, {
   characterSelectionData = createCharacterSelectionData({ prisma })
 }) {
   let matchAttempt = 0;
-  socket.on("match:join", async ({ mode: modeInput, lineup } = {}, ack = () => {}) => {
+  let expansionTimer = null;
+  const clearExpansionTimer = () => {
+    clearTimeout(expansionTimer);
+    expansionTimer = null;
+  };
+  const isQueued = () => listWaitingPlayers().some((entry) => entry.user.id === socket.user.id && entry.socketId === socket.id);
+  async function join({ mode: modeInput, lineup } = {}, ack = () => {}, retry = false) {
+    if (retry && !isQueued()) return;
+    clearExpansionTimer();
     const attempt = ++matchAttempt;
     if (typeof ack !== "function") ack = () => {};
     try {
       const admission = runtimeServiceState?.admission?.("match") ?? { ok: true };
       if (!admission.ok) {
+        if (retry) {
+          leaveMatchmaking(socket.user.id);
+          socket.emit("match:left");
+          broadcastLobbyStats();
+        }
         metrics?.increment?.("admissionRejectedMatches");
         socket.emit("error:toast", admission.error);
         ack({ ok: false, error: admission.error });
@@ -82,7 +96,7 @@ export function registerMatchSocketEvents(socket, {
           blockedCandidateIds.add(candidate.user.id);
         }
       }
-      if (attempt !== matchAttempt || socket.connected === false) {
+      if (attempt !== matchAttempt || socket.connected === false || (retry && !isQueued())) {
         ack({ ok: true, cancelled: true });
         return;
       }
@@ -91,19 +105,38 @@ export function registerMatchSocketEvents(socket, {
         io,
         { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) }
       );
-      if (!room) socket.emit("match:waiting", { startedAt: now(), mode });
+      if (!room) {
+        const queued = listWaitingPlayers().find((entry) => entry.user.id === socket.user.id);
+        const startedAt = queued?.queuedAt ?? now();
+        socket.emit("match:waiting", { startedAt, serverNow: now(), mode });
+        if (!retry && mode !== "team") {
+          expansionTimer = setTimeout(() => { void join({ mode, lineup }, () => {}, true); }, Math.max(0, MATCH_EXPANSION_DELAY_MS - (now() - startedAt)));
+          expansionTimer.unref?.();
+        }
+      }
       broadcastLobbyStats();
       ack({ ok: true });
     } catch (error) {
+      if (retry && attempt === matchAttempt) {
+        leaveMatchmaking(socket.user.id);
+        socket.emit("match:left");
+        broadcastLobbyStats();
+      }
       socket.emit("error:toast", SOCKET_AUTH_EXPIRED_MESSAGE);
       ack({ ok: false, error: SOCKET_AUTH_EXPIRED_MESSAGE });
     }
-  });
+  }
+  socket.on("match:join", (payload, ack) => join(payload, ack));
 
   socket.on("match:leave", () => {
     matchAttempt += 1;
+    clearExpansionTimer();
     leaveMatchmaking(socket.user.id);
     socket.emit("match:left");
     broadcastLobbyStats();
+  });
+  socket.on("disconnect", () => {
+    matchAttempt += 1;
+    clearExpansionTimer();
   });
 }

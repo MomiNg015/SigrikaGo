@@ -181,7 +181,7 @@ export const FALLBACK_CHARACTERS = {
     description: "擅长伪装与错觉的幻色棋手，会让对手眼中的棋盘变得难以捉摸。",
     palette: "#8fb4f7",
     portrait: CHARACTER_PORTRAIT_ASSETS.nabomo.url,
-    acquisitionMethod: "积分达到1400分时自动获得",
+    acquisitionMethod: "首次升上6段后自动获得",
     skill: {
       id: "color-illusion-passive",
       name: "千变万化",

@@ -56,6 +56,7 @@ export function createAuthRouteHandlers({
       user = await prisma.$transaction(async (tx) => {
         const createdUser = await tx.user.create({
           data: {
+            rank: "3段", stars: 2, rating: 0,
             username,
             passwordHash,
             onboardingRequired: true,

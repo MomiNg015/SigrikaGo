@@ -1,3 +1,5 @@
+import RankProgress from "../shared/RankProgress.jsx";
+import { rankStarLimit } from "../shared/rankProgression.js";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { adminApi } from "../api/client.js";
@@ -25,7 +27,7 @@ export default function AdminUsers({ users, onSelect }) {
               <th>权限</th>
               <th>状态</th>
               <th>段位</th>
-              <th>积分</th>
+
               <th>金币</th>
               <th>胜负</th>
               <th>操作</th>
@@ -37,8 +39,8 @@ export default function AdminUsers({ users, onSelect }) {
                 <td>{user.username}</td>
                 <td><AdminStatusPill tone={user.role === "admin" ? "blue" : "neutral"}>{user.role === "admin" ? "管理员" : "玩家"}</AdminStatusPill></td>
                 <td><AdminStatusPill tone={user.status === "active" ? "green" : "red"}>{user.status}</AdminStatusPill></td>
-                <td>{user.rank}</td>
-                <td>{user.rating}</td>
+                <td><RankProgress {...user} /></td>
+
                 <td>{user.coins}</td>
                 <td>{user.wins}/{user.losses}</td>
                 <td><button className="admin-row-action" type="button">编辑</button></td>
@@ -106,6 +108,7 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
       body: {
         role: draft.role,
         rating,
+        stars: Number(draft.stars),
         coins,
         ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
         ownedItems: parseOwnedItemsText(draft.ownedItemsText),
@@ -171,12 +174,14 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
             <option value="admin">管理员</option>
           </select>
         </label>
-        <label><AdminFieldLabel text="段位" tip="段位按最近10盘胜负独立升降，不再由积分自动换算。" />
+        <label><AdminFieldLabel text="段位" tip="九段以下按星数升降，九段使用独立积分。" />
           <input value={draft.rank} readOnly />
         </label>
-        <label><AdminFieldLabel text="积分" tip="用户的匹配积分，必须是整数。" />
-          <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
-        </label>
+        {draft.rank === "9段" ? <label><AdminFieldLabel text="九段积分" tip="仅九段使用，最低为0。" />
+          <input type="number" min="0" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
+        </label> : <label><AdminFieldLabel text="星数" tip="达到上限后下一盘为晋级赛，零星下一盘为降级赛。" />
+          <input type="number" min="0" max={rankStarLimit(draft.rank)} value={draft.stars} onChange={(event) => updateDraft("stars", event.target.value)} />
+        </label>}
         <label><AdminFieldLabel text="金币" tip="用户当前拥有的金币数量，必须是整数。" />
           <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
         </label>

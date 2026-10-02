@@ -6,6 +6,8 @@
 
 常规玩家 `ActionBar` 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 `disabled` 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。`room-people-table` 的滚动区域内保留上／右／下／左 `2px 6px 6px 2px` 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。
 
+履历与详细资料无角色战绩时，`.profile-character-section` 保留校园卡片边框、底色和阴影，内部嵌套紧凑 `WindowEmptyState`。外框沿桌面剩余 grid 行或竖屏正文 flex 剩余空间延伸到底部；有记录时保持原表格滚动。
+
 ## 玩家窗口左侧书签选项卡
 
 `ResumeModal`、`SettingsModal`、`AchievementModal`、`LeaderboardModal`、`WatchModal`、`FriendsModal`和 `AnnouncementModal` 显式声明 `window-bookmark-host`，对应分类/模式控件使用 `WindowBookmarkTabs`；`UserProfileCard` 仅在首页好友入口启用 `titleStickers` 时接入，房间内保持原布局。组件保留原按钮 ID、`aria-controls`、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 `.app-shell` 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 `ShopTabs` 和 `GachaModal` 没有现行入口，不为样式推广重新启用。
@@ -233,10 +235,14 @@
 
 普通空状态最小高度 154px，紧凑版为 88px；后者用于履历战绩、装饰区及公告/邮件列表。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历战绩、装饰与服装商店。加载提示与错误状态不复用空结果插画；观战只有存在房间时渲染表格，空结果不留空表头，也不会在加载失败时同时显示暂无房间。接入书签的观战窗口移除旧选项卡网格轨道，使正文/空状态在剩余内容区布局。
 
-### 棋盘比例与队际赛头像
-竖屏 `board-stage` 宽度仍取 `--mobile-room-board-size`，`max-width:100%` 随父容器收缩；舞台与 `board-wrap` 均使用 `height:auto`、`aspect-ratio:1`，父槽及舞台显式收缩网格轨道，防止旧固定高度与不同断点宽度形成非等比棋盘。队际赛采用 B「错落纸片」：独立斜边纸片轻微错落，浅黄／浅绿／浅粉纸面配棕色细边和轻硬阴影，关闭单人拱形底板。三张直立图片按出场顺序各自裁切，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px、头像高96px，宽度为clamp(88px,27.7vw,108px)，为三位角色保留可辨识空间；普通单人布局保持不变。隐藏角色只显示问号，退场角色灰显。
+## Star rank presentation (2026-09-30)
 
-移动端普通对弈信息区采用紧凑 A 独立卡片，由 `battle-paper-player-mobile.css` 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 `battle-paper-skill-mobile.css`。身份卡随棋色显示黑底浅字或浅底深字；只有当前回合时钟卡变黄；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面和黑化剧情保持原布局。
+`RankProgress` owns rank plus progress on player/profile/leaderboard/result/invitation/admin surfaces. Four slots form one row, six form two rows of three, and eight form two rows of four. Empty slots remain outlined and earned slots filled using the existing school palette. Ninth dan renders points inline instead of stars. The former separate rating field/column is removed. The final `mobile-adaptive/rank-progress.css` owner preserves this geometry under the theme cascade; current and pinned leaderboard rows share the same component. Profile summaries now contain rank, total games and win rate.
+
+### 棋盘比例与队际赛头像
+竖屏 `board-stage` 宽度仍取 `--mobile-room-board-size`，`max-width:100%` 随父容器收缩；舞台与 `board-wrap` 均使用 `height:auto`、`aspect-ratio:1`，父槽及舞台显式收缩网格轨道，防止旧固定高度与不同断点宽度形成非等比棋盘。队际赛采用 B「错落纸片」：独立斜边纸片轻微错落，浅黄／浅绿／浅粉纸面配轻硬阴影，不绘制上下边框以免斜切产生黑色碎线，关闭单人拱形底板。三张直立图片按出场顺序各自裁切，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px、头像高96px，宽度为clamp(88px,27.7vw,108px)，为三位角色保留可辨识空间；普通单人布局保持不变。隐藏角色只显示问号，退场角色灰显。
+
+移动端普通对弈信息区采用紧凑 A 独立卡片，由 `battle-paper-player-mobile.css` 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 `battle-paper-skill-mobile.css`。身份卡随棋色显示黑底浅字或浅底深字；当前回合时钟卡变黄并抬起（4px底部硬阴影），非当前回合下移3px并保留1px底部阴影与内阴影，形成压下状态；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面和黑化剧情保持原布局。
 
 移动双行卡片统一补足内部留白：身份6×7px、时钟6×9px、统计5px、技能5×7px。名牌背景用户名不再被棋色字色覆盖，沿用名牌配套颜色和文字阴影；仅普通用户名与段位随身份卡变色。`battle-paper-nameplate-mobile.css` 将名牌限制在用户名列内，消除嵌套默认内边距，避免名牌裁切与重复留白。
 

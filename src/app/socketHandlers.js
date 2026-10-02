@@ -85,7 +85,7 @@ export function createSocketHandlers({
       cancelOpeningPresentation();
     },
     matchWaiting: (payload = {}) => {
-      const nextMatchStart = normalizeMatchStart(payload);
+      const nextMatchStart = normalizeMatchStart(payload, now());
       setMatchStart((current) => sameMatchStart(current, nextMatchStart) ? current : nextMatchStart);
     },
     matchLeft: () => setMatchStart(null),
@@ -435,8 +435,11 @@ export function sameLobbyStats(current = {}, next = {}) {
     && Number(current.matchmakingCounts?.[mode] ?? 0) === Number(next.matchmakingCounts?.[mode] ?? 0));
 }
 
-export function normalizeMatchStart({ startedAt, mode = "spark" } = {}) {
-  return { startedAt, mode };
+export function normalizeMatchStart({ startedAt, serverNow, mode = "spark" } = {}, receivedAt = Date.now()) {
+  const localStart = Number.isFinite(startedAt) && Number.isFinite(serverNow)
+    ? receivedAt - Math.max(0, serverNow - startedAt)
+    : startedAt;
+  return { startedAt: localStart, mode };
 }
 
 export function sameMatchStart(current, next) {

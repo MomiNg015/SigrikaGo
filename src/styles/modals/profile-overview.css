@@ -73,6 +73,7 @@
   color: color-mix(in srgb, var(--profile-dossier-ink) 78%, var(--profile-dossier-blue));
   font-size: 0.8125rem;
   font-weight: 900;
+  line-height: 1.4;
   white-space: nowrap;
 }
 
@@ -87,6 +88,57 @@
 
 .profile-summary-item.is-primary > strong {
   font-size: 1.5625rem;
+}
+
+.profile-record-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profile-record-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1.4fr);
+  margin: 0;
+  gap: 4px;
+}
+
+.profile-record-metric {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+  color: var(--profile-dossier-ink);
+}
+
+.profile-record-metric dt {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.profile-record-metric dd {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.profile-record-metric.is-rate {
+  border-left: 1px solid var(--profile-dossier-line);
+}
+
+.profile-record-metric.is-win { color: #16663a; }
+.profile-record-metric.is-loss { color: #9b1c24; }
+.profile-record-metric.is-draw { color: var(--profile-dossier-ink); }
+
+.profile-record-header > .profile-replay-button {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .profile-summary-item .stat-tip-wrap {

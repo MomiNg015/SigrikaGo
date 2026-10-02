@@ -1,3 +1,4 @@
+import { migrateRankStars } from "./rankStarsMigration.js";
 import { ensureCaptureChallengeSchema } from "./captureChallengeSchema.js";
 import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements.js";
 import { ensureAnnouncementSchema } from "./announcements.js";
@@ -70,7 +71,8 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureGameModeSchema",
   "ensureMailboxSchema",
   "ensureCaptureChallengeSchema",
-  "ensureSigrikaCandyArcSchema"
+  "ensureSigrikaCandyArcSchema",
+  "migrateRankStars"
 ]);
 
 function createServerSchemaTasks({
@@ -160,6 +162,7 @@ export async function ensureServerSchema({
 
 export async function initializeServerData({
   prisma,
+  migrateRankStars: migrateRankStarsTask = migrateRankStars,
   seedCharacters: seedCharactersTask = seedCharacters,
   seedBuiltinShopItems: seedBuiltinShopItemsTask = seedBuiltinShopItems,
   ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask = ensureDefaultSiteSettings,
@@ -190,6 +193,7 @@ export async function initializeServerData({
   migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask = migrateBuiltinSkillDescriptions
 }) {
   const tasks = {
+    migrateRankStars: migrateRankStarsTask,
     cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
     cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask,
     cleanupLegacyUsernames: cleanupLegacyUsernamesTask,

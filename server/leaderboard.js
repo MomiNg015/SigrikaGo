@@ -1,7 +1,7 @@
 import { recordWinnerColor } from "./gameRecords.js";
 import { publicUser } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
-import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
+import { DEFAULT_RANK, normalizeRank, compareRankProgress } from "../src/shared/rankProgression.js";
 
 export function buildLeaderboard(users = [], records = [], options = {}) {
   const mode = normalizeGameModeId(options.mode);
@@ -13,6 +13,7 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
       id: profile.id,
       username: profile.username,
       rating: stats.rating,
+      stars: stats.stars,
       rank: stats.rank,
       selectedCharacter: profile.selectedCharacter ?? "sigrika",
       itemEffects: profile.itemEffects,
@@ -35,12 +36,13 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
     addGame(rows.get(record.whiteUserId), record.whiteCharacter, winnerColor, "white");
   }
 
-  return [...rows.values()]
+  const sorted = [...rows.values()]
     .filter((row) => row.totalGames > 0)
     .map((row) => ({
       id: row.id,
       username: row.username,
       rating: row.rating,
+      stars: row.stars,
       rank: row.rank,
       itemEffects: row.itemEffects,
       equippedCostumes: row.equippedCostumes,
@@ -52,7 +54,18 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
       draws: row.draws,
       commonCharacter: mostUsedCharacter(row.characterCounts) ?? row.selectedCharacter
     }))
-    .sort((a, b) => b.rating - a.rating || b.wins - a.wins || a.username.localeCompare(b.username));
+    .sort((a, b) => compareLeaderboardStanding(a, b) || a.username.localeCompare(b.username) || a.id.localeCompare(b.id));
+  let ranking = 0;
+  return sorted.map((row, index) => {
+    if (!index || compareLeaderboardStanding(sorted[index - 1], row) !== 0) ranking = index + 1;
+    return { ...row, ranking };
+  });
+}
+
+function compareLeaderboardStanding(a, b) {
+  return compareRankProgress(a, b)
+    || (b.wins * a.totalGames - a.wins * b.totalGames)
+    || b.wins - a.wins;
 }
 
 function modeStatsForUser(user, mode) {
@@ -60,7 +73,8 @@ function modeStatsForUser(user, mode) {
     ? user.modeStats.find((entry) => normalizeGameModeId(entry.mode) === mode)
     : user.modeStats?.[mode] ?? null;
   return {
-    rating: Number(stats?.rating ?? user.rating ?? 1000),
+    rating: Number(stats?.rating ?? (mode === "spark" ? user.rating : 0) ?? 0),
+    stars: Number(stats?.stars ?? (mode === "spark" ? user.stars : 2) ?? 2),
     rank: normalizeRank(stats?.rank ?? (mode === "spark" ? user.rank : DEFAULT_RANK))
   };
 }
