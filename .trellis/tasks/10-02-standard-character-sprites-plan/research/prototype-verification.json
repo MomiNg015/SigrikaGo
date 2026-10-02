@@ -36,9 +36,14 @@
     "winLossDrawExpressionMapping": "passed",
     "handbookNineMemberGridAndPhone88pxCards": "superseded by horizontal student-ID cards",
     "handbookStudentIdCardLayoutAndThemes": "passed",
+    "handbookChestUpPortraits": "passed; same source range on desktop and phone, PNGs unchanged",
+    "handbookNoRepeatedSchoolLabel": "passed; no student-id-school nodes",
+    "handbookFlagIconOnlySortie": "passed; outlined available, filled selected, accessible labels and native disabled state",
+    "handbookTwoColumnsOnPhone": "passed at 320, 360 and 390px; no grid or page horizontal overflow",
+    "handbookFlagTouchTargets": "passed; 44x44px on phone, 48x48px on desktop; no portrait overlap",
     "handbookSortieDoesNotOpenDetails": "passed",
     "handbookCardButtonsAreSiblings": "passed",
-    "handbookSortiePreservesScroll": "passed; 926px before and after selecting last member",
+    "handbookSortiePreservesScroll": "passed; 577px before and after selecting last member at 900px",
     "handbookCardRowsDoNotOverlap": "passed at 320, 360, 390, 900 and 1440px",
     "handbookCardNameAndButtonDoNotOverlap": "passed at 320, 360, 390, 900 and 1440px",
     "handbookThreeCharacterNineExpressionSwitches": "passed",
@@ -69,13 +74,15 @@
     "Use focusable native scrolling in handbook details and resume records",
     "Use light hand-painted card skin based on existing student ID and nameplate",
     "Preserve list scroll position after sortie and override shared hover specificity",
-    "Support direct scene links and narrow physical browser viewports"
+    "Support direct scene links and narrow physical browser viewports",
+    "Use chest-up card crops, omit repeated academy text, and retain flag-only accessible sortie controls",
+    "Use two-column phone cards with container-sized single-line names and 44px touch targets"
   ],
   "intentionalDesignExceptions": [
     "Board wood and black/white stone colors describe the game objects rather than UI theme tokens"
   ],
   "screenshots": {
     "directory": "C:/Users/Moming/.codex/visualizations/2026/10/02/01a0fbc7-ae53-71a3-90eb-82bdaae98b51/character-sprite-sample",
-    "files": ["story-desktop.jpg", "battle-phone.jpg", "team-phone.jpg", "result-phone.jpg", "handbook-desktop.jpg", "handbook-detail-desktop.jpg", "handbook-phone.jpg", "student-desktop.jpg", "resume-desktop.jpg", "resume-phone.jpg", "handbook-id-desktop.jpg", "handbook-id-phone.jpg"]
+    "files": ["story-desktop.jpg", "battle-phone.jpg", "team-phone.jpg", "result-phone.jpg", "handbook-desktop.jpg", "handbook-detail-desktop.jpg", "handbook-phone.jpg", "student-desktop.jpg", "resume-desktop.jpg", "resume-phone.jpg", "handbook-id-desktop.jpg", "handbook-id-phone.jpg", "handbook-id-flags-desktop.jpg", "handbook-id-flags-phone.jpg"]
   }
 }
