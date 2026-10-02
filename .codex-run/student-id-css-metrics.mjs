@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):e.name.endsWith('.css')?[path.join(d,e.name)]:[]);
+const sources=walk('src/styles').map(p=>fs.readFileSync(p,'utf8').replaceAll('\r\n','\n'));
+const metrics={totalFiles:sources.length,totalBytes:sources.reduce((n,s)=>n+Buffer.byteLength(s),0),importantCount:sources.reduce((n,s)=>n+(s.match(/!important/g)||[]).length,0),importantFiles:sources.filter(s=>s.includes('!important')).length,hardcodedHexCount:sources.reduce((n,s)=>n+(s.match(/#[0-9a-fA-F]{3,8}\b/g)||[]).length,0),mediaFiles:sources.filter(s=>/@media\b/.test(s)).length,reducedMotionFiles:sources.filter(s=>s.includes('prefers-reduced-motion')).length,highZIndexFiles:sources.filter(s=>[...s.matchAll(/z-index:\s*(\d+)/g)].some(m=>+m[1]>=1000)).length};
+console.log(metrics);
+const p='src/styles/cssLayerInventory.js';
+let s=fs.readFileSync(p,'utf8');
+s=s.replace(/  metrics: \{[\s\S]*?\n  \},/,`  metrics: {\n${Object.entries(metrics).map(([k,v])=>`    ${k}: ${v}`).join(',\n')}\n  },`);
+fs.writeFileSync(p,s);

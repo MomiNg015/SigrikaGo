@@ -1,0 +1,5 @@
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Component boundaries and semantic interactive ownership for ChatBox, tabs, PlayerInfo, and replay controls."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Derive and propagate spectator/replay/viewpoint state without duplicated boolean logic."}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Keep mobile room geometry component-owned and preserve the Bright School theme layering contract."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Mobile battle layout, accessibility, testing, and durable behavior requirements."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Share chat content and view-state derivation without duplicating desktop and mobile behavior."}

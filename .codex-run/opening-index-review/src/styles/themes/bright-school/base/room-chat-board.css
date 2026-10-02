@@ -1,0 +1,107 @@
+.app-shell.player-theme-enabled.theme-bright-school .player-info {
+  position: relative;
+  background: #ffffff !important;
+  background-image:
+    radial-gradient(circle at 16px 20px, #4a3736 0 4px, transparent 5px),
+    linear-gradient(90deg, transparent 0 24px, rgba(74, 55, 54, 0.12) 24px 27px, transparent 27px) !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0 #4a3736 !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .player-info.opponent {
+  border-color: #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .timer-track,
+.app-shell.player-theme-enabled.theme-bright-school .timer-track span {
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .digital-timer,
+.app-shell.player-theme-enabled.theme-bright-school .classroom-clock {
+  background: #fff9ed !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school .chat-log {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.22) 1px, transparent 1px) !important;
+  background-size: 15px 15px !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 12px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .chat-box input,
+.app-shell.player-theme-enabled.theme-bright-school .chat-box textarea,
+.app-shell.player-theme-enabled.theme-bright-school .message-board-modal textarea {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  color: #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .chat-box button,
+.app-shell.player-theme-enabled.theme-bright-school .message-board-modal button {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+  color: #4a3736 !important;
+  box-shadow: 2px 2px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .board-stage {
+  padding: 12px;
+  background: #ffffff !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 14px !important;
+  box-shadow: 5px 5px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .action-bar,
+.app-shell.player-theme-enabled.theme-bright-school .decision-bar,
+.app-shell.player-theme-enabled.theme-bright-school .test-tools {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .action-bar button,
+.app-shell.player-theme-enabled.theme-bright-school .decision-actions button,
+.app-shell.player-theme-enabled.theme-bright-school .settings-tabs button,
+.app-shell.player-theme-enabled.theme-bright-school .shop-tabs button,
+.app-shell.player-theme-enabled.theme-bright-school .theme-choice-button,
+.app-shell.player-theme-enabled.theme-bright-school .shop-pagination button {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 10px !important;
+  color: #4a3736 !important;
+  box-shadow: 2px 2px 0 #4a3736 !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .primary-action,
+.app-shell.player-theme-enabled.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school .skill-action,
+.app-shell.player-theme-enabled.theme-bright-school .settings-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school .shop-tabs button.active {
+  background: #ff9ebb !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 12px !important;
+  color: #4a3736 !important;
+  box-shadow: 3px 3px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .skill-action:hover,
+.app-shell.player-theme-enabled.theme-bright-school .action-bar button:hover,
+.app-shell.player-theme-enabled.theme-bright-school .decision-actions button:hover {
+  background: #86e3ce !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}

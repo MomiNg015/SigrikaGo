@@ -1,0 +1,345 @@
+import "dotenv/config";
+import cors from "cors";
+import express from "express";
+import fs from "node:fs";
+import helmet from "helmet";
+import { createServer } from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import multer from "multer";
+import { Server } from "socket.io";
+import { prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
+import { makeAuth, withToken } from "./auth.js";
+import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
+import { createAuthRouter } from "./authRoutes.js";
+import { createCommerceRouter } from "./commerceRoutes.js";
+import { createAnnouncementRouter } from "./announcementRoutes.js";
+import { createOnboardingStoryRouter } from "./onboardingStoryRoutes.js";
+import { createGachaRouter } from "./gachaRoutes.js";
+import { createMailboxRouter } from "./mailboxRoutes.js";
+import { createRecruitmentRouter } from "./recruitmentRoutes.js";
+import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
+import { createPublicRouter } from "./publicRoutes.js";
+import { createReplayRouter } from "./replayRoutes.js";
+import { createSocialRouter } from "./socialRoutes.js";
+import { createLoginSessionStore } from "./loginSessions.js";
+import { createDuelRequestManager } from "./duelRequests.js";
+import { createOnlineSessionManager } from "./onlineSessions.js";
+import { apiErrorHandler, jsonSyntaxErrorHandler, requestBodyErrorHandler } from "./httpErrors.js";
+import { createJsonBodyParser } from "./jsonBody.js";
+import { closeRealtimeServer, installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { createHealthRouter } from "./healthRoutes.js";
+import { initializeServerData } from "./serverStartup.js";
+import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
+import { resolveSelectedCharacter } from "./characterSelection.js";
+import { installProductionStaticAssets } from "./staticAssets.js";
+import { HELMET_OPTIONS } from "./securityHeaders.js";
+import { createSocketUserRefresher } from "./socketAuth.js";
+import { registerSocketEvents } from "./socketEvents.js";
+import { practiceBotEngine } from "./practiceBotEngine.js";
+import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import {
+  assertProductionDeployment,
+  corsOriginForRequest,
+  createApiRateLimit,
+  createCredentialAuthRateLimit,
+  createSessionAuthRateLimit,
+  validateRoomCode
+} from "./security.js";
+import { createVerificationFixtureRouter } from "./verificationFixtureRoutes.js";
+import {
+  addChat,
+  attachSocketToRoom,
+  broadcastRoom,
+  broadcastRoomPatch,
+  broadcastRoomPresencePatch,
+  closePracticeRoomAutomation,
+  createDirectRoom,
+  createPracticeRoom,
+  createSigrikaCandyDuelRoom,
+  detachSocket,
+  findActiveSigrikaCandyDuel,
+  findRoomForUser,
+  flushRoomPersistence,
+  getRoom,
+  handleGameAction,
+  handleScoringAction,
+  isUserInActiveRoom,
+  joinMatchmaking,
+  leaveRoom,
+  leaveMatchmaking,
+  listActiveRooms,
+  listWaitingPlayers,
+  listWatchRooms,
+  markRoomPreloadReady,
+  matchmakingCountsByMode,
+  matchmakingCount,
+  requestCounting,
+  requestDraw,
+  restorePersistedRooms,
+  respondCounting,
+  respondDraw,
+  roomView
+} from "./rooms.js";
+import {
+  hasBlacklistBetween,
+  hasBlacklistFromOwner,
+  toSocialUser
+} from "./social.js";
+import { resumePayloadForUser } from "./resume.js";
+import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
+import { roomPersistenceStats } from "./roomStatePersistence.js";
+import { createRuntimeServiceState } from "./runtimeServiceState.js";
+import { createLobbyStatsBroadcaster } from "./lobbyStatsBroadcaster.js";
+
+const app = express();
+const server = createServer(app);
+const PORT = Number(process.env.PORT ?? 3001);
+const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
+assertProductionDeployment();
+const loginSessions = createLoginSessionStore({ prisma });
+const { authHttp, requireAdmin } = makeAuth({
+  prisma,
+  jwtSecret: JWT_SECRET,
+  isSessionActive: (userId, sessionId) => loginSessions.adopt(userId, sessionId)
+});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.join(__dirname, "..");
+const uploadRoot = resolveUploadRoot({ projectRoot });
+const uploadDir = resolveCharacterUploadDir({ projectRoot });
+const distDir = path.join(__dirname, "..", "dist");
+fs.mkdirSync(uploadDir, { recursive: true });
+const upload = multer({
+  limits: { fileSize: 3 * 1024 * 1024 },
+  storage: multer.diskStorage({
+    destination: uploadDir,
+    filename: (_req, file, cb) => {
+      const filename = safeUploadFilename(file.originalname, file.mimetype);
+      if (!filename) {
+        cb(Object.assign(new Error("Unsupported image type"), { status: 400 }));
+        return;
+      }
+      cb(null, filename);
+    }
+  })
+});
+let onlineSessions;
+let duelRequests;
+const runtimeServiceState = createRuntimeServiceState({
+  onlineCount: () => onlineSessions?.onlineCount?.() ?? 0,
+  activeRoomCount: () => listActiveRooms().length,
+  spectatorCount: () => listActiveRooms().reduce(
+    (total, room) => total + Number(room.spectators?.length ?? 0),
+    0
+  ),
+  matchmakingCount,
+  persistenceStats: roomPersistenceStats
+});
+
+const corsOptions = {
+  origin: (origin, callback) => corsOriginForRequest(origin, callback),
+  credentials: true
+};
+
+app.set("trust proxy", 1);
+app.use(helmet(HELMET_OPTIONS));
+app.use(cors(corsOptions));
+app.use(createJsonBodyParser());
+app.use(requestBodyErrorHandler);
+app.use(jsonSyntaxErrorHandler);
+app.use("/health", createHealthRouter({ runtimeServiceState }));
+app.use(["/api/auth/register", "/api/auth/login"], createCredentialAuthRateLimit());
+app.use(["/api/auth/refresh", "/api/auth/logout"], createSessionAuthRateLimit());
+app.use("/api", createApiRateLimit());
+app.use("/uploads", express.static(uploadRoot));
+
+const io = new Server(server, {
+  cors: corsOptions
+});
+const lobbyStatsBroadcaster = createLobbyStatsBroadcaster({
+  io,
+  getStats: lobbyStats,
+  metrics: runtimeStabilityMetrics
+});
+
+await initializeServerData({ prisma });
+
+app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
+
+app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
+const characterSelectionData = createCharacterSelectionData({ prisma });
+
+const refreshSocketUser = createSocketUserRefresher({
+  jwtSecret: JWT_SECRET,
+  prisma,
+  characterSelectionData,
+  isSessionActive: (userId, sessionId) => loginSessions.adopt(userId, sessionId)
+});
+
+onlineSessions = createOnlineSessionManager({
+  io,
+  sessions: loginSessions,
+  signLoginResponse: (user, session) => withToken(user, JWT_SECRET, { sessionId: session.sessionId }),
+  isUserInActiveRoom,
+  onSocketDisconnected: (socket) => {
+    duelRequests?.expireSocketRequests(socket.id);
+  }
+});
+duelRequests = createDuelRequestManager({
+  io,
+  isUserInActiveRoom,
+  firstOnlineSocket,
+  statusForUser,
+  toSocialUser,
+  createDirectRoom,
+  refreshSocketUser,
+  isDuelBlocked: (requesterId, targetId) => hasBlacklistFromOwner({
+    prisma,
+    ownerUserId: targetId,
+    targetUserId: requesterId
+  })
+});
+
+app.use("/api/auth", createAuthRouter({
+  prisma,
+  jwtSecret: JWT_SECRET,
+  loginSessions,
+  onlineSessions
+}));
+
+app.use("/api/test-fixtures", authHttp, createVerificationFixtureRouter({ prisma }));
+
+app.use("/api", authHttp, createCommerceRouter({ prisma }));
+app.use("/api", authHttp, createAnnouncementRouter({ prisma }));
+app.use("/api", authHttp, createOnboardingStoryRouter({ prisma }));
+app.use("/api", authHttp, createGachaRouter({ prisma }));
+app.use("/api", authHttp, createMailboxRouter({ prisma }));
+app.use("/api", authHttp, createRecruitmentRouter({ prisma }));
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({
+  prisma,
+  uploadMiddleware: upload,
+  onlineSessions,
+  listActiveRooms,
+  matchmakingCount,
+  matchmakingCountsByMode,
+  runtimeStabilityMetrics,
+  runtimeServiceState
+}));
+app.use("/api", authHttp, createPlayerRouter({
+  prisma,
+  findRoomForUser,
+  roomView,
+  characterSelectionData
+}));
+app.use("/api", authHttp, createReplayRouter({ prisma }));
+app.use("/api", apiErrorHandler);
+
+function lobbyStats() {
+  const matchmakingCounts = matchmakingCountsByMode();
+  return {
+    onlineCount: onlineSessions?.onlineCount?.() ?? 0,
+    matchmakingCount: matchmakingCount(),
+    matchmakingCounts
+  };
+}
+
+function broadcastLobbyStats() {
+  lobbyStatsBroadcaster.schedule();
+}
+
+io.use(async (socket, next) => {
+  try {
+    await refreshSocketUser(socket);
+    next();
+  } catch (error) {
+    next(new Error(error.message === "forbidden" ? "forbidden" : "unauthorized"));
+  }
+});
+
+io.on("connection", (socket) => {
+  registerOnlineSocket(socket);
+  socket.emit("me", socket.user);
+  socket.emit("lobby:stats", lobbyStats());
+  broadcastLobbyStats();
+
+  registerSocketEvents(socket, {
+    io,
+    prisma,
+    refreshSocketUser,
+    listWaitingPlayers,
+    hasBlacklistBetween,
+    joinMatchmaking,
+    createPracticeRoom,
+    createSigrikaCandyDuelRoom,
+    practiceEngineReady: () => practiceBotEngine.ensureAvailable(),
+    leaveMatchmaking,
+    isUserInActiveRoom,
+    broadcastLobbyStats,
+    normalizeGameModeId,
+    validateRoomCode,
+    validateOptionalRoomCode,
+    attachSocketToRoom,
+    leaveRoom,
+    findActiveSigrikaCandyDuel,
+    findRoomForUser,
+    resumePayloadForUser,
+    roomView,
+    markRoomPreloadReady,
+    metrics: runtimeStabilityMetrics,
+    runtimeServiceState,
+    handleGameAction,
+    requestCounting,
+    respondCounting,
+    requestDraw,
+    respondDraw,
+    handleScoringAction,
+    addChat,
+    duelRequests,
+    unregisterOnlineSocket,
+    detachSocket,
+    broadcastRoom,
+    broadcastRoomPatch,
+    broadcastRoomPresencePatch,
+    getRoom
+  });
+});
+
+await restorePersistedRooms(io);
+
+function registerOnlineSocket(socket) {
+  onlineSessions.registerOnlineSocket(socket);
+}
+
+function unregisterOnlineSocket(socket) {
+  onlineSessions.unregisterOnlineSocket(socket);
+}
+
+function statusForUser(userId) {
+  return onlineSessions.statusForUser(userId);
+}
+
+function firstOnlineSocket(userId) {
+  return onlineSessions.firstOnlineSocket(userId);
+}
+
+function isUserOnline(userId) {
+  return onlineSessions?.hasOnlineUser?.(userId) ?? false;
+}
+
+installProductionStaticAssets(app, { distDir });
+
+installServerLifecycle(server, {
+  beginShutdown: [() => {
+    if (!runtimeServiceState.beginDrain("server-shutdown")) return;
+    lobbyStatsBroadcaster.close();
+    io.emit("server:draining", {
+      reason: "server-shutdown",
+      message: "服务器正在维护，将自动尝试恢复连接"
+    });
+  }],
+  closeRealtime: () => closeRealtimeServer(io),
+  beforeShutdown: [closePracticeRoomAutomation, flushRoomPersistence, () => runtimeServiceState.close()],
+  dependencies: [prisma]
+});
+startHttpServer(server, { port: PORT });

@@ -1,0 +1,100 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 64ms
+ ✓ src/styles/themeContract.test.js (38 tests) 495ms
+ ❯ src/styles/styleContract.test.js (57 tests | 1 failed) 754ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 2ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 0ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 2ms
+   ✓ root CSS entry contract > keeps art font usage semantic and opt-in 8ms
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 2ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries 277ms
+   × root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 208ms
+     → expected [ { …(2) } ] to deeply equal []
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 1ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 0ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 1ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 6ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 5ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 7ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 1ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 50ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 32ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 1ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 1ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 1ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 0ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 22ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 12ms
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 0ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 0ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 0ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 1ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 23ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 40ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 1ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 1ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 4ms
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 1ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 1ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 0ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 1ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 1ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 1ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 0ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 1ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 1ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 1ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 0ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 1ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 24ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 0ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 0ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 910ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 793ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  394ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/styleContract.test.js > root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files
+AssertionError: expected [ { …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "bytes": 6506,
++     "path": "mobile-adaptive/window-sticker-resume-header.css",
++   },
++ ]
+
+ ❯ src/styles/styleContract.test.js:219:38
+    217|       .map(({ path, bytes }) => ({ path, bytes, limit: KNOWN_OVERSIZED…
+    218| 
+    219|     expect(unexpectedOversizedFiles).toEqual([]);
+       |                                      ^
+    220|     expect(expandedKnownDebtFiles).toEqual([]);
+    221|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 121 passed (122)
+   Start at  17:04:23
+   Duration  6.47s (transform 737ms, setup 0ms, collect 1.94s, tests 3.02s, environment 1.81s, prepare 725ms)
+

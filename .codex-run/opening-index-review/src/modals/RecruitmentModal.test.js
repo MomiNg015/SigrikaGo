@@ -1,0 +1,196 @@
+import { readFileSync } from "node:fs";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  fastForwardPresentationRemainingMs,
+  formatRecruitmentCountdown,
+  presentationReadyRecruitmentTask,
+  shouldRecoverInterruptedCinematic
+} from "./recruitment/useRecruitmentCatalog.js";
+import {
+  AEMEATH_RECRUITMENT_ASSET_SLOTS,
+  cinematicPresentationReadyAt,
+  RECRUITMENT_FAST_FORWARD_TIMING,
+  RECRUITMENT_ITEMS,
+  RECRUITMENT_ITEM_TYPES,
+  recruitmentReadyDelayMs
+} from "../shared/recruitment.js";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("RecruitmentModal", () => {
+  it("uses the tightly cropped memorial-ticket WebP in recruitment item surfaces", () => {
+    const imageUrl = "/assets/items/aemeath-flight-snow-memorial-ticket.webp";
+    const asset = readFileSync(new URL(`../../public${imageUrl}`, import.meta.url));
+
+    expect(AEMEATH_RECRUITMENT_ASSET_SLOTS.ticketImageUrl).toBe(imageUrl);
+    expect(RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].imageUrl).toBe(imageUrl);
+    expect(asset.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(asset.subarray(8, 12).toString("ascii")).toBe("WEBP");
+  });
+
+  it("uses the converted OGG exactly at the fully white concealed swap", () => {
+    const audioUrl = "/assets/music/aemeath-recruitment-full-white-burst.ogg";
+    const asset = readFileSync(new URL(`../../public${audioUrl}`, import.meta.url));
+    const overlaySource = readFileSync(new URL("./recruitment/RecruitmentCinematicOverlay.jsx", import.meta.url), "utf8");
+
+    expect(AEMEATH_RECRUITMENT_ASSET_SLOTS.flashSoundUrl).toBe(audioUrl);
+    expect(asset.subarray(0, 4).toString("ascii")).toBe("OggS");
+    expect(overlaySource).toContain("}, AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs);");
+    expect(overlaySource).not.toContain("}, AEMEATH_RECRUITMENT_TIMING.glowAtMs);");
+  });
+
+  it("renders a clock fast-forward action during pending recruitment", () => {
+    const modalSource = readFileSync(new URL("./RecruitmentModal.jsx", import.meta.url), "utf8");
+    const hookSource = readFileSync(new URL("./recruitment/useRecruitmentCatalog.js", import.meta.url), "utf8");
+
+    expect(modalSource).toContain("/assets/items/magic-clock.svg");
+    expect(modalSource).toContain("playRecruitmentResultSound");
+    expect(modalSource).toContain("playedResultSoundRef");
+    expect(modalSource).toContain("audioSettings");
+    expect(modalSource).not.toContain("\u56de\u5e94\u5df2\u7ecf\u9001\u5230\u90e8\u5ba4\u95e8\u53e3");
+    expect(modalSource).not.toContain("\u8fd9\u6b21\u8fd8\u6ca1\u6709\u65b0\u56de\u5e94");
+    expect(modalSource).toContain('<WindowTitleSticker titleKey="recruitment" id="recruitment-modal-title" enabled={!cinematicPlaying} />');
+    expect(modalSource).not.toContain("围棋部招新现场");
+    expect(modalSource).not.toContain("公示板已经摆好");
+    expect(modalSource).not.toContain("等待招新回应");
+    expect(modalSource).toContain("canUse ? \"使用\" : \"数量不足\"");
+    expect(modalSource).toContain("RecruitmentItemWatermark");
+    expect(modalSource).toContain("selectedItem.scopeLabel !== selectedItem.confidenceText");
+    expect(modalSource).toContain("item?.imageUrl || item?.itemImageUrl");
+    expect(modalSource).toContain("<img className=\"recruitment-item-watermark-art\"");
+    expect(modalSource).toContain("recruitment-pending-panel");
+    expect(modalSource).not.toContain("PosterWatermarkIcon");
+    expect(modalSource).not.toContain("RadioWatermarkIcon");
+    expect(modalSource).not.toContain("function PosterWatermarkIcon");
+    expect(modalSource).not.toContain("function RadioWatermarkIcon");
+    expect(modalSource).toContain("瞧瞧有没有新部员！");
+    expect(modalSource).not.toContain("查看招新回应");
+    expect(modalSource).not.toContain("<strong>{task.itemName}</strong>\n        <button className=\"primary-action\" type=\"button\" disabled={busy} onClick={onClaim}>");
+    expect(modalSource).toContain("recruitment-fast-forward-button");
+    expect(modalSource).toContain("recruitment-fast-forward-count");
+    expect(modalSource).toContain("recruitment-time-warp-clock");
+    expect(modalSource).toContain("playRecruitmentMagicClockFastForwardSound");
+    expect(modalSource).toContain("magicClock.quantity <= 0");
+    expect(modalSource).toContain("remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs");
+    expect(modalSource).toContain("onFastForward={useMagicClock}");
+    expect(modalSource).toContain("RecruitmentCinematicOverlay");
+    expect(modalSource).toContain("RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket");
+    expect(modalSource).toContain('style={{ "--recruitment-item-count": items.length }}');
+    expect(modalSource).toContain("!task?.cinematic");
+    expect(modalSource).toContain("!task?.fastForwarded");
+    expect(hookSource).toContain("/api/recruitment/fast-forward");
+    expect(hookSource).toContain("RECRUITMENT_ITEM_TYPES.magicClock");
+    expect(hookSource).toContain("fastForwardPresentation");
+    expect(hookSource).toContain("/api/recruitment/interrupt-cinematic");
+    expect(hookSource).toContain("theatricalCountdownMs");
+    expect(hookSource).not.toContain("import.meta.env.DEV");
+    expect(hookSource).not.toContain("VITE_ENABLE_TEST_TOOLS");
+  });
+
+  it("runs a three-second fast-forward animation before a full 3-2-1 countdown", () => {
+    const presentation = {
+      startedAt: 10_000,
+      animationEndsAt: 13_000,
+      readyAt: 16_000,
+      initialRemainingMs: 63_000
+    };
+    const task = { readyAt: new Date(16_000).toISOString() };
+
+    expect(RECRUITMENT_FAST_FORWARD_TIMING).toEqual({
+      animationMs: 3000,
+      countdownMs: 3000,
+      totalMs: 6000
+    });
+    expect(fastForwardPresentationRemainingMs(presentation, 10_000)).toBe(63_000);
+    expect(fastForwardPresentationRemainingMs(presentation, 13_000)).toBe(3_000);
+    vi.spyOn(Date, "now").mockReturnValue(13_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:03");
+    Date.now.mockReturnValue(14_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:02");
+    Date.now.mockReturnValue(15_000);
+    expect(formatRecruitmentCountdown(task, null, "", presentation)).toBe("00:01");
+  });
+
+  it("ships the magic clock placeholder and three-second fast-forward sound", () => {
+    const icon = readFileSync(new URL("../../public/assets/items/magic-clock.svg", import.meta.url), "utf8");
+    const sound = readFileSync(new URL("../../public/assets/music/recruitment-magic-clock-fast-forward.ogg", import.meta.url));
+
+    expect(icon).toContain("<svg");
+    expect(icon).toContain("神奇小钟表");
+    expect(sound.subarray(0, 4).toString("ascii")).toBe("OggS");
+  });
+
+  it("keeps the theatrical countdown moving until the concealed authoritative swap", () => {
+    vi.spyOn(Date, "now").mockReturnValue(6_250);
+    const task = {
+      readyAt: new Date(1_000).toISOString(),
+      cinematic: { theatricalCountdownMs: 999 * 60 * 1000 }
+    };
+    const presentationReadyAt = new Date(11_250).toISOString();
+
+    expect(formatRecruitmentCountdown(task, 0)).toBe("999:00");
+    expect(formatRecruitmentCountdown(task, 3_000)).toBe("998:57");
+    expect(formatRecruitmentCountdown(task, 6_249)).toBe("998:53");
+    expect(formatRecruitmentCountdown(task, 6_250, presentationReadyAt)).toBe("00:05");
+    Date.now.mockReturnValue(7_050);
+    expect(formatRecruitmentCountdown(task, null, presentationReadyAt)).toBe("00:04");
+  });
+
+  it("anchors a fresh cinematic countdown to client receipt instead of request latency", () => {
+    const task = {
+      status: "pending",
+      readyAt: new Date(2_000).toISOString(),
+      cinematic: { id: "aemeath-arrival" }
+    };
+    const presentationReadyAt = cinematicPresentationReadyAt(task, 10_000);
+
+    expect(presentationReadyAt).toBe(new Date(21_250).toISOString());
+    expect(recruitmentReadyDelayMs(task, 16_000, presentationReadyAt)).toBe(5_650);
+    expect(presentationReadyRecruitmentTask(task)).toMatchObject({
+      status: "ready",
+      remainingMs: 0,
+      cinematic: task.cinematic
+    });
+  });
+
+  it("keeps the cinematic lock and stable replacement asset slots wired", () => {
+    const source = readFileSync(new URL("./recruitment/RecruitmentCinematicOverlay.jsx", import.meta.url), "utf8");
+    const css = readFileSync(new URL("../styles/commerce/recruitment/cinematic.css", import.meta.url), "utf8");
+
+    expect(source).toContain("onInteractionLockChange?.(true)");
+    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.darkenAtMs");
+    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.flightAtMs");
+    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs");
+    expect(source).toContain("AEMEATH_RECRUITMENT_TIMING.unlockAtMs");
+    expect(source).toContain('window.addEventListener("pagehide", interrupt)');
+    expect(source).toContain('document.addEventListener("visibilitychange", interruptWhenHidden)');
+    expect(source).toContain("task.cinematic?.spriteImageUrl");
+    expect(source).toContain("task.cinematic?.spriteSheetUrl");
+    expect(source).toContain("recruitment-cinematic-sprite-flight-frame");
+    expect(source).toContain("recruitment-cinematic-sprite-wave-frame");
+    expect(source).toContain("task.cinematic?.flightSoundUrl");
+    expect(source).toContain("task.cinematic?.flashSoundUrl");
+    expect(source).toContain("window.clearTimeout(flashSoundTimer)");
+    expect(css).toContain("top: var(--recruitment-cinematic-target-y)");
+    expect(css).toContain("left: var(--recruitment-cinematic-target-x)");
+  });
+
+  it("does not misclassify a normally completed cinematic as an interruption", () => {
+    const task = { id: "task-aemeath", status: "pending", cinematic: { id: "aemeath-arrival" } };
+
+    expect(shouldRecoverInterruptedCinematic({
+      task,
+      cinematicPlaybackTaskId: task.id
+    })).toBe(false);
+    expect(shouldRecoverInterruptedCinematic({
+      task,
+      cinematicCompletedTaskId: task.id
+    })).toBe(false);
+    expect(shouldRecoverInterruptedCinematic({ task })).toBe(true);
+    expect(shouldRecoverInterruptedCinematic({
+      task: { ...task, status: "ready" }
+    })).toBe(false);
+  });
+});

@@ -1,0 +1,20 @@
+/* Bright School top control cleanup. */
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip .icon-button,
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip .admin-nav-action,
+.app-shell.player-theme-enabled.theme-bright-school .room-header .icon-button,
+.app-shell.player-theme-enabled.theme-bright-school .room-toggles .toggle {
+  background: #ffffff !important;
+  color: #4a3736 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 10px !important;
+  clip-path: none !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  transform: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip .icon-button:hover,
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip .admin-nav-action:hover {
+  background: #ff9ebb !important;
+  color: #ffffff !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  transform: translateY(-2px) !important;
+}

@@ -1,0 +1,6 @@
+/* Bright School portrait mobile home and shell fit layer. */
+@import "./home-shell/shell-base.css";
+@import "./home-shell/top-strip-menu.css";
+@import "./home-shell/main-stage.css";
+@import "./home-shell/player-plaque.css";
+@import "./home-shell/entries-utility-footer.css";

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Verify shared defaults, bounded normalization, partial PATCH preservation, audit, and snapshot coverage."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify the unified IRIS ownership, unsaved-draft protection, admin tests, and player rendering contracts."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Trace admin form through API and SiteSetting storage back to both shop hooks and IRIS."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Verify old dialogue constants now derive from one shared default source instead of duplicating copy."}

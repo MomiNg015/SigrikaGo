@@ -1,0 +1,65 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ docs/systemDesignHtml.test.js (3 tests | 1 failed) 83ms
+   × system design html > stays generated from the markdown source set 56ms
+     → expected '<!doctype html>\n<html lang="zh-CN">\…' to be '<!doctype html>\n<html lang="zh-CN">\…' // Object.is equality
+   ✓ system design html > keeps generated docs free of encoding damage 14ms
+   ✓ system design html > uses the UTF-8 doc writer for Chinese-safe document updates 12ms
+ ✓ src/app/socketHandlers.test.js (44 tests) 53ms
+ ✓ src/styles/styleContract.test.js (57 tests) 884ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1202ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 44ms
+ ✓ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (9 tests) 135ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  docs/systemDesignHtml.test.js > system design html > stays generated from the markdown source set
+AssertionError: expected '<!doctype html>\n<html lang="zh-CN">\…' to be '<!doctype html>\n<html lang="zh-CN">\…' // Object.is equality
+
+- Expected
++ Received
+
+@@ -51,11 +51,10 @@
+    }
+  </style>
+  </head>
+  <body>
+  <h1>SigrikaGo 系统设计</h1>
+- <p>猜先阶段新增全屏黑白斜切立绘演出：左黑上落、右白上升，约 0.5 秒落位并轻微回弹；执棋结果与倒计时直接叠于交界处。最后 0.4 秒向左右拉幕退场，在既有 <code>openingEndsAt</code> 时点完全移除。手机竖屏采用黑方左上、白方右下构图。仅本次匹配且双方有角色的玩家播放，旁观、中途进入、重连及资源未及时就绪回退简洁提示；沿用角色外观、规则提示与现有声音，不改服务端开局节奏。</p>
+  <p>移动端吃子排行榜的提子数跨越整行三条网格轨道并垂直居中，榜单和底部个人排名共用；普通排行榜保留积分、战绩和胜率的分行布局。</p>
+  <p>准时宝陪练新增“吃子挑战赛！”：高级难度、双方合计 100 手，仅统计提子，禁用数子、和棋并取消 22 子认输。有效成绩与纪录角色独立持久化；吃子总榜按个人最高提子数并列排名，结算按本次成绩计算名次，首次成功完成或超越历史最好名次时显示红色盖章提示。排行榜空榜仍为四个左侧书签保留最低高度；坐标开关以同色、右下位移及缩小阴影表示开启。详见<a href="./system-design/03-backend-realtime-api.md#吃子挑战赛">后端与实时接口</a>和<a href="./system-design/04-data-model-and-domain.md#吃子挑战赛成绩">数据模型</a>。</p>
+  <p>最后 10 秒的棋钟显示与角色读秒共用本地一秒节拍，以服务端快照持续校准，吸收到包前后 300ms 的抖动；最多提前估计一秒并停在 1，不在客户端推断超时或下一轮读秒。读秒音频复用下载与解码缓存，跳过片头静音并保留 10ms 起音余量；启动延迟超过 200ms、换手或离开房间时取消过期请求。详见<a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a>。</p>
+  <p>部员手册恢复今天美化前的原有窗口与角色卡片样式，撤去生成书页、学生证背景和专用尺寸覆盖；仅保留左侧“角色 / 装饰”书签切换。装饰页移除重复虚线、分类标题与重置图标，列表首位始终提供默认黑白棋子，复用空装饰 ID 的恢复操作。两个内容区继续使用原有直接子元素与滚动样式，剧情状态、详情浮层和出战语音生命周期保持原有规则。</p>
+  <p>好友操作区按钮保持单排文字按钮，取消默认、悬停、按下及禁用阴影；详情使用蓝色边框、对局申请使用粉色边框、解除好友使用柔和红色边框，普通解除操作使用中性色边框。禁用状态保留灰色提示。</p>
+@@ -2058,13 +2057,10 @@
+  <ul>
+  <li>对局聊天和系统消息；若聊天发送者是本局对局者，聊天名后追加 <code>[出战角色名字]</code>。</li>
+  </ul>
+  <ul>
+  <li>匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 <code>opening</code> 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。</li>
+- </ul>
+- <ul>
+- <li><code>OpeningDuelPresentation</code> 在猜先阶段以全屏黑白斜切、左黑右白立绘替代普通弹窗外框；双方相向上下入场约 500ms 并轻微回弹，中央直接显示执棋结果、规则和倒计时。手机竖屏黑方偏左上、白方偏右下。<code>socketHandlers</code> 仅对当前 <code>match:found</code> 玩家会话添加客户端 <code>__openingPresentation</code> 标记，后续快照保留，重连或 resume 撤销；旁观和中途加入不补播。立绘复用 <code>playerCharacterForDisplay</code> / <code>playerCandyPortraitProps</code> 的外观与时装快照，任一方无角色、图片失败、200ms 内未就绪或剩余时间不足 900ms 时回退原提示。演出 portal 到 body，使用独立黑白样式避免房间裁切和主题模态框覆盖；保留减少动态效果的淡出替代。左右拉幕持续 400ms，并在 <code>openingEndsAt</code> 前完成；到点移除覆盖层，离开 opening 也立即卸载，不延长服务端倒计时或添加音效。</li>
+  </ul>
+  <ul>
+  <li>匹配成功弹窗倒计时期间仍会接收服务端 <code>room:update</code>。前端会同步刷新匹配过渡状态和一个最新房间 ref，倒计时完成时优先使用该 ref 进入房间，避免服务端已推进到 <code>playing</code> 但客户端仍拿旧 <code>opening</code> 快照，导致棋钟不动、不能落子或开局语音不触发。</li>
+  </ul>
+  <ul>
+
+ ❯ docs/systemDesignHtml.test.js:17:18
+     15|     const html = normalizeNewlines(await readFile("docs/system-design.…
+     16| 
+     17|     expect(html).toBe(normalizeNewlines(renderSystemDesignHtml(markdow…
+       |                  ^
+     18|   });
+     19| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 149 passed (150)
+   Start at  16:27:31
+   Duration  5.39s (transform 1.76s, setup 0ms, collect 4.18s, tests 2.40s, environment 1.59s, prepare 996ms)
+

@@ -1,0 +1,111 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-locked {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  place-items: center !important;
+  padding: clamp(10px, 1vw, 12px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card:not(.is-corruption-focus) {
+  isolation: isolate;
+  overflow: hidden !important;
+  opacity: 1 !important;
+  filter: grayscale(1) contrast(1.06) !important;
+  color: #302d2f !important;
+  border-color: #555153 !important;
+  background-color: #918d8f !important;
+  background-image: linear-gradient(145deg, #aaa6a8, #7d797b) !important;
+  box-shadow: 2px 3px 0 rgb(44 41 43 / 0.58) !important;
+  animation: sigrika-handbook-card-data-break var(--corruption-card-duration, 7s) steps(1, end) var(--corruption-card-delay, -2s) infinite var(--corruption-card-direction, alternate) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card:not(.is-corruption-focus)::after {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 8 !important;
+  display: block !important;
+  content: "" !important;
+  border: 0 !important;
+  background:
+    linear-gradient(90deg, transparent 0 var(--corruption-flash-first-start, 7%), rgb(255 255 255 / 0.82) var(--corruption-flash-first-start, 7%) var(--corruption-flash-first-end, 31%), transparent var(--corruption-flash-first-end, 31%) 100%) 0 var(--corruption-flash-y-first, 24%) / 100% 2px no-repeat,
+    linear-gradient(90deg, transparent 0 var(--corruption-flash-second-start, 42%), rgb(31 28 30 / 0.72) var(--corruption-flash-second-start, 42%) var(--corruption-flash-second-end, 76%), transparent var(--corruption-flash-second-end, 76%) 100%) 0 var(--corruption-flash-y-second, 61%) / 100% 3px no-repeat,
+    linear-gradient(90deg, transparent 0 var(--corruption-flash-third-start, 18%), rgb(255 255 255 / 0.58) var(--corruption-flash-third-start, 18%) var(--corruption-flash-third-end, 64%), transparent var(--corruption-flash-third-end, 64%) 100%) 0 var(--corruption-flash-y-third, 79%) / 100% 1px no-repeat !important;
+  box-shadow: none !important;
+  opacity: 0;
+  pointer-events: none;
+  animation: sigrika-handbook-card-fragment-flash var(--corruption-card-duration, 7s) steps(1, end) var(--corruption-card-delay, -2s) infinite var(--corruption-card-direction, alternate);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card:not(.is-corruption-focus) > strong {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card-corruption-noise {
+  z-index: 1 !important;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  animation: sigrika-handbook-noise-fault var(--corruption-noise-duration, 4s) steps(1, end) var(--corruption-noise-delay, -1s) infinite var(--corruption-noise-direction, alternate-reverse);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-obscured > img.character-corruption-source {
+  opacity: 0 !important;
+}
+
+.app-shell.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-data-fragments {
+  --corruption-fragment-limit: 5px;
+  top: clamp(10px, 1vw, 12px);
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  z-index: 7;
+  width: 104px;
+  height: 82px;
+  filter: grayscale(1) contrast(1.52) brightness(0.72);
+  transform: translateX(-50%);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-data-fragments .corruption-fragment-piece {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  opacity: var(--corruption-fragment-opacity) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-focus {
+  isolation: isolate;
+  overflow: hidden !important;
+  color: #481018 !important;
+  border-color: #8d2635 !important;
+  background:
+    linear-gradient(135deg, #f3c1c7 0%, #dc8e99 31%, #efb2bb 57%, #c96876 100%) !important;
+  box-shadow: 3px 3px 0 #72202c, inset 0 0 0 2px rgb(255 241 243 / 0.46) !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-focus::before {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 8 !important;
+  display: block !important;
+  content: "" !important;
+  border: 0 !important;
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgb(255 242 244 / 0.9) 9% 34%, transparent 34% 100%) 0 18% / 100% 2px no-repeat,
+    linear-gradient(90deg, transparent 0 51%, rgb(255 108 125 / 0.88) 51% 88%, transparent 88% 100%) 0 72% / 100% 3px no-repeat !important;
+  box-shadow: none !important;
+  opacity: 0;
+  pointer-events: none;
+  animation: sigrika-handbook-error-scan 2.8s steps(1, end) infinite;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-focus > * {
+  filter: none !important;
+  opacity: 1 !important;
+  justify-self: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-card.is-corruption-focus > strong {
+  color: #481018 !important;
+  text-shadow: 1px 1px 0 rgb(255 235 238 / 0.7) !important;
+}

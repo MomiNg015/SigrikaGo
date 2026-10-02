@@ -1,0 +1,358 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --maxWorkers=2
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ src/styles/themeContract.test.js (38 tests | 1 failed) 400ms
+   ✓ player theme CSS contract > imports every registered player theme entry from themes.css 3ms
+   ✓ player theme CSS contract > keeps future theme options out of the active CSS import contract 1ms
+   ✓ player theme CSS contract > keeps each registered theme scoped to the player app shell 90ms
+   ✓ player theme CSS contract > keeps theme entries import-oriented for future extension 2ms
+   ✓ player theme CSS contract > keeps Bright School commerce as an import-only domain entry 1ms
+   ✓ player theme CSS contract > keeps Bright School commerce shop as an import-only modal polish entry 1ms
+   ✓ player theme CSS contract > keeps Bright School commerce warehouse and profile as an import-only polish entry 1ms
+   ✓ player theme CSS contract > keeps Bright School base as an import-only foundation entry 0ms
+   ✓ player theme CSS contract > keeps Bright School semantic surface contracts as one import-only anti-bleed entry 1ms
+   × player theme CSS contract > keeps equivalent Bright School profile panels on shared paper tints 17ms
+     → expected '.app-shell.player-theme-enabled.theme…' to contain '.app-shell.player-theme-enabled.theme…'
+   ✓ player theme CSS contract > keeps Bright School theme tokens available to the Tailwind semantic scaffold 39ms
+   ✓ player theme CSS contract > keeps Bright School home as an import-only lobby entry 1ms
+   ✓ player theme CSS contract > keeps Bright School home utility toolbox as an import-only sub-entry 1ms
+   ✓ player theme CSS contract > keeps Bright School home student-id-card as an import-only sub-entry 1ms
+   ✓ player theme CSS contract > keeps Bright School gallery polish as an import-only static gallery parity entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile as an import-only domain entry 1ms
+   ✓ player theme CSS contract > hides Bright School portrait window scrollbars without disabling internal scrolling 46ms
+   ✓ player theme CSS contract > sizes Bright School portrait dialogs from their padded containing block 1ms
+   ✓ player theme CSS contract > gives the Bright School document scrollbar the paper palette 0ms
+   ✓ player theme CSS contract > keeps Bright School mobile home shell as an import-only portrait home entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile commerce and warehouse as an import-only portrait entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile house and profile as an import-only portrait entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile lists and settings as an import-only portrait entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile room as an import-only portrait battle entry 0ms
+   ✓ player theme CSS contract > keeps Bright School modals as an import-only modal cleanup entry 1ms
+   ✓ player theme CSS contract > keeps Bright School effects as an import-only animation and board-effect entry 0ms
+   ✓ player theme CSS contract > keeps Bright School room as an import-only battle readability entry 0ms
+   ✓ player theme CSS contract > keeps Bright School component repairs as an import-only domain entry 1ms
+   ✓ player theme CSS contract > keeps Bright School quality base as an import-only audit and refinement entry 1ms
+   ✓ player theme CSS contract > removes the retired home online-count selectors from Bright School owner layers 1ms
+   ✓ player theme CSS contract > keeps the Bright School generic touch target from shrinking message board textareas 0ms
+   ✓ player theme CSS contract > rejects legacy Bright School purge and broad fallback CSS from the theme tree 43ms
+   ✓ player theme CSS contract > keeps volatile room and replay semantics in the final theme tree 68ms
+   ✓ player theme CSS contract > keeps Bright School star points from occupying the move-preview pseudo element 1ms
+   ✓ player theme CSS contract > keeps default board stones free of outline rings 3ms
+   ✓ player theme CSS contract > keeps Bright School mobile interaction polish in the final theme tree 60ms
+   ✓ player theme CSS contract > keeps Bright School mobile story long-text compression from reverting to the default modal grid 8ms
+   ✓ player theme CSS contract > keeps the new-theme template aligned with the registry contract 0ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 873ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 280ms
+     → totalBytes: expected 1554025 to be less than or equal to 1553830
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 167ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 149ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 137ms
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 37ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 3ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 1ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 17ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 53ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 0ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 0ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 8ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 3ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 5ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 2ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 5ms
+ ❯ src/modals/ShopModal.test.js (27 tests | 1 failed) 299ms
+   ✓ Zahira shop window > renders refresh, title, live coin balance, and close in one semantic header 24ms
+   ✓ Zahira shop window > renders both Zahira mascot layers without duplicating the header balance 1ms
+   ✓ Zahira shop window > uses configured mascot dialogue without changing the shop presentation 5ms
+   ✓ Zahira shop window > keeps the clothing reception free of duplicate balance UI 1ms
+   ✓ Zahira shop window > keeps both Zahira mascot WebP assets at their source dimensions 5ms
+   ✓ Zahira shop window > keeps both complete dialogue frames lossless and wide enough for live copy 3ms
+   ✓ Zahira shop window > keeps the reusable generated shop signpost lossless with transparent-source proportions 2ms
+   ✓ Zahira shop window > ships alpha-trimmed costume art and square mascot art as lossless WebP assets 9ms
+   ✓ Zahira shop window > mounts the sliding clothing-store page with all three Nivora states 5ms
+   ✓ Zahira shop window > keeps the portrait home width guard from collapsing the two-page shop track 1ms
+   ✓ Zahira shop window > prioritizes purchasable costumes, excludes owned entries, and caps batches at five 2ms
+   ✓ Zahira shop window > filters owned one-time goods and per-user sold-out consumables from new batches 0ms
+   ✓ Zahira shop window > selects at most five unique products and prioritizes the previous batch's unseen item 1ms
+   ✓ Zahira shop window > creates fixed per-batch rotation and balanced 6-9px, 4.2-6s float parameters 1ms
+   ✓ Zahira shop window > reuses the measured count-aware stage and whole-card motion for costume products 3ms
+   ✓ Zahira shop window > uses balanced desktop 2+3, 2+2, and 2+1 rows with safe seeded jitter 4ms
+   ✓ Zahira shop window > uses mobile 2+3 and 2+1 compositions, tighter gaps, wider cards, and sub-44px scaling 2ms
+   ✓ Zahira shop window > uses category and quantity corner badges while preserving card interactions and disabled states 4ms
+   ✓ Zahira shop window > does not show a limit line for one-time goods 0ms
+   ✓ Zahira shop window > preserves detail copy, ownership status, and illustration credit behavior 4ms
+   ✓ Zahira shop window > keeps rotated, floating card shadows inside the clipped product stage 11ms
+   ✓ Zahira shop window > renders music detail category and known ownership states 3ms
+   ✓ Zahira shop window > keeps opening, refresh, loading, empty, failure, and purchase dialogue contracts 1ms
+   ✓ Zahira shop window > keeps refresh local, preloads the prepared batch, and uses the one-second cooldown 1ms
+   ✓ Zahira shop window > keeps Zahira and Nivora feedback until an explicit shop action changes it 1ms
+   × Zahira shop window > encodes no-scroll, fixed rotation, float pause, reduced-motion, and final mobile overrides in CSS 203ms
+     → expected '/* Final mobile adaptation pass for 3…' not to contain 'width: calc(100% + 32px) !important'
+   ✓ Zahira shop window > uses server ownership and stock fields without changing purchase semantics 1ms
+ ❯ src/modals/HouseModal.test.js (28 tests | 2 failed) 693ms
+   ✓ deriveCharacterRecordStats > counts only owned character records for the viewed player 7ms
+   ✓ deriveCharacterRecordStats > disables Sigrika sortie and swaps Denia portrait from candy effects 2ms
+   ✓ deriveCharacterRecordStats > splits profile record text into total games and result counts 1ms
+   ✓ deriveCharacterRecordStats > sorts profile character stats by total games descending 1ms
+   ✓ deriveCharacterRecordStats > renders the shared profile summary and semantic character record table 40ms
+   ✓ deriveCharacterRecordStats > disables profile like and report actions for self and disables repeat daily likes 23ms
+   ✓ deriveCharacterRecordStats > keeps the profile report dialog submit-only below the textarea 1ms
+   ✓ deriveCharacterRecordStats > marks house character cards with active item effect icons 9ms
+   ✓ deriveCharacterRecordStats > hides character chain badges in the house manual character grid 4ms
+   ✓ deriveCharacterRecordStats > renders unobtained and hidden-intel roster cards without the old unavailable copy 5ms
+   ✓ deriveCharacterRecordStats > keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted 2ms
+   ✓ deriveCharacterRecordStats > keeps Bright School portrait handbook art centered with a compact bottom-right sortie action 1ms
+   ✓ deriveCharacterRecordStats > plays the selected character sortie voice before selecting the character 0ms
+   ✓ deriveCharacterRecordStats > does not play sortie voice or select when the sortie button is disabled 0ms
+   ✓ deriveCharacterRecordStats > stops active character voice playback only when the nested detail surface closes 1ms
+   ✓ deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual 2ms
+   ✓ deriveCharacterRecordStats > keeps the house manual focused on character and decoration management 7ms
+   ✓ deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive 9ms
+   × deriveCharacterRecordStats > renders replay access and profile stats in the resume modal 30ms
+     → expected 2363 to be less than 806
+   ✓ deriveCharacterRecordStats > renders Baconbits as owned and sortie-capable when public user owns it 4ms
+   ✓ deriveCharacterRecordStats > keeps nested character detail dialogs as viewport overlays above the house manual 27ms
+   ✓ deriveCharacterRecordStats > renders character descriptions in the character detail dialog 83ms
+   ✓ deriveCharacterRecordStats > renders optional character CV labels without default link styling 25ms
+   ✓ deriveCharacterRecordStats > renders the character skill BGM player in the detail heading 150ms
+   × deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable 239ms
+     → expected '/* Dossier geometry only; tagged acti…' to contain 'background: var(--bright-cream) !impo…'
+   ✓ deriveCharacterRecordStats > shows a title disclosure when the user owns multiple base-skill BGM tracks 6ms
+   ✓ deriveCharacterRecordStats > separates base and derived-skill music into independent slots 1ms
+   ✓ deriveCharacterRecordStats > makes the character description area replay the detail voice 5ms
+ ❯ server/social.test.js (15 tests | 2 failed) 64ms
+   ✓ social profiles and relationships > formats profile records and per-character stats in readable Chinese 15ms
+   ✓ social profiles and relationships > derives profile records from all games instead of only the replay-list page 2ms
+   ✓ social profiles and relationships > uses legacy result text when profile records do not have structured winner colors 2ms
+   ✓ social profiles and relationships > keeps friend and blacklist mutually exclusive 2ms
+   ✓ social profiles and relationships > writes relationship timestamps explicitly for schemas without db defaults 2ms
+   ✓ social profiles and relationships > lists social users with rank and online status 4ms
+   ✓ social profiles and relationships > prefers structured item effects for social users 1ms
+   × social profiles and relationships > returns replay summaries for any target user without viewer context 22ms
+     → expected [] to deeply equal [ ObjectContaining{…} ]
+   × social profiles and relationships > excludes unrated friendly games from profile stats but keeps them in replay summaries 4ms
+     → expected [] to deeply equal [ [ 'rated-win', true, …(1) ], …(1) ]
+   ✓ social profiles and relationships > finds public profile by exact username for social search 2ms
+   ✓ social profiles and relationships > uses Asia/Shanghai day keys for daily profile likes 1ms
+   ✓ social profiles and relationships > stores one profile like per viewer target and day 1ms
+   ✓ social profiles and relationships > rejects liking or reporting yourself 2ms
+   ✓ social profiles and relationships > stores user reports with reporter and reported snapshots 1ms
+   ✓ social profiles and relationships > lists recent user reports for admins 1ms
+ ❯ scripts/characterPortraitNormalization.test.js (12 tests | 1 failed) 11092ms
+   ✓ character portrait normalization > trims alpha, preserves aspect ratio, and anchors the subject bottom-center  605ms
+   ✓ character portrait normalization > is pixel- and byte-idempotent after the first normalization  758ms
+   ✓ character portrait normalization > preserves animated WebP frames, timing, loop, and one shared placement  1928ms
+   ✓ character portrait normalization > rejects a static portrait when its asset contract requires animation  462ms
+   ✓ character portrait normalization > rejects opaque, empty, and non-normalized assets 61ms
+   ✓ character portrait normalization > discovers local, remote, fallback, and candy portraits without duplicates 45ms
+   ✓ character portrait normalization > covers every committed built-in character, costume, and candy portrait 4ms
+   × character portrait normalization > keeps the committed Denia candy portrait at its authored animation timing 5033ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ character portrait normalization > skips remote URLs without trying to read or write them 3ms
+   ✓ character portrait normalization > reports a missing local source without aborting the remaining batch 7ms
+   ✓ character portrait normalization > writes and validates repository portraits from a legacy source  518ms
+   ✓ character portrait normalization > rebuilds a required animation from its legacy source when the output is static  1657ms
+ ❯ src/shared/windowTitleStickers.test.js (1 test | 1 failed) 5035ms
+   × window title asset delivery > ships matching PNG and WebP with actual transparent margins for every title 5032ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ✓ src/audio/countdownPlayback.test.js (5 tests) 313ms
+ ✓ server/serverProcessRestart.test.js (1 test) 23277ms
+   ✓ server process restart recovery > restores an acknowledged move from SQLite after a real process restart  23274ms
+ ✓ src/room/Board.test.js (57 tests) 3894ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 2527ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  471ms
+   ✓ HomeScreen > renders the equipped username nameplate inside the student ID and retains its source assets  425ms
+ ✓ server/localPracticeEngine.test.js (9 tests) 2596ms
+   ✓ local practice authority > invalidates board changes even when moveNumber does not change  426ms
+   ✓ local practice authority > expires leases and fences former connections, spectators and other users  437ms
+   ✓ local practice authority > pauses and revokes the job on backgrounding, resuming from current state  390ms
+   ✓ local practice authority > persists the backend without persisting jobs and rejects legacy/special rooms  347ms
+ ❯ src/styles/styleContract.test.js (57 tests | 2 failed) 1951ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 4ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 0ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 2ms
+   ✓ root CSS entry contract > keeps art font usage semantic and opt-in 15ms
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 5ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  505ms
+   × root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 542ms
+     → expected [ { …(2) } ] to deeply equal []
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 3ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 4ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 5ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 1ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 1ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 12ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 15ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 16ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 2ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 132ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 74ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 3ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 4ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 2ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 1ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 69ms
+   × root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 14ms
+     → expected [ …(47) ] to deeply equal [ …(43) ]
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 2ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 3ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 80ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 207ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 2ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 2ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 3ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 4ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 5ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 2ms
+   ✓ root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 20ms
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 2ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 2ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 3ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 3ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 4ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 2ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 3ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 5ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 2ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 6ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 3ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 2ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 3ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 3ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 6ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 4ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 110ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 2ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 2ms
+ ✓ scripts/check-production-config.test.js (6 tests) 3274ms
+   ✓ production config check script > loads the production values from the current working directory .env  724ms
+   ✓ production config check script > prints ok for valid production deployment config  582ms
+   ✓ production config check script > exits non-zero and prints errors for invalid production deployment config  563ms
+   ✓ production config check script > checks production rules even when NODE_ENV is omitted  680ms
+   ✓ production config check script > rejects enabled test actions in production checks  393ms
+   ✓ production config check script > rejects explicit multi-instance production checks  325ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 2041ms
+   ✓ GNU Go practice engine adapter > runs the real child-process boundary without a shell  459ms
+ ✓ src/admin/storyScriptWorkbook.test.js (5 tests) 701ms
+ ✓ server/homeOnboarding.test.js (7 tests) 1094ms
+ ✓ src/modals/WarehouseModal.test.js (13 tests) 536ms
+ ✓ src/auth/AuthScreen.test.js (17 tests) 622ms
+ ✓ server/captureChallenge.test.js (9 tests) 497ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 345ms
+ ✓ server/adminRoutes.test.js (48 tests) 676ms
+ ✓ src/room/PlayerInfo.test.js (20 tests) 1020ms
+   ✓ PlayerInfo labels > renders the safe practice bot portrait metadata with accessible alt text  393ms
+ ✓ server/rooms.test.js (44 tests) 643ms
+ ✓ scripts/export-admin-default-snapshot.test.js (3 tests) 128ms
+ ✓ server/practiceRoomAutomation.test.js (18 tests) 558ms
+ ✓ src/modals/FriendsModal.test.jsx (7 tests) 315ms
+ ✓ src/modals/ReplayList.test.jsx (12 tests) 287ms
+ ✓ server/jsonBody.test.js (3 tests) 317ms
+ ✓ src/modals/GachaModal.test.js (6 tests) 170ms
+ ✓ src/shared/game.test.js (80 tests) 442ms
+ ✓ src/modals/SettingsModal.test.jsx (9 tests) 144ms
+ ✓ src/room/BoardSkillEffects.test.js (21 tests) 206ms
+ ✓ src/modals/WatchModal.test.js (9 tests) 257ms
+ ✓ src/modals/AchievementModal.test.jsx (2 tests) 146ms
+ ❯ src/room/RoomScreen.test.js (38 tests | 1 failed) 1234ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 5ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 136ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 90ms
+   ✓ RoomScreen helpers > formats room header game information 1ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 1ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 1ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 2ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 1ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 1ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 1ms
+   ✓ RoomScreen helpers > uses the mode label while replacing the special duel room value with ERROR 2ms
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 3ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 4ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 1ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 1ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 77ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 1ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 19ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 46ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 16ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 34ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 3ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 9ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 31ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 2ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 27ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 91ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 101ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 108ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 58ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 103ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 105ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 12ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 11ms
+   × RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 117ms
+     → expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 4ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 382ms
+ ✓ server/zhiziKataGoEngine.test.js (11 tests) 151ms
+ ✓ src/tutorial/TutorialSessionModal.test.jsx (8 tests) 299ms
+ ✓ scripts/characterNameplateSkill.test.js (8 tests) 154ms
+ ✓ src/home/IrisDatabase.test.jsx (2 tests) 172ms
+ ✓ src/shared/preloadAssets.test.js (23 tests) 165ms
+ ✓ src/room/ActionBar.test.js (20 tests) 441ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 158ms
+ ✓ server/adminDefaultSnapshot.test.js (10 tests) 173ms
+ ✓ src/admin/AdminShell.test.jsx (8 tests) 191ms
+ ❯ docs/systemDesignHtml.test.js (3 tests | 1 failed) 812ms
+   × system design html > stays generated from the markdown source set 433ms
+     → expected '<!doctype html>\n<html lang="zh-CN">\…' to be '<!doctype html>\n<html lang="zh-CN">\…' // Object.is equality
+   ✓ system design html > keeps generated docs free of encoding damage 65ms
+   ✓ system design html > uses the UTF-8 doc writer for Chinese-safe document updates 27ms
+ ✓ src/modals/PersonalizationModal.test.jsx (1 test) 152ms
+ ✓ src/admin/AdminGachaPools.test.jsx (9 tests) 94ms
+ ✓ scripts/playwrightTestDatabase.test.js (1 test) 215ms
+ ✓ src/modals/ProfileMobileLayout.test.js (4 tests) 128ms
+ ✓ src/room/ChatBox.test.js (14 tests) 104ms
+ ✓ server/items.test.js (25 tests) 80ms
+ ✓ src/app/siteEntryPreload.test.js (4 tests) 79ms
+ ✓ src/app/socketHandlers.test.js (45 tests) 142ms
+ ✓ src/room/roomView.test.js (16 tests) 87ms
+ ✓ server/storyScripts.test.js (22 tests) 83ms
+ ✓ src/home/HomeActionButton.test.jsx (2 tests) 98ms
+ ✓ src/admin/AdminMailbox.test.jsx (1 test) 92ms
+ ✓ src/modals/FeedbackModals.test.js (6 tests) 76ms
+ ✓ src/app/AssetPreloadScreen.test.jsx (19 tests) 75ms
+ ✓ src/app/AppOverlays.test.jsx (9 tests) 73ms
+ ✓ src/admin/AdminAudit.test.jsx (3 tests) 80ms
+ ✓ src/room/BoardAmbientEffects.test.js (4 tests) 43ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 120ms
+ ✓ src/ui/CorruptionMarks.test.jsx (6 tests) 48ms
+ ✓ server/teamMatch.test.js (7 tests) 38ms
+ ✓ src/modals/StoryPlayerModal.test.jsx (12 tests) 34ms
+ ✓ server/socketRoomEvents.test.js (16 tests) 42ms
+ ✓ server/shop.test.js (24 tests) 35ms
+ ✓ server/adminDefaultSeed.test.js (12 tests) 60ms
+ ✓ src/admin/AdminTableScroll.test.jsx (3 tests) 39ms
+ ✓ src/tutorial/tutorialGameState.test.js (8 tests) 36ms
+ ✓ server/achievements.test.js (12 tests) 51ms
+ ✓ src/shared/musicLibrary.test.js (68 tests) 36ms
+ ✓ server/roomCreationLifecycle.test.js (6 tests) 34ms
+ ✓ src/modals/house/CharacterCostumeDialog.test.jsx (3 tests) 25ms
+ ✓ server/roomView.test.js (13 tests) 42ms
+ ✓ server/recruitment.test.js (15 tests) 42ms
+ ✓ server/schemaIntegrity.test.js (19 tests) 31ms
+ ✓ src/shared/CharacterChainBadge.test.jsx (2 tests) 41ms
+ ✓ server/costumes.test.js (11 tests) 40ms

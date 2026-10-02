@@ -1,0 +1,92 @@
+/* Asset-owned presentation for Danya's selected off-center pearlescent dream-bubble nameplate. */
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] {
+  --user-nameplate-base-width: 150px;
+  --user-nameplate-base-height: 32px;
+  --user-nameplate-padding-left: calc(40px * var(--user-nameplate-scale));
+  --user-nameplate-padding-right: calc(25px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(14px * var(--user-nameplate-scale));
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-name {
+  color: #fffaf5;
+  font-family: var(--font-ui-default);
+  font-style: italic;
+  letter-spacing: calc(0.08px * var(--user-nameplate-scale));
+  text-shadow:
+    0 1px 1px rgba(51, 28, 104, 0.96),
+    0 0 3px rgba(246, 222, 255, 0.82);
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-effect * {
+  pointer-events: none;
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-background {
+  filter:
+    drop-shadow(0 0 calc(1.8px * var(--user-nameplate-scale)) rgba(232, 210, 255, 0.96))
+    drop-shadow(0 0 calc(3.4px * var(--user-nameplate-scale)) rgba(255, 153, 226, 0.7));
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
+  top: calc(2px * var(--user-nameplate-scale));
+  left: calc(5px * var(--user-nameplate-scale));
+  width: calc(39px * var(--user-nameplate-scale));
+  height: calc(28px * var(--user-nameplate-scale));
+  border-radius: 54% 46% 58% 42% / 46% 58% 42% 54%;
+  background:
+    linear-gradient(128deg, transparent 8%, rgba(255, 255, 252, 0.58) 27%, rgba(194, 219, 255, 0.26) 38%, transparent 50%),
+    linear-gradient(314deg, transparent 43%, rgba(255, 185, 231, 0.42) 59%, rgba(214, 188, 255, 0.18) 70%, transparent 82%);
+  filter: drop-shadow(0 0 2px rgba(239, 207, 255, 0.62));
+  mix-blend-mode: screen;
+  opacity: 0.52;
+  transform: translate3d(-1%, 1%, 0);
+  transform-origin: 48% 52%;
+  animation: denia-nameplate-pearl-sheen 4.4s ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-core {
+  top: calc(9px * var(--user-nameplate-scale));
+  left: calc(11px * var(--user-nameplate-scale));
+  width: calc(28px * var(--user-nameplate-scale));
+  height: calc(14px * var(--user-nameplate-scale));
+  border-radius: 58% 42% 54% 46% / 48% 57% 43% 52%;
+  background:
+    linear-gradient(104deg, transparent 4%, rgba(178, 220, 255, 0.3) 25%, rgba(255, 231, 250, 0.56) 42%, rgba(255, 179, 226, 0.3) 58%, transparent 82%);
+  filter: drop-shadow(0 0 1.4px rgba(232, 211, 255, 0.58));
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transform: translate3d(-5%, 2%, 0);
+  animation: denia-nameplate-soft-refraction 3.8s ease-in-out -0.9s infinite alternate;
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
+  top: calc(2px * var(--user-nameplate-scale));
+  left: 80%;
+  width: 18%;
+  height: calc(28px * var(--user-nameplate-scale));
+  border-radius: 62% 38% 56% 44% / 44% 58% 42% 56%;
+  background:
+    linear-gradient(142deg, transparent 8%, rgba(255, 233, 252, 0.18) 28%, rgba(255, 166, 222, 0.54) 45%, rgba(211, 177, 255, 0.24) 61%, transparent 80%);
+  filter: drop-shadow(0 0 1.6px rgba(242, 167, 229, 0.54));
+  mix-blend-mode: screen;
+  opacity: 0.48;
+  transform: translate3d(-4%, 1%, 0);
+  transform-origin: right center;
+  animation: denia-nameplate-tail-fold 3.6s ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="reward-denia-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
+  inset: calc(2px * var(--user-nameplate-scale)) calc(4px * var(--user-nameplate-scale));
+  background-image:
+    radial-gradient(circle, rgba(255, 249, 230, 0.96) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle, rgba(222, 203, 255, 0.9) 0 0.8px, transparent 1.7px),
+    radial-gradient(circle, rgba(255, 204, 235, 0.9) 0 0.8px, transparent 1.6px),
+    radial-gradient(circle, rgba(190, 225, 255, 0.88) 0 0.7px, transparent 1.5px);
+  background-position: 8% 76%, 24% 12%, 86% 18%, 94% 72%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 4px 4px, 4px 4px, 4px 4px;
+  opacity: 0.24;
+  transform-origin: center;
+  animation: denia-nameplate-dream-glints 3.9s ease-in-out -1.2s infinite alternate;
+}

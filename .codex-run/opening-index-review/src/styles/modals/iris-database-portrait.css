@@ -1,0 +1,130 @@
+.iris-database-portrait-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(118deg, rgba(22, 184, 221, 0.08), transparent 44%),
+    repeating-linear-gradient(0deg, rgba(124, 233, 255, 0.045) 0 1px, transparent 1px 7px),
+    var(--iris-panel);
+  clip-path: polygon(0 0, 91% 0, 100% 8%, 100% 92%, 86% 100%, 0 100%);
+}
+
+.iris-database-portrait-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(transparent, var(--iris-blue-bright) 18% 58%, var(--iris-green) 58% 76%, transparent);
+}
+
+.iris-database-portrait-slot {
+  position: absolute;
+  inset: 20% 12% 24% 9%;
+  min-height: 0;
+  background:
+    linear-gradient(90deg, rgba(124, 233, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(rgba(124, 233, 255, 0.09) 1px, transparent 1px);
+  background-size: 34px 34px;
+  border: 0;
+  border-top: 1px solid rgba(124, 233, 255, 0.3);
+  border-bottom: 1px solid rgba(124, 233, 255, 0.18);
+  border-radius: 0;
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 18px);
+}
+
+.iris-database-portrait-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 0 46%, rgba(66, 242, 161, 0.22) 50%, transparent 54%);
+  animation: iris-portrait-scan 3.4s linear infinite;
+}
+
+.iris-database-portrait-slot::after {
+  display: none;
+}
+
+.iris-database-portrait-label {
+  position: absolute;
+  top: 10%;
+  left: 11%;
+  color: var(--iris-blue-bright);
+  font: 9px var(--iris-data-font);
+  letter-spacing: 0.16em;
+}
+
+.iris-database-portrait-anchor {
+  position: absolute;
+  right: 13%;
+  bottom: 28%;
+  width: 26px;
+  height: 26px;
+  border-right: 1px solid var(--iris-green);
+  border-bottom: 1px solid var(--iris-green);
+}
+
+.iris-database-identity {
+  position: absolute;
+  right: 11%;
+  bottom: 7%;
+  left: 9%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 12px;
+  color: #e2ffff;
+}
+
+.iris-database-identity strong {
+  color: inherit;
+  font: 700 clamp(28px, 3.2vw, 48px) var(--iris-data-font);
+  letter-spacing: 0.11em;
+  line-height: 0.9;
+}
+
+.iris-database-identity span {
+  display: block;
+  margin-top: 10px;
+  color: var(--iris-muted);
+  font: 8px/1.55 var(--iris-data-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.iris-database-identity small {
+  padding-left: 10px;
+  color: var(--iris-green);
+  border-left: 2px solid var(--iris-green);
+  font: 9px/1.5 var(--iris-data-font);
+  text-align: right;
+}
+
+@keyframes iris-portrait-scan {
+  from { transform: translateY(-60%); }
+  to { transform: translateY(60%); }
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .iris-database-portrait-panel {
+    clip-path: polygon(0 0, 93% 0, 100% 16%, 100% 86%, 88% 100%, 0 100%);
+  }
+
+  .iris-database-portrait-slot {
+    inset: 34% 18% 19% 7%;
+    background-size: 25px 25px;
+  }
+
+  .iris-database-portrait-label { top: 6%; left: 9%; font-size: 6px; }
+  .iris-database-portrait-anchor { right: 20%; bottom: 23%; width: 18px; height: 18px; }
+  .iris-database-identity { right: 14%; bottom: 6%; left: 7%; }
+  .iris-database-identity strong { font-size: 24px; }
+  .iris-database-identity span { display: none; }
+  .iris-database-identity small { font-size: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iris-database-portrait-slot::before { animation: none; }
+}

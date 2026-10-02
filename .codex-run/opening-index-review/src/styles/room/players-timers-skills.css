@@ -1,0 +1,8 @@
+/* Player cards, timers, captures, skill chips, and tap tooltips. */
+@import "./players-timers-skills/side-layout.css";
+@import "./players-timers-skills/player-card.css";
+@import "./players-timers-skills/captures-tooltips.css";
+@import "./players-timers-skills/timers.css";
+@import "./players-timers-skills/skill-chips.css";
+@import "./players-timers-skills/mobile-tap-tooltip.css";
+@import "./players-timers-skills/color-badges.css";

@@ -1,0 +1,13 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 71ms
+ ✓ src/styles/themeContract.test.js (38 tests) 477ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 21ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1060ms
+
+ Test Files  4 passed (4)
+      Tests  66 passed (66)
+   Start at  16:13:42
+   Duration  4.27s (transform 559ms, setup 0ms, collect 1.44s, tests 1.63s, environment 1ms, prepare 648ms)
+

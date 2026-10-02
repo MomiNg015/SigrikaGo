@@ -1,0 +1,11 @@
+import {chromium} from 'playwright';
+import fs from 'node:fs';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:1280,height:900}});
+await page.goto('http://localhost:5173/.codex-run/clock-review.html');
+await page.waitForSelector('.captures');
+await page.addStyleTag({content:fs.readFileSync('src/styles/mobile-adaptive/battle-paper-panels.css','utf8')});
+const gaps=await page.locator('.captures > *').evaluateAll(es=>es.map(e=>({gap:getComputedStyle(e).gap,wrap:getComputedStyle(e).whiteSpace})));
+if(gaps.length!==3||gaps.some(e=>e.gap!=='8px'||e.wrap!=='nowrap')) throw Error(JSON.stringify(gaps));
+console.log(gaps);
+await browser.close();

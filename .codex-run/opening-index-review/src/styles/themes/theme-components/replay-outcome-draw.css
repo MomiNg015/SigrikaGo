@@ -1,0 +1,27 @@
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:hover,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:focus-visible {
+  border-color: #ead487 !important;
+  background: linear-gradient(135deg, #fff4bd, #fffbe7) !important;
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:focus-visible {
+  border-color: #ead487 !important;
+  background: linear-gradient(135deg, #fff4bd, #fffbe7) !important;
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:hover span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:focus-visible span {
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:hover span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:focus-visible span {
+  color: #5b4820 !important;
+}

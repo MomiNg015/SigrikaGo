@@ -1,0 +1,94 @@
+.shop-card-position .shop-item {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--shop-card-width);
+  height: var(--shop-card-height);
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) 38px;
+  gap: 6px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.shop-card-position .shop-item-detail-trigger {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 112px 28px 36px;
+  gap: 6px;
+  align-items: center;
+  justify-items: stretch;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  filter: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+.shop-card-position .shop-item-detail-trigger > img,
+.shop-card-position .shop-item-detail-trigger > svg,
+.shop-card-position .shop-item-detail-trigger .stone-decoration-preview {
+  width: 100%;
+  height: 104px;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+}
+
+.shop-card-position .shop-item-detail-trigger > strong {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-card-position .shop-card-meta,
+.shop-card-position .shop-price,
+.shop-card-position .shop-price b {
+  font-size: 14px;
+}
+
+.shop-card-position .shop-card-meta-price-only {
+  width: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  gap: 0;
+  margin: 0;
+}
+
+.shop-card-position .shop-card-meta-price-only .shop-price {
+  justify-self: center;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.shop-card-position .shop-item .primary-action {
+  min-height: 38px;
+  height: 38px;
+  padding: 6px 9px;
+}
+
+.shop-card-position .shop-item:has(.shop-item-detail-trigger:focus-visible) {
+  outline: 3px solid rgba(0, 191, 255, 0.7);
+  outline-offset: 3px;
+}
+
+.shop-card-position .shop-item-detail-trigger:focus-visible {
+  outline: none;
+}

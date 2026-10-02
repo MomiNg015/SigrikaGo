@@ -1,0 +1,330 @@
+import { CHARACTERS } from "../src/shared/characters.js";
+import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { isLegacyDeniaSlug } from "./legacyDeniaCleanup.js";
+import { isSkillEffectType, skillEffectTargetRule, skillEffectTypeMessage } from "../src/shared/skillEffectCatalog.js";
+import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
+import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../src/shared/characterCv.js";
+import { normalizeCreditName, normalizeCreditUrl } from "../src/shared/creditLink.js";
+
+const COST_TYPES = new Set(["numeric", "special"]);
+
+export function validateCharacterInput(input = {}) {
+  if (!isPlainObject(input)) {
+    return { ok: false, error: "payload must be an object" };
+  }
+
+  const errors = [];
+  const skillInput = isPlainObject(input.skill) ? input.skill : {};
+  if (!isPlainObject(input.skill)) errors.push("skill must be an object");
+
+  const slug = String(input.slug ?? "").trim();
+  const name = String(input.name ?? "").trim();
+  const characterDescription = String(input.description ?? "").trim();
+  const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
+  const portraitSource = String(input.portraitSource ?? "url").trim();
+  const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
+  const cvName = normalizeCharacterCvName(input.cvName);
+  const cvUrl = normalizeCharacterCvUrl(input.cvUrl);
+  const illustName = normalizeCreditName(input.illustName);
+  const illustUrl = normalizeCreditUrl(input.illustUrl);
+  const source = normalizeSource(input.source);
+  const palette = String(input.palette ?? "#5d7fe8").trim();
+  const effectType = String(skillInput.effectType ?? "").trim();
+  const skillName = String(skillInput.name ?? "").trim();
+  const description = String(skillInput.description ?? "").trim();
+  const targetRule = String(skillInput.targetRule ?? "").trim();
+  const uses = skillInput.uses ?? input.uses;
+  const enabled = input.enabled ?? true;
+  const sortOrder = input.sortOrder ?? 0;
+  const freeTurn = skillInput.freeTurn ?? input.freeTurn ?? false;
+  const skillEnabled = skillInput.enabled ?? true;
+  const paramsJson = skillInput.paramsJson ?? input.paramsJson ?? "{}";
+  const costType = String(skillInput.costType ?? input.costType ?? "numeric").trim();
+  const fallbackCostValue = skillInput.cost ?? input.cost ?? 0;
+  const costValue = String(skillInput.costValue ?? input.costValue ?? fallbackCostValue).trim();
+  const systemMessage = String(skillInput.systemMessage ?? input.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE).trim();
+  let params = {};
+
+  if (!/^[a-z0-9-]{2,40}$/.test(slug)) {
+    errors.push("slug must contain lowercase letters, numbers, or hyphens and be 2-40 characters");
+  }
+  if (!name) errors.push("name is required");
+  if (!skillName) errors.push("skill.name is required");
+  if (!description) errors.push("skill.description is required");
+  if (!portraitUrl) errors.push("portraitUrl is required");
+  if (!["url", "upload"].includes(portraitSource)) {
+    errors.push("portraitSource must be url or upload");
+  }
+  if (!isSkillEffectType(effectType)) {
+    errors.push(`effectType must be ${skillEffectTypeMessage()}`);
+  }
+  if (isSkillEffectType(effectType) && targetRule !== skillEffectTargetRule(effectType)) {
+    errors.push("目标规则与技能类型不匹配");
+  }
+  if (!Number.isInteger(uses) || uses < 0 || uses > 9) {
+    errors.push("uses must be an integer from 0 to 9");
+  }
+  if (typeof enabled !== "boolean") errors.push("enabled must be a boolean");
+  if (!Number.isInteger(sortOrder)) errors.push("sortOrder must be an integer");
+  if (typeof freeTurn !== "boolean") errors.push("freeTurn must be a boolean");
+  if (typeof skillEnabled !== "boolean") errors.push("skill.enabled must be a boolean");
+  if (typeof paramsJson !== "string") errors.push("paramsJson must be a string");
+  if (!COST_TYPES.has(costType)) errors.push("costType must be numeric or special");
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) {
+    errors.push("costValue must be numeric when costType is numeric");
+  }
+  if (costType === "special" && !costValue) {
+    errors.push("costValue is required when costType is special");
+  }
+  if (!systemMessage) errors.push("systemMessage is required");
+  if (cvUrl == null) errors.push("cvUrl must be an http(s) URL or root-relative path");
+  if (cvUrl && !cvName) errors.push("cvName is required when cvUrl is set");
+  if (illustUrl == null) errors.push("illustUrl must be an http(s) URL or root-relative path");
+  if (illustUrl && !illustName) errors.push("illustName is required when illustUrl is set");
+
+  try {
+    params = JSON.parse(typeof paramsJson === "string" ? paramsJson : "{}");
+  } catch {
+    errors.push("paramsJson must be valid JSON");
+  }
+
+  if (errors.length) return { ok: false, error: errors.join("\n") };
+
+  return {
+    ok: true,
+    value: {
+      slug,
+      name,
+      description: characterDescription,
+      portraitUrl,
+      portraitSource,
+      acquisitionMethod,
+      cvName,
+      cvUrl: cvUrl ?? "",
+      illustName,
+      illustUrl: illustUrl ?? "",
+      source,
+      palette,
+      enabled,
+      sortOrder,
+      skill: {
+        effectType,
+        name: skillName,
+        description,
+        uses,
+        freeTurn,
+        targetRule,
+        params,
+        paramsJson: JSON.stringify(params),
+        costType,
+        costValue,
+        systemMessage,
+        enabled: skillEnabled
+      }
+    }
+  };
+}
+
+export function toCharacterPayload(record) {
+  const skill = record.skill && record.skill.enabled !== false
+    ? {
+        id: record.skill.id,
+        effectType: record.skill.effectType,
+        name: record.skill.name,
+        uses: record.skill.uses,
+        description: record.skill.description,
+        freeTurn: record.skill.freeTurn,
+        targetRule: record.skill.targetRule,
+        params: parseParams(record.skill.paramsJson),
+        costType: record.skill.costType ?? "numeric",
+        costValue: record.skill.costValue ?? String(record.skill.cost ?? 0),
+        cost: numericCost(record.skill),
+        systemMessage: record.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
+      }
+    : null;
+
+  return {
+    id: record.slug,
+    dbId: record.id,
+    name: record.name,
+    description: record.description ?? "",
+    palette: record.palette,
+    portrait: record.portraitUrl,
+    portraitSource: record.portraitSource,
+    acquisitionMethod: record.acquisitionMethod ?? "",
+    cvName: record.cvName ?? "",
+    cvUrl: record.cvUrl ?? "",
+    illustName: record.illustName ?? "",
+    illustUrl: record.illustUrl ?? "",
+    source: record.source ?? "default",
+    enabled: record.enabled,
+    sortOrder: record.sortOrder ?? 0,
+    skill
+  };
+}
+
+export async function seedCharacters(prisma) {
+  const entries = Object.values(CHARACTERS);
+  for (const [sortOrder, character] of entries.entries()) {
+    const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
+    if (existing) {
+      await syncBuiltinStaticPortrait(prisma, existing, character);
+      await syncBuiltinSkillCost(prisma, existing, character);
+      await syncBuiltinDerivedSkillDefinitions(prisma, existing, character);
+      continue;
+    }
+
+    await prisma.character.create({
+      data: {
+        slug: character.id,
+        name: character.name,
+        description: character.description ?? "",
+        portraitUrl: character.portrait,
+        acquisitionMethod: character.acquisitionMethod ?? "",
+        palette: character.palette,
+        enabled: true,
+        sortOrder,
+        skill: {
+          create: {
+            effectType: character.skill.id,
+            name: character.skill.name,
+            description: character.skill.description,
+            uses: character.skill.uses ?? 1,
+            freeTurn: Boolean(character.skill.freeTurn),
+            targetRule: targetRuleForEffect(character.skill.id),
+            paramsJson: JSON.stringify(character.skill.params ?? {}),
+            costType: character.skill.costType ?? "numeric",
+            costValue: String(character.skill.costValue ?? character.skill.cost ?? 0),
+            systemMessage: character.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
+            enabled: true
+          }
+        }
+      }
+    });
+  }
+}
+
+async function syncBuiltinStaticPortrait(prisma, existing, character) {
+  if (!existing.id || existing.portraitUrl === character.portrait) return;
+  if (existing.source && existing.source !== "default") return;
+  if (existing.portraitSource && existing.portraitSource !== "url") return;
+  if (!String(existing.portraitUrl ?? "").startsWith("/assets/")) return;
+  await prisma.character.update({
+    where: { id: existing.id },
+    data: {
+      portraitUrl: character.portrait,
+      portraitSource: "url"
+    }
+  });
+}
+
+async function syncBuiltinSkillCost(prisma, existing, character) {
+  const fallbackCost = String(character.skill.costValue ?? character.skill.cost ?? 0);
+  if (!existing.skill || fallbackCost === "0") return;
+  const looksLikeOriginalSkill = existing.skill.name === character.skill.name
+    && existing.skill.description === character.skill.description
+    && existing.skill.effectType === character.skill.id;
+  if (!looksLikeOriginalSkill) return;
+  if (existing.skill.costType === "numeric" && existing.skill.costValue === fallbackCost) return;
+  await prisma.characterSkill.update({
+    where: { id: existing.skill.id },
+    data: {
+      costType: character.skill.costType ?? "numeric",
+      costValue: fallbackCost
+    }
+  });
+}
+
+async function syncBuiltinDerivedSkillDefinitions(prisma, existing, character) {
+  const builtinDefinitions = Array.isArray(character.skill?.params?.derivedSkills)
+    ? character.skill.params.derivedSkills
+    : [];
+  if (!builtinDefinitions.length || !existing.skill?.id || !prisma.characterSkill?.update) return;
+  if (existing.skill.effectType !== character.skill.id) return;
+  const params = parseParams(existing.skill.paramsJson);
+  const existingDefinitions = Array.isArray(params.derivedSkills) ? params.derivedSkills : [];
+  const existingIds = new Set(existingDefinitions.map((definition) => definition?.effectType ?? definition?.id).filter(Boolean));
+  const missingDefinitions = builtinDefinitions.filter((definition) => (
+    !existingIds.has(definition?.effectType ?? definition?.id)
+  ));
+  if (!missingDefinitions.length) return;
+  await prisma.characterSkill.update({
+    where: { id: existing.skill.id },
+    data: {
+      paramsJson: JSON.stringify({
+        ...params,
+        derivedSkills: [...existingDefinitions, ...missingDefinitions]
+      })
+    }
+  });
+}
+
+export async function listPublicCharacters(prisma) {
+  return (await listPublicCharacterResponse(prisma)).characters;
+}
+
+export async function listPublicCharacterResponse(prisma) {
+  const characters = await prisma.character.findMany({
+    where: { enabled: true },
+    include: { skill: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
+  });
+  const records = await prisma.character.findMany({
+    select: { slug: true, enabled: true }
+  });
+  const canonicalApiIds = new Set(
+    characters
+      .map((record) => record.slug)
+      .filter((slug) => canonicalCharacterId(slug) === slug)
+  );
+  const seenCharacters = new Set();
+  const publicCharacters = [];
+  for (const record of characters) {
+    if (isLegacyDeniaSlug(record.slug)) continue;
+    const characterId = canonicalCharacterId(record.slug);
+    if (record.slug !== characterId && canonicalApiIds.has(characterId)) continue;
+    if (seenCharacters.has(characterId)) continue;
+    seenCharacters.add(characterId);
+    publicCharacters.push(toCharacterPayload({ ...record, slug: characterId }));
+  }
+  const enabledCanonical = new Set(records.filter((record) => record.enabled).map((record) => canonicalCharacterId(record.slug)));
+  const disabledSlugs = [];
+  const seenDisabled = new Set();
+  for (const record of records) {
+    if (isLegacyDeniaSlug(record.slug)) continue;
+    const characterId = canonicalCharacterId(record.slug);
+    if (record.enabled || enabledCanonical.has(characterId) || seenDisabled.has(characterId)) continue;
+    seenDisabled.add(characterId);
+    disabledSlugs.push(characterId);
+  }
+  return {
+    characters: publicCharacters,
+    disabledSlugs
+  };
+}
+
+function targetRuleForEffect(effectType) {
+  return skillEffectTargetRule(effectType, "stone");
+}
+
+function numericCost(skill) {
+  if ((skill.costType ?? "numeric") !== "numeric") return 0;
+  const value = Number(skill.costValue ?? skill.cost ?? 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function parseParams(paramsJson) {
+  try {
+    return JSON.parse(paramsJson ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeSource(value) {
+  return String(value ?? "default").trim() === "achievement" ? "achievement" : "default";
+}

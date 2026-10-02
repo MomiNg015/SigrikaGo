@@ -1,0 +1,22 @@
+/* --------------------------------------------------------------------------
+   2. 主界面左下按钮样式与斜体清除 (对应大长白块与斜字纠偏)
+   -------------------------------------------------------------------------- */
+.app-shell.player-theme-enabled.theme-bright-school .utility-entry,
+.app-shell.player-theme-enabled.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+  transform: none !important;
+  clip-path: none !important;
+  border-radius: 12px !important;
+}
+/* 强行放正所有被科技风 skew 斜置的字体 */
+.app-shell.player-theme-enabled.theme-bright-school .utility-entry > *,
+.app-shell.player-theme-enabled.theme-bright-school button > *,
+.app-shell.player-theme-enabled.theme-bright-school .action-bar button > * {
+  transform: none !important;
+  font-style: normal !important;
+}
+/* 调整左下功能组排版宽度，使其在桌面端不会傻大粗拉得过长 */
+@media (min-width: 901px) {
+  .app-shell.player-theme-enabled.theme-bright-school .home-grid-featured > .home-utility-grid {
+    width: min(340px, 100%) !important;
+  }
+}

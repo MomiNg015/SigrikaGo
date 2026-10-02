@@ -1,0 +1,17 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --maxWorkers=2 src/home/onboarding src/styles/cssLayerInventory.test.js docs/systemDesignHtml.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 53ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 812ms
+ ✓ src/home/onboarding/useHomeOnboarding.dom.test.jsx (8 tests) 648ms
+ ✓ src/home/onboarding/HomeOnboarding.dom.test.jsx (5 tests) 315ms
+
+ Test Files  4 passed (4)
+      Tests  36 passed (36)
+   Start at  22:59:36
+   Duration  3.87s (transform 220ms, setup 0ms, collect 885ms, tests 1.83s, environment 2.64s, prepare 438ms)
+

@@ -1,0 +1,4 @@
+/* Bright School portrait mobile shop and warehouse layout. */
+@import "./commerce-warehouse/shop-layout.css";
+@import "./commerce-warehouse/warehouse-shell.css";
+@import "./commerce-warehouse/warehouse-items.css";

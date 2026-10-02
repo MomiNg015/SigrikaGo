@@ -1,0 +1,13 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 66ms
+ ✓ src/styles/styleContract.test.js (57 tests) 711ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 990ms
+ ✓ src/room/header/RoomHeader.test.jsx (3 tests) 276ms
+
+ Test Files  4 passed (4)
+      Tests  83 passed (83)
+   Start at  15:07:39
+   Duration  5.43s (transform 351ms, setup 0ms, collect 1.07s, tests 2.04s, environment 1.80s, prepare 649ms)
+

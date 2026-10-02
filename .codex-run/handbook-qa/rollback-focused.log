@@ -1,0 +1,14 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 645ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 894ms
+ ✓ src/modals/WindowBookmarkTabs.dom.test.jsx (4 tests) 376ms
+ ✓ src/modals/house/HouseHandbook.dom.test.jsx (3 tests) 487ms
+   ✓ member handbook pages > switches the visible page through bookmarks and keeps decoration actions working  426ms
+
+ Test Files  4 passed (4)
+      Tests  84 passed (84)
+   Start at  13:56:22
+   Duration  5.52s (transform 658ms, setup 0ms, collect 1.96s, tests 2.40s, environment 2.68s, prepare 560ms)
+

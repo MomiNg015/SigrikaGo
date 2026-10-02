@@ -1,0 +1,6 @@
+@media (max-width: 340px) and (orientation: portrait) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 16px), calc(100dvh - 388px), 320px);
+    --mobile-room-dock-panel-height: clamp(98px, 15dvh, 120px);
+  }
+}

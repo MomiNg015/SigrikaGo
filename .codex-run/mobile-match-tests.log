@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/HomeScreen.test.jsx src/styles/cssLayerInventory.test.js src/styles/themeContract.test.js src/styles/hudComponents.test.js src/styles/styleContract.test.js docs/systemDesignHtml.test.js --maxWorkers=2
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 656ms
+ ✓ src/styles/styleContract.test.js (57 tests) 482ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1073ms
+ ✓ src/styles/themeContract.test.js (38 tests) 303ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 59ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 49ms
+
+ Test Files  6 passed (6)
+      Tests  168 passed (168)
+   Start at  09:13:27
+   Duration  3.87s (transform 632ms, setup 0ms, collect 1.61s, tests 2.62s, environment 1ms, prepare 635ms)
+

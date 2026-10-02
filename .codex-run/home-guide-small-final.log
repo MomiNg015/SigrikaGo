@@ -1,0 +1,16 @@
+[WebServer] (node:46780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+Running 1 test using 1 worker
+
+(node:49136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 360x640 (32.7s)
+
+  1 passed (49.6s)

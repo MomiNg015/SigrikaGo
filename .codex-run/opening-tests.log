@@ -1,0 +1,386 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/app/socketHandlers.test.js (42 tests) 51ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 43ms
+ ❯ src/room/RoomScreen.test.js (38 tests | 1 failed) 935ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 3ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 81ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 55ms
+   ✓ RoomScreen helpers > formats room header game information 0ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 0ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 0ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 2ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 0ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 1ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 1ms
+   ✓ RoomScreen helpers > keeps the ordinary room-code label while replacing the special duel value with ERROR 2ms
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 1ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 3ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 1ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 1ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 107ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 1ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 16ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 38ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 11ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 42ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 1ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 6ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 18ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 1ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 20ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 69ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 56ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 55ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 36ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 98ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 92ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 11ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 10ms
+   × RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 87ms
+     → expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 3ms
+ ❯ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (8 tests | 1 failed) 132ms
+   × opening duel presentation > orders by stone color, preserves costume framing and uses the server deadline 71ms
+     → expected '' to be '1.1' // Object.is equality
+   ✓ opening duel presentation > keeps simple opening for ineligible rooms: {"__openingPresentation":false} 17ms
+   ✓ opening duel presentation > keeps simple opening for ineligible rooms: {"role":"spectator"} 7ms
+   ✓ opening duel presentation > keeps simple opening for ineligible rooms: {"players":[{"color":"white","characterId":"sigrika","user":{"id":"self"}},{"color":"black","character":null}]} 6ms
+   ✓ opening duel presentation > never interrupts the simple countdown with late-loading portraits 8ms
+   ✓ opening duel presentation > falls back on image failure and immediately cancels on reconnection 10ms
+   ✓ opening duel presentation > does not begin an entrance when less than entry plus exit time remains 4ms
+   ✓ opening duel presentation > preserves capture challenge rules in the cinematic 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/room/RoomScreen.test.js > RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls
+AssertionError: expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+
+- Expected
++ Received
+
+- grid-template-columns: minmax(0, 1fr) auto auto !important
++ /* Bright School room replay/battle readability fixes. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
++   display: grid !important;
++   grid-template-columns: minmax(0, 1fr) !important;
++   align-items: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-toggles {
++   justify-self: end !important;
++   justify-content: flex-end !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-mobile-exit {
++   justify-self: end !important;
++   border: 2px solid #4a3736 !important;
++   box-shadow: 3px 3px 0 #4a3736 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-exit {
++   background: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   background-color: #eaf8ff !important;
++   background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   border-color: #7dbfe6 !important;
++   color: #225a78 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures > * {
++   min-height: 36px !important;
++   box-sizing: border-box !important;
++   align-items: center !important;
++   padding-block: 6px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-step-indicator {
++   display: inline-grid !important;
++   place-items: center !important;
++   justify-content: center !important;
++   text-align: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info {
++   overflow: visible !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character {
++   width: 100% !important;
++   height: var(--side-portrait) !important;
++   min-height: var(--side-portrait) !important;
++   background: radial-gradient(circle at 50% 58%, rgba(255, 158, 187, 0.28), rgba(255, 250, 240, 0.86) 66%) !important;
++   border: 2px dashed rgba(74, 55, 54, 0.42) !important;
++   border-radius: 16px !important;
++   box-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap.no-character {
++   width: 46px !important;
++   height: 46px !important;
++   min-height: 46px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character {
++   height: calc(var(--side-portrait) + 4px) !important;
++   min-height: calc(var(--side-portrait) + 4px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.no-character-player .meta-placeholder {
++   visibility: hidden !important;
++   pointer-events: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   width: 100% !important;
++   background: var(--tutorial-choice-background, #e4f8dc) !important;
++   color: #14532d !important;
++   border-color: rgba(74, 55, 54, 0.92) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar:not(.tutorial-choice-actions) button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   flex: 1 1 0 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:hover,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:focus-visible {
++   background: var(--tutorial-choice-hover-background, #d7f5ca) !important;
++   color: #0f3f24 !important;
++   border-color: var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar {
++   width: 100% !important;
++   justify-content: stretch !important;
++   align-items: center !important;
++   gap: 10px !important;
++   padding: 8px 12px !important;
++   box-sizing: border-box !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   box-shadow:
++     0 0 0 3px rgba(245, 158, 11, 0.2),
++     3px 3px 0 var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn {
++   background:
++     linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)),
++     #fff0a6 !important;
++   background-color: #fff0a6 !important;
++   background-image: linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)) !important;
++   border-color: #d18b17 !important;
++   color: #3f2b08 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .name-button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .player-meta span,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures > * {
++   color: #3f2b08 !important;
++ }
++
++ /* Bright School tutorial reply choices reuse the home utility card hover motion. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button {
++   transition:
++     transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     filter 160ms ease-out,
++     background-color 160ms ease-out,
++     border-color 160ms ease-out,
++     color 160ms ease-out !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled) {
++   box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important;
++   filter: saturate(1.04) brightness(1.01) !important;
++   transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action:active:not(:disabled) {
++   background: var(--tutorial-choice-active-background, #ffd6e7) !important;
++   color: #7a1d3d !important;
++   border-color: var(--bright-border) !important;
++   transform: translateY(1px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++   box-shadow: 1px 1px 0 #3d2b25 !important;
++   filter: brightness(0.98) saturate(1.02) !important;
++   transform: translateY(1px) rotate(var(--utility-tilt, 0deg)) scale(0.98) !important;
++ }
++
++ @media (prefers-reduced-motion: reduce) {
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button,
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++     transition-duration: 1ms !important;
++     transform: none !important;
++   }
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip-wrap {
++   z-index: var(--room-floating-z, 60) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-detail-panel {
++   z-index: var(--room-floating-z, 80) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button {
++   min-height: 0 !important;
++   padding: 0 !important;
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   text-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
++   filter: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side {
++   background: #1f1714 !important;
++   background-image: none !important;
++   color: #ffffff !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side :where(span, strong, small) {
++   color: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side {
++   background: #ffffff !important;
++   background-image: none !important;
++   color: #1f1714 !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side :where(span, strong, small) {
++   color: #1f1714 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::after,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::after {
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen :where(
++   .room-code-label,
++   .room-info-tag,
++   .toggle,
++   .room-mobile-exit,
++   .room-mobile-menu-toggle,
++   .room-mobile-menu-panel button,
++   .mobile-tab-button,
++   .action-bar button,
++   .decision-actions button,
++   .replay-bar button,
++   .chat-toggle-button,
++   .chat-exit-action,
++   .name-button,
++   .rank-tag,
++   .rating-tag,
++   .captures > *,
++   .digital-timer,
++   .timer-track,
++   .timer-track span,
++   .skill-chip
++ ) {
++   box-shadow: none !important;
++   filter: none !important;
++   text-shadow: none !important;
++ }
++
++
+
+ ❯ src/room/RoomScreen.test.js:945:27
+    943| 
+    944|     expect(brightRoomCss).toContain(".desktop-room-screen .room-header…
+    945|     expect(brightRoomCss).toContain("grid-template-columns: minmax(0, …
+       |                           ^
+    946|     expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !im…
+    947|     expect(brightRoomCss).toContain("background-image: linear-gradient…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx > opening duel presentation > orders by stone color, preserves costume framing and uses the server deadline
+AssertionError: expected '' to be '1.1' // Object.is equality
+
+- Expected
++ Received
+
+- 1.1
+
+ ❯ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx:34:31
+     32|     const black = document.querySelector(".opening-duel-black img");
+     33|     expect(black.getAttribute("src")).toBe("/costume.webp");
+     34|     expect(black.style.scale).toBe("1.1");
+       |                               ^
+     35|     expect(document.querySelector(".opening-duel-white img").alt).toMa…
+     36|     expect(screen.getByText("本局你执白")).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 2 passed (4)
+      Tests  2 failed | 103 passed (105)
+   Start at  16:21:35
+   Duration  7.31s (transform 1.82s, setup 0ms, collect 5.56s, tests 1.16s, environment 2.37s, prepare 703ms)
+

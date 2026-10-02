@@ -1,0 +1,182 @@
+# Workspace Index - Moming
+
+> Journal tracking for AI development sessions.
+
+---
+
+## Current Status
+
+<!-- @@@auto:current-status -->
+- **Active File**: `journal-3.md`
+- **Total Sessions**: 140
+- **Last Active**: 2026-09-22
+<!-- @@@/auto:current-status -->
+
+---
+
+## Active Documents
+
+<!-- @@@auto:active-documents -->
+| File | Lines | Status |
+|------|-------|--------|
+| `journal-3.md` | ~667 | Active |
+| `journal-2.md` | ~1990 | Archived |
+| `journal-1.md` | ~1993 | Archived |
+<!-- @@@/auto:active-documents -->
+
+---
+
+## Session History
+
+<!-- @@@auto:session-history -->
+| # | Date | Title | Commits | Branch |
+|---|------|-------|---------|--------|
+| 140 | 2026-09-22 | Synchronize countdown voice and clock | `ac35fe4d` | `codex/mobile-battle-polish` |
+| 139 | 2026-09-22 | Default stones in handbook decoration tab | 3475ca95 | `codex/mobile-battle-polish` |
+| 138 | 2026-09-22 | Restore handbook before today's redesign | `abefce4b` | `codex/mobile-battle-polish` |
+| 137 | 2026-09-22 | Refine handbook crop and compact roster | `ee9ed77c` | `codex/mobile-battle-polish` |
+| 136 | 2026-09-22 | Handbook right-page student IDs | `3baddd73` | `codex/mobile-battle-polish` |
+| 135 | 2026-09-20 | 统一专属窗口按钮第二批 | `43fe9319` | `codex/campus-home-handbook-polish` |
+| 134 | 2026-09-20 | 统一普通按钮状态第一批 | `5299298e` | `codex/campus-home-handbook-polish` |
+| 133 | 2026-09-20 | 禁止拖选按钮文字 | `a46a374a` | `codex/campus-home-handbook-polish` |
+| 132 | 2026-09-20 | 美化窗口加载状态 | b6391660 | `codex/campus-home-handbook-polish` |
+| 131 | 2026-09-20 | 修复引导立绘与加载首帧 | `60e59605` | `codex/campus-home-handbook-polish` |
+| 130 | 2026-09-20 | 精修文字书签与窗口空状态 | `35723a15` | `codex/campus-home-handbook-polish` |
+| 129 | 2026-09-20 | 恢复招募窗口内道具选择 | `b50c4e81` | `codex/campus-home-handbook-polish` |
+| 128 | 2026-09-19 | 修整书签窗口列表与分隔线 | `0997c67c` | `codex/campus-home-handbook-polish` |
+| 127 | 2026-09-19 | 玩家窗口手绘书签推广 | `d4f3cde4` | `codex/campus-home-handbook-polish` |
+| 126 | 2026-09-19 | 修复懒加载子窗口导致履历闪隐 | `244b2516` | `codex/campus-home-handbook-polish` |
+| 125 | 2026-09-19 | 履历书签轮廓加粗 | `145545ab` | `codex/campus-home-handbook-polish` |
+| 124 | 2026-09-19 | 履历手机窗口与书签比例 | `d5d7fb7a` | `codex/campus-home-handbook-polish` |
+| 123 | 2026-09-19 | 履历书签接缝修整 | `00d0fbce` | `codex/campus-home-handbook-polish` |
+| 122 | 2026-09-19 | 履历左侧书签选项卡 | `226b906f` | `codex/campus-home-handbook-polish` |
+| 121 | 2026-09-19 | Home grid and mobile match focus | `4eed174e` | `codex/campus-home-handbook-polish` |
+| 120 | 2026-09-18 | Center friend status and align mobile rows | `2ed3303a` | `codex/campus-home-handbook-polish` |
+| 119 | 2026-09-18 | Compact friends window | `9d0c9590` | `codex/campus-home-handbook-polish` |
+| 118 | 2026-09-18 | Fix home window shadow clipping | `f11b8de` | `codex/campus-home-handbook-polish` |
+| 117 | 2026-09-18 | Polish six home window issues | `8dbb8c2d` | `codex/campus-home-handbook-polish` |
+| 116 | 2026-09-18 | Unify desktop profile summary cards | `7cd4ecaf` | `codex/campus-home-handbook-polish` |
+| 115 | 2026-09-18 | Preserve empty character record cards | `7dd64023` | `codex/campus-home-handbook-polish` |
+| 114 | 2026-09-18 | Consistent guided continue icons | `fcc42de0` | `codex/campus-home-handbook-polish` |
+| 113 | 2026-09-18 | Full-width story continue action | `0190473d` | `codex/campus-home-handbook-polish` |
+| 112 | 2026-09-18 | Story action bottom clearance | `668d1553` | `codex/campus-home-handbook-polish` |
+| 111 | 2026-09-18 | Guided choice border and responsive sizing | `a0633cfa` | `codex/campus-home-handbook-polish` |
+| 110 | 2026-09-18 | Soft gold guided reply controls | `c4d90a39` | `codex/campus-home-handbook-polish` |
+| 109 | 2026-09-18 | Compact wide desktop home composition | ebdde75e | `codex/campus-home-handbook-polish` |
+| 108 | 2026-09-18 | Profile empty states, guided actions and circular watch counts | `a4089eac` | `codex/campus-home-handbook-polish` |
+| 107 | 2026-09-18 | Cloud Sigrika candy restriction | `31d64d1c` | `codex/campus-home-handbook-polish` |
+| 106 | 2026-09-16 | 首页挂扣学生证 | `4c84f002` | `codex/campus-home-handbook-polish` |
+| 105 | 2026-08-27 | Interaction and modal motion polish | `899c5e14` | `codex/animation-polish-audit-fixes` |
+| 104 | 2026-08-24 | Polish shared profile dossier portraits | `07201a07` | `codex/nameplate-fixes` |
+| 103 | 2026-08-14 | Finalize and archive all pending work | `72755bb7`, `b724a451` | `codex/nameplate-fixes` |
+| 102 | 2026-08-14 | Make viewport gate device-agnostic | `9f5f5573` | `codex/nameplate-fixes` |
+| 101 | 2026-08-13 | Allow desktop phone-window emulation | `18601b7a`, `d0291efc` | `codex/nameplate-fixes` |
+| 100 | 2026-08-07 | Corrupted Sigrika BGM | `57c3d770` | `codex/mail-ui-polish` |
+| 99 | 2026-08-03 | Add recruitment magic-clock booster | `a8b74b3f` | `codex/frontend-work` |
+| 98 | 2026-08-03 | Fix music shop metadata | `e5a6131d` | `codex/frontend-work` |
+| 97 | 2026-08-02 | 修复加载页与角色音乐按钮 | `d9484f1d` | `codex/frontend-work` |
+| 96 | 2026-08-01 | Hand-painted character music radio player | `031cfecd` | `codex/frontend-work` |
+| 95 | 2026-08-01 | 登录页角色立绘预热 | `304bde7d` | `codex/frontend-work` |
+| 94 | 2026-07-31 | Refine responsive login mascot composition | `9e08f4bc` | `codex/frontend-work` |
+| 93 | 2026-07-31 | 商店金币复用履历样式 | `246271f5` | `codex/frontend-work` |
+| 92 | 2026-07-31 | 商店路牌固定到底角 | `5363ceb3` | `codex/frontend-work` |
+| 91 | 2026-07-31 | 商店金币移入页头 | `83c3205e` | `codex/frontend-work` |
+| 90 | 2026-07-31 | 修复积分说明气泡文字溢出 | `e4f3e847` | `codex/frontend-work` |
+| 89 | 2026-07-31 | 角色主题色战绩卡 | `9f8934c5` | `codex/frontend-work` |
+| 88 | 2026-07-31 | 统一履历与用户详情面板配色 | `aec73d4d` | `codex/frontend-work` |
+| 87 | 2026-07-31 | Tint Bright School social and record cards | `6976a8b5` | `codex/frontend-work` |
+| 86 | 2026-07-31 | Simplify utility window headers | `09e40462` | `codex/frontend-work` |
+| 85 | 2026-07-31 | Fix pending skill state leaking across rooms | `50f44288` | `codex/frontend-work` |
+| 84 | 2026-07-31 | Polish spectator tabs and leaderboard ranks | `2013d1df` | `codex/frontend-work` |
+| 83 | 2026-07-30 | Loading and spectator polish | `c3ff926e` | `master` |
+| 82 | 2026-07-30 | 修复生产部署样式与后台同步 | `0fac40ff` | `master` |
+| 81 | 2026-07-29 | Restore beginner Zhunshibao practice heuristic | `2e523317` | `codex/zhunshibao-ai` |
+| 80 | 2026-07-29 | 修复 Windows 本地 GNU Go 发现 | `a0ff470b` | `codex/zhunshibao-ai` |
+| 79 | 2026-07-29 | Use GNU Go for Zhunshibao difficulty tiers | `8a221237` | `codex/zhunshibao-ai` |
+| 78 | 2026-07-26 | 统一角色语音响度并修复准时宝 TTS | `00d579c2` | `codex/audio-work` |
+| 77 | 2026-07-26 | 商店切换路标按钮 | `cf2e3a04` | `codex/frontend-chores` |
+| 76 | 2026-07-26 | Fill shop side gutters | `1ee943db` | `codex/frontend-chores` |
+| 75 | 2026-07-26 | Simplify Zahira shop header and align mobile controls | `d3074297` | `codex/frontend-chores` |
+| 74 | 2026-07-26 | Style Fractsidus shop header | `20b232c1` | `codex/frontend-chores` |
+| 73 | 2026-07-26 | Fractsidus costume shop crayon backgrounds | `234ccc54` | `codex/frontend-chores` |
+| 72 | 2026-07-25 | Zahira shop crayon backgrounds | `d4185bd7` | `codex/frontend-chores` |
+| 71 | 2026-07-24 | 修正服装详情与后台保存 | `b58054a9` | `codex/frontend-chores` |
+| 70 | 2026-07-24 | Polish costume shop purchase flow | `a86b83e6` | `codex/frontend-chores` |
+| 69 | 2026-07-24 | Preserve Denia candy portrait animation | `9114100d` | `codex/normalize-character-portraits` |
+| 68 | 2026-07-24 | Normalize character portrait assets | `89b899d4ceb7b4d748ab80b8ae935bf5981239ef` | `codex/normalize-character-portraits` |
+| 67 | 2026-07-24 | Costume portrait calibration and dynamic shop stage | `72702e97` | `master` |
+| 66 | 2026-07-23 | Allow Rainbow Candy On Lynae | `da66d4ae` | `master` |
+| 65 | 2026-07-23 | Add Lynae rainbow candy story and voice effect | `439df835` | `master` |
+| 64 | 2026-07-23 | 修复首页模式与准时宝陪练启动无响应 | `15e951c0` | `codex/fix-practice-start` |
+| 63 | 2026-07-23 | 桌面端主界面零视觉性能优化与登录后资源预载 | `58e3001f`, `78110ec0` | `codex/human-vs-ai` |
+| 62 | 2026-07-23 | Align Zhunshibao practice entry shadow | `f2e37c98` | `codex/human-vs-ai` |
+| 61 | 2026-07-23 | Polish replay practice watch and shop UI | `39f48a7b` | `codex/human-vs-ai` |
+| 60 | 2026-07-22 | Zhunshibao practice baseline verification | `611d57f8` | `codex/human-vs-ai` |
+| 59 | 2026-07-22 | Zhunshibao practice mode | `122bd087` | `codex/human-vs-ai` |
+| 58 | 2026-07-22 | Add Aemeath rainbow candy story and move effect | `f82f7404` | `codex/rainbow-bean-popping-candy-story` |
+| 57 | 2026-07-22 | 完成彩虹豆豆跳跳糖双分支剧情 | `87f2556e` | `codex/rainbow-bean-popping-candy-story` |
+| 56 | 2026-07-20 | Phase 3 stability and release rehearsal | `f48fbb29` | `codex/prelaunch-phase3` |
+| 55 | 2026-07-20 | Prelaunch Phase 2 database baseline | `66a80e9a` | `codex/prelaunch-phase2` |
+| 54 | 2026-07-20 | 上线前阶段0与阶段1加固 | `8c0770f3` | `codex/prelaunch-phase0-phase1` |
+| 53 | 2026-07-18 | Aemeath memorial-ticket recruitment | `200df94b`, `85519988`, `82566ad9` | `codex/aemeath-acquisition` |
+| 52 | 2026-07-17 | Add mailbox sender metadata | `67dc18a9` | `codex/username-background` |
+| 51 | 2026-07-17 | Add reusable character nameplate production workflow | `fa7323bc` | `codex/username-background` |
+| 50 | 2026-07-17 | Refine Sigrika nameplate glow and clipping | `6ba48109` | `codex/username-background` |
+| 49 | 2026-07-17 | Redesign Sigrika semantic nameplate | `026f2b6c` | `codex/username-background` |
+| 48 | 2026-07-16 | 修复用户名铭牌真实主题渲染 | `46d49a12` | `codex/username-background` |
+| 47 | 2026-07-16 | Username nameplate V2 | `16677735` | `codex/username-background` |
+| 46 | 2026-07-16 | Replay, preload, and auth UI polish | `2a99a4f6` | `codex/auth-ui-review` |
+| 45 | 2026-07-15 | Restyle login title lockup | `020ffa47` | `codex/mobile-battle-ui` |
+| 44 | 2026-07-13 | Story tutorial draft capacity and graph scrolling | `fdaa2290` | `codex/story-tutorial-system` |
+| 43 | 2026-07-12 | Deepen Zahira shop background | `2b3ee60b` | `codex/shop-window-redesign` |
+| 42 | 2026-07-12 | Polish shop card alignment and desktop float | `5058de53` | `codex/shop-window-redesign` |
+| 41 | 2026-07-12 | Fix responsive Zahira shop card layout | `ce30f305` | `codex/shop-window-redesign` |
+| 40 | 2026-07-12 | Redesign Zahira shop window | `6cb0c1ad` | `codex/shop-window-redesign` |
+| 39 | 2026-07-10 | Refine desktop home utility button hover | `80d37218` | `codex/character-music-player-polish` |
+| 38 | 2026-07-10 | Harden stability and complete replay history | `2e1d9431` | `codex/work-20260708-2` |
+| 37 | 2026-07-06 | Fix mobile shop card layout | `66a5f454` | `codex/frontend-ui-issues` |
+| 36 | 2026-07-06 | Fix clipped Bright School card shadows | `0b305b3d` | `codex/frontend-fixes-20260705` |
+| 35 | 2026-07-06 | Preserve admin default snapshot | `0deec8eb` | `codex/frontend-fixes-20260705` |
+| 34 | 2026-07-05 | Mobile shop mascot clarity | `b9f87a1` | `codex/frontend-fixes-20260705` |
+| 33 | 2026-07-05 | Shop mascot purchase feedback | `b348e6d8` | `codex/frontend-fixes-20260705` |
+| 32 | 2026-07-05 | Fix recruit modal duplicate background | `a60c3db` | `codex/frontend-fixes-20260705` |
+| 31 | 2026-07-05 | Frontend mobile UI fixes | `4ad79258` | `codex/frontend-fixes-20260705` |
+| 30 | 2026-07-05 | Fix Pixi Vite optimizer skill effects | `59b66d6b`, `1cf9e623` | `codex/fix-pixi-vite-optimizer` |
+| 29 | 2026-07-03 | Admin story node settings popup | `7b86d812` | `codex/story-tutorial-node-timing-controls` |
+| 28 | 2026-07-02 | Home lobby adjustments and story close guard | `7674bd1e`, `67af88fd` | `codex/css-cleanup` |
+| 27 | 2026-07-02 | Fix QiuYuan row slash mobile scar width | `b677ef58` | `codex/css-cleanup` |
+| 26 | 2026-07-02 | Tailwind migration roadmap and pilots | `214bb6d1` | `codex/css-tidy` |
+| 25 | 2026-07-01 | CSS depollution and standardization | `1dca2a59da0512f48196dd4450cd55aa4055b137` | `codex/css-tidy` |
+| 24 | 2026-06-30 | Improve repo hygiene CI and frontend splitting | `a43a436e` | `master` |
+| 23 | 2026-06-30 | Fix mobile replay scroll and mailbox badge | `93df23e4` | `codex/battle-tutorial-session` |
+| 22 | 2026-06-23 | Stabilize room runtime guardrails | `adab31a3` | `codex/stability-tech-debt-audit` |
+| 21 | 2026-06-20 | Dynamic rating and friendly match rewards | `b3254761` | `codex/bright-school-font-refresh` |
+| 20 | 2026-06-19 | Mobile profile layout fixes | `36d4ea1b`, `6fdef71c` | `master` |
+| 19 | 2026-06-19 | Remove report dialog cancel button | `2b7d5232` | `master` |
+| 18 | 2026-06-19 | Profile likes and reports | `84303f59` | `master` |
+| 17 | 2026-06-19 | Disable unavailable social actions | `ab25bbe5` | `master` |
+| 16 | 2026-06-17 | Mobile room tab press state | `9a2b554` | `codex/new-branch` |
+| 15 | 2026-06-17 | Profile resume mobile layout polish | `bdfda307`, `df329ef3` | `codex/new-branch` |
+| 14 | 2026-06-14 | 角色详情说明颜色与音乐暂停续播 | `0135941` | `codex/gacha-scheme-c-ui` |
+| 13 | 2026-06-13 | 修复首页资源请求循环限流 | `8e63888` | `codex/gacha-scheme-c-ui` |
+| 12 | 2026-06-13 | 修复登录后回退登录页 | `1787e85` | `codex/gacha-scheme-c-ui` |
+| 11 | 2026-06-13 | 修复成就系统启动报错 | `b0c56b2` | `codex/gacha-scheme-c-ui` |
+| 10 | 2026-06-13 | 成就系统与个性化装备 | `92be79e` | `codex/gacha-scheme-c-ui` |
+| 9 | 2026-06-13 | Fix house manual chain badge switching | `78b1374` | `codex/gacha-scheme-c-ui` |
+| 8 | 2026-06-12 | Polish gacha ten-pull results | `bb9aaf9` | `codex/standard-game-mode` |
+| 7 | 2026-06-12 | Hide number input spinners | `5aa04a3` | `codex/standard-game-mode` |
+| 6 | 2026-06-12 | Multiple gacha featured prizes | `0341f75` | `codex/standard-game-mode` |
+| 5 | 2026-06-12 | Gacha featured prize toggle fix | `b231db4` | `codex/standard-game-mode` |
+| 4 | 2026-06-12 | Gacha admin UI polish | `1ae019d` | `codex/standard-game-mode` |
+| 3 | 2026-06-12 | Gacha admin prize editor polish | `415a07b` | `codex/standard-game-mode` |
+| 2 | 2026-06-12 | Configurable gacha system | `94a09e1` | `codex/standard-game-mode` |
+| 1 | 2026-06-10 | Polish mobile battle UI and warehouse layout | `bc082d8` | `codex/gemini-mobile-battle-handoff` |
+<!-- @@@/auto:session-history -->
+
+---
+
+## Notes
+
+- Sessions are appended to journal files
+- New journal file created when current exceeds 2000 lines
+- Use `add_session.py` to record sessions

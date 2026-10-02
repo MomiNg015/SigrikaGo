@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 748ms
+ ✓ src/home/components/HomeStage.dom.test.jsx (2 tests) 96ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (4 tests) 250ms
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  15:06:14
+   Duration  5.47s (transform 290ms, setup 0ms, collect 1.27s, tests 1.09s, environment 3.97s, prepare 467ms)
+

@@ -1,0 +1,17 @@
+import {chromium} from '@playwright/test';
+const browser=await chromium.launch({headless:true,channel:'msedge'});
+const page=await browser.newPage({viewport:{width:390,height:844}});
+await page.goto('http://localhost:5173/.codex-run/opening-duel.html?duration=3000');
+await page.locator('.opening-duel').waitFor();
+await page.waitForTimeout(100);
+console.log('entrance', await page.locator('.opening-duel-portrait').evaluateAll(els=>els.map(x=>getComputedStyle(x).transform)));
+await page.waitForFunction(()=>Date.now()>=window.openingDeadline-210);
+console.log('exit',await page.locator('.opening-duel-panel').evaluateAll(els=>els.map(x=>getComputedStyle(x).transform)));
+await page.screenshot({path:'.codex-run/opening-duel-exit.png'});
+await page.waitForFunction(()=>Date.now()>=window.openingDeadline+30);
+console.log('after deadline',await page.locator('.opening-duel,.opening-backdrop').count());
+await page.emulateMedia({reducedMotion:'reduce'});
+await page.goto('http://localhost:5173/.codex-run/opening-duel.html');
+await page.locator('.opening-duel').waitFor();
+console.log('reduced motion',await page.locator('.opening-duel-portrait').evaluateAll(els=>els.map(x=>getComputedStyle(x).animationName)));
+await browser.close();

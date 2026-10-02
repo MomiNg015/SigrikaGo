@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Check the frontend validation path and focused test expectations."}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Verify the fix stays in the correct CSS owner layer and does not broaden theme resets."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify the UI fix has durable regression coverage."}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared quality gate guidance for final checks."}
+{"file": ".trellis/tasks/07-02-qiuyuan-row-slash-mobile-scar-width/research/root-cause.md", "reason": "Check implementation against the documented root cause."}

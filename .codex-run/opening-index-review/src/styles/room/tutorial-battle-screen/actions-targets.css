@@ -1,0 +1,209 @@
+.tutorial-battle-continue,
+.tutorial-battle-action,
+.tutorial-action-bar button {
+  flex: 1 1 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid rgba(22, 163, 74, 0.34);
+  border-radius: 8px;
+  background: var(--tutorial-choice-background, #e4f8dc);
+  color: #14532d;
+  font-weight: 800;
+  text-align: left;
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.tutorial-battle-continue::after,
+.tutorial-battle-action::after,
+.tutorial-action-bar button::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.72;
+}
+
+.tutorial-battle-continue > *,
+.tutorial-battle-action > *,
+.tutorial-action-bar button > * {
+  flex: 0 0 auto;
+}
+
+.tutorial-battle-continue span,
+.tutorial-battle-action span,
+.tutorial-action-bar button span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tutorial-battle-continue:hover,
+.tutorial-battle-continue:focus-visible,
+.tutorial-battle-action:hover,
+.tutorial-battle-action:focus-visible,
+.tutorial-action-bar button:hover,
+.tutorial-action-bar button:focus-visible {
+  border-color: rgba(79, 111, 223, 0.58);
+  background: var(--tutorial-choice-hover-background, #d7f5ca);
+  color: #0f3f24;
+  outline: none;
+}
+
+.tutorial-battle-continue:active,
+.tutorial-battle-action:active,
+.tutorial-action-bar button:active {
+  border-color: rgba(219, 39, 119, 0.48);
+  background: var(--tutorial-choice-active-background, #ffd6e7);
+  color: #7a1d3d;
+  transform: translateY(1px);
+}
+
+.tutorial-action-bar {
+  width: 100%;
+  justify-content: stretch;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+.tutorial-action-bar.tutorial-choice-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  align-content: start;
+  max-height: 128px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.tutorial-choice-actions button {
+  height: auto;
+}
+
+.tutorial-choice-actions button span {
+  overflow: visible;
+  white-space: normal;
+}
+
+.tutorial-action-bar .tutorial-highlight-action {
+  border-color: rgba(245, 158, 11, 0.72);
+  background: linear-gradient(180deg, #e9fbe2, #d8f6cf);
+  color: #14532d;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.18),
+    0 8px 20px rgba(22, 101, 52, 0.14);
+  animation: tutorial-action-pulse 1.4s ease-in-out infinite;
+}
+
+.tutorial-action-bar .tutorial-highlight-action:hover,
+.tutorial-action-bar .tutorial-highlight-action:focus-visible {
+  border-color: rgba(217, 119, 6, 0.86);
+  background: #cff2c3;
+  color: #0f3f24;
+}
+
+.board-wrap.tutorial-any-board-target .board {
+  box-shadow:
+    inset 0 0 0 3px rgba(245, 158, 11, 0.46),
+    0 0 0 4px rgba(245, 158, 11, 0.12);
+}
+
+.tutorial-battle-continue,
+.tutorial-battle-action {
+  position: absolute;
+  left: 14px;
+  top: 126px;
+}
+
+.tutorial-battle-screen-stage .chat-form-disabled input,
+.tutorial-battle-screen-stage .chat-form-disabled button {
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #64748b;
+  border-color: rgba(148, 163, 184, 0.5);
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: none !important;
+  grid-auto-rows: auto !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button {
+  flex: 1 1 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 46px !important;
+  display: flex !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button span {
+  flex: 0 1 auto !important;
+  text-align: center !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar:not(.tutorial-choice-actions) button::after {
+  display: none !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions {
+  --tutorial-choice-background: rgb(228 248 220/.72);
+  --tutorial-choice-hover-background: rgb(215 245 202/.8);
+  --tutorial-choice-active-background: rgb(255 214 231/.8);
+  max-height: none;
+  flex-direction: column;
+  overflow: visible;
+  overscroll-behavior: auto;
+  scrollbar-gutter: auto;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-choice-actions button {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 46px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+@keyframes tutorial-action-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px rgba(245, 158, 11, 0.18),
+      0 8px 20px rgba(22, 101, 52, 0.14);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(245, 158, 11, 0.26),
+      0 0 20px rgba(245, 158, 11, 0.35),
+      0 8px 20px rgba(22, 101, 52, 0.14);
+  }
+}

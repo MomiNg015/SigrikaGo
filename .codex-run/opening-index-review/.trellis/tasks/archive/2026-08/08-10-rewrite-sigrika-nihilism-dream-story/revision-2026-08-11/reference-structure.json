@@ -1,0 +1,3236 @@
+{
+  "source": "C:\\Users\\Moming\\WPSDrive\\728505899\\WPS云盘\\sigrikago\\黑化西格莉卡剧情审阅稿.docx",
+  "sha256": "8ed112e8780ce4ae2553848d7dea11a77b9b901870687316f990edf3587fb2e6",
+  "paragraph_count": 314,
+  "table_count": 14,
+  "records": [
+    {
+      "kind": "paragraph",
+      "body_index": 0,
+      "paragraph_index": 0,
+      "key": "P000",
+      "style": "Speaker",
+      "text": "【1】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 1,
+      "paragraph_index": 1,
+      "key": "P001",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 2,
+      "paragraph_index": 2,
+      "key": "P002",
+      "style": "Narration",
+      "text": "午后的围棋部活动室里，西格莉卡把一本刚拆封的漫画摊在棋盘旁。你凑近一看，这本漫画的名字叫《棋魂》。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 3,
+      "paragraph_index": 3,
+      "key": "P003",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 4,
+      "paragraph_index": 4,
+      "key": "P004",
+      "style": "Dialogue",
+      "text": "原来故事是从一张旧棋盘开始的……沉睡了那么久的棋手，因为进藤光终于又能看见棋盘、听见落子的声音。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 5,
+      "paragraph_index": 5,
+      "key": "P005",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 6,
+      "paragraph_index": 6,
+      "key": "P006",
+      "style": "Dialogue",
+      "text": "表面上看，是佐为借用了光的手去下棋。可要是没有光愿意听他说话，佐为连一颗棋子都碰不到吧？"
+    },
+    {
+      "kind": "table",
+      "body_index": 7,
+      "table_index": 0,
+      "key": "T000",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T000-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T000-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "所以并不只是光得到了帮助。"
+        },
+        {
+          "key": "T000-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T000-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "他们让彼此都能继续往前走。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 8,
+      "paragraph_index": 7,
+      "key": "P007",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 9,
+      "paragraph_index": 8,
+      "key": "P008",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 10,
+      "paragraph_index": 9,
+      "key": "P009",
+      "style": "Dialogue",
+      "text": "嗯！好的相遇不是谁单方面拯救了谁，而是两个人都因此看见了原本看不见的路。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 11,
+      "paragraph_index": 10,
+      "key": "P010",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 12,
+      "paragraph_index": 11,
+      "key": "P011",
+      "style": "Dialogue",
+      "text": "而且，跨越了那么久还想再下一盘棋……这种心情很了不起呢。我开始有点期待他们会走到哪里了。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 13,
+      "paragraph_index": 12,
+      "key": "P012",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 14,
+      "paragraph_index": 13,
+      "key": "P013",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 15,
+      "paragraph_index": 14,
+      "key": "P014",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 16,
+      "paragraph_index": 15,
+      "key": "P015",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 17,
+      "paragraph_index": 16,
+      "key": "P016",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 18,
+      "paragraph_index": 17,
+      "key": "P017",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 19,
+      "paragraph_index": 18,
+      "key": "P018",
+      "style": "Speaker",
+      "text": "【2】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 20,
+      "paragraph_index": 19,
+      "key": "P019",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 21,
+      "paragraph_index": 20,
+      "key": "P020",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 22,
+      "paragraph_index": 21,
+      "key": "P021",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 23,
+      "paragraph_index": 22,
+      "key": "P022",
+      "style": "Dialogue",
+      "text": "大家都在找 sai。棋手、记者、塔矢亮……明明谁都不知道屏幕后面是谁，却因为那几盘棋，一下子全都追了过来。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 24,
+      "paragraph_index": 23,
+      "key": "P023",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 25,
+      "paragraph_index": 24,
+      "key": "P024",
+      "style": "Dialogue",
+      "text": "塔矢亮也是。他第一次见到光时，以为终于遇到了值得追赶的对手。后来发现光本人还没有那么强，才会那么生气吧。"
+    },
+    {
+      "kind": "table",
+      "body_index": 26,
+      "table_index": 1,
+      "key": "T001",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T001-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T001-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "他追逐的是那份强大，不一定是光本人。"
+        },
+        {
+          "key": "T001-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T001-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "难怪光会想亲自追上他。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 27,
+      "paragraph_index": 25,
+      "key": "P025",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 28,
+      "paragraph_index": 26,
+      "key": "P026",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 29,
+      "paragraph_index": 27,
+      "key": "P027",
+      "style": "Dialogue",
+      "text": "所以我才喜欢光现在的选择。他没有永远躲在佐为后面，而是开始学着用自己的棋去追塔矢亮。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 30,
+      "paragraph_index": 28,
+      "key": "P028",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 31,
+      "paragraph_index": 29,
+      "key": "P029",
+      "style": "Dialogue",
+      "text": "因为别人追错了人而失落当然会很难受……但只要继续走，也许总有一天，对方真正回头看见的就会是自己。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 32,
+      "paragraph_index": 30,
+      "key": "P030",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 33,
+      "paragraph_index": 31,
+      "key": "P031",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 34,
+      "paragraph_index": 32,
+      "key": "P032",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 35,
+      "paragraph_index": 33,
+      "key": "P033",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 36,
+      "paragraph_index": 34,
+      "key": "P034",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 37,
+      "paragraph_index": 35,
+      "key": "P035",
+      "style": "Speaker",
+      "text": "【3】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 38,
+      "paragraph_index": 36,
+      "key": "P036",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 39,
+      "paragraph_index": 37,
+      "key": "P037",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 40,
+      "paragraph_index": 38,
+      "key": "P038",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 41,
+      "paragraph_index": 39,
+      "key": "P039",
+      "style": "Dialogue",
+      "text": "光刚进入院生就一直输……明明在外面已经进步了那么多，到了这里，却一下子变成追在所有人后面的那个。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 42,
+      "paragraph_index": 40,
+      "key": "P040",
+      "style": "Speaker",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 43,
+      "paragraph_index": 41,
+      "key": "P041",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 44,
+      "paragraph_index": 42,
+      "key": "P042",
+      "style": "Dialogue",
+      "text": "可他第二天还是会来，还是会坐到同一个位置上，把昨天不会的东西一点点学会。"
+    },
+    {
+      "kind": "table",
+      "body_index": 45,
+      "table_index": 2,
+      "key": "T002",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T002-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T002-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "就算下一盘可能还会输？"
+        },
+        {
+          "key": "T002-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T002-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "不断输的时候，坐回来才最难吧。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 46,
+      "paragraph_index": 43,
+      "key": "P043",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 47,
+      "paragraph_index": 44,
+      "key": "P044",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 48,
+      "paragraph_index": 45,
+      "key": "P045",
+      "style": "Dialogue",
+      "text": "嗯。赢棋的时候谁都愿意继续，真正需要勇气的，反而是刚刚确认过自己还不够强的时候。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 49,
+      "paragraph_index": 46,
+      "key": "P046",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 50,
+      "paragraph_index": 47,
+      "key": "P047",
+      "style": "Dialogue",
+      "text": "而且排名表只记录今天排在第几，又不会把今天学会的东西擦掉。嘿嘿，我觉得他一定还会往上走的。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 51,
+      "paragraph_index": 48,
+      "key": "P048",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 52,
+      "paragraph_index": 49,
+      "key": "P049",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 53,
+      "paragraph_index": 50,
+      "key": "P050",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 54,
+      "paragraph_index": 51,
+      "key": "P051",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 55,
+      "paragraph_index": 52,
+      "key": "P052",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 56,
+      "paragraph_index": 53,
+      "key": "P053",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 57,
+      "paragraph_index": 54,
+      "key": "P054",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 58,
+      "paragraph_index": 55,
+      "key": "P055",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 59,
+      "paragraph_index": 56,
+      "key": "P056",
+      "style": "Normal",
+      "text": "【4】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 60,
+      "paragraph_index": 57,
+      "key": "P057",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 61,
+      "paragraph_index": 58,
+      "key": "P058",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 62,
+      "paragraph_index": 59,
+      "key": "P059",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 63,
+      "paragraph_index": 60,
+      "key": "P060",
+      "style": "Dialogue",
+      "text": "伊角明明拥有职业棋手的实力，却在最重要的对局里被心理压力逼得犯了规。认输以后，他连后面的棋也没能恢复过来。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 64,
+      "paragraph_index": 61,
+      "key": "P061",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 65,
+      "paragraph_index": 62,
+      "key": "P062",
+      "style": "Dialogue",
+      "text": "还有本田。准备了那么久，认真下了那么多盘棋，最后还是差一点……一年只能定段三位，其他人的努力就这样被挡在门外了。"
+    },
+    {
+      "kind": "table",
+      "body_index": 66,
+      "table_index": 3,
+      "key": "T003",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T003-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T003-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "比赛只会记录这一次的结果。"
+        },
+        {
+          "key": "T003-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T003-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "一次偶发的失常就可能让这整整一年的努力白费。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 67,
+      "paragraph_index": 63,
+      "key": "P063",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 68,
+      "paragraph_index": 64,
+      "key": "P064",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 69,
+      "paragraph_index": 65,
+      "key": "P065",
+      "style": "Dialogue",
+      "text": "嗯……竞技就是有这么残酷。它不会因为一个人以前很努力，就把今天的结果改掉。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 70,
+      "paragraph_index": 66,
+      "key": "P066",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 71,
+      "paragraph_index": 67,
+      "key": "P067",
+      "style": "Dialogue",
+      "text": "不过，结果没有照顾他们，不代表他们走过的路突然消失了吧？伊角还有朋友，也还有下一次考试……我希望他能再回来。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 72,
+      "paragraph_index": 68,
+      "key": "P068",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 73,
+      "paragraph_index": 69,
+      "key": "P069",
+      "style": "Dialogue",
+      "text": "要是换成我，大概也会躲起来难过很久。但等难过完了，还是得想办法朝着目标继续努力才行。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 74,
+      "paragraph_index": 70,
+      "key": "P070",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 75,
+      "paragraph_index": 71,
+      "key": "P071",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 76,
+      "paragraph_index": 72,
+      "key": "P072",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 77,
+      "paragraph_index": 73,
+      "key": "P073",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 78,
+      "paragraph_index": 74,
+      "key": "P074",
+      "style": "Normal",
+      "text": "【5】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 79,
+      "paragraph_index": 75,
+      "key": "P075",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 80,
+      "paragraph_index": 76,
+      "key": "P076",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 81,
+      "paragraph_index": 77,
+      "key": "P077",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 82,
+      "paragraph_index": 78,
+      "key": "P078",
+      "style": "Dialogue",
+      "text": "佐为终于和塔矢名人下到了！两个人都追寻了那么久，这盘棋几乎就是他们各自抵达的最高处了吧。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 83,
+      "paragraph_index": 79,
+      "key": "P079",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 84,
+      "paragraph_index": 80,
+      "key": "P080",
+      "style": "Dialogue",
+      "text": "可最后发现那一手后续变化的人，却是一直在旁边看棋的光。连佐为都没有看见的地方，被后来的人看见了。"
+    },
+    {
+      "kind": "table",
+      "body_index": 85,
+      "table_index": 4,
+      "key": "T004",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T004-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T004-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "最强的一局也不是终点。"
+        },
+        {
+          "key": "T004-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T004-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "佐为的棋把光带到了更远的地方。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 86,
+      "paragraph_index": 81,
+      "key": "P081",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 87,
+      "paragraph_index": 82,
+      "key": "P082",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 88,
+      "paragraph_index": 83,
+      "key": "P083",
+      "style": "Dialogue",
+      "text": "对呀。也许真正重要的不是永远站在最前面，而是自己走到尽头以后，还有人能从那里继续往前看。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 89,
+      "paragraph_index": 84,
+      "key": "P084",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 90,
+      "paragraph_index": 85,
+      "key": "P085",
+      "style": "Dialogue",
+      "text": "这样想的话，“下一手”好像不只属于正在下棋的人。它也可能是上一位棋手，留给后来者的问题呢。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 91,
+      "paragraph_index": 86,
+      "key": "P086",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 92,
+      "paragraph_index": 87,
+      "key": "P087",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 93,
+      "paragraph_index": 88,
+      "key": "P088",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 94,
+      "paragraph_index": 89,
+      "key": "P089",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 95,
+      "paragraph_index": 90,
+      "key": "P090",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 96,
+      "paragraph_index": 91,
+      "key": "P091",
+      "style": "Speaker",
+      "text": "【6】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 97,
+      "paragraph_index": 92,
+      "key": "P092",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 98,
+      "paragraph_index": 93,
+      "key": "P093",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 99,
+      "paragraph_index": 94,
+      "key": "P094",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 100,
+      "paragraph_index": 95,
+      "key": "P095",
+      "style": "Dialogue",
+      "text": "佐为真的消失了。光跑了那么多地方，翻遍棋院和旧棋盘，也没有办法让他回来。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 101,
+      "paragraph_index": 96,
+      "key": "P096",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 102,
+      "paragraph_index": 97,
+      "key": "P097",
+      "style": "Dialogue",
+      "text": "所以光不再下棋，我好像也能理解。只要不碰棋盘，就不用一次次在自己的棋里想起那个已经不在的人。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 103,
+      "paragraph_index": 98,
+      "key": "P098",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 104,
+      "paragraph_index": 99,
+      "key": "P099",
+      "style": "Dialogue",
+      "text": "可偏偏是伊角回来了。那个曾经因为定段失败而离开的人，带着重新学会的下棋的精神回来，邀请光把当初没能好好结束的那一局下完。"
+    },
+    {
+      "kind": "table",
+      "body_index": 105,
+      "table_index": 5,
+      "key": "T005",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T005-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T005-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "然后光在自己的棋里找到了佐为。"
+        },
+        {
+          "key": "T005-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T005-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "让他重新落子的，也是曾经失败过的人。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 106,
+      "paragraph_index": 100,
+      "key": "P100",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 107,
+      "paragraph_index": 101,
+      "key": "P101",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 108,
+      "paragraph_index": 102,
+      "key": "P102",
+      "style": "Dialogue",
+      "text": "嗯。失去的人不会再回来，可一起走过的路已经改变了留下的人。只要光还在下棋，佐为教给他的那些东西就还在继续。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 109,
+      "paragraph_index": 103,
+      "key": "P103",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 110,
+      "paragraph_index": 104,
+      "key": "P104",
+      "style": "Dialogue",
+      "text": "塔矢亮后来也从光的棋里看见了两个人的痕迹……但那已经不再是佐为的棋了，而是光自己选择继续下出来的棋。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 111,
+      "paragraph_index": 105,
+      "key": "P105",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 112,
+      "paragraph_index": 106,
+      "key": "P106",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 113,
+      "paragraph_index": 107,
+      "key": "P107",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 114,
+      "paragraph_index": 108,
+      "key": "P108",
+      "style": "Speaker",
+      "text": "【7】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 115,
+      "paragraph_index": 109,
+      "key": "P109",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 116,
+      "paragraph_index": 110,
+      "key": "P110",
+      "style": "Narration",
+      "text": "西格莉卡正在看《棋魂》漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 117,
+      "paragraph_index": 111,
+      "key": "P111",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 118,
+      "paragraph_index": 112,
+      "key": "P112",
+      "style": "Dialogue",
+      "text": "日本青年队终于选出来了！光和塔矢亮不再只是互相追赶的对手，这一次还要作为同一支队伍去面对中国队和韩国队。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 119,
+      "paragraph_index": 113,
+      "key": "P113",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 120,
+      "paragraph_index": 114,
+      "key": "P114",
+      "style": "Dialogue",
+      "text": "而且其他队伍也全是很厉害的年轻棋手。有人早就成名，有人第一次站到这样的赛场上……光看名单就觉得比赛一定会很精彩。"
+    },
+    {
+      "kind": "table",
+      "body_index": 121,
+      "table_index": 6,
+      "key": "T006",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T006-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T006-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "你还没看到正式比赛吧？"
+        },
+        {
+          "key": "T006-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T006-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "所以最后哪一队会赢？"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 122,
+      "paragraph_index": 115,
+      "key": "P115",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 123,
+      "paragraph_index": 116,
+      "key": "P116",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 124,
+      "paragraph_index": 117,
+      "key": "P117",
+      "style": "Dialogue",
+      "text": "还没有！我刚看到北斗杯要正式开始。最关键的部分当然要留到大家都安静的时候，再一口气读完嘛。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 125,
+      "paragraph_index": 118,
+      "key": "P118",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 126,
+      "paragraph_index": 119,
+      "key": "P119",
+      "style": "Dialogue",
+      "text": "嘿嘿，我已经开始期待了。光走了那么远，这次一定能让更多人看见属于他自己的棋吧。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 127,
+      "paragraph_index": 120,
+      "key": "P120",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 128,
+      "paragraph_index": 121,
+      "key": "P121",
+      "style": "Speaker",
+      "text": "【8】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 129,
+      "paragraph_index": 122,
+      "key": "P122",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 130,
+      "paragraph_index": 123,
+      "key": "P123",
+      "style": "Narration",
+      "text": "傍晚的活动室只开着桌边的一盏灯。达妮娅趴在远处的沙发扶手上打盹，西格莉卡则坐在棋盘前，手边放着已经合上的最后一卷漫画。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 131,
+      "paragraph_index": 124,
+      "key": "P124",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 132,
+      "paragraph_index": 125,
+      "key": "P125",
+      "style": "Dialogue",
+      "text": "我看完了。北斗杯……日本队最后输给了中国队，也输给了韩国队。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 133,
+      "paragraph_index": 126,
+      "key": "P126",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 134,
+      "paragraph_index": 127,
+      "key": "P127",
+      "style": "Dialogue",
+      "text": "光两盘都拼到了最后，却一盘也没有赢下来。故事没有安排一个“终于战胜所有强敌”的结局，甚至连一点安慰性质的胜利都没有。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 135,
+      "paragraph_index": 128,
+      "key": "P128",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 136,
+      "paragraph_index": 129,
+      "key": "P129",
+      "style": "Dialogue",
+      "text": "原来竭尽全力，也可能一个想要的结果都拿不到啊……"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 137,
+      "paragraph_index": 130,
+      "key": "P130",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 138,
+      "paragraph_index": 131,
+      "key": "P131",
+      "style": "Dialogue",
+      "text": "啊，不过我不是说这些努力没有意义！只是……定段赛那几章，还有最后的北斗杯，读完以后心里会有点堵得慌。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 139,
+      "paragraph_index": 132,
+      "key": "P132",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 140,
+      "paragraph_index": 133,
+      "key": "P133",
+      "style": "Dialogue",
+      "text": "把彩虹豆豆跳跳糖递给西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 141,
+      "paragraph_index": 134,
+      "key": "P134",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 142,
+      "paragraph_index": 135,
+      "key": "P135",
+      "style": "Dialogue",
+      "text": "谢谢啦。正好需要一点能稍微能让人打起精神的甜味……"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 143,
+      "paragraph_index": 136,
+      "key": "P136",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 144,
+      "paragraph_index": 137,
+      "key": "P137",
+      "style": "Narration",
+      "text": "糖果在她齿间发出细碎的噼啪声。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 145,
+      "paragraph_index": 138,
+      "key": "P138",
+      "style": "Narration",
+      "text": "啪。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 146,
+      "paragraph_index": 139,
+      "key": "P139",
+      "style": "Narration",
+      "text": "啪。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 147,
+      "paragraph_index": 140,
+      "key": "P140",
+      "style": "Narration",
+      "text": "那声音渐渐失去了糖果应有的轻快，变得沉重、空旷，像一颗颗棋子落在看不见的棋盘上。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 148,
+      "paragraph_index": 141,
+      "key": "P141",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 149,
+      "paragraph_index": 142,
+      "key": "P142",
+      "style": "Narration",
+      "text": "西格莉卡的身影突然变得深黯。灯光从西格莉卡身后急速晕开，带来了视觉上的失重感。你想扶住桌沿，指尖却没有触到熟悉的木纹。活动室里的颜色正在缓慢褪去。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 150,
+      "paragraph_index": 143,
+      "key": "P143",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 151,
+      "paragraph_index": 144,
+      "key": "P144",
+      "style": "Narration",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 152,
+      "paragraph_index": 145,
+      "key": "P145",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 153,
+      "paragraph_index": 146,
+      "key": "P146",
+      "style": "Narration",
+      "text": "你恢复了正常的视觉平衡感，眼前混沌的一切渐渐变得清晰。西格莉卡张着那血红色的双眼正凝视着你。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 154,
+      "paragraph_index": 147,
+      "key": "P147",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 155,
+      "paragraph_index": 148,
+      "key": "P148",
+      "style": "Dialogue",
+      "text": "{username}，你有没有想过……如果进藤光一开始没有遇见佐为，塔矢亮还会那样追着他吗？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 156,
+      "paragraph_index": 149,
+      "key": "P149",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 157,
+      "paragraph_index": 150,
+      "key": "P150",
+      "style": "Dialogue",
+      "text": "别人期待的，究竟是“这个人”，还是他们想象中那个永远不会失败、永远足够优秀的影子？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 158,
+      "paragraph_index": 151,
+      "key": "P151",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 159,
+      "paragraph_index": 152,
+      "key": "P152",
+      "style": "Dialogue",
+      "text": "伊角和本田也努力了很久。可没有得到那几个名额，就只能被拒之门外。努力并没有把所有人带到同一个地方。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 160,
+      "paragraph_index": 153,
+      "key": "P153",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 161,
+      "paragraph_index": 154,
+      "key": "P154",
+      "style": "Dialogue",
+      "text": "所有人都会追问最强的 sai 是谁，会讨论塔矢名人和高永夏……可那些一次次落选、连名字都没有被记住的人呢？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 162,
+      "paragraph_index": 155,
+      "key": "P155",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 163,
+      "paragraph_index": 156,
+      "key": "P156",
+      "style": "Dialogue",
+      "text": "最后留下来的，还是谁赢了，谁输了。棋谱可以记住每一手，旁观的人却只需要看一眼结果。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 164,
+      "paragraph_index": 157,
+      "key": "P157",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 165,
+      "paragraph_index": 158,
+      "key": "P158",
+      "style": "Dialogue",
+      "text": "所以，不去期待就不会害怕辜负；不去追赶就不会看见天赋的差距；不站上赛场，就不会被一次结果否定此前的一切。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 166,
+      "paragraph_index": 159,
+      "key": "P159",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 167,
+      "paragraph_index": 160,
+      "key": "P160",
+      "style": "Dialogue",
+      "text": "闭上眼睛，不去想；捂住耳朵，不去听；从棋盘前离开，便再也不用知道自己究竟能走到哪里。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 168,
+      "paragraph_index": 161,
+      "key": "P161",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 169,
+      "paragraph_index": 162,
+      "key": "P162",
+      "style": "Dialogue",
+      "text": "只要不落子，就永远不会输。不是吗？"
+    },
+    {
+      "kind": "table",
+      "body_index": 170,
+      "table_index": 7,
+      "key": "T007",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T007-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T007-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "不是。"
+        },
+        {
+          "key": "T007-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T007-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "至少我要先把这一手落下。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 171,
+      "paragraph_index": 163,
+      "key": "P163",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 172,
+      "paragraph_index": 164,
+      "key": "P164",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 173,
+      "paragraph_index": 165,
+      "key": "P165",
+      "style": "Dialogue",
+      "text": "那就来证明吧。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 174,
+      "paragraph_index": 166,
+      "key": "P166",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 175,
+      "paragraph_index": 167,
+      "key": "P167",
+      "style": "Dialogue",
+      "text": "在这张只承认胜负的棋盘上，让我看看你所相信的东西，能不能带你走到最后。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 176,
+      "paragraph_index": 168,
+      "key": "P168",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 177,
+      "paragraph_index": 169,
+      "key": "P169",
+      "style": "Narration",
+      "text": "她身后的黑暗向两侧裂开。一张棋盘浮现在你们之间，唯一保留颜色的，是通往决战的猩红入口。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 178,
+      "paragraph_index": 170,
+      "key": "P170",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 179,
+      "paragraph_index": 171,
+      "key": "P171",
+      "style": "Speaker",
+      "text": "【败北分支】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 180,
+      "paragraph_index": 172,
+      "key": "P172",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 181,
+      "paragraph_index": 173,
+      "key": "P173",
+      "style": "Narration",
+      "text": "最后一颗棋子落下后，棋盘上的数字停止变化。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 182,
+      "paragraph_index": 174,
+      "key": "P174",
+      "style": "Narration",
+      "text": "你输了。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 183,
+      "paragraph_index": 175,
+      "key": "P175",
+      "style": "Narration",
+      "text": "西格莉卡？没有笑，也没有庆祝。她只是安静地看完结果，像在等待一个早已知道的答案。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 184,
+      "paragraph_index": 176,
+      "key": "P176",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 185,
+      "paragraph_index": 177,
+      "key": "P177",
+      "style": "Dialogue",
+      "text": "不用难过。你已经认真想过每一手，也坚持到了最后。只是这些都没有改变结果。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 186,
+      "paragraph_index": 178,
+      "key": "P178",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 187,
+      "paragraph_index": 179,
+      "key": "P179",
+      "style": "Dialogue",
+      "text": "你走进来，是因为有人在等你证明自己。可当你没有做到，那份期待立刻就会变成一句——“为什么你还是不够好？”"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 188,
+      "paragraph_index": 180,
+      "key": "P180",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 189,
+      "paragraph_index": 181,
+      "key": "P181",
+      "style": "Dialogue",
+      "text": "别人甚至不必责怪你。你会替他们责怪自己，会反复寻找是哪一手不够聪明、哪一天还不够努力。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 190,
+      "paragraph_index": 182,
+      "key": "P182",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 191,
+      "paragraph_index": 183,
+      "key": "P183",
+      "style": "Dialogue",
+      "text": "然后你会发现，有些差距不是多坐一会儿、多下几盘就一定能够追上的。付出相同的时间，也不会抵达相同的地方。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 192,
+      "paragraph_index": 184,
+      "key": "P184",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 193,
+      "paragraph_index": 185,
+      "key": "P185",
+      "style": "Dialogue",
+      "text": "人们会记住赢下这局的人。至于你曾经怎样犹豫、怎样坚持、怎样差一点找到正确的变化——那是败者才需要珍惜的东西。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 194,
+      "paragraph_index": 186,
+      "key": "P186",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 195,
+      "paragraph_index": 187,
+      "key": "P187",
+      "style": "Dialogue",
+      "text": "定段赛不会因为伊角过去的努力多给他一个名额，北斗杯也不会因为进藤光已经拼尽全力，替日本队改写比分。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 196,
+      "paragraph_index": 188,
+      "key": "P188",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 197,
+      "paragraph_index": 189,
+      "key": "P189",
+      "style": "Dialogue",
+      "text": "竞技最诚实的地方，也正是它最残酷的地方。它只问这一次谁赢了，不负责安慰那些已经把一切都放上去的人。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 198,
+      "paragraph_index": 190,
+      "key": "P190",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 199,
+      "paragraph_index": 191,
+      "key": "P191",
+      "style": "Narration",
+      "text": "你想开口。喉咙里却像塞满了冰冷的棋子，一个字也发不出来。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 200,
+      "paragraph_index": 192,
+      "key": "P192",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 201,
+      "paragraph_index": 193,
+      "key": "P193",
+      "style": "Dialogue",
+      "text": "所以，停在这里就好。以后不要再回应谁的期待，不要再追赶比自己强的人，也不要再把自己交给一次结果审判。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 202,
+      "paragraph_index": 194,
+      "key": "P194",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 203,
+      "paragraph_index": 195,
+      "key": "P195",
+      "style": "Dialogue",
+      "text": "不去想，不去听，不去看，也不去做……确实会轻松很多。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 204,
+      "paragraph_index": 196,
+      "key": "P196",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 205,
+      "paragraph_index": 197,
+      "key": "P197",
+      "style": "Narration",
+      "text": "她的声音越来越远。棋盘上的线条逐渐融成一片灰白，连你自己的手也开始变得模糊。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 206,
+      "paragraph_index": 198,
+      "key": "P198",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 207,
+      "paragraph_index": 199,
+      "key": "P199",
+      "style": "Narration",
+      "text": "在彻底失去意识以前，你最后看见的，是那盘已经结束、再也无法修改的棋。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 208,
+      "paragraph_index": 200,
+      "key": "P200",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 209,
+      "paragraph_index": 201,
+      "key": "P201",
+      "style": "Dialogue",
+      "text": "{username}？{username}！醒醒，你能听见我说话吗？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 210,
+      "paragraph_index": 202,
+      "key": "P202",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 211,
+      "paragraph_index": 203,
+      "key": "P203",
+      "style": "Narration",
+      "text": "你猛地抬起头。额头下压着一本摊开的棋谱，窗外的夕阳仍停在原来的位置。西格莉卡扶着桌沿，达妮娅则抱着水杯站在她身后。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 212,
+      "paragraph_index": 204,
+      "key": "P204",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 213,
+      "paragraph_index": 205,
+      "key": "P205",
+      "style": "Dialogue",
+      "text": "你刚才突然就趴下去了，怎么叫都没反应。是不是低血糖了？要不要我陪你去找陆医生？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 214,
+      "paragraph_index": 206,
+      "key": "P206",
+      "style": "Speaker",
+      "text": "达妮娅"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 215,
+      "paragraph_index": 207,
+      "key": "P207",
+      "style": "Dialogue",
+      "text": "我看更像是昨晚又通宵了吧。能在西西说话的时候睡得这么沉，也算一种不得了的本事。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 216,
+      "paragraph_index": 208,
+      "key": "P208",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 217,
+      "paragraph_index": 209,
+      "key": "P209",
+      "style": "Dialogue",
+      "text": "我没事……只是有点累。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 218,
+      "paragraph_index": 210,
+      "key": "P210",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 219,
+      "paragraph_index": 211,
+      "key": "P211",
+      "style": "Dialogue",
+      "text": "真的没事吗？至少先喝点水吧。今天就不要勉强自己下棋了。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 220,
+      "paragraph_index": 212,
+      "key": "P212",
+      "style": "Speaker",
+      "text": "达妮娅"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 221,
+      "paragraph_index": 213,
+      "key": "P213",
+      "style": "Dialogue",
+      "text": "嗯，难得同意西西一次。再晕过去的话，负责把你搬去医务室的人可不是我。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 222,
+      "paragraph_index": 214,
+      "key": "P214",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 223,
+      "paragraph_index": 215,
+      "key": "P215",
+      "style": "Narration",
+      "text": "你接过水杯，没有再看桌边的棋盘。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 224,
+      "paragraph_index": 216,
+      "key": "P216",
+      "style": "Narration",
+      "text": "刚才的一切似乎只是一个过分漫长的梦。可那句“只要不落子，就永远不会输”，仍像一颗没有被提走的棋，安静地留在心里。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 225,
+      "paragraph_index": 217,
+      "key": "P217",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 226,
+      "paragraph_index": 218,
+      "key": "P218",
+      "style": "Speaker",
+      "text": "【胜利分支】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 227,
+      "paragraph_index": 219,
+      "key": "P219",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 228,
+      "paragraph_index": 220,
+      "key": "P220",
+      "style": "Narration",
+      "text": "最后的胜负已经确定。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 229,
+      "paragraph_index": 221,
+      "key": "P221",
+      "style": "Narration",
+      "text": "你赢了。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 230,
+      "paragraph_index": 222,
+      "key": "P222",
+      "style": "Narration",
+      "text": "西格莉卡？站在棋盘另一侧，像是忽然失去了支撑身体的力气。她慢慢坐下，目光仍停留在已经结束的棋局上。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 231,
+      "paragraph_index": 223,
+      "key": "P223",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 232,
+      "paragraph_index": 224,
+      "key": "P224",
+      "style": "Dialogue",
+      "text": "然后呢？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 233,
+      "paragraph_index": 225,
+      "key": "P225",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 234,
+      "paragraph_index": 226,
+      "key": "P226",
+      "style": "Dialogue",
+      "text": "你赢了我，可伊角依然经历过那次失败，进藤光依然输掉了北斗杯的两盘棋。人们依然追逐强者，天赋的差距也没有消失。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 235,
+      "paragraph_index": 227,
+      "key": "P227",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 236,
+      "paragraph_index": 228,
+      "key": "P228",
+      "style": "Dialogue",
+      "text": "一盘胜利什么都没有改变。你打算用什么来反驳我？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 237,
+      "paragraph_index": 229,
+      "key": "P229",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 238,
+      "paragraph_index": 230,
+      "key": "P230",
+      "style": "Dialogue",
+      "text": "当所有人都相信“你一定可以”，那就不再只是鼓励了。它会变成不允许失败的命令。只要做不到，就会怀疑真正的自己是不是令所有人失望。"
+    },
+    {
+      "kind": "table",
+      "body_index": 239,
+      "table_index": 8,
+      "key": "T008",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T008-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T008-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "期待不是命令。我可以选择回应，也可以承认自己做不到。"
+        },
+        {
+          "key": "T008-R0-C0-P2",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T008-R0-C0-P3",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "选择……可有些期待，是因为在意那些人才舍不得放下。选择回应它们的人，还是会被压得喘不过气。"
+        },
+        {
+          "key": "T008-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T008-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "就算我辜负过谁，也不能因此断定我不值得被相信。"
+        },
+        {
+          "key": "T008-R0-C1-P2",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T008-R0-C1-P3",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "即使已经让他们失望过，你也还能这样说吗？失败不会自动让那份自责消失。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 240,
+      "paragraph_index": 231,
+      "key": "P231",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 241,
+      "paragraph_index": 232,
+      "key": "P232",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 242,
+      "paragraph_index": 233,
+      "key": "P233",
+      "style": "Dialogue",
+      "text": "自责可以存在，但它不能替我决定以后所有的选择。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 243,
+      "paragraph_index": 234,
+      "key": "P234",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 244,
+      "paragraph_index": 235,
+      "key": "P235",
+      "style": "Dialogue",
+      "text": "那天赋呢？有些人很早就能看见别人看不见的棋，有些人用尽时间也只能摸到他们曾经站过的位置。努力并不会公平地兑换成实力。"
+    },
+    {
+      "kind": "table",
+      "body_index": 245,
+      "table_index": 9,
+      "key": "T009",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T009-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T009-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "努力本来就不是保证登顶的契约。"
+        },
+        {
+          "key": "T009-R0-C0-P2",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T009-R0-C0-P3",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "既然没有保证，为什么还要把那么多时间交给一个可能永远无法抵达的地方？"
+        },
+        {
+          "key": "T009-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T009-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "我未必能成为最强，但我会成为那个真正落下过这些棋的人。"
+        },
+        {
+          "key": "T009-R0-C1-P2",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T009-R0-C1-P3",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "只是“亲自做过”吗？如果永远无法成为自己仰望的那个人，这样就足够了？"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 246,
+      "paragraph_index": 236,
+      "key": "P236",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 247,
+      "paragraph_index": 237,
+      "key": "P237",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 248,
+      "paragraph_index": 238,
+      "key": "P238",
+      "style": "Dialogue",
+      "text": "上限决定我能走多远，却不能替我决定这条路值不值得走。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 249,
+      "paragraph_index": 239,
+      "key": "P239",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 250,
+      "paragraph_index": 240,
+      "key": "P240",
+      "style": "Dialogue",
+      "text": "可这个世界只会向强者聚拢。所有人寻找 sai，追逐塔矢亮和高永夏。没有赢下来的人，只会从视线里慢慢消失。"
+    },
+    {
+      "kind": "table",
+      "body_index": 251,
+      "table_index": 10,
+      "key": "T010",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T010-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T010-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "被看见当然很好，但没被看见不等于没有发生。"
+        },
+        {
+          "key": "T010-R0-C0-P2",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T010-R0-C0-P3",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "如果没有人记得，没有人回应，只剩自己知道……那份努力真的不会变得越来越轻吗？"
+        },
+        {
+          "key": "T010-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T010-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "我不能让所有人回头，但我至少可以选择看见那些没有赢的人。"
+        },
+        {
+          "key": "T010-R0-C1-P2",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T010-R0-C1-P3",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "只靠一个人去看见，又能改变多少？那些被忽略的人还是不会因此得到掌声。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 252,
+      "paragraph_index": 241,
+      "key": "P241",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 253,
+      "paragraph_index": 242,
+      "key": "P242",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 254,
+      "paragraph_index": 243,
+      "key": "P243",
+      "style": "Dialogue",
+      "text": "意义不是掌声分配的。伊角重新落下的棋，确实把进藤光带回来了。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 255,
+      "paragraph_index": 244,
+      "key": "P244",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 256,
+      "paragraph_index": 245,
+      "key": "P245",
+      "style": "Dialogue",
+      "text": "但结果仍然是结果。伊角那一年没有定段，进藤光也没有替日本队赢下任何一场。竞技不会为了过程动人，就多给败者半目。"
+    },
+    {
+      "kind": "table",
+      "body_index": 257,
+      "table_index": 11,
+      "key": "T011",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T011-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T011-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "比分必须诚实，但它只能回答这一次谁赢了。"
+        },
+        {
+          "key": "T011-R0-C0-P2",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T011-R0-C0-P3",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "所以你愿意接受，自己可能付出一切，最后只得到一个诚实的“输”字？"
+        },
+        {
+          "key": "T011-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T011-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "输掉的棋不会从棋谱里消失，走过的人也不会回到落子以前。"
+        },
+        {
+          "key": "T011-R0-C1-P2",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 2,
+          "style": "ChoiceSpeaker",
+          "text": "西格莉卡？"
+        },
+        {
+          "key": "T011-R0-C1-P3",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 3,
+          "style": "ChoiceDialogue",
+          "text": "棋谱留下来又怎样？它不能把败局改成胜利，也不能把失去的人带回来。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 258,
+      "paragraph_index": 246,
+      "key": "P246",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 259,
+      "paragraph_index": 247,
+      "key": "P247",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 260,
+      "paragraph_index": 248,
+      "key": "P248",
+      "style": "Dialogue",
+      "text": "它不需要把失败改成胜利，才有资格存在。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 261,
+      "paragraph_index": 249,
+      "key": "P249",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 262,
+      "paragraph_index": 250,
+      "key": "P250",
+      "style": "Dialogue",
+      "text": "……世界没有改变，差距没有消失，下一次你也可能输。既然如此，你究竟赢过了什么？"
+    },
+    {
+      "kind": "table",
+      "body_index": 263,
+      "table_index": 12,
+      "key": "T012",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T012-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T012-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "我赢过了那个因为害怕结果，想从一开始就不落子的人。"
+        },
+        {
+          "key": "T012-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T012-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "我没有赢过这个世界。我只是仍然选择坐到棋盘前。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 264,
+      "paragraph_index": 251,
+      "key": "P251",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 265,
+      "paragraph_index": 252,
+      "key": "P252",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 266,
+      "paragraph_index": 253,
+      "key": "P253",
+      "style": "Dialogue",
+      "text": "即使下一盘还是会输？"
+    },
+    {
+      "kind": "table",
+      "body_index": 267,
+      "table_index": 13,
+      "key": "T013",
+      "rows": 1,
+      "columns": 2,
+      "cells": [
+        {
+          "key": "T013-R0-C0-P0",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T013-R0-C0-P1",
+          "row": 0,
+          "column": 0,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "那就等下一盘真正开始，再把下一手落下去。"
+        },
+        {
+          "key": "T013-R0-C1-P0",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 0,
+          "style": "ChoiceSpeaker",
+          "text": "玩家"
+        },
+        {
+          "key": "T013-R0-C1-P1",
+          "row": 0,
+          "column": 1,
+          "paragraph_index": 1,
+          "style": "ChoiceDialogue",
+          "text": "只要轮到我，我就会亲自决定这一手下在哪里。"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 268,
+      "paragraph_index": 254,
+      "key": "P254",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 269,
+      "paragraph_index": 255,
+      "key": "P255",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 270,
+      "paragraph_index": 256,
+      "key": "P256",
+      "style": "Dialogue",
+      "text": "……这样啊。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 271,
+      "paragraph_index": 257,
+      "key": "P257",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 272,
+      "paragraph_index": 258,
+      "key": "P258",
+      "style": "Dialogue",
+      "text": "我还是没有办法相信，那些残酷的事情会因此变好。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 273,
+      "paragraph_index": 259,
+      "key": "P259",
+      "style": "Speaker",
+      "text": "西格莉卡？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 274,
+      "paragraph_index": 260,
+      "key": "P260",
+      "style": "Dialogue",
+      "text": "不过，你已经落子了。至少这一点，我没办法再说它从未发生。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 275,
+      "paragraph_index": 261,
+      "key": "P261",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 276,
+      "paragraph_index": 262,
+      "key": "P262",
+      "style": "Narration",
+      "text": "棋盘、教室和她的身影同时失去焦点。你听见很远的地方有人呼唤你的名字，眼前的世界随之沉入一片温暖的白光。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 277,
+      "paragraph_index": 263,
+      "key": "P263",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 278,
+      "paragraph_index": 264,
+      "key": "P264",
+      "style": "Narration",
+      "text": "你向前伸出手，却只碰到一片柔软的黑暗。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 279,
+      "paragraph_index": 265,
+      "key": "P265",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 280,
+      "paragraph_index": 266,
+      "key": "P266",
+      "style": "Dialogue",
+      "text": "{username}？{username}！太好了，你终于醒了！"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 281,
+      "paragraph_index": 267,
+      "key": "P267",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 282,
+      "paragraph_index": 268,
+      "key": "P268",
+      "style": "Narration",
+      "text": "你从课桌上抬起头。活动室依然浸在夕阳里。西格莉卡半蹲在课桌边看着你，脸上是刚舒展开来的笑容。达妮娅则端着水杯，睡眼惺忪地打量着你。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 283,
+      "paragraph_index": 269,
+      "key": "P269",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 284,
+      "paragraph_index": 270,
+      "key": "P270",
+      "style": "Dialogue",
+      "text": "你刚才突然趴下去了，脸色也不太好。是不是低血糖了？要不要我陪你去找陆医生看看？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 285,
+      "paragraph_index": 271,
+      "key": "P271",
+      "style": "Speaker",
+      "text": "达妮娅"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 286,
+      "paragraph_index": 272,
+      "key": "P272",
+      "style": "Dialogue",
+      "text": "也可能是昨晚通宵。正常人可不会听着糖果噼啪响两声，就当场睡得像被人点了休眠键。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 287,
+      "paragraph_index": 273,
+      "key": "P273",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 288,
+      "paragraph_index": 274,
+      "key": "P274",
+      "style": "Dialogue",
+      "text": "我没事，只是做了一个很长的梦。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 289,
+      "paragraph_index": 275,
+      "key": "P275",
+      "style": "Speaker",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 290,
+      "paragraph_index": 276,
+      "key": "P276",
+      "style": "Dialogue",
+      "text": "西格莉卡，陪我下一局吧。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 291,
+      "paragraph_index": 277,
+      "key": "P277",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 292,
+      "paragraph_index": 278,
+      "key": "P278",
+      "style": "Dialogue",
+      "text": "诶？才刚醒就要下棋吗？"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 293,
+      "paragraph_index": 279,
+      "key": "P279",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 294,
+      "paragraph_index": 280,
+      "key": "P280",
+      "style": "Narration",
+      "text": "她愣了一下，随即露出熟悉的笑容，把棋罐推到棋盘两侧。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 295,
+      "paragraph_index": 281,
+      "key": "P281",
+      "style": "Speaker",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 296,
+      "paragraph_index": 282,
+      "key": "P282",
+      "style": "Dialogue",
+      "text": "当然可以。那这一次，也请多多指教啦，{username}！"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 297,
+      "paragraph_index": 283,
+      "key": "P283",
+      "style": "Speaker",
+      "text": "达妮娅"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 298,
+      "paragraph_index": 284,
+      "key": "P284",
+      "style": "Dialogue",
+      "text": "你们两个还真有精神……那我去食堂打饭啦。下完记得把灯关掉。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 299,
+      "paragraph_index": 285,
+      "key": "P285",
+      "style": "Speaker",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 300,
+      "paragraph_index": 286,
+      "key": "P286",
+      "style": "Narration",
+      "text": "第一颗棋子落在交叉点上，发出清脆而普通的一声。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 301,
+      "paragraph_index": 287,
+      "key": "P287",
+      "style": "Narration",
+      "text": "没有什么因此被保证，也没有什么因此被改写。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 302,
+      "paragraph_index": 288,
+      "key": "P288",
+      "style": "Narration",
+      "text": "只是这一手，确实已经落下。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 303,
+      "paragraph_index": 289,
+      "key": "P289",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 304,
+      "paragraph_index": 290,
+      "key": "P290",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 305,
+      "paragraph_index": 291,
+      "key": "P291",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 306,
+      "paragraph_index": 292,
+      "key": "P292",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 307,
+      "paragraph_index": 293,
+      "key": "P293",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 308,
+      "paragraph_index": 294,
+      "key": "P294",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 309,
+      "paragraph_index": 295,
+      "key": "P295",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 310,
+      "paragraph_index": 296,
+      "key": "P296",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 311,
+      "paragraph_index": 297,
+      "key": "P297",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 312,
+      "paragraph_index": 298,
+      "key": "P298",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 313,
+      "paragraph_index": 299,
+      "key": "P299",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 314,
+      "paragraph_index": 300,
+      "key": "P300",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 315,
+      "paragraph_index": 301,
+      "key": "P301",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 316,
+      "paragraph_index": 302,
+      "key": "P302",
+      "style": "Narration",
+      "text": ""
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 317,
+      "paragraph_index": 303,
+      "key": "P303",
+      "style": "Narration",
+      "text": "【通用吃糖生效剧情】"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 318,
+      "paragraph_index": 304,
+      "key": "P304",
+      "style": "Narration",
+      "text": "玩家"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 319,
+      "paragraph_index": 305,
+      "key": "P305",
+      "style": "Narration",
+      "text": "把彩虹豆豆跳跳糖递给西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 320,
+      "paragraph_index": 306,
+      "key": "P306",
+      "style": "Narration",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 321,
+      "paragraph_index": 307,
+      "key": "P307",
+      "style": "Narration",
+      "text": "这个糖的颜色好绚丽……看起来很适合读完一段故事以后换换心情。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 322,
+      "paragraph_index": 308,
+      "key": "P308",
+      "style": "Narration",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 323,
+      "paragraph_index": 309,
+      "key": "P309",
+      "style": "Narration",
+      "text": "西格莉卡把糖果放入口中。细碎的噼啪声才响了几下，她便猛地捂住嘴，肩膀也跟着抖了一下。"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 324,
+      "paragraph_index": 310,
+      "key": "P310",
+      "style": "Narration",
+      "text": "西格莉卡"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 325,
+      "paragraph_index": 311,
+      "key": "P311",
+      "style": "Narration",
+      "text": "嗝……怎么会一直打嗝……{username}，这我可没法下嗝......我、嗝去问问嗝医生这种情况该怎么办！"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 326,
+      "paragraph_index": 312,
+      "key": "P312",
+      "style": "Narration",
+      "text": "旁白"
+    },
+    {
+      "kind": "paragraph",
+      "body_index": 327,
+      "paragraph_index": 313,
+      "key": "P313",
+      "style": "Narration",
+      "text": "西格莉卡抱起漫画，一边打着嗝一边光速跑出了围棋部活动室。看来在等糖效消失以前，暂时不能找她下棋了。"
+    }
+  ]
+}

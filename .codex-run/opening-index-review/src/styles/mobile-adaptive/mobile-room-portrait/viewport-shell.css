@@ -1,0 +1,16 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen .mobile-room-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) auto;
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-board-viewport {
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+}

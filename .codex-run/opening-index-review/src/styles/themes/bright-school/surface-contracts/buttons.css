@@ -1,0 +1,13 @@
+/* 6. 按钮组件样式标准化修正（剔除任何发光继承，落实贴纸按键质感） */
+.app-shell.player-theme-enabled.theme-bright-school .primary-action,
+.app-shell.player-theme-enabled.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school .skill-action,
+.app-shell.player-theme-enabled.theme-bright-school .settings-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school .shop-tabs button.active {
+  background: #ff9ebb !important;
+  color: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+}

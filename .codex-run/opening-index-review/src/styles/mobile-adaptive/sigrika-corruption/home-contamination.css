@@ -1,0 +1,176 @@
+.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-player-plaque:disabled {
+  opacity: 0.44 !important;
+  filter: grayscale(1) contrast(1.65) brightness(0.58) !important;
+  text-decoration: line-through;
+  text-shadow: 4px 0 0 rgb(255 255 255 / 0.18), -3px 0 0 rgb(0 0 0 / 0.84);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-player-zone {
+  filter: grayscale(1) saturate(0) contrast(1.12) brightness(0.82) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-grid-featured > .home-utility-grid .utility-entry:disabled {
+  opacity: 1 !important;
+  border: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  overflow: visible !important;
+}
+
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .home-grid-featured > .home-utility-grid .utility-entry:disabled::before,
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .home-grid-featured > .home-utility-grid .utility-entry:disabled::after {
+  content: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .utility-entry:disabled .utility-entry-motion {
+  position: relative;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .utility-entry:disabled .utility-entry-art {
+  filter: grayscale(1) contrast(1.7) brightness(0.52) !important;
+  opacity: 0;
+}
+
+.app-shell.is-sigrika-corrupted .utility-data-fragments {
+  z-index: 2;
+  display: block !important;
+  opacity: 0.9;
+  filter: grayscale(1) contrast(1.8) brightness(0.5);
+}
+
+.app-shell.is-sigrika-corrupted .utility-data-fragments .corruption-fragment-piece {
+  padding: 0 6px 6px 0;
+}
+
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .is-corruption-access-point {
+  position: relative;
+  z-index: 6 !important;
+  filter: none !important;
+  opacity: 1 !important;
+  isolation: isolate;
+}
+
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .home-match-feature {
+  position: relative;
+  z-index: 6 !important;
+}
+
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .home-main-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted main.home-screen.is-sigrika-corrupted-home > section.home-main-panel.home-terminal-main::after {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  content: "" !important;
+  background-color: transparent !important;
+  background-image: var(--home-main-panel-bg) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  filter: grayscale(1) saturate(0) contrast(1.12) brightness(0.82) !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted main.home-screen.is-sigrika-corrupted-home > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+  z-index: 1 !important;
+}
+
+.app-shell.is-sigrika-corrupted .is-sigrika-corrupted-home .is-corruption-access-point .home-entry-motion > img {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-manual-entry.is-corruption-access-point .house-manual-corruption-source {
+  opacity: 0 !important;
+}
+
+.app-shell.is-sigrika-corrupted .house-manual-data-fragments {
+  --corruption-fragment-limit: 5px;
+  z-index: 2;
+  display: block !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.app-shell.is-sigrika-corrupted .house-manual-data-fragments .corruption-fragment-piece {
+  height: 100% !important;
+  filter: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header :is(
+  .home-brand-version,
+  .topbar-actions,
+  .home-mobile-menu
+) {
+  filter: grayscale(1) contrast(1.12) !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-brand-title {
+  position: relative;
+  z-index: 1;
+  color: #171214 !important;
+  text-shadow: 2px 0 0 rgb(255 255 255 / 0.28), -2px 0 0 rgb(0 0 0 / 0.45) !important;
+}
+
+.home-brand-title-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.app-shell.is-sigrika-corrupted > .home-footer-strip {
+  border: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 0.5 !important;
+}
+
+.app-shell.is-sigrika-corrupted > .home-footer-strip::before,
+.app-shell.is-sigrika-corrupted > .home-footer-strip::after {
+  content: none !important;
+}
+
+.app-shell.is-sigrika-corrupted .home-footer-strip .home-footer-disabled-link {
+  opacity: 0.58;
+  text-decoration: line-through;
+}
+
+@media (max-width: 700px) {
+  .app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header {
+    grid-template-areas: "brand actions" !important;
+    grid-template-columns: minmax(0, 1fr) 44px !important;
+  }
+
+  .app-shell.is-sigrika-corrupted .utility-data-fragments {
+    --corruption-fragment-limit: 4px;
+  }
+
+  .app-shell.is-sigrika-corrupted .house-manual-data-fragments {
+    --corruption-fragment-limit: 3px;
+  }
+}

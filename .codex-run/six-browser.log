@@ -1,0 +1,7 @@
+locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByText('注册', { exact: true })
+
+    at C:\codex\SigrikaGo\.codex-run\six-verify.mjs:30:42 {
+  name: 'TimeoutError'
+}

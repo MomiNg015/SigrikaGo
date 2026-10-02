@@ -1,0 +1,9 @@
+@import "./mobile-modals/backdrop-base.css";
+@import "./mobile-modals/compact-modal-shell.css";
+@import "./mobile-modals/phone-modal-shell-watch.css";
+@import "./mobile-modals/phone-replay-profile.css";
+@import "./mobile-modals/phone-shop-buttons.css";
+@import "./mobile-modals/phone-leaderboard.css";
+@import "./mobile-modals/phone-friends.css";
+@import "./mobile-modals/phone-house-resume.css";
+@import "./mobile-modals/reduced-motion.css";

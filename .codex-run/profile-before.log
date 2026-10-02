@@ -1,0 +1,580 @@
+360 800 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 776,
+    scroll: 770,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.265625,
+    h: 682.734375,
+    scroll: 683,
+    overflow: 'hidden',
+    rows: '184px 70px 428.734px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.265625,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.265625,
+    h: 428.734375,
+    scroll: 429,
+    overflow: 'visible',
+    rows: '0px 256px 160.734px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.265625,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 602.265625,
+    h: 152.734375,
+    scroll: 149,
+    overflow: 'hidden',
+    rows: '32px 86.7344px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 654.265625,
+    h: 86.734375,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+360 800 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 724,
+    scroll: 718,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.375,
+    h: 640.625,
+    scroll: 641,
+    overflow: 'hidden',
+    rows: '184px 70px 386.625px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.375,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.375,
+    h: 386.625,
+    scroll: 387,
+    overflow: 'visible',
+    rows: '0px 256px 118.625px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.375,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 628.375,
+    h: 110.625,
+    scroll: 107,
+    overflow: 'hidden',
+    rows: '32px 44.625px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 680.375,
+    h: 44.625,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+390 844 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 820,
+    scroll: 814,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.46875,
+    h: 726.53125,
+    scroll: 727,
+    overflow: 'hidden',
+    rows: '184px 70px 472.531px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.46875,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.46875,
+    h: 472.53125,
+    scroll: 473,
+    overflow: 'visible',
+    rows: '0px 256px 204.531px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.46875,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 602.46875,
+    h: 196.53125,
+    scroll: 193,
+    overflow: 'hidden',
+    rows: '32px 130.531px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 654.46875,
+    h: 130.53125,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+390 844 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 768,
+    scroll: 762,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.578125,
+    h: 684.421875,
+    scroll: 684,
+    overflow: 'hidden',
+    rows: '184px 70px 430.422px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.578125,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.578125,
+    h: 430.421875,
+    scroll: 430,
+    overflow: 'visible',
+    rows: '0px 256px 162.422px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.578125,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 628.578125,
+    h: 154.421875,
+    scroll: 150,
+    overflow: 'hidden',
+    rows: '32px 88.4219px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 680.578125,
+    h: 88.421875,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+412 915 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 891,
+    scroll: 885,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.75,
+    h: 797.25,
+    scroll: 797,
+    overflow: 'hidden',
+    rows: '184px 70px 543.25px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.75,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.75,
+    h: 543.25,
+    scroll: 543,
+    overflow: 'visible',
+    rows: '0px 256px 275.25px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.75,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 602.75,
+    h: 267.25,
+    scroll: 263,
+    overflow: 'hidden',
+    rows: '32px 201.25px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 654.75,
+    h: 201.25,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+412 915 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 839,
+    scroll: 833,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.875,
+    h: 755.125,
+    scroll: 755,
+    overflow: 'hidden',
+    rows: '184px 70px 501.125px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.875,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.875,
+    h: 501.125,
+    scroll: 501,
+    overflow: 'visible',
+    rows: '0px 256px 233.125px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.875,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 628.875,
+    h: 225.125,
+    scroll: 221,
+    overflow: 'hidden',
+    rows: '32px 159.125px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 680.875,
+    h: 159.125,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+360 640 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 616,
+    scroll: 610,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 87.328125,
+    h: 523.671875,
+    scroll: 574,
+    overflow: 'hidden',
+    rows: '184px 70px 269.672px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 91.328125,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 341.328125,
+    h: 269.671875,
+    scroll: 320,
+    overflow: 'visible',
+    rows: '0px 256px 1.67188px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 345.328125,
+    h: 256,
+    scroll: 256,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 601.328125,
+    h: 30,
+    scroll: 62,
+    overflow: 'hidden',
+    rows: '32px 0px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 653.328125,
+    h: 8,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+360 640 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 564,
+    scroll: 558,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 113.390625,
+    h: 481.609375,
+    scroll: 534,
+    overflow: 'hidden',
+    rows: '184px 70px 227.609px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 117.390625,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 367.390625,
+    h: 227.609375,
+    scroll: 280,
+    overflow: 'visible',
+    rows: '0px 215.609px 0px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 371.390625,
+    h: 215.609375,
+    scroll: 250,
+    overflow: 'visible',
+    rows: '142px 100px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 587,
+    h: 30,
+    scroll: 62,
+    overflow: 'hidden',
+    rows: '32px 0px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 639,
+    h: 8,
+    scroll: 712,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+1440 900 false [
+  {
+    s: '.user-profile-modal',
+    y: 28,
+    h: 868,
+    scroll: 862,
+    overflow: 'hidden',
+    rows: '59px 759px'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 110,
+    h: 759,
+    scroll: 759,
+    overflow: 'hidden',
+    rows: '204px 70px 485px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 114,
+    h: 192,
+    scroll: 188,
+    overflow: 'visible',
+    rows: '152px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 384,
+    h: 485,
+    scroll: 485,
+    overflow: 'visible',
+    rows: '0px 146px 327px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 388,
+    h: 146,
+    scroll: 235,
+    overflow: 'visible',
+    rows: '130px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 534,
+    h: 319,
+    scroll: 315,
+    overflow: 'hidden',
+    rows: '32px 253px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 586,
+    h: 253,
+    scroll: 884,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+1440 900 true [
+  {
+    s: '.user-profile-modal',
+    y: 54,
+    h: 824,
+    scroll: 818,
+    overflow: 'visible',
+    rows: '44px 742px'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 109,
+    h: 742,
+    scroll: 742,
+    overflow: 'hidden',
+    rows: '204px 70px 468px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 113,
+    h: 192,
+    scroll: 188,
+    overflow: 'visible',
+    rows: '152px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 383,
+    h: 468,
+    scroll: 468,
+    overflow: 'visible',
+    rows: '0px 146px 310px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 387,
+    h: 146,
+    scroll: 235,
+    overflow: 'visible',
+    rows: '130px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 533,
+    h: 302,
+    scroll: 298,
+    overflow: 'hidden',
+    rows: '32px 236px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 585,
+    h: 236,
+    scroll: 884,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]

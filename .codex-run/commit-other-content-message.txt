@@ -1,0 +1,14 @@
+feat: add team matches, capture challenge and interface updates
+
+Add team relay admission, stage handoffs, lineup selection and replay support;
+add the capture challenge, dedicated persistence and leaderboard. Include
+match entry, window layout, candy story, specs and task documentation updates.
+
+Exclude chibi portrait/reference images and local build/test artifacts.
+
+Validation: ESLint, 10 browser tests, production build, portrait assets,
+admin snapshot, built CSS contracts, production config and system-design
+generation passed. Unit suite: 2653 passed, 7 failed. Remaining failures:
+- social replay query fixture assertions (2)
+- existing HouseModal, ShopModal and RoomScreen interface assertions (4)
+- CSS debt totalBytes baseline exceeded by 1280 bytes (1)

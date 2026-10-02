@@ -1,0 +1,58 @@
+
+> sigrika-go@0.1.0 build
+> vite build
+
+vite v6.4.3 building for production...
+transforming...
+
+__VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+__VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 2692 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                       0.73 kB │ gzip:   0.36 kB
+dist/assets/TutorialBattleScreen-xOahuKah.css        12.10 kB │ gzip:   3.08 kB
+dist/assets/AdminConsole-BmTk_mFw.css                64.24 kB │ gzip:  11.18 kB
+dist/assets/index-BnnTaH5u.css                    1,242.60 kB │ gzip: 173.99 kB
+dist/assets/shopItemIllust-BrQKaBYd.js                0.12 kB │ gzip:   0.11 kB
+dist/assets/check-DB3cZizB.js                         0.30 kB │ gzip:   0.25 kB
+dist/assets/search-CoPkSX4K.js                        0.35 kB │ gzip:   0.27 kB
+dist/assets/circle-dollar-sign-D6_tD3zG.js            0.42 kB │ gzip:   0.31 kB
+dist/assets/award-FNZxkYU8.js                         0.45 kB │ gzip:   0.33 kB
+dist/assets/refresh-cw-C5ciFMsG.js                    0.49 kB │ gzip:   0.33 kB
+dist/assets/ticket-DRnbZ2dd.js                        0.49 kB │ gzip:   0.32 kB
+dist/assets/trash-2-CCvSWXbT.js                       0.53 kB │ gzip:   0.35 kB
+dist/assets/package-DJO2fzOj.js                       0.55 kB │ gzip:   0.36 kB
+dist/assets/StoneDecorationPreview-uCGSoDZ2.js        0.57 kB │ gzip:   0.38 kB
+dist/assets/palette-BrvMfrKT.js                       0.68 kB │ gzip:   0.38 kB
+dist/assets/MessageBoardModal-B7brzplD.js             1.35 kB │ gzip:   0.83 kB
+dist/assets/MarkdownLiteContent-DO4bP3rb.js           2.40 kB │ gzip:   1.02 kB
+dist/assets/InformationCenterLayout-C9kGszHS.js       2.46 kB │ gzip:   1.18 kB
+dist/assets/BattleAssetPreloadScreen-C_Iy8-6F.js      2.64 kB │ gzip:   1.32 kB
+dist/assets/WatchModal-CiO32m2B.js                    3.88 kB │ gzip:   1.66 kB
+dist/assets/AchievementModal-3rb5vJsW.js              4.18 kB │ gzip:   1.94 kB
+dist/assets/LeaderboardModal-BRu2EKoL.js              4.44 kB │ gzip:   1.90 kB
+dist/assets/ResumeModal-DBvNOPjT.js                   4.62 kB │ gzip:   2.14 kB
+dist/assets/SettingsModal-UPeXIlUP.js                 5.30 kB │ gzip:   2.07 kB
+dist/assets/PersonalizationModal-u3p_k45n.js          5.71 kB │ gzip:   2.21 kB
+dist/assets/FriendsModal-BUwSKz3R.js                  7.83 kB │ gzip:   2.92 kB
+dist/assets/AnnouncementModal-CHp4RnWZ.js             8.06 kB │ gzip:   3.17 kB
+dist/assets/WarehouseModal-BvHk7-Zn.js                8.82 kB │ gzip:   3.59 kB
+dist/assets/MailboxModal-D9etczmz.js                  9.22 kB │ gzip:   3.64 kB
+dist/assets/HouseModal-pZCYWFe5.js                   13.43 kB │ gzip:   4.81 kB
+dist/assets/RecruitmentModal-DMQUEfph.js             17.15 kB │ gzip:   5.84 kB
+dist/assets/TutorialBattleScreen-uDHxKine.js         21.78 kB │ gzip:   7.65 kB
+dist/assets/ShopModal-DyRfDK3q.js                    26.21 kB │ gzip:   8.52 kB
+dist/assets/realtime-vendor-QyAzXPig.js              41.59 kB │ gzip:  13.02 kB
+dist/assets/react-vendor-DvgcfV-f.js                193.93 kB │ gzip:  60.58 kB
+dist/assets/AdminConsole-C-FYx4_H.js                213.90 kB │ gzip:  58.20 kB
+dist/assets/index-BQAQe-Sx.js                       496.74 kB │ gzip: 155.49 kB
+dist/assets/pixi-vendor-DKLUOadx.js                 870.42 kB │ gzip: 249.95 kB
+dist/assets/exceljs.min-CkSz_nNj.js                 940.20 kB │ gzip: 271.34 kB
+
+(!) Some chunks are larger than 900 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 19.00s

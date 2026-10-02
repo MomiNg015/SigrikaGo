@@ -1,0 +1,90 @@
+/* Dossier geometry only; tagged action paint is shared with ordinary controls. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
+  .resume-header-actions,
+  .profile-modal-header,
+  .profile-identity-actions,
+  .profile-section-heading,
+  .profile-secondary-actions,
+  .profile-mode-feedback
+) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button) {
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-radius: 14px !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .resume-header-actions :is(
+  .achievement-entry-action,
+  .resume-wallet
+) svg {
+  color: inherit !important;
+  filter: none !important;
+  stroke: currentColor !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view {
+  --resume-icon-size: 36px;
+  @media (max-width: 360px) and (orientation: portrait) {
+    --resume-icon-size: 32px;
+  }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
+  & .profile-identity-actions {
+    position: absolute;
+    grid-area: auto;
+    right: 10px;
+    bottom: 6px;
+    display: flex !important;
+    justify-self: end !important;
+    align-self: end;
+    width: auto !important;
+    gap: 6px !important;
+
+    & .resume-mini-action {
+      display: inline-flex !important;
+      justify-content: center;
+      align-items: center;
+      padding: 0 !important;
+    }
+  }
+
+  @media (max-width: 360px) and (orientation: portrait) {
+    & .profile-identity-actions { bottom: 2px; }
+  }
+
+  & .achievement-entry-action {
+    --campus-control-fill: #ffe4ee;
+    --campus-control-hover: #ffe4ee;
+    --campus-control-ink: #76314a;
+    --campus-control-border: #f08bad;
+  }
+
+  & .personalization-entry-action {
+    --campus-control-fill: #d9f0ff;
+    --campus-control-hover: #d9f0ff;
+    --campus-control-ink: #245f8c;
+    --campus-control-border: #7db8e8;
+  }
+
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-replay-button {
+    --campus-control-fill: #e4f6f0;
+    --campus-control-hover: #e4f6f0;
+    --campus-control-ink: #245b4f;
+    --campus-control-border: #73b79f;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal.profile-dossier-modal .profile-resume-view-self button:is(.achievement-entry-action, .personalization-entry-action, .resume-replay-action),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.profile-dossier-modal .profile-resume-view-social button.profile-replay-button {
+  --campus-control-shadow: none;
+  --campus-control-hover-shadow: none;
+  --campus-control-active-shadow: none;
+  border-radius: 50% !important;
+  width: var(--resume-icon-size) !important;
+  min-width: var(--resume-icon-size) !important;
+  height: var(--resume-icon-size) !important;
+  min-height: var(--resume-icon-size) !important;
+}

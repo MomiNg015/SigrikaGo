@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="金币袋">
+  <defs>
+    <linearGradient id="bag" x1="29" x2="103" y1="36" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff1b8"/>
+      <stop offset="0.45" stop-color="#e3a93c"/>
+      <stop offset="1" stop-color="#9e641f"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="15" x2="62" y1="26" y2="75" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff8be"/>
+      <stop offset="0.52" stop-color="#ffc94d"/>
+      <stop offset="1" stop-color="#d98616"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#5b3520" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <ellipse cx="38" cy="62" rx="25" ry="21" fill="url(#coin)" stroke="#5a3924" stroke-width="4"/>
+    <ellipse cx="84" cy="60" rx="24" ry="20" fill="url(#coin)" stroke="#5a3924" stroke-width="4"/>
+    <path fill="#7a4e2b" stroke="#3e2b22" stroke-linejoin="round" stroke-width="5" d="M47 37c4-11 30-11 35 0l-8 14H55L47 37Z"/>
+    <path fill="url(#bag)" stroke="#3e2b22" stroke-linejoin="round" stroke-width="5" d="M36 64c5-13 21-18 29-18s25 5 31 18c9 19 18 50-31 50S27 83 36 64Z"/>
+    <path fill="none" stroke="#6d4028" stroke-linecap="round" stroke-width="6" d="M48 57c10 5 24 5 35 0"/>
+    <circle cx="63" cy="83" r="18" fill="#ffd766" stroke="#6d4028" stroke-width="5"/>
+    <path fill="none" stroke="#9f641e" stroke-linecap="round" stroke-width="5" d="M63 72v22M53 83h20"/>
+    <path fill="#fff7cb" fill-opacity="0.55" d="M44 69c4-8 13-13 20-13-15 14-17 33-13 47-12-5-17-21-7-34Z"/>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+··············x·····················································
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .codex-run/opening-index-review/src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 693 to be less than or equal to 692
+ ❯ .codex-run/opening-index-review/src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 67 passed (68)
+   Start at  09:50:31
+   Duration  5.11s (transform 2.20s, setup 0ms, collect 5.11s, tests 4.90s, environment 2ms, prepare 1.17s)
+

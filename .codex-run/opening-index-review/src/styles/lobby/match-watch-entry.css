@@ -1,0 +1,39 @@
+.match-button {
+  width: 100%;
+  min-height: 72px;
+  font-size: 20px;
+  background: linear-gradient(135deg, #5d7fe8, #e279ad);
+}
+
+.home-match-feature .match-button-large {
+  width: auto;
+  min-width: clamp(128px, 12vw, 168px);
+  min-height: clamp(42px, 4vw, 52px);
+  padding: 10px 22px;
+  font-size: clamp(15px, 1.25vw, 18px);
+}
+
+.watch-pad {
+  display: grid;
+  gap: 12px;
+}
+
+.room-code {
+  padding: 14px;
+  border-radius: 8px;
+  background: #2f2a35;
+  color: #fff;
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 8px;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.keypad span {
+  min-height: 44px;
+}

@@ -1,0 +1,78 @@
+{
+  width: 1440,
+  columns: '203.594px 203.594px 203.609px 203.594px 203.609px',
+  window: {
+    x: 215,
+    y: 54,
+    width: 1120,
+    height: 450,
+    top: 54,
+    right: 1335,
+    bottom: 504,
+    left: 215
+  },
+  grid: {
+    x: 240,
+    y: 141,
+    width: 1070,
+    height: 338,
+    top: 141,
+    right: 1310,
+    bottom: 479,
+    left: 240
+  },
+  overflow: false,
+  art: false
+}
+{
+  width: 390,
+  columns: '84px 84px 84px',
+  window: {
+    x: 64,
+    y: 46,
+    width: 314,
+    height: 487,
+    top: 46,
+    right: 378,
+    bottom: 533,
+    left: 64
+  },
+  grid: {
+    x: 81,
+    y: 129,
+    width: 280,
+    height: 387,
+    top: 129,
+    right: 361,
+    bottom: 516,
+    left: 81
+  },
+  overflow: false,
+  art: false
+}
+{
+  width: 360,
+  columns: '74px 74px 74px',
+  window: {
+    x: 64,
+    y: 46,
+    width: 284,
+    height: 487,
+    top: 46,
+    right: 348,
+    bottom: 533,
+    left: 64
+  },
+  grid: {
+    x: 81,
+    y: 129,
+    width: 250,
+    height: 387,
+    top: 129,
+    right: 331,
+    bottom: 516,
+    left: 81
+  },
+  overflow: false,
+  art: false
+}

@@ -1,0 +1,17 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { renderSystemDesignHtml, SYSTEM_DESIGN_SOURCE_PATHS } from '../../scripts/render-system-design-html.mjs';
+import { fileURLToPath } from 'node:url';
+import { relative } from 'node:path';
+const git=(args,input)=>execFileSync('git',args,{encoding:'utf8',input});
+const head=p=>git(['show',`HEAD:${p}`]).replace(/\r\n/g,'\n');
+const stage=(p,s)=>{const hash=git(['hash-object','-w','--stdin'],s).trim();git(['update-index','--add','--cacheinfo',`100644,${hash},${p}`]);};
+const cssPath='src/styles/mobile-adaptive/bright-school-overrides/leaderboard-cards/score-record.css';
+stage(cssPath,readFileSync(cssPath,'utf8').replace(/\r\n/g,'\n'));
+let baseline=head('src/styles/cssLayerInventory.js').replace(/totalBytes: (\d+)/,(_,n)=>`totalBytes: ${Number(n)+191}`).replace(/importantCount: (\d+)/,(_,n)=>`importantCount: ${Number(n)+2}`);
+stage('src/styles/cssLayerInventory.js',baseline);
+const paragraph='移动端吃子排行榜的提子数跨越整行三条网格轨道并垂直居中，榜单和底部个人排名共用；普通排行榜保留积分、战绩和胜率的分行布局。';
+const markdown=head('docs/system-design.md').replace('# SigrikaGo 系统设计\n',`# SigrikaGo 系统设计\n\n${paragraph}\n`);
+stage('docs/system-design.md',markdown);
+const parts=SYSTEM_DESIGN_SOURCE_PATHS.map(url=>relative(process.cwd(),fileURLToPath(url)).replaceAll('\\','/')).map(p=>p==='docs/system-design.md'?markdown:head(p));
+stage('docs/system-design.html',renderSystemDesignHtml(parts.map(s=>s.trim()).filter(Boolean).join('\n\n---\n\n')+'\n'));

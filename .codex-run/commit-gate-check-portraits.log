@@ -1,0 +1,23 @@
+
+> sigrika-go@0.1.0 check:portraits
+> node scripts/normalize-character-portraits.mjs --check
+
+OK   /assets/characters/portraits/aemeath.webp (608x792 visible)
+OK   /assets/characters/portraits/baconbits.webp (792x645 visible)
+OK   /assets/characters/portraits/changli.webp (792x777 visible)
+OK   /assets/characters/portraits/chisa.webp (759x792 visible)
+OK   /assets/characters/portraits/denia-candy.webp (788x792 visible)
+OK   /assets/characters/portraits/denia.webp (705x792 visible)
+OK   /assets/characters/portraits/lynae.webp (745x792 visible)
+OK   /assets/characters/portraits/mornye.webp (664x792 visible)
+OK   /assets/characters/portraits/nabomo.webp (621x792 visible)
+OK   /assets/characters/portraits/qiuyuan.webp (702x792 visible)
+OK   /assets/characters/portraits/sigrika-corrupted-player.webp (353x792 visible)
+OK   /assets/characters/portraits/sigrika-corrupted.webp (589x792 visible)
+OK   /assets/characters/portraits/sigrika.webp (761x792 visible)
+OK   /assets/costumes/portraits/denia-costume-01.webp (686x792 visible)
+OK   /assets/costumes/portraits/denia-costume-02.webp (746x792 visible)
+OK   /assets/costumes/portraits/nabomo-costume-01.webp (633x792 visible)
+OK   /assets/costumes/portraits/nabomo-costume-02.webp (626x792 visible)
+OK   /assets/costumes/portraits/sigrika-costume-01.webp (665x792 visible)
+Portraits: 18 valid, 0 skipped, 0 invalid

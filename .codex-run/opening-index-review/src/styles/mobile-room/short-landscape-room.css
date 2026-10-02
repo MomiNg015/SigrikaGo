@@ -1,0 +1,35 @@
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
+  .mobile-room-screen {
+    --mobile-room-dock-panel-height: 44px;
+    --mobile-room-board-size: min(54dvw, calc(100dvh - 112px), 330px);
+    height: 100dvh;
+    padding: 4px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(128px, 0.72fr) minmax(280px, 1.4fr) minmax(128px, 0.72fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    aspect-ratio: 1;
+  }
+
+  .mobile-room-screen .player-info {
+    grid-template-areas: "meta" "time" "captures";
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 44px;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+}

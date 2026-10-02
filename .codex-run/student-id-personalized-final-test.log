@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/components/PlayerPlaque.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (4 tests) 197ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  09:03:19
+   Duration  3.96s (transform 94ms, setup 0ms, collect 338ms, tests 197ms, environment 1.17s, prepare 118ms)
+

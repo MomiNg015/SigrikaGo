@@ -1,0 +1,13 @@
+import {chromium} from 'playwright';
+import fs from 'node:fs';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:390,height:844}});
+await page.goto('http://localhost:5173/.codex-run/bot-center.html');
+await page.waitForFunction(()=>window.renderBot);
+await page.evaluate(()=>window.renderBot(false,{main:0,byoYomi:30,periodRemaining:6,periods:3}));
+await page.waitForSelector('.timer-periods');
+for(const f of ['battle-paper-player-mobile.css','battle-info-typography.css']) await page.addStyleTag({content:fs.readFileSync('src/styles/mobile-adaptive/'+f,'utf8')});
+const values=await page.locator('.timer-primary,.timer-periods,.captures > *,.player-skill-count,.rank-tag').evaluateAll(es=>es.map(e=>({name:e.className||e.tagName,weight:getComputedStyle(e).fontWeight})));
+if(values.some(v=>v.weight!=='400'))throw Error(JSON.stringify(values));
+console.log(values);
+await browser.close();

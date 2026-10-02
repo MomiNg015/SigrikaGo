@@ -1,0 +1,1 @@
+import {build} from 'vite';await build({build:{outDir:'.codex-run/six-dist',rollupOptions:{input:['index.html','.codex-run/audit-a.html','.codex-run/beauty-b.html','.codex-run/beauty-b-extra.html']}}});await import('./shadow-audit.mjs');

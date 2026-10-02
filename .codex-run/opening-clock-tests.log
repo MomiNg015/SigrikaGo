@@ -1,0 +1,15 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/app/roomSnapshot.test.js (6 tests) 7ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 74ms
+ ✓ server/roomView.test.js (13 tests) 23ms
+ ✓ src/app/socketHandlers.test.js (44 tests) 47ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 31ms
+ ✓ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (13 tests) 160ms
+
+ Test Files  6 passed (6)
+      Tests  96 passed (96)
+   Start at  16:55:27
+   Duration  4.55s (transform 1.20s, setup 0ms, collect 3.63s, tests 343ms, environment 1.32s, prepare 854ms)
+

@@ -1,0 +1,43 @@
+.shop-card-position .shop-corner-badge {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  min-width: 34px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border: 2px solid rgba(61, 43, 37, 0.82);
+  border-radius: 8px;
+  background: #eef5ff;
+  color: #3d2b25;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.shop-card-position .shop-category-badge {
+  left: 8px;
+}
+
+.shop-card-position .shop-category-badge-item {
+  background: #ffe1eb;
+}
+
+.shop-card-position .shop-category-badge-decoration {
+  background: #e5f4df;
+}
+
+.shop-card-position .shop-category-badge-music {
+  background: #eee7ff;
+}
+
+.shop-card-position .shop-quantity-badge {
+  right: 8px;
+  min-width: 30px;
+  background: #fff0a8;
+  font-variant-numeric: tabular-nums;
+}

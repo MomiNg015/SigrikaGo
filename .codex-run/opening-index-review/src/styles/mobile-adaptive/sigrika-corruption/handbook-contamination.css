@@ -1,0 +1,41 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted {
+  --bright-paper: #eceaeb;
+  --bright-sheet: #f4f3f3;
+  --bright-ink: #383436;
+  --bright-border: #4a4547;
+  color: var(--bright-ink) !important;
+  border-color: var(--bright-border) !important;
+  background-color: var(--bright-paper) !important;
+  background-image:
+    linear-gradient(rgb(67 62 65 / 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(67 62 65 / 0.12) 1px, transparent 1px) !important;
+  box-shadow: 4px 4px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted::after {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 12 !important;
+  display: block !important;
+  content: "" !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  background: rgb(63 60 62 / 0.22) !important;
+  box-shadow: inset 0 0 72px rgb(21 19 20 / 0.28) !important;
+  -webkit-backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important;
+  backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important;
+  pointer-events: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-list {
+  scrollbar-color: #6e686b #d7d4d5;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-list::-webkit-scrollbar-track {
+  background: #d7d4d5 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted .character-list::-webkit-scrollbar-thumb {
+  border-color: #d7d4d5 !important;
+  background: #6e686b !important;
+}

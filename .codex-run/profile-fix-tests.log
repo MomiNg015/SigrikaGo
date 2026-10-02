@@ -1,0 +1,20 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/modals/ProfileMobileLayout.test.js src/modals/UserProfileCard.dom.test.jsx src/modals/ResumeModal.dom.test.jsx src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/ProfileMobileLayout.test.js (3 tests) 33ms
+ ✓ src/styles/styleContract.test.js (57 tests) 559ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 753ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 843ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  413ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (13 tests) 1726ms
+   ✓ UserProfileCard dossier interactions > opts report titles in explicitly and restores focus (stickers: false)  340ms
+
+ Test Files  5 passed (5)
+      Tests  97 passed (97)
+   Start at  10:21:26
+   Duration  6.95s (transform 871ms, setup 0ms, collect 2.97s, tests 3.91s, environment 3.24s, prepare 742ms)
+

@@ -1,0 +1,65 @@
+/* Bright School final surface cleanup for handbook/settings/lobby comments. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list::after {
+  background: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section {
+  padding: 10px 0 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  min-height: 28px !important;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  gap: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header h3 {
+  line-height: 28px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action {
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 10px !important;
+  box-shadow: 1px 2px 0 rgba(61, 43, 37, 0.56) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2.6 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag {
+  min-height: 24px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+}

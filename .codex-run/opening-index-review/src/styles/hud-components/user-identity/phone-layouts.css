@@ -1,0 +1,53 @@
+/* Phone and compact UserIdentity scale hooks. */
+@media (max-width: 768px) {
+  .user-identity {
+    --user-nameplate-scale: 0.92;
+    --user-identity-name-tag-min-height: 1.35em;
+    --user-identity-name-tag-max-width: 100%;
+    --user-identity-name-tag-padding-x: 0.52em;
+    padding: 2px 6px;
+  }
+
+  .user-identity.has-nameplate {
+    max-width: 100%;
+  }
+
+  .user-identity-title {
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .user-identity-main {
+    gap: 3px;
+  }
+
+  .user-identity-emblem {
+    width: 15px;
+    height: 15px;
+    font-size: 8px;
+  }
+
+  .user-identity.compact {
+    padding: 1px 5px;
+  }
+
+  .user-identity.compact.has-nameplate {
+    --user-nameplate-scale: 0.8;
+  }
+
+  .user-identity.compact {
+    --user-identity-name-tag-max-width: 8em;
+    --user-identity-name-tag-padding-x: 0.46em;
+  }
+
+  .user-identity.compact .user-identity-emblem {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+  }
+
+  .mobile-room-screen .name-button .user-identity.has-nameplate,
+  .mobile-room-screen .room-person-name .user-identity.has-nameplate {
+    --user-nameplate-scale: 0.76;
+  }
+}

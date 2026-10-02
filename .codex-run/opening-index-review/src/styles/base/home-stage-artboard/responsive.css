@@ -1,0 +1,23 @@
+@media (max-width: 900px) and (orientation: portrait) {
+  .home-screen {
+    width: calc(100vw - (var(--page-pad) * 2));
+    min-width: 0;
+    min-height: 100dvh;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .home-main-panel {
+    display: grid;
+  }
+
+  .home-orientation-guard {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .home-screen {
+    --home-stage-min-w: 960px;
+    --home-stage-min-h: 402px;
+  }
+}

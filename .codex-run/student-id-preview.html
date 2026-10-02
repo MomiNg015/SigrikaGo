@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Student ID QA</title></head><body><div id="root"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import HomeScreen from '/src/home/HomeScreen.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const noop=()=>{};
+window.renderStudentId=(patch={})=>root.render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(HomeScreen,{user:{username:'西格莉卡',selectedCharacter:'sigrika',role:'player',itemEffects:{},...patch},characters:CHARACTERS,lobbyStats:{onlineCount:1},onOpenResume:()=>{window.resumeOpened=true;},onStartMatch:noop,onOpenHouse:noop,onOpenFriends:noop,onOpenShop:noop,onOpenRecruitment:noop,onOpenWarehouse:noop,onOpenWatch:noop,onOpenLeaderboard:noop})));
+const root=createRoot(document.getElementById('root'));
+window.renderStudentId();
+</script></body></html>
+

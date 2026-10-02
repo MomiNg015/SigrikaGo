@@ -1,0 +1,18 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/items.test.js src/modals/ProfileMobileLayout.test.js src/modals/ProfileResumeView.dom.test.jsx src/modals/warehouse/useWarehouseInventory.dom.test.jsx src/modals/WarehouseModal.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/ProfileMobileLayout.test.js (4 tests) 65ms
+ ✓ server/items.test.js (25 tests) 38ms
+ ✓ src/modals/WarehouseModal.test.js (13 tests) 327ms
+ ✓ src/modals/warehouse/useWarehouseInventory.dom.test.jsx (1 test) 80ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (2 tests) 245ms
+
+ Test Files  5 passed (5)
+      Tests  45 passed (45)
+   Start at  22:23:17
+   Duration  4.68s (transform 615ms, setup 0ms, collect 2.24s, tests 755ms, environment 3.07s, prepare 770ms)
+

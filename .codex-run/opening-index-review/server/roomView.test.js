@@ -1,0 +1,247 @@
+import { describe, expect, it } from "vitest";
+import { COLORS, GAME_PHASES, createGameState, getPoint, pointId } from "../src/shared/game.js";
+import { buildRoomView } from "./roomView.js";
+
+function testPlayer(id, color) {
+  return {
+    user: { id, username: id, rank: "1段" },
+    socketId: `socket-${id}`,
+    disconnectedAt: null,
+    color,
+    characterId: "sigrika",
+    character: null,
+    time: { main: 300, byoYomi: 30, periods: 3 }
+  };
+}
+
+function testRoom() {
+  const players = [testPlayer("black-user", COLORS.black), testPlayer("white-user", COLORS.white)];
+  const game = createGameState(players.map((player) => ({
+    userId: player.user.id,
+    color: player.color,
+    characterId: player.characterId,
+    character: player.character
+  })));
+  game.captures.black = 2;
+  game.skillRemovals.white = 1;
+  const hiddenPoint = getPoint(game, pointId(3, 3));
+  hiddenPoint.stone = COLORS.black;
+  hiddenPoint.hiddenHand = { owner: COLORS.black, exposed: false, effect: "hidden-hand" };
+
+  return {
+    code: "12345",
+    players,
+    spectators: [{ user: { id: "spectator", username: "spectator" } }],
+    game,
+    chat: [],
+    openingEndsAt: null,
+    closesAt: null,
+    countingDeadline: null,
+    drawDeadline: null,
+    rated: false,
+    matchSource: "duel"
+  };
+}
+
+describe("room view serialization", () => {
+  it("exposes rating and match-source metadata", () => {
+    const view = buildRoomView(testRoom(), "black-user");
+
+    expect(view).toMatchObject({ rated: false, matchSource: "duel", clockSeq: 0 });
+  });
+
+  it("returns the player-specific board view and player counters", () => {
+    const view = buildRoomView(testRoom(), "white-user");
+
+    expect(view.role).toBe("player");
+    expect(view.gameViews).toBeNull();
+    expect(getPoint(view.game, pointId(3, 3)).stone).toBeNull();
+    expect(view.players.find((player) => player.color === COLORS.black).captures).toBe(2);
+    expect(view.players.find((player) => player.color === COLORS.white).skillRemovals).toBe(1);
+  });
+
+  it("includes player connection state", () => {
+    const room = testRoom();
+    room.players[1].socketId = null;
+    room.players[1].disconnectedAt = 12345;
+
+    const view = buildRoomView(room, "black-user");
+    const black = view.players.find((player) => player.color === COLORS.black);
+    const white = view.players.find((player) => player.color === COLORS.white);
+
+    expect(black).toMatchObject({ connected: true, disconnectedAt: null });
+    expect(white).toMatchObject({ connected: false, disconnectedAt: 12345 });
+  });
+
+  it("exposes the completed item-effect snapshot for result-only presentation", () => {
+    const room = testRoom();
+    room.players[0].completedItemEffects = { lynaeContraryVoice: true };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.players[0].completedItemEffects).toEqual({ lynaeContraryVoice: true });
+    expect(view.players[1].completedItemEffects).toBeNull();
+  });
+
+  it("serializes each player's room-start costume snapshot", () => {
+    const room = testRoom();
+    room.players[0].costumeSnapshot = {
+      id: "sigrika-costume-01",
+      portraitUrl: "/assets/costumes/sigrika-01.webp",
+      candyEffectPortraitUrl: ""
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.players[0].costumeSnapshot).toEqual(room.players[0].costumeSnapshot);
+    expect(view.players[1].costumeSnapshot).toBeNull();
+  });
+
+  it("uses game as the black spectator view and includes only the white alternate view", () => {
+    const view = buildRoomView(testRoom(), "spectator");
+
+    expect(view.role).toBe("spectator");
+    expect(view.gameViews).not.toHaveProperty("black");
+    expect(view.gameViews.white).toBeTruthy();
+    expect(getPoint(view.game, pointId(3, 3)).stone).toBe(COLORS.black);
+    expect(getPoint(view.gameViews.white, pointId(3, 3)).stone).toBeNull();
+  });
+
+  it("projects only safe practice metadata and treats the virtual bot as connected", () => {
+    const room = testRoom();
+    room.matchSource = "practice";
+    room.recordPolicy = "none";
+    room.practice = {
+      botId: "zhunshibao",
+      botActorId: "private-bot-actor",
+      difficulty: "beginner",
+      captureResignThreshold: 22,
+      humanColor: COLORS.black,
+      botColor: COLORS.white
+    };
+    room.players[1] = {
+      ...room.players[1],
+      socketId: null,
+      isBot: true,
+      user: { ...room.players[1].user, isBot: true },
+      botProfile: { id: "zhunshibao", name: "准时宝", portraitUrl: "/assets/characters/zhunshibao.png" }
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.practice).toEqual({
+      botId: "zhunshibao",
+      difficulty: "beginner",
+      captureResignThreshold: 22,
+      humanColor: COLORS.black,
+      botColor: COLORS.white
+    });
+    expect(view.practice).not.toHaveProperty("botActorId");
+    expect(view.players[1]).toMatchObject({
+      isBot: true,
+      connected: true,
+      botProfile: { id: "zhunshibao", portraitUrl: "/assets/characters/zhunshibao.png" }
+    });
+  });
+
+  it("exposes only the Sigrika trigger signal and keeps agreement metrics server-side", () => {
+    const room = testRoom();
+    room.sigrikaCandyDuel = {
+      humanColor: COLORS.black,
+      botColor: COLORS.white,
+      resultOutcome: "",
+      aiAgreementTriggered: true,
+      aiAgreementEventSeq: 1,
+      presentationSequence: 7,
+      openingPresentationStage: "done",
+      aiReactionPresentationStage: "dialogue-2",
+      presentation: {
+        sequence: 7,
+        type: "dialogue",
+        speaker: "untrusted",
+        text: "我懂了......我懂了！那么你也是恶啊！",
+        privateValue: "hidden"
+      },
+      aiAgreementTrigger: { reason: "extreme-35", moveNumber: 55 },
+      aiAgreementAudit: {
+        eligibleMoves: 35,
+        top1Hits: 33,
+        pending: { candidates: [{ pointId: "3,3", winrate: 0.7 }] }
+      }
+    };
+
+    const view = buildRoomView(room, "black-user");
+
+    expect(view.sigrikaCandyDuel).toMatchObject({
+      aiAgreementTriggered: true,
+      aiAgreementEventSeq: 1,
+      musicStarted: true,
+      presentation: {
+        sequence: 7,
+        type: "dialogue",
+        speaker: "西格莉卡？",
+        text: "我懂了......我懂了！那么你也是恶啊！"
+      }
+    });
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiAgreementAudit");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiAgreementTrigger");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("openingPresentationStage");
+    expect(view.sigrikaCandyDuel).not.toHaveProperty("aiReactionPresentationStage");
+    expect(view.sigrikaCandyDuel.presentation).not.toHaveProperty("privateValue");
+    expect(JSON.stringify(view)).not.toContain("top1Hits");
+  });
+
+  it("keeps the Sigrika duel music silent until the opening skill stage", () => {
+    const room = testRoom();
+    room.sigrikaCandyDuel = {
+      humanColor: COLORS.black,
+      botColor: COLORS.white,
+      openingPresentationStage: "dialogue",
+      presentation: { sequence: 1, type: "dialogue", text: "那么，让你看看才能的差距吧。" }
+    };
+
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(false);
+
+    room.sigrikaCandyDuel.openingPresentationStage = "skill";
+    room.sigrikaCandyDuel.presentation = { sequence: 2, type: "skill", skillName: "秘日六席" };
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(true);
+
+    room.sigrikaCandyDuel.openingPresentationStage = "done";
+    room.sigrikaCandyDuel.presentation = null;
+    expect(buildRoomView(room, "black-user").sigrikaCandyDuel.musicStarted).toBe(true);
+  });
+
+  it("treats finished room players as spectator viewers", () => {
+    const room = testRoom();
+    room.game.phase = GAME_PHASES.finished;
+    const view = buildRoomView(room, "white-user");
+
+    expect(view.role).toBe("spectator");
+    expect(view.gameViews).not.toHaveProperty("black");
+    expect(view.gameViews.white).toBeTruthy();
+  });
+
+  it("builds only the needed color view for players", () => {
+    const calls = [];
+    buildRoomView(testRoom(), "white-user", {
+      gameView: (game, color) => {
+        calls.push(color);
+        return game;
+      }
+    });
+
+    expect(calls).toEqual([COLORS.white]);
+  });
+
+  it("builds both color views once for spectators", () => {
+    const calls = [];
+    buildRoomView(testRoom(), "spectator", {
+      gameView: (game, color) => {
+        calls.push(color);
+        return game;
+      }
+    });
+
+    expect(calls).toEqual([COLORS.black, COLORS.white]);
+  });
+});

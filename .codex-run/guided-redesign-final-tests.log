@@ -1,0 +1,13 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 28ms
+ ✓ src/styles/styleContract.test.js (57 tests) 723ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 28ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1114ms
+
+ Test Files  4 passed (4)
+      Tests  102 passed (102)
+   Start at  15:20:10
+   Duration  4.15s (transform 789ms, setup 0ms, collect 1.66s, tests 1.89s, environment 1ms, prepare 584ms)
+

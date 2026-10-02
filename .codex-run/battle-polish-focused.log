@@ -1,0 +1,17 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 6ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 59ms
+ ✓ src/styles/themeContract.test.js (38 tests) 423ms
+ ✓ src/styles/styleContract.test.js (57 tests) 658ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 873ms
+ ✓ src/room/PlayerInfo.dom.test.jsx (2 tests) 568ms
+   ✓ PlayerInfo mobile skill traits > opens a trait immediately from the mobile skill tooltip without closing the skill tooltip  430ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 560ms
+
+ Test Files  7 passed (7)
+      Tests  162 passed (162)
+   Start at  14:50:37
+   Duration  5.10s (transform 1.72s, setup 0ms, collect 4.48s, tests 3.15s, environment 1.30s, prepare 899ms)
+

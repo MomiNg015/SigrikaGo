@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 check:admin-snapshot
+> node scripts/check-admin-default-snapshot.mjs
+
+Committed admin snapshot matches the local non-user admin configuration.

@@ -1,0 +1,88 @@
+.board-ambient-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0;
+  contain: layout paint;
+}
+
+.board-ambient-layer[data-ambient-effect="color-illusion-desaturate"] {
+  opacity: 1;
+}
+
+.color-illusion-desaturate-wave {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 142%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.34) 0 18%, rgba(222, 226, 228, 0.28) 42%, rgba(180, 185, 188, 0.18) 66%, transparent 72%),
+    radial-gradient(circle, rgba(42, 45, 48, 0.22), transparent 68%);
+  mix-blend-mode: saturation;
+  opacity: 0.9;
+  transform: translate(-50%, -50%) scale(1);
+  animation: color-illusion-desaturate-spread 760ms ease-out both;
+}
+
+.color-illusion-desaturate-wave::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, transparent 0 42%, rgba(255, 255, 255, 0.24) 50%, transparent 64%);
+  mix-blend-mode: screen;
+  animation: color-illusion-desaturate-ring 760ms ease-out both;
+}
+
+@keyframes color-illusion-desaturate-spread {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.06);
+  }
+  18% {
+    opacity: 0.92;
+  }
+  to {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes color-illusion-desaturate-ring {
+  from {
+    opacity: 0.95;
+    transform: scale(0.1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .board-wrap.color-illusion-board-surface::before {
+    animation-duration: 720ms;
+  }
+
+  .color-illusion-desaturate-wave {
+    width: 150%;
+    animation-duration: 680ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-wrap.color-illusion-board-surface::before {
+    animation-duration: 0.01ms;
+  }
+
+  .color-illusion-desaturate-wave,
+  .color-illusion-desaturate-wave::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

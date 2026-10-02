@@ -1,0 +1,2 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+for(const p of ['docs/system-design.md','docs/system-design/06-ui-theme-mobile.md']){let s=readFileSync(p,'utf8');s=s.replace('手机竖屏使用 130px 信息条，短屏允许页面滚动以保留棋盘最小尺寸及阴影空间','手机竖屏使用 158px 信息条，棋盘与信息条按实际高度自然排列、保留 16px 间距，短屏页面滚动，取消剩余高度压缩');s=s.replace('竖屏预留 130px 信息条及至少 254px 棋盘行，短屏向下滚动，不能让棋盘最小高度穿入上下信息条。','竖屏预留 158px 信息条，`mobile-room-viewport[data-action-anchored]` 使用四行 `max-content` 与 16px 间距，棋盘按屏宽定高，视口不参与 flex 剩余空间压缩。短屏页面滚动，避免棋盘实际尺寸超出分配行高而遮挡信息条。单角色恢复大幅出框比例与姓名贴纸，背板、棋钟及技能面板使用角色色渐变和细纸纹；棋钟仍保持米色／回合黄色语义。');writeFileSync(p,s);}

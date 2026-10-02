@@ -1,0 +1,45 @@
+/* Final Bright School portrait handbook character-card composition. */
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+    .house-modal .character-card.portrait-card > img {
+    width: 72px !important;
+    max-width: calc(100% - 4px) !important;
+    height: 72px !important;
+    max-height: 72px !important;
+    align-self: center !important;
+    justify-self: center !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+    .house-modal .character-card.portrait-card .sortie-button {
+    position: absolute !important;
+    top: auto !important;
+    right: 4px !important;
+    bottom: 4px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 !important;
+    z-index: 5 !important;
+    transform: none !important;
+    box-shadow: 1px 1px 0 color-mix(in srgb, var(--bright-border) 34%, transparent) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+    .house-modal .character-card.portrait-card .sortie-button svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+    .house-modal .character-card.portrait-card.is-deployed .sortie-button.selected,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+    .house-modal .character-card.portrait-card.is-deployed .sortie-button.selected:disabled {
+    transform: none !important;
+    box-shadow: 1px 1px 0 color-mix(in srgb, var(--bright-border) 34%, transparent) !important;
+  }
+}

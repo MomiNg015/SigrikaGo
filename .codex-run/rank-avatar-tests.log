@@ -1,0 +1,15 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 74ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 338ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1121ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  423ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1542ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  457ms
+
+ Test Files  4 passed (4)
+      Tests  91 passed (91)
+   Start at  16:52:33
+   Duration  5.72s (transform 636ms, setup 0ms, collect 1.50s, tests 3.08s, environment 1ms, prepare 649ms)
+

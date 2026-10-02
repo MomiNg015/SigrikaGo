@@ -1,0 +1,150 @@
+/* Startorch Academy tactical terminal list rows, ranks, and status badges. */
+.shop-description,
+.shop-card-meta > span,
+.warehouse-item p,
+.friends-row span,
+.leaderboard-player span,
+.leaderboard-row > span,
+.leaderboard-heading,
+.friends-list-heading,
+.watch-room-head {
+  color: var(--terminal-muted);
+}
+
+.leaderboard-heading,
+.friends-list-heading,
+.watch-room-head {
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.leaderboard-row,
+.leaderboard-current,
+.friends-row,
+.friend-action-row,
+.watch-room-row,
+.character-record-row {
+  position: relative;
+  border-radius: 0;
+  clip-path: var(--terminal-row-cut);
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  background:
+    linear-gradient(90deg, rgba(0, 255, 190, 0.1), transparent 30%),
+    rgba(10, 32, 40, 0.55);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 16px rgba(0, 191, 255, 0.08);
+}
+
+.leaderboard-row.current-user,
+.leaderboard-row.pinned {
+  border-color: rgba(183, 255, 69, 0.56);
+  background:
+    linear-gradient(90deg, rgba(183, 255, 69, 0.14), transparent 30%),
+    rgba(12, 34, 34, 0.68);
+  box-shadow: 0 0 18px rgba(183, 255, 69, 0.16), inset 0 0 18px rgba(183, 255, 69, 0.08);
+}
+
+.leaderboard-row.rank-1 {
+  border-color: rgba(255, 210, 87, 0.68);
+  background:
+    linear-gradient(100deg, rgba(70, 46, 12, 0.2), rgba(255, 244, 190, 0.2) 42%, rgba(139, 86, 20, 0.18)),
+    url("/assets/leaderboard/top-rank-gold.webp"),
+    rgba(45, 34, 16, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
+  box-shadow: 0 0 20px rgba(255, 210, 87, 0.2), inset 0 0 18px rgba(255, 210, 87, 0.1);
+}
+
+.leaderboard-row.rank-2 {
+  border-color: rgba(211, 224, 234, 0.64);
+  background:
+    linear-gradient(100deg, rgba(36, 49, 60, 0.18), rgba(255, 255, 255, 0.18) 45%, rgba(85, 105, 120, 0.18)),
+    url("/assets/leaderboard/top-rank-silver.webp"),
+    rgba(24, 36, 44, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
+  box-shadow: 0 0 18px rgba(211, 224, 234, 0.16), inset 0 0 18px rgba(211, 224, 234, 0.08);
+}
+
+.leaderboard-row.rank-3 {
+  border-color: rgba(218, 155, 94, 0.62);
+  background:
+    linear-gradient(100deg, rgba(82, 49, 28, 0.18), rgba(255, 229, 200, 0.18) 45%, rgba(126, 73, 40, 0.18)),
+    url("/assets/leaderboard/top-rank-bronze.webp"),
+    rgba(42, 30, 22, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
+  box-shadow: 0 0 18px rgba(218, 155, 94, 0.16), inset 0 0 18px rgba(218, 155, 94, 0.08);
+}
+
+.leaderboard-rank {
+  position: relative;
+  width: 42px;
+  min-height: 34px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--terminal-blue);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 16px;
+}
+
+.leaderboard-row.top-rank .leaderboard-rank {
+  background: transparent;
+  clip-path: none;
+  padding-bottom: 0;
+  filter: none;
+  text-shadow: none;
+}
+
+.leaderboard-row.rank-2 .leaderboard-rank {
+  color: #dbe7ef;
+}
+
+.leaderboard-row.rank-3 .leaderboard-rank {
+  color: #f1c29c;
+}
+
+.online-status {
+  border-radius: 2px;
+  border-color: rgba(0, 255, 190, 0.32);
+  background: rgba(0, 255, 190, 0.08);
+  color: var(--terminal-cyan);
+}
+
+.online-status.playing {
+  border-color: rgba(255, 178, 63, 0.42);
+  background: rgba(255, 178, 63, 0.12);
+  color: #ffd38b;
+}
+
+.online-status.offline {
+  border-color: rgba(125, 165, 168, 0.22);
+  background: rgba(125, 165, 168, 0.1);
+  color: var(--terminal-dim);
+}
+
+.friend-search input {
+  color: var(--terminal-text);
+}
+
+.friend-search input::placeholder {
+  color: var(--terminal-dim);
+}
+
+.friend-gear-button {
+  border-radius: 2px;
+  border-color: rgba(0, 255, 190, 0.34);
+  background: rgba(0, 255, 190, 0.08);
+  color: var(--terminal-text);
+}
+
+.watch-status {
+  border-radius: 2px;
+  background: rgba(0, 255, 190, 0.12);
+  color: var(--terminal-cyan);
+}
+
+.watch-status.finished {
+  background: rgba(125, 165, 168, 0.12);
+  color: var(--terminal-muted);
+}

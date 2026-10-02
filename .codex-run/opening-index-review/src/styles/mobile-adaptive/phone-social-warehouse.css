@@ -1,0 +1,254 @@
+/* Final phone/tablet leaderboard, friends, house, warehouse, and duel-request rules. */
+@media (max-width: 768px) {
+  .leaderboard-modal,
+  .house-modal,
+  .warehouse-modal,
+  .settings-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .friends-modal {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .leaderboard-table,
+  .replay-table {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .friends-list,
+  .watch-room-table {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 6px;
+    padding-bottom: 6px;
+    scroll-padding: 0 6px 6px 0;
+  }
+
+  .leaderboard-heading,
+  .leaderboard-row,
+  .leaderboard-current,
+  .replay-table-heading,
+  .replay-table-row {
+    min-width: min(680px, 178vw);
+  }
+
+  .friends-row,
+  .friend-action-row,
+  .watch-room-row {
+    min-width: 0;
+  }
+
+  .friends-row {
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "status avatar info action";
+    grid-template-columns: auto 32px minmax(0, 1fr) 44px;
+    gap: 4px 6px;
+    align-items: center;
+    padding: 10px;
+    white-space: nowrap;
+  }
+
+  .friends-row .online-status {
+    grid-area: status;
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .friends-row img {
+    grid-area: avatar;
+    width: 32px;
+    height: 32px;
+  }
+
+  .friends-row > .friend-main {
+    grid-area: info;
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .friends-row .friend-username {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .friends-row .friend-actions-cell {
+    grid-area: action;
+    justify-self: end;
+  }
+
+  .friends-modal-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .friend-search {
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .friend-search input,
+  .friend-search button,
+  .friend-gear-button,
+  .friend-action-row button {
+    min-height: 44px;
+    height: auto;
+  }
+
+  .friend-search button,
+  .friend-gear-button {
+    width: 44px;
+  }
+
+  .house-modal .character-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(128px, auto);
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .owned-decoration-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+  }
+
+  .owned-decoration-chip {
+    width: 100%;
+    min-height: 64px;
+  }
+
+  .friends-modal-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .friend-search {
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .friend-search input,
+  .friend-search button,
+  .friend-gear-button,
+  .friend-action-row button {
+    min-height: 44px;
+    height: auto;
+  }
+
+  .friend-search button,
+  .friend-gear-button {
+    width: 44px;
+  }
+
+  .house-modal .character-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(128px, auto);
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .owned-decoration-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+  }
+
+  .owned-decoration-chip {
+    width: 100%;
+    min-height: 64px;
+  }
+
+  .warehouse-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding-right: 6px !important;
+    padding-bottom: 6px !important;
+    scroll-padding: 0 6px 6px 0 !important;
+  }
+
+  .warehouse-item {
+    --warehouse-item-media-size: clamp(64px, 20vw, 72px);
+    display: grid !important;
+    grid-template-columns: var(--warehouse-item-media-size) minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 7px 12px !important;
+    padding: 11px !important;
+    align-items: stretch !important;
+    min-height: 120px !important;
+  }
+
+  .warehouse-item-media {
+    grid-column: 1 !important;
+    grid-row: 1 / 3 !important;
+    width: var(--warehouse-item-media-size) !important;
+    height: var(--warehouse-item-media-size) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+    border: 1px solid rgba(0, 255, 190, 0.1) !important;
+  }
+
+  .warehouse-item strong {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .warehouse-item p {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin: 0 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .warehouse-item-quantity {
+    position: absolute !important;
+    top: -6px !important;
+    right: -8px !important;
+    min-width: 30px !important;
+    min-height: 24px !important;
+    padding: 4px 7px !important;
+    font-size: 10px !important;
+    color: var(--hud-cyan) !important;
+    font-weight: 600 !important;
+    background: rgba(0, 255, 190, 0.08) !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 255, 190, 0.15) !important;
+  }
+
+  .warehouse-item .primary-action {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    align-self: end !important;
+    min-width: 60px !important;
+    min-height: 30px !important;
+    height: 30px !important;
+    padding: 0 9px !important;
+    font-size: 12px !important;
+    margin-top: 0 !important;
+  }
+}

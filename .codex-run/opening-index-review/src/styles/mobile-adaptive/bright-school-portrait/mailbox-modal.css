@@ -1,0 +1,50 @@
+/* Final Bright School portrait safety for the shared mailbox information center. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .information-center-layout,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .information-center-master,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .information-center-reader,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list-region {
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list {
+    display: grid !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    align-content: start !important;
+    grid-auto-rows: minmax(72px, auto) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list-item {
+    width: 100% !important;
+    min-height: 72px !important;
+    padding: 12px 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-detail {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-detail .mailbox-delete-button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-detail .mailbox-delete-button:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-detail .mailbox-delete-button:focus-visible {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+}

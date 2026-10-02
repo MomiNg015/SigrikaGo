@@ -1,0 +1,121 @@
+1440 {
+  overflow: false,
+  portraitLoaded: true,
+  card: {
+    x: 137.4375,
+    y: 142,
+    width: 260,
+    height: 477.03125,
+    top: 142,
+    right: 397.4375,
+    bottom: 619.03125,
+    left: 137.4375
+  },
+  portrait: {
+    x: 253.390625,
+    y: 341.875,
+    width: 99.046875,
+    height: 144.53125,
+    top: 341.875,
+    right: 352.4375,
+    bottom: 486.40625,
+    left: 253.390625
+  }
+}
+button style {
+  background: 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+  border: '0px none rgb(61, 43, 37)',
+  shadow: 'none'
+}
+390 {
+  overflow: false,
+  portraitLoaded: true,
+  card: {
+    x: 32.1875,
+    y: 94,
+    width: 148.1875,
+    height: 271.875,
+    top: 94,
+    right: 180.375,
+    bottom: 365.875,
+    left: 32.1875
+  },
+  portrait: {
+    x: 98.265625,
+    y: 207.90625,
+    width: 56.453125,
+    height: 82.375,
+    top: 207.90625,
+    right: 154.71875,
+    bottom: 290.28125,
+    left: 98.265625
+  }
+}
+button style {
+  background: 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+  border: '0px none rgb(61, 43, 37)',
+  shadow: 'none'
+}
+360 {
+  overflow: false,
+  portraitLoaded: true,
+  card: {
+    x: 30.390625,
+    y: 94,
+    width: 140,
+    height: 256.859375,
+    top: 94,
+    right: 170.390625,
+    bottom: 350.859375,
+    left: 30.390625
+  },
+  portrait: {
+    x: 92.828125,
+    y: 201.609375,
+    width: 53.328125,
+    height: 77.828125,
+    top: 201.609375,
+    right: 146.15625,
+    bottom: 279.4375,
+    left: 92.828125
+  }
+}
+button style {
+  background: 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+  border: '0px none rgb(61, 43, 37)',
+  shadow: 'none'
+}
+412 {
+  overflow: false,
+  portraitLoaded: true,
+  card: {
+    x: 33.515625,
+    y: 94,
+    width: 156.546875,
+    height: 287.21875,
+    top: 94,
+    right: 190.0625,
+    bottom: 381.21875,
+    left: 33.515625
+  },
+  portrait: {
+    x: 103.328125,
+    y: 214.34375,
+    width: 59.640625,
+    height: 87.015625,
+    top: 214.34375,
+    right: 162.96875,
+    bottom: 301.359375,
+    left: 103.328125
+  }
+}
+button style {
+  background: 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+  border: '0px none rgb(61, 43, 37)',
+  shadow: 'none'
+}
+resume click true
+resume keyboard true
+long name { text: '星炬学院十二字用户名测试', clipped: false }
+changed character /assets/characters/portraits/denia.webp
+reduced motion 0.001s

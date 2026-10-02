@@ -1,0 +1,252 @@
+1440 self [
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  }
+]
+1440 social [
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  }
+]
+1920 self [
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  }
+]
+1920 social [
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  },
+  {
+    width: 179.15625,
+    labelY: 29.75,
+    valueY: 54.75,
+    labelX: 14,
+    valueX: 14,
+    font: '25px',
+    padding: '12px',
+    overlap: false
+  }
+]
+390 self [
+  {
+    width: 147,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 147,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 147,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 147,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  }
+]
+390 social [
+  {
+    width: 150,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 150,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 150,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  },
+  {
+    width: 150,
+    labelY: 10,
+    valueY: 33,
+    labelX: 10,
+    valueX: 10,
+    font: '20px',
+    padding: '8px',
+    overlap: false
+  }
+]

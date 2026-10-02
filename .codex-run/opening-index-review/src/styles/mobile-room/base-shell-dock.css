@@ -1,0 +1,8 @@
+/* Mobile-only room layout */
+@import "./base-shell-dock/shell-header-menu.css";
+@import "./base-shell-dock/flat-control-reset.css";
+@import "./base-shell-dock/viewport-dock-shell.css";
+@import "./base-shell-dock/player-timer-strip.css";
+@import "./base-shell-dock/board-viewport.css";
+@import "./base-shell-dock/dock-tabs-actions.css";
+@import "./base-shell-dock/decision-chat-panel.css";

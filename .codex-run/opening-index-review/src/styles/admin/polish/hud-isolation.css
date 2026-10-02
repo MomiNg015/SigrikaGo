@@ -1,0 +1,147 @@
+.admin-screen :is(
+  .admin-main header,
+  .admin-section-header,
+  .admin-section-heading,
+  .admin-form-heading
+) {
+  clip-path: none !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  color: var(--admin-ink) !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.admin-screen :is(
+  .admin-main header,
+  .admin-section-header,
+  .admin-section-heading,
+  .admin-form-heading,
+  .admin-section-title-block,
+  .admin-settings-grid,
+  .admin-character-form-grid,
+  .admin-inline-grid
+)::before,
+.admin-screen :is(
+  .admin-main header,
+  .admin-section-header,
+  .admin-section-heading,
+  .admin-form-heading,
+  .admin-section-title-block,
+  .admin-settings-grid,
+  .admin-character-form-grid,
+  .admin-inline-grid
+)::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.admin-screen .admin-settings-grid {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--admin-ink) !important;
+  box-shadow: none !important;
+}
+
+.admin-screen :is(
+  h1,
+  h2,
+  h3,
+  legend
+) {
+  color: var(--admin-ink) !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.admin-screen :is(
+  .admin-field-label,
+  .admin-form label,
+  .admin-danger-zone label,
+  .admin-character-form label,
+  .admin-announcement-edit-pane label
+) {
+  color: #6b596d !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea
+) {
+  min-height: 42px;
+  border: 1px solid var(--admin-line-strong) !important;
+  border-radius: 8px !important;
+  clip-path: none !important;
+  background-color: #ffffff !important;
+  color: var(--admin-ink) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  caret-color: var(--admin-primary) !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea
+) {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea
+)::placeholder {
+  color: #94a3b8 !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea
+):hover {
+  border-color: #9fb1c7 !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea
+):focus {
+  border-color: var(--admin-primary) !important;
+  box-shadow:
+    0 0 0 3px rgba(47, 111, 189, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.admin-screen :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea
+):is(:disabled, [readonly]) {
+  background: #eef2f6 !important;
+  background-image: none !important;
+  border-color: #d9e2ec !important;
+  color: #64748b !important;
+  cursor: not-allowed;
+}
+
+.admin-screen select {
+  color: var(--admin-ink) !important;
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 17px) 50%,
+    calc(100% - 12px) 50% !important;
+  background-size: 5px 5px, 5px 5px !important;
+  background-repeat: no-repeat !important;
+  padding-right: 34px;
+}

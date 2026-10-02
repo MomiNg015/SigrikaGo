@@ -1,0 +1,4 @@
+@keyframes room-skill-sheen {
+  0% { transform: translateX(-55%) rotate(10deg); }
+  55%, 100% { transform: translateX(55%) rotate(10deg); }
+}

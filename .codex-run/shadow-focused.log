@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/modals/ShopModal.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/ShopModal.test.js (27 tests) 234ms
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  19:37:18
+   Duration  3.44s (transform 451ms, setup 0ms, collect 1.05s, tests 234ms, environment 0ms, prepare 131ms)
+

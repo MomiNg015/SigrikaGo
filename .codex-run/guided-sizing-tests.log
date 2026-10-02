@@ -1,0 +1,20 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 36ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 95ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 27ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1232ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  388ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  325ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1702ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  426ms
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  339ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family  364ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries  329ms
+
+ Test Files  5 passed (5)
+      Tests  105 passed (105)
+   Start at  15:52:11
+   Duration  6.89s (transform 964ms, setup 0ms, collect 2.32s, tests 3.09s, environment 2ms, prepare 1.13s)
+

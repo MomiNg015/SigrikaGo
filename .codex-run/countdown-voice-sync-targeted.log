@@ -1,0 +1,33 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/audio/voiceBackgroundIndependence.test.js (1 test) 5ms
+ ✓ src/audio/countdownVoiceTiming.test.js (3 tests) 4ms
+ ✓ src/audio/voicePlaybackProfiles.test.js (2 tests) 4ms
+ ✓ src/audio/backgroundDucking.test.js (1 test) 6ms
+ ✓ src/audio/backgroundMusicPause.test.js (2 tests) 4ms
+ ✓ src/audio/audioSettings.test.js (6 tests) 7ms
+ ✓ src/shared/timeAnnouncements.test.js (5 tests) 6ms
+ ✓ src/audio/proceduralSounds.test.js (2 tests) 6ms
+ ✓ src/shared/systemVoices.test.js (16 tests) 9ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 65ms
+ ✓ src/shared/musicLibrary.test.js (68 tests) 24ms
+ ✓ src/audio/effectPlayback.test.js (7 tests) 10ms
+ ✓ src/audio/skillEffectSounds.test.js (5 tests) 13ms
+ ✓ src/audio/CharacterMusicPreview.test.jsx (4 tests) 19ms
+ ✓ src/audio/playback.test.jsx (14 tests) 19ms
+ ✓ src/audio/systemVoicePlayback.test.js (2 tests) 5ms
+ ✓ src/audio/countdownPlayback.test.js (5 tests) 1247ms
+   ✓ countdown playback loading and cancellation > shares in-flight preload, starts at the audible onset, and reuses decoded audio  831ms
+ ✓ src/shared/preloadAssets.test.js (23 tests) 91ms
+ ✓ src/room/audio/useRoomAudioEffects.test.js (1 test) 4ms
+ ✓ src/room/view/useRoomBoardView.test.js (5 tests) 5ms
+ ✓ src/room/view/useRoomCountdownClock.test.jsx (3 tests) 30ms
+ ✓ src/audio/CharacterMusicPreview.dom.test.jsx (4 tests) 385ms
+ ✓ src/room/audio/countdownSync.test.jsx (10 tests) 58ms
+
+ Test Files  23 passed (23)
+      Tests  192 passed (192)
+   Start at  14:44:22
+   Duration  4.51s (transform 5.71s, setup 0ms, collect 16.20s, tests 2.03s, environment 4.35s, prepare 5.07s)
+

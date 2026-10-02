@@ -1,0 +1,104 @@
+[
+  {
+    "name": "desktop",
+    "kind": "entry",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 483,
+      "y": 567.328125,
+      "width": 470,
+      "height": 70.140625,
+      "top": 567.328125,
+      "right": 953,
+      "bottom": 637.46875,
+      "left": 483
+    },
+    "color": "rgb(61, 43, 37)",
+    "columns": "44px 380px"
+  },
+  {
+    "name": "desktop",
+    "kind": "leaderboard",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 240,
+      "y": 155,
+      "width": 1064,
+      "height": 76,
+      "top": 155,
+      "right": 1304,
+      "bottom": 231,
+      "left": 240
+    },
+    "color": "rgb(61, 43, 37)",
+    "columns": "62px 82px 405.703px 223.141px 223.156px"
+  },
+  {
+    "name": "desktop",
+    "kind": "result",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 621.390625,
+      "y": 460.484375,
+      "width": 433.609375,
+      "height": 20,
+      "top": 460.484375,
+      "right": 1055,
+      "bottom": 480.484375,
+      "left": 621.390625
+    },
+    "color": "rgb(192, 24, 45)",
+    "columns": "none"
+  },
+  {
+    "name": "phone",
+    "kind": "entry",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 39,
+      "y": 387.90625,
+      "width": 322,
+      "height": 65,
+      "top": 387.90625,
+      "right": 361,
+      "bottom": 452.90625,
+      "left": 39
+    },
+    "color": "rgb(61, 43, 37)",
+    "columns": "36px 248px"
+  },
+  {
+    "name": "phone",
+    "kind": "leaderboard",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 87,
+      "y": 137,
+      "width": 262,
+      "height": 76,
+      "top": 137,
+      "right": 349,
+      "bottom": 213,
+      "left": 87
+    },
+    "color": "rgb(61, 43, 37)",
+    "columns": "24px 46px 86px 86px"
+  },
+  {
+    "name": "phone",
+    "kind": "result",
+    "documentOverflow": false,
+    "targetBox": {
+      "x": 183.265625,
+      "y": 434.203125,
+      "width": 145.453125,
+      "height": 20,
+      "top": 434.203125,
+      "right": 328.71875,
+      "bottom": 454.203125,
+      "left": 183.265625
+    },
+    "color": "rgb(192, 24, 45)",
+    "columns": "none"
+  }
+]

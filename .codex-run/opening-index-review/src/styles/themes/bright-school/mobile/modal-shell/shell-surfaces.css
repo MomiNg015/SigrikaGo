@@ -1,0 +1,91 @@
+/* Bright School portrait mobile modal shell and shared surfaces. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+    .modal-backdrop,
+    .nested-modal-backdrop
+  ) {
+    --bright-mobile-modal-inline-start: calc(10px + env(safe-area-inset-left));
+    --bright-mobile-modal-inline-end: calc(12px + env(safe-area-inset-right));
+    --bright-mobile-modal-block-start: calc(10px + env(safe-area-inset-top));
+    --bright-mobile-modal-block-end: calc(14px + env(safe-area-inset-bottom));
+    inset: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding:
+      var(--bright-mobile-modal-block-start)
+      var(--bright-mobile-modal-inline-end)
+      var(--bright-mobile-modal-block-end)
+      var(--bright-mobile-modal-inline-start) !important;
+    box-sizing: border-box !important;
+    align-items: start !important;
+    justify-items: center !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .small-modal,
+    .confirm-modal,
+    .result-modal,
+    .settings-modal,
+    .mailbox-modal,
+    .nested-modal,
+    .character-target-modal,
+    .character-details-modal,
+    .room-floating-modal,
+    .shop-item-detail-modal,
+    .shop-modal,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .message-board-modal,
+    .onboarding-story-modal,
+    .watch-list-modal,
+    .user-profile-modal
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 14px !important;
+    overflow: hidden !important;
+    border-width: 2px !important;
+    border-radius: 18px !important;
+    box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.68) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .shop-modal,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .settings-modal,
+    .mailbox-modal,
+    .message-board-modal,
+    .onboarding-story-modal,
+    .watch-list-modal,
+    .user-profile-modal
+  ) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal {
+    display: grid !important;
+    grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto !important;
+    gap: 10px !important;
+    padding: 16px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {
+    grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;
+  }
+}

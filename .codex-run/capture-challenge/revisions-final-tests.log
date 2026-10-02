@@ -1,0 +1,17 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/roomRequestLifecycle.test.js (7 tests) 14ms
+ ✓ server/roomScoringFlow.test.js (2 tests) 18ms
+ ✓ src/room/ActionBar.test.js (17 tests) 105ms
+ ✓ src/styles/styleContract.test.js (57 tests) 692ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 919ms
+ ✓ server/captureChallenge.test.js (9 tests) 409ms
+ ✓ src/modals/CaptureChallenge.dom.test.jsx (5 tests) 555ms
+   ✓ capture challenge player flow > starts advanced random-color challenge directly from the picker  448ms
+
+ Test Files  7 passed (7)
+      Tests  117 passed (117)
+   Start at  15:48:34
+   Duration  5.86s (transform 1.41s, setup 0ms, collect 4.60s, tests 2.71s, environment 1.64s, prepare 1.12s)
+

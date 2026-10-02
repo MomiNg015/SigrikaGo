@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 341ms
+ ✓ src/modals/FriendsModal.test.jsx (7 tests) 167ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  16:41:35
+   Duration  5.79s (transform 971ms, setup 0ms, collect 2.45s, tests 508ms, environment 0ms, prepare 304ms)
+

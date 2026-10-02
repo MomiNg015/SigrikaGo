@@ -1,0 +1,5 @@
+{"at":"2026-06-30T07:45:00+08:00","command":"npm test -- src/styles/styleContract.test.js src/admin/AdminOnboardingStory.test.jsx src/room/Board.test.js src/room/RoomScreen.test.js src/app/AppOverlays.test.jsx src/app/App.test.js src/app/useOnboardingStory.test.js server/storyScripts.test.js src/tutorial/tutorialBattleRoom.test.js","result":"passed","details":"9 files, 172 tests passed"}
+{"at":"2026-06-30T07:46:00+08:00","command":"npm test","result":"passed after rerun","details":"231 files, 1681 tests passed; previous aggregate npm run check attempt hit transient Vitest ERR_IPC_CHANNEL_CLOSED during test worker shutdown with no assertion failures before rerun"}
+{"at":"2026-06-30T07:47:00+08:00","command":"npm run build","result":"passed","details":"Vite production build completed"}
+{"at":"2026-06-30T07:48:00+08:00","command":"JWT_SECRET/PUBLIC_ORIGIN sample env + scripts/check-production-config.mjs","result":"passed","details":"Production deployment configuration OK"}
+{"at":"2026-06-30T07:48:00+08:00","command":"npm run docs:system-design","result":"passed","details":"Regenerated docs/system-design.html"}

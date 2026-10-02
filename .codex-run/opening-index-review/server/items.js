@@ -1,0 +1,256 @@
+import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
+import { CHARACTERS } from "../src/shared/characters.js";
+import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import {
+  AEMEATH_CANDY_EFFECT_TEXT,
+  DENIA_CANDY_EFFECT_TEXT,
+  LYNAE_CANDY_EFFECT_TEXT,
+  parseItemEffects,
+  RAINBOW_BEAN_CANDY_ID,
+  serializeItemEffects,
+  SIGRIKA_CANDY_EFFECT_TEXT
+} from "./itemEffects.js";
+import {
+  normalizeOwnedItemCounts,
+  parseOwnedItemCounts,
+  publicUserAssets,
+  serializeOwnedItemCounts,
+  syncStructuredUserAssets
+} from "./userAssets.js";
+import { isRecruitmentInventoryActionVisible, isRecruitmentInventoryItem } from "./recruitment.js";
+import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
+import { shopCatalogImageUrl } from "./itemImages.js";
+import {
+  RAINBOW_BEAN_CANDY_OUTCOMES,
+  rollRainbowBeanCandyOutcome,
+  selectRainbowBeanCandyStoryBranch
+} from "./rainbowBeanCandyStory.js";
+import { sigrikaCandyUseProgressData } from "./sigrikaCandyArc.js";
+
+export { parseItemEffects } from "./itemEffects.js";
+
+export const ITEM_TARGET_TYPES = new Set(["self", "character"]);
+
+export const parseOwnedItems = parseOwnedItemCounts;
+export const normalizeOwnedItems = normalizeOwnedItemCounts;
+export const serializeOwnedItems = serializeOwnedItemCounts;
+
+export function ownedItemsToPublic(value) {
+  return Object.entries(parseOwnedItems(value)).map(([itemId, quantity]) => ({ itemId, quantity }));
+}
+
+export async function listItemInventory({ prisma, userId }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw routeError(404, "用户不存在");
+  return { items: await inventoryPayload(prisma, user) };
+}
+
+export async function useInventoryItem({ prisma, userId, itemId, characterId = "", random = Math.random }) {
+  return prisma.$transaction(async (tx) => {
+    const [user, item] = await Promise.all([
+      tx.user.findUnique({ where: { id: userId }, include: USER_ASSET_RELATION_INCLUDE }),
+      tx.shopItem.findFirst({
+        where: { category: "item", targetId: itemId }
+      })
+    ]);
+    if (!user) throw routeError(404, "用户不存在");
+    if (!item) throw routeError(404, "道具不存在");
+
+    if (isRecruitmentInventoryItem(item.targetId)) throw routeError(400, "请在招募窗口使用这个道具");
+    if (!item.enabled) throw routeError(404, "道具不存在");
+
+    const ownedItems = parseOwnedItems(user.ownedItems);
+    if ((ownedItems[item.targetId] ?? 0) <= 0) throw routeError(400, "未拥有该道具");
+
+    const targetType = normalizeItemTargetType(item.itemTargetType);
+    const targetCharacter = String(characterId ?? "").trim();
+    const disabledReason = itemDisabledCharacterReasons(item)[canonicalCharacterId(targetCharacter)];
+    if (disabledReason) throw routeError(403, disabledReason);
+    if (targetType === "character") {
+      if (!targetCharacter) throw routeError(400, "请选择角色");
+      const ownedCharacters = publicUserAssets(user).ownedCharacters.map(canonicalCharacterId);
+      if (!ownedCharacters.includes(canonicalCharacterId(targetCharacter))) throw routeError(403, "尚未获得该角色");
+    }
+
+    const effect = resolveItemEffect({ item, user, characterId: targetCharacter });
+    const publicItem = toItemPayload(item);
+    const target = targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType };
+    const storyScript = targetType === "character" ? await getPublishedStoryScriptForTrigger({
+      prisma: tx,
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: {
+        itemId: item.targetId,
+        characterId: targetCharacter
+      },
+      variables: {
+        username: user.username,
+        characterName: CHARACTERS[targetCharacter]?.name ?? targetCharacter,
+        itemName: item.name
+      }
+    }) : null;
+    const itemUseOutcome = item.targetId === RAINBOW_BEAN_CANDY_ID
+      ? rollRainbowBeanCandyOutcome(targetCharacter, random)
+      : RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
+    const sigrikaProgressData = item.targetId === RAINBOW_BEAN_CANDY_ID && canonicalCharacterId(targetCharacter) === "sigrika"
+      ? sigrikaCandyUseProgressData(user)
+      : {};
+    const selectedStoryScript = item.targetId === RAINBOW_BEAN_CANDY_ID
+      ? selectRainbowBeanCandyStoryBranch(storyScript, itemUseOutcome, {
+        characterId: targetCharacter,
+        useCount: sigrikaProgressData.sigrikaCandyUseCount
+      })
+      : storyScript;
+
+    if (itemUseOutcome === RAINBOW_BEAN_CANDY_OUTCOMES.rejected) {
+      return {
+        user: publicUser(user),
+        items: await inventoryPayload(tx, user),
+        item: publicItem,
+        effectText: "",
+        storyScript: selectedStoryScript,
+        target,
+        itemUseOutcome
+      };
+    }
+
+    ownedItems[item.targetId] -= 1;
+    if (ownedItems[item.targetId] <= 0) delete ownedItems[item.targetId];
+    const updated = await tx.user.update({
+      where: { id: user.id },
+      data: {
+        ownedItems: serializeOwnedItems(ownedItems),
+        ...effect.data,
+        ...sigrikaProgressData
+      }
+    });
+    await syncStructuredUserAssets(tx, updated);
+    const projectedUser = await tx.user.findUnique({
+      where: { id: user.id },
+      include: USER_ASSET_RELATION_INCLUDE
+    });
+    if (!projectedUser) throw routeError(404, "用户不存在");
+    return {
+      user: publicUser(projectedUser),
+      items: await inventoryPayload(tx, projectedUser),
+      item: publicItem,
+      effectText: effect.effectText,
+      storyScript: selectedStoryScript,
+      target,
+      itemUseOutcome
+    };
+  });
+}
+
+export function toItemPayload(item, quantity = 0) {
+  const payload = toShopLikePayload(item);
+  return {
+    ...payload,
+    itemId: payload.targetId,
+    quantity,
+    targetType: normalizeItemTargetType(payload.itemTargetType),
+    disabledCharacterReasons: itemDisabledCharacterReasons(item),
+    usable: !isRecruitmentInventoryItem(payload.targetId),
+    actionVisible: isRecruitmentInventoryActionVisible(payload.targetId)
+  };
+}
+
+function itemDisabledCharacterReasons(item) {
+  if (item.targetId === RAINBOW_BEAN_CANDY_ID && process.env.NODE_ENV === "production") {
+    return { sigrika: "西格莉卡的糖果剧情尚未开放，暂不可使用" };
+  }
+  return {};
+}
+
+function toShopLikePayload(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    category: item.category,
+    targetId: item.targetId,
+    itemTargetType: normalizeItemTargetType(item.itemTargetType),
+    stockQuantity: item.stockQuantity ?? -1,
+    priceCoins: item.priceCoins,
+    discountPercent: item.discountPercent ?? 0,
+    finalPrice: Math.max(0, Math.ceil(Number(item.priceCoins ?? 0) * (100 - Math.max(0, Math.min(100, Number(item.discountPercent ?? 0)))) / 100)),
+    purchasable: item.purchasable,
+    enabled: item.enabled,
+    sortOrder: item.sortOrder ?? 0,
+    description: item.description ?? "",
+    imageUrl: shopCatalogImageUrl(item)
+  };
+}
+
+export function normalizeItemTargetType(value) {
+  return ITEM_TARGET_TYPES.has(value) ? value : "self";
+}
+
+async function inventoryPayload(prisma, user) {
+  const counts = parseOwnedItems(user.ownedItems);
+  const itemIds = Object.keys(counts);
+  if (itemIds.length === 0) return [];
+  const items = await prisma.shopItem.findMany({
+    where: { category: "item", targetId: { in: itemIds } },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
+  });
+  return items.map((item) => toItemPayload(item, counts[item.targetId] ?? 0));
+}
+
+function resolveItemEffect({ item, user, characterId }) {
+  if (item.targetId !== RAINBOW_BEAN_CANDY_ID) return { data: {}, effectText: "" };
+  const targetCharacter = canonicalCharacterId(characterId);
+  const itemEffects = parseItemEffects(user.itemEffects);
+  if (targetCharacter === "sigrika") {
+    if (itemEffects.sigrikaCandyDisabled) throw routeError(400, "西格莉卡已经处于糖果效果中");
+    const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
+    const data = {
+      itemEffects: serializeItemEffects({ ...itemEffects, sigrikaCandyDisabled: true })
+    };
+    if (selectedCharacter === "sigrika") {
+      data.selectedCharacter = fallbackSelectedCharacter(user);
+    }
+    return { data, effectText: SIGRIKA_CANDY_EFFECT_TEXT };
+  }
+  if (targetCharacter === "denia") {
+    if (itemEffects.deniaRainbowGlow) throw routeError(400, "达妮娅已经处于糖果效果中");
+    return {
+      data: {
+        itemEffects: serializeItemEffects({ ...itemEffects, deniaRainbowGlow: true })
+      },
+      effectText: DENIA_CANDY_EFFECT_TEXT.replaceAll("{username}", user.username)
+    };
+  }
+  if (targetCharacter === "aemeath") {
+    if (itemEffects.aemeathRainbowMove) throw routeError(400, "爱弥斯已经处于糖果效果中");
+    return {
+      data: {
+        itemEffects: serializeItemEffects({ ...itemEffects, aemeathRainbowMove: true })
+      },
+      effectText: AEMEATH_CANDY_EFFECT_TEXT
+    };
+  }
+  if (targetCharacter === "lynae") {
+    if (itemEffects.lynaeContraryVoice) throw routeError(400, "琳奈已经处于糖果效果中");
+    return {
+      data: {
+        itemEffects: serializeItemEffects({ ...itemEffects, lynaeContraryVoice: true })
+      },
+      effectText: LYNAE_CANDY_EFFECT_TEXT
+    };
+  }
+  throw routeError(400, "这个角色暂时没有糖果效果");
+}
+
+function fallbackSelectedCharacter(user) {
+  const ownedCharacters = publicUserAssets(user).ownedCharacters
+    .map(canonicalCharacterId)
+    .filter((characterId) => characterId && characterId !== "sigrika");
+  const fallback = ownedCharacters[0];
+  if (!fallback) throw routeError(400, "没有可替换的出战角色");
+  return fallback;
+}
+
+function routeError(status, message) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}

@@ -1,0 +1,5 @@
+PASS 1440 { parts: [ 390, 459, 525, 1003 ], width: 760, overflow: 0 }
+PASS 390 { parts: [ 57, 99.234375, 137.234375, 293 ], width: 356, overflow: 0 }
+PASS 320 { parts: [ 57, 99.234375, 137.234375, 223 ], width: 286, overflow: 0 }
+PASS long list { scrollable: true, gutter: 14 }
+PASS empty

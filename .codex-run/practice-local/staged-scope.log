@@ -1,0 +1,80 @@
+warning: in the working copy of '.trellis/spec/backend/index.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/spec/backend/practice-room-contract.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'deploy/nginx/sigrikago-routes.conf', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'eslint.config.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/deploymentConfig.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/index.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/practiceRoomAutomation.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/practiceRoomAutomation.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/roomClockLifecycle.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/roomClockLifecycle.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/roomFactory.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/roomView.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/roomView.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/rooms.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/securityHeaders.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/securityHeaders.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/socketEvents.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/socketEvents.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/socketGuards.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/socketPracticeEvents.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/socketPracticeEvents.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/useGameSocketConnection.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/useMatchActions.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/useMatchActions.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/spec/backend/local-practice-engine-contract.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/tasks/09-26-practice-local-engine/commit-plan.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/tasks/09-26-practice-local-engine/prd.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/tasks/09-26-practice-local-engine/research/validation.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.trellis/tasks/09-26-practice-local-engine/task.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/engines/gnugo-3.8/COPYING.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/engines/gnugo-3.8/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/engines/gnugo-3.8/build-practice-wasm.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/build-practice-wasm.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/verify-practice-wasm.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/localPracticeEngine.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/localPracticeEngine.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/gnuGoWasm.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/localPracticeController.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/localPracticeController.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/practiceEngine.worker.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/practiceEngineClient.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/practice/practiceEngineClient.test.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/shared/localPractice.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/e2e/fixtures/local-practice-server.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/e2e/fixtures/local-practice.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/e2e/fixtures/local-practice.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/e2e/local-practice.config.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/e2e/local-practice.spec.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/system-design.md', LF will be replaced by CRLF the next time Git touches it
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: git diff --cached --check
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:925:11)
+    at execFileSync (node:child_process:961:15)
+    at git (file:///C:/codex/SigrikaGo/.codex-run/practice-local/stage-scoped.mjs:7:30)
+    at file:///C:/codex/SigrikaGo/.codex-run/practice-local/stage-scoped.mjs:28:1 {
+  status: 2,
+  signal: null,
+  output: [
+    null,
+    'public/engines/gnugo-3.8/gnugo.js:2: trailing whitespace.\n' +
+      '+  \n' +
+      'public/engines/gnugo-3.8/gnugo.js:3084: trailing whitespace.\n' +
+      "+    // The incomming Module['websocket'] can be used for configuring \n",
+    ''
+  ],
+  pid: 50684,
+  stdout: 'public/engines/gnugo-3.8/gnugo.js:2: trailing whitespace.\n' +
+    '+  \n' +
+    'public/engines/gnugo-3.8/gnugo.js:3084: trailing whitespace.\n' +
+    "+    // The incomming Module['websocket'] can be used for configuring \n",
+  stderr: ''
+}
+
+Node.js v24.15.0

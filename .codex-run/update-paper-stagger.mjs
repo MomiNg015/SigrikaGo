@@ -1,0 +1,2 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+for(const p of ['docs/system-design.md','docs/system-design/06-ui-theme-mobile.md']){let s=readFileSync(p,'utf8');s=s.replace('信息拆为身份铭牌、棋钟统计面板与角色色技能按钮。','信息拆为错位搭叠的身份铭牌、棋钟统计面板与角色色技能签；隐藏粗进度条，时间数字与右侧统计组成棋钟。');s=s.replace('棋钟仍保持米色／回合黄色语义。','棋钟仍保持米色／回合黄色语义。身份铭牌和技能签宽度缩进、轻微反向倾斜并搭叠棋钟边缘；正式 Bright School 信息区隐藏计时进度条，突出时间数字与读秒次数，提子统计置于右侧。移动端的错位仅在信息条分配范围内发生，不改变棋盘行间距。');writeFileSync(p,s);}

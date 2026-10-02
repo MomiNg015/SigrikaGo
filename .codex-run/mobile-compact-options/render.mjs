@@ -1,0 +1,3 @@
+import {chromium} from 'playwright';
+const b=await chromium.launch({channel:'msedge',headless:true});const p=await b.newPage({viewport:{width:800,height:920}});p.on('pageerror',e=>{throw e});
+for(const v of ['a','b','c']){await p.goto('file:///C:/codex/SigrikaGo/.codex-run/mobile-compact-options/index.html');await p.locator(`[data-v=${v}]`).click();await p.screenshot({path:`.codex-run/mobile-compact-options/${v}.png`});console.log(v,await p.locator('.measure').textContent());await p.locator('select').selectOption('320');await p.locator('#long').click();console.log(await p.locator('.card').evaluateAll(cs=>cs.map(c=>({width:c.clientWidth,scroll:c.scrollWidth}))));await p.screenshot({path:`.codex-run/mobile-compact-options/${v}-320.png`});}await b.close();

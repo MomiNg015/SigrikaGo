@@ -1,0 +1,51 @@
+[WebServer] (node:53556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+Running 2 tests using 1 worker
+
+(node:7196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 1440x1000 (22.8s)
+(node:40540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 390x844 (32.5s)
+
+
+  1) tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 1440x1000 ──────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('.home-guide-panel p')
+    Expected: [32m"[7m铛铛，这就是我们的招募系统啦。我们可以准备招新物品来招募新部员[27m。"[39m
+    Received: [31m"[7m不过我都想好办法了，点开这个看看吧[27m。"[39m
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toHaveText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.home-guide-panel p')[22m
+    [2m    14 × locator resolved to <p>不过我都想好办法了，点开这个看看吧。</p>[22m
+    [2m       - unexpected value "不过我都想好办法了，点开这个看看吧。"[22m
+
+
+      19 |     await expect.poll(async () => (await page.locator(".home-guide-scrim").boundingBox())?.height).toBe(viewport.height);
+      20 |     for (const step of HOME_ONBOARDING_STEPS) {
+    > 21 |       if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
+         |                                                                        ^
+      22 |       if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
+      23 |       await expect(page.getByText("正在准备介绍的窗口…", { exact: true })).toHaveCount(0);
+      24 |       const target = step.target || step.surface ? await page.locator(".home-guide-spotlight").boundingBox() : null;
+        at C:\codex\SigrikaGo\tests\e2e\home-onboarding.spec.js:21:72
+
+    Error Context: .codex-run\home-onboarding-browser\home-onboarding-complete-real-window-home-tour-1440x1000\error-context.md
+
+  1 failed
+    tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 1440x1000 ───────────────
+  1 passed (1.2m)

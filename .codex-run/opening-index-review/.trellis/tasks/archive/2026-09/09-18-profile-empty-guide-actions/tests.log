@@ -1,0 +1,97 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 22ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 1012ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 343ms
+     → totalFiles: expected 687 to be less than or equal to 686
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 158ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 170ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 183ms
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 51ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 3ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 0ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 16ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 60ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 0ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 0ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 7ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 3ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 5ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 2ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 5ms
+ ❯ src/modals/HouseModal.test.js (28 tests | 1 failed) 543ms
+   ✓ deriveCharacterRecordStats > counts only owned character records for the viewed player 2ms
+   ✓ deriveCharacterRecordStats > disables Sigrika sortie and swaps Denia portrait from candy effects 1ms
+   ✓ deriveCharacterRecordStats > splits profile record text into total games and result counts 1ms
+   ✓ deriveCharacterRecordStats > sorts profile character stats by total games descending 0ms
+   ✓ deriveCharacterRecordStats > renders the shared profile summary and semantic character record table 21ms
+   ✓ deriveCharacterRecordStats > disables profile like and report actions for self and disables repeat daily likes 13ms
+   ✓ deriveCharacterRecordStats > keeps the profile report dialog submit-only below the textarea 1ms
+   ✓ deriveCharacterRecordStats > marks house character cards with active item effect icons 7ms
+   ✓ deriveCharacterRecordStats > hides character chain badges in the house manual character grid 3ms
+   ✓ deriveCharacterRecordStats > renders unobtained and hidden-intel roster cards without the old unavailable copy 4ms
+   ✓ deriveCharacterRecordStats > keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted 2ms
+   ✓ deriveCharacterRecordStats > keeps Bright School portrait handbook art centered with a compact bottom-right sortie action 1ms
+   ✓ deriveCharacterRecordStats > plays the selected character sortie voice before selecting the character 0ms
+   ✓ deriveCharacterRecordStats > does not play sortie voice or select when the sortie button is disabled 0ms
+   ✓ deriveCharacterRecordStats > stops active character voice playback only when the nested detail surface closes 1ms
+   ✓ deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual 4ms
+   ✓ deriveCharacterRecordStats > keeps the house manual focused on character and decoration management 3ms
+   ✓ deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive 8ms
+   × deriveCharacterRecordStats > renders replay access and profile stats in the resume modal 25ms
+     → expected '<link rel="preload" as="image" href="…' to contain 'profile-character-table'
+   ✓ deriveCharacterRecordStats > renders Baconbits as owned and sortie-capable when public user owns it 4ms
+   ✓ deriveCharacterRecordStats > keeps nested character detail dialogs as viewport overlays above the house manual 25ms
+   ✓ deriveCharacterRecordStats > renders character descriptions in the character detail dialog 83ms
+   ✓ deriveCharacterRecordStats > renders optional character CV labels without default link styling 28ms
+   ✓ deriveCharacterRecordStats > renders the character skill BGM player in the detail heading 122ms
+   ✓ deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable 172ms
+   ✓ deriveCharacterRecordStats > shows a title disclosure when the user owns multiple base-skill BGM tracks 2ms
+   ✓ deriveCharacterRecordStats > separates base and derived-skill music into independent slots 1ms
+   ✓ deriveCharacterRecordStats > makes the character description area replay the detail voice 3ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 843ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  421ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (13 tests) 1634ms
+   ✓ UserProfileCard dossier interactions > opts report titles in explicitly and restores focus (stickers: false)  352ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > renders replay access and profile stats in the resume modal
+AssertionError: expected '<link rel="preload" as="image" href="…' to contain 'profile-character-table'
+
+Expected: "profile-character-table"
+Received: "<link rel="preload" as="image" href="/assets/window-titles/resume.webp"/><link rel="preload" as="image" href="/assets/characters/portraits/sigrika.webp"/><div class="modal-backdrop"><section class="house-modal resume-modal profile-dossier-modal window-sticker-host" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" tabindex="-1"><header class="house-header resume-header window-sticker-header"><h2 id="resume-modal-title" class="window-title-sticker" style="--window-title-width:168px;--window-title-height:76px"><span class="window-title-sticker-label">履历</span><img class="window-title-sticker-art" src="/assets/window-titles/resume.webp" alt="" aria-hidden="true" draggable="false" decoding="async"/></h2><div class="resume-header-actions"><button type="button" class="resume-mini-action achievement-entry-action"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg>成就</button><button type="button" class="resume-mini-action profile-personalization-button personalization-entry-action"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>个性化</button><p class="shop-wallet resume-wallet" title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dollar-sign" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>1070</p><button class="close-button resume-close-button" type="button" aria-label="关闭履历"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></header><div class="profile-resume-view profile-resume-view-self" data-profile-context="self"><section class="profile-resume-hero" aria-label="我的身份资料"><span class="profile-chain-portrait profile-hero-portrait" style="--character-theme-color:#ff9b4d"><span class="profile-portrait-mask"><img src="/assets/characters/portraits/sigrika.webp" alt="西格莉卡立绘"/></span></span><div class="profile-identity-block"><h3><span class="user-identity"><span class="user-identity-main"><span class="user-identity-name-tag"><span class="user-identity-name">moming</span></span></span></span></h3></div></section><div class="mode-tabs window-mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式"><button id="self-profile-tab-spark" type="button" role="tab" aria-selected="true" aria-controls="self-profile-mode-panel" tabindex="0" class="active">星炬</button><button id="self-profile-tab-standard" type="button" role="tab" aria-selected="false" aria-controls="self-profile-mode-panel" tabindex="-1" class="">标准</button><button id="self-profile-tab-gomoku" type="button" role="tab" aria-selected="false" aria-controls="self-profile-mode-panel" tabindex="-1" class="">五子棋</button></div><div id="self-profile-mode-panel" class="profile-record-panel" role="tabpanel" aria-labelledby="self-profile-tab-spark"><section class="profile-overview-grid" aria-label="模式战绩摘要"><div class="profile-summary-grid"><div class="profile-summary-item is-primary"><span class="profile-summary-label"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>段位<span class="stat-tip-wrap" tabindex="0" aria-label="段位说明"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-help" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg><span class="stat-tip" role="tooltip">每个模式独立记录最近十盘：累计7胜升一级或一段，累计8负降一级或一段；升降后重新记录。最高9段，最低18级。</span></span></span><strong>3段</strong></div><div class="profile-summary-item is-primary"><span class="profile-summary-label"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>积分<span class="stat-tip-wrap" tabindex="0" aria-label="积分说明"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-help" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg><span class="stat-tip" role="tooltip">对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。</span></span></span><strong>1160分</strong></div><div class="profile-summary-item has-action"><span class="profile-summary-label"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gamepad2 lucide-gamepad-2" aria-hidden="true"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>总对局</span><strong>2局</strong><button class="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-monitor-play" aria-hidden="true"><path d="M10 7.75a.75.75 0 0 1 1.142-.638l3.664 2.249a.75.75 0 0 1 0 1.278l-3.664 2.25a.75.75 0 0 1-1.142-.64z"></path><path d="M12 17v4"></path><path d="M8 21h8"></path><rect x="2" y="3" width="20" height="14" rx="2"></rect></svg></button></div><div class="profile-summary-item"><span class="profile-summary-label"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-gauge" aria-hidden="true"><path d="M15.6 2.7a10 10 0 1 0 5.7 5.7"></path><circle cx="12" cy="12" r="2"></circle><path d="M13.4 10.6 19 5"></path></svg>胜率</span><strong>50.0%</strong></div></div><section class="profile-recent-section" aria-label="最近十盘"><span class="recent-result-markers profile-rank-results" aria-label="最近胜负"><span class="recent-result-marker recent-result-marker-win">胜</span><span class="recent-result-marker recent-result-marker-loss">负</span></span></section></section><section class="profile-character-empty" aria-label="角色战绩"><span class="recent-result-empty">暂无</span></section></div></div></section></div>"
+
+ ❯ src/modals/HouseModal.test.js:606:18
+    604|     expect(html).toContain("胜率");
+    605|     expect(html).toContain("resume-replay-action");
+    606|     expect(html).toContain("profile-character-table");
+       |                  ^
+    607|     expect(html).not.toContain("<h4 class=\"text-window-title\">角色战绩</…
+    608|     expect(html).toContain("profile-character-col-identity");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 687 to be less than or equal to 686
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 3 passed (5)
+      Tests  2 failed | 83 passed (85)
+   Start at  14:23:26
+   Duration  7.58s (transform 1.44s, setup 0ms, collect 4.44s, tests 4.05s, environment 4.17s, prepare 787ms)
+

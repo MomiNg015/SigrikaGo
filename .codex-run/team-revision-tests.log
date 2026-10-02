@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/TeamLineupPicker.dom.test.jsx src/app/useBackgroundMusicTrack.test.js src/shared/musicLibrary.test.js server/teamMatch.test.js server/rooms.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/shared/musicLibrary.test.js (68 tests) 31ms
+ ✓ server/teamMatch.test.js (7 tests) 37ms
+ ✓ server/rooms.test.js (44 tests) 440ms
+ ✓ src/app/useBackgroundMusicTrack.test.js (3 tests) 46ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (3 tests) 642ms
+   ✓ team selection > uses click order, removes selected cards and remembers the confirmed lineup  390ms
+
+ Test Files  5 passed (5)
+      Tests  125 passed (125)
+   Start at  20:17:10
+   Duration  9.47s (transform 2.16s, setup 0ms, collect 6.53s, tests 1.20s, environment 5.34s, prepare 968ms)
+

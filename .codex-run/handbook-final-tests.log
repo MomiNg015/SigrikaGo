@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 759ms
+ ✓ src/modals/HouseModal.test.js (28 tests | 19 skipped) 47ms
+
+ Test Files  2 passed (2)
+      Tests  29 passed | 19 skipped (48)
+   Start at  10:26:40
+   Duration  4.05s (transform 740ms, setup 0ms, collect 1.66s, tests 806ms, environment 0ms, prepare 246ms)
+

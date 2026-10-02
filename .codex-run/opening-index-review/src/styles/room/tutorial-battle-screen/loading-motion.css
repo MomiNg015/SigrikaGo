@@ -1,0 +1,80 @@
+.tutorial-battle-preload-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100200;
+  pointer-events: auto;
+}
+
+.tutorial-battle-preload-overlay .asset-preload-screen {
+  min-height: 100dvh;
+  width: 100vw;
+  padding: 0;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.92));
+}
+
+@keyframes tutorial-battle-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scaleX(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+@keyframes tutorial-battle-bubble-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-18px) scaleX(0.96);
+  }
+}
+
+@keyframes tutorial-target-pulse {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) scale(0.95);
+    box-shadow:
+      0 0 0 2px rgba(74, 55, 54, 0.32),
+      0 0 0 6px rgba(255, 210, 77, 0.24),
+      0 0 20px rgba(255, 210, 77, 0.9),
+      0 0 40px rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow:
+      0 0 0 2px rgba(74, 55, 54, 0.38),
+      0 0 0 10px rgba(255, 210, 77, 0.36),
+      0 0 30px rgba(255, 210, 77, 1),
+      0 0 62px rgba(245, 158, 11, 0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-battle-continue,
+  .tutorial-battle-action,
+  .tutorial-action-bar button {
+    transition: none;
+  }
+
+  .tutorial-battle-dialogue,
+  .tutorial-battle-dialogue.closing,
+  .chat-popover.tutorial-story-log-popover,
+  .board .point.tutorial-target-point .tutorial-target-ring,
+  .tutorial-action-bar .tutorial-highlight-action {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .tutorial-battle-dialogue {
+    width: min(360px, calc(100vw - 32px));
+  }
+}

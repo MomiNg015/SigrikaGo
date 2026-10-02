@@ -1,0 +1,1217 @@
+﻿import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
+import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
+import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
+import HouseModal from "./HouseModal.jsx";
+import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
+import ResumeModal from "./ResumeModal.jsx";
+import { characterMusicSlots, CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
+import { sortCharacterStatsByGames, splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
+
+describe("deriveCharacterRecordStats", () => {
+  const user = {
+    id: 1,
+    username: "moming",
+    ownedCharacters: ["sigrika", "aemeath"]
+  };
+  const characters = [
+    { id: "sigrika", name: "西格莉卡" },
+    { id: "aemeath", name: "爱弥斯" },
+    { id: "baconbits", name: "猪小仙" }
+  ];
+
+  it("counts only owned character records for the viewed player", () => {
+    const records = [
+      { blackUserId: 1, blackCharacter: "sigrika", winnerColor: "black" },
+      { whiteUserId: 1, whiteCharacter: "aemeath", winnerColor: "black" },
+      { blackName: "moming", blackCharacter: "baconbits", winnerColor: "black" },
+      { whiteUserId: 2, whiteCharacter: "sigrika", winnerColor: "white" }
+    ];
+
+    expect(deriveCharacterRecordStats(user, records, characters)).toEqual([
+      { character: characters[0], total: 1, wins: 1, losses: 0, draws: 0 },
+      { character: characters[1], total: 1, wins: 0, losses: 1, draws: 0 }
+    ]);
+  });
+
+  it("disables Sigrika sortie and swaps Denia portrait from candy effects", () => {
+    const itemEffects = {
+      sigrikaCandyDisabled: true,
+      deniaRainbowGlow: true,
+      aemeathRainbowMove: true,
+      lynaeContraryVoice: true
+    };
+
+    expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
+    expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
+    expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.webp" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
+    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/sigrika_centered.webp");
+  });
+
+  it("splits profile record text into total games and result counts", () => {
+    expect(splitRecordSummary("29局 · 15胜10负4和")).toEqual({
+      total: "29局",
+      breakdown: "15胜10负4和"
+    });
+    expect(splitRecordSummary("29局15胜10负4和")).toEqual({
+      total: "29局",
+      breakdown: "15胜10负4和"
+    });
+  });
+
+  it("sorts profile character stats by total games descending", () => {
+    expect(sortCharacterStatsByGames([
+      { characterId: "denia", record: "14局 · 4胜10负0和" },
+      { characterId: "aemeath", record: "38局 · 23胜14负1和" },
+      { characterId: "sigrika", record: "21局 · 9胜12负0和" }
+    ]).map((item) => item.characterId)).toEqual(["aemeath", "sigrika", "denia"]);
+  });
+
+  it("renders the shared profile summary and semantic character record table", () => {
+    const profileHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        record: "29局 · 15胜10负4和",
+        characterId: "sigrika",
+        characterStats: [{
+          characterId: "sigrika",
+          total: 29,
+          wins: 15,
+          losses: 10,
+          draws: 4
+        }],
+        likeCount: 3,
+        achievementEquipmentAssets: {
+          nameplate: { imageUrl: "/assets/nameplate.png", name: "用户名背景" }
+        }
+      },
+      characters: {
+        sigrika: {
+          id: "sigrika",
+          name: "西格莉卡",
+          palette: "#67d9e8",
+          portrait: "/assets/sigrika_centered.webp"
+        }
+      },
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
+    }));
+    expect(profileHtml).toContain("profile-summary-grid");
+    expect(profileHtml).toContain("profile-character-table");
+    expect(profileHtml).toContain("profile-character-table-head");
+    expect(profileHtml).not.toContain('<h4 class="text-window-title">角色战绩</h4>');
+    expect(profileHtml).toContain("tabindex=\"0\"");
+    expect(profileHtml).toContain("aria-label=\"角色战绩列表\"");
+    expect(profileHtml).toContain("aria-hidden=\"true\"");
+    expect(profileHtml).toContain("profile-mode-tabs");
+    expect(profileHtml).toContain("profile-identity-actions");
+    expect(profileHtml).toContain("profile-like-button");
+    expect(profileHtml).toContain("profile-friend-button");
+    expect(profileHtml).toContain("profile-blacklist-button");
+    expect(profileHtml).toContain("profile-report-button");
+    expect(profileHtml).not.toContain("text-rating-value");
+    expect(profileHtml).toContain("点赞 3");
+    expect(profileHtml).toContain("background-image:url(/assets/nameplate.png)");
+    expect(profileHtml.indexOf(">星炬</button>")).toBeLessThan(profileHtml.indexOf(">标准</button>"));
+    expect(profileHtml.indexOf(">标准</button>")).toBeLessThan(profileHtml.indexOf(">五子棋</button>"));
+    expect(profileHtml).toContain(">五子棋</button>");
+    expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
+    expect(profileHtml).toContain("profile-recent-section");
+    expect(profileHtml).toContain("--character-theme-color:#67d9e8");
+    expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-summary-grid"));
+    expect(profileHtml).not.toContain("3段 · 1160分");
+    expect(profileHtml).toContain("<th scope=\"col\" aria-label=\"角色\"></th>");
+    expect(profileHtml).toContain("<th scope=\"col\">对局</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">胜</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">负</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">和</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">胜率</th>");
+    expect(profileHtml).toContain("data-label=\"胜率\"");
+  });
+
+  it("disables profile like and report actions for self and disables repeat daily likes", () => {
+    const baseUser = {
+      id: 1,
+      username: "moming",
+      rank: "3段",
+      rating: 1160,
+      record: "29局 · 15胜10负4和",
+      characterId: "sigrika",
+      characterStats: [],
+      likeCount: 4
+    };
+    const characters = [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }];
+    const selfHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: { ...baseUser, relation: "self" },
+      characters,
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
+    }));
+    const likedHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: { ...baseUser, relation: "none", likedToday: true },
+      characters,
+      token: "token",
+      onAddFriend: () => {},
+      onAddBlacklist: () => {}
+    }));
+
+    expect(selfHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-friend-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-blacklist-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-report-button"[^>]*disabled=""/);
+    expect(likedHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(likedHtml).not.toMatch(/class="profile-friend-button"[^>]*disabled=""/);
+    expect(likedHtml).not.toMatch(/class="profile-report-button"[^>]*disabled=""/);
+    expect(likedHtml).toContain("已点赞 4");
+    expect(likedHtml).not.toContain("个性化");
+  });
+
+  it("keeps the profile report dialog submit-only below the textarea", () => {
+    const source = readFileSync(new URL("./UserProfileCard.jsx", import.meta.url), "utf8");
+    const reportDialogStart = source.indexOf("{showReportDialog && (");
+    const reportDialogEnd = source.indexOf("</section>\n  );", reportDialogStart);
+    const reportDialogSource = source.slice(reportDialogStart, reportDialogEnd);
+
+    expect(reportDialogStart).toBeGreaterThan(-1);
+    expect(reportDialogSource).toContain('className="danger-action"');
+    expect(reportDialogSource).toContain("disabled={reportPending || reportContent.trim().length === 0}");
+    expect(reportDialogSource).not.toContain(">取消</button>");
+  });
+
+  it("marks house character cards with active item effect icons", () => {
+    const itemEffects = {
+      sigrikaCandyDisabled: true,
+      deniaRainbowGlow: true,
+      aemeathRainbowMove: true,
+      lynaeContraryVoice: true
+    };
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika", "denia", "aemeath", "lynae"],
+        ownedDecorations: [],
+        selectedCharacter: "denia",
+        itemEffects
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "lynae", name: "琳奈", portrait: "/assets/lynae.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(activeCharacterItemEffects("sigrika", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "sigrikaCandyDisabled",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(activeCharacterItemEffects("denia", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "deniaRainbowGlow",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(activeCharacterItemEffects("aemeath", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "aemeathRainbowMove",
+        label: "彩虹落子模式",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(activeCharacterItemEffects("lynae", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "lynaeContraryVoice",
+        label: "反话语音模式",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(4);
+    expect(html).toContain("src=\"/assets/items/rainbow-bean-candy.webp\"");
+    expect(html).toContain("alt=\"彩虹豆豆跳跳糖效果中\"");
+    expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
+    expect(html).toContain("title=\"彩虹落子模式\"");
+    expect(html).toContain("title=\"反话语音模式\"");
+  });
+
+  it("hides character chain badges in the house manual character grid", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika", "denia"],
+        ownedDecorations: [],
+        selectedCharacter: "denia",
+        characterChains: { denia: 3 },
+        itemEffects: {}
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(html).not.toContain("character-chain-badge");
+  });
+
+  it("renders unobtained and hidden-intel roster cards without the old unavailable copy", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: [],
+        selectedCharacter: "sigrika",
+        itemEffects: {}
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "qiuyuan", name: "仇远", portrait: "/assets/qiuyuan.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "baconbits", name: "隐藏角色", portrait: "/assets/hidden.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(html.match(/class="character-card portrait-card[^"]*unowned[^"]*"/g)).toHaveLength(2);
+    expect(html).toContain("hidden-intel-card");
+    expect(html).toContain("hidden-intel-visual");
+    expect(html).toContain("hidden-intel-brackets");
+    expect(html.match(/hidden-intel-fragment/g)).toHaveLength(6);
+    expect(html).toContain("hidden-intel-no-signal");
+    expect(html).toContain("NO SIGNAL");
+    expect(html).toContain("hidden-intel-label");
+    expect(html).toContain("aria-label=\"暂无情报\"");
+    expect(html).not.toContain("暂不可获取");
+    expect(html).not.toContain("隐藏角色");
+  });
+
+  it("keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted", () => {
+    const handbookCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-unobtained.css", import.meta.url),
+      "utf8"
+    );
+    const hiddenIntelCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-hidden-intel.css", import.meta.url),
+      "utf8"
+    );
+    const signalMotionCss = readFileSync(
+      new URL("../styles/themes/bright-school/modals/handbook-signal-motion.css", import.meta.url),
+      "utf8"
+    );
+    const mobileCss = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(handbookCss).toContain(".character-card.portrait-card.unowned {");
+    expect(handbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(handbookCss).toContain("padding-inline: clamp(10px, 1vw, 12px) !important");
+    expect(handbookCss).toContain("filter: grayscale(1) !important");
+    expect(handbookCss).toContain(".character-card.portrait-card.unowned::before");
+    expect(handbookCss).toContain("content: none !important");
+    expect(handbookCss).toContain("display: none !important");
+    expect(handbookCss).toContain(
+      "--handbook-signal-surface: color-mix(in srgb, var(--bright-ink) 10%, var(--bright-sheet-clean))"
+    );
+    expect(handbookCss).toContain(
+      "--handbook-signal-surface-edge: color-mix(in srgb, var(--bright-ink) 27%, var(--bright-sheet-clean))"
+    );
+    expect(handbookCss).toContain("brightness(0.9)");
+    expect(handbookCss).not.toContain("100% 4px");
+    expect(hiddenIntelCss).not.toContain("100% 4px");
+    expect(signalMotionCss).not.toContain("@keyframes bright-handbook-crt-static");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-sync-loss");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-image-fault");
+    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-glyph-fault");
+    expect(hiddenIntelCss).toContain(".hidden-intel-no-signal");
+    expect(`${handbookCss}\n${hiddenIntelCss}\n${signalMotionCss}`).not.toMatch(/--bright-(?:blue|pink)/);
+    expect(signalMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(handbookCss).not.toContain("repeating-linear-gradient");
+    expect(mobileCss).toContain(
+      ".house-modal .character-card.portrait-card.hidden-intel-card > .hidden-intel-label"
+    );
+    expect(mobileCss).not.toContain("--handbook-scan-distance");
+    expect(mobileCss).toContain("width: 60px !important");
+    expect(mobileCss).toContain("height: 52px !important");
+  });
+
+  it("keeps Bright School portrait handbook art centered with a compact bottom-right sortie action", () => {
+    const portraitEntryCss = readFileSync(
+      new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url),
+      "utf8"
+    );
+    const characterCardCss = readFileSync(
+      new URL("../styles/mobile-adaptive/bright-school-portrait/house-character-cards.css", import.meta.url),
+      "utf8"
+    );
+    const themeMobileCss = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(portraitEntryCss).toContain('@import "./bright-school-portrait/house-character-cards.css";');
+    expect(characterCardCss).toContain(".character-card.portrait-card > img");
+    expect(characterCardCss).not.toContain(".character-card.portrait-card img {");
+    expect(characterCardCss).toContain("width: 72px !important");
+    expect(characterCardCss).toContain("height: 72px !important");
+    expect(characterCardCss).toContain("justify-self: center !important");
+    expect(characterCardCss).toContain("object-position: center !important");
+    expect(characterCardCss).toContain("position: absolute !important");
+    expect(characterCardCss).toContain("right: 4px !important");
+    expect(characterCardCss).toContain("bottom: 4px !important");
+    expect(characterCardCss).toContain("width: 30px !important");
+    expect(characterCardCss).toContain("height: 30px !important");
+    expect(characterCardCss).toContain("box-shadow: 1px 1px 0");
+    expect(themeMobileCss).toContain(".house-modal .character-item-effect-icon");
+    expect(themeMobileCss).toContain("width: 24px !important");
+    expect(themeMobileCss).toContain("height: 24px !important");
+  });
+
+  it("plays the selected character sortie voice before selecting the character", () => {
+    const calls = [];
+    const character = {
+      id: "sigrika",
+      systemVoices: {
+        sortie: "/assets/voice/sigrika_sortie.ogg"
+      }
+    };
+
+    selectSortieCharacter({
+      character,
+      disabled: false,
+      itemEffects: { lynaeContraryVoice: true },
+      audioSettings: { voiceVolume: 0.8 },
+      playVoice: (event, options) => calls.push(["voice", event, options]),
+      onSelectCharacter: (characterId) => calls.push(["select", characterId])
+    });
+
+    expect(calls).toEqual([
+      ["voice", "sortie", {
+        character: { ...character, itemEffects: { lynaeContraryVoice: true } },
+        audioSettings: { voiceVolume: 0.8 }
+      }],
+      ["select", "sigrika"]
+    ]);
+  });
+
+  it("does not play sortie voice or select when the sortie button is disabled", () => {
+    const calls = [];
+
+    selectSortieCharacter({
+      character: { id: "sigrika" },
+      disabled: true,
+      playVoice: (event, options) => calls.push(["voice", event, options]),
+      onSelectCharacter: (characterId) => calls.push(["select", characterId])
+    });
+
+    expect(calls).toEqual([]);
+  });
+
+  it("stops active character voice playback only when the nested detail surface closes", () => {
+    const source = readFileSync(new URL("./HouseModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("function closeCharacterDetail()");
+    expect(source).toContain("function closeHouseModal()");
+    expect(source).toContain("function playCharacterDetailVoice(character)");
+    expect(source.match(/stopVoicePlayback\(\);/g)).toHaveLength(1);
+    expect(source).toMatch(/function closeCharacterDetail\(\) \{\s*stopVoicePlayback\(\);\s*setShowCostumes\(false\);\s*setDetailCharacter\(null\);\s*\}/);
+    expect(source).toMatch(/function closeHouseModal\(\) \{\s*onClose\?\.\(\);\s*\}/);
+    expect(source).toContain("onClose={closeCharacterDetail}");
+    expect(source).toContain("onPlayDetailVoice={() => playCharacterDetailVoice(detailCharacter)}");
+    expect(source).toContain("onClick={closeHouseModal}");
+  });
+
+  it("renders icon-only owned decorations with an accessible name in the house manual", () => {
+    const html = renderToStaticMarkup(createElement(HouseDecorationPicker, {
+      ownedDecorations: ["paw-stone"],
+      onApplyDecoration: () => {}
+    }));
+
+    expect(html).toContain("owned-decoration-chip");
+    expect(html).toContain("decoration-applied-box");
+    expect(html).toContain("decorations-section");
+    expect(html).toContain("aria-label=\"爪印棋子\"");
+    expect(html).not.toContain(">爪印棋子</span>");
+    expect(html).not.toContain(">应用</strong>");
+    expect(html).not.toContain(">使用中</strong>");
+  });
+
+  it("keeps the house manual focused on character and decoration management", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: [],
+        selectedCharacter: "sigrika"
+      },
+      records: [],
+      characterListView: [{
+        id: "sigrika",
+        name: "西格莉卡",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "技能", description: "", cost: 1 }
+      }],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("is-deployed");
+    expect(html).not.toContain("deploy-tag");
+    expect(html).toContain("lock-character-card");
+    expect(html).toContain("lock-text-title text-display-accent");
+    expect(html).toContain("<strong class=\"text-display-accent\">LOADING... (x_x)</strong>");
+    expect(html).toContain("character-grid-container");
+    expect(html).not.toContain("top-stats-bar");
+    expect(html).not.toContain("对局回放");
+    expect(html).not.toContain("战绩");
+    expect(html).not.toContain("金币");
+    expect(html).toContain("LOADING... (x_x)");
+    expect(html).toContain("LOCK / LOADING... (x_x)");
+  });
+
+  it("turns the corrupted house manual into a Sigrika-only readable archive", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        ownedCharacters: ["sigrika", "denia"],
+        selectedCharacter: "sigrika",
+        sigrikaCandyArc: { corrupted: true }
+      },
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+        { id: "denia", name: "丹雅", portrait: "/assets/Danea_centered.webp" }
+      ],
+      audioSettings: {},
+      onApplyDecoration: () => {},
+      onClose: () => {},
+      onSelectCharacter: () => {}
+    }));
+
+    expect(html).toContain("sigrika-corruption-house-backdrop");
+    expect(html).toContain("is-corruption-focus");
+    expect(html).toContain("西格莉卡？");
+    expect(html).toContain('alt="西格莉卡？"');
+    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
+    expect(html).not.toContain("档案校验异常");
+    expect(html).not.toContain("house-corruption-integrity");
+    expect(html).toContain("is-corruption-obscured");
+    expect(html).toContain('data-corruption-seed="house-denia"');
+    expect(html).toContain('data-corruption-seed="house-card-denia"');
+    expect(html).toContain("character-card-corruption-noise");
+    expect(html).toContain("--corruption-card-duration:");
+    expect(html).toContain("--corruption-noise-duration:");
+    expect(html).toContain("character-data-fragments");
+    expect(html).toContain("character-corruption-source");
+    expect(html).not.toContain('data-corruption-seed="house-sigrika"');
+    expect(html).not.toContain("corruption-scribble");
+    expect(html).not.toContain("sortie-button");
+    expect(html).not.toContain("decorations-section");
+  });
+
+  it("renders replay access and profile stats in the resume modal", () => {
+    const html = renderToStaticMarkup(createElement(ResumeModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        coins: 1070,
+        ownedCharacters: ["sigrika"],
+        itemEffects: {},
+        modeStats: {
+          spark: { rating: 1160, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 1, draws: 0 }
+        }
+      },
+      token: "token",
+      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } }],
+      onClose: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain('<h2 id="resume-modal-title" class="window-title-sticker"');
+    expect(html).toContain('<span class="window-title-sticker-label">履历</span>');
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('data-profile-context="self"');
+    expect(html.indexOf(">星炬</button>")).toBeLessThan(html.indexOf(">标准</button>"));
+    expect(html.indexOf(">标准</button>")).toBeLessThan(html.indexOf(">五子棋</button>"));
+    expect(html).not.toContain(">来下五子棋吗？</button>");
+    expect(html).toContain("profile-personalization-button");
+    expect(html).not.toContain("profile-like-button");
+    expect(html).not.toContain("profile-friend-button");
+    expect(html).not.toContain("profile-report-button");
+    expect(html.indexOf("achievement-entry-action")).toBeLessThan(html.indexOf("resume-wallet"));
+    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("resume-close-button"));
+    expect(html).not.toContain("text-rating-value");
+    expect(html).toContain("profile-summary-grid");
+    expect(html).toContain("总对局");
+    expect(html).toContain("胜率");
+    expect(html).toContain("resume-replay-action");
+    expect(html).not.toContain("profile-character-table");
+    expect(html).toContain("profile-character-empty");
+    expect(html).not.toContain("profile-character-table-head");
+    expect(html).not.toContain("character-record-dialog");
+
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
+    const mobileModalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const resumeSource = readFileSync(new URL("./ResumeModal.jsx", import.meta.url), "utf8");
+    expect(modalCss).toContain("width: min(1440px, calc(100vw - 48px));");
+    expect(modalCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(modalCss).toContain(".profile-summary-grid");
+    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain(".profile-character-table");
+    expect(modalCss).toContain("table-layout: fixed;");
+    expect(brightSchoolCss).toContain(".resume-modal > .resume-header");
+    expect(brightSchoolCss).toContain("display: flex !important");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-resume-hero");
+    expect(finalMobileCss).toContain('"portrait identity"\n      "actions actions" !important');
+    expect(finalMobileCss).toContain(".profile-summary-grid");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(2, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-character-table tbody tr");
+    expect(finalMobileCss).toContain("display: table-row !important");
+    expect(finalMobileCss).toContain("display: table-header-group !important");
+    expect(finalMobileCss).toContain("overflow-x: hidden !important");
+    expect(resumeSource).not.toContain("showCharacterRecords");
+    expect(resumeSource).not.toContain("CharacterRecordsDialog");
+    expect(resumeSource).toContain("<ProfileResumeView");
+  });
+
+  it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        coins: 1070,
+        ownedCharacters: ["sigrika", "denia", "aemeath", "baconbits"],
+        ownedDecorations: [],
+        selectedCharacter: "aemeath"
+      },
+      records: [],
+      characterListView: [{
+        id: "baconbits",
+        name: "猪小仙",
+        portrait: "/assets/baconbits.webp",
+        skill: { name: "猪小仙爆炸", description: "", cost: 0 }
+      }],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("猪小仙");
+    expect(html).not.toContain("unowned");
+    expect(html).toContain("title=\"设为出战\"");
+    expect(html).not.toContain("disabled=\"\"");
+  });
+
+  it("keeps nested character detail dialogs as viewport overlays above the house manual", () => {
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const nestedSource = readFileSync(new URL("./house/HouseNestedDialogs.jsx", import.meta.url), "utf8");
+    const nestedBackdropBlock = css.match(/\.nested-modal-backdrop\s*\{[^}]+\}/g)?.at(-1) ?? "";
+    const nestedBackdropPaintBlock = css.match(/\.nested-modal-backdrop::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const nestedModalBlock = css.match(/\.nested-modal-backdrop \.nested-modal\s*\{[^}]+\}/)?.[0] ?? "";
+    const closeButtonBlock = css.match(/\.modal-backdrop \.close-button,\s*\.nested-modal-backdrop \.close-button\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightSchoolRootShell = readFileSync(
+      new URL("../styles/themes/bright-school/surface-contracts/root-shell.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(nestedSource).toContain("character-details-modal");
+    expect(nestedBackdropBlock).toContain("position: fixed");
+    expect(nestedBackdropBlock).toContain("inset: 0");
+    expect(nestedBackdropBlock).toContain("z-index: 80");
+    expect(nestedBackdropBlock).toContain("place-items: center");
+    expect(nestedBackdropBlock).toContain("backdrop-filter: none");
+    expect(nestedBackdropPaintBlock).toContain('content: ""');
+    expect(nestedBackdropPaintBlock).toContain("z-index: -1");
+    expect(nestedBackdropPaintBlock).toContain("backdrop-filter: none");
+    expect(nestedBackdropPaintBlock).not.toContain("blur(");
+    expect(nestedBackdropPaintBlock).toContain("pointer-events: none");
+    expect(brightSchoolRootShell).toContain("--nested-modal-backdrop-fill: rgba(35, 27, 31, 0.64)");
+    expect(nestedModalBlock).toContain("position: relative");
+    expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
+    expect(closeButtonBlock).toContain("position: absolute");
+    expect(closeButtonBlock).toContain("top: var(--modal-close-inset, 12px)");
+    expect(closeButtonBlock).toContain("right: var(--modal-close-inset, 12px)");
+    expect(closeButtonBlock).toContain("width: var(--modal-close-size, 44px)");
+    expect(closeButtonBlock).toContain("height: var(--modal-close-size, 44px)");
+    expect(closeButtonBlock).toContain("z-index: 20");
+    expect(closeButtonBlock).toContain("pointer-events: auto");
+  });
+
+  it("renders character descriptions in the character detail dialog", () => {
+    const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const auditProfileStyles = readFileSync(new URL("../styles/themes/bright-school/quality-base/audit-profile-modals.css", import.meta.url), "utf8");
+    const refinementStyles = readFileSync(new URL("../styles/themes/bright-school/quality-base/refinement-foundation.css", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "西格莉卡",
+        palette: "#67d9e8",
+        portrait: "/assets/sigrika_centered.webp",
+        acquisitionMethod: "初始获得",
+        description: "来自星辉社团的棋手。",
+        skill: { name: "星辉符文", description: "抹除交叉点。", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-description");
+    expect(html).toContain("--character-theme-color:#67d9e8");
+    expect(html).toContain("--detail-label-bg:color-mix(in srgb, var(--character-theme-color) 24%, #ffffff)");
+    expect(html).toContain("--detail-label-color:#111111");
+    expect(html).toContain("--detail-label-bg:#e5e7eb");
+    expect(html).toContain("--detail-label-border:2px solid #6b7280");
+    expect(html).toContain("--detail-label-radius:0");
+    expect(html).not.toContain("skill-cost-badge");
+    expect(html).toContain("skill-overclock-badge");
+    expect(html).toContain("超频：3");
+    expect(html).not.toMatch(/class="character-description"><strong>/);
+    expect(html).toContain("来自星辉社团的棋手。");
+    expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);
+    expect(styles).toMatch(/\.character-description\s*\{[^}]*color:\s*#7b3fa0;/s);
+    expect(styles).toMatch(/\.character-detail-copy p\s*\{[^}]*text-align:\s*left;/s);
+    expect(brightSchoolStyles).toContain(".character-details-modal .character-description");
+    expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
+    expect(brightSchoolStyles).toContain("color: #7b3fa0 !important");
+    expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
+    expect(brightSchoolStyles).toContain("text-align: left !important");
+    expect(auditProfileStyles).toContain("color: var(--detail-label-color, #3d2b25) !important");
+    expect(auditProfileStyles).toContain("background: var(--detail-label-bg, #ffdfeb) !important");
+    expect(auditProfileStyles).toContain("border: var(--detail-label-border, 2px solid #3d2b25) !important");
+    expect(auditProfileStyles).toContain("border-radius: var(--detail-label-radius, 999px) !important");
+    expect(refinementStyles).not.toContain("  .skill-title-row strong,");
+    expect(refinementStyles).not.toContain("  .acquisition-method strong,");
+    expect(brightSchoolStyles).not.toContain(".character-details-modal .skill-title-row strong:first-child");
+    expect(brightSchoolStyles).toContain("button.skill-trait-token");
+    expect(brightSchoolStyles).toContain("background: transparent !important");
+    expect(brightSchoolStyles).toContain("border: 0 !important");
+    expect(brightSchoolStyles).toContain("box-shadow: none !important");
+  });
+
+  it("renders optional character CV labels without default link styling", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "西格莉卡",
+        cvName: "配音者",
+        cvUrl: "https://example.com/cv",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "星辉符文", description: "抹除交叉点。", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const noCvHtml = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "denia",
+        name: "达妮娅",
+        portrait: "/assets/Danea_centered.webp",
+        skill: { name: "泡影幻梦", description: "翻转棋子。", cost: 4 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const unsafeLinkHtml = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "aemeath",
+        name: "爱弥斯",
+        cvName: "配音者",
+        cvUrl: "javascript:alert(1)",
+        portrait: "/assets/Aemeath_centered.webp",
+        skill: { name: "小爱出击", description: "隐藏手。", cost: 0 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+
+    expect(html).toContain("character-detail-title-line");
+    expect(html).toContain("class=\"character-cv-label\"");
+    expect(html).toContain("CV：配音者");
+    expect(html).toContain("href=\"https://example.com/cv\"");
+    expect(html).toContain("target=\"_blank\"");
+    expect(html).toContain("rel=\"noreferrer\"");
+    expect(noCvHtml).not.toContain("character-cv-label");
+    expect(unsafeLinkHtml).toContain("<span class=\"character-cv-label\">CV：配音者</span>");
+    expect(unsafeLinkHtml).not.toContain("javascript:alert");
+    expect(css).toContain(".character-detail-title-line");
+    expect(css).toContain("align-items: baseline;");
+    expect(css).toMatch(/\.character-cv-label\s*\{[^}]*display:\s*block;[^}]*color:\s*inherit;[^}]*text-decoration:\s*none;[^}]*transform:\s*none;[^}]*white-space:\s*nowrap;/s);
+    expect(css).toContain(".character-cv-label:link");
+    expect(css).toContain(".character-cv-label:visited");
+    expect(css).toMatch(/\.character-cv-label:visited,\s*\.character-cv-label:hover,\s*\.character-cv-label:active\s*\{[^}]*filter:\s*none;[^}]*transform:\s*none;/s);
+    expect(css).toContain(".character-cv-label:focus-visible");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    expect(brightSchoolCss).toMatch(/\.character-cv-label\s*\{[^}]*min-height:\s*0\s*!important;/s);
+  });
+
+  it("renders the character skill BGM player in the detail heading", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "Sigrika",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "Skill", description: "Erase a point.", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: { ownedMusicIds: ["sigrika-skill-default"], musicSelections: { skill: {} } },
+      audioSettings: {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-detail-heading");
+    expect(html).toContain("character-music-player");
+    expect(html).not.toContain("character-music-sketch");
+    expect(html).toContain("Sigrika Skill BGM");
+    expect(html).not.toContain("character-music-select");
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    expect(css).toContain(".character-detail-heading");
+    expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);");
+    expect(css).toContain("padding-right: calc(var(--modal-close-size, 44px) + 12px);");
+    expect(css).toContain("background-color: transparent;");
+    expect(css).toContain(".character-detail-title-line");
+    expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
+    expect(css).toContain("width: 188px;");
+    expect(css).toContain("height: 46px;");
+    expect(css).toContain("repeating-linear-gradient(0deg");
+    expect(css).toMatch(/\.character-music-player\s*\{[^}]*border:\s*0;/s);
+    expect(css).toMatch(/\.character-music-toggle\s*\{[^}]*border:\s*0;/s);
+    expect(css).toContain(".character-music-title-trigger");
+    expect(css).toContain(".character-music-sheet");
+    expect(css).toContain("font-weight: 700;");
+    expect(css).toContain(".character-music-player.is-loading .character-music-toggle");
+    expect(css).toContain(".character-music-player.is-playing .character-music-toggle");
+    expect(css).toContain(".character-music-toggle::before");
+    expect(css).toMatch(/\.character-music-toggle:hover:not\(:disabled\),\s*\.character-music-toggle:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\);/s);
+
+    const phoneCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const brightSchoolDesktopCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const brightSchoolPlayerShellCss = readFileSync(
+      new URL("../styles/themes/bright-school/component-repairs/character-music-player/player-shell.css", import.meta.url),
+      "utf8"
+    );
+    const brightSchoolRadioAsset = readFileSync(
+      new URL("../../public/assets/characters/bright-school-radio-player.png", import.meta.url)
+    );
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
+      + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(brightSchoolDesktopCss).toContain("border: 0 !important");
+    expect(brightSchoolDesktopCss).toContain(".character-music-toggle::before");
+    expect(brightSchoolPlayerShellCss).toContain("background-color: transparent !important");
+    expect(brightSchoolPlayerShellCss).toContain("background-image: url(\"/assets/characters/bright-school-radio-player.png\") !important");
+    expect(brightSchoolPlayerShellCss).toContain("width: 230px !important");
+    expect(brightSchoolPlayerShellCss).toContain("height: 50px !important");
+    expect(brightSchoolPlayerShellCss).toContain("background-size: contain !important");
+    expect(brightSchoolPlayerShellCss).toContain("box-shadow: none !important");
+    expect(brightSchoolPlayerShellCss).toContain("border-radius: 999px !important");
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-blue\)\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle \.character-music-glyph,[\s\S]*?\.character-music-toggle \.character-music-glyph span\s*\{[^}]*color:\s*inherit\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-player\.is-playing \.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-pink\)\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\),[\s\S]*?\.character-music-toggle:active:not\(:disabled\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toContain("transform: translateY(2px) !important");
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\)::before,[\s\S]*?\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*border-color:\s*transparent;[^}]*background:\s*transparent;[^}]*box-shadow:\s*none;/s);
+    expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*background:\s*var\(--bright-pink\)/s);
+    expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active[^}]*scale\(/s);
+    expect(brightSchoolPlayerShellCss).toContain("font-family: var(--font-ui-default) !important");
+    expect(brightSchoolPlayerShellCss).not.toContain("var(--font-window-title)");
+    expect(brightSchoolPlayerShellCss).not.toContain(".character-music-slot-mark");
+    expect(brightSchoolPlayerShellCss).not.toContain(".character-music-sketch");
+    expect(brightSchoolPlayerShellCss).toContain("margin-left: 34px !important");
+    expect(brightSchoolPlayerShellCss).toContain("margin-right: 62px !important");
+    expect(brightSchoolPlayerShellCss).toContain("margin-left: 5px !important");
+    expect(brightSchoolPlayerShellCss).toContain("inset: 6px");
+    expect(brightSchoolPlayerShellCss).toContain("overflow: hidden !important");
+    expect(brightSchoolRadioAsset.readUInt32BE(16)).toBe(920);
+    expect(brightSchoolRadioAsset.readUInt32BE(20)).toBe(200);
+    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
+    expect(phoneCss).toContain("flex-direction: column;");
+    expect(phoneCss).toContain("width: min(164px, 48vw);");
+    expect(phoneCss).toContain("height: 46px;");
+    expect(phoneCss).toContain("justify-self: end;");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important");
+    expect(finalMobileCss).toContain("flex-direction: column !important");
+    expect(finalMobileCss).toContain("padding-right: 0 !important");
+    expect(finalMobileCss).toContain("width: min(164px, 48vw) !important");
+    expect(finalMobileCss).toContain("height: 46px !important");
+    expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
+    expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
+    expect(brightSchoolMobileCss).toContain(".character-cv-label");
+    expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");
+    expect(brightSchoolMobileCss).toContain("text-align: left !important");
+    expect(brightSchoolMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(180px, 210px) !important");
+    expect(brightSchoolMobileCss).toContain("width: min(210px, 58vw) !important");
+    expect(brightSchoolMobileCss).toContain("height: 50px !important");
+    expect(brightSchoolMobileCss).toContain("margin-left: 24px !important");
+    expect(brightSchoolMobileCss).toContain("margin-right: 58px !important");
+  });
+
+  it("keeps the Bright School mobile house manual internally scrollable", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const brightSchoolEffectsCss = readCssWithImports(new URL("../styles/themes/bright-school/effects.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(finalMobileCss).toContain(".character-details-modal");
+    expect(finalMobileCss).toContain("overflow-y: auto !important");
+    expect(finalMobileCss).toContain("overscroll-behavior: contain !important");
+
+    expect(css).toContain(".house-modal");
+    expect(css).toContain("grid-template-rows: auto minmax(0, 1fr) auto !important");
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+
+    expect(modalCss).toContain(".resume-modal,\n.room-floating-modal.user-profile-modal");
+    expect(modalCss).toContain("width: min(1440px, calc(100vw - 48px));");
+    expect(modalCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
+    expect(modalCss).toContain("overflow: hidden;");
+    expect(modalCss).toContain(".profile-resume-view");
+    expect(modalCss).toContain(".profile-overview-grid");
+    expect(modalCss).toContain(".profile-summary-grid");
+    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain(".profile-character-table");
+    expect(modalCss).toContain("table-layout: fixed;");
+    expect(modalCss).toContain(".profile-character-table-scroll");
+    expect(modalCss).toContain("overscroll-behavior: contain;");
+    expect(modalCss).toContain("white-space: nowrap;");
+    expect(modalCss).toContain(".room-floating-modal.user-profile-modal");
+    expect(modalCss).toContain("height: min(900px, calc(100dvh - 32px));");
+    expect(modalCss).toContain(".profile-resume-hero > .profile-hero-portrait > .profile-portrait-mask > img");
+    expect(modalCss).toContain("filter: none;");
+    expect(modalCss).toContain(".profile-identity-block :where(.user-identity, .user-identity-main, .user-identity-name-tag)");
+    expect(modalCss).toContain("background-color: transparent;");
+    expect(modalCss).toContain(".profile-friend-button");
+    expect(modalCss).toContain("min-height: 44px;");
+    expect(modalCss).toContain(".profile-replay-button {");
+    expect(modalCss).toContain(".profile-replay-button:disabled");
+    expect(modalCss).toContain(".profile-relation-actions button:disabled");
+    expect(modalCss).toContain(".confirm-inline-modal");
+    expect(modalCss).toContain("position: fixed;");
+    expect(modalCss).toContain("inset: 50% auto auto 50%;");
+    expect(modalCss).toContain("transform: translate(-50%, -50%);");
+    expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
+    expect(modalCss).toContain(":is(.profile-like-button, .profile-friend-button, .profile-blacklist-button, .profile-report-button):active:not(:disabled)");
+    expect(modalCss).toContain("transform: none;");
+    expect(modalCss).toContain(".profile-identity-actions .profile-like-button");
+    expect(modalCss).toContain("min-width: 72px;");
+    const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
+    const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const finalThemeCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
+    const profileAuditCss = readFileSync(
+      new URL("../styles/themes/bright-school/quality-base/audit-profile-modals.css", import.meta.url),
+      "utf8"
+    );
+    const profileActionsCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/quality-base/profile-dossier/actions-tabs.css", import.meta.url)
+    );
+    expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto minmax(0, 1fr) !important;");
+    expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
+    expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
+    expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(brightSchoolModalCss).toContain("background: #ff9ebb !important");
+    expect(finalThemeCss).toContain(".user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag)");
+    expect(finalThemeCss).toContain("background-color: transparent !important");
+    expect(finalThemeCss).toContain(".profile-resume-view .profile-resume-hero .profile-portrait-mask > img");
+    expect(finalThemeCss).toContain("width: 80% !important");
+    expect(finalThemeCss).toContain("height: 80% !important");
+    expect(finalThemeCss).toContain("object-fit: contain !important");
+    expect(finalThemeCss).toContain(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask");
+    expect(finalThemeCss).toContain("background: transparent !important");
+    expect(finalThemeCss).toContain("border: 0 !important");
+    expect(finalThemeCss).toContain(".profile-character-table tbody tr");
+    expect(finalThemeCss).toContain("clip-path: none !important");
+    expect(profileAuditCss).toContain(".profile-character-table tbody tr");
+    expect(profileAuditCss).not.toContain(".character-record-row");
+    expect(finalThemeCss).toContain("--profile-dossier-card-surface: var(--bright-sheet)");
+    expect(finalThemeCss).toContain("box-shadow: var(--profile-dossier-shadow-large) !important");
+    expect(finalThemeCss).toContain("box-shadow: var(--profile-dossier-shadow-medium) !important");
+    expect(finalThemeCss).toContain(".profile-character-table-head");
+    expect(profileAuditCss).toContain("7%, var(--profile-dossier-card-surface, var(--bright-sheet))");
+    expect(profileAuditCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important");
+    expect(finalThemeCss).toContain(".profile-friend-button");
+    expect(profileActionsCss).toContain("Profile tabs reuse the watch-window mode-tab control language.");
+    expect(profileActionsCss).toContain("width: auto !important");
+    expect(profileActionsCss).toContain("min-width: 0 !important");
+    expect(profileActionsCss).toContain("gap: 4px !important");
+    expect(profileActionsCss).not.toContain(".profile-mode-tabs button:is(.active, [aria-selected=\"true\"])");
+    expect(profileActionsCss).toContain("background: var(--bright-cream) !important");
+    expect(profileActionsCss).toContain("button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button)");
+    expect(profileActionsCss).toContain(".achievement-entry-action,\n  .resume-wallet");
+    expect(profileActionsCss).toContain("filter: none !important");
+    expect(profileActionsCss).toContain("transform: translateY(-2px) !important");
+    expect(profileActionsCss).toContain("transform: translateY(1px) !important");
+    expect(profileActionsCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(profileActionsCss).toContain(":is(.profile-report-button, .profile-blacklist-button)");
+    expect(profileActionsCss).toContain("var(--bright-sheet) 76%, var(--theme-danger)");
+    expect(finalThemeCss).toContain(".resume-replay-action");
+    expect(finalThemeCss).toContain("background: #e4f6f0 !important");
+    expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
+      .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
+    expect(finalThemeCss).toContain(".house-modal .character-list");
+    expect(finalThemeCss).toContain("padding-right: 6px !important");
+    expect(finalThemeCss).toContain("padding-bottom: 6px !important");
+    expect(finalThemeCss).toContain("scroll-padding: 0 6px 6px 0 !important");
+    const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
+    expect(lobbyCss).toContain(".character-item-effect-badges");
+    expect(lobbyCss).toContain(".character-item-effect-badges.is-interactive");
+    expect(lobbyCss).toContain("pointer-events: auto;");
+    expect(lobbyCss).toContain(".character-item-effect-icon");
+    expect(lobbyCss).toContain(".character-item-effect-cancel");
+    expect(lobbyCss).toContain(".character-card .character-item-effect-icon");
+    expect(lobbyCss).toMatch(
+      /\.stat-tip\s*\{[^}]*white-space: normal;[^}]*word-break: normal;[^}]*overflow-wrap: anywhere;[^}]*\}/
+    );
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-item-effect-icon");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("width: 24px;");
+    expect(brightSchoolComponentCss).toContain(".character-item-effect-icon");
+    expect(brightSchoolComponentCss).toContain(".character-item-effect-cancel:hover");
+    expect(brightSchoolComponentCss).toContain("background: transparent !important;");
+    expect(brightSchoolComponentCss).toContain("border: 0 !important;");
+    expect(brightSchoolComponentCss).toContain("box-shadow: none !important;");
+    expect(css).toContain(".house-modal .character-item-effect-icon");
+    expect(css).toContain(".house-modal .stat strong");
+    expect(css).toContain("white-space: nowrap !important");
+    expect(css).toContain(".house-modal .character-card.portrait-card > strong");
+    expect(css).toContain(".house-modal .character-card.portrait-card > strong {");
+    expect(css).toContain("display: none !important");
+    expect(css).toContain(".house-modal .stat-tip");
+    expect(css).toContain("position: fixed !important");
+    expect(css).toContain("transform: none !important");
+    expect(css).toContain("overflow-wrap: anywhere !important");
+    expect(css).toContain("grid-template-rows: none !important");
+    expect(css).toContain("grid-auto-rows: 88px !important");
+    expect(css).toContain("overflow-y: auto !important");
+    expect(css).toContain(".character-card.portrait-card .lock-text-title");
+    expect(css).toContain("box-sizing: border-box !important");
+    expect(css).toContain("padding-right: 8px !important");
+    expect(css).toContain("padding-bottom: 6px !important");
+    expect(css).toContain("scroll-padding: 0 8px 6px 0 !important");
+    expect(css).toContain(".house-modal .owned-decoration-section");
+    expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
+    expect(css).not.toContain(".house-modal .owned-decoration-chip strong::after");
+    expect(css).toContain(".character-record-dialog");
+    expect(css).toContain("width: min(420px, calc(100vw - 20px)) !important");
+    expect(css).toContain(".character-record-row span");
+    expect(css).toContain(".character-record-rate");
+    expect(css).toContain("word-break: keep-all !important");
+    expect(css).toContain(".character-detail-art img");
+    expect(css).toContain("filter: none !important");
+    expect(css).toContain("max-height: min(156px, 30dvh) !important");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-resume-hero");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain(".profile-resume-view .profile-identity-actions");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-resume-view-self .profile-identity-actions");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain(".profile-report-dialog");
+    expect(finalMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog");
+    expect(finalMobileCss).toContain("width: min(420px, calc(100vw - 44px)) !important");
+    expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(finalMobileCss).toContain(".profile-secondary-actions");
+    expect(finalMobileCss).toContain("justify-content: flex-end !important");
+    expect(finalMobileCss).toContain(".profile-summary-grid");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(2, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".profile-character-table tbody tr");
+    expect(finalMobileCss).toContain("display: table-row !important");
+    expect(finalMobileCss).toContain("overflow-x: hidden !important");
+    expect(finalMobileCss).toContain(".resume-modal > .resume-header > .resume-header-actions");
+    expect(finalMobileCss).toContain("position: static !important");
+    expect(finalMobileCss).toContain(".profile-rank-results");
+    expect(modalCss).toContain(".profile-rank-results::before,\n.profile-rank-results::after");
+    expect(modalCss).toContain("display: flex;");
+    expect(modalCss).toContain("flex-wrap: wrap;");
+    expect(modalCss).toContain(".profile-rank-results .recent-result-label");
+    expect(modalCss).toContain("display: none;");
+    expect(modalCss).toContain("content: none;");
+    expect(modalCss).not.toContain("content: \"显示最近十盘的战绩\";");
+    expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(finalMobileCss).toContain("background: #ff9ebb !important");
+    expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
+    expect(finalMobileCss).toContain("#4f9b69");
+    expect(brightSchoolEffectsCss).toContain(".sortie-button.selected");
+    expect(brightSchoolEffectsCss).toContain("background: #ff9ebb !important");
+    expect(brightSchoolEffectsCss).toContain("border: 2px solid #3d2b25 !important");
+    expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed .sortie-button.selected");
+    expect(finalMobileCss).toContain("background: #ff9ebb !important");
+    expect(finalMobileCss).toContain(".house-modal .character-list");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain("grid-auto-rows: 88px !important");
+    expect(finalMobileCss).toContain("repeat(auto-fill, 80px) !important");
+    expect(finalMobileCss).toContain(".house-modal .deploy-tag");
+    expect(finalMobileCss).toContain("padding-right: 6px !important");
+    expect(finalMobileCss).toContain("padding-bottom: 6px !important");
+    expect(finalMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
+    expect(finalMobileCss).toContain("display: none !important");
+    expect(finalMobileCss).toContain(".character-record-row");
+    expect(finalMobileCss).toContain("grid-template-columns: 42px minmax(52px, 0.82fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr) !important");
+    expect(finalMobileCss).toContain("overflow-wrap: normal !important");
+  });
+
+  it("shows a title disclosure when the user owns multiple base-skill BGM tracks", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "Sigrika",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "Skill", description: "Erase a point.", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: {
+        ownedMusicIds: ["sigrika-skill-default", "sigrika-skill-dream"],
+        musicSelections: { skill: { sigrika: "sigrika-skill-dream" } }
+      },
+      audioSettings: {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-music-title-trigger");
+    expect(html).not.toContain("character-music-select");
+    expect(html).toContain("Sigrika Dream BGM");
+  });
+
+  it("separates base and derived-skill music into independent slots", () => {
+    const character = {
+      id: "aemeath",
+      skill: {
+        name: "小爱出击",
+        params: {
+          derivedSkills: [{
+            id: "voyage-star",
+            effectType: "voyage-star",
+            name: "远航星",
+            musicTrackId: "aemeath-voyage-star-default"
+          }]
+        }
+      }
+    };
+    const musicTracks = {
+      "aemeath-skill-default": {
+        id: "aemeath-skill-default",
+        name: "小爱出击 BGM",
+        type: "skill",
+        characterId: "aemeath",
+        defaultUnlocked: true,
+        playback: { src: "/base.ogg" }
+      },
+      "aemeath-voyage-star-default": {
+        id: "aemeath-voyage-star-default",
+        name: "远航星 BGM",
+        type: "skill",
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        defaultUnlocked: true,
+        playback: { src: "/derived.ogg" }
+      }
+    };
+
+    const slots = characterMusicSlots({
+      character,
+      derivedSkills: character.skill.params.derivedSkills,
+      musicTracks,
+      user: { ownedMusicIds: [], musicSelections: { skill: {} } }
+    });
+
+    expect(slots.map((slot) => ({
+      id: slot.id,
+      label: slot.label,
+      trackId: slot.track.id,
+      optionIds: slot.options.map((option) => option.id)
+    }))).toEqual([
+      {
+        id: "base",
+        label: "普通技·小爱出击",
+        trackId: "aemeath-skill-default",
+        optionIds: ["aemeath-skill-default"]
+      },
+      {
+        id: "derived:voyage-star",
+        label: "派生技·远航星",
+        trackId: "aemeath-voyage-star-default",
+        optionIds: ["aemeath-voyage-star-default"]
+      }
+    ]);
+  });
+
+  it("makes the character description area replay the detail voice", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "mornye",
+        name: "Mornye",
+        portrait: "/assets/mornye.png",
+        description: "Protocol details.",
+        skill: { name: "Skill", description: "Ban a point.", cost: 1 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: {},
+      audioSettings: {},
+      onPlayDetailVoice: () => {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("class=\"character-description\"");
+    expect(html).toContain("role=\"button\"");
+    expect(html).toContain("tabindex=\"0\"");
+  });
+});

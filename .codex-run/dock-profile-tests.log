@@ -1,0 +1,25 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 22ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 87ms
+ ✓ src/styles/themeContract.test.js (38 tests) 726ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1218ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  388ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  315ms
+ ✓ src/room/RoomPeopleList.test.js (3 tests) 5ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1695ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  344ms
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  320ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family  338ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries  365ms
+ ✓ src/room/layout/useMobileDockBaseline.test.jsx (1 test) 242ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 762ms
+ ✓ src/room/RoomPeopleList.dom.test.jsx (2 tests) 376ms
+   ✓ RoomPeopleList floating actions > opens the shared bookmark profile outside the mobile dock  329ms
+
+ Test Files  9 passed (9)
+      Tests  182 passed (182)
+   Start at  15:41:43
+   Duration  6.68s (transform 2.34s, setup 0ms, collect 7.48s, tests 5.13s, environment 4.14s, prepare 1.49s)
+

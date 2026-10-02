@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/HomeScreen.test.jsx src/home/components/PlayerPlaque.dom.test.jsx src/shared/UserIdentity.test.jsx src/styles/cssLayerInventory.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/shared/UserIdentity.test.jsx (4 tests) 20ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1064ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (4 tests) 265ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1693ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  357ms
+   ✓ HomeScreen > renders the equipped username nameplate inside the student ID and retains its source assets  337ms
+
+ Test Files  4 passed (4)
+      Tests  50 passed (50)
+   Start at  10:00:18
+   Duration  6.20s (transform 971ms, setup 0ms, collect 2.78s, tests 3.04s, environment 2.13s, prepare 711ms)
+

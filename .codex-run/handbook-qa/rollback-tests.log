@@ -1,0 +1,203 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 1495ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  524ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  411ms
+ ❯ src/modals/HouseModal.test.js (28 tests | 3 failed) 891ms
+   ✓ deriveCharacterRecordStats > counts only owned character records for the viewed player 3ms
+   ✓ deriveCharacterRecordStats > disables Sigrika sortie and swaps Denia portrait from candy effects 1ms
+   ✓ deriveCharacterRecordStats > splits profile record text into total games and result counts 1ms
+   ✓ deriveCharacterRecordStats > sorts profile character stats by total games descending 1ms
+   ✓ deriveCharacterRecordStats > renders the shared profile summary and semantic character record table 31ms
+   ✓ deriveCharacterRecordStats > disables profile like and report actions for self and disables repeat daily likes 21ms
+   ✓ deriveCharacterRecordStats > keeps the profile report dialog submit-only below the textarea 1ms
+   ✓ deriveCharacterRecordStats > marks house character cards with active item effect icons 11ms
+   ✓ deriveCharacterRecordStats > hides character chain badges in the house manual character grid 5ms
+   ✓ deriveCharacterRecordStats > renders unobtained and hidden-intel roster cards without the old unavailable copy 6ms
+   ✓ deriveCharacterRecordStats > keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted 3ms
+   ✓ deriveCharacterRecordStats > keeps Bright School portrait handbook art centered with a compact bottom-right sortie action 2ms
+   ✓ deriveCharacterRecordStats > plays the selected character sortie voice before selecting the character 1ms
+   ✓ deriveCharacterRecordStats > does not play sortie voice or select when the sortie button is disabled 0ms
+   ✓ deriveCharacterRecordStats > stops active character voice playback only when the nested detail surface closes 1ms
+   × deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual 38ms
+     → expected '<link rel="preload" as="image" href="…' to contain 'owned-decoration-chip'
+   ✓ deriveCharacterRecordStats > keeps the house manual focused on character and decoration management 6ms
+   ✓ deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive 12ms
+   × deriveCharacterRecordStats > renders replay access and profile stats in the resume modal 15ms
+     → expected 2363 to be less than 806
+   ✓ deriveCharacterRecordStats > renders Baconbits as owned and sortie-capable when public user owns it 4ms
+   ✓ deriveCharacterRecordStats > keeps nested character detail dialogs as viewport overlays above the house manual 35ms
+   ✓ deriveCharacterRecordStats > renders character descriptions in the character detail dialog 135ms
+   ✓ deriveCharacterRecordStats > renders optional character CV labels without default link styling 65ms
+   ✓ deriveCharacterRecordStats > renders the character skill BGM player in the detail heading 209ms
+   × deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable 272ms
+     → expected '/* Dossier geometry only; tagged acti…' to contain 'background: var(--bright-cream) !impo…'
+   ✓ deriveCharacterRecordStats > shows a title disclosure when the user owns multiple base-skill BGM tracks 3ms
+   ✓ deriveCharacterRecordStats > separates base and derived-skill music into independent slots 1ms
+   ✓ deriveCharacterRecordStats > makes the character description area replay the detail voice 3ms
+ ✓ src/modals/WindowBookmarkTabs.dom.test.jsx (4 tests) 421ms
+ ✓ src/modals/house/HouseHandbook.dom.test.jsx (3 tests) 538ms
+   ✓ member handbook pages > switches the visible page through bookmarks and keeps decoration actions working  471ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual
+AssertionError: expected '<link rel="preload" as="image" href="…' to contain 'owned-decoration-chip'
+
+Expected: "owned-decoration-chip"
+Received: "<link rel="preload" as="image" href="/assets/window-titles/handbook.webp"/><link rel="preload" as="image" href="/assets/sigrika_centered.webp"/><div class="modal-backdrop "><section class="house-modal window-sticker-host window-bookmark-host handbook-modal"><button class="close-button" aria-label="关闭部员手册"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button><header class="house-header window-sticker-header"><h2 class="window-title-sticker" style="--window-title-width:220px;--window-title-height:80px"><span class="window-title-sticker-label">部员手册</span><img class="window-title-sticker-art" src="/assets/window-titles/handbook.webp" alt="" aria-hidden="true" draggable="false" decoding="async"/></h2></header><span hidden="" data-bookmark-anchor=""></span><div aria-label="部员手册分类" class="handbook-tabs" role="tablist" aria-orientation="horizontal"><button type="button" role="tab" id="_R_0_-characters-tab" aria-controls="_R_0_-characters-panel" aria-selected="true" tabindex="0">角色</button><button type="button" role="tab" id="_R_0_-decorations-tab" aria-controls="_R_0_-decorations-panel" aria-selected="false" tabindex="-1">装饰</button></div><div class="character-list character-grid-container" id="_R_0_-characters-panel" role="tabpanel" aria-labelledby="_R_0_-characters-tab" tabindex="0"><div class="character-card portrait-card selected is-deployed    " role="button" tabindex="0" data-ui-sound="none"><button class="sortie-button selected" title="出战中" data-ui-sound="confirm"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flag" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg></button><img src="/assets/sigrika_centered.webp" alt="西格莉卡"/><strong>西格莉卡</strong></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div><div class="character-card portrait-card locked lock-character-card"><span class="locked-portrait lock-text-title text-display-accent">LOCK</span><strong class="text-display-accent">LOADING... (x_x)</strong><small class="text-display-accent">LOCK / LOADING... (x_x)</small></div></div></section></div>"
+
+ ❯ src/modals/HouseModal.test.js:478:18
+    476|     }));
+    477| 
+    478|     expect(html).toContain("owned-decoration-chip");
+       |                  ^
+    479|     expect(html).toContain("decoration-applied-box");
+    480|     expect(html).toContain("decorations-section");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > renders replay access and profile stats in the resume modal
+AssertionError: expected 2363 to be less than 806
+ ❯ src/modals/HouseModal.test.js:599:54
+    597|     expect(html).not.toContain("profile-friend-button");
+    598|     expect(html).not.toContain("profile-report-button");
+    599|     expect(html.indexOf("achievement-entry-action")).toBeLessThan(html…
+       |                                                      ^
+    600|     expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("r…
+    601|     expect(html).not.toContain("text-rating-value");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable
+AssertionError: expected '/* Dossier geometry only; tagged acti…' to contain 'background: var(--bright-cream) !impo…'
+
+- Expected
++ Received
+
+- background: var(--bright-cream) !important
++ /* Dossier geometry only; tagged action paint is shared with ordinary controls. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
++   .resume-header-actions,
++   .profile-modal-header,
++   .profile-identity-actions,
++   .profile-section-heading,
++   .profile-secondary-actions,
++   .profile-mode-feedback
++ ) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button) {
++   border-width: 2px !important;
++   border-style: solid !important;
++   border-radius: 14px !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .resume-header-actions :is(
++   .achievement-entry-action,
++   .resume-wallet
++ ) svg {
++   color: inherit !important;
++   filter: none !important;
++   stroke: currentColor !important;
++   text-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view {
++   --resume-icon-size: 36px;
++   @media (max-width: 360px) and (orientation: portrait) {
++     --resume-icon-size: 32px;
++   }
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
++   & .profile-identity-actions {
++     position: absolute;
++     grid-area: auto;
++     right: 10px;
++     bottom: 6px;
++     display: flex !important;
++     justify-self: end !important;
++     align-self: end;
++     width: auto !important;
++     gap: 6px !important;
++
++     & .resume-mini-action {
++       display: inline-flex !important;
++       justify-content: center;
++       align-items: center;
++       padding: 0 !important;
++     }
++   }
++
++   @media (max-width: 360px) and (orientation: portrait) {
++     & .profile-identity-actions { bottom: 2px; }
++   }
++
++   & .achievement-entry-action {
++     --campus-control-fill: #ffe4ee;
++     --campus-control-hover: #ffe4ee;
++     --campus-control-ink: #76314a;
++     --campus-control-border: #f08bad;
++   }
++
++   & .personalization-entry-action {
++     --campus-control-fill: #d9f0ff;
++     --campus-control-hover: #d9f0ff;
++     --campus-control-ink: #245f8c;
++     --campus-control-border: #7db8e8;
++   }
++
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-replay-button {
++     --campus-control-fill: #e4f6f0;
++     --campus-control-hover: #e4f6f0;
++     --campus-control-ink: #245b4f;
++     --campus-control-border: #73b79f;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal.profile-dossier-modal .profile-resume-view-self button:is(.achievement-entry-action, .personalization-entry-action, .resume-replay-action),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.profile-dossier-modal .profile-resume-view-social button.profile-replay-button {
++   --campus-control-shadow: none;
++   --campus-control-hover-shadow: none;
++   --campus-control-active-shadow: none;
++   border-radius: 50% !important;
++   width: var(--resume-icon-size) !important;
++   min-width: var(--resume-icon-size) !important;
++   height: var(--resume-icon-size) !important;
++   min-height: var(--resume-icon-size) !important;
++ }
++
++ /* Profile tabs reuse the watch-window mode-tab control language. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-mode-tabs {
++   box-sizing: border-box !important;
++   width: auto !important;
++   min-width: 0 !important;
++   gap: 4px !important;
++   margin: 0 8px !important;
++   padding: 12px 0 14px !important;
++   border: 0 !important;
++   border-radius: 0 !important;
++   background: transparent !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++
+
+ ❯ src/modals/HouseModal.test.js:1008:31
+    1006|     expect(profileActionsCss).toContain("gap: 4px !important");
+    1007|     expect(profileActionsCss).not.toContain(".profile-mode-tabs button…
+    1008|     expect(profileActionsCss).toContain("background: var(--bright-crea…
+       |                               ^
+    1009|     expect(profileActionsCss).toContain("button:not(.achievement-entry…
+    1010|     expect(profileActionsCss).toContain(".achievement-entry-action,\n …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  3 failed | 89 passed (92)
+   Start at  13:53:25
+   Duration  9.86s (transform 1.61s, setup 0ms, collect 4.78s, tests 3.34s, environment 5.63s, prepare 877ms)
+

@@ -1,0 +1,8 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const edits=[
+ ['docs/system-design.md','对弈信息区“立体纸剧场”独立交互样板','对弈信息区“立体纸剧场”已接入普通 Bright School 对弈：保留出框角色立绘，信息拆为身份铭牌、棋钟统计面板与角色色技能按钮。棋钟平时沿用米色，当前行棋方变黄并抬起显示硬阴影，另一方下沉 3px；手机竖屏使用 130px 信息条，短屏允许页面滚动以保留棋盘最小尺寸及阴影空间。独立交互样板仍见 `docs/prototypes/battle-paper-stage.html`。'],
+ ['docs/system-design.md','对弈 Header 的房间号前缀','对弈 Header 的房间号前缀显示当前模式（星炬、标准、五子棋、人机、吃子赛、队际赛），手数标签只显示当前手数。普通校园对弈的回合反馈集中在棋钟统计面板，人物与身份铭牌保持稳定。'],
+ ['docs/system-design/06-ui-theme-mobile.md','`RoomHeader` 的','.codex-placeholder']
+];
+for(const [path,prefix,replacement] of edits){let text=readFileSync(path,'utf8');if(replacement!=='.codex-placeholder')text=text.split(/\r?\n/).map(l=>l.startsWith(prefix)?replacement:l).join('\n');else text=text.replace('普通 Bright School 对弈的信息卡在 `room/player-status.css` 内统一拥有棋钟深度：`.active-turn` 使用 `3px 3px` 棕色硬阴影及零位移，其余卡片无阴影并向右下移动 3px，视觉占位保持一致；优先级覆盖手机原有扁平卡片规则，黑化剧情保留独立外观。','普通 Bright School 对弈由最终样式 `mobile-adaptive/battle-paper-panels.css` 与 `battle-paper-panels-mobile.css` 拆分身份、棋钟和技能面板。`PlayerInfo` 的 `player-clock-panel` 包含原计时器和统计，其他主题使用 `display: contents` 保留原布局；黑化剧情不启用新外观。棋钟常态使用 `--bright-sheet` 米色，`.active-turn` 使用既有黄色 `#fff0a6`、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏预留 130px 信息条及至少 254px 棋盘行，短屏向下滚动，不能让棋盘最小高度穿入上下信息条。');writeFileSync(path,text);}
+const source='src/room/PlayerInfo.jsx';let jsx=readFileSync(source,'utf8');let begin=jsx.indexOf('      <TimeBar time={player.time} />');let end=jsx.indexOf('      </div>\n      {skillEnabled',begin);if(end<0)end=jsx.indexOf('      </div>\r\n      {skillEnabled',begin);if(end>=0)jsx=jsx.slice(0,begin)+jsx.slice(begin,end).split(/\r?\n/).map(l=>l?'  '+l:l).join('\n')+jsx.slice(end);writeFileSync(source,jsx);

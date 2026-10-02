@@ -1,0 +1,21 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 91ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1559ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  370ms
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  342ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family  301ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries  304ms
+ ✓ src/modals/HouseModal.test.js (28 tests) 772ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (2 tests) 326ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 897ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  439ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (13 tests) 1626ms
+   ✓ UserProfileCard dossier interactions > opts report titles in explicitly and restores focus (stickers: false)  359ms
+
+ Test Files  6 passed (6)
+      Tests  70 passed (70)
+   Start at  16:46:32
+   Duration  9.70s (transform 1.80s, setup 0ms, collect 6.37s, tests 5.27s, environment 8.66s, prepare 1.34s)
+

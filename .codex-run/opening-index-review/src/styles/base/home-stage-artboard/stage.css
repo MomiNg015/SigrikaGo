@@ -1,0 +1,39 @@
+.home-main-panel {
+  min-height: var(--home-stage-min-h);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  place-items: start center;
+  overflow: visible;
+  container-type: inline-size;
+}
+
+.home-main-panel .home-title-lockup {
+  margin: 0 auto;
+}
+
+.home-main-panel .home-title-lockup p,
+.home-main-panel .home-title-lockup h1 {
+  transform: none;
+}
+
+.home-main-panel .home-title-lockup p {
+  font-size: clamp(13px, 1.1vw, 17px);
+}
+
+.home-main-panel .home-title-lockup h1 {
+  font-size: clamp(30px, 3.4vw, 50px);
+}
+
+.home-grid-featured {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1480 / 620;
+  min-width: var(--home-stage-min-w);
+  min-height: var(--home-stage-min-h);
+  max-width: var(--home-stage-max-w);
+}
+
+.home-orientation-guard {
+  display: none;
+}

@@ -1,0 +1,156 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 260,
+        "h": 260
+      },
+      {
+        "c": "board-wrap",
+        "w": 256,
+        "h": 256
+      },
+      {
+        "c": "board",
+        "w": 200,
+        "h": 200
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 260,
+        "h": 260
+      },
+      {
+        "c": "board-wrap",
+        "w": 256,
+        "h": 256
+      },
+      {
+        "c": "board",
+        "w": 200,
+        "h": 200
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 358,
+        "h": 358
+      },
+      {
+        "c": "board-wrap",
+        "w": 354,
+        "h": 354
+      },
+      {
+        "c": "board",
+        "w": 298,
+        "h": 298
+      }
+    ]
+  },
+  {
+    "width": 412,
+    "height": 915,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 380,
+        "h": 380
+      },
+      {
+        "c": "board-wrap",
+        "w": 376,
+        "h": 376
+      },
+      {
+        "c": "board",
+        "w": 320,
+        "h": 320
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 390,
+        "h": 390
+      },
+      {
+        "c": "board-wrap",
+        "w": 348,
+        "h": 348
+      },
+      {
+        "c": "board",
+        "w": 288,
+        "h": 288
+      }
+    ]
+  },
+  {
+    "width": 900,
+    "height": 1200,
+    "parent": 0,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 390,
+        "h": 390
+      },
+      {
+        "c": "board-wrap",
+        "w": 348,
+        "h": 348
+      },
+      {
+        "c": "board",
+        "w": 284,
+        "h": 284
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "parent": 280,
+    "boxes": [
+      {
+        "c": "board-stage",
+        "w": 275,
+        "h": 275
+      },
+      {
+        "c": "board-wrap",
+        "w": 271,
+        "h": 271
+      },
+      {
+        "c": "board",
+        "w": 215,
+        "h": 215
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+import fs from 'node:fs';
+const path='src/home/HomeScreen.test.jsx';
+let s=fs.readFileSync(path,'utf8');
+s=s.replaceAll('class="home-player-plaque tactical-id-card"','class="home-student-id"');
+s=s.replaceAll('class="home-grid-featured home-stage home-terminal-stage"','class="home-grid-featured home-stage home-terminal-stage home-stage-with-student-id"');
+const start=s.indexOf('    expect(html).toContain("home-player-row tactical-id-row");');
+const end=s.indexOf('    expect(html).not.toContain("plaque-mode-name");',start);
+s=s.slice(0,start)+`    expect(html).toContain('class="home-student-id"');
+    expect(html).toContain('aria-label="打开履历"');
+    expect(html).toContain('class="home-student-id-portrait"');
+    expect(html).toContain('class="home-student-id-name"');
+    expect(html).not.toContain('aria-label="对弈模式段位"');
+    expect(html).not.toContain('plaque-mode-stat');
+`+s.slice(end);
+s=s.replace('renders equipped achievement nameplates on the player identity tag','keeps achievement nameplates out of the student ID while retaining their source assets');
+// These asset fixtures are still used by other identity surfaces, but the home card is username-only.
+const a=s.indexOf('  it("keeps achievement nameplates');
+const b=s.indexOf('\n  it(',a+5);
+let block=s.slice(a,b);
+block=block.replace(/expect\((html|deniaHtml|aemeathHtml)\)\.toContain\(([^\n]+)\);/g,'expect($1).not.toContain($2);');
+s=s.slice(0,a)+block+s.slice(b);
+fs.writeFileSync(path,s);

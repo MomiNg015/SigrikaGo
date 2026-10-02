@@ -1,0 +1,199 @@
+/* Compact six-column record table: one character always occupies one row. */
+@media (max-width: 768px) {
+  .profile-character-section {
+    --profile-character-columns: 48% 12% repeat(3, 7%) 19%;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 4px !important;
+    min-height: 0 !important;
+    padding: 16px 12px 8px !important;
+    overflow: hidden !important;
+  }
+
+  .profile-character-table-head {
+    display: grid !important;
+    margin-right: var(--profile-character-scrollbar-gutter) !important;
+  }
+
+  .profile-character-table-head > :is(h4, span) {
+    padding-inline: 2px !important;
+  }
+
+  .profile-character-table-head > h4 {
+    padding-left: 4px !important;
+    padding-right: 5px !important;
+    text-align: left !important;
+  }
+
+  .profile-character-table-head > span {
+    text-align: center !important;
+  }
+
+  .profile-character-table-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 0 8px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    box-sizing: border-box !important;
+    scrollbar-gutter: auto !important;
+    scroll-padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table-scroll::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .profile-character-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    table-layout: fixed !important;
+  }
+
+  .profile-character-table thead {
+    position: absolute !important;
+    display: table-header-group !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table tbody {
+    display: table-row-group !important;
+    width: auto !important;
+  }
+
+  .profile-character-table tbody tr {
+    display: table-row !important;
+    width: auto !important;
+    height: 60px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .profile-character-table :is(th, td) {
+    display: table-cell !important;
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 7px 2px !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--profile-dossier-ink) 16%, transparent) !important;
+    border-left: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table :is(th, td):first-child {
+    padding-left: 4px !important;
+    padding-right: 5px !important;
+    text-align: left !important;
+  }
+
+  .profile-character-table .profile-character-col-identity {
+    width: 48% !important;
+  }
+
+  .profile-character-table .profile-character-col-total {
+    width: 12% !important;
+  }
+
+  .profile-character-table .profile-character-col-outcome {
+    width: 7% !important;
+  }
+
+  .profile-character-table .profile-character-col-rate {
+    width: 19% !important;
+  }
+
+  .profile-character-table thead th {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .profile-character-table .profile-character-identity {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table .profile-chain-portrait.small,
+  .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask {
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    height: 46px !important;
+  }
+
+  .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask > img {
+    width: 80% !important;
+    height: 80% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    scale: 1 !important;
+    translate: 0 0 !important;
+  }
+
+  .profile-character-name {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    color: var(--profile-dossier-ink) !important;
+    font-size: 0.8125rem !important;
+    line-height: 1.15 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-character-table tbody td {
+    font-size: 0.75rem !important;
+  }
+
+  .profile-character-table tbody td::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .profile-character-table .profile-character-empty-row {
+    display: table-row !important;
+    height: 104px !important;
+  }
+
+  .profile-character-table .profile-character-empty-row td {
+    display: table-cell !important;
+    width: auto !important;
+    height: 104px !important;
+    padding: 24px 8px !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+}

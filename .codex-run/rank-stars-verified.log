@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/shared/rankProgression.test.js src/shared/ratingRules.test.js src/shared/resultRewards.test.js src/shared/RankProgress.test.jsx src/shared/gameRecords.test.js server/roomRewards.test.js server/roomResultPersistence.test.js server/rankStarsMigration.test.js server/rooms.test.js server/db.test.js server/authRoutes.test.js server/userAssets.test.js server/leaderboard.test.js server/adminRoutes.test.js server/serverStartup.test.js server/siteSettings.test.js server/roomFactory.test.js server/captureChallenge.test.js src/modals/ResumeModal.dom.test.jsx src/modals/ProfileResumeView.dom.test.jsx src/modals/FeedbackModals.test.js src/modals/GameLifecycleModals.test.js src/modals/LeaderboardModal.test.jsx src/room/PlayerInfo.test.js src/room/RoomPeopleList.test.js src/styles/cssLayerInventory.test.js scripts/export-admin-default-snapshot.test.js docs/systemDesignHtml.test.js --reporter=json --outputFile=.codex-run/rank-stars-verified.json
+
+JSON report written to C:/codex/SigrikaGo/.codex-run/rank-stars-verified.json

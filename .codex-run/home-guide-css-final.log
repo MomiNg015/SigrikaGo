@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --maxWorkers=1 src/styles/styleContract.test.js -t keeps mobile-adaptive.css as an import-only safety entry
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests | 56 skipped) 16ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 56 skipped (57)
+   Start at  22:21:11
+   Duration  915ms (transform 66ms, setup 0ms, collect 82ms, tests 16ms, environment 0ms, prepare 109ms)
+

@@ -1,0 +1,39 @@
+{"width":1440,"view":"shop","issues":[]}
+{"width":1440,"view":"friends","issues":[]}
+{"width":1440,"view":"leaderboard","issues":[]}
+{"width":1440,"view":"house","issues":[]}
+{"width":1440,"view":"warehouse","issues":[]}
+{"width":1440,"view":"watch","issues":[]}
+{"width":1440,"view":"recruitment","issues":[]}
+{"width":1440,"view":"settings","issues":[{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"xy","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"}]}
+{"width":1440,"view":"mailbox","issues":[]}
+{"width":1440,"view":"announcement","issues":[]}
+{"width":1440,"view":"message","issues":[]}
+{"width":1440,"view":"personalization","issues":[]}
+{"width":1440,"view":"achievement","issues":[]}
+{"width":390,"view":"shop","issues":[{"element":"shop-item shop-category-item  ","owner":"shop-product-stage shop-product-count-4","axis":"y","padding":"0px","shadow":"rgba(61, 43, 37, 0.78) 4px 5px 0px 0px"}]}
+{"width":390,"view":"friends","issues":[]}
+{"width":390,"view":"leaderboard","issues":[]}
+{"width":390,"view":"house","issues":[]}
+{"width":390,"view":"warehouse","issues":[]}
+{"width":390,"view":"watch","issues":[]}
+{"width":390,"view":"recruitment","issues":[]}
+{"width":390,"view":"settings","issues":[{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"xy","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"}]}
+{"width":390,"view":"mailbox","issues":[]}
+{"width":390,"view":"announcement","issues":[]}
+{"width":390,"view":"message","issues":[]}
+{"width":390,"view":"personalization","issues":[]}
+{"width":390,"view":"achievement","issues":[]}
+{"width":320,"view":"shop","issues":[{"element":"shop-item shop-category-item  ","owner":"shop-product-stage shop-product-count-4","axis":"y","padding":"0px","shadow":"rgba(61, 43, 37, 0.78) 4px 5px 0px 0px"}]}
+{"width":320,"view":"friends","issues":[]}
+{"width":320,"view":"leaderboard","issues":[]}
+{"width":320,"view":"house","issues":[]}
+{"width":320,"view":"warehouse","issues":[]}
+{"width":320,"view":"watch","issues":[]}
+{"width":320,"view":"recruitment","issues":[]}
+{"width":320,"view":"settings","issues":[{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"},{"element":"volume-row audio-slider-item ","owner":"settings-panel settings-modal-content","axis":"x","padding":"0px","shadow":"rgb(61, 43, 37) 4px 4px 0px 0px"}]}
+{"width":320,"view":"mailbox","issues":[]}
+{"width":320,"view":"announcement","issues":[]}
+{"width":320,"view":"message","issues":[]}
+{"width":320,"view":"personalization","issues":[]}
+{"width":320,"view":"achievement","issues":[]}

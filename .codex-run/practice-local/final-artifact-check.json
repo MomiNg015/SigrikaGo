@@ -1,0 +1,73 @@
+{
+  "wasmBytes": 6343132,
+  "gzipBytes": 1075806,
+  "nativeAvailable": false,
+  "results": [
+    {
+      "position": "empty",
+      "difficulty": "intermediate",
+      "elapsedMs": 26,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    },
+    {
+      "position": "empty",
+      "difficulty": "advanced",
+      "elapsedMs": 8,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    },
+    {
+      "position": "position-20",
+      "difficulty": "intermediate",
+      "elapsedMs": 544,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    },
+    {
+      "position": "position-20",
+      "difficulty": "advanced",
+      "elapsedMs": 1562,
+      "action": {
+        "type": "move",
+        "pointId": "8,1"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    },
+    {
+      "position": "position-70",
+      "difficulty": "intermediate",
+      "elapsedMs": 824,
+      "action": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    },
+    {
+      "position": "position-70",
+      "difficulty": "advanced",
+      "elapsedMs": 3424,
+      "action": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "native": "not-tested",
+      "sameMove": null
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 5ms
+ ✓ src/styles/themeContract.test.js (38 tests) 366ms
+ ❯ src/styles/styleContract.test.js (57 tests | 1 failed) 620ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 3ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 0ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 2ms
+   ✓ root CSS entry contract > keeps art font usage semantic and opt-in 7ms
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 2ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries 193ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 163ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 1ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 0ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 0ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 5ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 4ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 4ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 0ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 40ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 30ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 1ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 1ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 1ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 0ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 22ms
+   × root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 17ms
+     → expected [ …(44) ] to deeply equal [ …(43) ]
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 0ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 0ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 1ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 25ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 45ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 1ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 1ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 5ms
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 1ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 1ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 0ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 0ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 1ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 1ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 0ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 1ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 0ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 1ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 0ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 1ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 22ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 1ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 820ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 214ms
+     → totalFiles: expected 693 to be less than or equal to 692
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 169ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 161ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 154ms
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 36ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 2ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 0ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 10ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 48ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 0ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 0ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 6ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 2ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 4ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 1ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 5ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 549ms
+ ✓ src/room/PlayerInfo.dom.test.jsx (2 tests) 514ms
+   ✓ PlayerInfo mobile skill traits > opens a trait immediately from the mobile skill tooltip without closing the skill tooltip  373ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 693 to be less than or equal to 692
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/styleContract.test.js > root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry
+AssertionError: expected [ …(44) ] to deeply equal [ …(43) ]
+
+- Expected
++ Received
+
+@@ -35,10 +35,11 @@
+    "./mobile-adaptive/window-title-stickers.css",
+    "./mobile-adaptive/window-title-sticker-content.css",
+    "./mobile-adaptive/window-sticker-resume-header.css",
+    "./mobile-adaptive/match-mode-title-layout.css",
+    "./mobile-adaptive/mobile-room-shadow-gutters.css",
++   "./mobile-adaptive/mobile-battle-polish.css",
+    "./mobile-adaptive/home-student-id.css",
+    "./mobile-adaptive/guided-actions.css",
+    "./mobile-adaptive/window-bookmarks.css",
+    "./mobile-adaptive/window-empty-states.css",
+    "./mobile-adaptive/sigrika-corruption.css",
+
+ ❯ src/styles/styleContract.test.js:595:37
+    593|     const mobileEntry = readFileSync(new URL("./mobile-adaptive.css", …
+    594| 
+    595|     expect(cssImports(mobileEntry)).toEqual([
+       |                                     ^
+    596|       "./mobile-adaptive/desktop-home-footer.css",
+    597|       "./mobile-adaptive/admin-fullscreen.css",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 4 passed (6)
+      Tests  2 failed | 157 passed (159)
+   Start at  14:46:47
+   Duration  5.28s (transform 1.55s, setup 0ms, collect 3.90s, tests 2.87s, environment 1.58s, prepare 872ms)
+

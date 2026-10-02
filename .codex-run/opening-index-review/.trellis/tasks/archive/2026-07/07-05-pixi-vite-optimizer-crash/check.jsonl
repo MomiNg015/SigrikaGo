@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend runtime and Vite config change"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify Vite config and handoff contracts"}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared thinking guide index"}

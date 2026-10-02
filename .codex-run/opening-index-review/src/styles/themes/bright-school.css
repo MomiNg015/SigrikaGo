@@ -1,0 +1,8 @@
+/* Bright School theme entry.
+   Keep this file as an import-only layer map so high-frequency theme edits stay localized.
+   Order matters: later files intentionally override earlier files. */
+@import "./bright-school/base.css";
+@import "./bright-school/gallery-polish.css";
+@import "./bright-school/surface-contracts.css";
+@import "./bright-school/component-repairs.css";
+@import "./bright-school/qa-guard.css";

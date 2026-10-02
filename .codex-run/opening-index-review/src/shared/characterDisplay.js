@@ -1,0 +1,42 @@
+import { CHARACTERS } from "./characters.js";
+import { canonicalCharacterId } from "./characterAliases.js";
+import { characterVoiceMapForSkill } from "./musicLibrary.js";
+
+const DEFAULT_CHARACTER_SYSTEM_VOICES = characterVoiceMapForSkill();
+
+export function findCharacter(characters, characterOrId) {
+  const characterId = canonicalCharacterId(typeof characterOrId === "string" ? characterOrId : characterOrId?.id);
+  const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+  if (characterOrId && typeof characterOrId === "object") {
+    return withCharacterSystemVoices({
+      ...fallback,
+      ...characterOrId,
+      id: characterId,
+      description: String(characterOrId.description ?? "").trim() || fallback.description || "",
+      acquisitionMethod: characterOrId.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
+      skill: {
+        ...fallback.skill,
+        ...(characterOrId.skill ?? {})
+      }
+    });
+  }
+  const catalogCharacter = Array.isArray(characters)
+    ? characters.find((character) => canonicalCharacterId(character?.id) === characterId)
+    : characters?.[characterId];
+  return withCharacterSystemVoices(catalogCharacter ?? fallback);
+}
+
+export function characterThemeStyle(character) {
+  return { "--character-theme-color": character?.palette || CHARACTERS.sigrika.palette };
+}
+
+export function withCharacterSystemVoices(character) {
+  if (!character?.id) return character;
+  return {
+    ...character,
+    systemVoices: {
+      ...(DEFAULT_CHARACTER_SYSTEM_VOICES[character.id] ?? {}),
+      ...(character.systemVoices ?? {})
+    }
+  };
+}

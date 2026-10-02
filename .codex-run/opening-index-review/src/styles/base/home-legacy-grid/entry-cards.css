@@ -1,0 +1,83 @@
+.home-entry {
+  min-height: clamp(142px, 16vw, 184px);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #35283a;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: clamp(8px, 1vw, 10px);
+  padding: clamp(14px, 1.6vw, 20px);
+  text-align: center;
+}
+
+.house-entry {
+  grid-template-columns: minmax(0, 1fr) clamp(118px, 15vw, 180px);
+  text-align: left;
+  overflow: hidden;
+}
+
+.house-entry-secondary {
+  grid-area: house;
+  min-height: clamp(186px, 18vw, 230px);
+  align-content: stretch;
+}
+
+.entry-copy {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  min-width: 0;
+}
+
+.entry-portrait {
+  width: clamp(118px, 15vw, 180px);
+  height: clamp(118px, 14.5vw, 176px);
+  object-fit: contain;
+  justify-self: end;
+  align-self: center;
+  filter: drop-shadow(0 14px 22px rgba(74, 48, 88, 0.18));
+}
+
+.home-entry strong {
+  font-size: clamp(20px, 2vw, 24px);
+}
+
+.home-entry span {
+  color: #7d6a82;
+}
+
+.house-entry {
+  background: linear-gradient(135deg, rgba(255, 248, 253, 0.94), rgba(255, 238, 218, 0.9));
+}
+
+.watch-entry {
+  background: linear-gradient(135deg, rgba(247, 250, 255, 0.96), rgba(236, 244, 255, 0.9));
+}
+
+.leaderboard-entry {
+  background: linear-gradient(135deg, rgba(255, 251, 229, 0.96), rgba(235, 247, 255, 0.9));
+}
+
+.shop-entry {
+  background: linear-gradient(135deg, rgba(255, 250, 239, 0.96), rgba(255, 240, 247, 0.9));
+}
+
+.warehouse-entry {
+  background: linear-gradient(135deg, rgba(238, 253, 255, 0.96), rgba(236, 246, 232, 0.9));
+}
+
+.warehouse-entry svg {
+  color: #277f92;
+}
+
+.admin-entry {
+  background: linear-gradient(135deg, rgba(242, 248, 244, 0.96), rgba(237, 244, 255, 0.9));
+}
+
+.friends-entry {
+  background: linear-gradient(135deg, rgba(244, 255, 250, 0.96), rgba(244, 239, 255, 0.9));
+}

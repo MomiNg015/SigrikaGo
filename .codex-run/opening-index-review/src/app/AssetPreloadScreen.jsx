@@ -1,0 +1,301 @@
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { canonicalCharacterId } from "../shared/characterAliases.js";
+import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
+import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
+import { resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
+import {
+  authPortraitReadySources,
+  authPortraitReadyVersion,
+  subscribeAuthPortraitReady
+} from "./authPortraitPrewarm.js";
+import { isExcludedPreloadCharacter, preloadCharacterCandidates } from "./preloadCharacterCatalog.js";
+
+const TIP_ROTATION_MS = 10000;
+const PRELOAD_PROGRESS_MASCOT = "/assets/preload/orange-mascot.png";
+const PRELOAD_PROGRESS_IDLE_MS = 600;
+const PRELOAD_PROGRESS_MIN_MOVEMENT = 1;
+const EXCLUDED_CHARACTER_LOADING_LINE = "资源正在加载中";
+
+export function isMeaningfulPreloadProgressMovement(previousPercent, nextPercent) {
+  return Math.abs(nextPercent - previousPercent) > PRELOAD_PROGRESS_MIN_MOVEMENT;
+}
+
+export function preloadTipList(tipsText = DEFAULT_SITE_SETTINGS.preloadTips) {
+  return String(tipsText || DEFAULT_SITE_SETTINGS.preloadTips)
+    .split(/\r?\n/)
+    .map((tip) => tip.trim())
+    .filter(Boolean);
+}
+
+export function preloadTipDisplayText(tip = "") {
+  const content = String(tip || "").trim().replace(/^Tip\s*[:：]\s*/i, "");
+  return content ? `Tip：${content}` : "";
+}
+
+function randomTipIndex(tips, currentIndex = -1) {
+  if (tips.length <= 1) return 0;
+  let nextIndex = Math.floor(Math.random() * tips.length);
+  if (nextIndex === currentIndex) {
+    nextIndex = (nextIndex + 1) % tips.length;
+  }
+  return nextIndex;
+}
+
+export function characterLoadingLineMap(linesText = DEFAULT_SITE_SETTINGS.characterLoadingLines) {
+  return Object.fromEntries(String(linesText || DEFAULT_SITE_SETTINGS.characterLoadingLines)
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separatorIndex = firstSeparatorIndex(line);
+      if (separatorIndex <= 0) return null;
+      const key = canonicalCharacterId(line.slice(0, separatorIndex).trim());
+      const value = line.slice(separatorIndex + 1).trim();
+      return key && value ? [key, value] : null;
+    })
+    .filter(Boolean));
+}
+
+export function characterLoadingLine(character, linesText = DEFAULT_SITE_SETTINGS.characterLoadingLines) {
+  if (isExcludedPreloadCharacter(character)) return EXCLUDED_CHARACTER_LOADING_LINE;
+  const characterId = canonicalCharacterId(character?.id);
+  const line = characterLoadingLineMap(linesText)[characterId];
+  return line || `${character?.name || "角色"}正在加载中`;
+}
+
+export function randomPreloadCharacter(
+  characters = CHARACTERS,
+  random = Math.random,
+  currentCharacter = null,
+  readyPortraitSources = null
+) {
+  const allCandidates = preloadCharacterCandidates(characters);
+  const readyCandidates = readyPortraitSources?.size
+    ? allCandidates.filter((character) => readyPortraitSources.has(character.portrait))
+    : [];
+  const candidates = readyCandidates.length > 0 ? readyCandidates : allCandidates;
+  if (candidates.length === 0) return CHARACTERS.sigrika;
+  const index = Math.min(candidates.length - 1, Math.floor(random() * candidates.length));
+  const nextCharacter = candidates[index];
+  if (candidates.length > 1 && canonicalCharacterId(nextCharacter?.id) === canonicalCharacterId(currentCharacter?.id)) {
+    return candidates[(index + 1) % candidates.length];
+  }
+  return nextCharacter;
+}
+
+function randomPreloadDisplayState({
+  tips,
+  characters,
+  fixedCharacter = null,
+  currentTipIndex = -1,
+  currentCharacter = null,
+  readyPortraitSources = null
+}) {
+  return {
+    tipIndex: randomTipIndex(tips, currentTipIndex),
+    randomCharacter: fixedCharacter
+      ? null
+      : randomPreloadCharacter(characters, Math.random, currentCharacter, readyPortraitSources)
+  };
+}
+
+function characterFromCatalogById(characters, characterId) {
+  const canonicalId = canonicalCharacterId(characterId);
+  if (!canonicalId) return null;
+  return characterListFromCatalog(characters)
+    .find((catalogCharacter) => canonicalCharacterId(catalogCharacter?.id) === canonicalId) ?? null;
+}
+
+export default function AssetPreloadScreen({
+  character = null,
+  characters = CHARACTERS,
+  label = "",
+  loadingLinesText = DEFAULT_SITE_SETTINGS.characterLoadingLines,
+  progress,
+  progressHint = "",
+  statusText = "",
+  showTips = true,
+  tipsText,
+  user = null
+}) {
+  const readyVersion = useSyncExternalStore(
+    subscribeAuthPortraitReady,
+    authPortraitReadyVersion,
+    authPortraitReadyVersion
+  );
+  const readyPortraitSources = useMemo(() => authPortraitReadySources(), [readyVersion]);
+  const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
+  const tips = useMemo(() => preloadTipList(tipsText), [tipsText]);
+  const tipsSignature = tips.join("\n");
+  const fixedCharacter = isExcludedPreloadCharacter(character) ? null : character;
+  const fixedCharacterId = canonicalCharacterId(fixedCharacter?.id) || "";
+  const [displayState, setDisplayState] = useState(() => randomPreloadDisplayState({
+    tips,
+    characters,
+    fixedCharacter,
+    readyPortraitSources: authPortraitReadySources()
+  }));
+  const [isProgressIdle, setIsProgressIdle] = useState(true);
+  const didMountRef = useRef(false);
+  const previousPercentRef = useRef(percent);
+  const progressIdleTimerRef = useRef(null);
+  const latestInputsRef = useRef({ character: fixedCharacter, characters, readyPortraitSources, tips });
+  const { tipIndex, randomCharacter } = displayState;
+  const safeRandomCharacter = fixedCharacter
+    ? null
+    : randomCharacter ?? randomPreloadCharacter(characters, Math.random, null, readyPortraitSources);
+  const randomCharacterId = canonicalCharacterId(safeRandomCharacter?.id);
+  const displayCharacter = fixedCharacter
+    ? characterFromCatalogById(characters, fixedCharacter.id) ?? fixedCharacter
+    : characterFromCatalogById(characters, randomCharacterId) ?? safeRandomCharacter;
+  const displayPortrait = resolveCharacterPortraitPresentation(displayCharacter, fixedCharacter ? {
+    itemEffects: user?.itemEffects,
+    user,
+    costumeSnapshot: displayCharacter?.costumeSnapshot
+  } : {});
+  const currentTip = tips[tipIndex] ?? tips[0] ?? "";
+  const displayTip = preloadTipDisplayText(currentTip);
+  const characterPresentationHidden = Boolean(user?.sigrikaCandyArc?.corrupted);
+  const title = label || (characterPresentationHidden ? "" : characterLoadingLine(displayCharacter, loadingLinesText));
+  const portraitSource = characterPresentationHidden
+    ? SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
+    : displayPortrait.src;
+  const portraitLabel = characterPresentationHidden ? "玩家" : (displayCharacter.name ?? "当前角色");
+
+  useEffect(() => {
+    latestInputsRef.current = { character: fixedCharacter, characters, readyPortraitSources, tips };
+  }, [fixedCharacter, characters, readyPortraitSources, tips]);
+
+  useEffect(() => {
+    if (fixedCharacter || readyPortraitSources.size === 0) return;
+    setDisplayState((current) => {
+      if (readyPortraitSources.has(current.randomCharacter?.portrait)) return current;
+      return {
+        ...current,
+        randomCharacter: randomPreloadCharacter(
+          characters,
+          Math.random,
+          current.randomCharacter,
+          readyPortraitSources
+        )
+      };
+    });
+  }, [characters, fixedCharacter, readyPortraitSources]);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    setDisplayState((current) => ({
+      tipIndex: randomTipIndex(tips, current.tipIndex),
+      randomCharacter: fixedCharacter
+        ? null
+        : current.randomCharacter ?? randomPreloadCharacter(
+          characters,
+          Math.random,
+          null,
+          readyPortraitSources
+        )
+    }));
+  }, [characters, fixedCharacterId, readyPortraitSources, tips, tipsSignature]);
+
+  useEffect(() => {
+    if (fixedCharacter && tips.length <= 1) return undefined;
+    const timer = setInterval(() => {
+      const latestInputs = latestInputsRef.current;
+      setDisplayState((current) => randomPreloadDisplayState({
+        tips: latestInputs.tips,
+        characters: latestInputs.characters,
+        fixedCharacter: latestInputs.character,
+        currentTipIndex: current.tipIndex,
+        currentCharacter: current.randomCharacter,
+        readyPortraitSources: latestInputs.readyPortraitSources
+      }));
+    }, TIP_ROTATION_MS);
+    return () => clearInterval(timer);
+  }, [fixedCharacterId, tipsSignature]);
+
+  useEffect(() => {
+    const previousPercent = previousPercentRef.current;
+    previousPercentRef.current = percent;
+    window.clearTimeout(progressIdleTimerRef.current);
+
+    if (!isMeaningfulPreloadProgressMovement(previousPercent, percent)) {
+      setIsProgressIdle(true);
+      return undefined;
+    }
+
+    setIsProgressIdle(false);
+    progressIdleTimerRef.current = window.setTimeout(() => {
+      setIsProgressIdle(true);
+    }, PRELOAD_PROGRESS_IDLE_MS);
+
+    return () => window.clearTimeout(progressIdleTimerRef.current);
+  }, [percent]);
+
+  return (
+    <main className="asset-preload-screen">
+      <section className="asset-preload-panel">
+        {portraitSource ? (
+          <span className="preload-character" aria-label={portraitLabel}>
+            <img
+              src={portraitSource}
+              style={characterPresentationHidden ? undefined : displayPortrait.style}
+              alt={portraitLabel}
+            />
+          </span>
+        ) : (
+          <div className="preload-mark" />
+        )}
+        {title && <p className="preload-title">{title}</p>}
+        {statusText && <p className="preload-status">{statusText}</p>}
+        <div
+          className={`preload-progress${isProgressIdle ? " is-idle" : ""}`}
+          style={{
+            "--preload-progress": percent / 100,
+            "--preload-mask-size": `${percent}%`,
+            "--preload-mascot-rotation": `${percent * 7.2}deg`
+          }}
+          role="progressbar"
+          aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={percent}
+        >
+          <div className="preload-progress-track">
+            <div className="preload-bar" aria-hidden="true">
+              <span className="preload-paper-fill" />
+            </div>
+            <span className="preload-mascot-anchor" aria-hidden="true">
+              <span className="preload-mascot-roll">
+                <span className="preload-mascot-motion">
+                  <img
+                    className="preload-progress-mascot"
+                    src={PRELOAD_PROGRESS_MASCOT}
+                    alt=""
+                    decoding="sync"
+                    draggable="false"
+                    fetchPriority="high"
+                    loading="eager"
+                  />
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+        {progressHint && <p className="preload-status preload-progress-hint">{progressHint}</p>}
+        {showTips && displayTip && <p className="preload-tip" aria-live="polite">{displayTip}</p>}
+      </section>
+    </main>
+  );
+}
+
+function firstSeparatorIndex(line) {
+  const separators = ["=", ":", "："];
+  return separators
+    .map((separator) => line.indexOf(separator))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)[0] ?? -1;
+}

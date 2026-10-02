@@ -1,0 +1,23 @@
+@keyframes bright-school-skill-action-glow {
+  0% {
+    background: var(--bright-school-skill-active-bg-0);
+  }
+  50% {
+    background: var(--bright-school-skill-active-bg-50);
+  }
+  100% {
+    background: var(--bright-school-skill-active-bg-100);
+  }
+}
+
+@keyframes bright-school-board-targeting-glow {
+  0% {
+    outline-color: #ff75b7;
+  }
+  50% {
+    outline-color: #71e0d1;
+  }
+  100% {
+    outline-color: #ffcf4d;
+  }
+}

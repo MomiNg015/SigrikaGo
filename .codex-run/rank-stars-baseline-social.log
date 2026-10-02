@@ -1,0 +1,73 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --config .codex-run/rank-baseline.config.mjs server/social.test.js --reporter=dot
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+·······xx······
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/social.test.js > social profiles and relationships > returns replay summaries for any target user without viewer context
+AssertionError: expected [] to deeply equal [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+- [
+-   ObjectContaining {
+-     "blackCharacter": "sigrika",
+-     "blackName": "black",
+-     "id": "r-1",
+-     "whiteName": "white",
+-   },
+- ]
++ []
+
+ ❯ server/social.test.js:233:29
+    231|     });
+    232| 
+    233|     expect(records.records).toEqual([expect.objectContaining({
+       |                             ^
+    234|       id: "r-1",
+    235|       blackName: "black",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/social.test.js > social profiles and relationships > excludes unrated friendly games from profile stats but keeps them in replay summaries
+AssertionError: expected [] to deeply equal [ [ 'rated-win', true, …(1) ], …(1) ]
+
+- Expected
++ Received
+
+- [
+-   [
+-     "rated-win",
+-     true,
+-     "matchmaking",
+-   ],
+-   [
+-     "friendly-loss",
+-     false,
+-     "duel",
+-   ],
+- ]
++ []
+
+ ❯ server/social.test.js:266:84
+    264| 
+    265|     expect(profile.record).toMatch(/^1/);
+    266|     expect(replays.records.map((item) => [item.id, item.rated, item.ma…
+       |                                                                                    ^
+    267|       ["rated-win", true, "matchmaking"],
+    268|       ["friendly-loss", false, "duel"]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 13 passed (15)
+   Start at  09:54:33
+   Duration  3.35s (transform 266ms, setup 0ms, collect 442ms, tests 33ms, environment 0ms, prepare 137ms)
+

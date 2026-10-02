@@ -1,0 +1,80 @@
+.replay-item,
+.replay-table-row,
+.profile-resume-hero,
+.profile-summary-item,
+.profile-character-table tbody tr,
+.character-record-row,
+.warehouse-effect-result p {
+  border: 1px solid var(--terminal-line-soft);
+  border-radius: 2px;
+  clip-path: var(--terminal-row-cut);
+  background: rgba(18, 43, 52, 0.52);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 18px rgba(0, 191, 255, 0.08);
+}
+
+.replay-table-heading,
+.replay-item span,
+.profile-summary-label,
+.profile-section-heading h4,
+.profile-character-table thead th,
+.replay-table-row span,
+.profile-character-table tbody :is(th, td) {
+  color: var(--terminal-muted);
+}
+
+.replay-table-row,
+.profile-character-table,
+.result-rewards span {
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.nested-modal-backdrop {
+  --nested-modal-backdrop-fill: rgba(1, 9, 13, 0.46);
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.nested-modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nested-modal-backdrop-fill);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  pointer-events: none;
+}
+
+.nested-modal-backdrop .nested-modal {
+  position: relative;
+  inset: auto;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(760px, calc(100dvh - 32px));
+  overflow: auto;
+}
+
+.nested-modal-backdrop .nested-modal.replay-dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.replay-dialog-list-scroll {
+  min-width: 0;
+  min-height: 0;
+  padding-right: 4px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.replay-dialog-list-scroll .replay-table {
+  min-width: 0;
+}

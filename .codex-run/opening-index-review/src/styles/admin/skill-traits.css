@@ -1,0 +1,110 @@
+.admin-skill-trait-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.admin-skill-trait-list,
+.admin-skill-trait-editor {
+  min-width: 0;
+}
+
+.admin-skill-trait-cards {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-skill-trait-card {
+  width: 100%;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-line, #eaddea);
+  border-radius: 8px;
+  background: var(--admin-surface, #ffffff);
+  color: var(--admin-ink, #2d2430);
+  text-align: left;
+}
+
+.admin-skill-trait-card.selected {
+  border-color: var(--admin-accent, #5d7fe8);
+  box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-skill-trait-card span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.admin-skill-trait-card small {
+  overflow: hidden;
+  color: var(--admin-muted, #7d6a82);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-skill-trait-card em {
+  color: var(--admin-muted, #7d6a82);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-skill-trait-editor {
+  padding: 16px;
+  border: 1px solid var(--admin-line, #eaddea);
+  border-radius: 8px;
+  background: var(--admin-surface, #ffffff);
+}
+
+.admin-skill-trait-references {
+  padding: 14px;
+  border: 1px solid var(--admin-line, #eaddea);
+  border-radius: 8px;
+  background: var(--admin-surface-soft, #fbf7fd);
+}
+
+.admin-skill-trait-references h3,
+.admin-skill-trait-references p {
+  margin: 0;
+}
+
+.admin-skill-trait-references ul {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-skill-trait-references li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: var(--admin-surface, #ffffff);
+}
+
+.admin-trait-description-field .admin-trait-insert-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--admin-muted, #7d6a82);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-trait-description-field .admin-trait-insert-row select {
+  width: min(220px, 100%);
+  min-height: 40px;
+}

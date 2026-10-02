@@ -1,0 +1,2245 @@
+# Quality Guidelines
+
+> Code quality standards for frontend development.
+
+---
+
+## Overview
+
+<!--
+Document your project's quality standards here.
+
+Questions to answer:
+- What patterns are forbidden?
+- What linting rules do you enforce?
+- What are your testing requirements?
+- What code review standards apply?
+-->
+
+(To be filled by the team)
+
+---
+
+## Forbidden Patterns
+
+<!-- Patterns that should never be used and why -->
+
+(To be filled by the team)
+
+---
+
+## Required Patterns
+
+### Countdown Voice Timing Contract
+
+- `useRoomCountdownClock(room, enabled)` owns the last-ten-second presentation timeline. Player clocks and `useRoomAudioEffects` must consume its same room projection. Accept +/-300 ms snapshot jitter without resetting phase; predict at most one tick beyond confirmation, clamp at one, and never infer period loss or timeout. Reset on room, turn, history length, period, phase, replay, both-player disconnection, increasing time or larger drift.
+- Countdown playback uses `{ reverb: false, trimLeadingSilence: true, maxStartDelayMs: 200 }`. `countdownVoiceOffset(buffer)` finds the earliest absolute amplitude >=0.01 across channels, retains 10 ms pre-roll, and caches by AudioBuffer. Do not trim against vowel-relative loudness, normalize gain, change speed or rewrite assets to fix timing.
+- Voice preload and playback share fetch/decode caches. Every new voice invalidates pending older requests; validate after decode and AudioContext resume. A countdown start delayed over 200 ms is dropped. Playback returns an owner-scoped cancellation callback; room lifecycle cleanup must not cancel a newer unrelated voice.
+- Required regressions: early and late snapshots preserve one-second steps; missing snapshots advance at most once; replay, reset and unmount cancel timers; quiet consonants survive onset detection; preload is shared; stale decode/resume does not start audio; cleanup does not stop newer playback. Cover all static character countdown mappings and retain TTS fallback behavior.
+
+<!-- Patterns that must always be used -->
+
+### Desktop Minimum Viewport Gate Contract
+
+#### Scope / Trigger
+
+- Any change to the app-shell viewport gate, compact-layout geometry, or the desktop minimum window dimensions.
+
+#### Signatures and contracts
+
+- `DESKTOP_MINIMUM_VIEWPORT = { width: 1440, height: 768 }` uses inclusive CSS-pixel boundaries.
+- `COMPACT_VIEWPORT_RANGE = { minShortSide: 320, maxShortSide: 480, minLongSide: 568, maxLongSide: 1024 }` defines the inclusive rotatable compact range.
+- `NARROW_PORTRAIT_VIEWPORT_RANGE = { minWidth: 320, maxWidth: 520, minHeight: 568 }` extends compact layout to tall narrow windows such as the observed `496 x 1047` Chrome content area.
+- `isCompactViewport({ width, height })` uses current viewport geometry only. It must not inspect user agents, touch points, pointer/hover media, `navigator.userAgentData`, or physical device-screen dimensions; identical viewport sizes always receive identical layout treatment on phones, tablets, and desktops.
+- `shouldBlockDesktopViewport({ width, height, compactLayout })` returns `false` only when compact layout is selected, or when both desktop dimensions meet their minimums.
+- `DesktopViewportGate` is the single outer owner around route, audio, and overlay rendering. It listens for `resize` and `orientationchange`, preserves application state while blocked, and shows only the exact accessible copy `请用合适尺寸窗口进行游玩`.
+
+#### Validation matrix
+
+- `1440 x 768` desktop -> render the application.
+- `1439 x 768`, `1440 x 767`, or `1366 x 768` desktop -> render only the size notice.
+- `320 x 568`, `390 x 844`, `480 x 960`, and `932 x 430` on any device -> preserve the compact application.
+- `496 x 1047` or the inclusive `520 x 568` narrow-portrait boundary on any device -> preserve the compact application.
+- `319 x 1047`, `521 x 1047`, `520 x 567`, or intermediate `768 x 1024` on any device -> show the size notice.
+
+#### Tests required
+
+- Unit-test both compact geometry ranges, their inclusive boundaries, the observed Chrome `496 x 1047` viewport, and device-identical outcomes.
+- DOM-test notice copy without secondary minimum-size text, replacement of application content, and restoration after resize.
+- Browser-test at least one undersized desktop and the exact `1440 x 768` boundary; confirm zero document-level horizontal overflow.
+
+#### Wrong vs correct
+
+```js
+// Wrong: layout behavior differs for the same viewport based on device identity.
+const compact = isTabletUserAgent ? false : isCompactViewport({ width, height });
+
+// Correct: only the current viewport geometry selects the compact layout.
+const compact = isCompactViewport({ width, height });
+```
+
+### Character Detail BGM Preview Interaction Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/audio/CharacterMusicPreview.jsx`, `.character-music-*` CSS, Bright School character detail music overrides, or ordinary/derived skill BGM selection.
+- The player sits in a compact modal heading, so interaction feedback must stay immediate and layout-stable even when first-use audio decoding is slow.
+
+#### 2. Signatures
+- `CharacterMusicPreview({ characterId, slots, audioSettings, onTrackChange })` renders `.character-music-player`; each slot contains `{ id, effectType, label, fallbackTrackId, options, track }`.
+- `onTrackChange({ trackId, effectType })` persists the active ordinary- or derived-skill slot.
+- Runtime skill BGM metadata uses `{ effectType, musicEffectType, musicTrackId }`: `effectType` owns gameplay presentation, while `musicEffectType` alone selects the ordinary (`""`) or derived (non-empty) music slot.
+- Local playback states are `idle`, `loading`, `playing`, and `error`.
+- Bright School renders `/assets/characters/bright-school-radio-player.png` as the closed-player shell; live title and playback state remain DOM/CSS content rather than baked raster content.
+
+#### 3. Contracts
+- Clicking play must enter a visible `loading` state before awaiting WebAudio fetch/decode.
+- The global background music pause request must be released when preview startup fails, the selected track changes, or the component unmounts.
+- Async preview startup must use an intent/request guard so old decode completions cannot play after a slot change, pause action, or unmount.
+- Ordinary skill and every derived `effectType` are independent selection slots. Switching slot or track while playing continues with the new track; switching while idle must not autoplay.
+- Pending skill previews must always carry `musicEffectType`; ordinary skills use an explicit empty string even when their gameplay `effectType` is non-empty, while derived skills use their exact derived effect type. Resolved skill history preserves non-empty derived `musicEffectType`; legacy history may infer it only from `musicTrackId` track metadata.
+- Track persistence is optimistic but reversible: keep a per-slot request id, ignore stale saves, roll back only the latest rejected save, keep the sheet open, show a player-local error, and expose retry.
+- The main title and track-sheet row titles stay single-line. Only measured overflow animates; after every title or layout change, recompute `scrollWidth - clientWidth` and reject distances at or below 1px before assigning animation styles. This prevents a stale long-title overflow state from producing a `translateX(-0px)` animation after switching to a short title. The main title scrolls one way with start/end pauses, while rows animate only on hover/focus. Reduced motion disables automatic movement and keeps manual horizontal access.
+- The track sheet is rendered into the nearest nested/modal backdrop (falling back to the themed app shell), positioned against the trigger without expanding the modal, constrained to the viewport, and limited to about four rows before internal scrolling. This keeps it above the detail modal while retaining theme ancestry. Trigger, outside press, and Escape close it; Escape restores trigger focus.
+- Skill slots use tab semantics and keyboard arrow/Home/End navigation. Track choices use listbox/option semantics and retain selection state while the sheet stays open.
+- The closed title renders only the current music name. Ordinary/derived skill identity belongs to the open track-sheet tabs and must not be duplicated as a visible marker beside the closed title.
+- Under Bright School, the `920x200` transparent radio PNG must be rendered with `background-size: contain`, never stretched to fill a different aspect ratio. Desktop uses the `230x50` owner and reserves 62px on the right of the title; portrait mobile uses `min(210px, 58vw) x 50px`, reserves 58px, and keeps the adjacent heading grid in sync. These reserves end the clipping owner before the painted waveform window. The outer player background color remains transparent so alpha padding cannot reveal a flat mint/blue capsule behind the painted shell.
+- The native 44px playback button is positioned over the left painted circular control by the themed owner, while the live CSS play/loading/pause glyph and `aria-pressed` state remain dynamic. Do not bake a playback glyph or track title into the raster. Its live play glyph uses Bright School blue, its pause glyph uses Bright School pink, and the inset circular key face remains transparent at rest, hover/focus, and active states. The themed glyph owner must explicitly make both `.character-music-glyph` and its pause/loading child spans inherit the button's state color with an `!important` winner because the later Bright School span-text rule otherwise repaints those CSS shapes dark ink. Playback glyphs are solid CSS shapes and must not use Lucide play/pause icons.
+- Hover and press feedback for the play button must not change layout dimensions. Use transform, color, or opacity changes rather than width, height, border-width, padding, or DOM regeneration.
+- Bright School button press feedback models depth instead of scale: hover raises the 44px control by 1px, active lowers it by 2px and shortens the pseudo-element shadow, and the active transform must not include `scale(...)`.
+- The theme-wide `final-controls-forms.css` `button:hover`/`button:focus-visible` rule colors the full 44px button and adds a hard shadow. The character-music owner must explicitly keep the real button background, background image, border color, and box shadow transparent/none in hover, focus, and active states. Hover, focus, and active must also keep the inset pseudo-element background, border, and shadow transparent/none so the hand-painted radio circle stays visible without a second circular plate; keyboard focus remains visible through the button outline.
+- Do not stretch the radio bitmap, crop its alpha safety margin, add a second baked playback glyph, add button-only `will-change`, or use paint containment as a substitute for measuring the whole character-detail surface. Bright play/pause glyph colors own persistent state visibility; interaction feedback uses transform and the focus outline without repainting the inset key face.
+- Character-detail and other nested interactive overlays must not use real-time full-viewport `backdrop-filter`, including on a separated pseudo-element. Keep both `.nested-modal-backdrop` and its static, pointer-transparent `::before` paint layer at `backdrop-filter: none`; use a theme-owned translucent fill for background separation.
+
+```css
+/* Wrong: moving the same live blur to a pseudo-layer keeps the GPU cost. */
+.nested-modal-backdrop::before { backdrop-filter: blur(8px); }
+
+/* Correct: the paint layer is static and has no live backdrop sampling. */
+.nested-modal-backdrop { backdrop-filter: none; }
+.nested-modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nested-modal-backdrop-fill);
+  backdrop-filter: none;
+  pointer-events: none;
+}
+```
+
+- Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid; the mobile playback key remains at least 44px.
+
+#### 4. Validation & Error Matrix
+- Slow first decode -> button shows loading state immediately and does not look inert.
+- Startup failure -> release background pause request, enter local error state, and expose retry.
+- Track changes while startup is pending -> old completion is ignored and stopped.
+- Latest save fails -> active slot rolls back, local error remains retryable, and other slots stay untouched.
+- Older save settles after a newer save -> stale response cannot replace the newer selection or user payload.
+- Derived slot selected -> request includes its exact non-empty `effectType`; ordinary slot uses an empty value.
+- Ordinary runtime preview with gameplay `effectType: "flip-stone"` or `"liberty-purge"` -> resolve `musicSelections.skill[characterId]`, not a derived slot.
+- Bright School active -> play/pause glyphs remain bright, hover/focus/active add no circular fill, and hover/active rules keep transform-only feedback.
+- Character detail open in Chromium -> both the interactive backdrop and pointer-transparent paint layer compute to no backdrop filter.
+- Reduced motion -> no automatic title animation; text remains horizontally reachable.
+- Portrait mobile -> final mobile safety layer preserves the same non-overlap grid contract as the theme layer.
+- Long title changes to a short title -> the recomputed distance is at most 1px, so no `transform` animation is emitted.
+- Bright School shell loads -> alpha outside the hand-painted radio remains transparent, the raster keeps its intrinsic aspect ratio, and the native button center aligns with the left painted circle.
+- Playback starts or pauses -> the CSS glyph, accessible label, player state class, and `aria-pressed` switch together.
+
+#### 5. Good/Base/Bad Cases
+- Good: set local state to `loading`, request background pause, await playback, then set `playing` only if the current intent still wants playback.
+- Good: persist `{ trackId, effectType }` and reconcile only when that slot's request id is still current.
+- Good: render only the current music name in the closed title and keep `普通技·技能名` / `派生技·技能名` in the open tab strip.
+- Good: use the transparent hand-painted radio as a visual shell and overlay one native circular 44px control plus live DOM title inside its painted control/display zones; keep play/pause glyphs bright and let the painted circle remain visible through transparent hover, focus, and pressed faces.
+- Base: characters without derived BGM render one slot and no tab strip; characters with one track render a non-sheet title.
+- Bad: waiting for `decodeAudioData()` before updating visible state.
+- Bad: storing derived selection in `musicSelections.skill[characterId]`, filtering only by character, or closing the sheet after every selection.
+- Bad: using runtime gameplay `effectType` directly as the music slot discriminator, because every ordinary active skill also has a non-empty gameplay effect type.
+- Bad: using an infinite CSS marquee without measuring overflow or honoring `prefers-reduced-motion`.
+- Bad: stretching the radio PNG to an arbitrary CSS rectangle, filling its transparent padding with a flat color, or leaving the button at the flex-start origin instead of aligning it to the painted circle.
+- Bad: retaining full-viewport `backdrop-filter` on either the interactive container or a pseudo-layer, then treating button-only `will-change` or immediate computed-style changes as proof that the visible Chrome paint path is fast.
+- Bad: rendering `shortLabel`, `普通技`, `派生技`, or the skill name beside the closed music title, because it duplicates the track-sheet tabs and reduces marquee space.
+- Bad: restoring a Rough.js frame/ring over the bitmap, baking live text or state glyphs into the asset, or using the display title font for track data.
+
+#### 6. Tests Required
+- `src/audio/CharacterMusicPreview.test.jsx` asserts the absent sketch layer, CSS playback glyph, accessible state hooks, and marker-free closed title without Lucide playback icons.
+- `src/audio/CharacterMusicPreview.dom.test.jsx` asserts play/loading/pause glyph and `aria-pressed` switching, measured long-title motion, short-title non-motion after a long title, tab semantics, slot switching, sheet persistence after selection, save rollback, and retry.
+- `src/modals/HouseModal.test.js` or focused style tests assert slot construction, radio asset URL/dimensions, transparent/contained background, desktop/mobile size hooks, bright play/pause state colors, transparent hover/focus/active pseudo-element paint, painted-circle button offset, and transform-only feedback.
+- `src/shared/preloadAssets.test.js` asserts the Bright School radio asset is part of the post-login critical image manifest.
+- `src/shared/musicLibrary.test.js`, `server/roomSkillResolution.test.js`, `server/musicSelection.test.js`, and `server/playerRoutes.test.js` cover realistic ordinary gameplay effect types, pending/history metadata, ordinary/derived slot separation, legacy history fallback, and request forwarding.
+- Run the focused suites and `npm run build` after changing this surface or its image/CSS ownership boundary.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+onTrackChange(trackId); // derived slot identity is lost
+```
+
+Correct:
+
+```jsx
+onTrackChange({ trackId, effectType: activeSlot.effectType });
+```
+
+Wrong:
+
+```js
+resolveSkillMusicTrack({ effectType: skillPreview.effectType });
+```
+
+Correct:
+
+```js
+resolveSkillMusicTrack({ effectType: skillPreview.musicEffectType });
+```
+
+### Story Guidance Backdrop Performance Contract
+
+- Trigger: changes to `StoryPlayerModal`, `TutorialSessionModal`, `.onboarding-story-backdrop`, `.tutorial-session-backdrop`, or their Bright School root overrides.
+- Ordinary story playback and local board-tutorial playback are two phases of the same player guidance flow. Both full-viewport backdrops must use the shared deep-plum static fill `rgba(35, 27, 31, 0.64)`.
+- Both standard and WebKit `backdrop-filter` must remain `none` on these two backdrop owners. Do not reintroduce live blur for typewriter text, branch options, tutorial-board interaction, or mobile presentation.
+- Bright School's generic `.modal-backdrop` color is weaker, so `root-shell.css` must keep an explicit story/tutorial selector that preserves the deep-plum fill after theme overrides.
+- Do not change story stacking, skip confirmation, click handling, responsive sizing, or teaching-board behavior as part of this performance contract.
+- Validation: ordinary story, empty story, item-triggered story, and local tutorial-board phases must all keep the static fill; admin embedded preview may continue resetting its backdrop to transparent.
+- Good: keep the performance fix on the two full-screen backdrop owners and the Bright School override. Bad: add button-level `will-change` while either owner still samples the live viewport.
+- `OnboardingStoryModal.test.jsx` and `TutorialSessionModal.test.jsx` must assert the static fill and reject `blur(...)`; the onboarding contract also verifies the Bright School override names both runtime phases.
+
+```css
+/* Wrong: every typewriter or board update can invalidate a live full-screen sample. */
+.onboarding-story-backdrop { backdrop-filter: blur(2px); }
+
+/* Correct: preserve separation with one static theme-aligned fill. */
+.onboarding-story-backdrop,
+.tutorial-session-backdrop {
+  background: rgba(35, 27, 31, 0.64);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+```
+
+### Responsive login mascot composition contract
+
+The login title mascot is a visible, login-owned presentation asset, not the shared character portrait consumed by profiles, loading screens, character lists, or battles. The panel, mascot overhang, and supporting divider are one responsive composition so centering and viewport adaptation use the complete silhouette rather than the card alone.
+
+Required assertion points:
+
+- `AuthScreen` must wrap the login panel in `.auth-composition` and retain the visible `/assets/login-sigrika-mascot.webp` element with empty `alt` and `aria-hidden="true"`; it must not read `CHARACTERS.sigrika.portrait` for the title lockup.
+- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas. When artwork changes, measure non-zero-alpha bounds, remove export residue, crop transparent edges only, scale uniformly, and center the result; do not stretch width and height independently. Preserve exactly 8 transparent raster rows below visible alpha: at the 252px desktop display size this resolves to about the 3px structural-rule thickness, so the art meets the rule's top edge without covering it or floating above it.
+- The title `h1` must use the semantic `.text-window-title` hook so the final typography layer resolves it to `var(--font-window-title)` (霞鹜漫黑) even after Bright School owner overrides.
+- The login version reads the root `package.json` version, renders as `v{version}` directly below the title, and reuses the `SigrikaGo` subtitle's `.text-display-accent` typography. Its title gap matches the subtitle-to-title `4px` gap, then the label shifts `8px` beyond the title's right edge for a restrained stagger. Do not maintain a second handwritten version string or give the version its own decorative surface.
+- The title lockup is wrapped by semantic `.auth-panel-header`. Its Bright School owner separates the title from the form with a pointer-transparent, hard-edged two-layer paper rule: the structural stroke uses `--bright-border`, the offset stroke uses `--bright-blue`, and both extend left through composition variables so the rule becomes a shelf beneath the mascot. Do not replace it with a tinted header card, blur, motion, or an interactive divider element.
+- `.auth-composition` owns the panel width, panel padding, horizontal overhang, vertical reserve, mascot size, and rule offsets as shared custom properties. Desktop includes a 118px left overhang and 117px top reserve around a 440px panel; the existing `max-width: 900px` mobile-layout family collapses the left reserve to zero, scales the mascot with `clamp(148px, 42vw, 164px)`, and keeps page-level horizontal overflow at zero across portrait phones, common mobile landscape widths, and 768px previews.
+- The mascot is a pointer-transparent absolute decoration anchored by its bottom edge to the same header-rule spacing used by the divider. It uses equal width/height, `object-fit: contain`, `object-position: center bottom`, and no independent rotation, so the artwork and shelf remain aligned when the composition changes size.
+- `AuthScreen.test.js` must assert the composition wrapper, visible decorative-image semantics, dedicated WebP URL, shared-portrait rejection, PNG/WebP signatures and 640px PNG canvas, exactly 8 transparent rows below visible alpha in both assets, compressed runtime WebP, shared shelf/mascot variables, equal dimensions, bottom anchoring, and the desktop/mobile overhang contracts.
+
+Correct:
+
+```jsx
+<div className="auth-composition">
+  <section className="auth-panel login-card-container">
+    <header className="auth-panel-header">
+      <div className="brand-lockup">
+        <img src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
+        <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+        <p className="auth-version text-display-accent">{APP_VERSION_LABEL}</p>
+      </div>
+    </header>
+  </section>
+</div>
+```
+
+Wrong:
+
+```jsx
+<section className="auth-panel">
+  <img className="floating-mascot" src="/assets/characters/portraits/sigrika.webp" alt="" />
+</section>
+```
+
+### Social action availability contract
+
+Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must distinguish retained-but-unavailable actions from product-removed actions.
+
+Required assertion points:
+
+- Use a real `disabled` attribute for retained actions that temporarily cannot run, such as an offline-user match request.
+- When product direction removes an unimplemented action, omit it from markup entirely instead of leaving a disabled discovery placeholder. Keep the remaining action buttons equal-width and horizontally distributed.
+- Keep click handlers guarded when the action depends on mutable user state, such as online/offline match requests or friend/blacklist relation changes.
+- Add base and active-theme `button:disabled` CSS when high-specificity theme layers style the same action buttons with `!important`; disabled actions must stay gray and use `cursor: not-allowed` on desktop and mobile.
+- Static markup tests should assert both the absence of product-removed actions and the disabled attribute for retained unavailable actions. Style-contract tests should assert the disabled selector exists in every theme layer that can override the remaining buttons.
+
+Wrong:
+
+```jsx
+<button type="button">Request match</button>
+```
+
+This looks actionable even when the feature is unavailable.
+
+Correct:
+
+```jsx
+<button type="button" disabled>Request match</button>
+```
+
+### Home utility unavailable-entry contract
+
+Temporarily unavailable home utility entries must look and behave unavailable on both desktop and mobile, even when a theme layer restyles the utility dock.
+
+Required assertion points:
+
+- Keep the entry in the home utility dock only when product discovery still matters; otherwise remove it entirely. If it remains visible, render it as a native `disabled` button.
+- Rename the visible label to the product-facing future feature name, not the unavailable internal implementation name. For example, a hidden gacha implementation can surface as `Recruitment`.
+- Add a focused base CSS file for shared disabled utility-entry treatment when the existing home layout file is already oversized.
+- Add active-theme disabled selectors when theme files style `.utility-entry`, hover, focus, or active states with high specificity or `!important`; the disabled rule must preserve a gray background, gray text/border, `cursor: not-allowed`, no press transform, and no action-looking shadow.
+- Mobile touch feedback selectors must use `:active:not(:disabled)` for `.utility-entry` so disabled home actions cannot receive a pressed visual state.
+- Tests should assert the disabled markup, the product-facing label, base disabled CSS, active-theme disabled CSS, and the mobile `:not(:disabled)` touch selector.
+
+Wrong:
+
+```jsx
+<button className="home-entry utility-entry" onClick={openFeature}>Gacha</button>
+```
+
+This still looks and behaves like an available action.
+
+Correct:
+
+```jsx
+<button className="home-entry utility-entry recruitment-entry" disabled title="Recruitment unavailable">
+  <strong>Recruitment</strong>
+</button>
+```
+
+### Profile social action CSS split contract
+
+Profile like/report styling must stay split across focused CSS files so the style-contract oversized-file guard stays useful.
+
+Required assertion points:
+
+- Base desktop profile like/report rules live in `src/styles/modals/profile-social-actions.css`, imported by `src/styles/modals.css` immediately after `nested-profile.css`.
+- Mobile profile like/report overrides live in `src/styles/mobile-adaptive/mobile-profile-social-actions.css`, imported by `src/styles/mobile-adaptive.css` immediately after `mobile-profile-records.css`.
+- Broad profile layout rules such as hero grid, record rows, footer actions, and social action buttons should not all accumulate in one CSS file. If a focused rule set pushes a known debt file over its byte limit, split it into a named import-only domain file and update `styleContract.test.js`.
+- Update `docs/system-design.md` and `docs/system-design/06-ui-theme-mobile.md` when adding or renaming CSS domain entries.
+
+Wrong:
+
+```css
+/* Appending all new profile button and dialog rules to nested-profile.css */
+.profile-social-actions { ... }
+.profile-report-dialog textarea { ... }
+```
+
+Correct:
+
+```css
+@import "./modals/nested-profile.css";
+@import "./modals/profile-social-actions.css";
+```
+
+---
+
+## Testing Requirements
+
+### CSS import-only style contract tests
+
+When a test asserts concrete CSS rules from an entry that may contain `@import`, use `readCssWithImports()` instead of reading the entry file directly. CSS cleanup keeps domain entries import-only, so raw `readFileSync()` on an entry such as `themes/theme-components.css`, `themes/shared.css`, `room.css`, or `mobile-adaptive.css` only sees import directives and can fail even when the effective CSS is correct.
+
+Required assertion points:
+
+- Use `src/styles/cssTestUtils.js` `readCssWithImports()` for cross-entry CSS rule assertions outside files that already define an equivalent local helper.
+- Raw `readFileSync()` is still fine when the test intentionally asserts an entry is import-only or checks exact import order.
+- After splitting an entry into child CSS files, update dependent tests to preserve the same effective-rule assertions through import expansion instead of moving concrete rules back into the entry.
+
+### Admin route CSS isolation contract
+
+Admin screens are a light production tool surface, not a Startorch terminal surface. When admin markup reuses generic shared classes such as `.primary-action`, `.secondary-action`, `.danger-action`, `.close-button`, `.modal-backdrop`, `.confirm-modal`, ordinary `input`/`textarea`/`select`, or setting-named containers, the effective `src/styles/admin.css` import tree must keep `.admin-screen`-scoped resets that beat global terminal/HUD rules.
+
+Required assertion points:
+
+- Keep action, danger, and close-button admin rules specific enough to reset `clip-path`, dark/neon backgrounds, `text-shadow`, `filter`, and terminal skew/cut styling.
+- Keep admin heading, settings-grid, and form-control rules specific enough to reset global HUD input and setting-surface hardening, including dark backgrounds, green borders, pseudo-elements, neon text treatment, and terminal focus/caret colors.
+- Keep announcement confirmation modal/backdrop rules specific enough to clear terminal modal pseudo-elements, scanline/dark backdrops, and neon text treatment.
+- Add or update a focused admin test that reads `src/styles/admin.css` with `readCssWithImports()` whenever the admin polish or announcement confirmation rules change.
+
+### Startup preload, build chunking, and handoff check contracts
+
+#### 1. Scope / Trigger
+- Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, project handoff verification commands, or the GitHub Actions CI quality gate.
+- Startup preload is user-visible performance infrastructure. The login-generated manifest uses a bandwidth-first, account-accessible gate: owned character portraits, home/shop/recruitment/inventory/equipment/decoration images, interaction/result sounds, reachable default/owned BGM, and owned-character skill/system voices block the post-login progress screen. Inaccessible resources such as unpurchased music, replay data, and room-specific opponent/Pixi resources remain excluded or battle-gated.
+
+#### 2. Signatures
+- `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
+- `battlePreloadAssets({ room, characters, tracks, user, skillVoices, systemVoices })` returns the same grouped shape and resolves battle/skill tracks from the current user's ownership and selections.
+- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, onSkipped, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background when callers provide them, caps concurrent loaders, bounds each loader with a timeout, and reports timed-out or failed sources through `onSkipped`.
+- `preloadImageAssets(images, { concurrency, loadImage, onLoaded, onSkipped, taskTimeoutMs })` reports each source through `onLoaded(source)` only after its image loader and browser decode complete; it still bounds and reports failed/timed-out work through `onSkipped(source)`.
+- `retrySkippedPreloadAssets(skippedAssets, { concurrency, retryDelaysMs, taskTimeoutMs })` retries skipped login or battle resources after the target screen has been entered.
+- `prewarmAuthPortraits({ characters, concurrency, preloadImages, taskTimeoutMs })` starts or reuses the authentication-page base-portrait batch. `authPortraitReadySources()` returns a defensive `Set` snapshot; `subscribeAuthPortraitReady(listener)` plus `authPortraitReadyVersion()` form the external-store boundary consumed by `AssetPreloadScreen`.
+- `useStartupPreload({ token, ... })` must not receive a transient Socket.IO `socket` instance or include one in its dependency list.
+- `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`. It installs handlers before `connect()`, then immediately queues one `room:resume` emit in addition to the normal `connect` listener so polling/websocket timing cannot make room recovery depend on a single client event callback.
+- `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
+- `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
+- `.github/workflows/ci.yml` is the hosted quality gate for pull requests and pushes to `master`. It should use Node 22, `npm ci`, `npm test`, `npm run build`, explicit sample-env production config validation, and `npm run docs:system-design`.
+- `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
+- `vite.config.js` keeps `pixi.js` and `pixi.js/unsafe-eval` in `optimizeDeps.exclude` for the dev server, and keeps Pixi nested runtime dependencies such as `pixi.js > @xmldom/xmldom`, `pixi.js > eventemitter3`, `pixi.js > gifuct-js`, and `pixi.js > ismobilejs` in `optimizeDeps.include`. Pixi lazily imports renderer modules such as WebGLRenderer; pre-optimizing the Pixi entries can leave browsers holding immutable stale `.vite/deps` renderer chunk URLs after the optimizer graph changes, while failing to optimize these nested CommonJS/conditional-export dependencies makes Pixi source modules load raw entries without the default or named exports they import.
+- `vite.config.js` configures the dev `/socket.io` websocket proxy with an error handler that keeps expected backend-watch restart disconnects quiet while still warning on unexpected proxy errors.
+
+#### 3. Contracts
+- Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
+- Critical login images include all account-accessible non-room images assembled by `loginPreloadAssets()`: owned character portraits, `RUNTIME_IMAGE_ASSETS.home`, `RUNTIME_IMAGE_ASSETS.shop`, recruitment surfaces/items, current shop/inventory items, equipped achievement assets, and owned stone decorations.
+- Recruitment surface preloading includes the bulletin board, empty-state letter paper, and success celebration art. The ordinary no-response result remains image-free beyond the consumed recruitment-item icon and text, so it must not render a `.recruitment-result-miss::after` envelope sticker or preload `recruitment-envelope-flat.webp`.
+- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction`, match/result sounds, every reachable default/owned track candidate, and skill/system voice candidates for owned characters. Dedicated home destination sounds, including the IRIS database open sound, must use the shared `sfx` channel, join this interaction registry, and mark their trigger with `data-ui-sound="none"` so the generic confirm sound does not stack. Unpurchased music product audio must not be preloaded.
+- `loginPreloadAssets()` currently returns empty `deferredImages` and `deferredAudio`; its flattened `images`/`audio` arrays must equal the critical groups. The generic grouped executor still supports deferred work for other callers, starts it only after critical completion, and keeps it concurrency-limited.
+- `useStartupPreload()` uses six blocking workers. Do not raise concurrency again without checking source/origin behavior and 2 GB deployment memory; per-resource timeout and lower-concurrency retry remain mandatory.
+- `AuthScreen` starts base-character portrait warmup on mount but never awaits it before enabling submit, sending `/api/auth/*`, or calling `onAuth`. The batch uses two workers, orders Sigrika and Denia first, deduplicates repeated/Strict Mode mounts, excludes loading-screen-ineligible characters, and leaves costumes, candy-effect portraits, audio, shop media, and battle effects to their authenticated/runtime owners.
+- A random no-fixed-character `AssetPreloadScreen` must use the decoded auth ready subset whenever at least one matching base portrait exists, including its first character and 10-second rotations. Random startup/route loaders render the warmed base portrait instead of substituting an equipped costume or item-effect portrait that was not warmed. Fixed-character battle/tutorial loaders continue to resolve current-user and costume-snapshot presentation.
+- Battle preload must derive assets from the current room, players, mode, and current user. It blocks on both player portraits, the one resolved battle track, one resolved track per relevant base/derived skill slot, required voice candidates, and mode-specific effect images; it must not preload every configured battle track or every purchasable alternative for a slot. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
+- Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
+- `AssetPreloadScreen` owns normalized `--preload-progress`, `--preload-mask-size`, and `--preload-mascot-rotation` values for one shared paper-strip progress stage. Keep the paper track at 20px on desktop and 18px on phones, the mascot height at exactly three times the track height with its natural square aspect, and reserve half a mascot at both horizontal ends so 0% and 100% remain fully visible. The mascot owner must retain `width: auto`, the fixed height, and `max-width: none`; later mobile-wide responsive media rules must not squeeze it near the endpoint. The orange-yellow crayon fill, scratches, paper gaps, and warm glow must stay full-width with progress-independent background sizing; reveal them from the left through `mask-size` plus an equivalent `clip-path` fallback, never `scaleX()`. Keep position, clockwise 0–720-degree roll, and post-idle breathing on separate transform owners. Movement above one percentage point enters the 420ms ease-out position/roll transition and returns to breathing after 600ms; unchanged or one-point progress remains idle. Reduced-motion keeps the correct endpoint and revealed range while removing interpolation, roll, and breathing. Theme-wide media and meter rules may provide semantic colors but must not replace the paper texture, mask/clip reveal, or mascot owners. Random tips receive the literal `Tip：` prefix only at the `AssetPreloadScreen` display boundary so admin-configured lines remain raw and `showTips={false}` flows remain silent.
+- A timed tutorial loading transition must key its progress-owning component by the stable transition id. Resetting progress only inside an effect is insufficient when the same component instance previously reached 100%, because the browser can paint that completed state once before the effect returns it to 0%.
+- Loading-character exclusions belong in `AssetPreloadScreen`, not in individual routes. `baconbits` must be filtered from random candidates and normalized away when supplied as a fixed character; `characterLoadingLine()` must also ignore any configured Baconbits-specific line. The exclusion is presentation-only and must not change the actual login/battle asset manifest or Baconbits behavior outside loading screens.
+- Sigrika corruption also belongs at the shared `AssetPreloadScreen` presentation boundary. Every production caller must pass the current `user`; when `user.sigrikaCandyArc.corrupted` is true, omit both the fixed/random character portrait (including the missing-image spinner that occupies the same slot) and the derived/configured character loading line. Preserve explicit generic `label` copy, status text, progressbar and its orange progress mascot, and ordinary tips. Do not replace the removed character presentation with new corruption copy or an empty title element.
+- Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
+- The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
+- Room resume is idempotent. Do not remove the immediate queued `room:resume` from `connectGameSocket()` just because the installed `connect` listener also emits one; the immediate emit covers browser/mobile transport cases where the app shell otherwise waits on one event edge.
+- The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
+- Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
+- The hosted CI workflow must mirror the local handoff gate instead of introducing a separate, weaker validation path. If `npm run check` changes, update `.github/workflows/ci.yml` and system-design docs in the same change.
+- Dev proxy `ECONNRESET` and `ECONNREFUSED` errors from `/socket.io` are expected while `dev:server` restarts; do not remove the proxy error handler unless the replacement keeps those disconnects from spamming the client terminal.
+
+#### 4. Validation & Error Matrix
+- API request never settles -> abort after the request timeout and reject with a user-readable timeout error.
+- Missing grouped fields but legacy `images`/`audio` provided -> treat all legacy assets as critical.
+- Empty critical groups -> call `onProgress(1)` and still start deferred work if present.
+- Invalid or zero concurrency -> fall back to one worker.
+- Loader rejection -> swallow the failure and continue remaining preload work.
+- Loader never settles -> treat it like a non-blocking preload failure after the per-task timeout and continue remaining preload work.
+- Auth portrait fails or times out -> keep it out of the ready subset, continue the remaining low-concurrency batch, and allow a later login mount to retry; authentication remains available throughout.
+- Auth succeeds before any portrait becomes ready -> enter the existing preload view without waiting and use the existing safe loading-character fallback until a decoded source enters the subscribed ready store.
+- Socket instance changes while token preload is in progress -> do not cancel or restart `useStartupPreload`.
+- Mobile WebSocket handshake stalls -> Socket.IO connection attempt times out after 6 seconds and retries with the configured reconnect delays.
+- Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
+- CI workflow omits docs generation or production config validation -> invalid, because documentation drift and deploy config regressions can merge even when tests pass.
+- Selected battle/skill track is unavailable or not owned -> use the existing music-library fallback for that slot; never preload an arbitrary inaccessible alternative.
+- Dedicated home destination sound is added -> its shared asset constant, named `effectPlayback` helper, `playback.jsx` compatibility export, `RUNTIME_AUDIO_ASSETS.interaction` registration, and trigger `data-ui-sound="none"` marker must move together; omitting any one is invalid.
+
+#### 5. Good/Base/Bad Cases
+- Good: Login reaches home after the current account's accessible image, music, and voice manifest has completed or timed out; opening home, shop, warehouse, recruitment, and owned-character audio surfaces begins from a warmed browser cache.
+- Good: The idle login form decodes Sigrika/Denia first in a two-worker background batch; a successful auth response calls `onAuth` even if that batch is still pending, and the random startup loader switches to decoded-ready base art as it becomes available.
+- Good: `IrisDatabase` plays `UI_IRIS_DATABASE_OPEN_SOUND` through `playUiIrisDatabaseOpenSound(audioSettings)` immediately before opening, while its trigger suppresses the generic confirm cue.
+- Good: Match preload fetches the user's selected battle track and the resolved skill-slot tracks for the two room characters, not the whole music catalog.
+- Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
+- Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
+- Good: CI runs the same core quality surfaces as local handoff so pull requests catch tests, build, production config, and system-design docs regressions before merge.
+- Base: Older tests or helpers that pass only `images` and `audio` still work.
+- Base: A very fast login or weak network can reach the preload view with an empty auth-ready set; the loader keeps its established fallback rather than delaying authentication.
+- Bad: Preloading the whole configured music/voice catalog regardless of ownership, or pulling room-specific opponent/Pixi resources before a room exists.
+- Bad: Moving owned/reachable music or owned-character voices back to the login deferred queue without an explicit product decision and updated loading-screen contract.
+- Bad: Awaiting all character portraits in `AuthScreen.performSubmit()`, prewarming costumes/candy/audio before authentication, or letting a random startup loader choose an undecoded portrait when a decoded-ready subset exists.
+- Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
+- Bad: CI runs only `npm test`, because build, docs, and production config drift can still merge.
+
+#### 6. Tests Required
+- API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
+- Asset grouping tests must assert owned portraits, home/shop/recruitment/inventory/equipment/decoration images, reachable default/owned music, match/result sounds, and owned-character skill/system voices are critical; generated login deferred groups are empty; inaccessible unpurchased music audio is excluded.
+- Recruitment style/preload tests must reject the retired no-response envelope selector and asset URL while retaining the board, empty-state letter paper, and success celebration surfaces.
+- Dedicated home destination sound tests must assert the stable asset path, named helper routing, presence in `RUNTIME_AUDIO_ASSETS.interaction`, propagation of `audioSettings`, and generic-confirm suppression on the trigger.
+- Battle grouping tests must assert selected battle music replaces the default candidate, derived skill slots remain covered, both room portraits are present, and no-skill modes omit skill-only resources.
+- Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
+- Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
+- Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
+- Auth portrait warmup tests must assert Sigrika/Denia ordering, two-worker handoff, active-batch deduplication, decoded-source ready notifications, failure exclusion, and Baconbits exclusion.
+- Auth DOM tests must assert a never-settling portrait warmup cannot delay the auth request or successful `onAuth` callback.
+- Random loading-screen tests must assert decoded-ready filtering for initial/rotated candidates and base-portrait rendering for no-fixed-character loaders while fixed-character presentation remains unchanged.
+- `AssetPreloadScreen` tests must assert 0/50/100 progress maps to 0/50/100% mask reveal and 0/360/720-degree mascot roll, accessible progressbar state, one-time `Tip：` display prefix, 20px desktop / 18px phone / 3x aspect-preserving mascot size ownership including the mobile max-width escape, progress-independent crayon texture sizing, mask plus clip fallback for both fill and warm glow, absence of progress `scaleX()`, separate position/roll/breath owners, meaningful/near-idle movement threshold, 600ms idle transition, reduced-motion fallback, and late-theme exclusions that protect the paper-strip owner.
+- Tutorial loading integration tests must assert the timed progress component is keyed by `loading.id`, so consecutive setup/exit transitions cannot reuse the preceding transition's completed first frame.
+- `AssetPreloadScreen` tests must cover both random and explicit fixed-character Baconbits inputs, asserting that rendered markup contains another eligible portrait/line and contains neither the Baconbits name, portrait URL, nor configured loading copy.
+- `AssetPreloadScreen` tests must cover corrupted users with and without an explicit generic label, assert that no portrait/character line/fallback spinner or empty title remains, and verify every production shared-loader caller forwards `user` so route, battle, recovery, and tutorial handoffs cannot bypass the shared rule.
+- App wiring tests must assert startup preload is not passed a `socket` prop.
+- Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
+- Game socket tests must assert handlers install before `connect()` and that an immediate `room:resume` is queued after connecting.
+- Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
+- Workflow review must assert `.github/workflows/ci.yml` keeps the hosted CI commands aligned with the local handoff gate when either command list changes.
+- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, Pixi dev optimizer exclusions, and quiet handling for expected dev websocket proxy disconnects.
+- Run `npm run check` before handoff when changing preload or verification commands.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await Promise.all([...images, ...audio].map(preloadEverything));
+```
+
+This either over-fetches inaccessible resources or lacks per-asset timeout/retry reporting.
+
+Correct:
+
+```js
+const skipped = [];
+await preloadLoginAssets(loginPreloadAssets({ characters, user, shopItems, inventoryItems, tracks }), {
+  onProgress,
+  onSkipped: (src) => skipped.push(src)
+});
+retrySkippedPreloadAssets(skipped, { concurrency: 2 });
+```
+
+`loginPreloadAssets` places the current user's accessible non-room manifest in the critical tier and excludes inaccessible or room-specific resources. `preloadLoginAssets` bounds each asset, reports skipped sources, and allows the caller to retry those sources after home entry.
+
+Wrong:
+
+```yaml
+- run: npm test
+```
+
+Correct:
+
+```yaml
+- run: npm test
+- run: npm run build
+- run: node -e "process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')"
+- run: npm run docs:system-design
+```
+
+Wrong:
+
+```jsx
+useStartupPreload({ token, socket });
+```
+
+This lets a transient realtime connection object restart login asset preload on mobile reconnects.
+
+Correct:
+
+```jsx
+useStartupPreload({ token });
+connectGameSocket({ socketBase, token });
+```
+
+The socket lifecycle hook owns realtime reconnects while startup preload remains tied to the confirmed token.
+
+### Memoized home route callback forwarding contracts
+
+#### 1. Scope / Trigger
+- Trigger: changing `AppRoutes`, `HomeRoute`, `HomeScreen` action props, or the memoized home render boundary.
+
+#### 2. Signatures
+- `HomeRoute` is a thin memoized wrapper around `HomeScreen`.
+- Core action props are `onLogout`, `onSelectCharacter`, `onStartMatch`, and `onStartPractice`.
+
+#### 3. Contracts
+- A thin memo boundary must preserve the wrapped component's public action-prop names end to end. Do not pass `onStartMatch` into the wrapper and destructure it as `startMatch`.
+- Memoization may suppress rerenders only when consumed inputs remain equal; it must never replace, alias, or drop an action callback.
+- Match-mode close state and match/practice startup are separate callbacks. Tests must prove both the visual close and the authoritative startup action occur.
+
+#### 4. Validation & Error Matrix
+- Any match mode -> the picker closes and the original `startMatch(mode)` callback is invoked.
+- Practice quick start -> the picker closes and the original `startPractice(options)` callback is invoked.
+- Logout or character selection -> the original app callback is invoked through `HomeScreen`.
+- Room/replay-only prop update -> `HomeScreen` remains memoized when all consumed home props are stable.
+
+#### 5. Good/Base/Bad Cases
+- Good: `AppRoutes` passes `onStartMatch={startMatch}`, `HomeRoute` reads `onStartMatch`, and `HomeScreen` receives `onStartMatch`.
+- Base: non-action room state changes do not rerender the home tree.
+- Bad: a wrapper renames `onStartMatch` to `startMatch` only on one side; React accepts the missing callback and the button silently becomes inert.
+
+#### 6. Tests Required
+- `src/app/AppRoutes.dom.test.jsx` must assert callback identity and invocation for logout, character selection, all match modes, and practice start.
+- The same suite must keep its room/replay-only rerender guard.
+- `src/home/HomeScreen.dom.test.jsx` must continue covering the practice picker close plus quick-start request.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<HomeRoute onStartMatch={startMatch} />
+function HomeRoute({ startMatch }) {
+  return <HomeScreen onStartMatch={startMatch} />;
+}
+```
+
+Correct:
+
+```jsx
+<HomeRoute onStartMatch={startMatch} />
+function HomeRoute({ onStartMatch }) {
+  return <HomeScreen onStartMatch={onStartMatch} />;
+}
+```
+
+### Board point and interaction feedback performance contracts
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/room/Board.jsx` point rendering, point event handling, scoring/neutral point interactions, or `src/app/InteractionFeedback.jsx` unavailable feedback animation.
+- These paths sit on high-frequency user interactions; they must reduce unnecessary renders and avoid layout-thrashing reads without freezing current event behavior.
+
+#### 2. Signatures
+- `arePointButtonPropsEqual(previous, next)` is the point-level React memo comparator for board intersections.
+- Point buttons receive stable refs such as `handlersRef` and `pointerTypeRef`; visible state and capability booleans remain ordinary props.
+- `useRoomPointActions()` returns `useCallback`-stable `handlePoint`, `handleScoringPoint`, and `handleBoardSurface` callbacks.
+- `areChatBoxPropsEqual(previous, next)` is the chat widget comparator for avoiding room-clock rerenders.
+- `areRoomPeopleListPropsEqual(previous, next)` is the member-list comparator for avoiding room-clock rerenders.
+- `areOperationHintPropsEqual(previous, next)` is the action-hint comparator for avoiding room-clock rerenders.
+- `areActionBarPropsEqual(previous, next)` is the room action comparator for avoiding countdown or clock-only rerenders while keeping button availability and decision bars live.
+- `timedRoomRequestEffectKey(room, userId)` is the request-toast effect dependency key; it must ignore clock-only player time changes while changing for request phase, deadline, requester, acceptance, or displayed request copy changes.
+- `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
+- `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
+
+#### 3. Contracts
+- Point memo comparison may ignore event function identity only when the rendered button reads the latest handlers through a stable ref object.
+- Board-level memo comparison must not ignore handler identity if `handlersRef.current` is updated inside the board render. Handler changes should re-render the board shell to refresh the ref, while point buttons can still stay memoized because their `handlersRef` object identity is stable.
+- `useRoomPointActions()` callback dependencies should track click semantics, not whole room/player objects. Depend on fields such as `phase`, `role`, `pendingSkill`, and current player color instead of the full `displayRoom` or `me` object so room clock ticks do not churn board click handlers.
+- `RoomBattleStage` must pass named stable callbacks into `Board`; do not use inline handlers for board point props such as `onNeutral`, because board-level memo comparison treats handler identity as the signal that `handlersRef.current` needs refreshing.
+- `ChatBox` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, chat array changes, player metadata that affects chat names such as user id or character id, and `presentation` changes between desktop floating and mobile embedded modes.
+- `RoomPeopleList` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, player connection state, spectator membership, and user display metadata used by `roomPeople()`.
+- `OperationHint` should ignore player `time` changes from `room:clock` while still rerendering for action-relevant fields: room code, phase, turn, winner, current user id, scoring reference, draw request reference, and color-to-user mappings.
+- `RoomBattleStage` must also pass stable floating-layer callbacks into memoized room widgets such as `ChatBox`; inline `onFloatingLayerRequest` callbacks defeat memo comparison during parent renders.
+- `ActionBar` should ignore player `time` changes and unused timed-request payloads while still rerendering for role, mode, phase, turn ownership, skill state, skill uses, decision locks, opponent connectivity, scoring reference, replay step, and every rendered callback identity.
+- `RoomBattleStage` must pass named stable callbacks into `ActionBar` for test tools and scoring decisions; inline action dispatchers defeat `areActionBarPropsEqual()` during parent renders.
+- `RoomScreen` should pass stable confirmation and header-toggle callbacks into room composition; close-countdown timer state belongs in `RoomCloseCountdown` under `RoomHeader` so a finished-room countdown does not re-run the whole room screen or recreate pass/resign/exit and coordinate/move toggle handlers.
+- Timed room request toast logic should depend on `timedRoomRequestEffectKey(room, userId)`, not the whole `room` object, so `room:clock` player-time churn does not rerun draw/counting/result request state effects.
+- Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
+- Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
+- Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
+- Neutral point marking remains phase-gated by an explicit capability prop such as `canMarkNeutral`.
+- History entries for skills that place a real stone must be eligible for the latest placed-stone marker. Keep Chisa `liberty-purge` covered through `lastMarkedAction(history)` instead of treating only ordinary moves as markable placements.
+
+#### 4. Validation & Error Matrix
+- Handler function changes -> board shell re-renders to refresh `handlersRef.current`; the same stable handler ref is passed to point buttons, so point buttons may stay memoized and must still call the latest handler.
+- Player timer object changes while the current player color and click semantics stay the same -> `useRoomPointActions()` should keep point handler identities stable.
+- Parent room render with unchanged scoring callback -> `RoomBattleStage` should pass the same `onNeutral` handler identity into `Board`.
+- Room clock tick changes only player `time` -> `ChatBox` should stay memoized.
+- Chat content, chat-name player metadata, or floating/embedded presentation changes -> `ChatBox` must rerender.
+- Room clock tick changes only player `time` -> `RoomPeopleList` should stay memoized.
+- Player connected state, username/rank/rating, achievement display metadata, or spectator list changes -> `RoomPeopleList` must rerender.
+- Room clock tick changes only player `time` -> `OperationHint` should stay memoized.
+- Phase, turn, winner, scoring/draw request, or active-player user mapping changes -> `OperationHint` must rerender.
+- Room clock or close-countdown tick changes only player `time` or header timer text -> `ActionBar` should stay memoized, and the close countdown tick should be local to the header.
+- Room clock tick changes only player `time` while draw/counting/result request fields are unchanged -> timed request toast effects should not rerun.
+- Skill uses, pending-skill active state, scoring confirmation reference, replay step, or rendered action callback identity changes -> `ActionBar` must rerender.
+- Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
+- Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
+- Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
+- A skill history entry with `effectType: "liberty-purge"` and `placedId`/`id` after an ordinary move -> latest marker must move to the skill placement point.
+
+#### 5. Good/Base/Bad Cases
+- Good: A timer tick or parent handler recreation does not re-render all board intersections, while a new click handler stored in `handlersRef.current` is still used.
+- Good: Room clock ticks can replace player time objects without making `useRoomPointActions()` return new point handlers.
+- Good: `const handleNeutralPoint = useCallback(...)` is passed as `onNeutral={handleNeutralPoint}`.
+- Good: `ChatBox` compares `room.chat` and chat display metadata, not the full `room.players[*].time` object.
+- Good: `RoomPeopleList` compares the `roomPeople()` source fields, not full player objects.
+- Good: `OperationHint` compares the action hint inputs, not full player timer objects.
+- Good: `ActionBar` compares the action-control inputs and rendered callback identities, not full player timer objects or unused request deadlines.
+- Base: A changed point object for one intersection re-renders that point and preserves other memoized points.
+- Bad: Ignoring handler identity while the point button directly closes over stale `onPoint`, `onScoringPoint`, or `onNeutral` props.
+- Bad: Restarting disabled feedback by reading `target.offsetWidth`.
+
+#### 6. Tests Required
+- Board comparator tests must assert handler-ref content changes stay memoized and visible/capability changes re-render.
+- Board comparator tests must assert handler identity changes re-render the board shell, so the stable handler ref cannot become stale.
+- Point-action tests must assert `useRoomPointActions()` keeps handlers callback-stable and narrows player dependencies to current color instead of the whole player object.
+- Room screen source tests must assert `RoomBattleStage` passes a stable neutral-point handler into `Board`.
+- Chat tests must assert `areChatBoxPropsEqual()` ignores clock-only player time changes and rerenders on chat content, chat-name metadata, or presentation changes; embedded-chat DOM tests must keep an unsent draft while its mounted tab panel is hidden and shown again.
+- Room people tests must assert `areRoomPeopleListPropsEqual()` ignores clock-only player time changes and rerenders on member visibility metadata changes.
+- Operation hint tests must assert `areOperationHintPropsEqual()` ignores clock-only player time changes and rerenders on action-relevant room changes.
+- Action bar tests must assert `areActionBarPropsEqual()` ignores clock-only player time changes, rerenders on skill/scoring changes, and source-guards stable `RoomBattleStage` callbacks.
+- Room screen source tests must assert memoized room widgets receive stable floating-layer callbacks.
+- Room screen source tests must assert finished-room close countdown timing is local to `RoomHeader` / `RoomCloseCountdown`, not top-level `RoomScreen` state.
+- Timed request toast tests must assert `timedRoomRequestEffectKey()` is stable across clock-only player time changes and changes when request deadlines or result-review acceptance changes.
+- Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
+- Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
+- Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const MemoPointButton = memo(PointButton, () => true);
+
+function PointButton({ onPoint, point }) {
+  return <button onClick={() => onPoint(point)} />;
+}
+```
+
+This can keep a stale click closure after the parent changes game interaction behavior.
+
+Correct:
+
+```jsx
+const handlersRef = useRef({ onPoint });
+handlersRef.current = { onPoint };
+
+function PointButton({ handlersRef, point }) {
+  return <button onClick={() => handlersRef.current.onPoint(point)} />;
+}
+```
+
+The memoized button avoids handler-identity churn while still calling the latest handler.
+
+### CSS Contract Ownership
+
+When a visual contract is asserted by static CSS tests, keep one source test responsible for exact sizing values and let broader theme tests assert presence/scope instead of duplicating the same literals.
+
+Required assertion points:
+
+- Component or feature tests that read the source CSS file should own exact layout values such as `grid-template-columns`, fixed column widths, and minimum stat-panel widths.
+- Broad theme/HUD tests should assert that the relevant scoped rule, polish layer, and semantic safety rules still exist, but should avoid keeping a second stale copy of feature-specific sizing values. Bright School mobile domain tests own `mobile.css`, `mobile/home-shell.css`, `mobile/commerce-warehouse.css`, `mobile/lists-settings.css`, and `mobile/room.css` import order so sub-entry splits remain stable.
+- If a broad test must inspect a scoped rule, extract the specific selector block first and assert only the values that belong to that test's ownership boundary.
+- When changing a visual contract, update the source CSS, the owning feature test, and any broad guard that intentionally references the same selector.
+
+Wrong:
+
+```js
+expect(themesCss).toContain("grid-template-columns: 76px minmax(120px, 1fr) 94px !important");
+```
+
+This duplicates a component layout contract in a broad HUD test, so the test can drift when the feature test and source CSS move together.
+
+Correct:
+
+```js
+const plaqueBlock = cssBlockForSelector(themesCss, ".home-player-plaque.tactical-id-card");
+
+expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content) !important");
+expect(plaqueBlock).toContain('url("/assets/home/student-id-nameplate.webp")');
+```
+
+The feature-level test still owns the exact layout, while the broader guard confirms the themed selector and generated shell asset remain present.
+
+### CSS Domain Entry Ownership
+
+Large top-level CSS files should become import-only domain entries before they accumulate unrelated feature rules. The detailed layer contract lives in `css-architecture.md`; keep this file focused on test ownership and feature-specific quality rules. Current high-level ownership is: shared domain entries delegate concrete rules to matching folders under `src/styles/`; route-only entries such as `admin.css` and `room/tutorial-battle-screen.css` are imported by their lazy owner components; Bright School uses `base.css`, `gallery-polish.css`, `surface-contracts.css`, `component-repairs.css`, and `qa-guard.css`; and `mobile-adaptive.css` remains the final post-theme safety layer.
+
+Route-only domains should not stay in `src/styles.css` just because they are top-level entries. `src/styles/admin.css` is imported by lazy `src/admin/AdminConsole.jsx`, and `src/styles/room/tutorial-battle-screen.css` is imported by lazy `src/tutorial/TutorialBattleScreen.jsx`; `src/styles/cssLayerInventory.js` records these in `CSS_LAZY_ROUTE_STYLE_ENTRIES`. Keep final cross-route safety rules global only when they intentionally run after themes/HUD, such as `src/styles/mobile-adaptive/admin-fullscreen.css`.
+
+Required assertion points:
+
+- `src/styles/styleContract.test.js` owns the allowed nested style directories and the `base.css` / `admin.css` / `lobby.css` / `room.css` / `room/players-timers-skills.css` / `room/board.css` / `room-terminal.css` / `modals.css` / `modals/replay-mode-resume.css` / `modals/terminal-system.css` / `mobile-modals.css` / `commerce-settings.css` / `commerce/gacha.css` / `commerce/social-profile.css` / `commerce/shop-settings.css` / `commerce/terminal-polish.css` / `responsive.css` / `mobile-home.css` / `mobile-room.css` / `mobile-room/base-shell-dock.css` / `hud-components.css` / `hud-components/hud-hardening.css` import order.
+- `src/styles/styleContract.test.js` also owns the `mobile-adaptive.css` import order plus the nested `mobile-room-portrait.css`, `home-narrow-desktop.css`, `bright-school-overrides.css`, `bright-school-overrides/profile-house-records.css`, and `bright-school-portrait.css` import orders because these entries are the final safety layers after theme imports.
+- `src/styles/themeContract.test.js` owns the Bright School base, gallery polish, surface contract, home, home student-id-card, commerce, modals, effects, room, mobile, mobile house/profile, mobile room, component repair, and quality guard import order.
+- Feature tests that need concrete CSS, such as gacha modal coverage, should read the CSS import tree instead of asserting that rules live directly in the entry file.
+- New top-level CSS domains should start as import-only entries with an explicit directory and a style contract test update.
+- Route-only CSS entries must be removed from `src/styles.css` or shared domain entries, imported by their lazy owner component, recorded in `CSS_LAZY_ROUTE_STYLE_ENTRIES`, and covered by `src/styles/cssLayerInventory.test.js`.
+- `src/styles/styleContract.test.js` enforces the general CSS architecture guard: any CSS file containing `@import` must stay import-only, and files at or above the 6000-byte guard threshold must be either split or kept within the known-debt byte baseline recorded in the test.
+
+### UserIdentity Nameplate Background Contract
+
+#### 1. Scope / Trigger
+
+- Trigger: changing `src/shared/UserIdentity.jsx`, nameplate reward assets, `hud-components/user-identity/**`, `mobile-adaptive/user-nameplate-final.css`, or a surface that sizes equipped usernames.
+- Achievement nameplates are fixed-ratio username skins shared by home, room, leaderboard, social, profile, watch, personalization, and result surfaces.
+
+#### 2. Signatures
+
+- `UserIdentity({ user, name, className = "", compact = false, showNameplate = true })` keeps its public props stable.
+- Equipped asset payloads remain `{ id, imageUrl, name?, text? }` under `user.achievementEquipmentAssets.nameplate`; no effect-specific API field is required.
+- An equipped image nameplate renders `data-nameplate-id`, `.user-identity-nameplate-background`, an `aria-hidden` `.user-identity-nameplate-effect`, and `.user-identity-name` inside `.user-identity-name-tag`.
+
+#### 3. Contracts
+
+- Generic image nameplates use the shared `96px x 25.6px` (`3.75:1`) slot and remain static. Scene-owned `--user-nameplate-scale` scales width, height, safe padding, and font together.
+- Bespoke presentation is selected only by exact `data-nameplate-id`. Keep its shell and motion in asset-owned files under `hud-components/user-identity/`; when a later theme or responsive safety layer uses broad `!important` resets, add a last-imported exact-asset winner under `mobile-adaptive/` for only the declarations that must survive. Do not add effect branches to every consumer or add a backend field for code-owned effects.
+- The selected Sigrika, Danya, and Aemeath assets share the bounded `mobile-adaptive/user-nameplate-final.css` winner: it restores the same scaled `150px x 32px` tag geometry, visible local-effect overflow, and direct italic `800` UI-name treatment after Bright School's late important resets. Keep each character's own dark-plus-soft-glow text colors, padding, and authored raster proportions. Danya's measured Alpha height is `216px` while Sigrika and Aemeath occupy `224px`; do not stretch Danya's PNG to fake parity, because the common unclipped slot/effect contract is the intended perceived-height correction.
+- The shared italic legal-name owner must reserve `3px * --user-nameplate-scale` of paint-only inline-end space on `.user-identity-name` and cancel the same amount with a negative inline-end margin. This protects the roughly `2.3px` right ink overhang measured for both `Alice_12` and four CJK characters at the home `1.12` scale without changing font size, nameplate geometry, text-safe width, flex centering, or the existing ellipsis contract. Do not solve italic ink clipping by shrinking the username, enlarging the nameplate, or disabling overflow for legacy names.
+- Asset owners may replace base width, height, asymmetric safe padding, font size, and text color, but must continue deriving final dimensions from `--user-nameplate-scale`.
+- Background, effect, and text have stable local stacking. Effect nodes are `aria-hidden`, `pointer-events: none`, and must not affect layout.
+- Continuous motion changes only `transform` and `opacity`; the same asset-owned motion file must provide `prefers-reduced-motion` static fallback.
+- Parent surfaces align the whole `UserIdentity`. They must not stretch the nameplate to parent width or introduce per-username font scaling. Legal usernames render in full; legacy overlong names use the existing ellipsis fallback.
+- Generic nameplate PNGs remain alpha-trimmed on the shared `3.75:1` delivery canvas. Asset-owned exceptions must keep their raster ratio identical to their exact-ID slot ratio. Transparent padding may reserve safe art/effect bleed, but must be measured because it changes apparent art size. For the built-in `1125 x 240` Semantic Ignition raster, the selected open-starlight sigil subject occupies `904 x 224` pixels and leaves `110px / 111px / 8px / 8px` transparent on the left/right/top/bottom; this keeps the large four-point sigil, rune curls, star points, and painted tail complete after runtime resampling. Use `node scripts/pngTrim.mjs <input.png> [output.png]` only to find accidental waste, then uniformly scale and add the measured asset-owned safety inset before validation.
+- The built-in Semantic Ignition asset is Sigrika-specific hand-painted rune art, not a generic energy badge. Preserve the open four-point starlight sigil, deep-plum magical-ink username carrier, warm-gold rune curls, sparse mint-cyan star points, and soft painterly boundary; prohibit Go boards/stones/grids, mechanical armor, hard esports framing, a letter/rank emblem, a character portrait, and baked text. Its CSS keeps a clearly visible alpha-following gold-violet rim continuously lit. The signature motion starts with an opacity-only flare at the left sigil, sends three separated sub-`2px` gold/mint filaments with transparent gaps horizontally through the username carrier, moves another three thin traces along the upper and lower rune contours, and throws two fine directional streaks beyond the painted right tail. No moving element may paint a filled center or read as one solid object crossing the plaque; the tail closure must read as lines leaving the plaque rather than a local light source. Sparse stars are secondary accents and use only small translations plus opacity. Reduced motion freezes the rim, open filaments, contours, sigil, and tail lines into a readable static state. Do not introduce an isolated pulsing orb, an oval or radial tail blob, a scale-based halo, a solid polygonal carrier, a continuously rotating ring, a full-width glossy band, or full-surface screen haze.
+- The built-in Danya nameplate is the user-selected off-center pearlescent dream bubble, not a portal, dark void core, memory-album frame, or full-plaque soap-film capsule. Preserve its softly compressed asymmetric left bubble, pale cobalt/lavender/rose refraction, quiet blueberry-violet username carrier, and short rose-pink folded closure. Its `1125 x 240` raster occupies Alpha bounds `x=56..1068, y=12..227`, maps to a `150px x 32px` exact-ID slot, and keeps `40px / 25px` runtime username padding. The owner provides a continuously visible lavender-pink Alpha rim; local motion may drift the pearl sheen, internal refraction, short tail fold, and sparse dream glints using only translation and opacity. If in-game feedback reports that this effect is too weak, strengthen the existing background drop shadows and raise both the minimum and peak opacity of these four illustration-bound layers; do not compensate with a new sweep, filled orb, or unrelated light source. Do not introduce a black center, eye/portal, rupture, slime, tentacle, long branching tail, scale-based orb pulse, rotating ring, or full-width glossy sweep. Reduced motion freezes all four local layers into a readable static state.
+- The built-in Aemeath nameplate is the user-selected v2 A paper-flight beacon, not the retired stage-fan, radial snowfluff face, rank disc, or hard esports shell. Preserve its oversized folded paper airplane at the left, deep-teal quiet username carrier, hand-painted cyan/pink perimeter currents, sparse square data glints, and short integrated right curl. Its `1125 x 240` raster occupies Alpha bounds `x=40..979, y=8..231` and maps to a `150px x 32px` exact-ID slot. The final in-game student-ID correction keeps the `62px` text-safe budget but rebalances it to `34px / 28px`, moving the live username `11px * --user-nameplate-scale` left relative to the previous iteration so it sits in the dark carrier. Whole-plaque placement is a separate concern: only `.home-player-plaque` moves this asset's `.user-identity-name-tag` `12px * --user-nameplate-scale` right via the individual `translate` property. Never use one global tag translation to solve both the internal text alignment and one consumer's placement; it moves the background and text together and leaves their relative error unchanged. The owner uses ice-white italic UI text with the shared readable weight/spacing pattern and a character-specific deep-teal shadow plus soft cyan glow over the dark carrier; it keeps a continuously visible alpha-following cyan/pink rim. Local motion sends three separated sub-`2px` paper-wake traces from the left, echoes the paper-plane folds without creating a filled flare, moves thin cyan/pink traces along the upper and lower painted perimeter, emits paired fine lines beyond the right curl, and twinkles only a few square pixels; continuous keyframes use translation and opacity only. Do not reintroduce a radial core, scale pulse, rotating ring, full-width glossy sweep, dense scanner texture, detached endpoint badge, or solid light object crossing the username. Reduced motion freezes every local layer into a readable static state.
+
+#### 4. Validation & Error Matrix
+
+- Missing `imageUrl` or `showNameplate={false}` -> render no nameplate layers or asset-ID hook.
+- Image asset without a bespoke owner -> render the generic static `96px x 25.6px` fallback.
+- Bespoke asset on phone/compact/room surfaces -> inherit the existing scene scale; do not add a parallel breakpoint-specific size system.
+- Consumer-specific plaque offset -> scope the whole-tag translation to that consumer while keeping asset padding responsible only for text-to-art alignment.
+- Legacy overlong username -> ellipsis inside the text safe area; never overlap the embedded core, independent badge, or adjacent stats.
+- Legal 8-half-width or four-CJK username -> the inline-end paint reserve exceeds the measured italic ink overhang while its equal negative margin keeps layout width and centering unchanged.
+- Reduced-motion preference -> no running keyframe animation; retain a readable static highlight.
+
+#### 5. Good / Base / Bad Cases
+
+- Good: an exact asset-ID selector overrides base geometry and owns its effect while every consumer keeps rendering the same `UserIdentity` component.
+- Base: an admin-created image-only nameplate needs no code and uses the static generic background layer.
+- Bad: changing the shared base size to fit one decorated asset, branching on the asset ID in each page, or baking usernames into the raster.
+- Bad: relying on overflow outside the fixed slot for essential shell or text readability. Local `overflow: visible` is allowed only for pointer-transparent glow/sparkle bleed; the raster shell and username safe area must remain complete inside the fixed slot.
+
+#### 6. Tests Required
+
+- `src/shared/UserIdentity.test.jsx` asserts asset ID, background/effect/text layers, `aria-hidden`, ordinary asset fallback, title + independent badge coexistence, and no username-length font variable.
+- `src/styles/hudComponents.test.js` asserts generic `96px x 25.6px`, bespoke geometry, pointer transparency, keyframe durations, and reduced-motion coverage.
+- `src/home/HomeScreen.test.jsx` asserts the equipped built-in asset hook plus checked-in PNG dimensions, transparent corners, and measured four-edge alpha safety margins.
+- `src/styles/styleContract.test.js` and `src/styles/cssLayerInventory.test.js` own import order, file-size boundaries, motion registration, and measured debt baselines.
+- Browser QA must load the full active theme cascade, not an isolated shared-HUD stylesheet. It covers legal 8-half-width/CJK names, a legacy overlong name, title + badge coexistence, ordinary fallback, compact scaling, final computed color/shadow/overflow winners, adjacent stats bounds, and no horizontal overflow at desktop, narrow desktop, and portrait phone widths.
+- For italic clipping checks, compare `CanvasRenderingContext2D.measureText().actualBoundingBoxRight - width` against the computed inline-end paint reserve and confirm `clientWidth === scrollWidth` for legal names. DOM `getBoundingClientRect()` alone reports the advance box and cannot reveal the italic ink overhang.
+- Home placement fixes must also render the real `PlayerPlaque` DOM/grid and assert or record the tag, username, and adjacent-stat rectangles; an isolated `UserIdentity` preview cannot prove the student-ID placement.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+.user-identity.has-nameplate {
+  --user-nameplate-base-width: 150px;
+}
+```
+
+This changes every nameplate to accommodate one asset.
+
+Correct:
+
+```css
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] {
+  --user-nameplate-base-width: 150px;
+  --user-nameplate-base-height: 32px;
+  --user-nameplate-padding-left: calc(39px * var(--user-nameplate-scale));
+}
+```
+
+### Character Nameplate Production Skill Contract
+
+#### 1. Scope / Trigger
+
+- Trigger: creating or refining a character-specific achievement username nameplate, its raster, exact asset-ID owner, motion, preview evidence, or reusable production workflow.
+- The repository-local workflow lives at `.agents/skills/create-character-nameplate/`; keep it aligned with the `UserIdentity Nameplate Background Contract` above whenever the runtime structure or CSS ownership changes.
+
+#### 2. Signatures
+
+- Skill entry: `.agents/skills/create-character-nameplate/SKILL.md` with `name: create-character-nameplate`.
+- Asset validation: `node .agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs <asset.png> [--width N --height N --ratio N --min-left N --min-right N --min-top N --min-bottom N --alpha-threshold N --safe-left N --safe-right N --min-safe-ratio N --min-visible-height-ratio N --json <report>]`.
+- Preview preparation: `node .agents/skills/create-character-nameplate/scripts/prepare_nameplate_preview.mjs --task-dir <active-task> --asset-id <id> --image-url <url> [--style <repo-css-path>]...`.
+- Preview capture: `node .agents/skills/create-character-nameplate/scripts/capture_nameplate_preview.mjs --preview-dir <task-preview> [--output-dir <task-output>] [--port N]`.
+- Validator reports `{ ok, image, alphaBounds, margins, safeArea, cornersTransparent, alphaThreshold, errors }`; each error exposes `{ code, message, actual, expected }`.
+
+#### 3. Contracts
+
+- The Skill supports `new` and `refine` modes. New/major-redesign work must produce four structurally different, character-researched concepts and stop at a mandatory human selection gate before any production asset overwrite or CSS integration. Refine work may skip concepts only when the user explicitly locks the artwork and requests a technical repair.
+- Character research is text-first. Before the visual-language card or concept generation, inspect the supplied dossier body and relevant tabs, accordions, anchors, pagination, and linked text sections; record personality, biography, goals/values/conflicts, relationships, dialogue/voice, plot development, abilities, meaningful objects/places/hobbies/foods, and achievement relevance as nine separate, unmerged rows marked `found`, `absent`, or `inaccessible` with source locators.
+- Images are secondary corroboration and cannot establish the textual dossier alone. If character-defining text remains inaccessible after browser/DOM navigation, report the missing sections and stop rather than generating concepts from images or guesses.
+- Character research must produce an evidence-based visual-language card with representative motifs, forbidden/misleading motifs, palette/material, motion verbs, canvas/runtime geometry, and username safe area. Every primary anchor, supporting motif, palette/material choice, and motion verb must trace through `textual evidence -> interpretation -> visual decision`. Do not reuse another character's motif or generic neon/sparkle vocabulary as the default.
+- Reward seed/data wiring is opt-in only when the request explicitly includes a new achievement or reward. Visual requests must not silently change earning conditions or asset metadata.
+- Final assets are validated by `.agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs`, which reuses the shared RGBA PNG decoder and reports exact dimensions/ratio, four-corner transparency, non-zero Alpha bounds, four-edge safety margins, visible-height ratio, and declared username-safe-zone geometry as JSON with a non-zero failure exit.
+- Motion keeps continuously visible primary illumination, illustration-bound local narrative motion, and sparse secondary accents. Continuous keyframes change only `transform` and `opacity`; static filters/gradients own paint/light treatment, and reduced motion freezes a readable static state.
+- `.agents/skills/create-character-nameplate/scripts/prepare_nameplate_preview.mjs` may generate a Vite harness only under the active `.trellis/tasks/` directory. The harness imports the real `UserIdentity` and global CSS but never registers a production `AppRoutes` entry.
+- `.agents/skills/create-character-nameplate/scripts/capture_nameplate_preview.mjs` captures `1440x900`, `1024x768`, and `375x812` in normal and reduced-motion contexts. It may use Playwright Chromium or an installed Chrome/Edge fallback; task-local preview evidence does not replace final checks in real app consumers.
+- The workflow must snapshot and preserve unrelated dirty paths before work and staging. Unselected concepts, preview harnesses/screenshots, logs, and temporary tooling stay task artifacts rather than production assets.
+
+#### 4. Validation & Error Matrix
+
+- Invalid/non-RGBA/interlaced PNG -> `png_decode`, non-zero exit.
+- Delivered dimensions or ratio differ from the declared owner -> `width`, `height`, or `ratio`, non-zero exit.
+- No pixel exceeds the Alpha threshold -> `empty_alpha`, non-zero exit.
+- Any corner exceeds the Alpha threshold -> `corners`, non-zero exit.
+- Non-zero Alpha approaches an edge more closely than its declared minimum -> `margin_<side>`, non-zero exit.
+- Only one safe-area edge is supplied, bounds are reversed/outside the canvas, or safe width is too small -> `safe_area_pair`, `safe_area_bounds`, or `safe_area_ratio`, non-zero exit.
+- Preview or output path escapes `.trellis/tasks/` -> reject before copying, deleting, starting Vite, or writing screenshots.
+- Playwright Chromium is absent -> try installed Chrome/Edge; no usable Chromium browser -> fail with a direct diagnostic instead of downloading silently.
+- Existing art is locked in `refine` mode -> diagnose/repair without four concepts; visual direction changes -> return to the four-concept human gate.
+- Any required dossier category is unrecorded -> do not write the visual-language card or generate concepts.
+- Character-defining dossier sections are inaccessible -> report exact missing sections and request text; do not substitute portrait/image analysis.
+
+#### 5. Good / Base / Bad Cases
+
+- Good: a new role gets an evidence-backed visual-language card, four compositionally different concepts, an explicit user selection, measured RGBA delivery, character-owned motion, task-local preview evidence, real-consumer QA, and isolated staging.
+- Good: dossier facts are paraphrased with source locators, missing categories are explicit, and every visual/motion decision can be traced back to text or user direction.
+- Good: a locked existing asset with clipped art is re-canvased after Alpha-bound diagnosis instead of adding more CSS overflow.
+- Base: an image-only nameplate without a bespoke owner continues using the generic static fallback and does not need this motion workflow.
+- Bad: copying Sigrika's starlight-sigil/rune-ink vocabulary into another character, changing only colors across four concepts, using blink accents as the only light, or writing a production asset before the user selects a concept.
+- Bad: inspecting only character images, treating captions/search snippets as the full dossier, or inventing personality, story, relationships, dialogue, or meaningful objects from a portrait.
+- Bad: registering the preview page in `AppRoutes`, silently downloading a browser, weakening margin thresholds to pass a clipped raster, or modifying reward seeds from a visual-only request.
+
+#### 6. Tests Required
+
+- `scripts/characterNameplateSkill.test.js` owns Skill metadata, the mandatory text-first evidence gate and category/status/traceability vocabulary, the mandatory human gate, `new`/`refine` and data boundaries, character-neutral templates, validator pass/fail geometry, task-local preview generation, production-route isolation, fixed capture viewports, and reduced-motion evidence.
+- Run the official `skill-creator` `quick_validate.py` against `.agents/skills/create-character-nameplate/` after changing Skill metadata or structure.
+- Forward-test material workflow changes with a planning-only new-character request that must stop at the four-concept gate without modifying production files.
+- Run the focused Skill test, the nameplate component/CSS/asset tests affected by an actual role asset, and `npm run check` before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```powershell
+# Adds a production tool route and skips the human gate.
+Copy-Item concept.png public/assets/achievements/new-role-nameplate.png
+```
+
+Correct:
+
+```powershell
+# Keep four concepts in the active task, wait for selection, then validate the chosen delivery.
+node .agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs `
+  public/assets/achievements/new-role-nameplate.png `
+  --width 1125 --height 240 --min-left 40 --min-right 40 --min-top 8 --min-bottom 8
+```
+
+### Web Audio Pause/Resume Contracts
+
+When changing background music, character BGM previews, or shared playback schedules, preserve user-visible playback position across pause/resume.
+
+Required assertion points:
+
+- `src/shared/audioScheduling.js` owns offset-aware schedule calculation for single-loop and intro-loop tracks; callers should pass `offset` into `createPlaybackSchedule()` instead of duplicating modulo math.
+- Character BGM preview pause should update its state offset from `context.currentTime - startedAt`, keep that offset through the next play click, and reset only when the selected track id changes.
+- Background music paused by a preview should stop current sources, save offset, and reschedule from that offset when the pause request count returns to zero. Do not rely only on `AudioContext.suspend()` if the visible contract is "continue from where it paused".
+- `startedAt` should be the scheduled audio start time, not the context time before `BGM_START_DELAY_SECONDS`, so short pause/resume cycles do not accumulate artificial delay.
+- Volume changes may adjust gain ramps, but must not change playback identity or reset offsets.
+
+Wrong:
+
+```js
+context.suspend();
+scheduleBackgroundTrack({ state, track });
+```
+
+This can resume by creating a fresh source at the beginning of the track.
+
+Correct:
+
+```js
+state.offset += Math.max(0, context.currentTime - state.startedAt);
+stopBackgroundPlayers(state);
+scheduleBackgroundTrack({ state, track, offset: state.offset });
+```
+
+Before finishing audio pause/resume changes, run:
+
+```bash
+npm test -- src/shared/audioScheduling.test.js src/audio/CharacterMusicPreview.test.jsx src/audio/playback.test.jsx
+```
+
+### Native number input spinner contract
+
+When using numeric form controls, keep the markup as `type="number"` so browser validation, min/max constraints, and mobile numeric keyboards still work, but hide the native `+1/-1` spinner UI in shared base CSS.
+
+Required assertion points:
+
+- `src/styles/base.css` should own the global spinner reset, not per-component CSS.
+- Keep `input[type="number"] { appearance: textfield; -moz-appearance: textfield; }` for standard/Firefox behavior.
+- Keep both `input[type="number"]::-webkit-outer-spin-button` and `input[type="number"]::-webkit-inner-spin-button` with `-webkit-appearance: none` for Chromium/WebKit.
+- Static coverage belongs in `src/styles/styleContract.test.js` so style entry refactors cannot drop the contract.
+
+Wrong:
+
+```jsx
+<input type="text" inputMode="numeric" value={quantity} />
+```
+
+This loses native numeric validation and min/max semantics just to remove the spinner.
+
+Correct:
+
+```css
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+```
+
+### Mobile battle layout contracts
+
+When changing the mobile room or battle layout, update static layout tests in `src/room/RoomScreen.test.js` to lock the CSS contracts that keep the board playable.
+
+Required assertion points:
+
+- The mobile room shell stays fixed to `100dvh` with `overflow: hidden`; ordinary action/member panels must fit without page scrolling, and the board remains derived from viewport units.
+- Player strips use a bounded custom property such as `--mobile-room-player-strip-height` and grid rows reference that property, so opponent/self cards cannot grow into the board.
+- Portrait player strips should keep the avatar column fixed and large enough for readable art, give identity/capture metadata the flexible middle column, and keep the timer/skill column bounded with visible row gaps; shared mobile CSS, `mobile-adaptive.css`, and Bright School overrides must use the same player-info column contract and Bright School cards must remain flat without heavy card shadows. Mobile player metadata should keep a legal 8-half-width username on one line at the normal scene font size, with rank/rating tags on the right; the username and equipped title/badge/nameplate must never ellipsize, marquee, horizontally scroll, or shrink. Representative legacy overlong names may wrap with `overflow-wrap: anywhere`, and secondary tags must yield before the username is truncated. Rank/rating pills must vertically center their text with selector-specific CSS. The small color dot may be hidden because portrait color styling already carries side identity, and Bright School black portrait frames must use `#2b2b2b`.
+- Normal room timers keep the shared `TimeBar` layout contract. Do not add tutorial-specific centering overrides to `.digital-timer`, `.timer-digits`, or `.timer-track`; shared room CSS, mobile room CSS, and Bright School overrides should preserve the existing grid alignment, baseline digit alignment, and track sizing for both normal games and tutorial games.
+- Mobile replay/spectator controls use a seven-slot row in both portrait and landscape: first, minus five, previous, move count, next, plus five, and last. The move-count slot is icon-free, uses the same row height as the buttons, and centers its single-line semantic label horizontally and vertically. Record replay uses `current/max`; live spectator mode uses `实时 · N手`; spectator history uses `回看 current/max`. The last icon keeps `title` / `aria-label` text such as `回到实时` without rendering that copy visibly.
+- Player info keeps the portrait/result badge column present across both rows (`"portrait meta time"` / `"portrait captures skill"`) and hides ordinary overflow inside the strip instead of spilling over the board. The outer card is passive; when viewpoint switching is available, only the portrait is a real `button` with `aria-pressed`, and interactive stat explanations are real buttons independent of viewpoint switching.
+- The board stage keeps `aspect-ratio: 1`, is centered in the board viewport, and sizes from `--mobile-room-board-size`.
+- Board stone visual jitter is mode-aware. Spark mode stones may use up to 1px deterministic offset, but standard 19-line stones must use a maximum 0.5px offset on both desktop and mobile; the logic should live in the board offset helper so all responsive layouts share the same values.
+- The bottom dock keeps compact natural-height action/member content; operation hints inside `#mobile-room-panel-actions` must remain bounded so action controls stay reachable on 375px/393px portrait screens.
+- Ordinary live rooms, spectator views, and record replays must not render a chat button, chat tab, chat panel, chat input, or client `chat:send` wiring. Backend chat events and stored room chat data may remain for compatibility, but `RoomScreen` must not expose a user-facing path to send or read them.
+- Battle tutorials may opt into `showTutorialLog` as a separate readonly popup-style `剧情记录` surface because scripted NPC/player replies are teaching history rather than public chat. On mobile, its entry remains in the existing dock tab row while the content is portaled out of the dock and opens upward from the trigger inside viewport bounds; the content must not become a compressed dock panel. The tutorial record never renders a send input, uses compact message metadata, and is the only production `RoomBattleStage` path that composes `ChatBox`.
+- On desktop, the player operation hint belongs in the right room column directly below the self player panel, replacing the former floating chat-control location. Do not leave a duplicate hint under the opponent/member column.
+- `roomViewStatusFor()` remains the single mapping for replay control mode, following-live state, and active black/white viewpoint. Do not render its mode/viewpoint label in `RoomHeader`; viewpoint switching is already owned by the portrait buttons and the replay bar already exposes live/history progress.
+- Mobile leaderboard rows should be compact cards rather than cramped tables. Use rank/avatar/player/score lanes, left-align the username/rank block, show rating as the primary right-side value, and use a right metrics lane with explicit win/loss/draw chips above a small win-rate stat. Give the metrics lane its own `record` and `rate` grid rows instead of stacking both elements in the same grid area, and make the pinned current-user row follow the same rhythm instead of becoming a large separate panel. When the mobile heading is hidden, the table grid must use `grid-template-rows: minmax(0, 1fr) auto` so the pinned row is auto-height; do not keep the desktop `minmax(220px, 1fr)` row because it creates an empty "我的排名" panel.
+- Mobile replay lists are ordinary card flows, not leaderboard tables with a pinned current-user footer. When the mobile replay heading is hidden, the replay table must use `grid-auto-rows: auto`, `align-content: start`, and no explicit two-track `grid-template-rows`, so the first replay cards cannot overlap.
+- Mobile menu buttons with short Chinese labels should keep icon and text on one line. Use a fixed icon column plus a `max-content` label column, and pair `white-space: nowrap` with `word-break: keep-all`; do not use a compressible `minmax(0, 1fr)` text column for two-character labels such as 留言, 设置, or 退出.
+- Mobile modal controls with short Chinese labels, including settings tabs and match-mode status chips, should stay on one line with `white-space: nowrap`, `word-break: keep-all`, and enough fixed/minimum inline space for the full label. For match mode rules, render semantic line wrappers instead of relying on arbitrary text wrapping: line one is board size plus time, line two is komi/rules, and tests should assert the first line does not end with a separator dot. Match-mode option buttons must keep the status/count chip pinned to the far right edge of the button, not merely right-align the text inside the chip; use a stretched two-column grid plus `justify-self: end` and `margin-left: auto` on the chip.
+- Mobile nested record dialogs, including the house character-record dialog, must be clamped to the viewport and scroll internally. Character record rows should use compact avatar/name plus total/win/loss/draw/win-rate stat columns; each stat column must stay on one line with `white-space: nowrap`, `word-break: keep-all`, tabular numbers, and right-aligned cell content so repeated rows read as an aligned table without vertical dividers.
+- Mobile player-info explanations should support touch as well as desktop hover. Removal, overclock, and skill labels should open a tap-position tooltip on mobile/coarse pointers; the tooltip must use viewport-contained fixed width with normal wrapping and emergency word breaks, clamp within the viewport, flip below taps near the top edge, and cap height with internal scrolling so explanation text cannot overflow off-screen.
+- Theme overrides, especially Bright School mobile rules with `!important`, must mirror the shared mobile room contract rather than redefining a conflicting layout.
+- Components that intentionally opt out of paper/card chrome need explicit owner selectors in the owning domain or final safety layer. Do not add broad Bright School substring guards; target a real class such as `.asset-preload-panel`, repeat explicit classes only when needed to beat earlier `!important` rules, and add a `styleContract.test.js` assertion so later theme cleanup cannot reintroduce a solid middle panel background.
+- Battle-room tags and buttons should stay visually flat on mobile. Header tags, timer chips, capture chips, player labels, menu buttons, dock tabs, action buttons, replay buttons, and chat controls should use border-only treatment without `box-shadow`, `filter: drop-shadow(...)`, or `text-shadow`. When a mobile room control is flat, selected/pressed feedback must not use translate/scale offsets; dock tabs such as `.mobile-tab-button` should change background/border color only so the tab bar does not jitter without a shadow model. Bright School control-shadow cleanup must use selectors specific enough to beat older `.app-shell... .captures span` / `.skill-chip` `!important` rules; a low-specificity `:where(...)` reset alone is not sufficient. Do not use a generic room `button` reset that catches `.point`; board point buttons and stone/current-move visuals are gameplay affordances and must stay separately controlled by board styles.
+- Board point buttons must explicitly opt out of ordinary button chrome in both shared board CSS and Bright School board guards: keep `appearance: none`, transparent background/background-image, no border/shadow, `min-width/min-height: 0`, and `touch-action: none`. Otherwise 13x13 button surfaces can cover the SVG grid and make the board appear as a blank white square.
+- Board grid SVGs also need dedicated survival rules. Keep `.board-lines` as an absolute `display: block` layer with `width/height: 100%`, `max-width/max-height: none`, visible stroke/opacity, and Bright School guard overrides so broad `svg { height: auto; max-width: 100%; }` media resets cannot collapse the grid while DOM effects such as row slash remain visible.
+- DOM board effect layers must explicitly opt out of ordinary surface chrome through board-owned selectors. Keep `.board-row-effects` transparent, borderless, shadowless, and overflow-visible, and keep `.board-row-slash` responsible for only the slash artwork so paper panels cannot cover the grid and stones. If the effect uses `::before`/`::after` for highlights or cuts, restore those pseudo-elements with the same scoped specificity in a board or Bright School board guard file.
+- Phase-aware `decision-bar` controls are not the same layout as the normal action grid. Mobile dead-stone confirmation must keep a compact copy column and a two-button `decision-actions` grid; shared mobile CSS, `mobile-adaptive.css`, and Bright School mobile overrides must all preserve this special layout so confirm/reset buttons do not stack awkwardly inside 375px/393px portrait docks.
+- Scoring board marks carry semantic color and shape separately. `territory-mark.black/white` draws owner-colored crosses for black/white empty territory, while `dead-mark.black/white` draws owner-colored circles for white/black dead stones; dead-stone marks must not inherit the territory cross pseudo-elements.
+
+Wrong:
+
+```css
+.mobile-room-screen .mobile-room-viewport {
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+```
+
+This lets long player strips or action hints steal board space unpredictably.
+
+Correct:
+
+```css
+.mobile-room-screen {
+  --mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px);
+  --mobile-room-dock-panel-height: clamp(82px, 16dvh, 132px);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mobile-room-screen .mobile-room-viewport {
+  grid-template-rows:
+    minmax(0, var(--mobile-room-player-strip-height))
+    minmax(0, 1fr)
+    minmax(0, var(--mobile-room-player-strip-height))
+    auto;
+}
+
+.mobile-room-screen .board-stage {
+  width: var(--mobile-room-board-size);
+  aspect-ratio: 1;
+}
+
+```
+
+Static room layout tests must assert the absence of ordinary chat composition and `chat:send` client wiring, the readonly tutorial-record opt-in, desktop hint placement, compact portrait/landscape dock ceilings, and fixed `100dvh` overflow ownership in shared, Bright School, and final mobile safety owners.
+
+Before finishing mobile battle UI work, run:
+
+```bash
+npm test -- src/room/RoomScreen.test.js src/room/ActionBar.test.js
+```
+
+For broader confidence after shared CSS changes, also run `npm test` and `npm run build`.
+
+### Mobile room root-back contracts
+
+#### 1. Scope / Trigger
+- Trigger: changing `useRootBackExitGuard`, App/AppRoutes room routing, `RoomScreen` exit confirmation, replay exit, or spectator leave behavior.
+
+#### 2. Signatures
+- `App` owns the monotonic `roomBackRequestId` and increments it when root back occurs while `view === "room"` and a room snapshot is loaded.
+- `AppRoutes` forwards that value as `RoomScreen.mobileBackRequestId`.
+- `RoomScreen.requestExitConfirm()` remains the single owner for both the visible leave control and forwarded mobile root-back requests.
+
+#### 3. Contracts
+- A functional top overlay consumes mobile back before the room or app root handler.
+- Replay and spectator room views call the existing `onBack` path immediately; their navigation plan clears/leaves the room as already defined by `planRoomBackNavigation()`.
+- An unfinished player game opens the existing “是否认输并退出房间？” confirmation; confirmation sends `resign` and then runs `onBack`, while cancellation keeps the room mounted.
+- Login, preload, home, and admin root back continue to show the application exit confirmation.
+- Do not duplicate role/phase/replay branching in `App`; forward an intent to the room owner instead.
+
+#### 4. Validation & Error Matrix
+- Room view with no restored room snapshot -> keep the app-level exit guard behavior until recovery completes.
+- Replay room -> one back request returns home without a resign confirmation.
+- Live spectator -> one back request leaves the watched room and returns home.
+- Active player before `finished` -> show resign-and-exit confirmation without navigating immediately.
+- Finished player review -> return home directly through the existing room exit path.
+
+#### 5. Good/Base/Bad Cases
+- Good: App increments a request id and `RoomScreen` responds only when the id changes.
+- Base: clicking the room leave button still calls the same `requestExitConfirm()` callback.
+- Bad: root back in every view calls `setShowExitConfirm(true)`, because this replaces room semantics with “退出游戏”.
+- Bad: App reimplements `role === "player"` and phase checks separately from `RoomScreen`.
+
+#### 6. Tests Required
+- `src/app/modalDismissal.test.js` asserts room root back increments and forwards the request id while non-room views retain the app exit modal.
+- `src/room/RoomScreen.test.js` asserts request-id changes invoke `requestExitConfirm` and keep the resign confirmation copy.
+- `src/app/roomNavigation.test.js` covers replay, spectator, finished review, and active-player navigation plans.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+useRootBackExitGuard({ onRequestExit: () => setShowExitConfirm(true) });
+```
+
+Correct:
+
+```jsx
+useRootBackExitGuard({ onRequestExit: requestRootBack });
+// requestRootBack increments roomBackRequestId for a loaded room;
+// RoomScreen invokes its existing requestExitConfirm when that id changes.
+```
+
+### Room control layout contracts
+
+When changing desktop room headers, replay bars, or player side panels, update static layout tests in `src/room/RoomScreen.test.js` to lock shared room UI contracts.
+
+Required assertion points:
+
+- Desktop room header controls should use a grid or equivalent right-aligned layout so message/settings/move/coordinate buttons stay grouped against the room-exit action instead of drifting toward the center.
+- Room exit actions should use the shared light-blue treatment across desktop and mobile; theme layers that reset button backgrounds must mirror that treatment.
+- Do not duplicate room exit actions beside desktop chat when the header or replay/action bar already provides an exit path.
+- Replay bars in record and spectator modes share the same seven controls: first, minus five, previous, centered icon-free move count, next, plus five, and last. Five-move controls must clamp to `0..replayMax` and disable at the corresponding endpoint; test both modes in `src/room/ActionBar.test.js`.
+- The last replay control remains a pure icon button. Spectator history uses `title="回到实时"` and `aria-label="回到实时"`, but must not add visible copy that changes the grid width.
+- `RoomHeader` must not render replay/live mode or viewpoint subtitle copy. Keep the room code, participants, move count, close countdown, utility controls, and exit action unchanged.
+- Desktop room floating panels, including chat popovers, skill detail panels, hover/click stat tooltips, and room member action popovers, must use the shared `--room-floating-z` contract instead of fixed cross-surface z-index values. Opening, hovering, focusing, or clicking one of these panels should bring that surface to the front.
+- `ROOM_FLOATING_LAYER_BASE_Z` must equal the highest ordinary room fallback (`140`), and only the latest interacted room surface receives `ROOM_FLOATING_LAYER_BASE_Z + 1` (`141`). Replacing the active-layer map instead of incrementing an unbounded counter makes the first promotion greater than every untouched chat/skill/member fallback and keeps every later promotion below the shared modal-backdrop layer (`160`). A lower base is invalid because untouched surfaces retain their larger CSS fallback; an unbounded counter is invalid because repeated interactions can eventually climb above modal backdrops.
+- Mobile room floating panels, including the folded room menu, chat widget, chat popover, and any dock that contains an open chat popover, must mirror the `--room-floating-z` contract in base CSS, Bright School overrides, and the final `mobile-adaptive.css` safety layer. Modal-backdrop suppressors may lower those room controls while a real modal is open, but ordinary room panels must not cover the most recently opened floating surface.
+- Mobile home folded menu surfaces use `--home-floating-z` on `.home-top-strip`, `.home-mobile-menu`, and `.home-mobile-menu-panel` so the menu stays above the home main panel in both base and Bright School portrait rules.
+- Shared modal backdrops must stack above room `--room-floating-z` surfaces, including the member popover fallback of `140`, so request and confirmation modals dim skill chips, chat controls, and member popovers together.
+- Timed room request toasts for draw, counting, and result-confirmation flows must render through a `document.body` portal in browser environments and keep a non-document fallback for static rendering tests. Do not leave these fixed-position request toasts as children of `.mobile-room-screen`, because mobile board sizing uses viewport-derived grid constraints and the extra child can reintroduce visible board shifts.
+- Disconnected room players should use a portrait-background state such as `.disconnected-portrait`, not an overlaid text badge. Keep the cue on the portrait wrapper so desktop and mobile player strips stay the same size and the board/action layout is not affected by connection-state copy.
+- Mobile room portrait strips must not show character-chain badges. Duplicate-chain data can stay in the user payload, but `CharacterChainBadge` should render nothing unless the product explicitly re-enables the badge.
+- Keep player cards and skill wrappers overflow-visible so dynamically raised skill panels can escape the side panel without clipping.
+- Room member action popovers must keep their fixed-position anchor variables and use `--room-floating-z` in both base CSS and Bright School theme overrides. Render member actions and their follow-up profile/confirmation overlays through a portal into the nearest `.app-shell` (with a `document.body` fallback), so mobile dock scrolling and `overflow: hidden` cannot clip them; click-away logic must treat both the member list and the portaled action surface as inside targets.
+- `src/room/RoomPeopleList.dom.test.jsx` must render the list inside a clipped mobile dock, open a member row, assert the action surface belongs to `.app-shell` rather than the dock, keep it open for pointer events inside the portal, and close it for an outside pointer event.
+- Capture/removal/overclock chips should share stable heights so skill-only counters do not look shorter or taller than captures.
+- Hover/focus optimizations must preserve the visible transform/filter timing. If a home or utility entry already animates `transform`, prefer promoting that existing surface with `will-change: transform` and keep reduced-motion rules beside the owning selector instead of replacing the motion with a different effect.
+
+### Modal and Tab Visual State Contracts
+
+When adding or restyling modal tabs, including game-mode tabs in resume, leaderboard, replay, or watch-list surfaces, keep selected state visually explicit in both base CSS and the active theme override.
+
+Required assertion points:
+
+- Tab buttons with `.active`, `aria-selected="true"`, or equivalent selected state must have a distinct background color, not only a border or text-color change.
+- Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
+- Personalization equipment buttons have two different visual states: `.equipped` is the saved, currently effective asset and should use the same pink selected background as achievement/resume tabs; `.trying` is a draft try-on state that has not been saved and should use a light green background. If the draft matches the saved asset, show the saved `.equipped` treatment rather than green.
+- Mobile modal fixes that must survive Bright School and shared responsive rules should also be mirrored in the final `mobile-adaptive.css` safety layer, because it is imported after theme files.
+- Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
+- Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.
+- Home image entries should not expose rules or matchmaking status through hover/focus text popups. Keep those details in click-open modals or mode pickers so desktop hover and mobile touch behavior stay consistent.
+- The watch-list mode-tab wrapper is layout-only: `.watch-list-modal .mode-tabs` must remain transparent and borderless. Each child button owns its paper/selected surface, and must explicitly center its label and count with `align-items: center` and `justify-content: center`.
+- Leaderboard emphasis belongs to the row, not the rank-number capsule. Bright School desktop, component-repair, and final mobile winners must keep rank-position backgrounds transparent for ordinary, top-three, current-user, and pinned-current rows while preserving the existing row artwork or current-user fill.
+- Focused static tests should assert these owner declarations. Browser QA should also verify computed transparent rank-number backgrounds and preserved row-level emphasis at desktop and portrait-mobile widths so a late `!important` theme rule cannot silently restore the capsule fill.
+
+```css
+.watch-list-modal .mode-tabs {
+  border: 0;
+  background: transparent;
+}
+
+.watch-list-modal .mode-tabs button {
+  align-items: center;
+  justify-content: center;
+}
+
+.leaderboard-table .current-user .rank-position,
+.leaderboard-mobile-card.current-user .rank-position {
+  background: transparent !important;
+}
+```
+
+### Scenario: Information-Center Editorial Reader
+
+#### 1. Scope / Trigger
+- Trigger: changes to `InformationCenterLayout`, `MailboxModal`, `AnnouncementModal`, `MarkdownLiteContent`, or their mailbox/announcement/mobile CSS owners.
+
+#### 2. Signatures
+- Shared prose hook: `.information-center-prose`.
+- Safe authored blocks: paragraphs and line breaks, `-`/`*` lists, numeric lists, `##`/`###` headings, `>` quotes, `---`/`***` dividers, `**bold**`, and http(s) links.
+
+#### 3. Contracts
+- The shared window header renders only its title plus close/back controls; mailbox and announcement must not add an English/count subtitle under the title.
+- Mail detail order is title, sender/time metadata, independently scrolling prose, then an optional real-attachment shelf. Text-only mail renders no attachment placeholder.
+- The mail prose sits on a low-contrast natural-paper texture whose center remains calm enough for long-form text. Decorative rules, grids, stains, watermarks, and other authored marks must not run beneath scrolling prose.
+- A real attachment and its claim/claimed action share one footer shelf. Delete remains the secondary icon action beside the mail heading.
+- Announcement detail uses a quiet kind marker, article title, timestamps, solid divider, then the shared prose renderer.
+- `MarkdownLiteContent` never renders raw HTML. In-article `##`/`###` map below the detail title hierarchy, and all supported blocks remain semantic.
+- Desktop and portrait mobile share the same content order; mobile changes pane navigation and fitting only.
+
+#### 4. Validation & Error Matrix
+- Empty or plain text body -> render ordinary paragraphs without synthetic summary or attachment UI.
+- Body contains raw HTML -> escape it as text.
+- Long title/body or attachment name -> wrap or ellipsize inside the reader without horizontal overflow.
+- Claimed attachment -> keep its action disabled and visibly neutral after Bright School overrides.
+
+#### 5. Good/Base/Bad Cases
+- Good: reuse `MarkdownLiteContent` plus `.information-center-prose` for both domains and keep only domain-specific paper/callout styling in their owner files.
+- Base: legacy plain-text mail and announcements remain readable without authored Markdown-lite syntax.
+- Bad: render “纯文本邮件” as a fake attachment card, put timestamp above the mail title, or restore a category pill that competes with the announcement title.
+
+#### 6. Tests Required
+- `MarkdownLiteContent.test.jsx` covers every supported block and raw-HTML escaping.
+- `MailboxModal.test.jsx` asserts title-first metadata, absent text-only placeholder, real attachment shelf, disabled claimed action, the low-contrast natural-paper asset, no live blur, and mobile list-first behavior.
+- `AnnouncementModal.test.jsx` asserts the subtitle-free `公告` dialog title, shared prose hooks, quiet kind marker, rich block CSS, and mobile list-first behavior.
+- Run CSS inventory/style/theme contracts, `npm run build`, and `npm run check:built-css`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<p>{message.body}</p>
+<div className="mailbox-attachment empty">纯文本邮件</div>
+```
+
+Correct:
+
+```jsx
+<MarkdownLiteContent className="information-center-prose mailbox-body" value={message.body} />
+{hasAttachment(message.attachment) && <footer className="mailbox-attachment-shelf">...</footer>}
+```
+
+### Modal Close Button Contracts
+
+Window close buttons should share one relative size and top-right placement contract across desktop, mobile, base CSS, and Bright School overrides.
+
+Required assertion points:
+
+- Modal close buttons use `--modal-close-size` with a 44px fallback and `--modal-close-inset` with a 12px fallback for the button box and top/right offset.
+- `.modal-backdrop .close-button` and `.nested-modal-backdrop .close-button` are absolutely positioned at the same top-right inset with `z-index: 20`.
+- Watch-list and other toolbar close buttons may remain in the header action group when sibling controls such as refresh buttons exist; they must be the rightmost same-size close target and must not overlay sibling controls.
+- Resume header close buttons may remain grouped with the coin capsule so the capsule can sit immediately to their left, but the `.resume-header-actions` group must be anchored to the header's top-right corner on desktop and mobile instead of flowing beside the title. The title should reserve right-side space so the fixed action group cannot overlap it. The close button must keep the same close-button size and touch target, and the coin capsule should use the same `--modal-close-size` minimum height.
+- Mobile and Bright School overrides must reference the same variables instead of hard-coding separate `10px`, `36px`, or other one-off close-button values.
+
+Wrong:
+
+```css
+.watch-list-modal .inline-close {
+  position: absolute;
+  right: 12px;
+}
+```
+
+This can cover sibling header controls such as refresh buttons instead of reserving a real layout slot.
+
+Correct:
+
+```css
+.watch-list-actions .inline-close {
+  position: static;
+  flex: 0 0 auto;
+  width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+}
+```
+
+### Standalone profile replay and scroll containment contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `ResumeModal`, `UserProfileCard`, `HouseReplayDialog`, `ReplayList`, `.standalone-replay-backdrop`, `.replay-dialog-list-scroll`, `.nested-modal.replay-dialog`, mobile replay card CSS, or Bright School mobile replay overrides.
+
+#### 2. Signatures
+- `HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination })` is the single replay-list dialog used by self resume and social detail.
+- The shared overlay renders as `.standalone-replay-backdrop > .nested-modal.replay-dialog` through `createPortal(..., document.querySelector(".app-shell") ?? document.body)`.
+- `.replay-dialog-list-scroll` is the only vertical scroll owner for both resume and social-profile replay history; `.nested-modal.replay-dialog .replay-table` is non-scrollable content inside it.
+- `useReplayPagination({ enabled, endpoint, token })` owns 50-row page state for both resume and profile replay dialogs.
+
+#### 3. Contracts
+- Keep the replay overlay outside `.resume-modal` and `.user-profile-modal`; it must remain independently dismissible while the underlying dossier stays mounted. The dedicated class reuses a bounded z-index below the high-layer inventory threshold and above ordinary modal backdrops.
+- Keep `.nested-modal.replay-dialog` as a bounded shell with a fixed title/close area and a `minmax(0, 1fr)` replay-list region.
+- Keep `.replay-dialog-list-scroll` scrollable with `overflow-y: auto`, `min-height: 0`, touch momentum support, and `onScroll={pagination.onScroll}`.
+- Keep `.nested-modal.replay-dialog .replay-table` non-scrollable with `overflow: visible`, not only `overflow-y: visible`. CSS computes `overflow-y: visible` back to `auto` when the other axis is hidden or auto, which creates a dead inner scroll container that can intercept touch and wheel chaining.
+- Bright School final mobile overrides must repeat the same `overflow: visible !important` and `overscroll-behavior: auto !important` table contract after any generic `.replay-table` mobile scroll rules.
+- Do not restore `.profile-replay-dialog` or `.profile-replay-list-scroll`; those duplicate profile-only owners are retired.
+- The owning scroll element must forward `onScroll` to the pagination hook. Reaching the final 48px loads `nextCursor`; a null cursor renders the completed state and makes no further request.
+
+#### 4. Validation & Error Matrix
+- Social replay opens -> shared replay dialog is portaled outside the detailed-profile dialog and closing it leaves detailed profile visible.
+- Replay history has more rows than the visible mobile list -> swiping on row text or buttons scrolls `.replay-dialog-list-scroll`.
+- `.nested-modal.replay-dialog .replay-table` computes to `overflow-y: auto` with no scroll range -> invalid, because it can swallow scroll gestures before the outer list receives them.
+- Bright School portrait active -> same scroll owner contract as base mobile.
+- First page shorter than the full history -> scrolling to the bottom appends older records without replacing or duplicating the first page.
+
+#### 5. Good/Base/Bad Cases
+- Good: both callers render `HouseReplayDialog`, `.replay-dialog-list-scroll` owns scrolling, and the nested table is overflow-visible.
+- Base: the shared portal targets `document.body` in isolated tests that have no `.app-shell`.
+- Bad: recreating a profile-only replay modal inside `UserProfileCard` or binding pagination scroll to the non-scrolling dialog shell.
+- Bad: `.nested-modal.replay-dialog .replay-table { overflow-x: hidden; overflow-y: visible; }`.
+
+#### 6. Tests Required
+- `src/modals/UserProfileCard.dom.test.jsx` should assert reuse, portal placement outside detailed profile, independent dismissal, and opener-focus restoration.
+- `src/modals/ReplayList.test.jsx` should assert the shared wrapper scroll owner, final mobile table `overflow: visible` contract, and absence of retired profile replay selectors.
+- `src/modals/useReplayPagination.dom.test.jsx` should assert initial loading, cursor URL encoding, bottom detection, append semantics, and terminal `nextCursor = null`.
+- Browser regression checks should open replay from social detail on desktop and mobile, verify the portal is not a profile-dialog descendant, and confirm the underlying profile remains after replay dismissal.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<UserProfileCard>{showReplays && <ProfileOnlyReplayDialog />}</UserProfileCard>
+```
+
+Correct:
+
+```jsx
+{showReplays && <HouseReplayDialog pagination={replayPagination} />}
+```
+
+### Home Layout Contracts
+
+Desktop home footer text is part of the HUD, not the scrollable stage content.
+
+Required assertion points:
+
+- Desktop `.home-footer-strip` must remain fixed to the viewport bottom-right in the final theme safety layer, because the home screen itself can scroll vertically on shorter desktop windows.
+- The desktop final-layer rule should use the same `clamp(12px, 2vw, 24px)` right inset and `clamp(8px, 1.4vw, 16px)` bottom inset as `home-terminal.css`.
+- Mobile may keep `.home-footer-strip` in normal document flow, but the static mobile override must stay inside the `max-width: 768px` mobile safety layer.
+- The desktop footer should keep `pointer-events: none` so it cannot intercept clicks near the lower-right lobby content.
+
+Wrong:
+
+```css
+.home-footer-strip {
+  position: static;
+}
+```
+
+This makes the desktop copyright strip travel with the scrollable home content.
+
+Correct:
+
+```css
+@media (min-width: 769px) {
+  .home-screen.home-terminal-screen > .home-footer-strip {
+    position: fixed !important;
+    bottom: clamp(8px, 1.4vw, 16px) !important;
+  }
+}
+```
+
+### Mobile Profile Record Layout Contracts
+
+Self resume and social profile dialogs share one semantic dossier. Portrait layouts must preserve the desktop information order while assigning vertical overflow only to the bounded character-record card.
+
+Required assertion points:
+
+- `.profile-resume-view` owns identity hero, fixed mode tabs, and `.profile-record-panel`. On portrait screens the modal shell and shared view keep `overflow: hidden`; `.profile-record-panel` is a non-scrolling four-row grid for status, overview, character records, and optional actions. Only `.profile-character-table-scroll` owns vertical overflow, so its scrollbar begins below the non-scrolling summary and recent-result cards. At 360×800 it must retain at least one 58px row viewport.
+- The summary uses four explicit `.profile-summary-item` nodes in the order 段位、积分、总对局、胜率. Portrait layout uses a 2×2 grid; each item remains an independent Bright School `#fffaf0` paper card with its own dark-brown outline and medium hard shadow, and it must not reintroduce the old three-card `.profile-resume-stats`, combined record-string markup, or one continuous ruled white field.
+- Recent rank result markers must render below the record/rating/rank stat row, not inside one stat card. On mobile profile and resume modals, the ten-result marker set must stay on one marker row; use a ten-column grid plus `clamp()` marker/font sizing instead of `flex-wrap` so wins/losses shrink before wrapping. Empty-state text such as `暂无` must span the marker grid, stay centered, and use a wider responsive chip than a single win/loss marker so the text cannot overflow its border.
+- Rating/rank `.stat-tip` prose must explicitly restore `white-space: normal`, `word-break: normal`, and `overflow-wrap: anywhere`; Bright School summary cards deliberately use `word-break: keep-all` for short labels, and allowing that inherited value into Chinese tooltip prose makes an entire sentence overflow the tooltip surface. Rank must expose the recent-ten-game promotion/demotion help trigger. Profile help opens below the owning summary card and hover/focus raises that card above following content. The compact portrait overview must keep the complete tooltip inside the non-scrolling panel without trying to mutate panel scroll state. The portrait final owner must beat the broader `.house-modal .stat-tip` fixed-position rule, otherwise nested resume/profile surfaces expand to the viewport edges and are clipped by the dossier.
+- Character records use one semantic `.profile-character-table` with fixed accessible columns 角色、对局、胜、负、和、胜率. The first column keeps `aria-label="角色"`, while the separate visible header uses “角色战绩” as its first cell and the other five labels remain visible. The title and column labels share one bottom-aligned row. Portrait screens preserve every character as one native six-column table row; header cells and body cells remain `nowrap`, only the nested character name may ellipsize, and neither the table nor its wrapper may own horizontal scrolling.
+- On desktop and portrait screens, `.profile-character-table-head` is the visible six-column header outside `.profile-character-table-scroll`; it shares the table's columns without reserving a visible scrollbar gutter. The “角色战绩” heading reuses `.text-window-title` and the same `1.5rem` title size as the dossier window title, while the five metric labels retain their compact data style and shared bottom baseline. The header-to-row-scroller grid gap is `4px` on both desktop and portrait screens; keep the separate `7–8px` table row spacing intact so this tighter grouping affects only the title-to-first-card relationship. On portrait screens, the metric labels use the same centered alignment and `2px` inline padding as their data cells, while the first heading cell mirrors the identity cell's left alignment and `4px / 5px` inline padding. The header itself stays `overflow: hidden` with zero scroll range, transparent/borderless/shadowless, and never uses sticky positioning. The semantic table `thead` remains in the DOM but is visually collapsed so screen-reader semantics survive without duplicating the visible header. `.profile-character-table-scroll` owns only the table body's vertical overflow inside the fixed-height dossier, hides native scrollbar chrome across Firefox/legacy Edge/WebKit, and remains wheel-, touch-, and keyboard-scrollable through its labelled focusable region. Because Bright School's root scrollbar owner uses broad important rules, the hidden-scrollbar contract must be repeated in the late profile theme owner and the final portrait owner rather than relying only on the shared base declaration.
+- Portrait paint must be nested inside `.profile-portrait-mask` with `overflow: hidden`; chain badges remain siblings of that mask inside the visible `.profile-chain-portrait` carrier. The profile dossier resets costume `scale` / `translate` and centers the image independently from scene framing. Identity and character-record paint both use `object-fit: contain` at 80%; record masks additionally remain borderless and transparent. Do not clip the carrier itself because that hides badges.
+- The identity username/nameplate scale is `1.4` on desktop and `1.288` on portrait mobile, exactly 70% of the previous `2` / `1.84` treatment. Width, height, padding, and font must continue to derive from the same scale; profile owners must pin equipped nameplates to `--user-nameplate-width` × `--user-nameplate-height` so a grid column cannot distort the shared 3.75:1 slot. Portrait mobile keeps portrait and identity side by side and gives actions a full-width second row to preserve the 80% portrait and 44px controls while leaving a usable character-record viewport.
+- Keep desktop table cells in native table layout. Put flex alignment on an inner `.profile-character-identity` wrapper rather than `display: flex` on the `th`, otherwise browser table sizing can truncate the character name and destabilize numeric columns.
+- Portrait rows use a 60px native table-row height. Allocate 48% to the character identity column, then 12% / 7% / 7% / 7% / 19% to 对局、胜、负、和、胜率 so the orange-tinted name area remains readable without wrapping any numeric column; keep the inner identity wrapper on one line with a 46px portrait and an ellipsizing name. Desktop record portraits use a 68×56px transparent mask. Both sizes retain the 80% contained image contract.
+- Bright School's final owner must reset terminal-system `font-family`, background, clip-path, box-shadow, borders, and cell colors on `.profile-character-table`. Render each semantic row as one small card by painting the six native cells with the same `color-mix(... 7%, var(--profile-dossier-card-surface))` surface, 1px outline, and 2px hard shadow, with radii only on the first and last cells; do not change the row itself to flex/grid or give every cell an independent rounded tile. Scope this reset to the semantic profile table; `.character-record-row` belongs to the house manual and keeps its existing paper-card treatment.
+- At maximum scroll, the last character record must be fully visible. Preserve bottom `scroll-padding` on `.profile-character-table-scroll`; optional footer actions occupy their own non-scrolling grid row outside the character-table scroll owner.
+- Desktop `.profile-record-panel` assigns `status`, `overview`, `characters`, and `actions` grid areas explicitly. Optional status markup must not shift the character section into an intrinsic `auto` row or push the footer below the clipped shell.
+- Only the dossier's structural rails remain transparent: `.profile-resume-view`, `.profile-record-panel`, `.profile-overview-grid`, `.profile-secondary-actions`, and the `.profile-mode-tabs` wrapper must not introduce a white/paper tray. The identity hero and character section are large `#fffaf0` paper cards, the four summary items are independent medium cards, and recent results is its own medium card; all use Bright School dark-brown outlines and hierarchical hard shadows. These read-only cards stay static on hover. Only controls may lift/press, and their transform feedback must stop under `prefers-reduced-motion`.
+- The late dossier action owner must exclude `.achievement-entry-action`, `.profile-personalization-button`, and `.profile-replay-button` from generic cream-button paint so their existing pink, blue, and light-green identities remain recognizable. `.resume-wallet` keeps the shared gold coin gradient and pill geometry. Achievement and wallet icons explicitly clear the older terminal `.house-header svg` green glow and inherit their semantic foreground color.
+- Social identity actions are ordered like, friend, blacklist, report. Blacklist belongs in `.profile-identity-actions` immediately before report, not in a footer. All four Lucide glyphs compute to 18×18px; friend, blacklist, and report render icon-only controls with accessible labels, while like keeps only its icon and numeric count as visible content. Desktop like width is at least 72px and at least 20px wider than the square neutral controls. Report uses a high-specificity light blood-red surface that wins over the generic cream dossier action selector in default, hover, and focus states.
+- `.profile-mode-tabs` is a transparent, borderless, shadowless three-column layout wrapper and carries the same `.window-mode-tabs` hook as Watch. Profile CSS may own geometry and vertical breathing room, but must not repaint a second approximation of the inactive/selected controls; computed gap, background, border, radius, shadow, and minimum height must match the live Watch tab contract. The wrapper uses `width: auto` with bounded inline margins so `width: 100%` cannot combine with margins and clip “五子棋” on desktop or portrait mobile.
+- The Bright School dossier entry must load at the end of `themes/bright-school/qa-guard.css`, after the older commerce/profile, modal, mobile, effect, and selected-control owners. Importing the same rules earlier from `quality-base.css` is insufficient because later `.profile-summary-item` rules with matching specificity and `!important` can silently restore the flat transparent/white field.
+- Resume and social profile close buttons are excluded from the dossier's generic action selector and reuse the standard Bright School 44×44px white surface, 3px dark outline, 14px radius, and hard shadow. Social profile headers reserve a 44px close-control grid column and align the title and close boxes on the same top and center coordinates on desktop and portrait viewports.
+
+Wrong:
+
+```jsx
+<div className="profile-resume-stats"><span>{user.record}</span></div>
+```
+
+This revives the old combined record card and cannot express the required four-item summary or semantic table.
+
+Correct:
+
+```jsx
+<div className="profile-summary-grid">
+  <ProfileSummaryItem label="段位" value={rank} />
+  <ProfileSummaryItem label="积分" value={`${rating}分`} />
+  <ProfileSummaryItem label="总对局" value={`${totalGames}局`} />
+  <ProfileSummaryItem label="胜率" value={winRate} />
+</div>
+```
+
+Portrait mask and identity ownership:
+
+```jsx
+<span className="profile-chain-portrait small">
+  <span className="profile-portrait-mask">
+    <img className="profile-character-avatar" alt="" />
+  </span>
+  <span className="profile-chain-badge">2</span>
+</span>
+<span className="profile-character-name">角色名</span>
+```
+
+```css
+/* Wrong: flex changes the table-cell sizing algorithm. */
+.profile-character-table th { display: flex; }
+
+/* Correct: the cell remains a table cell; only its child aligns content. */
+.profile-character-identity { display: flex; align-items: center; }
+
+/* Portrait: preserve a real one-line table, with only the name allowed to truncate. */
+.profile-character-table tbody tr { display: table-row; height: 60px; }
+.profile-character-table :is(th, td) { white-space: nowrap; }
+.profile-character-name { overflow: hidden; text-overflow: ellipsis; }
+
+/* Record portraits: remove the avatar-card chrome and preserve source proportions. */
+.profile-character-table .profile-portrait-mask { background: transparent; border: 0; }
+.profile-character-table .profile-portrait-mask > img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+/* Bright School: the row stays semantic; its six cells paint one continuous small card. */
+.profile-character-table tbody :is(th, td) {
+  background: color-mix(in srgb, var(--character-theme-color) 7%, var(--bright-cream));
+  box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42);
+}
+
+/* Layout tray is invisible; each tab owns its own surface. */
+.profile-mode-tabs { width: auto; background: transparent; border: 0; box-shadow: none; }
+.profile-mode-tabs button[aria-selected="true"] { background: var(--bright-pink); }
+```
+
+Tooltip inheritance boundary:
+
+```css
+.stat-tip {
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+```
+
+### Bright School Home Responsive Contracts
+
+The Bright School home layout has four distinct responsive modes. Keep them explicit so medium desktop windows do not inherit the large scrapbook offsets, and so micro desktop windows preserve content before changing composition.
+
+Required assertion points:
+
+- Base terminal layout must not force a fixed minimum viewport width; `.home-screen` and `.home-grid-featured` should keep `min-width: 0`.
+- Large desktop starts at 1181px. It can use the three-column composition, but should not create horizontal page scroll.
+- The 1181px-1500px middle desktop band must reserve enough left-column width for the fixed-structure Bright School player plaque; prefer reducing column gaps and secondary-column width before shrinking plaque text below readability.
+- Bright School player plaque names must stay inside the middle identity column. Equipped nameplates use the shared fixed `3.75:1` slot and scene-owned `--user-nameplate-scale`; do not use parent-width stretching, geometry overflow, or per-username `--user-identity-fit-font-size` scaling if that lets the username cover `.plaque-stats`. An exact asset owner may expose only pointer-transparent effect bleed after computed bounds prove the fixed tag still ends before `.plaque-stats` at desktop, narrow desktop, and portrait widths.
+- Generated Bright School home player plaque art must remain a shell/background asset. Avatar art, `UserIdentity`, username text, mode icons, ranks, and labels stay rendered by React DOM/CSS rather than baked into the raster image.
+- The generated plaque shell background must draw from `border-box` rather than the default padding box so the full outer frame, holes, sticker, and stats panel art cover the entire clickable card.
+- The generated plaque shell must be the only `.home-player-plaque.tactical-id-card` background layer. Do not keep the old pink/green gradient fallback or any browser/theme button background, border, radius, outline, or `box-shadow` frame on the card body; the card body may use the shared home-image `filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3))` treatment and transform-only hover/focus rotation, with reduced-motion coverage.
+- When generated plaque art includes the portrait and stats panel frames, `.plaque-avatar` and `.plaque-stats` must stay transparent content layers with no independent background, border, or box-shadow; otherwise the generated shell gets duplicated by legacy inner cards.
+- `.plaque-avatar` must anchor to the generated shell's portrait-frame center through shared center/size variables, and portrait art inside that box must stay horizontally and vertically centered with a stable grid/contain contract in both base theme CSS and final responsive safety layers.
+- Legacy `.home-player-row.tactical-id-row::before` / `::after` paperclip pseudo-elements must stay disabled (`content: none` and `display: none`) when the generated shell is active; do not reintroduce a separate clamp layer over the generated art.
+- Later Bright School layers such as `modals.css`, `mobile.css`, and the final `mobile-adaptive.css` safety pass must not redefine `.home-player-plaque.tactical-id-card` with a new background that covers the generated shell.
+- When generated plaque art changes, feature tests should assert the WebP/PNG asset URLs from the final expanded theme CSS and preserve the avatar/name/stats grid contract on both desktop and mobile layouts.
+- Compact desktop is 1024px-1180px and should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) while staying inside the viewport.
+- Micro desktop is 701px-1023px. It should use a controlled minimum home stage width, currently `960px`, with horizontal scroll localized to `.home-main-panel`; do not shrink core entries until their contents become unreadable.
+- The final `mobile-adaptive/home-narrow-desktop.css` layer owns compact and micro desktop safety after theme overrides. It must reset player/manual/match/utility regions to `position: static` and remove decorative transforms that can create invisible hit boxes or overlaps.
+- Footer chrome should be fixed only on wide and tall desktop windows. Compact, micro, and low-height desktop windows should keep the footer in normal flow so it cannot cover core entries.
+- Home plaque stats must be in a shrinkable grid column with `min-width: 0`; avoid fixed pixel stats columns on mobile because long usernames need the remaining space.
+- Phone portrait must remain a usable home layout, not an orientation gate. Below the phone breakpoint, keep `.home-main-panel` visible and stack the stage as `player`, `match`, `manual`, `utility`; do not render or reveal `.home-orientation-guard`.
+- Bright School home utility entries may use image-only hand-drawn button art when the image itself contains the icon and title. In that mode, keep native `<button>` semantics and `aria-label`s, render the `<img>` as decorative `.utility-entry-art`, and keep DOM icon/title fallbacks visually hidden instead of visible. Non-image utility entries should still keep recognisable icon and main `<strong>` title content visible so the 2x3 mobile toolbox preserves clear touch targets.
+- Bright School image-only home entries and utility buttons rely on `filter: drop-shadow(...)` for the paper depth. Keep `.home-image-entry`, `.match-image-entry`, `.house-manual-entry`, `.home-utility-grid`, and `.utility-entry` overflow-visible on desktop and mobile; `.utility-entry-art` must reserve right/bottom transparent bleed such as `padding: 0 6px 6px 0` so the shadow is not clipped by either the replaced image box or a final mobile safety rule. Large home-entry transforms belong to `.home-entry-motion`, and utility rest/hover/active transforms belong to `.utility-entry-motion`; the nested raster images own filter/shadow only. Never animate `transform` on the same image element that owns `drop-shadow`, because desktop browsers may rerasterize the filtered transparent image on every frame. For the six desktop utility buttons, deterministic tone-scoped `--utility-tilt` values may vary the resting art angle, but `.utility-entry` must remain `transform: none`; use fixed `grid-auto-rows`. Each tone must also keep a same-direction `--utility-hover-tilt` around `3.8deg` to `4.4deg`, with the shared hover/focus `scale(1.015)` compensation; do not force negative resting tilts across zero to a common positive endpoint because the long raster labels appear to shrink during that path. This prevents transformed overflow from changing the main-panel/background height while preserving stable hit boxes; mobile keeps its existing 2x3 sizing and final interaction overrides by splitting transform selectors onto `.utility-entry-motion` and filter selectors onto `.utility-entry-art`.
+
+```jsx
+// Correct: the replaceable image remains a filtered raster-only layer.
+<span className="utility-entry-motion" aria-hidden="true">
+  <img className="utility-entry-art" src={imageUrl} alt="" />
+</span>
+```
+
+```css
+.utility-entry-motion {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.utility-entry-art {
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3));
+  transition: filter 160ms ease-out;
+}
+```
+
+Required regression points: `src/home/HomeScreen.test.jsx` must assert the motion-wrapper markup and separate desktop/mobile transform-versus-filter selectors; `src/app/AppRoutes.dom.test.jsx` must prove room-only route state does not rerender a stable home tree; `src/shared/preloadAssets.test.js` must prove the default image loader does not settle before `decode()` resolves.
+- Bright School hard-shadow cards and rows inside scroll/clipping owners must reserve trailing and bottom bleed on the list/layout owner instead of weakening the existing shadow. Check both desktop and mobile owner CSS for house manual `.character-list`, leaderboard `.leaderboard-list` plus `.leaderboard-current`, warehouse `.warehouse-grid`, shop `.shop-layout`, and friends `.friends-list` before calling a shadow-clipping fix complete.
+
+Wrong:
+
+```css
+.home-screen {
+  min-width: 1180px;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .home-main-panel {
+    display: none;
+  }
+
+  .home-orientation-guard {
+    display: grid;
+  }
+}
+```
+
+This preserves a desktop artboard inside a small browser and causes player plaques, buttons, and manual art to overlap.
+
+Correct:
+
+```css
+.home-screen,
+.home-grid-featured {
+  min-width: 0;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .home-main-panel {
+    display: grid;
+  }
+
+  .home-stage {
+    grid-template-areas:
+      "player"
+      "match"
+      "manual"
+      "utility";
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1180px) {
+  .home-stage {
+    grid-template-areas:
+      "player manual"
+      "nav manual"
+      "match match";
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1023px) {
+  .home-main-panel {
+    overflow-x: auto;
+  }
+
+  .home-stage {
+    width: 960px;
+    min-width: 960px;
+  }
+}
+```
+
+### Scenario: IRIS Database Home Entry
+
+#### 1. Scope / Trigger
+
+- Applies when changing the production IRIS Database entry, modal, links, or either reserved character-art region on the real home screen.
+
+#### 2. Signatures
+
+- `IrisDatabase({ links })` owns local open state and renders one viewport-fixed entry plus one shared `ModalDialog` while open.
+- `SiteSetting.irisGreeting` stores a bounded JSON greeting pool and `SiteSetting.irisLinks` stores the JSON catalog; shared normalizers own their defaults and legacy single-string compatibility, `/api/site-settings` transports them, the IRIS section of the unified `AdminMascotSettings` tab edits them, and `IrisDatabase` chooses a fresh greeting on each open.
+
+#### 3. Contracts
+
+- `HomeScreen` mounts exactly one `<IrisDatabase />`.
+- The edge entry keeps the existing width but uses a compact `1.56` width/height ratio, halving its former height while preserving a transparent Q-version half-body hit area and the blue archive plaque. Blank art must not become a visible portrait card, fallback silhouette, placeholder copy, or broken image.
+- Both art slots remain image-free; runtime code must not reference or request candidate Iris character assets.
+- The entry uses viewport `position: fixed`, a safe-area-aware right offset, and no horizontal page overflow.
+- The modal reuses `ModalDialog`; desktop is left blank-art/right links, portrait mobile is top blank-art/bottom links. Intro and quote copy stay absent, while the link list is the independent vertical scroll owner.
+- Link normalization allows at most 30 entries, requires a title plus HTTP(S) URL, derives display hosts, and bounds title/description/URL lengths.
+- External links use `target="_blank"` and `rel="noreferrer"`.
+- IRIS editing must stay outside `AdminSiteSettings` and share the dedicated `AdminMascotSettings` save boundary with the two shop mascots. Its initial fetch may replace defaults only while loading or when the authentication token changes; changing parent callback identities, moving focus, or rerendering the admin shell must not refetch and overwrite the unsaved draft.
+
+#### 4. Validation & Error Matrix
+
+- Character art absent -> render blank reservations without fallback copy or broken images.
+- Narrow/short viewport -> keep the entry reachable and constrain the modal with owned internal scrolling.
+- Missing database row or malformed stored JSON -> use shared defaults; a valid empty array intentionally renders an empty state.
+- Unsafe or incomplete admin row -> omit it from the persisted public catalog.
+
+#### 5. Good/Base/Bad Cases
+
+- Good: transparent entry reservation plus archive plaque, zero art request, admin round-trip, independently scrolling list, desktop and portrait layouts.
+- Base: image-free entry and modal remain usable before approved artwork exists.
+- Bad: replacing absent Q-version art with a framed mini profile panel.
+
+#### 6. Tests Required
+
+- Shared/backend/admin/DOM/CSS tests cover normalization, public settings persistence, the unified mascot tab and IRIS section, editor add/remove/save, unsaved draft preservation across callback rerenders and focus changes, Home wiring, removed copy, image absence, safe links, open/close/focus behavior, fixed placement, list scrolling, responsive geometry, reduced motion, and Bright School owners.
+- Browser QA covers desktop and portrait overflow, 44px close target, empty art regions, and zero candidate-art resources.
+
+#### 7. Wrong vs Correct
+
+```css
+/* Wrong: absent artwork became a generic profile card. */
+.iris-entry-portrait-slot { background: #06182d; border: 1px solid #89e8f4; }
+
+/* Correct: keep the Q-version hit region intentionally transparent. */
+.iris-entry-portrait-slot { position: absolute; inset: 0; background: transparent; border: 0; }
+```
+
+```jsx
+// Wrong: an unstable parent callback refetches and overwrites the active draft.
+useEffect(loadIrisSettings, [token, onNotice]);
+
+// Correct: refresh the callback ref separately; data loading still depends only on token.
+const onNoticeRef = useRef(onNotice);
+useEffect(() => { onNoticeRef.current = onNotice; }, [onNotice]);
+useEffect(loadIrisSettings, [token]);
+```
+
+### Character Item Effect Badge Contracts
+
+When a character-specific item effect is active in `user.itemEffects`, the house manual character card should render the item's icon as a small badge on the corresponding character card across desktop and mobile.
+
+Required assertion points:
+
+- Derive card badges from `itemEffects` in a shared helper, rather than duplicating checks in JSX.
+- Badge metadata must include the real item icon path, an accessible `alt`, and a `title` matching the item effect.
+- Badge CSS must use selectors specific enough to beat generic `.character-card img` portrait sizing and Bright School mobile portrait overrides.
+- Mobile badge dimensions should remain compact and stable; add assertions for the mobile selector and size when changing character-card layout.
+- Bright School portrait handbook layout must size the character art with the direct-child selector `.character-card.portrait-card > img`; the final mobile owner centers that art at `72px`, anchors the `30px` sortie action to the card's bottom-right corner, and keeps the action shadow to `1px` without changing the nested `24px` item badges.
+- A development-only cancellable badge must opt its badge container back into pointer events, then stop pointer and Enter/Space propagation at the cancellation button so activating the icon never opens the parent character card.
+- Bright School must reset the cancellation button's global button chrome in the character-badge owner for default, hover, focus-visible, and active states. Keep only the existing item icon and the shared keyboard focus outline visible.
+- Cover cancellation with DOM tests for pointer and keyboard activation, plus a theme CSS assertion for the transparent, borderless, shadowless button reset.
+
+Wrong:
+
+```css
+.character-item-effect-icon {
+  width: 24px;
+}
+```
+
+This can be overridden by `.character-card img` and stretch the badge to portrait size.
+
+Correct:
+
+```css
+.house-modal .character-card.portrait-card .character-item-effect-icon {
+  width: 24px;
+  height: 24px;
+}
+```
+
+### Skill targeting contracts
+
+Keep visual target preview separate from board-click release confirmation. No-target active skills such as Baconbits `random-blast` must keep `canPreviewSkillTarget` false so the board does not show a fake target marker, but `skillUsesBoardConfirmation` must still let a valid board point confirm and send the skill action. Do not reuse the preview helper as the only click-eligibility gate for skills.
+
+Before finishing skill targeting changes, run:
+
+```bash
+npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.test.js src/room/RoomScreen.test.js src/shared/boardView.test.js
+```
+
+---
+
+## Code Review Checklist
+
+<!-- What reviewers should check -->
+
+(To be filled by the team)
+
+### Scenario: Zahira shop offer-card density and corner badges
+
+#### 1. Scope / Trigger
+- Trigger: changing `ShopItemCard`, `ShopProductStage`, `shopLayout.js`, shop corner badges, or desktop/mobile offer spacing.
+
+#### 2. Signatures
+- `getShopItemCategoryLabel(item)` returns the player-facing `部员 / 道具 / 棋子 / 音乐` label.
+- `getShopItemQuantityBadge(item)` returns `{ text, ariaLabel }` for eligible consumable badges or `null`.
+- `getShopCategoryLabel(category)` returns the detail-facing `角色 / 道具 / 装饰 / 音乐` label and falls back to `商品` only for unsupported categories.
+- `getShopItemDetailOwned(item, user)` and `getShopItemDetailStatus(item, user)` project the same one-time ownership sources used by `isShopItemOwned()`, including `ownedMusicIds` matched against a music item's `targetId`.
+- `ADMIN_SHOP_CATEGORY_LABELS` in `src/shared/adminDrafts.js` is the admin table/select source of truth for `character / item / decoration / music`; `music` renders as `音乐` while the submitted value stays `music`.
+- `layoutShopCards({ width, height, count, mobile, seed })` returns collision-free card rectangles and a uniform scale.
+- `ShopItemCard` renders `.shop-item-detail-trigger` as a native button for image/name/price and keeps `.primary-action` as its sibling purchase button.
+
+#### 3. Contracts
+- Every real product card renders a non-interactive category badge in the upper-left corner.
+- Detail metadata must stay in parity with every one-time category supported by `isShopItemOwned()`. Music details render category `音乐`; an owned track renders `已持有`, while an unowned track or a user payload without `ownedMusicIds` renders `尚未拥有该音乐` instead of the unknown-category fallback.
+- Admin shop category labels and `<option>` elements must be generated from the same shared mapping. Do not duplicate category copy in `AdminShopItems`, because a damaged option label can hide a valid persisted `music` value even when the database and server validation are correct.
+- The upper-right badge is consumable-only: finite stock above one shows remaining quantity, unlimited stock shows `∞`, and `stockQuantity === 1` or non-consumables render no quantity badge.
+- Desktop and mobile use the same count-aware topology: five offers use 2+3, four use 2+2, three use 2+1, and one or two stay centered on one row.
+- Mobile mode is selected from `window.matchMedia("(max-width: 768px)")`, not product-stage width. The desktop product lane can itself be narrower than 768px.
+- Desktop placement confines seeded jitter to balanced row cells and reserves at least 28px before rotation/float safety; it must never shuffle four offers into 1+3 or three offers into arbitrary free placement.
+- The shop window is a fixed clipping shell, not a scroll owner. Its Bright School owner must keep `overflow: hidden !important` and `scrollbar-gutter: auto !important` so the generic modal `stable both-edges` gutter cannot inset the shared header, 200% store track, or either shop background.
+- Final mobile shop CSS must clear the shared modal shell's padding/gap, give header/body the full paper width, and never use negative-margin width compensation. Mobile horizontal gaps stay at 4–5px; vertical geometry reserves the hard shadow while preserving roughly the same visible clearance, and the whole card still scales together.
+- Final mobile card CSS must explicitly clear portrait-wide `max-width: 100%` from `.shop-card-scale`, `.shop-card-rotation`, and `.shop-card-float`, and must beat legacy `.shop-item` height/min-height rules with a `.shop-window`-scoped owner selector. Otherwise the child width is scaled twice while the legacy card height overflows the algorithmic slot.
+- The offer shell and rendered card share `--shop-card-width` / `--shop-card-height`; the detail trigger owns enlarged media/name/price rows and the purchase action owns a separate fixed bottom row. Do not make the whole article a pseudo-button containing the purchase button.
+- The final mobile card owner must restore a full-width `minmax(0, 1fr)` column with stretched grid content, stretch every purchase action to the full card content width, and center `.shop-card-meta-price-only .shop-price` itself; button `width: 100%` is insufficient when a legacy `justify-content: center` rule leaves the grid column shrink-wrapped, while centering only the metadata parent still lets legacy item-category rules right-align the price child.
+- Each batch seeds a 6–9px float value and a 4.2–6s duration. Desktop multiplies that value to a 12–18px total travel, while portrait mobile uses a 1.5 multiplier for a 9–13.5px total travel; the float layer remains transform-only and reduced-motion continues to disable continuous floating.
+- Fractsidus costume cards keep the shared slot, hit-area, count-aware topology, and collision algorithm. Enlarge only `.costume-shop-art` (which contains both the alpha-trimmed costume image and price tag) with `--costume-shop-visual-scale: 1.14` on desktop and `1.18` on portrait mobile, so the visible product gains presence without changing layout geometry.
+- Bright School Zahira background depth belongs to `.zahira-store-page .shop-layout.shop-window-body`, not the outer modal or card layers. Desktop uses versioned `/assets/shop/zahira-shop-background-crayon-v1.webp` (1586x992); portrait mobile uses its independently composed `/assets/shop/zahira-shop-background-crayon-mobile-v1.webp` (941x1672, approximately 9:16), selected by the final `max-width: 768px` owner rather than cropping the desktop scene. Both use centered `cover`, no pseudo background layers, runtime filter, repeating stripe texture, or continuous decorative motion.
+- The desktop art reserves the left 68% for products and the right reception/counter area for Zahira. The mobile art reserves the upper 56% for products and the lower 44% for the bubble, counter, and Zahira. Keep both WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`; retain the corresponding PNG files as editable sources.
+- The Fractsidus costume shop follows the same two-source contract: `/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp` is 1586x992 and reserves the left 34% for Nivora plus the right 65% for products; `/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp` is an independently composed 941x1672 portrait scene with the upper 57% for products and lower 43% for reception. Both must use the Zahira background's rough wax-crayon grain, uneven outlines, simplified blocks, and deliberately low detail; polished concept-art metal, glass, and cinematic lighting are visual regressions even when the palette is correct.
+- Keep the two Fractsidus WebP URLs in `shopMascotAssets.js` and `RUNTIME_IMAGE_ASSETS.shop`, retain their same-name PNG sources, and disable the old `.costume-store-panel` curtain pseudo-elements. Under Bright School, the final mobile rule must use `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel` so its mobile asset wins against the equally important theme owner; an unscoped `.costume-store-panel` rule loses on specificity and silently crops the desktop image on phones.
+- Zahira-only header styling is selected by `.shop-header[data-store="zahira"]` and uses a simple low-detail blue-gray to muted-purple color band. Do not crop or imitate the body scene in this header: scene-like canopy, tassel, shelf, or tent details create a false expectation that header and body are one continuous illustration. Costume-store headers must not inherit this background.
+- Bright School shop dialogue uses two complete ImageGen transparent WebP frames instead of CSS-built pill/blob boxes: Zahira uses a berry-white hand-cut frame with an integrated lower-right tail, while Nivora uses a muted warm-gold ticket frame with an integrated lower-left tail. The paper texture, hand-drawn edge, hard offset shadow, and tail must all remain inside each asset canvas; CSS loads the versioned frame from `shopMascotAssets.js`, stretches it with `background-size: 100% 100%`, clears inherited border/radius/shadow/clip-path, and keeps live left-aligned DOM text inside frame-specific safe padding. Do not restore tail pseudo-elements outside the element box: the shop viewport, store page, panel, and modal deliberately clip overflow. Both frame assets participate in `RUNTIME_IMAGE_ASSETS.shop` login preloading. Final mobile owners may adjust frame width, position, font size, and safe padding, but not split the tail back out of the image. Both portrait frames use `22px` horizontal safe padding while keeping their existing top and tail padding. The portrait Nivora owner must repeat `.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-shop-bubble` so its right-aligned `54%` frame wins against the important desktop `80%` frame; an unscoped important rule leaves the desktop frame over the mascot's face.
+- The shop header owns exactly one `.shop-header-balance` between its title and close button. It reads the active catalog's current `effectiveUser.coins`, renders the same `CircleDollarSign` icon plus number used by the resume `.shop-wallet`, and inherits that shared yellow-gold gradient, outline, and hard-shadow surface instead of declaring a flat header-only fill. It uses no wallet raster and prevents Zahira/Nivora reception panels from duplicating balance UI. The wallet WebP stays outside `RUNTIME_IMAGE_ASSETS.shop`.
+- In the final portrait layer, the header uses `44px minmax(0, 1fr) max-content 44px` for refresh, title, balance, and close. The Bright School-scoped shop close-button owner must beat the theme-wide important `.close-button` absolute-position rule, restore `position: static` / `inset: auto`, and align the 44px close and refresh buttons to the same grid center. A later but lower-specificity shop selector is insufficient.
+- Store-to-store navigation stays as native `.shop-switch-button` controls with visible DOM copy `残星会` and `扎希拉商店`. Do not add `前往`, encode direction with a text arrow, or bake either label into artwork. `.zahira-to-costume` and `.costume-to-zahira` own opposite `--shop-sign-image-scale-x` values so only the image layer points toward the target store.
+- The two switch signs use mirrored corner anchors on every viewport: `.zahira-to-costume` clears `top` / `right` and sits at the lower-left, while `.costume-to-zahira` clears `top` / `left` and sits at the lower-right. Desktop uses a shared `14px` inset and portrait mobile uses a shared `8px` inset; do not lift either sign into the reception art.
+- The shared signpost uses `/assets/shop/shop-direction-sign-sticker-right-v2.webp`, a `1420x430` lossless transparent ImageGen sticker with a flat right-pointing board, tiny support tab, thick warm-white die-cut edge, dark burgundy outline, sparse crayon strokes, and exactly two simple nail dots; retain the same-name transparent PNG as the editable source and preload the WebP through `SHOP_DIRECTION_SIGN_IMAGE`. The button stays transparent, `::before` renders the whole asset with `background-size: contain` and mirrors through `scaleX()`, `::after` renders nothing, and the live `<span>` remains unmirrored above the image. Do not restore realistic timber grain, rope, cracks, bevels, CSS gradients, nail pseudo-elements, clip-path silhouettes, or mirroring on the whole button.
+- Signpost interaction is transform/filter-only: desktop and portrait mobile stay at least 48px high; hover/focus keeps the 1px lift, slight rotation, and brightness feedback but must replace the resting filter without any `drop-shadow`, because a moving shadow visually detaches the sticker from the painted background. Active may press by 2px, and reduced motion removes the transforms. The asset remains fully inside the button box, and the control must not add continuous animation.
+
+#### 4. Validation & Error Matrix
+- Unknown category -> category badge falls back to `商品`.
+- Music detail with matching `ownedMusicIds` entry -> `音乐 / 已持有`; missing or non-matching ownership entry -> `音乐 / 尚未拥有该音乐`.
+- Admin music row -> table cell and selected option both display `音乐`; save request retains `category: "music"`.
+- Unlimited item (`stockQuantity < 0`) -> `∞` with accessible name `不限量`.
+- Limit-one item -> no quantity badge.
+- Three items in either layout family -> two top placements plus one centered lower placement.
+- Four desktop items -> two balanced rows of two; five desktop items -> two top plus three bottom.
+- Desktop viewport with a sub-768px product lane -> still uses the desktop card base and spacing algorithm.
+- Desktop and portrait shop shells -> header, active store page, and active background share the `.shop-window` padding-box edges; the document has no horizontal overflow.
+- Portrait mobile with four offers -> computed `.shop-item` bounds remain inside the corresponding placement plus rotation/float/shadow bleed; old minimum heights cannot create row overlap.
+- 375x600 with five offers -> the bottom purchase controls remain above the product-stage clip boundary.
+- Portrait mobile background -> the independent mobile WebP is the computed background image; its display-wall boundary equals the product-stage bottom, the bubble begins in the reception wall, and the counter remains behind Zahira without horizontal overflow.
+- Fractsidus desktop background -> the computed image is the desktop WebP; Nivora overlays the left reception scenery and products remain inside the quiet right stage.
+- Fractsidus portrait background -> the computed image is the mobile WebP at both 375x812 and 375x600; the stage/host split remains 57/43 and the document has no horizontal overflow.
+- Both shop families -> computed float travel is 12–18px on desktop and 9–13.5px on portrait mobile, duration remains 4.2–6s, interaction states pause the current float, and reduced-motion removes it.
+- Fractsidus cards -> the scaled `.costume-shop-art` rectangles remain inside the product stage and do not overlap at 1440x900, 375x812, or 375x600; the trigger hit-area and algorithmic slot bounds remain unchanged.
+- Costume store active -> the computed header background does not contain either Zahira background asset.
+- Either store active -> the dialogue frame is the computed background image, `background-size` is `100% 100%`, both pseudo-elements compute to no content, and every visible non-transparent frame pixel remains inside the bubble element's border box.
+- 375x812 and 375x600 headers -> refresh and close controls are both 44x44, their computed top coordinates match, the balance sits immediately left of close without covering the full title, and the close button computes to `position: static`.
+- Either store active -> the visible `::before` uses the generated signpost asset and the matching positive/negative horizontal image scale, `::after` has no content, and the DOM label remains normally oriented.
+- Either store active -> the Zahira-to-costume sign computes to the lower-left corner and the costume-to-Zahira sign computes to the lower-right corner, with equal horizontal/bottom insets for the current viewport family.
+- 1440x900, 375x812, and 375x600 -> the visible signpost does not intersect product cards or mascot dialogue, does not create horizontal overflow, and keeps a 48px minimum target.
+
+#### 5. Good/Base/Bad Cases
+- Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
+- Good: add a supported one-time category to the shared ownership helper and detail category/status mappings in the same change, with owned and unowned regression assertions.
+- Good: drive the admin table label and category options from `ADMIN_SHOP_CATEGORY_LABELS`, then assert a real edit/save round trip for `music`.
+- Base: one or two items remain centered on a single row while desktop cards keep only bounded slot jitter.
+- Bad: let a supported music item fall through detail-only helpers to `商品` or `状态未知` even though `isShopItemOwned()` already understands `ownedMusicIds`.
+- Bad: hard-code an independent admin option label such as `???` while the option value and database row remain `music`.
+- Bad: `size.width <= 760` selects mobile mode, because the normal desktop stage is commonly about 744px wide.
+- Bad: a generic mobile modal shell adds padding/gap back to `.shop-window`, or a `width: calc(100% + ...)` plus negative margin attempts to compensate for the lost card width.
+- Bad: allowing the generic modal `scrollbar-gutter: stable both-edges` rule to win on `.shop-window`, because it leaves a visible empty strip on both sides even when the shop never scrolls.
+- Bad: repeating `不限量` or remaining stock in the card body after the corner badge is present.
+- Bad: testing only `layoutShopCards()` rectangles while generic/theme CSS changes the final `.shop-item` width or height.
+- Bad: `.shop-item[role="button"]` with a nested purchase `<button>`.
+- Bad: a high-detail, glossy deep-red illustration that matches Fractsidus colors but not the existing Zahira crayon medium.
+- Bad: relying on an unscoped final-mobile `.costume-store-panel` rule when the Bright School theme owns the same background with higher specificity.
+- Bad: keeping `←` / `→` inside the label, baking Chinese copy into the bitmap, mirroring the whole button and its label, replacing the sticker with a realistic timber/rope prop, or replacing the generated tab/arrow silhouette with a clipped gradient rectangle.
+
+#### 6. Tests Required
+- `src/modals/ShopModal.test.js` covers card and detail category labels, music detail owned/unowned status (including a missing `ownedMusicIds` field), finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
+- `src/shared/adminDrafts.test.js` locks the `music -> 音乐` label, and `src/admin/AdminShopItems.test.jsx` opens the real editor and asserts the selected option plus PATCH body both preserve `music`.
+- `src/modals/ShopModal.test.js` must assert refresh -> title -> balance -> close DOM order, the live accessible coin label, shared `.shop-wallet` class, `CircleDollarSign` icon, inherited resume gradient, absence of a flat header-only fill, absence of the wallet raster from both reception panels, and the four-column desktop/mobile header contracts. Preload tests must reject the retired wallet path from `RUNTIME_IMAGE_ASSETS.shop`.
+- The same CSS contract must assert the shop owner restores `overflow: hidden` and `scrollbar-gutter: auto`; browser QA must compare the shop shell padding-box edges with the header and active body edges at 1440x900, 375x812, and 375x600 for both stores.
+- CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
+- Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
+- `src/modals/ShopModal.test.js` must lock the 6–9px / 4.2–6s seeded boundaries, the desktop 2x and portrait 1.5x travel multipliers, and the Fractsidus 1.14 / 1.18 visual-scale owners.
+- Background QA must inspect the rendered composition and computed image URL/position/size at 1440x900, 375x812, and 375x600; static color-string assertions alone cannot prove that the desktop split, mobile boundary, short-screen crop, crayon treatment, or header isolation aligns with content. Tests must also assert both Fractsidus assets are preloaded and that the final mobile owner carries Bright School theme specificity.
+- `src/modals/ShopModal.test.js` must assert both accessible switch labels, reject the old text-arrow labels, lock the lossless signpost dimensions, asset URL, opposite image-scale values, absent nail pseudo-element, hover/focus transform preservation with no hover `drop-shadow`, Bright School press/reduced-motion hooks, and portrait minimum-size owners. Preload tests must assert the WebP exists and is a critical shop image. Browser QA still verifies the rendered silhouette and non-overlap at the three target viewports.
+- The same shop CSS contract must lock the lower-left/lower-right anchor pairs, including cleared opposite insets and the shared `14px` desktop / `8px` portrait offsets.
+- `src/modals/ShopModal.test.js` must lock both dialogue surface variants, texture URLs, their double-layer tail polygons, left-aligned typography, and the final-mobile tail anchors; preload tests must assert both texture files exist and are critical shop images. Browser QA must confirm each tail points toward its mascot without covering products or the store switch.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const mobile = stageWidth <= 760;
+```
+
+Correct:
+
+```js
+const mobile = window.matchMedia("(max-width: 768px)").matches;
+const placements = layoutShopCards({ width: stageWidth, height: stageHeight, count, mobile });
+```
+
+Wrong:
+
+```jsx
+<article role="button" tabIndex={0}>
+  <button>购买</button>
+</article>
+```
+
+Correct:
+
+```jsx
+<article className="shop-item">
+  <button className="shop-item-detail-trigger">商品图、名称与价格</button>
+  <button className="primary-action">购买</button>
+</article>
+```
+
+Wrong:
+
+```css
+@media (max-width: 768px) {
+  .zahira-store-page .shop-window-body {
+    background-image: var(--shop-background-image);
+  }
+}
+```
+
+Correct:
+
+```css
+@media (max-width: 768px) {
+  .zahira-store-page .shop-window-body {
+    background-image: var(--shop-mobile-background-image);
+    background-position: center;
+    background-size: cover;
+  }
+}
+```
+
+Wrong:
+
+```css
+@media (max-width: 768px) {
+  .costume-store-panel {
+    background-image: var(--costume-shop-mobile-background-image) !important;
+  }
+}
+```
+
+Correct:
+
+```css
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel {
+    background-image: var(--costume-shop-mobile-background-image) !important;
+  }
+}
+```
+
+Wrong:
+
+```jsx
+<button className="shop-switch-button">扎希拉商店 →</button>
+```
+
+Correct:
+
+```jsx
+<button className="shop-switch-button costume-to-zahira">
+  <span>扎希拉商店</span>
+</button>
+```
+
+Wrong:
+
+```css
+.zahira-to-costume {
+  transform: scaleX(-1);
+}
+```
+
+Correct:
+
+```css
+.zahira-to-costume {
+  --shop-sign-image-scale-x: -1;
+}
+
+.shop-switch-button::before {
+  background: var(--shop-sign-image) center / contain no-repeat;
+  transform: scaleX(var(--shop-sign-image-scale-x));
+}
+```
+
+Wrong:
+
+```css
+.shop-mascot-bubble::after {
+  bottom: -18px;
+  clip-path: polygon(0 0, 100% 0, 72% 100%);
+}
+```
+
+Correct:
+
+```css
+.shop-mascot-bubble,
+.costume-shop-bubble {
+  aspect-ratio: var(--shop-dialogue-frame-aspect);
+  padding: var(--shop-dialogue-frame-padding);
+  background: transparent var(--shop-dialogue-frame-image) center / 100% 100% no-repeat;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
+}
+
+.shop-mascot-bubble::before,
+.shop-mascot-bubble::after,
+.costume-shop-bubble::before,
+.costume-shop-bubble::after {
+  content: none;
+}
+```
+
+Keep the full generated silhouette inside the dialogue element, then vary the frame asset and responsive safe padding for each mascot.
+
+### Scenario: Shared Modal Dialog and Lint Boundary
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing a modal shell, nested picker, close behavior, keyboard navigation, focus management, or the repository lint baseline.
+
+#### 2. Signatures
+- Shared shell: `ModalDialog({ as = "section", labelledBy, ariaLabel, onClose, className, children, ...props })` from `src/modals/modalComponents.jsx`.
+- Quality command: `npm run lint`; the full repository gate starts with lint through `npm run check`.
+
+#### 3. Contracts
+- Interactive modal surfaces use `ModalDialog` with `role="dialog"`, `aria-modal="true"`, and either `aria-labelledby` or `aria-label`.
+- On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
+- Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
+- Close and icon-only controls expose an accessible name.
+- Player utility window headers keep one clear visible title when secondary copy does not aid a decision: warehouse and leaderboard omit decorative icons and subtitles, while the friends window renders a dedicated `.friends-modal-header` titled `社交系统` above its tabs/search toolbar. Under Bright School, the `.friends-tabs` wrapper stays transparent, borderless, and shadowless; only the individual tab buttons own visible surfaces and selected-state feedback. Social `.friends-row` cards use the shared warm paper `var(--bright-sheet)` surface, matching profile dossier cards instead of introducing a blue status fill. Shared profile summaries use four independent cream `.profile-summary-item` cards with dark-brown outlines and medium hard shadows. Semantic `.profile-character-table tbody tr` still receives the current catalog character `palette` through `--character-theme-color`, but the six native cells jointly paint one restrained 7% character-tinted cream row card with only the outer corners rounded and a short shadow; the separate house-manual `.character-record-row` keeps its existing 18% character-color paper card, dark-brown outline, and hard shadow. State meaning remains owned by existing labels rather than row fill. Positive values keep their accessible dark green treatment.
+- At `max-width: 768px`, Bright School's dashed utility-window headers—`.leaderboard-header`, `.warehouse-header`, `.house-header`, `.friends-modal-header`, and `.watch-list-header`—share one final owner. Their title uses the `clamp(20px, 6vw, 28px)` window-title scale, the header centers its content on a 44px control row, and the dashed divider keeps at least 12px clearance below that row. Do not add narrower media rules that shrink or top-align one title independently.
+- Watch refresh and close buttons remain static inside `.watch-list-actions` and align to the same vertical center. Information center, shop, recruitment, settings, and IRIS headers keep their established dedicated layout owners; they are audited separately and must not be pulled into the dashed utility-header selector merely to share typography.
+- ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
+
+#### 4. Validation & Error Matrix
+- Missing `aria-labelledby` and `aria-label` -> accessibility lint/review failure.
+- Escape in a nested picker -> close only the picker.
+- Tab from the last focusable item -> wrap to the first; Shift+Tab from the first -> wrap to the last.
+- Modal closes -> restore focus when the opener is still connected.
+- Bright School profile summary cards collapse back to one ruled white field, profile row cells lose their unified cream/palette card paint, or house character-record cards ignore the live character `palette` -> theme contract failure.
+- Character-record positive text falls below `4.5:1` against a generated light theme surface -> accessibility review failure.
+- Hooks dependency mismatch or undefined JSX identifier -> lint failure.
+
+#### 5. Good/Base/Bad Cases
+- Good: a leaderboard modal passes its title id to `labelledBy` and its close button has `aria-label="关闭"`.
+- Good: a narrow Watch header keeps “对局列表” at the shared mobile window-title size while refresh and close remain centered above the dashed divider.
+- Good: row-specific custom properties tint the native profile table cells and house character-record cards while each surface keeps its own restrained treatment and semantic layout.
+- Base: a non-interactive visual wrapper remains a normal element and does not pretend to be a dialog.
+- Bad: a clickable `<div>` modal shell with no keyboard focus boundary.
+- Bad: using the whole card fill to encode online, win, or loss state instead of the existing labels and values.
+- Bad: adding a second document-level Escape handler inside each modal.
+- Bad: shrinking a single mobile window title to 18px or using `align-items: flex-start` while adjacent header controls remain 44px tall.
+
+#### 6. Tests Required
+- `src/modals/modalComponents.dom.test.jsx` asserts initial focus, forward/backward wrapping, Escape close, and opener focus restoration in jsdom.
+- Migrated modal tests assert the shared dialog shell and accessible title/controls.
+- `WarehouseModal.test.js`, `LeaderboardModal.test.jsx`, and `FriendsModal.test.jsx` assert the utility-window header content, the friends title/toolbar/list row contract, and the transparent `.friends-tabs` wrapper while individual tab buttons retain their active styling.
+- `WatchModal.test.js` asserts that the final mobile owner includes every dashed utility-header family, preserves the shared title scale and divider clearance, and keeps Watch actions statically centered.
+- `src/styles/themeContract.test.js` locks the mist-blue social surface, character-palette light mixes, outline variable for card-style records, and accessible positive-value green; profile rendering tests assert semantic table rows expose `--character-theme-color`.
+- `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<div className="modal" onClick={(event) => event.stopPropagation()}>{children}</div>
+```
+
+Correct:
+
+```jsx
+<ModalDialog className="modal" labelledBy="modal-title" onClose={onClose}>
+  <h2 id="modal-title">Title</h2>
+  {children}
+</ModalDialog>
+```
+
+Card surface wrong:
+
+```css
+.friends-row,
+.character-record-row {
+  background: #ffffff;
+}
+```
+
+Card surface correct:
+
+```css
+.friends-row { --bright-commerce-card-surface: var(--bright-sheet); }
+.character-record-row {
+  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color) 18%, #ffffff);
+}
+.profile-character-table tbody :is(th, td) {
+  background: color-mix(in srgb, var(--character-theme-color) 7%, var(--bright-cream));
+  box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42);
+}
+```
+
+### Scenario: Voice Playback and Scoped Background Music Control
+
+#### 1. Scope / Trigger
+- Trigger: changing voice/TTS playback, countdown voice profiles, `backgroundDucking.js`, audio defaults, or an authored scene that temporarily changes BGM volume.
+
+#### 2. Signatures
+- `requestBackgroundMusicDuck({ ratio, attackMs, releaseMs })` returns an idempotent release callback; overlapping explicit scene requests resolve to the lowest active ratio.
+- `playSystemVoice(event, { character, params, fallbackText, audioSettings, playbackProfile })` resolves character audio or TTS; `playbackProfile` controls the decoded voice effect chain, not BGM gain.
+- `DEFAULT_AUDIO_SETTINGS` is the only new-user default source; persisted `sigrika-audio-settings` values override it.
+- `npm run voices:normalize` performs staged offline normalization for `public/assets/voice/*.ogg`; `npm run check:voices` is the read-only drift gate and requires `ffmpeg` plus `ffprobe` on `PATH`.
+
+#### 3. Contracts
+- Voice audio and TTS never create, update, or release BGM duck requests. BGM remains at the user's configured gain throughout voice playback.
+- Ordinary decoded voices use the dry/wet reverb chain. Countdown decoded voices bypass reverb but preserve user voice volume, boost, single-active-voice behavior, preload/cache reuse, and fallback behavior.
+- Static character voices apply one shared `1.15` linear calibration gain (about `+1.214 dB`) over the original baseline: ordinary clips target about `-16.8 LUFS integrated` with final Ogg True Peak no higher than about `-0.8 dBTP`, while clips shorter than 500ms or without a finite integrated measurement use about `-17.8 dBFS RMS`. The integrated, RMS, processing-peak, and final-peak targets must all move by the same dB delta; do not reintroduce decoded-buffer RMS gain because it would undo the authored LUFS contract and diverge from ordinary `Audio` fallback.
+- Voice normalization preserves each existing file's sample rate and channel count, writes high-quality Vorbis to a temporary staging directory, validates the final encoded Ogg, and replaces repository assets only when the whole batch passes. Final Ogg measurement must drive limiter correction because Vorbis can overshoot the PCM intermediate True Peak.
+- Routine `npm run voices:normalize` skips files already inside the active tolerance. A global calibration-baseline change must use `npm run voices:normalize -- --force`, because the old and new tolerance bands can overlap even when every intended asset needs recalibration.
+- Character-specific synthesis generators must not own paths that have been replaced by authored or approved reference-voice recordings, because their force mode would silently erase the approved performance. Qiuyuan's game-start, sortie, neutral countdown 10-1, byo-yomi start/remaining-2/remaining-1, and result events use approved authored or reference-voice assets. Remaining-period-1 uses the approved restrained take of “只剩一次读秒，抓紧脚步”: its two clauses are deliberately paced with a 600 ms authored pause instead of a shouted or run-together delivery. The legacy `scripts/generate-qiuyuan-system-voices.ps1` Kangkang generator is retired and must not be reintroduced.
+- A characterless room bot with `botProfile.id` keeps that id as its voice identity and an empty static `systemVoices` map. In particular, Zhunshibao resolves countdown events through the existing `zh-CN` TTS fallback; do not pass its null `character` / `characterId` through `findCharacter()`, whose compatibility fallback is Sigrika.
+- `backgroundDucking.js` is reserved for explicit non-voice scene direction such as the recruitment cinematic; a caller that acquires a request owns its idempotent release on completion, interruption, and unmount.
+- New-user defaults are `master: 100`, `bgm: 60`, `sfx: 100`, and `voice: 100`. Do not migrate or overwrite existing saved percentages when changing defaults.
+
+#### 4. Validation & Error Matrix
+- Voice starts, ends, overlaps, or is interrupted -> BGM gain does not change.
+- Web Audio/decode failure -> ordinary `Audio` fallback and TTS still do not touch BGM gain.
+- Voice asset outside loudness/True Peak tolerance -> `npm run check:voices` reports the exact file and exits non-zero.
+- Any staged normalization output fails loudness, codec, sample-rate, channel-count, or path validation -> do not replace any repository voice asset.
+- Integrated loudness becomes unstable around the measurement window -> classify clips below 500ms as short voices and validate RMS plus True Peak instead.
+- Global target delta overlaps the prior tolerance band -> use the forced write mode and assert the expected voice-asset change count before accepting the batch.
+- Characterless bot has a non-empty `botProfile.id` -> preserve the bot identity and resolve unmapped system events as TTS, never as Sigrika audio.
+- No persisted settings or invalid persisted JSON -> load the new-user defaults.
+- Valid persisted percentages -> keep them unchanged over the defaults.
+- Another explicit scoped request is active -> the shared duck manager keeps its authored ratio until its owning scene releases it.
+
+#### 5. Good/Base/Bad Cases
+- Good: play skill, story, result, and countdown voices without importing or calling `backgroundDucking.js` from the voice runtime.
+- Base: countdown audio uses `{ reverb: false }`; ordinary decoded voice uses `{ reverb: true }`.
+- Good: run `npm run voices:normalize` after adding/replacing voices, then commit only after `npm run check:voices` reports every file valid.
+- Good: run `npm run voices:normalize -- --force` once when changing the global calibration baseline; subsequent routine writes return to the non-forced command.
+- Good: `voiceCharacterForPlayer()` returns `{ id: "zhunshibao", systemVoices: {} }` for the characterless practice bot, so `resolveSystemVoice("countdown-10")` returns `{ type: "tts", text: "10" }`.
+- Good: an authored cinematic owns a scoped request and releases it on every exit path.
+- Bad: normalize PCM once and skip final Ogg measurement, or apply a runtime RMS correction on top of calibrated source assets.
+- Bad: reintroducing a voice-active counter, per-clip gain ramp, or room countdown request to alter BGM.
+- Bad: resolving a characterless bot with `findCharacter(characters, null)`, because the compatibility fallback attaches Sigrika's static voice map.
+
+#### 6. Tests Required
+- `src/audio/audioSettings.test.js` covers the new-user defaults, invalid storage fallback, and persisted-value precedence.
+- `src/audio/voicePlaybackProfiles.test.js` covers standard and countdown reverb option resolution.
+- `src/audio/systemVoicePlayback.test.js` covers decoded audio profile forwarding and TTS playback without BGM options.
+- `src/audio/backgroundDucking.test.js` covers explicit scoped scene requests independently from voice playback.
+- `src/audio/voiceBackgroundIndependence.test.js` guards the voice runtime and room countdown path against reintroducing BGM duck coupling.
+- `src/room/roomView.test.js` covers characterless bot voice identity and proves Zhunshibao's byo-yomi/countdown events resolve to TTS rather than Sigrika audio.
+- `scripts/voiceLoudnessNormalization.test.js` covers forced-write argument routing, FFmpeg metric parsing, short-clip routing, target calculation, tolerance validation, and path safety.
+- `src/shared/musicLibrary.test.js` covers every fixed character system-voice mapping, including Qiuyuan's static system-voice set; `scripts/qiuyuanSystemVoiceGenerator.test.js` prevents the retired Kangkang generator from being reintroduced while approved recordings replace its former outputs one selection at a time.
+- Run `npm run check:voices`, focused audio/time-announcement tests, then `npm run check` before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+beginVoicePlayback(); // voice activity must not control BGM gain
+```
+
+Correct:
+
+```js
+playSystemVoice(`countdown-${second}`, { playbackProfile: VOICE_PLAYBACK_PROFILES.countdown });
+```
+
+Wrong:
+
+```js
+findCharacter(characters, practiceBot.characterId); // null becomes Sigrika
+```
+
+Correct:
+
+```js
+const character = { id: practiceBot.botProfile.id, systemVoices: {} };
+resolveSystemVoice(`countdown-${second}`, { character }); // TTS
+```
+
+### Scenario: Shared Character Display Order
+
+#### 1. Scope / Trigger
+- Trigger: rendering a player-facing character collection that must match the house manual, including warehouse item-use target selection.
+
+#### 2. Signatures
+- `characterListFromCatalog(characters)` is the shared display-order source and sorts by catalog `sortOrder` before applying its stable fallback order.
+- `warehouseOwnedCharactersForDisplay(characters, ownedCharacterIds)` returns only owned catalog entries in that shared display order.
+
+#### 3. Contracts
+- Treat `user.ownedCharacters` as ownership/storage data, not presentation order.
+- Apply `characterListFromCatalog()` before filtering to owned or otherwise eligible character ids.
+- Canonicalize ids on both sides of the membership check so aliases do not change inclusion or ordering.
+- Ordering changes must not alter ownership, eligibility, disabled state, or card presentation.
+
+#### 4. Validation & Error Matrix
+- Owned ids arrive in acquisition/storage order -> output still follows catalog `sortOrder`.
+- Owned ids contain aliases -> canonical characters remain included once in catalog order.
+- Owned id is absent from the current catalog -> omit it, matching existing catalog-backed rendering behavior.
+- Empty or missing owned-id list -> return an empty list.
+
+#### 5. Good/Base/Bad Cases
+- Good: sort the catalog once, then filter it through a canonical owned-id set.
+- Base: an already catalog-ordered owned list produces the same visible order.
+- Bad: map `user.ownedCharacters` directly to character objects, because asset storage order can drift from the house manual.
+
+#### 6. Tests Required
+- `src/modals/WarehouseModal.test.js` must use deliberately shuffled owned ids with explicit `sortOrder` values and assert the same sequence as the house manual.
+- Keep `src/shared/characters.test.js` coverage for shared catalog ordering and fallback behavior.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+ownedCharacterIds.map((id) => characters[id]).filter(Boolean);
+```
+
+Correct:
+
+```js
+const owned = new Set(ownedCharacterIds.map(canonicalCharacterId));
+return characterListFromCatalog(characters)
+  .filter((character) => owned.has(canonicalCharacterId(character.id)));
+```
+
+### Scenario: Story Trigger and Player-Surface Routing
+
+#### 1. Scope / Trigger
+- Trigger: changing story-script trigger payloads, `AppOverlays` story routing, item-character interaction nodes, or unified tutorial node detection.
+
+#### 2. Signatures
+- Player story payload: `{ triggerType, startNodeId, nodes }` as returned by `toPlayerStoryScriptPayload()`.
+- `isUnifiedTutorialScript(script)` selects `TutorialSessionModal` only after honoring trigger-owned routing boundaries.
+
+#### 3. Contracts
+- `triggerType: "item-character-use"` always renders through `StoryPlayerModal`.
+- Item-character scripts may contain `player-choice` nodes for option-only beats. That node type must not route the whole script into the board tutorial surface.
+- Non-item scripts that contain interactive tutorial nodes continue to render through `TutorialSessionModal`.
+- Node type controls behavior inside a compatible runtime; it is not, by itself, sufficient evidence that an item interaction is a battle tutorial.
+
+#### 4. Validation & Error Matrix
+- Item-character script starts at `player-choice` -> render the generic story modal with no board.
+- Item-character script contains only `story` nodes -> render the generic story modal.
+- Battle tutorial contains `player-move`, `board-setup`, or another non-story tutorial node -> render the tutorial session surface.
+- Missing trigger metadata on a legacy script -> preserve non-story-node detection as the compatibility fallback.
+
+#### 5. Good/Base/Bad Cases
+- Good: use `triggerType` to protect the item-story product boundary, then use node detection for legacy/tutorial scripts.
+- Base: a pure `story` script renders through `StoryPlayerModal` without special routing.
+- Bad: treating every `player-choice` node as proof that the script needs a Go board.
+
+#### 6. Tests Required
+- `src/app/AppOverlays.test.jsx` must pass a realistic `item-character-use` script starting at `player-choice` and assert `StoryPlayerModal` is present while `TutorialSessionModal` is absent.
+- The existing unified-tutorial test must continue asserting that a `player-move` script renders `TutorialSessionModal`.
+- Run the focused overlay, warehouse, story, and item settlement suites before the repository-wide gate.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+return script.nodes.some((node) => !isStoryNodeType(node.type));
+```
+
+Correct:
+
+```js
+if (script.triggerType === "item-character-use") return false;
+return script.nodes.some((node) => !isStoryNodeType(node.type));
+```
+
+### Scenario: Sigrika Corruption Global Surface Lock
+
+#### 1. Scope / Trigger
+- Trigger: changing the Sigrika corruption root class or its one-shot normal/corrupted transition, official corrupted portrait, home controls, handbook cards, match picker, special-room player/presentation surfaces, result continuation, the development candy-badge cancel action, or the development story jump to use eight.
+
+#### 2. Signatures
+- `normalizeSigrikaCandyArc(user).corrupted` is the shared presentation gate; the app shell exposes the corruption class and phase data to route/overlay owners.
+- `useSigrikaCorruptionTransition()` owns the `covering -> covered -> revealing` mutation boundary, and `SigrikaCorruptionTransition` is its app-shell direct-child visual owner. Only the climax and recovery-complete handlers may invoke it; hydration and refresh must render the persisted theme directly.
+- `SIGRIKA_CORRUPTED_PORTRAIT_ASSET` owns the canonical runtime WebP and its authored PNG source; `resolveCharacterPortraitPresentation(character, { user })` must return that WebP for canonical character id `sigrika` whenever `user.sigrikaCandyArc.corrupted === true`.
+- `SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET` owns the canonical anonymous-player runtime WebP and its authored PNG source. Corrupted shared preload and the human side of special room/replay player cards must import this constant rather than duplicating its URL.
+- The special match CTA emits `sigrika-candy:duel-start`; it never enters an ordinary matchmaking queue.
+- `chatPopoverClassName({ mobileDockPopup, isSigrikaDuelSystemLog })` appends `.sigrika-duel-system-log` only for the special-room record popup so its portaled surface keeps an explicit theme owner outside the room root.
+- `POST /api/items/rainbow-bean-candy/sigrika/debug/jump-to-eight` has no request body and returns `{ user }`; `user.sigrikaCandyArc` must contain `{ useCount: 8, phase: "corruption-story" }` and the response must use `USER_ASSET_RELATION_INCLUDE`.
+- The injected story option targets shared sentinel `SIGRIKA_CANDY_DEBUG_JUMP_NODE_ID`; `StoryPlayerModal.onNavigate(nextNodeId)` handles only that sentinel and returns `false` for normal nodes so default navigation remains intact.
+
+#### 3. Contracts
+- During corruption the existing interface becomes deeply grayscale and visibly damaged through intermittent inverse slices, independently timed horizontal tears, block drops, brief blackouts, archive-failure fragments, and a persistent four-edge black vignette. The dedicated damage field is `aria-hidden` and pointer-transparent; it must never change layout or hit targets. Header controls and already opened overlay close/navigation controls remain usable except for both desktop and mobile onboarding-guide actions: those two native buttons are disabled and receive a compact red cross inside their existing geometry without changing the header layout. The home stage leaves only the handbook and match entrance available and those are the only home-stage surfaces allowed to retain their authored color. The final home owner must duplicate `--home-main-panel-bg` into the panel's existing pseudo-element and grayscale that image directly, while the separate `.home-player-zone` owner grayscales its mobile high-z composite; a low-z blend or backdrop layer is insufficient because the Bright School mobile player zone owns `z-index: 40` and Chromium does not consistently include the parent background in that filter backdrop. IRIS and the header mascot are omitted from corrupted markup rather than hidden only with opacity. Disabled utilities and the footer must not introduce rectangular gray/black pollution backgrounds.
+- Corrupted Bright School home backgrounds must be achromatic at every depth: the root paper-grid shell and `.home-screen` blend all authored background layers through a neutral luminosity base, the ordinary unfiltered `.home-main-panel` background image is removed so only its grayscale pseudo-element copy remains, and the footer composite is explicitly grayscale with neutral text color. This background-only treatment must not filter the handbook or match access points, which remain the only saturated home content.
+- Mounting the corruption presentation boundary acquires a shared BGM pause request; unmounting it releases that request. This must preserve the current track and playback offset so recovery resumes rather than restarts, without muting unrelated SFX or voices. A track change while the pause request is active may update `currentTrack`, but must not schedule audio until the request is released; this keeps the special-room transition silent too.
+- The corrupted handbook must inherit the ordinary Bright School handbook's modal dimensions, grid, card geometry, border radii, and short hard shadows instead of restyling those structures. Corruption omits sortie buttons from markup and restores equal card padding so the remaining portrait/name composition is centered. Recolor the paper, header, close control, scrollbar, and every non-Sigrika child surface to controlled grayscale; non-Sigrika cards use a medium-dark gray gradient with fine monochrome noise. The one exception is the card labelled `西格莉卡？`: it uses a pale blood-red multi-stop gradient, red border, and short pointer-transparent error scan without added copy. Every real non-Sigrika portrait overlays independently seeded image-block disassembly, while every non-Sigrika/empty card may use a low-duty-cycle, staggered mask split plus absolute fragment flash; those animations must never change layout, hit targets, or sibling positions. On coarse/portrait layouts the fragment image is absolutely centered against its owning card with explicit `inset` and translation rather than desktop padding compensation. A pointer-transparent modal overlay provides the same dim gray haze as the corrupted home without making Sigrika's red unreadable. It keeps only the existing `部员手册` heading: do not add archive summaries, integrity counters, English record labels, subject numbers, status bars, or other explanatory/prompt copy. Hidden-intel and empty slots stay gray and may share the card-level mask split without receiving a fake portrait overlay. Decorative scribbles, broad modal shadows, continuous jitter, and new card-grid geometry remain forbidden. The development-only candy badge action is available only in ordinary phase and must use a native button with an accessible cancel label.
+- Corrupted handbook card noise must be independently seeded, nonuniform rectangular SVG noise rather than repeated dot/grid backgrounds. Card breaks, flashes, and noise derive separate stable duration, negative-delay, slice-position, width, and direction variables from the character id; do not synchronize cards with one fixed duration or a small `nth-child` delay cycle. Determinism is required across rerenders, but visible cross-card rhythm is forbidden.
+- In a non-production build, Sigrika's `use-1-start` through `use-7-start` story entry may add one explicit test option that posts the authoritative jump endpoint, updates the full returned user projection, and reopens the same script at `corruption-start`. The normal next node must remain available as a sibling option. Production builds omit the option and production servers return 404 for the endpoint; merely navigating the player without persisting `useCount = 8 / corruption-story` is forbidden.
+- The match picker disables all four ordinary entries with damaged styling and adds one red `与西格莉卡？决战` action, but preserves the existing picker title, modal dimensions, option layout, spacing, and cancel action. During corruption the modal paper, title, ordinary options, practice entry, and cancel action all become medium dark gray at the corrupted home's `brightness(0.78-0.82)` range; stacking a near-black base, high-opacity veil, and sub-0.7 brightness is forbidden. Title/options remain a blurred, pointer-inert background layer, while the gray cancel action stays sharp and clickable. The duel CTA is absolutely centered above the pointer-transparent darkening layer and is the only saturated element. It contains only its necessary decision label (or `继续与西格莉卡？决战` while resuming), without a sigil, arrow, subtitle, automatic-match hint, or status explanation. Do not replace the picker with a protocol dashboard or wrap the CTA in a separate target panel. Never filter the parent as one flattened unit because that would also desaturate the duel CTA; use a lower-z overlay plus owner rules instead.
+- `CorruptionMarks.jsx` must derive image fragments and black/white noise from stable string seeds. The same target must render the same geometry and missing-block set across rerenders, different target ids must produce different geometry, and no render path may call `Math.random()`. `CorruptionFragmentImage` repeats the owning image into deterministic rectangular clips, omits exactly one quarter of the configured clips (default 6×4), offsets only the remaining clips, remains `aria-hidden` and pointer-transparent, and never owns a visible background. The owning full image must remain in layout only as a fully transparent size source while corruption is active; leaving it faintly visible beneath the fragment layer is forbidden because it fills every intended data-loss gap. The six home utility images retain the default 6×4 grid, while the much taller full-color handbook entry uses a denser 10×12 grid so its physical block size visually matches those utility errors; real non-Sigrika handbook portraits may continue using the default treatment. These overlays must not change button/card layout or hit boxes, and no corruption surface may render scribble polylines, brand-title red crosses, or handbook-entry noise; the compact red cross confined to the disabled onboarding-guide button is the sole header-cross exception. The handbook entry's fragments must retain the source image color, use a smaller displacement limit on mobile, and stay absolutely overlaid within the transparent source image's exact geometry on both desktop and portrait layouts. Generic home-image owners must target the direct source child (`.home-entry-motion > img`) instead of every descendant image, otherwise generated fragment pieces become relative flow items or inherit source-only mobile transforms. Unit tests must assert deterministic missing-block selection, custom grid density, exact quarter omission, and rendered fragment count, while CSS contracts must assert zero opacity on all source-image owners plus direct-child isolation for home image rules. The final `mobile-adaptive/sigrika-corruption.css` entry may split concrete owners and mirror the known Bright School owner specificity where an earlier `!important` surface or generic child positioning rule would otherwise win; relying on source order with a shorter selector is insufficient. Keep those specificity repairs local to the affected owner or final theme guard rather than restyling its parent window.
+- The special room is a scoped red-black exception to the otherwise achromatic corruption shell. `.room-screen.sigrika-candy-duel-room` restores full-color rendering only for the duel, while bounded late owners divide atmosphere, information panels, controls, portrait-mobile tabs, replay/result, and transient presentation. The natural-color board and black/white stones remain legible inside layered charcoal-red, oxblood, softened danger-red, and pale-red framing; near-black large-area fills, dense hard-red outlines, and unreadable theme-winner child colors are forbidden. Ordinary rooms and every non-room corruption surface remain isolated.
+- Special-duel NPC dialogue reuses the tutorial battle composition contract: canonical NPC portrait, immediate speaker name, and body copy in a two-column bubble with desktop and portrait-safe placement. The complete bubble owns one continuous red-black background; the portrait column and copy column must not add independent borders or background fills. The fake-skill burst remains a separate centered banner with one vivid charcoal-red to hot-red to deep-charcoal outer gradient; its portrait wrapper and copy wrapper remain borderless and transparent, while the label and skill name use high-contrast pale text directly on that shared surface. Do not reintroduce a split-zone background, nested backing card, or left inset stripe.
+- `SigrikaDuelPresentation` portals dialogue and fake-skill markup directly into `.app-shell.is-sigrika-corrupted`, so both nodes match the shell's direct-child grayscale rule independently of the room root. The late room-atmosphere owner must therefore include `> .sigrika-duel-presentation { filter: none !important; }`; recoloring the banner or bubble descendants cannot undo a filter applied to their composited portal root.
+- Both special-room players receive 1800 seconds of main time and zero byo-yomi; `TimeBar` shows the visible `主时间` label and countdown, and timeout follows the ordinary authoritative clock path. Desktop labels/digits must compute from the duel text tokens, while portrait mobile uses one `label digits track` row with a flexible track. Both player cards keep the `提子 / 除子 / 超频` row, the room code renders `房间号ERROR`, and `数子` remains natively disabled. `ActionBar` exposes `pass-action` and `resign-action`: pass stays neutral, counting stays explicitly disabled, and resign receives the danger treatment. `room-icons.css` owns the high-contrast Lucide stroke for header utilities, action controls and the system-record trigger without selecting board SVGs; the disabled counting glyph keeps the disabled text stroke. `room-mobile-readability.css` directly owns replay progress, mobile-menu child copy, the system-record badge, small counter labels, viewpoint/result badges, and tap tooltips because inherited parent color is not sufficient against late Bright School child winners. The special match-success heading is `正在踏入深渊。。。`, while ordinary matchmaking keeps `匹配成功`. Formal skill actions, draw, and chat input remain absent. General watch/list and room-code join remain hidden, while corrupted users may enter the current unique duel only through the occupied match-picker action. The client omits transient `npc-thinking` records from restored special-room logs while preserving every other safe record. Leaving an unfinished special room reuses the ordinary resignation confirmation, submits `{ type: "resign" }`, and remains mounted until the authoritative finished snapshot opens the result.
+- The mobile system-record popup is portaled to `.app-shell`, outside `.sigrika-candy-duel-room`; `ChatBox` must add `.sigrika-duel-system-log` and `room-system-log.css` must own the shell, header, close action, log, skill records, scrollbar, and read-only controls at that portal boundary. A selector scoped only beneath the room root is invalid because it cannot match the live popup. The special class must not appear on ordinary chat or tutorial-story record popups.
+- Bright School gives lifecycle modals a late `1120px` width, internal auto-scroll, and button color winner, so special-duel opening and resignation confirmation must use the real pointer-transparent `sigrika-duel-modal-atmosphere` child plus local high-specificity `!important` winners. Opening is capped at `460px`, confirmation at `420px`, both use available mobile width, `overflow: hidden`, `scrollbar-gutter: auto`, and `inset: 0` on the atmosphere child. The opening `Swords` mark must carry `.sigrika-duel-opening-icon` and compute to a `56px` circular, pale-on-red high-contrast owner instead of inheriting the small generic modal icon. Confirmation title/body plus danger and secondary action labels must compute to the pale duel text color over explicit charcoal/red surfaces; setting only Bright School custom properties is insufficient. The special portrait owner must set `.white-portrait` to pale blood-pink and `.black-portrait` to charcoal-red explicitly while avoiding one generic portrait background. The corrupted NPC skill chip must be scoped through the duel room and player card so it beats `.player-info.opponent .skill-chip`; a shorter selector leaves the Bright School cream gradient visible.
+- At fine-pointer desktop heights up to `820px`, special-duel fitting may only override `--board-size` on `.desktop-room-screen.sigrika-candy-duel-room`. Do not shrink player cards, timer panels, capture rows, or action controls to make 1280×720 fit. The acceptance point is the full action bar bottom inside the viewport and no horizontal document overflow; at ordinary desktop heights the base board-size contract remains in force.
+- The selected official corrupted portrait is `/assets/characters/portraits/sigrika-corrupted.webp`, normalized through `npm run portraits:normalize` from `/assets/characters/sigrika-corrupted.png`. It replaces every existing corrupted-Sigrika portrait or question-mark portrait slot: the handbook card/detail and corruption/recovery story resolve it through the shared character portrait resolver; the NPC side of the special-room player card, fake-skill burst, and replay use the same asset constant directly. Corruption presentation overrides equipped Sigrika costumes and their framing but must not affect ordinary Sigrika or another character.
+- The selected anonymous player portrait is `/assets/characters/portraits/sigrika-corrupted-player.webp`, normalized through the same pipeline from `/assets/characters/sigrika-corrupted-player.png`. It is a gender-neutral full-body black chibi with a white outline, standing while holding one Go stone beside the face. `AssetPreloadScreen` displays it in the existing portrait slot whenever `user.sigrikaCandyArc.corrupted === true`, while continuing to suppress ordinary character art, missing-image spinner, and character-specific loading copy. The human side of the special room and replay uses the same constant and must not render the selected ordinary character portrait or chain badge. Login preload includes both corrupted portraits only for a corrupted user; battle preload includes both for `SIGRIKA_CANDY_DUEL.matchSource` even when formal skills are disabled. The result surface remains portraitless because it owns no portrait slot; do not invent a new layout there merely to display either asset.
+- A special-duel replay remains in the ordinary five-column replay grid. Its timestamp cell contains no title/tag prefix, the row uses one pale blood-red surface, and a small absolute `Crown` boss badge sits at the top-left without becoming a grid child or visible text label. Ordinary unrated friend replays use the same non-grid top-left badge placement for the `Handshake` icon, retain an accessible “友谊对局” name, and must not displace the timestamp. Portrait replay lists reserve a 7px inner gutter for the outward badge bleed; the final nested-card and timestamp-cell owners keep that bleed visible instead of clipping it, while the surrounding list remains the scroll owner. The NPC and human cells in the special replay must resolve the two canonical corrupted portrait constants from the viewed user's color before costume/base portrait fallback; outcome classes and other ordinary replay rows remain unchanged.
+- The result surface cannot be dismissed around recovery. Its only continuation starts the win/loss recovery story; finishing or skipping that story restores the normal app shell. The special result stays portraitless, uses the same red-black token set, omits the ordinary record/reward disclaimer, and resolves no victory/defeat/draw character voice while ordinary result voices remain unchanged. Its actual portal owner `.sigrika-corruption-result-backdrop .sigrika-corruption-result-modal` must beat the late Bright School `50vw/40vh` lifecycle rule, cap width at `360px`, use content-driven height, and keep the sole continuation control at least `44px` high.
+- The normal/corrupted mutation request starts in parallel with `covering`, but `updateUser()` may run only after the full-screen layer reaches `covered`. A slow request extends only the opaque hold; a failed request must not commit and must reveal the original theme before the existing error toast is shown. One active transition shares its Promise with duplicate callers. The direct-child transition blocks pointer input, sets the shell busy state, uses named layer `--sigrika-theme-transition-z: 100300` above the story player, and is explicitly excluded from the root corruption filter. Its visual owners may animate only compositor-friendly transform/opacity on portrait devices and may not use a full-screen `backdrop-filter`.
+- Persistent ambient corruption motion intentionally has no `prefers-reduced-motion` fallback. This product-directed exception is limited to the existing damage field and marks imported by `mobile-adaptive/sigrika-corruption.css`; the one-shot `transition-motion.css` must provide a short veil-only reduced-motion path, and unrelated motion contracts keep their existing reduced-motion behavior.
+
+#### 4. Validation & Error Matrix
+- Refresh in any corrupted phase -> root restrictions reconstruct from the returned user payload before ordinary controls become actionable.
+- Successful climax/recovery -> request begins with cover, root theme changes only under an opaque veil, then the destination theme is revealed; slow response remains covered. Failed climax/recovery -> no user commit, the source theme is restored, then the existing error path runs. Duplicate calls -> one request/commit. Initial corrupted hydration -> no transition markup.
+- Non-guide header button during corruption -> remains usable; desktop/mobile onboarding guide -> native disabled behavior plus a red cross confined to the existing button geometry; blocked home utility -> native disabled/inert behavior and corrupted styling.
+- Non-Sigrika handbook card click -> no detail/open/select action.
+- Corrupted home render -> exactly six utility fragment seeds are distinct; no scribble or brand-title-cross markup exists; the only header cross belongs to both disabled onboarding actions; IRIS and the header mascot are absent; handbook noise stays alpha-masked inside the handbook image; footer computed background remains transparent.
+- Bright School corrupted handbook -> the modal interior computes achromatic, no added subtitle/counter/English label exists, all real non-Sigrika portraits have seeded fragments, and the Sigrika card computes pale blood red even when it is also selected/deployed.
+- Corrupted Sigrika portrait resolution -> the canonical WebP wins over an equipped costume and drops costume framing; normal Sigrika and non-Sigrika resolution remain unchanged; story portrait preloading resolves the same URL as visible story markup.
+- Special duel room/replay -> the NPC card and fake-skill burst contain the canonical corrupted-Sigrika WebP, the human card contains the canonical anonymous-player WebP, and battle preload contains both WebPs even when `skillEnabled` is false. The room root, each direct-child presentation portal, and the `.sigrika-duel-system-log` portal compute `filter: none`; dialogue and fake-skill banner each expose exactly one continuous outer background, while their portrait/copy children remain borderless and transparent. Header, action and system-record Lucide icons compute a pale high-contrast stroke, with the disabled counting glyph retaining its muted disabled stroke. Both information rows contain all three Go counters, the room code is `房间号ERROR`, and counting remains disabled. Both clocks begin at 30:00 with zero periods; desktop labels/digits are high contrast and portrait clocks use the label/value/flexible-track row. At 390×844 the replay label, mobile-menu copy, record badge, counter headings, viewpoint badge, tap tooltip, system-log title/body/skill row, and read-only field each compute at least 4.5:1 against their painted surface. Computed black/white portrait fills are distinct; the NPC skill chip has no cream background image. Opening/confirmation compute at `460px`/`420px` maximum width with hidden internal overflow and readable pale action labels; the opening icon computes to `56px`. The system log contains no `npc-thinking` line and no ordinary paper-grid surface. The special replay row shows an icon-only boss badge and pale blood-red background, uses the canonical NPC/player portraits, and keeps the timestamp first with no special title/tag prefix. The special match-success window says `正在踏入深渊。。。`; the ordinary window still says `匹配成功`. At 1280×720 the action bar is fully visible; 390×844 and 412×915 have no horizontal document overflow. Confirmed resignation produces the result without early navigation, and that result has no record disclaimer, no result voice event, exactly one continuation, a `360px` maximum width, content-driven height, and a continuation target at least `44px` high.
+- Corrupted shared preload -> the existing portrait slot contains the canonical anonymous-player WebP, no ordinary fixed/random character portrait or character loading line leaks through, and explicit generic labels/status/tips remain available.
+- Bright School corrupted match picker -> the modal keeps the ordinary Bright School picker geometry and title, all surfaces except the duel CTA compute dark gray, ordinary options remain disabled/blurred, the duel CTA is centered above the darkening layer, the dark-gray cancel button stays sharp/clickable, and a generic theme button rule cannot repaint the red CTA.
+- 360x800, 390x844, and 412x915 portrait corruption -> the home six-entry grid, handbook three-column roster, and match picker keep zero document overflow; fragments stay visually attached to their source images, card labels remain legible, and both duel/cancel actions keep at least a 44px touch target.
+- Corrupted home -> `resolveBackgroundMusic()` returns the internal `sigrika-corruption-home` single-loop before consulting the random home pool. `SIGRIKA_CANDY_DUEL.matchSource` with public `sigrikaCandyDuel.musicStarted !== true` -> returns `null` before ordinary battle or skill music; once the server-derived flag becomes true at the opening `秘日六席` skill stage, the resolver returns the internal duel intro-loop and keeps returning it after the presentation clears or the room is refreshed. Match-success, result-modal, and finished-room silence gates stay higher priority. Recovery to a normal user payload restores the ordinary resolver. The visual corruption overlay must not acquire the shared BGM pause request; character-music preview and other explicit pause consumers keep the existing offset-preserving pause contract.
+- Production build -> no cancelable candy badge action and no eighth-use story shortcut.
+- Development shortcut from a normal use story -> server persists use eight, returned equipped costumes remain intact, and the current player becomes non-dismissible at `corruption-start`.
+- Development shortcut at `n = 0`, `n = 8`, or any non-normal phase -> reject with 409 unless the account is already idempotently at `n = 8 / corruption-story`.
+
+#### 5. Good/Base/Bad Cases
+- Good: immutably add the debug option beside an explicit normal continuation, persist the real phase first, then swap the current script start node.
+- Good: route user-scoped handbook/story portraits through `resolveCharacterPortraitPresentation`, import `SIGRIKA_CORRUPTED_PORTRAIT_ASSET` for special-room Sigrika slots, and import `SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET` for corrupted player slots.
+- Good: start the authoritative mutation and full-screen cover together, commit under the opaque phase, then reveal the returned theme with a directional motion owner.
+- Good: attach `.sigrika-duel-system-log` before portaling the record popup, then style that semantic owner directly under the corrupted app shell.
+- Base: production or a non-Sigrika item story returns the original script object and uses ordinary navigation without a custom handler.
+- Bad: point the option directly at `corruption-start` without a server write, expose the option in production, replace the user with a relation-incomplete projection that resets equipped portraits, duplicate the portrait URL across components, let an equipped costume override the corrupted portrait, or update the root corruption class before the transition is fully opaque.
+- Bad: recolor only `.sigrika-candy-duel-room .chat-box`; the live mobile system log is no longer a descendant after Portal mounting and will keep the ordinary paper theme.
+
+#### 6. Tests Required
+- Home, handbook, match, IRIS/footer, story, result, room, timer, replay, and ChatBox suites assert both markup restrictions and semantic controls. Special-room coverage locks the abyss match-success heading, 1800-second zero-byo-yomi clocks, visible three-counter row, disabled counting action, `房间号ERROR`, absent result disclaimer, null result voice event, real opening/confirmation atmosphere child, the special opening-icon class, portal-safe system-log class, ordinary-room modal isolation, and resignation-without-early-navigation behavior. CSS contracts lock the `56px` dedicated opening-icon owner, `360px` content-height result owner, `44px` continuation target, pale/disabled stroke roles, one continuous presentation background, transparent borderless portrait/copy children, direct high-contrast mobile text winners, and the complete red-black system-log owner.
+- Portrait resolver, handbook, story player, player card, duel presentation, shared preload, asset preload, and portrait-normalization suites assert both canonical corrupted URLs, costume precedence, ordinary-state isolation, absence of question-mark/ordinary-player portrait fallback, conditional preload, and committed 900×900 WebP contracts.
+- `SigrikaCorruptionOverlay.dom.test.jsx` asserts the pointer-transparent damage structure without acquiring the global BGM pause; `roomView.test.js`, `musicLibrary.test.js`, and `useBackgroundMusicTrack.test.js` together lock false-before-skill / true-from-skill / persistent-after-clear special-duel music behavior and resolver priority, while `preloadAssets.test.js` locks conditional home preload and match-source duel preload.
+- `useSigrikaCorruptionTransition.dom.test.jsx` locks commit timing, slow/failing request recovery, reduced-motion timing, and duplicate-run sharing; `SigrikaCorruptionTransition.dom.test.jsx` locks the phase/direction structure and synchronized CSS duration variables; `App.test.js` locks both mutation boundaries plus shell mounting/busy state. CSS/static contracts lock the named high layer, root-filter exclusion, pointer blocking, absence of `backdrop-filter`, split visual/motion owners, and reduced-motion fallback.
+- `audio/playback.test.jsx` asserts that assigning a new track while `pauseRequested` is true returns the no-schedule decision and keeps the track ready for later recovery.
+- Warehouse/story and commerce/arc suites assert normal-option preservation, production omission/rejection, authoritative use-eight persistence, and full asset projection on the debug jump response.
+- `CorruptionMarks.test.jsx` asserts deterministic repeatability, per-seed difference, unique rectangular fragment geometry, and dense two-color noise.
+- CSS/static contracts assert the final corruption stylesheet is imported after normal theme/mobile layers, keeps each concrete owner below the size guard, imports the home/handbook/match/theme-guard owners in order, explicitly removes grayscale from the direct-child presentation portal, and owns the deliberate no-reduced-motion exception.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<header className="replacement-protocol-dashboard">...</header>
+<section className="sigrika-corruption-duel-zone">...</section>
+```
+
+Correct:
+
+```jsx
+<button className="corrupted" disabled>正式匹配</button>
+<button className="sigrika-duel-action" onClick={startSigrikaDuel}>
+  与西格莉卡？决战
+</button>
+```
+
+Wrong player portrait:
+
+```jsx
+<img src={selectedCharacter.portrait} alt={selectedCharacter.name} />
+```
+
+Correct player portrait:
+
+```jsx
+<img src={SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url} alt="玩家" />
+```
+
+Wrong portal styling:
+
+```css
+.sigrika-candy-duel-room .chat-popover { color: var(--sigrika-duel-text); }
+```
+
+Correct portal styling:
+
+```jsx
+<section className="chat-box chat-popover sigrika-duel-system-log" />
+```

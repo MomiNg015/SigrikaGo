@@ -1,0 +1,7 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
+import React from 'react'; import {createRoot} from 'react-dom/client'; import '/src/styles.css';
+const view=new URLSearchParams(location.search).get('view')||'WatchModal';
+window.fetch=async()=>new Response(JSON.stringify({items:[],rooms:[],players:[],friends:[],blacklist:[],achievements:[],messages:[],summary:{},profile:{id:1,username:'测试玩家',recordStats:{},characterStats:[]}}),{headers:{'Content-Type':'application/json'}});
+import Component from '/src/modals/FriendsModal.jsx';
+createRoot(document.getElementById('root')).render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(Component,{token:'fixture',user:{id:1,username:'测试玩家'},characters:{},onClose:()=>{},audioSettings:{master:80,bgm:60,sfx:60,voice:60},setAudioSettings:()=>{},titleStickers:true})));
+</script></body></html>

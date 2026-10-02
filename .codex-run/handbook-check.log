@@ -1,0 +1,371 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ src/styles/themeContract.test.js (38 tests | 1 failed) 431ms
+   ✓ player theme CSS contract > imports every registered player theme entry from themes.css 2ms
+   ✓ player theme CSS contract > keeps future theme options out of the active CSS import contract 2ms
+   ✓ player theme CSS contract > keeps each registered theme scoped to the player app shell 42ms
+   ✓ player theme CSS contract > keeps theme entries import-oriented for future extension 2ms
+   ✓ player theme CSS contract > keeps Bright School commerce as an import-only domain entry 2ms
+   ✓ player theme CSS contract > keeps Bright School commerce shop as an import-only modal polish entry 1ms
+   ✓ player theme CSS contract > keeps Bright School commerce warehouse and profile as an import-only polish entry 1ms
+   ✓ player theme CSS contract > keeps Bright School base as an import-only foundation entry 0ms
+   ✓ player theme CSS contract > keeps Bright School semantic surface contracts as one import-only anti-bleed entry 1ms
+   ✓ player theme CSS contract > keeps equivalent Bright School profile panels on shared paper tints 1ms
+   ✓ player theme CSS contract > keeps Bright School theme tokens available to the Tailwind semantic scaffold 53ms
+   ✓ player theme CSS contract > keeps Bright School home as an import-only lobby entry 5ms
+   ✓ player theme CSS contract > keeps Bright School home utility toolbox as an import-only sub-entry 2ms
+   ✓ player theme CSS contract > keeps Bright School home student-id-card as an import-only sub-entry 2ms
+   ✓ player theme CSS contract > keeps Bright School gallery polish as an import-only static gallery parity entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile as an import-only domain entry 1ms
+   ✓ player theme CSS contract > hides Bright School portrait window scrollbars without disabling internal scrolling 79ms
+   ✓ player theme CSS contract > sizes Bright School portrait dialogs from their padded containing block 2ms
+   ✓ player theme CSS contract > gives the Bright School document scrollbar the paper palette 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile home shell as an import-only portrait home entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile commerce and warehouse as an import-only portrait entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile house and profile as an import-only portrait entry 2ms
+   ✓ player theme CSS contract > keeps Bright School mobile lists and settings as an import-only portrait entry 1ms
+   ✓ player theme CSS contract > keeps Bright School mobile room as an import-only portrait battle entry 0ms
+   × player theme CSS contract > keeps Bright School modals as an import-only modal cleanup entry 16ms
+     → expected [ …(15) ] to deeply equal [ …(14) ]
+   ✓ player theme CSS contract > keeps Bright School effects as an import-only animation and board-effect entry 1ms
+   ✓ player theme CSS contract > keeps Bright School room as an import-only battle readability entry 1ms
+   ✓ player theme CSS contract > keeps Bright School component repairs as an import-only domain entry 1ms
+   ✓ player theme CSS contract > keeps Bright School quality base as an import-only audit and refinement entry 1ms
+   ✓ player theme CSS contract > removes the retired home online-count selectors from Bright School owner layers 1ms
+   ✓ player theme CSS contract > keeps the Bright School generic touch target from shrinking message board textareas 0ms
+   ✓ player theme CSS contract > rejects legacy Bright School purge and broad fallback CSS from the theme tree 44ms
+   ✓ player theme CSS contract > keeps volatile room and replay semantics in the final theme tree 76ms
+   ✓ player theme CSS contract > keeps Bright School star points from occupying the move-preview pseudo element 1ms
+   ✓ player theme CSS contract > keeps default board stones free of outline rings 3ms
+   ✓ player theme CSS contract > keeps Bright School mobile interaction polish in the final theme tree 69ms
+   ✓ player theme CSS contract > keeps Bright School mobile story long-text compression from reverting to the default modal grid 11ms
+   ✓ player theme CSS contract > keeps the new-theme template aligned with the registry contract 0ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 892ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 251ms
+     → totalFiles: expected 693 to be less than or equal to 692
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 187ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 160ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 150ms
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 42ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 4ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 0ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 14ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 56ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 0ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 0ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 7ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 3ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 5ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 2ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 5ms
+ ❯ src/modals/HouseModal.test.js (28 tests | 3 failed) 426ms
+   ✓ deriveCharacterRecordStats > counts only owned character records for the viewed player 2ms
+   ✓ deriveCharacterRecordStats > disables Sigrika sortie and swaps Denia portrait from candy effects 1ms
+   ✓ deriveCharacterRecordStats > splits profile record text into total games and result counts 1ms
+   ✓ deriveCharacterRecordStats > sorts profile character stats by total games descending 0ms
+   ✓ deriveCharacterRecordStats > renders the shared profile summary and semantic character record table 25ms
+   ✓ deriveCharacterRecordStats > disables profile like and report actions for self and disables repeat daily likes 17ms
+   ✓ deriveCharacterRecordStats > keeps the profile report dialog submit-only below the textarea 1ms
+   ✓ deriveCharacterRecordStats > marks house character cards with active item effect icons 9ms
+   ✓ deriveCharacterRecordStats > hides character chain badges in the house manual character grid 4ms
+   ✓ deriveCharacterRecordStats > renders unobtained and hidden-intel roster cards without the old unavailable copy 5ms
+   ✓ deriveCharacterRecordStats > keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted 2ms
+   × deriveCharacterRecordStats > keeps Bright School portrait handbook art centered with a compact bottom-right sortie action 19ms
+     → expected '/* Final Bright School portrait handb…' to contain 'width: 72px !important'
+   ✓ deriveCharacterRecordStats > plays the selected character sortie voice before selecting the character 0ms
+   ✓ deriveCharacterRecordStats > does not play sortie voice or select when the sortie button is disabled 0ms
+   ✓ deriveCharacterRecordStats > stops active character voice playback only when the nested detail surface closes 1ms
+   ✓ deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual 5ms
+   ✓ deriveCharacterRecordStats > keeps the house manual focused on character and decoration management 4ms
+   ✓ deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive 9ms
+   × deriveCharacterRecordStats > renders replay access and profile stats in the resume modal 10ms
+     → expected 2363 to be less than 806
+   ✓ deriveCharacterRecordStats > renders Baconbits as owned and sortie-capable when public user owns it 6ms
+   ✓ deriveCharacterRecordStats > keeps nested character detail dialogs as viewport overlays above the house manual 13ms
+   ✓ deriveCharacterRecordStats > renders character descriptions in the character detail dialog 59ms
+   ✓ deriveCharacterRecordStats > renders optional character CV labels without default link styling 22ms
+   ✓ deriveCharacterRecordStats > renders the character skill BGM player in the detail heading 91ms
+   × deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable 109ms
+     → expected '/* Dossier geometry only; tagged acti…' to contain 'background: var(--bright-cream) !impo…'
+   ✓ deriveCharacterRecordStats > shows a title disclosure when the user owns multiple base-skill BGM tracks 3ms
+   ✓ deriveCharacterRecordStats > separates base and derived-skill music into independent slots 0ms
+   ✓ deriveCharacterRecordStats > makes the character description area replay the detail voice 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > keeps Bright School portrait handbook art centered with a compact bottom-right sortie action
+AssertionError: expected '/* Final Bright School portrait handb…' to contain 'width: 72px !important'
+
+- Expected
++ Received
+
+- width: 72px !important
++ /* Final Bright School portrait handbook character-card composition. */
++
++ @media (max-width: 760px) and (orientation: portrait) {
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal:not(.is-sigrika-corrupted) .character-list {
++     grid-auto-rows: 152px !important;
++     gap: 8px !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal:not(.is-sigrika-corrupted) .character-card.portrait-card:not(.locked):not(.hidden-intel-card) {
++     grid-template-columns: minmax(0, 1fr) !important;
++     grid-template-rows: 26px minmax(0, 1fr) 24px !important;
++     height: 152px !important;
++     padding: 5px !important;
++     gap: 3px !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal:not(.is-sigrika-corrupted) .character-card.portrait-card:not(.locked):not(.hidden-intel-card) > strong {
++     display: block !important;
++     grid-area: 3 / 1 !important;
++     font-size: 12px !important;
++     padding: 4px 0 !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal:not(.is-sigrika-corrupted) .character-card.portrait-card > img {
++     grid-area: 2 / 1 !important;
++     width: 80px !important;
++     max-width: calc(100% - 4px) !important;
++     height: 80px !important;
++     max-height: 80px !important;
++     align-self: center !important;
++     justify-self: center !important;
++     object-fit: contain !important;
++     object-position: center !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal:not(.is-sigrika-corrupted) .character-card.portrait-card .sortie-button {
++     grid-area: 1 / 1 !important;
++     justify-self: end !important;
++     position: relative !important;
++     top: auto !important;
++     right: auto !important;
++     bottom: auto !important;
++     width: 30px !important;
++     min-width: 30px !important;
++     height: 30px !important;
++     min-height: 30px !important;
++     padding: 0 !important;
++     z-index: 5 !important;
++     transform: none !important;
++     box-shadow: 1px 1px 0 color-mix(in srgb, var(--bright-border) 34%, transparent) !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal .character-card.portrait-card .sortie-button svg {
++     width: 14px !important;
++     height: 14px !important;
++   }
++
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal .character-card.portrait-card.is-deployed .sortie-button.selected,
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
++     .house-modal .character-card.portrait-card.is-deployed .sortie-button.selected:disabled {
++     transform: none !important;
++     box-shadow: 1px 1px 0 color-mix(in srgb, var(--bright-border) 34%, transparent) !important;
++   }
++ }
++
+
+ ❯ src/modals/HouseModal.test.js:388:30
+    386|     expect(characterCardCss).toContain(".character-card.portrait-card …
+    387|     expect(characterCardCss).not.toContain(".character-card.portrait-c…
+    388|     expect(characterCardCss).toContain("width: 72px !important");
+       |                              ^
+    389|     expect(characterCardCss).toContain("height: 72px !important");
+    390|     expect(characterCardCss).toContain("justify-self: center !importan…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > renders replay access and profile stats in the resume modal
+AssertionError: expected 2363 to be less than 806
+ ❯ src/modals/HouseModal.test.js:599:54
+    597|     expect(html).not.toContain("profile-friend-button");
+    598|     expect(html).not.toContain("profile-report-button");
+    599|     expect(html.indexOf("achievement-entry-action")).toBeLessThan(html…
+       |                                                      ^
+    600|     expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("r…
+    601|     expect(html).not.toContain("text-rating-value");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable
+AssertionError: expected '/* Dossier geometry only; tagged acti…' to contain 'background: var(--bright-cream) !impo…'
+
+- Expected
++ Received
+
+- background: var(--bright-cream) !important
++ /* Dossier geometry only; tagged action paint is shared with ordinary controls. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
++   .resume-header-actions,
++   .profile-modal-header,
++   .profile-identity-actions,
++   .profile-section-heading,
++   .profile-secondary-actions,
++   .profile-mode-feedback
++ ) button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button) {
++   border-width: 2px !important;
++   border-style: solid !important;
++   border-radius: 14px !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .resume-header-actions :is(
++   .achievement-entry-action,
++   .resume-wallet
++ ) svg {
++   color: inherit !important;
++   filter: none !important;
++   stroke: currentColor !important;
++   text-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view {
++   --resume-icon-size: 36px;
++   @media (max-width: 360px) and (orientation: portrait) {
++     --resume-icon-size: 32px;
++   }
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-view-self {
++   & .profile-identity-actions {
++     position: absolute;
++     grid-area: auto;
++     right: 10px;
++     bottom: 6px;
++     display: flex !important;
++     justify-self: end !important;
++     align-self: end;
++     width: auto !important;
++     gap: 6px !important;
++
++     & .resume-mini-action {
++       display: inline-flex !important;
++       justify-content: center;
++       align-items: center;
++       padding: 0 !important;
++     }
++   }
++
++   @media (max-width: 360px) and (orientation: portrait) {
++     & .profile-identity-actions { bottom: 2px; }
++   }
++
++   & .achievement-entry-action {
++     --campus-control-fill: #ffe4ee;
++     --campus-control-hover: #ffe4ee;
++     --campus-control-ink: #76314a;
++     --campus-control-border: #f08bad;
++   }
++
++   & .personalization-entry-action {
++     --campus-control-fill: #d9f0ff;
++     --campus-control-hover: #d9f0ff;
++     --campus-control-ink: #245f8c;
++     --campus-control-border: #7db8e8;
++   }
++
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-replay-button {
++     --campus-control-fill: #e4f6f0;
++     --campus-control-hover: #e4f6f0;
++     --campus-control-ink: #245b4f;
++     --campus-control-border: #73b79f;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal.profile-dossier-modal .profile-resume-view-self button:is(.achievement-entry-action, .personalization-entry-action, .resume-replay-action),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-modal.profile-dossier-modal .profile-resume-view-social button.profile-replay-button {
++   --campus-control-shadow: none;
++   --campus-control-hover-shadow: none;
++   --campus-control-active-shadow: none;
++   border-radius: 50% !important;
++   width: var(--resume-icon-size) !important;
++   min-width: var(--resume-icon-size) !important;
++   height: var(--resume-icon-size) !important;
++   min-height: var(--resume-icon-size) !important;
++ }
++
++ /* Profile tabs reuse the watch-window mode-tab control language. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-mode-tabs {
++   box-sizing: border-box !important;
++   width: auto !important;
++   min-width: 0 !important;
++   gap: 4px !important;
++   margin: 0 8px !important;
++   padding: 12px 0 14px !important;
++   border: 0 !important;
++   border-radius: 0 !important;
++   background: transparent !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++
+
+ ❯ src/modals/HouseModal.test.js:1008:31
+    1006|     expect(profileActionsCss).toContain("gap: 4px !important");
+    1007|     expect(profileActionsCss).not.toContain(".profile-mode-tabs button…
+    1008|     expect(profileActionsCss).toContain("background: var(--bright-crea…
+       |                               ^
+    1009|     expect(profileActionsCss).toContain("button:not(.achievement-entry…
+    1010|     expect(profileActionsCss).toContain(".achievement-entry-action,\n …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 693 to be less than or equal to 692
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/styles/themeContract.test.js > player theme CSS contract > keeps Bright School modals as an import-only modal cleanup entry
+AssertionError: expected [ …(15) ] to deeply equal [ …(14) ]
+
+- Expected
++ Received
+
+@@ -1,7 +1,8 @@
+  [
+    "./modals/handbook-decoration.css",
++   "./modals/handbook-roster.css",
+    "./modals/handbook-unobtained.css",
+    "./modals/handbook-hidden-intel.css",
+    "./modals/handbook-signal-motion.css",
+    "./modals/surface-cleanup.css",
+    "./modals/settings-lobby-cleanup.css",
+
+ ❯ src/styles/themeContract.test.js:554:37
+    552|     const modalsEntry = readFileSync(new URL("./themes/bright-school/m…
+    553| 
+    554|     expect(cssImports(modalsEntry)).toEqual([
+       |                                     ^
+    555|       "./modals/handbook-decoration.css",
+    556|       "./modals/handbook-unobtained.css",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  5 failed | 81 passed (86)
+   Start at  10:19:27
+   Duration  5.16s (transform 843ms, setup 0ms, collect 2.03s, tests 1.75s, environment 1ms, prepare 459ms)
+

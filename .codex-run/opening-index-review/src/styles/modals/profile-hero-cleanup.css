@@ -1,0 +1,148 @@
+:is(.resume-modal, .user-profile-modal) {
+  --profile-dossier-paper: color-mix(in srgb, var(--theme-panel-bg) 92%, var(--theme-blue));
+  --profile-dossier-sheet: var(--theme-panel-bg);
+  --profile-dossier-ink: var(--theme-text);
+  --profile-dossier-muted: var(--theme-muted);
+  --profile-dossier-blue: var(--theme-blue);
+  --profile-dossier-pink: var(--theme-accent);
+  --profile-dossier-mint: var(--theme-accent-2);
+  --profile-dossier-line: color-mix(in srgb, var(--profile-dossier-ink) 16%, transparent);
+}
+
+.profile-resume-view {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  width: min(1160px, 100%);
+  max-width: 1160px;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  background: transparent;
+  color: var(--profile-dossier-ink);
+}
+
+.profile-record-panel {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "status"
+    "overview"
+    "characters"
+    "actions";
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.profile-resume-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr) max-content;
+  grid-template-areas: "portrait identity actions";
+  align-items: center;
+  gap: 28px;
+  min-height: 172px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--profile-dossier-line);
+  background: transparent;
+}
+
+.profile-hero-portrait {
+  grid-area: portrait;
+  align-self: end;
+  justify-self: center;
+  width: 164px;
+  height: 152px;
+  overflow: visible;
+}
+
+.profile-portrait-mask {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.profile-portrait-mask > img {
+  display: block;
+  width: 80% !important;
+  height: 80% !important;
+  object-fit: contain !important;
+  object-position: center;
+  transform-origin: center;
+  scale: 1 !important;
+  translate: 0 0 !important;
+}
+
+.profile-identity-block {
+  grid-area: identity;
+  min-width: 0;
+}
+
+.profile-resume-hero h3 {
+  margin: 0;
+  font-size: 2.3625rem;
+  line-height: 1.15;
+}
+
+.profile-identity-block .user-identity {
+  --user-nameplate-scale: 1.4;
+  max-width: none;
+  padding: 4px 16px;
+}
+
+.profile-identity-block :is(.user-identity-main, .user-identity-name-tag) {
+  max-width: none;
+}
+
+.profile-identity-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-resume-view .profile-mode-tabs {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  width: auto;
+  margin: 0 8px;
+  padding: 12px 0 14px;
+  border: 0;
+  background: transparent;
+}
+
+.profile-resume-view .profile-mode-tabs button[aria-disabled="true"] {
+  cursor: wait;
+}
+
+.profile-identity-block,
+.profile-identity-block :where(.user-identity, .user-identity-main, .user-identity-name-tag) {
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  filter: none;
+}
+
+.profile-resume-hero > .profile-hero-portrait > .profile-portrait-mask > img {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter: none;
+}

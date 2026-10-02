@@ -1,0 +1,40 @@
+import { skillEffectTargetRule } from "./skillEffectCatalog.js";
+import { canSprayTransformStone } from "./gameConstants.js";
+import { effectiveSkillConfigForPlayer, effectiveSkillUsesForColor } from "./derivedSkills.js";
+import { isLibertyPurgeForbiddenPoint } from "./gameSkillState.js";
+
+export function lastMarkedAction(history = []) {
+  return [...history].reverse().find((entry) => (
+    entry.type === "move"
+    || ["flip-stone", "hidden-hand", "voyage-star"].includes(entry.effectType)
+  ));
+}
+
+export function canPreviewSkillTarget({ game, player, point, fallbackCharacters }) {
+  if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
+  if (effectiveSkillUsesForColor(game, player.color) <= 0) return false;
+  if (!point?.valid) return false;
+  if (!point.stone && point.protocolBan?.bannedColor === player.color) return false;
+  if (isLibertyPurgeForbiddenPoint(game, player.color, point)) return false;
+  const skill = effectiveSkillConfigForPlayer(game, {
+    ...player,
+    character: player.character ?? fallbackCharacters?.[player.characterId]
+  });
+  const effectType = skill?.effectType ?? skill?.id;
+  const targetRule = targetRuleForEffect(effectType, skill?.targetRule);
+  return canTargetPointByRule(targetRule, point, game);
+}
+
+function canTargetPointByRule(targetRule, point, game) {
+  if (targetRule === "spray-stone") return canSprayTransformStone(point);
+  if (targetRule === "stone") return Boolean(point.stone);
+  if (targetRule === "empty-point") return !point.stone;
+  if (targetRule === "legal-move-point") return !point.stone && game?.ko !== point.id;
+  if (targetRule === "any-point") return true;
+  return false;
+}
+
+function targetRuleForEffect(effectType, fallbackRule = null) {
+  if (effectType === "spray-stone") return "spray-stone";
+  return skillEffectTargetRule(effectType, fallbackRule);
+}

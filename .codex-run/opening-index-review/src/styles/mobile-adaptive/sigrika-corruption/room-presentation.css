@@ -1,0 +1,144 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-presentation {
+  z-index: var(--sigrika-corruption-action-z);
+  pointer-events: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue {
+  position: fixed;
+  top: max(96px, calc(16px + env(safe-area-inset-top)));
+  left: max(18px, calc((100vw - 1240px) / 2 + 18px));
+  width: min(440px, calc(100vw - 48px));
+  min-height: 96px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid var(--sigrika-duel-line-strong);
+  border-radius: 8px;
+  color: var(--sigrika-duel-text);
+  background: linear-gradient(105deg, var(--sigrika-duel-surface-accent) 0%, var(--sigrika-duel-interactive) 48%, var(--sigrika-duel-ink) 100%);
+  box-shadow: 0 6px 8px var(--sigrika-duel-shadow-soft), 0 0 0 2px color-mix(in srgb, var(--sigrika-duel-hot) 24%, transparent);
+  animation: sigrika-duel-dialogue-in 210ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue > img {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  object-position: center;
+  transform: scale(1.22);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue-copy {
+  min-width: 0;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sigrika-duel-muted) !important;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue p {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--sigrika-duel-text) !important;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst {
+  z-index: var(--sigrika-corruption-action-z);
+  grid-template-columns: 132px minmax(0, 1fr);
+  border: 2px solid var(--sigrika-duel-line-strong);
+  color: var(--sigrika-duel-text);
+  background: linear-gradient(105deg, var(--sigrika-duel-surface-accent) 0%, var(--sigrika-duel-hot) 28%, var(--sigrika-duel-line-strong) 52%, var(--sigrika-duel-ink) 100%);
+  background-size: auto;
+  box-shadow: 0 6px 8px var(--sigrika-duel-shadow-soft), inset 0 0 0 1px color-mix(in srgb, var(--sigrika-duel-text) 12%, transparent);
+  animation: skill-burst-card 2s ease-in-out forwards;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst .sigrika-duel-skill-portrait {
+  display: grid;
+  width: 116px;
+  height: 104px;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst .sigrika-duel-skill-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-copy {
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst span {
+  color: var(--sigrika-duel-muted) !important;
+  text-shadow: 0 2px 3px var(--sigrika-duel-shadow);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst strong {
+  color: var(--sigrika-duel-text) !important;
+  text-shadow: 0 2px 3px var(--sigrika-duel-shadow);
+}
+
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue {
+    top: calc(env(safe-area-inset-top) + 66px);
+    left: max(10px, env(safe-area-inset-left));
+    width: min(360px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    min-height: 82px;
+    padding: 12px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue > img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 14px;
+    min-height: 108px;
+    padding: 12px 14px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst .sigrika-duel-skill-portrait {
+    width: 72px;
+    height: 72px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst strong {
+    font-size: 1.9rem;
+  }
+}
+
+@keyframes sigrika-duel-dialogue-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-dialogue,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-skill-burst {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}

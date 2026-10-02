@@ -1,0 +1,10 @@
+/* Bright School portrait mobile room layout and flat controls.
+   Keep this entry import-only so phone battle contracts stay reviewable. */
+@import "./room/shell-header-menu.css";
+@import "./room/viewport-player-strips.css";
+@import "./room/board-stage.css";
+@import "./room/dock-actions.css";
+@import "./room/record-dialogs.css";
+@import "./room/touch-board-feedback.css";
+@import "./room/modal-sheets.css";
+@import "./room/flat-controls.css";

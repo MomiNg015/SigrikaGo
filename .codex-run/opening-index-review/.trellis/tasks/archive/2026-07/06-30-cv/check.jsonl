@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify CSS import and modal heading contracts"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Verify schema/migration/startup guard coverage"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify CV fields survive full round-trip"}

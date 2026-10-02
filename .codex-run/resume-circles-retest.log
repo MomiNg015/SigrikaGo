@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 893ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  17:15:40
+   Duration  4.76s (transform 72ms, setup 0ms, collect 103ms, tests 893ms, environment 0ms, prepare 140ms)
+

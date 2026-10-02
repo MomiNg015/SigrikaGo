@@ -1,0 +1,6 @@
+/* Bright School portrait mobile room dock actions. */
+@import "./dock-actions/dock-tabs-shell.css";
+@import "./dock-actions/action-panel-hint.css";
+@import "./dock-actions/action-grid.css";
+@import "./dock-actions/decision-bar.css";
+@import "./dock-actions/action-button-labels.css";

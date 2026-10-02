@@ -1,0 +1,53 @@
+/* Bright School shop responsive polish. */
+@media (max-width: 860px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 50%) !important;
+    grid-template-areas:
+      "bubble mascot"
+      "wallet mascot" !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    justify-items: stretch !important;
+    gap: 8px 10px !important;
+    padding: 12px 0 0 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+    align-self: end !important;
+    justify-self: end !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+    width: 100% !important;
+    max-height: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item-detail-modal {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-title-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-illust-label {
+    max-width: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 13px !important;
+  }
+}

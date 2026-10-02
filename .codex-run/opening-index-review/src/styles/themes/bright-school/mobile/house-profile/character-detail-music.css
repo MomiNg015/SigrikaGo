@@ -1,0 +1,67 @@
+/* Bright School portrait character detail and music controls */
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img {
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy {
+    text-align: left !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading {
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 210px) !important;
+    align-items: start !important;
+    gap: 8px !important;
+    padding-right: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading h3 {
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-title-line {
+    min-width: 0 !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-cv-label {
+    max-width: 100% !important;
+    color: var(--bright-ink) !important;
+    text-decoration: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
+    width: min(210px, 58vw) !important;
+    max-width: 100% !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 1px 0 !important;
+    justify-self: end !important;
+    align-self: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+    margin-left: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-trigger,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-static {
+    gap: 3px !important;
+    margin-left: 24px !important;
+    margin-right: 58px !important;
+    padding-inline: 3px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy .character-description {
+    text-align: left !important;
+  }
+}

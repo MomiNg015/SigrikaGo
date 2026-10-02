@@ -1,0 +1,159 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e "process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ scripts/export-admin-default-snapshot.test.js (3 tests) 395ms
+   ✓ admin default snapshot export > serializes non-user admin configuration with catalog credit fields  390ms
+ ✓ src/styles/themeContract.test.js (38 tests) 616ms
+ ✓ server/jsonBody.test.js (3 tests) 255ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1154ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  365ms
+ ✓ src/modals/AchievementModal.test.jsx (2 tests) 93ms
+ ✓ src/modals/GachaModal.test.js (6 tests) 134ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 1650ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 321ms
+     → totalBytes: expected 1506280 to be less than or equal to 1505268
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  418ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 295ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 292ms
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 84ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 2ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 7ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 1ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 1ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 26ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 140ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 1ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 1ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 18ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 6ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 12ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 4ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 2ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 15ms
+ ✓ scripts/check-production-config.test.js (6 tests) 1833ms
+   ✓ production config check script > exits non-zero and prints errors for invalid production deployment config  353ms
+   ✓ production config check script > rejects explicit multi-instance production checks  346ms
+ ✓ src/modals/ProfileMobileLayout.test.js (3 tests) 66ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 113ms
+ ✓ src/room/BoardSkillEffects.test.js (21 tests) 232ms
+ ✓ src/admin/storyScriptWorkbook.test.js (5 tests) 1286ms
+   ✓ storyScriptWorkbook > imports legacy v1 sheets that do not contain the newly optional columns  476ms
+ ✓ src/modals/WatchModal.test.js (9 tests) 259ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 489ms
+ ✓ src/modals/WarehouseModal.test.js (14 tests) 677ms
+ ✓ scripts/characterNameplateSkill.test.js (8 tests) 85ms
+ ✓ scripts/playwrightTestDatabase.test.js (1 test) 88ms
+ ✓ src/shared/windowTitleStickers.test.js (1 test) 3796ms
+   ✓ window title asset delivery > ships matching PNG and WebP with actual transparent margins for every title  3794ms
+ ✓ src/shared/game.test.js (80 tests) 311ms
+ ✓ src/modals/ReplayList.test.jsx (12 tests) 217ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 280ms
+ ✓ src/modals/SettingsModal.test.jsx (9 tests) 131ms
+ ✓ server/adminDefaultSnapshot.test.js (10 tests) 157ms
+ ❯ docs/systemDesignHtml.test.js (3 tests | 1 failed) 429ms
+   × system design html > stays generated from the markdown source set 242ms
+     → expected '<!doctype html>\n<html lang="zh-CN">\…' to be '<!doctype html>\n<html lang="zh-CN">\…' // Object.is equality
+   ✓ system design html > keeps generated docs free of encoding damage 29ms
+   ✓ system design html > uses the UTF-8 doc writer for Chinese-safe document updates 14ms
+ ✓ server/zhiziKataGoEngine.test.js (11 tests) 129ms
+ ✓ src/room/ActionBar.test.js (17 tests) 164ms
+ ✓ src/modals/PersonalizationModal.test.jsx (1 test) 88ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 1551ms
+   ✓ GNU Go practice engine adapter > runs the real child-process boundary without a shell  318ms
+ ✓ src/shared/preloadAssets.test.js (23 tests) 127ms
+ ✓ src/modals/FeedbackModals.test.js (6 tests) 65ms
+ ✓ src/home/IrisDatabase.test.jsx (2 tests) 74ms
+ ✓ server/practiceRoomAutomation.test.js (15 tests) 452ms
+ ✓ src/room/PlayerInfo.test.js (17 tests) 576ms
+ ✓ src/auth/AuthScreen.test.js (17 tests) 637ms
+ ✓ src/room/boardSkillEffectRegistry.test.js (19 tests) 49ms
+ ✓ src/room/roomView.test.js (16 tests) 75ms
+ ✓ server/storyScripts.test.js (22 tests) 63ms
+ ✓ src/admin/AdminMailbox.test.jsx (1 test) 48ms
+ ✓ scripts/characterPortraitNormalization.test.js (12 tests) 6466ms
+   ✓ character portrait normalization > preserves animated WebP frames, timing, loop, and one shared placement  910ms
+   ✓ character portrait normalization > keeps the committed Denia candy portrait at its authored animation timing  3547ms
+   ✓ character portrait normalization > rebuilds a required animation from its legacy source when the output is static  803ms
+ ✓ src/app/socketHandlers.test.js (42 tests) 70ms
+ ✓ src/admin/AdminTableScroll.test.jsx (3 tests) 29ms
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 30ms
+ ✓ src/admin/AdminGachaPools.test.jsx (9 tests) 53ms
+ ✓ src/room/ChatBox.test.js (14 tests) 65ms
+ ✓ src/room/Board.test.js (50 tests) 1522ms
+ ✓ server/adminDefaultSeed.test.js (12 tests) 36ms
+ ✓ src/admin/AdminAudit.test.jsx (3 tests) 64ms
+ ✓ server/items.test.js (25 tests) 85ms
+ ✓ src/tutorial/TutorialSessionModal.test.jsx (8 tests) 221ms
+ ✓ src/modals/FriendsModal.test.jsx (7 tests) 249ms
+ ✓ src/admin/AdminShell.test.jsx (8 tests) 129ms
+ ✓ src/ui/CorruptionMarks.test.jsx (6 tests) 32ms
+ ✓ src/app/App.test.js (19 tests) 26ms
+ ✓ server/schemaIntegrity.test.js (19 tests) 24ms
+ ✓ src/shared/musicLibrary.test.js (68 tests) 31ms
+ ✓ src/shared/CharacterChainBadge.test.jsx (2 tests) 22ms
+ ✓ src/room/BoardAmbientEffects.test.js (4 tests) 28ms
+ ✓ server/achievements.test.js (12 tests) 40ms
+ ✓ src/app/AssetPreloadScreen.test.jsx (19 tests) 55ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 46ms
+ ✓ src/modals/HouseModal.test.js (28 tests) 637ms
+ ✓ server/roomView.test.js (12 tests) 29ms
+ ✓ src/modals/house/CharacterCostumeDialog.test.jsx (3 tests) 28ms
+ ✓ server/security.test.js (16 tests) 22ms
+ ✓ server/roomSkillResolution.test.js (17 tests) 30ms
+ ✓ server/recruitment.test.js (15 tests) 36ms
+ ✓ server/mailbox.test.js (15 tests) 32ms
+ ✓ server/roomCreationLifecycle.test.js (6 tests) 31ms
+ ✓ src/modals/StoryPlayerModal.test.jsx (12 tests) 43ms
+ ✓ src/modals/ModalActionButton.test.jsx (8 tests) 29ms
+ ✓ server/socketRoomEvents.test.js (16 tests) 32ms
+ ✓ server/roomConnectionLifecycle.test.js (8 tests) 24ms
+ ✓ server/socketSigrikaCandyEvents.test.js (9 tests) 35ms
+ ✓ src/room/requestToasts/timedRoomRequests.test.js (8 tests) 34ms
+ ✓ src/tutorial/tutorialGameState.test.js (8 tests) 42ms
+ ✓ server/shop.test.js (24 tests) 39ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1802ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  328ms
+   ✓ HomeScreen > renders the equipped username nameplate inside the student ID and retains its source assets  337ms
+ ✓ src/shared/MarkdownLiteContent.test.jsx (3 tests) 33ms
+ ✓ src/modals/ShopModal.test.js (27 tests) 297ms
+ ✓ server/gacha.test.js (8 tests) 15ms
+ ✓ src/admin/AdminAchievements.test.jsx (3 tests) 16ms
+ ✓ src/shared/gomokuRules.test.js (7 tests) 15ms
+ ✓ src/room/TimeBar.test.js (3 tests) 53ms
+ ✓ src/room/SigrikaDuelPresentation.test.jsx (2 tests) 22ms
+ ✓ src/modals/RecruitmentModal.test.js (9 tests) 33ms
+ ✓ server/roomScoringFlow.test.js (2 tests) 32ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 34ms
+ ✓ server/costumes.test.js (11 tests) 25ms
+ ✓ src/app/skillTraitCatalog.test.js (4 tests) 21ms
+ ✓ src/home/HomeActionButton.test.jsx (2 tests) 61ms
+ ✓ src/audio/skillEffectSounds.test.js (5 tests) 28ms
+ ✓ src/audio/CharacterMusicPreview.test.jsx (4 tests) 27ms
+ ✓ src/shared/UserIdentity.test.jsx (4 tests) 34ms
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Channel closed
+ ❯ target.send node:internal/child_process:777:16
+ ❯ ProcessWorker.send node_modules/tinypool/dist/index.js:140:41
+ ❯ MessagePort.<anonymous> node_modules/tinypool/dist/index.js:149:62
+ ❯ [nodejs.internal.kHybridDispatch] node:internal/event_target:843:20
+ ❯ MessagePort.<anonymous> node:internal/per_context/messageport:23:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_IPC_CHANNEL_CLOSED' }
+
+
+

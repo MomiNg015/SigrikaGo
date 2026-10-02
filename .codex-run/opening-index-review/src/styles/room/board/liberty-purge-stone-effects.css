@@ -1,0 +1,63 @@
+.liberty-purge-stone .stone {
+  box-shadow:
+    inset -9px -11px 15px rgba(0, 0, 0, 0.18),
+    0 6px 10px rgba(45, 29, 18, 0.28),
+    0 0 0 2px rgba(92, 8, 24, 0.84),
+    0 0 15px rgba(171, 10, 38, 0.78),
+    0 0 30px rgba(83, 0, 20, 0.5);
+  animation: liberty-purge-stone-glow 1.45s ease-in-out infinite alternate;
+}
+
+.liberty-purge-stone .stone::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 54%, rgba(128, 0, 28, 0.36) 61%, transparent 76%),
+    radial-gradient(ellipse at 50% 86%, rgba(188, 16, 45, 0.32), transparent 47%);
+  filter: blur(3px);
+  opacity: 0.66;
+  pointer-events: none;
+  z-index: -1;
+  animation: liberty-purge-stone-halo 1.8s ease-in-out infinite alternate;
+}
+
+.stone.liberty-purge-pending-stone {
+  opacity: 0;
+  transform:
+    translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-86% + var(--stone-offset-y, 0px)))
+    scale(1.16);
+  animation:
+    liberty-purge-stone-drop 280ms cubic-bezier(0.16, 1, 0.3, 1) var(--skill-banner-duration, 2000ms) forwards,
+    liberty-purge-stone-glow 1.45s ease-in-out calc(var(--skill-banner-duration, 2000ms) + 280ms) infinite alternate;
+}
+
+@keyframes liberty-purge-stone-glow {
+  from { filter: drop-shadow(0 0 5px rgba(121, 0, 24, 0.72)); }
+  to { filter: drop-shadow(0 0 17px rgba(174, 9, 39, 0.96)); }
+}
+
+@keyframes liberty-purge-stone-halo {
+  from { opacity: 0.44; transform: scale(0.94); }
+  to { opacity: 0.78; transform: scale(1.08); }
+}
+
+@keyframes liberty-purge-stone-drop {
+  0% {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-86% + var(--stone-offset-y, 0px)))
+      scale(1.16);
+  }
+  58% {
+    opacity: 1;
+    transform:
+      translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-47% + var(--stone-offset-y, 0px)))
+      scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-50% + var(--stone-offset-y, 0px)));
+  }
+}

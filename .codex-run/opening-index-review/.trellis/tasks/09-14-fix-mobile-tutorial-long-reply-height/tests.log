@@ -1,0 +1,15 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/tutorial/TutorialBattleScreen.test.jsx src/tutorial/TutorialChoiceActions.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 18ms
+ ✓ src/tutorial/TutorialChoiceActions.dom.test.jsx (2 tests) 202ms
+
+ Test Files  2 passed (2)
+      Tests  22 passed (22)
+   Start at  10:23:02
+   Duration  4.41s (transform 818ms, setup 0ms, collect 1.78s, tests 220ms, environment 1.44s, prepare 305ms)
+

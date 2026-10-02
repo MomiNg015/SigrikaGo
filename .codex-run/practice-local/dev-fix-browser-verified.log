@@ -1,0 +1,94 @@
+
+> sigrika-go@0.1.0 test:e2e:practice
+> playwright test --config tests/e2e/local-practice.config.js
+
+[WebServer] (node:24856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 2 workers
+
+(node:10176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner (12.9s)
+  ok 3 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate (12.7s)
+  ok 4 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes capture-challenge (12.6s)
+  ok 5 [production] › tests\e2e\local-practice.spec.js:42:1 › failed WASM download prevents admission and a fresh attempt recovers (6.6s)
+  x  1 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner (59.7s)
+[WebServer] 14:04:23 [vite] ws proxy socket error:
+[WebServer] Error: write ECONNABORTED
+[WebServer]     at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+[WebServer]     at writeGeneric (node:internal/stream_base_commons:150:3)
+[WebServer]     at Socket._writeGeneric (node:net:1025:11)
+[WebServer]     at Socket._write (node:net:1037:8)
+[WebServer]     at writeOrBuffer (node:internal/streams/writable:570:12)
+[WebServer]     at _write (node:internal/streams/writable:499:10)
+[WebServer]     at Writable.write (node:internal/streams/writable:508:10)
+[WebServer]     at Socket.ondata (node:internal/streams/readable:1012:24)
+[WebServer]     at Socket.emit (node:events:509:28)
+[WebServer]     at Readable.read (node:internal/streams/readable:784:10)
+(node:48812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  6 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate (1.2m)
+(node:46952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 7 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes capture-challenge (17.5s)
+  ok 8 [development] › tests\e2e\local-practice.spec.js:42:1 › failed WASM download prevents admission and a fresh attempt recovers (6.8s)
+
+
+  1) [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m1[39m
+    Received: [31m0[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      24 |     await page.evaluate((token) => window.practiceTest.connect(token), token);
+      25 |     await page.evaluate((options) => window.practiceTest.start(options), options);
+    > 26 |     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(1);
+         |                                                                                             ^
+      27 |     expect(await page.evaluate(() => window.practiceTest.room.practice.engineBackend)).toBe("browser");
+      28 |     expect(await page.evaluate(() => window.practiceTest.move())).toMatchObject({ ok: true });
+      29 |     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(3);
+        at C:\codex\SigrikaGo\tests\e2e\local-practice.spec.js:26:93
+
+    Error Context: test-results\local-practice-browser-engine-plays-and-resumes-beginner-development\error-context.md
+
+  2) [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate 
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+      24 |     await page.evaluate((token) => window.practiceTest.connect(token), token);
+      25 |     await page.evaluate((options) => window.practiceTest.start(options), options);
+    > 26 |     await expect.poll(() => page.evaluate(() => ({ move: window.practiceTest.room?.game.moveNumber,
+         |                                  ^
+      27 |       errors: window.practiceTest.errors, visibility: document.visibilityState }))))
+      28 |       .toMatchObject({ move: 1, errors: [], visibility: "visible" });
+      29 |     expect(await page.evaluate(() => window.practiceTest.room.practice.engineBackend)).toBe("browser");
+        at C:\codex\SigrikaGo\tests\e2e\local-practice.spec.js:26:34
+        at C:\codex\SigrikaGo\tests\e2e\local-practice.spec.js:26:5
+
+    Error Context: test-results\local-practice-browser-engine-plays-and-resumes-intermediate-development\error-context.md
+
+  2 failed
+    [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner 
+    [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate 
+  6 passed (3.5m)

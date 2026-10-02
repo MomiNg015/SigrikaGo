@@ -1,0 +1,67 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid {
+    grid-auto-rows: minmax(calc(clamp(96px,24vw,118px) + 132px),auto) !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item {
+    display: grid !important;
+    grid-template-rows: clamp(96px,24vw,118px) minmax(20px,auto) minmax(28px,1fr) 44px !important;
+    min-height: calc(clamp(96px,24vw,118px) + 132px) !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    text-align: center !important;
+    padding: 9px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-item, .shop-category-music).shop-item > svg {
+    width: 100% !important;
+    height: clamp(96px,24vw,118px) !important;
+    min-height: 96px !important;
+    max-height: 118px !important;
+    object-fit: contain !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item > strong {
+    align-self: center !important;
+    min-height: 20px !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta {
+    align-self: center !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    width: 100% !important;
+    gap: 6px !important;
+    min-height: 28px !important;
+    align-items: center !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action {
+    width: 100% !important;
+    min-height: 44px !important;
+    margin-top: 0 !important;
+    align-self: stretch !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled:active {
+    background: #d8d1cb !important;
+    color: rgba(61, 43, 37, 0.58) !important;
+    border-color: rgba(61, 43, 37, 0.36) !important;
+    box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.16) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-decoration.shop-item .stone-decoration-preview {
+    height: clamp(96px,24vw,118px) !important;
+    min-height: 96px !important;
+    max-height: 118px !important;
+    padding: 6px !important;
+  }
+}

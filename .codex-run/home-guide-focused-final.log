@@ -1,0 +1,21 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --maxWorkers=1 server/homeOnboarding.test.js server/onboardingStory.test.js server/onboardingStoryRoutes.test.js src/home/onboarding src/tutorial/TutorialBattleScreen.test.jsx src/app/App.test.js docs/systemDesignHtml.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 57ms
+ ✓ src/app/App.test.js (19 tests) 18ms
+ ✓ server/homeOnboarding.test.js (7 tests) 710ms
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 23ms
+ ✓ server/onboardingStory.test.js (7 tests) 10ms
+ ✓ server/onboardingStoryRoutes.test.js (6 tests) 11ms
+ ✓ src/home/onboarding/useHomeOnboarding.dom.test.jsx (4 tests) 327ms
+ ✓ src/home/onboarding/HomeOnboarding.dom.test.jsx (2 tests) 186ms
+
+ Test Files  8 passed (8)
+      Tests  68 passed (68)
+   Start at  22:17:03
+   Duration  8.83s (transform 392ms, setup 0ms, collect 1.61s, tests 1.34s, environment 2.56s, prepare 836ms)
+

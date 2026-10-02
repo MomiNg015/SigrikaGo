@@ -1,0 +1,43 @@
+/* Bright School profile dossier summary: one ruled field, not four nested cards. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-grid {
+  gap: 0 !important;
+  background: var(--bright-sheet-clean) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item {
+  min-height: 108px !important;
+  padding: 20px 22px !important;
+  display: grid !important;
+  align-content: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item + .profile-summary-item {
+  border-left: 1px solid color-mix(in srgb, var(--bright-ink) 18%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-label {
+  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-blue)) !important;
+  opacity: 1 !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item > strong {
+  color: var(--bright-ink) !important;
+  font-size: 1.25rem !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item.is-primary > strong {
+  font-size: 1.5625rem !important;
+}
+
+@media (min-width: 769px) {
+  .leaderboard-row > span { font-size: 0.875rem; font-weight: 600; }
+}

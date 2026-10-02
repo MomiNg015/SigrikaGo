@@ -1,0 +1,8 @@
+/* Static gallery parity polish: bright school. */
+.app-shell.player-theme-enabled.theme-bright-school {
+  --theme-text: #3d2b25;
+  --theme-muted: rgba(61, 43, 37, 0.72);
+  --theme-border: #3d2b25;
+  --theme-border-soft: #3d2b25;
+  --theme-glow: 4px 4px 0 #3d2b25;
+}

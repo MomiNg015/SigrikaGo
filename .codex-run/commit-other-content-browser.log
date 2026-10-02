@@ -1,0 +1,41 @@
+[WebServer] (node:48536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+Running 10 tests using 1 worker
+
+(node:49892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\e2e\team-match.spec.js:7:1 › bookmarks grow the window before scrolling and recalculate on viewport and tab changes (2.2s)
+  ok  2 tests\e2e\team-match.spec.js:41:3 › event descriptions and capture entrance at 1280 (7.1s)
+  ok  3 tests\e2e\team-match.spec.js:75:3 › team replay badges are not clipped at 1280 (2.7s)
+[WebServer] 19:50:53 [vite] http proxy error: /api/skill-traits
+[WebServer] AggregateError [ECONNREFUSED]: 
+[WebServer]     at internalConnectMultiple (node:net:1193:18)
+[WebServer]     at afterConnectMultiple (node:net:1783:7)
+[WebServer] 19:50:54 [vite] http proxy error: /api/skill-traits
+[WebServer] AggregateError [ECONNREFUSED]: 
+[WebServer]     at internalConnectMultiple (node:net:1193:18)
+[WebServer]     at afterConnectMultiple (node:net:1783:7)
+  ok  4 tests\e2e\team-match.spec.js:98:3 › team lineup and portraits at 1280 (5.3s)
+  ok  5 tests\e2e\team-match.spec.js:41:3 › event descriptions and capture entrance at 390 (5.6s)
+  ok  6 tests\e2e\team-match.spec.js:75:3 › team replay badges are not clipped at 390 (654ms)
+[WebServer] 19:51:03 [vite] http proxy error: /api/skill-traits
+[WebServer] AggregateError [ECONNREFUSED]: 
+[WebServer]     at internalConnectMultiple (node:net:1193:18)
+[WebServer]     at afterConnectMultiple (node:net:1783:7)
+  ok  7 tests\e2e\team-match.spec.js:98:3 › team lineup and portraits at 390 (2.3s)
+  ok  8 tests\e2e\team-match.spec.js:41:3 › event descriptions and capture entrance at 360 (5.3s)
+  ok  9 tests\e2e\team-match.spec.js:75:3 › team replay badges are not clipped at 360 (622ms)
+[WebServer] 19:51:11 [vite] http proxy error: /api/skill-traits
+[WebServer] AggregateError [ECONNREFUSED]: 
+[WebServer]     at internalConnectMultiple (node:net:1193:18)
+[WebServer]     at afterConnectMultiple (node:net:1783:7)
+  ok 10 tests\e2e\team-match.spec.js:98:3 › team lineup and portraits at 360 (2.0s)
+
+  10 passed (59.8s)

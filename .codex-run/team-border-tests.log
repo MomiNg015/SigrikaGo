@@ -1,0 +1,17 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/TeamLineupPicker.dom.test.jsx src/styles/styleContract.test.js docs/systemDesignHtml.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 70ms
+ ✓ src/styles/styleContract.test.js (57 tests) 806ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  393ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (3 tests) 438ms
+
+ Test Files  3 passed (3)
+      Tests  63 passed (63)
+   Start at  20:38:34
+   Duration  6.77s (transform 553ms, setup 0ms, collect 1.48s, tests 1.31s, environment 1.89s, prepare 458ms)
+

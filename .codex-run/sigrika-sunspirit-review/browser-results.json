@@ -1,0 +1,59 @@
+{
+  "portrait": [
+    {
+      "width": 360,
+      "beforeImpactOpacity": "0",
+      "impactOpacity": "0.999939",
+      "overflow": false,
+      "canvas": 1,
+      "finalCanvas": 0,
+      "pendingBoundary": 0
+    },
+    {
+      "width": 390,
+      "beforeImpactOpacity": "0",
+      "impactOpacity": "0.999939",
+      "overflow": false,
+      "canvas": 1,
+      "finalCanvas": 0,
+      "pendingBoundary": 0
+    },
+    {
+      "width": 412,
+      "beforeImpactOpacity": "0",
+      "impactOpacity": "0.999939",
+      "overflow": false,
+      "canvas": 1,
+      "finalCanvas": 0,
+      "pendingBoundary": 0
+    }
+  ],
+  "fullMotion": {
+    "translate": "0px -0.817192%",
+    "scale": "1.00681",
+    "opacity": "0.727603"
+  },
+  "reducedMotion": {
+    "marker": [
+      {
+        "delay": "2s",
+        "translate": "none",
+        "scale": "none",
+        "opacity": "1"
+      }
+    ],
+    "boundary": [
+      {
+        "delay": "2s",
+        "opacity": "1"
+      }
+    ],
+    "canvas": 1
+  },
+  "disabled": {
+    "canvas": 0,
+    "pendingMarker": 0,
+    "pendingBoundary": 0
+  },
+  "errors": []
+}

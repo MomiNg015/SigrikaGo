@@ -1,0 +1,22 @@
+/* 3. 强行清洗被 hud-components 锁死的所有输入框、文本域与留言板大白块 */
+.app-shell.player-theme-enabled.theme-bright-school input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.app-shell.player-theme-enabled.theme-bright-school textarea,
+.app-shell.player-theme-enabled.theme-bright-school .message-board-modal textarea,
+.app-shell.player-theme-enabled.theme-bright-school .friend-search input {
+  background: #ffffff !important;
+  color: #4a3736 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 10px !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  padding: 10px 14px !important;
+  outline: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school input:focus,
+.app-shell.player-theme-enabled.theme-bright-school textarea:focus {
+  border-color: #ff9ebb !important;
+  box-shadow: 3px 3px 0px #4a3736, 0 0 8px rgba(255, 158, 187, 0.4) !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school input::placeholder,
+.app-shell.player-theme-enabled.theme-bright-school textarea::placeholder {
+  color: rgba(74, 55, 54, 0.42) !important;
+}

@@ -1,0 +1,125 @@
+/* Bright School portrait mobile late compatibility fixes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span {
+  background: var(--timer-track-fill, #ff9ebb) !important;
+  border: 0 !important;
+  box-shadow: var(--timer-track-glow, none) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures .cost-stat,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures .cost-stat strong {
+  color: #d93645 !important;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+    padding: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
+    content: "" !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: auto !important;
+    bottom: -10px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 16px !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+    font-size: 0 !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    color: transparent !important;
+    pointer-events: none !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :where(
+    .room-header,
+    .room-code-label,
+    .room-info-tag,
+    .toggle,
+    .room-mobile-exit,
+    .room-mobile-menu-toggle,
+    .room-mobile-menu-panel,
+    .room-mobile-menu-panel button,
+    .mobile-room-dock,
+    .mobile-tab-button,
+    .mobile-tab-panel,
+    .mobile-tab-panel .action-bar button,
+    .action-bar button,
+    .decision-bar,
+    .decision-actions button,
+    .replay-bar,
+    .replay-bar button,
+    .mobile-action-panel,
+    .operation-hint,
+    .room-people,
+    .room-person,
+    .player-info,
+    .portrait-wrap,
+    .name-button,
+    .color-badge,
+    .rank-tag,
+    .rating-tag,
+    .captures > *,
+    .info-stat,
+    .digital-timer,
+    .timer-track,
+    .timer-track span,
+    .skill-chip,
+    .chat-widget,
+    .chat-box
+  ) {
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button {
+    min-width: 0 !important;
+    aspect-ratio: 0.78 !important;
+    padding: 8px 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
+    width: 100% !important;
+    height: 0 !important;
+    flex: 1 1 auto !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid span {
+    flex: 0 0 auto !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+}

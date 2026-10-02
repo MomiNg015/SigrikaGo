@@ -1,0 +1,31 @@
+{
+  "file": "C:\\codex\\SigrikaGo\\public\\assets\\achievements\\semantic-nameplate.png",
+  "ok": true,
+  "image": {
+    "width": 1125,
+    "height": 240,
+    "ratio": 4.6875,
+    "encoding": "rgba8"
+  },
+  "alphaBounds": {
+    "left": 110,
+    "top": 8,
+    "right": 1013,
+    "bottom": 231
+  },
+  "margins": {
+    "left": 110,
+    "top": 8,
+    "right": 111,
+    "bottom": 8
+  },
+  "safeArea": {
+    "left": 315,
+    "right": 990,
+    "width": 675,
+    "ratio": 0.6
+  },
+  "cornersTransparent": true,
+  "alphaThreshold": 0,
+  "errors": []
+}

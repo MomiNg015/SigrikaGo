@@ -1,0 +1,31 @@
+{
+  "file": "C:\\codex\\SigrikaGo\\public\\assets\\achievements\\aemeath-spark-100-wins-nameplate.png",
+  "ok": true,
+  "image": {
+    "width": 1125,
+    "height": 240,
+    "ratio": 4.6875,
+    "encoding": "rgba8"
+  },
+  "alphaBounds": {
+    "left": 40,
+    "top": 8,
+    "right": 979,
+    "bottom": 231
+  },
+  "margins": {
+    "left": 40,
+    "top": 8,
+    "right": 145,
+    "bottom": 8
+  },
+  "safeArea": {
+    "left": 337,
+    "right": 998,
+    "width": 661,
+    "ratio": 0.587556
+  },
+  "cornersTransparent": true,
+  "alphaThreshold": 0,
+  "errors": []
+}

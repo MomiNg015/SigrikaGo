@@ -1,0 +1,11 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
+  background: #ffffff !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 #3d2b25 !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+}

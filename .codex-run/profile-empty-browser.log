@@ -1,0 +1,38 @@
+1440 900 self {"height":345.60003662109375,"border":"2px","bg":"rgb(255, 250, 240)","frameBottom":838.1600341796875,"modalBottom":877.5200500488281,"viewBottom":853.52001953125,"viewHeight":683.52001953125,"overflow":false}
+1440 900 social {"height":372,"border":"2px","bg":"rgb(255, 250, 240)","frameBottom":781,"modalBottom":824,"viewBottom":797,"viewHeight":724,"overflow":false}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByRole('tab', { name: '标准', exact: true })
+    - locator resolved to <button role="tab" type="button" tabindex="-1" aria-selected="false" class="window-bookmark-tab" id="social-profile-tab-standard" aria-controls="social-profile-mode-panel">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    58 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+    at C:\codex\SigrikaGo\.codex-run\profile-empty-fix.mjs:15:52 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.15.0

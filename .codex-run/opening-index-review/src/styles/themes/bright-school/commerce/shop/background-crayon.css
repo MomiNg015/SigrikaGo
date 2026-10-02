@@ -1,0 +1,30 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  --shop-background-image: url("/assets/shop/zahira-shop-background-crayon-v1.webp");
+  --shop-mobile-background-image: url("/assets/shop/zahira-shop-background-crayon-mobile-v1.webp");
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header[data-store="zahira"] {
+  background: linear-gradient(90deg, rgb(211 215 217), rgb(154 139 166) 48%, rgb(215 204 194)) !important;
+  border-bottom-color: #593f58 !important;
+  box-shadow:
+    inset 0 -6px 0 rgba(97, 63, 91, 0.2),
+    inset 0 2px 0 rgba(255, 249, 226, 0.44) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header[data-store="costume"] {
+  --shop-header-title: rgb(244, 228, 196);
+  background:
+    linear-gradient(90deg, rgba(42, 5, 16, 0.94), rgba(104, 18, 40, 0.82) 48%, rgba(36, 4, 14, 0.95)),
+    var(--costume-shop-background-image) center 3% / cover rgb(58, 8, 24) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body {
+  background:
+    linear-gradient(rgba(255, 250, 232, 0.03), rgba(41, 30, 49, 0.08)),
+    var(--shop-background-image) center / cover oklch(76% 0.035 285) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .zahira-store-page .shop-layout.shop-window-body::after {
+  content: none !important;
+}

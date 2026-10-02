@@ -1,0 +1,8 @@
+/* Portrait mobile battle-room layout safety rules. */
+@import "./mobile-room-portrait/shell-header-menu.css";
+@import "./mobile-room-portrait/neutral-chrome-reset.css";
+@import "./mobile-room-portrait/viewport-shell.css";
+@import "./mobile-room-portrait/player-strips.css";
+@import "./mobile-room-portrait/board-viewport.css";
+@import "./mobile-room-portrait/dock-panels.css";
+@import "./mobile-room-portrait/action-decision-controls.css";

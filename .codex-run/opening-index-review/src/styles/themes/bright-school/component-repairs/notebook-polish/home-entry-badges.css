@@ -1,0 +1,30 @@
+/* 4. 宝丽来卡片斜度还原与排版纠偏 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+  transform: rotate(-2.5deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
+  transform: rotate(2deg) !important;
+}
+
+/* Hover 时拟物贴纸微微揭起缩放 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry:hover {
+  transform: translateY(-8px) rotate(-1deg) scale(1.02) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry:hover {
+  transform: translateY(-8px) rotate(3.5deg) scale(1.02) !important;
+}
+
+/* 5. 执黑/执白圆点颜色 Bug 修复与拟物化渐变 (解决黑白执子显示全为白色的问题) */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .color-badge.black {
+  background: radial-gradient(circle at 30% 25%, #5a3c36 0%, #301f1c 70%, #1e1210 100%) !important;
+  border: 2px solid #3d2b25 !important;
+  box-shadow: inset -1px -2px 3px rgba(0, 0, 0, 0.4), 1px 2px 0 rgba(61, 43, 37, 0.56) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .color-badge.white {
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #fffbf0 45%, #fff1cc 85%, #ffdca8 100%) !important;
+  border: 2px solid #3d2b25 !important;
+  box-shadow: inset -1px -2px 3px rgba(61, 43, 37, 0.15), 1px 2px 0 rgba(61, 43, 37, 0.56) !important;
+}

@@ -1,0 +1,76 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 9ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 76ms
+ ✓ src/styles/themeContract.test.js (38 tests) 837ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1304ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  435ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  363ms
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 2 failed) 1816ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 493ms
+     → mediaFiles: expected 281 to be less than or equal to 280
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  399ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family  319ms
+   × CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 368ms
+     → expected [ Array(1) ] to deeply equal []
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 86ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 3ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 1ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 1ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 20ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 88ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 1ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 1ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 10ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 4ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 7ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 2ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 2ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 6ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 824ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  419ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: mediaFiles: expected 281 to be less than or equal to 280
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > registers responsive breakpoint families used by current CSS media queries
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "themes/bright-school/quality-base/profile-dossier/action-controls.css: (max-width: 360px)",
++ ]
+
+ ❯ src/styles/cssLayerInventory.test.js:197:31
+    195|       "regular desktop"
+    196|     ]);
+    197|     expect(unexpectedQueries).toEqual([]);
+       |                               ^
+    198|   });
+    199| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  2 failed | 124 passed (126)
+   Start at  17:15:04
+   Duration  8.44s (transform 1.08s, setup 0ms, collect 2.64s, tests 4.87s, environment 2.28s, prepare 1.19s)
+

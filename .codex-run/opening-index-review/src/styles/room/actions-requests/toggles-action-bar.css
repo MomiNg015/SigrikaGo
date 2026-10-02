@@ -1,0 +1,40 @@
+/* Room toggles, action bars, scoring decisions, request toasts, and replay step controls. */
+.room-toggles,
+.action-bar,
+.inline-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.8vw, 8px);
+  flex-wrap: wrap;
+}
+
+.room-mobile-menu {
+  display: none;
+}
+
+.room-mobile-exit {
+  display: none;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dfd0e5;
+}
+
+.action-bar {
+  margin: 0;
+  justify-content: center;
+}
+
+.action-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-label {
+  white-space: nowrap;
+}

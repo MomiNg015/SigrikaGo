@@ -1,0 +1,57 @@
+/* Startorch Academy holographic battlefield skin for live Go rooms */
+
+:root {
+  --battle-bg: #03070a;
+  --battle-panel: rgba(6, 16, 22, 0.82);
+  --battle-panel-soft: rgba(9, 25, 33, 0.7);
+  --battle-cyan: #00ffbe;
+  --battle-blue: #00bfff;
+  --battle-red: #ff3d57;
+  --battle-orange: #ffb454;
+  --battle-text: #e0f7f4;
+  --battle-muted: rgba(191, 233, 229, 0.68);
+  --battle-cut: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+.app-shell:has(.room-screen) {
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(0, 191, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 78% 16%, rgba(255, 61, 87, 0.13), transparent 29%),
+    radial-gradient(circle at 16% 86%, rgba(0, 255, 190, 0.12), transparent 28%),
+    linear-gradient(135deg, #03070a 0%, #071118 46%, #020509 100%);
+  color: var(--battle-text);
+}
+
+.app-shell:has(.room-screen)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 190, 0.035) 1px, transparent 1px);
+  background-size: 100% 4px, 42px 42px;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.app-shell:has(.room-screen)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px),
+    radial-gradient(circle at 80% 60%, rgba(0, 255, 190, 0.04) 0 1px, transparent 1px);
+  background-size: 19px 19px, 29px 29px;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.room-screen {
+  width: min(1500px, calc(100vw - (var(--page-pad) * 2)));
+  color: var(--battle-text);
+}

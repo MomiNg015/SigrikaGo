@@ -1,0 +1,7 @@
+VIEW settings
+range { accent: 'rgb(0, 255, 190)', background: 'rgb(255, 255, 255)' }
+%c[impeccable] 4 anti-patterns found color: oklch(84% 0.19 80.46); font-weight: bold
+VIEW mailbox
+%c[impeccable] 3 anti-patterns found color: oklch(84% 0.19 80.46); font-weight: bold
+VIEW messageboard
+%c[impeccable] 3 anti-patterns found color: oklch(84% 0.19 80.46); font-weight: bold

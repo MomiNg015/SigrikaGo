@@ -1,0 +1,35 @@
+/* Bright School paper scrollbar palette, including the document root. */
+html:has(.app-shell.player-theme-enabled.theme-bright-school),
+body:has(.app-shell.player-theme-enabled.theme-bright-school),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school * {
+  scrollbar-width: thin !important;
+  scrollbar-color: #d58cab #fff6dd !important;
+}
+
+html:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar,
+body:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school::-webkit-scrollbar,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+html:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar-track,
+body:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar-track,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school::-webkit-scrollbar-track,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar-track {
+  background: #fff6dd !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+}
+
+html:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar-thumb,
+body:has(.app-shell.player-theme-enabled.theme-bright-school)::-webkit-scrollbar-thumb,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school::-webkit-scrollbar-thumb,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff9ebb, #9ad3de) !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}

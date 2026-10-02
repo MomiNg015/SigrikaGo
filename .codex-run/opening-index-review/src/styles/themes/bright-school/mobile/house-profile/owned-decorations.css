@@ -1,0 +1,33 @@
+/* Bright School portrait owned decoration section */
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-section {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: min(156px, 30dvh) !important;
+    padding-top: 4px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-header {
+    margin-bottom: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 80px !important;
+    padding: 10px !important;
+  }
+}

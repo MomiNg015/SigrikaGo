@@ -1,0 +1,47 @@
+@media (max-width: 800px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .small-modal,
+    .confirm-modal,
+    .result-modal,
+    .settings-modal,
+    .nested-modal,
+    .room-floating-modal,
+    .shop-modal,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal
+  ) {
+    width: min(100%, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: 88dvh !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+    width: 112px !important;
+    max-height: 124px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+    border-radius: 20px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap {
+    width: min(var(--board-size), 92vw) !important;
+  }
+}

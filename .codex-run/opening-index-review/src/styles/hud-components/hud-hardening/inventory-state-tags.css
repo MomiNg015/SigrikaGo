@@ -1,0 +1,31 @@
+/* Startorch HUD inventory state tags. */
+.lock-character-card,
+.character-card.locked {
+  background: rgba(5, 10, 15, 0.6) !important;
+}
+
+.lock-text-title,
+.character-card.locked span,
+.character-card.locked p {
+  color: #ff4e64 !important;
+  opacity: 0.85 !important;
+  font-weight: bold !important;
+}
+
+.decoration-applied-box,
+.owned-decoration-section,
+.owned-decoration-chip {
+  background: rgba(12, 30, 42, 0.8) !important;
+  border: 1px solid rgba(0, 255, 190, 0.4) !important;
+  color: #fff !important;
+}
+
+.store-owned-tag,
+.shop-item.owned,
+.shop-detail-status-owned,
+.shop-action-owned,
+.owned-decoration-header,
+.owned-decoration-chip {
+  color: #00ffbe !important;
+  font-weight: bold !important;
+}

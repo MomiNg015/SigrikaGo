@@ -1,0 +1,45 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-header {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 6px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    gap: 6px !important;
+    align-items: center !important;
+    border-width: 2px !important;
+    border-radius: 16px !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.58) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-title-stack {
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-title-line {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-code-label,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-info-tag.move-count,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-info-tag.close-countdown {
+    min-height: 28px !important;
+    padding: 4px 9px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    border-width: 2px !important;
+    border-radius: 999px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-toggles {
+    display: none !important;
+  }
+}

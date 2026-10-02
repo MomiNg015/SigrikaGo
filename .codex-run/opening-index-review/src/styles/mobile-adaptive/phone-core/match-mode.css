@@ -1,0 +1,87 @@
+/* Shared phone/tablet shell, modal, profile, and form safety rules. */
+@media (max-width: 768px) {
+  .match-mode-modal {
+    width: min(420px, calc(100vw - 20px)) !important;
+  }
+
+  .match-mode-option {
+    min-height: 72px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    justify-content: stretch !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .match-mode-copy {
+    width: 100% !important;
+    justify-self: stretch !important;
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .match-mode-copy > strong,
+  .match-mode-copy small,
+  .match-mode-rule-line {
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .match-mode-option-wrap.has-practice-entry {
+    padding-top: 24px;
+  }
+
+  .match-mode-option-wrap.has-practice-entry .match-mode-option {
+    min-height: 72px !important;
+    padding: 12px !important;
+  }
+
+  .practice-entry-button {
+    top: 0;
+    left: min(154px, calc(100% - 64px));
+    width: 136px;
+    min-height: 0;
+    transform: translateX(-50%) translateY(var(--practice-entry-lift, 0px)) rotate(var(--practice-entry-rotation, 0deg));
+  }
+
+  .match-mode-watermark {
+    gap: 7px !important;
+    max-width: min(58%, calc(100% - 132px)) !important;
+    opacity: 0.2 !important;
+  }
+
+  .match-mode-watermark-icon {
+    width: clamp(32px, 10vw, 42px) !important;
+    height: clamp(32px, 10vw, 42px) !important;
+  }
+
+  .match-mode-watermark-label {
+    max-width: calc(100% - 50px) !important;
+    font-size: clamp(1rem, 6.8vw, 1.45rem) !important;
+  }
+
+  .match-mode-copy small {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .match-mode-copy small.match-mode-rules {
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-rule-line {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-count {
+    min-width: 64px !important;
+    justify-self: end !important;
+    margin-left: auto !important;
+  }
+
+  .match-mode-modal .match-mode-options + .secondary-action {
+    margin-top: 14px !important;
+  }
+}

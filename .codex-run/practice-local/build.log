@@ -1,0 +1,2045 @@
+Compiling generator mkpat
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mkpat.c:84:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mkpat.c:1422:37: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+ 1422 |       code_pos += sprintf(code_pos, autohelper_functions[funcno].code);
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mkpat.c:1422:37: note: treat the string as an argument to avoid this
+ 1422 |       code_pos += sprintf(code_pos, autohelper_functions[funcno].code);
+      |                                     ^
+      |                                     "%s", 
+4 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\transform.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:28:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:291:14: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  291 |   fprintf(f, line);
+      |              ^~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:291:14: note: treat the string as an argument to avoid this
+  291 |   fprintf(f, line);
+      |              ^
+      |              "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:298:14: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  298 |   fprintf(f, line);
+      |              ^~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:298:14: note: treat the string as an argument to avoid this
+  298 |   fprintf(f, line);
+      |              ^
+      |              "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:303:14: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  303 |   fprintf(f, line);
+      |              ^~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:303:14: note: treat the string as an argument to avoid this
+  303 |   fprintf(f, line);
+      |              ^
+      |              "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:321:14: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  321 |   fprintf(f, line);
+      |              ^~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dfa.c:321:14: note: treat the string as an argument to avoid this
+  321 |   fprintf(f, line);
+      |              ^
+      |              "%s", 
+7 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+Compiling generator mkeyes
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mkeyes.c:40:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\eyes.h:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+Compiling generator joseki
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\joseki.c:26:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.c:32:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\boardlib.c:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\hash.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\printutils.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+Compiling generator uncompress_fuseki
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:28:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:227:12: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  227 |     printf(output_strings[PREAMBLE]);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:227:12: note: treat the string as an argument to avoid this
+  227 |     printf(output_strings[PREAMBLE]);
+      |            ^
+      |            "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:229:12: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  229 |     printf(output_strings[FOOTER]);
+      |            ^~~~~~~~~~~~~~~~~~~~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:229:12: note: treat the string as an argument to avoid this
+  229 |     printf(output_strings[FOOTER]);
+      |            ^
+      |            "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:254:10: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  254 |   printf(output_strings[PREAMBLE]);
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:254:10: note: treat the string as an argument to avoid this
+  254 |   printf(output_strings[PREAMBLE]);
+      |          ^
+      |          "%s", 
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:311:10: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+  311 |   printf(output_strings[FOOTER]);
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\uncompress_fuseki.c:311:10: note: treat the string as an argument to avoid this
+  311 |   printf(output_strings[FOOTER]);
+      |          ^
+      |          "%s", 
+7 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.c:32:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\boardlib.c:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\hash.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\printutils.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+Compiling generator mkmcpat
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mkmcpat.c:32:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\globals.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\montecarlo.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.c:32:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\boardlib.c:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\hash.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\printutils.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+---------------------------
+corner database for joseki
+size: 179 kB for 1622 patterns (8673 variations)
+---------------------------
+---------------------------
+DFA for aa_attackpat
+size: 3 kB for 28 patterns (375 states)
+---------------------------
+---------------------------
+DFA for owl_attackpat
+size: 93 kB for 397 patterns (9414 states)
+---------------------------
+---------------------------
+DFA for owl_vital_apat
+size: 10 kB for 59 patterns (1032 states)
+---------------------------
+---------------------------
+DFA for owl_defendpat
+size: 125 kB for 488 patterns (12653 states)
+---------------------------
+Compiling GNU Go browser engine
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\aftermath.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.c:32:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\boardlib.c:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\breakin.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\cache.c:26:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\clock.c:39:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\clock.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\combination.c:29:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\dragon.c:44:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\endgame.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\filllib.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\fuseki.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\genmove.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\globals.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\handicap.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\hash.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\influence.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\interface.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\matchpat.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\montecarlo.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\move_reasons.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\movelist.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\optics.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\owl.c:49:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\persistent.c:49:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\printutils.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\readconnect.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\reading.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\semeai.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\sgfdecide.c:28:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\sgffile.c:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\shapes.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\showbord.c:38:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\surround.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\unconditional.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\utils.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\value_moves.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\worm.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1811:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+ 1811 | #if !USE_WINDOWS_SOCKET_CLUDGE
+      |      ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1811:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1811:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1888:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+ 1888 | #if !USE_WINDOWS_SOCKET_CLUDGE
+      |      ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1888:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\main.c:1888:6: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+9 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\play_ascii.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\play_gmp.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\play_gtp.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\play_solo.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\play_test.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\gnugo.h:33:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\gtp.c:46:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\interface\gtp.h:42:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:206:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  206 | my_index (str, chr)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:296:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  296 | exchange (argv)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:381:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  381 | _getopt_initialize (argc, argv, optstring)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:394:28: warning: passing arguments to 'getenv' without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  394 |   posixly_correct = getenv ("POSIXLY_CORRECT");
+      |                            ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:503:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  503 | _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt.c:959:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+  959 | gg_getopt (argc, argv, optstring)
+      | ^
+6 warnings generated.
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:65:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   65 | gg_getopt_long (argc, argv, options, long_options, opt_index)
+      | ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\getopt1.c:81:1: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
+   81 | getopt_long_only (argc, argv, options, long_options, opt_index)
+      | ^
+2 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:34:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   37 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.c:37:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+6 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\patterns.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\josekidb.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\apatterns.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\dpatterns.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\conn.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\endgame.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\influence.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\barriers.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\oraclepat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\fusekipat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\handipat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\aa_attackpat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_attackpat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_vital_apat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_vital_apat.c:615:27: warning: logical not is only applied to the left hand side of this comparison [-Wlogical-not-parentheses]
+  615 |   return countlib(a)>1 || !play_attack_defend_n(color, 1, 3, move, NO_MOVE, b, move)==WIN;
+      |                           ^                                                         ~~
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_vital_apat.c:615:27: note: add parentheses after the '!' to evaluate the comparison first
+  615 |   return countlib(a)>1 || !play_attack_defend_n(color, 1, 3, move, NO_MOVE, b, move)==WIN;
+      |                           ^                                                              
+      |                            (                                                             )
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_vital_apat.c:615:27: note: add parentheses around left hand side expression to silence this warning
+  615 |   return countlib(a)>1 || !play_attack_defend_n(color, 1, 3, move, NO_MOVE, b, move)==WIN;
+      |                           ^                                                         
+      |                           (                                                         )
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_vital_apat.c:615:85: warning: result of comparison of constant 5 with boolean expression is always false [-Wtautological-constant-out-of-range-compare]
+  615 |   return countlib(a)>1 || !play_attack_defend_n(color, 1, 3, move, NO_MOVE, b, move)==WIN;
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^ ~~~
+5 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\owl_defendpat.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\eyes.c:29:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\eyes.h:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\fuseki9.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\fuseki13.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\fuseki19.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\mcpat.c:30:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\connections.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\helpers.c:25:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\patterns\transform.c:24:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\liberty.h:27:
+In file included from C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\engine\board.h:30:
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+   39 | #if USE_WINDOWS_SOCKET_CLUDGE
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:5: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |     ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:35:24: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   35 |   ((defined(_WIN32) || defined(_WIN32_WCE))     \
+      |                        ^
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:39:5: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+C:\codex\SigrikaGo\.codex-run\practice-local\gnugo-3.8\utils\winsocket.h:36:7: note: expanded from macro 'USE_WINDOWS_SOCKET_CLUDGE'
+   36 |    && defined(ENABLE_SOCKET_SUPPORT))
+      |       ^
+3 warnings generated.
+{
+  "version": "3.8",
+  "emscripten": "4.0.10",
+  "source": "https://ftp.gnu.org/gnu/gnugo/gnugo-3.8.tar.gz",
+  "sha256": {
+    "gnugo-3.8.tar.gz": "da68d7a65f44dcf6ce6e4e630b6f6dd9897249d34425920bfdd4e07ff1866a72",
+    "gnugo.js": "1b94ce473863f1c0322e22057cb6ee76916f212bf772cb7aded0c8585a53fe83",
+    "gnugo.wasm": "e23463539237087ad1e84aba36db3ebec79725e02124795d72600e6f1a26bbc4"
+  }
+}

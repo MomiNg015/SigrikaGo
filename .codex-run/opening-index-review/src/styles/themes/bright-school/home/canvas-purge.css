@@ -1,0 +1,14 @@
+/* Bright School lobby canvas background purge. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: none !important;
+}
+
+/* Bright School lobby material polish for browser comments. */

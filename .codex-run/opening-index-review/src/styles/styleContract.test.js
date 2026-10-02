@@ -1,0 +1,1786 @@
+import { describe, expect, it } from "vitest";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { basename, dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { readCssWithImports } from "./cssTestUtils.js";
+
+const rootStylesPath = fileURLToPath(new URL("../styles.css", import.meta.url));
+const stylesDir = dirname(fileURLToPath(new URL("./base.css", import.meta.url)));
+
+const ROOT_STYLE_IMPORTS = [
+  "./styles/base.css",
+  "./styles/lobby.css",
+  "./styles/room.css",
+  "./styles/modals.css",
+  "./styles/commerce-settings.css",
+  "./styles/responsive.css",
+  "./styles/mobile-home.css",
+  "./styles/home-terminal.css",
+  "./styles/mobile-room.css",
+  "./styles/room-terminal.css",
+  "./styles/mobile-modals.css",
+  "./styles/hud-components.css",
+  "./styles/tailwind.css",
+  "./styles/themes.css"
+];
+
+const DOMAIN_STYLE_FILES = new Set(ROOT_STYLE_IMPORTS.map((importPath) => basename(importPath)));
+const LAZY_ROUTE_STYLE_FILES = new Set(["admin.css"]);
+const SECONDARY_ENTRY_STYLE_FILES = new Set(["mobile-adaptive.css"]);
+const DOMAIN_STYLE_DIRECTORIES = new Set([
+  "admin",
+  "base",
+  "commerce",
+  "home-terminal",
+  "hud-components",
+  "lobby",
+  "mobile-adaptive",
+  "mobile-home",
+  "mobile-modals",
+  "mobile-room",
+  "modals",
+  "responsive",
+  "room",
+  "room-terminal",
+  "tailwind",
+  "themes"
+]);
+const TEST_STYLE_FILES = new Set([
+  "cssLayerInventory.test.js",
+  "hudComponents.test.js",
+  "styleContract.test.js",
+  "themeContract.test.js"
+]);
+const DOCUMENTATION_FILES = new Set(["README.md"]);
+const CSS_SIZE_GUARD_BYTES = 6000;
+const KNOWN_OVERSIZED_CSS_FILES = new Map([]);
+
+function cssImports(source) {
+  return [...source.matchAll(/@import\s+"([^"]+)"[^;]*;/g)].map((match) => match[1]);
+}
+
+function concreteCssAfterImports(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/@import\s+"[^"]+"[^;]*;\s*/g, "")
+    .trim();
+}
+
+function normalizedCssSize(source) {
+  return Buffer.byteLength(source.replace(/\r\n/g, "\n"), "utf8");
+}
+
+function cssFilesUnder(dir) {
+  return readdirSync(dir)
+    .flatMap((entry) => {
+      const fullPath = join(dir, entry);
+      if (statSync(fullPath).isDirectory()) return cssFilesUnder(fullPath);
+      return entry.endsWith(".css") ? [fullPath] : [];
+    });
+}
+
+function cssBlocksContaining(source, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const selectorPattern = new RegExp(`(?:^|\\n)([^{}]*${escapedSelector}[^{}]*)\\{`, "g");
+  const blocks = [];
+  let match;
+
+  while ((match = selectorPattern.exec(source)) !== null) {
+    const bodyStart = source.indexOf("{", match.index);
+    const bodyEnd = source.indexOf("}", bodyStart);
+    if (bodyStart < 0 || bodyEnd < 0) continue;
+    blocks.push(source.slice(match.index, bodyEnd + 1));
+    selectorPattern.lastIndex = bodyEnd + 1;
+  }
+
+  return blocks;
+}
+
+describe("root CSS entry contract", () => {
+  it("keeps styles.css import order stable", () => {
+    const source = readFileSync(rootStylesPath, "utf8");
+
+    expect(cssImports(source)).toEqual(ROOT_STYLE_IMPORTS);
+  });
+
+  it("keeps themes.css as the final root style layer", () => {
+    expect(ROOT_STYLE_IMPORTS.at(-1)).toBe("./styles/themes.css");
+  });
+
+  it("keeps Tailwind as a prefixed utility layer before theme overrides", () => {
+    const source = readFileSync(rootStylesPath, "utf8");
+    const rootImports = cssImports(source);
+    const tailwindEntry = readFileSync(new URL("./tailwind.css", import.meta.url), "utf8");
+
+    expect(rootImports.indexOf("./styles/tailwind.css")).toBe(rootImports.indexOf("./styles/themes.css") - 1);
+    expect(rootImports[rootImports.indexOf("./styles/tailwind.css") - 1]).toBe("./styles/hud-components.css");
+    expect(cssImports(tailwindEntry)).toEqual([
+      "tailwindcss/theme.css",
+      "./tailwind/tokens.css",
+      "tailwindcss/utilities.css"
+    ]);
+    expect(tailwindEntry).toContain('@import "tailwindcss/theme.css" layer(theme) prefix(tw);');
+    expect(tailwindEntry).toContain('@import "./tailwind/tokens.css";');
+    expect(tailwindEntry).toContain('@import "tailwindcss/utilities.css" layer(utilities) prefix(tw) source("../");');
+    expect(tailwindEntry).not.toContain("preflight");
+
+    const tailwindTokens = readFileSync(new URL("./tailwind/tokens.css", import.meta.url), "utf8");
+    expect(tailwindTokens).toContain("@theme inline");
+    expect(tailwindTokens).toContain("--color-sigrika-surface");
+    expect(tailwindTokens).toContain("--spacing-sigrika-page");
+    expect(tailwindTokens).toContain("--shadow-sigrika-paper");
+    expect(tailwindTokens).not.toContain("@import");
+    expect(tailwindTokens).not.toContain("preflight");
+  });
+
+  it("keeps art font usage semantic and opt-in", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+    const fontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf", import.meta.url));
+    const windowTitleFontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/LXGWMarkerGothic-Regular.ttf", import.meta.url));
+    const finalTypographyCss = readFileSync(new URL("./mobile-adaptive/semantic-accent-typography.css", import.meta.url), "utf8");
+
+    expect(statSync(fontAssetPath).isFile()).toBe(true);
+    expect(statSync(windowTitleFontAssetPath).isFile()).toBe(true);
+    expect(baseCss).toContain('font-family: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype")');
+    expect(baseCss).toContain("U+0030-0039");
+    expect(baseCss).toContain("U+0041-005A");
+    expect(baseCss).toContain("U+0061-007A");
+    expect(baseCss).toContain('--font-display-accent: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('--font-numeric-accent: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('font-family: "Sigrika Window Title";');
+    expect(baseCss).toContain('src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype")');
+    expect(baseCss).toContain('--font-window-title: "Sigrika Window Title";');
+    expect(baseCss).toContain(".text-display-accent");
+    expect(baseCss).toContain(".text-window-title");
+    expect(baseCss).toContain(':where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2');
+    expect(baseCss).toContain(".text-rating-value");
+    expect(baseCss).toContain(".text-clock-value");
+    expect(baseCss).toContain("font-variant-numeric: tabular-nums");
+    expect(baseCss).toContain("text-transform: uppercase");
+    expect(finalTypographyCss).toContain("font-family: var(--font-window-title), var(--font-ui-default)");
+    expect(finalTypographyCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .text-window-title");
+  });
+
+  it("keeps top-level style files either imported or intentionally non-CSS tests", () => {
+    const topLevelFiles = readdirSync(stylesDir).filter((entry) => !statSync(join(stylesDir, entry)).isDirectory());
+    const unexpectedFiles = topLevelFiles.filter((entry) => {
+      if (entry.endsWith(".css")) {
+        return !DOMAIN_STYLE_FILES.has(entry)
+          && !SECONDARY_ENTRY_STYLE_FILES.has(entry)
+          && !LAZY_ROUTE_STYLE_FILES.has(entry);
+      }
+      if (entry.endsWith(".test.js")) return !TEST_STYLE_FILES.has(entry);
+      if (entry.endsWith(".md")) return !DOCUMENTATION_FILES.has(entry);
+      return false;
+    });
+
+    expect(unexpectedFiles).toEqual([]);
+  });
+
+  it("keeps CSS files with imports as import-only entries", () => {
+    const filesWithMixedImports = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          hasImports: cssImports(source).length > 0,
+          concreteCss: concreteCssAfterImports(source)
+        };
+      })
+      .filter(({ hasImports, concreteCss }) => hasImports && concreteCss.length > 0)
+      .map(({ path }) => path);
+
+    expect(filesWithMixedImports).toEqual([]);
+  });
+
+  it("prevents new oversized CSS files and growth in known CSS debt files", () => {
+    const oversizedCssFiles = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          bytes: normalizedCssSize(source)
+        };
+      })
+      .filter(({ bytes }) => bytes >= CSS_SIZE_GUARD_BYTES);
+
+    const unexpectedOversizedFiles = oversizedCssFiles.filter(({ path }) => !KNOWN_OVERSIZED_CSS_FILES.has(path));
+    const expandedKnownDebtFiles = oversizedCssFiles
+      .filter(({ path, bytes }) => {
+        const currentLimit = KNOWN_OVERSIZED_CSS_FILES.get(path);
+
+        return currentLimit !== undefined && bytes > currentLimit;
+      })
+      .map(({ path, bytes }) => ({ path, bytes, limit: KNOWN_OVERSIZED_CSS_FILES.get(path) }));
+
+    expect(unexpectedOversizedFiles).toEqual([]);
+    expect(expandedKnownDebtFiles).toEqual([]);
+  });
+
+  it("keeps mobile-adaptive.css as the final theme entry safety layer", () => {
+    const themeEntry = readFileSync(new URL("./themes.css", import.meta.url), "utf8");
+
+    expect(cssImports(themeEntry).at(-1)).toBe("./mobile-adaptive.css");
+
+    const sharedThemeEntry = readFileSync(new URL("./themes/shared.css", import.meta.url), "utf8");
+    expect(cssImports(sharedThemeEntry)).toEqual([
+      "./shared/player-theme-tokens.css",
+      "./shared/theme-settings-panel.css",
+      "./shared/player-theme-wiring.css"
+    ]);
+    expect(sharedThemeEntry).not.toContain(".app-shell.player-theme-enabled {");
+
+    const themeComponentsEntry = readFileSync(new URL("./themes/theme-components.css", import.meta.url), "utf8");
+    expect(cssImports(themeComponentsEntry)).toEqual([
+      "./theme-components/outcome-skill-states.css",
+      "./theme-components/replay-outcome-win.css",
+      "./theme-components/replay-outcome-loss.css",
+      "./theme-components/replay-outcome-draw.css"
+    ]);
+    expect(themeComponentsEntry).not.toContain(".timer.byo-yomi");
+  });
+
+  it("keeps Bright School component repairs as import-only theme overlays", () => {
+    const componentRepairsEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(componentRepairsEntry)).toEqual([
+      "./component-repairs/foundation-home.css",
+      "./component-repairs/shop.css",
+      "./component-repairs/lists-profile.css",
+      "./component-repairs/profile-actions.css",
+      "./component-repairs/warehouse-character.css",
+      "./component-repairs/character-music-player.css",
+      "./component-repairs/room-board.css",
+      "./component-repairs/chat.css",
+      "./component-repairs/notebook-polish.css"
+    ]);
+    expect(componentRepairsEntry).not.toContain(".home-top-strip {");
+
+    const characterMusicPlayerEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/character-music-player.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(characterMusicPlayerEntry)).toEqual([
+      "./character-music-player/player-shell.css",
+      "./character-music-player/track-sheet.css"
+    ]);
+
+    const foundationHomeEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/foundation-home.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(foundationHomeEntry)).toEqual([
+      "./foundation-home/root-scrollbars.css",
+      "./foundation-home/scrollbar-auth.css",
+      "./foundation-home/home-brand-status.css",
+      "./foundation-home/home-image-entry.css"
+    ]);
+    expect(foundationHomeEntry).not.toContain(".home-top-strip {");
+
+    const warehouseCharacterEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/warehouse-character.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(warehouseCharacterEntry)).toEqual([
+      "./warehouse-character/decoration-owned.css",
+      "./warehouse-character/character-detail.css",
+      "./warehouse-character/profile-character-badges.css",
+      "./warehouse-character/character-target-modal.css"
+    ]);
+    expect(warehouseCharacterEntry).not.toContain(".character-detail {");
+
+    const notebookPolishEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(notebookPolishEntry)).toEqual([
+      "./notebook-polish/tape-rings-stones.css",
+      "./notebook-polish/lobby-notebook-background.css",
+      "./notebook-polish/home-entry-badges.css"
+    ]);
+    expect(notebookPolishEntry).not.toContain(".home-grid-featured {");
+  });
+
+  it("keeps Bright School mobile room dock actions as import-only theme overlays", () => {
+    const brightSchoolMobileRoomEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(brightSchoolMobileRoomEntry)).toContain("./room/dock-actions.css");
+
+    const dockActionsEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/dock-actions.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(dockActionsEntry)).toEqual([
+      "./dock-actions/dock-tabs-shell.css",
+      "./dock-actions/action-panel-hint.css",
+      "./dock-actions/action-grid.css",
+      "./dock-actions/decision-bar.css",
+      "./dock-actions/action-button-labels.css"
+    ]);
+    expect(dockActionsEntry).not.toContain(".mobile-room-dock {");
+
+    const shellHeaderMenuEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/shell-header-menu.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(shellHeaderMenuEntry)).toEqual([
+      "./shell-header-menu/screen-shell.css",
+      "./shell-header-menu/header-title-tags.css",
+      "./shell-header-menu/menu-buttons.css",
+      "./shell-header-menu/menu-panel.css",
+      "./shell-header-menu/menu-panel-items.css"
+    ]);
+    expect(shellHeaderMenuEntry).not.toContain(".mobile-room-screen {");
+
+    const viewportPlayerStripsEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/viewport-player-strips.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(viewportPlayerStripsEntry)).toEqual([
+      "./viewport-player-strips/viewport-shell.css",
+      "./viewport-player-strips/player-card-grid.css",
+      "./viewport-player-strips/portrait-badge.css",
+      "./viewport-player-strips/player-meta-name.css",
+      "./viewport-player-strips/timer-captures-skill.css"
+    ]);
+    expect(viewportPlayerStripsEntry).not.toContain(".player-info {");
+  });
+
+  it("keeps Bright School mobile modal shell as an import-only theme overlay", () => {
+    const modalShellEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/modal-shell.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(modalShellEntry)).toEqual([
+      "./modal-shell/shell-surfaces.css",
+      "./modal-shell/scroll-controls.css"
+    ]);
+    expect(modalShellEntry).not.toContain(".modal-backdrop {");
+    expect(modalShellEntry).not.toContain(".close-button {");
+  });
+
+  it("keeps Bright School refinement board as an import-only protected overlay", () => {
+    const refinementBoardEntry = readFileSync(
+      new URL("./themes/bright-school/quality-base/refinement-board.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(refinementBoardEntry)).toEqual([
+      "./refinement-board/board-surface-points.css",
+      "./refinement-board/board-lines-layer.css",
+      "./refinement-board/row-effects-shell.css",
+      "./refinement-board/row-slash-art.css",
+      "./refinement-board/board-lines-stroke.css",
+      "./refinement-board/stone-position.css"
+    ]);
+    expect(refinementBoardEntry).not.toContain(".board .point");
+  });
+
+  it("hides native number input spinner controls while preserving number inputs", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+
+    expect(baseCss).toContain('input[type="number"]');
+    expect(baseCss).toContain("appearance: textfield");
+    expect(baseCss).toContain('input[type="number"]::-webkit-outer-spin-button');
+    expect(baseCss).toContain('input[type="number"]::-webkit-inner-spin-button');
+    expect(baseCss).toContain("-webkit-appearance: none");
+  });
+
+  it("keeps selected tab and toggle buttons visually pressed in the shared base layer", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+
+    expect(baseCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(baseCss).toContain(".achievement-tabs button[aria-selected=\"true\"]");
+    expect(baseCss).toContain(".mobile-tab-button.active");
+    expect(baseCss).toContain("transform: translateY(1px) scale(0.985)");
+    expect(baseCss).toContain("inset 0 2px 5px rgba(45, 36, 48, 0.16)");
+  });
+
+  it("keeps the preload screen centered with wrapping text", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+
+    expect(baseCss).toContain(".asset-preload-screen");
+    expect(baseCss).toContain("min-height: 100dvh");
+    expect(baseCss).toContain("place-items: center");
+    expect(baseCss).toContain("background: transparent");
+    expect(baseCss).toContain("width: min(520px, calc(100vw - 32px))");
+    expect(baseCss).toContain(".preload-character");
+    expect(baseCss).toContain("preload-character-hop");
+    expect(baseCss).toContain(".preload-character img");
+    expect(baseCss).toContain("filter: none");
+    expect(baseCss).toContain(".preload-title");
+    expect(baseCss).toContain(".preload-status");
+    expect(baseCss).toContain(".preload-tip");
+    expect(baseCss).toContain("white-space: normal");
+    expect(baseCss).toContain("overflow-wrap: anywhere");
+  });
+
+  it("keeps the final Bright School preload panel background-free", () => {
+    const preloadCss = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/preload.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(preloadCss).toContain(".asset-preload-panel");
+    expect(preloadCss).toContain("background-color: transparent !important");
+    expect(preloadCss).toContain("background-image: none !important");
+    expect(preloadCss).toContain(
+      ".asset-preload-panel.asset-preload-panel.asset-preload-panel.asset-preload-panel"
+    );
+    expect(preloadCss).not.toContain(":has(.asset-preload-screen)");
+  });
+
+  it("keeps mobile settings tabs and match mode status on one line", () => {
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const matchModeCss = readCssWithImports(new URL("./modals.css", import.meta.url));
+
+    expect(mobileCss).toContain(".settings-modal .settings-tabs");
+    expect(mobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(mobileCss).toContain(".settings-modal .settings-tabs button");
+    expect(mobileCss).toContain("white-space: nowrap !important");
+    expect(mobileCss).toContain(".settings-modal h2");
+    expect(mobileCss).toContain("line-height: 1.22 !important");
+    expect(mobileCss).toContain("overflow: visible !important");
+    expect(matchModeCss).toContain(".match-mode-rules");
+    expect(matchModeCss).toContain(".match-mode-rule-line");
+    expect(matchModeCss).toContain("justify-content: stretch");
+    expect(matchModeCss).toContain("margin-left: auto");
+    expect(matchModeCss).not.toContain(".match-mode-count small");
+    expect(matchModeCss).toContain("overflow-wrap: normal !important");
+    expect(mobileCss).toContain(".match-mode-count");
+    expect(mobileCss).toContain("justify-self: end !important");
+    expect(mobileCss).toContain("margin-left: auto !important");
+  });
+
+  it("keeps the message board textarea visibly tall on desktop and mobile", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const messageBoardSource = readFileSync(new URL("../modals/MessageBoardModal.jsx", import.meta.url), "utf8");
+
+    expect(messageBoardSource).toContain('className="message-board-input"');
+    expect(baseCss).toContain(".message-board-modal textarea");
+    expect(baseCss).toContain("height: 480px");
+    expect(baseCss).toContain("min-height: 480px");
+    expect(mobileCss).toContain(".message-board-modal textarea");
+    expect(mobileCss).toContain("height: min(420px, 52dvh)");
+    expect(mobileCss).toContain("min-height: min(420px, 52dvh)");
+  });
+
+  it("keeps base.css as an import-only shared foundation entry", () => {
+    const baseEntry = readFileSync(new URL("./base.css", import.meta.url), "utf8");
+
+    expect(cssImports(baseEntry)).toEqual([
+      "./base/foundation.css",
+      "./base/asset-preload.css",
+      "./base/surfaces-forms-actions.css",
+      "./base/topbar-room-tags.css",
+      "./base/home-legacy-grid.css",
+      "./base/home-stage-artboard.css",
+      "./base/home-stage-toolbox.css",
+      "./base/home-unavailable-entry.css",
+      "./base/message-feedback.css",
+      "./base/skill-description.css"
+    ]);
+    expect(baseEntry).not.toContain(":root {");
+    expect(baseEntry).not.toContain(".home-screen {");
+    expect(baseEntry).not.toContain(".message-board-modal {");
+
+    const legacyHomeGridEntry = readFileSync(new URL("./base/home-legacy-grid.css", import.meta.url), "utf8");
+    expect(cssImports(legacyHomeGridEntry)).toEqual([
+      "./home-legacy-grid/layout.css",
+      "./home-legacy-grid/player-plaque.css",
+      "./home-legacy-grid/match-feature.css",
+      "./home-legacy-grid/entry-cards.css",
+      "./home-legacy-grid/utility-grid.css"
+    ]);
+    expect(legacyHomeGridEntry).not.toContain(".home-grid,");
+  });
+
+  it("keeps admin.css as an import-only admin console entry", () => {
+    const adminEntry = readFileSync(new URL("./admin.css", import.meta.url), "utf8");
+    const adminConsoleSource = readFileSync(new URL("../admin/AdminConsole.jsx", import.meta.url), "utf8");
+
+    expect(ROOT_STYLE_IMPORTS).not.toContain("./styles/admin.css");
+    expect(adminConsoleSource).toContain('import "../styles/admin.css";');
+    expect(cssImports(adminEntry)).toEqual([
+      "./admin/shell-layout.css",
+      "./admin/shared-surfaces.css",
+      "./admin/analytics.css",
+      "./admin/characters.css",
+      "./admin/skill-traits.css",
+      "./admin/audit-feedback.css",
+      "./admin/gacha.css",
+      "./admin/achievements.css",
+      "./admin/announcements.css",
+      "./admin/onboarding-story.css",
+      "./admin/onboarding-board-editor.css",
+      "./admin/mailbox.css",
+      "./admin/responsive.css",
+      "./admin/polish.css",
+      "./admin/scrollbars.css"
+    ]);
+    expect(adminEntry).not.toContain(".admin-screen {");
+    expect(adminEntry).not.toContain(".admin-table {");
+    expect(adminEntry).not.toContain(".admin-gacha-board");
+  });
+
+  it("keeps admin analytics and polish styles as import-only sub-entries", () => {
+    const analyticsEntry = readFileSync(new URL("./admin/analytics.css", import.meta.url), "utf8");
+    const polishEntry = readFileSync(new URL("./admin/polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(analyticsEntry)).toEqual([
+      "./analytics/brief.css",
+      "./analytics/lists.css",
+      "./analytics/operations.css"
+    ]);
+    expect(analyticsEntry).not.toContain(".admin-analytics-page {");
+    expect(analyticsEntry).not.toContain(".admin-bar-row {");
+
+    expect(cssImports(polishEntry)).toEqual([
+      "./polish/tokens-surfaces.css",
+      "./polish/forms-actions.css",
+      "./polish/hud-isolation.css",
+      "./polish/tables-specials.css"
+    ]);
+    expect(polishEntry).not.toContain(".admin-screen {");
+    expect(polishEntry).not.toContain(".admin-table th");
+  });
+
+  it("keeps lobby.css as an import-only lobby and house entry", () => {
+    const lobbyEntry = readFileSync(new URL("./lobby.css", import.meta.url), "utf8");
+
+    expect(cssImports(lobbyEntry)).toEqual([
+      "./lobby/panels-profile.css",
+      "./lobby/characters.css",
+      "./lobby/match-watch-entry.css",
+      "./lobby/watch-list.css",
+      "./lobby/watch-list-responsive.css"
+    ]);
+    expect(lobbyEntry).not.toContain(".profile-grid {");
+    expect(lobbyEntry).not.toContain(".character-list {");
+    expect(lobbyEntry).not.toContain(".watch-list-modal");
+  });
+
+  it("keeps the mobile interaction safety layer touch friendly", () => {
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const phoneInteractionsCss = readFileSync(new URL("./mobile-adaptive/phone-interactions.css", import.meta.url), "utf8");
+    const touchConfirmBlock = mobileCss.match(/\.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
+    const genericTransitionBlock = phoneInteractionsCss.match(/button,\s*[\s\S]*?\.watch-room-row\s*\{[\s\S]*?\n  \}/)?.[0] ?? "";
+    const genericActiveBlock = phoneInteractionsCss.match(/button:active[\s\S]*?\.watch-room-row:active\s*\{[\s\S]*?\n  \}/)?.[0] ?? "";
+
+    expect(mobileCss).toContain("--mobile-tap-duration: 120ms");
+    expect(mobileCss).toContain("-webkit-tap-highlight-color: transparent");
+    expect(mobileCss).toContain(".point.previewable:active");
+    expect(mobileCss).toContain("touch-action: none");
+    expect(touchConfirmBlock).not.toContain("transform: scale");
+    expect(genericTransitionBlock).not.toContain("filter var(--mobile-tap-duration)");
+    expect(genericTransitionBlock).not.toContain("box-shadow var(--mobile-tap-duration)");
+    expect(genericActiveBlock).not.toContain("filter:");
+    expect(mobileCss).toContain("@keyframes mobile-sheet-in");
+    expect(mobileCss).toContain("@media (max-width: 768px) and (prefers-reduced-motion: reduce)");
+  });
+
+  it("keeps mobile-adaptive.css as an import-only safety entry", () => {
+    const mobileEntry = readFileSync(new URL("./mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileEntry)).toEqual([
+      "./mobile-adaptive/desktop-home-footer.css",
+      "./mobile-adaptive/admin-fullscreen.css",
+      "./mobile-adaptive/phone-core.css",
+      "./mobile-adaptive/phone-character-detail-music.css",
+      "./mobile-adaptive/phone-gacha.css",
+      "./mobile-adaptive/phone-recruitment.css",
+      "./mobile-adaptive/phone-shop.css",
+      "./mobile-adaptive/phone-social-warehouse.css",
+      "./mobile-adaptive/phone-interactions.css",
+      "./mobile-adaptive/home-utility-interactions.css",
+      "./mobile-adaptive/coarse-house.css",
+      "./mobile-adaptive/motion-keyframes.css",
+      "./mobile-adaptive/mobile-room-portrait.css",
+      "./mobile-adaptive/profile-report-dialog.css",
+      "./mobile-adaptive/mobile-room-landscape.css",
+      "./mobile-adaptive/narrow-phone.css",
+      "./mobile-adaptive/bright-school-overrides.css",
+      "./mobile-adaptive/reduced-motion.css",
+      "./mobile-adaptive/home-narrow-desktop.css",
+      "./mobile-adaptive/bright-school-portrait.css",
+      "./mobile-adaptive/mobile-profile-records.css",
+      "./mobile-adaptive/information-center.css",
+      "./mobile-adaptive/semantic-accent-typography.css",
+      "./mobile-adaptive/shop-window-redesign.css",
+      "./mobile-adaptive/shop-background-raster.css",
+      "./mobile-adaptive/shop-window-card-layout.css",
+      "./mobile-adaptive/shop-window-compact.css",
+      "./mobile-adaptive/shop-card-badges.css",
+      "./mobile-adaptive/costume-store.css",
+      "./mobile-adaptive/modal-shadow-gutters.css",
+      "./mobile-adaptive/modal-control-gutters.css",
+      "./mobile-adaptive/mobile-window-headers.css",
+      "./mobile-adaptive/user-nameplate-final.css",
+      "./mobile-adaptive/window-title-stickers.css",
+      "./mobile-adaptive/window-title-sticker-content.css",
+      "./mobile-adaptive/window-sticker-resume-header.css",
+      "./mobile-adaptive/match-mode-title-layout.css",
+      "./mobile-adaptive/mobile-room-shadow-gutters.css",
+      "./mobile-adaptive/home-student-id.css",
+      "./mobile-adaptive/guided-actions.css",
+      "./mobile-adaptive/window-bookmarks.css",
+      "./mobile-adaptive/window-empty-states.css",
+      "./mobile-adaptive/sigrika-corruption.css"
+    ]);
+    expect(mobileEntry).not.toContain(".gacha-modal {");
+    expect(mobileEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
+
+    const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/sigrika-corruption.css");
+    const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
+    const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
+    const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");
+    const corruptionTransitionCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/transition.css", import.meta.url), "utf8");
+    const corruptionTransitionMotionCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/transition-motion.css", import.meta.url), "utf8");
+    const corruptionRoomAtmosphereCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-atmosphere.css", import.meta.url), "utf8");
+    const corruptionRoomPanelsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-panels.css", import.meta.url), "utf8");
+    const corruptionRoomTimersCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-timers.css", import.meta.url), "utf8");
+    const corruptionRoomControlsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-controls.css", import.meta.url), "utf8");
+    const corruptionRoomSecondarySurfacesCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-secondary-surfaces.css", import.meta.url), "utf8");
+    const corruptionRoomMobileReadabilityCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-mobile-readability.css", import.meta.url), "utf8");
+    const corruptionRoomSystemLogCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-system-log.css", import.meta.url), "utf8");
+    const corruptionRoomLifecycleCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-lifecycle.css", import.meta.url), "utf8");
+    const corruptionRoomReplayCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-replay.css", import.meta.url), "utf8");
+    const corruptionRoomPresentationCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-presentation.css", import.meta.url), "utf8");
+    const corruptionRoomIconsCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/room-icons.css", import.meta.url), "utf8");
+    const hologramEntryCss = readFileSync(new URL("./hud-components/hud-hardening/home-hologram-entries.css", import.meta.url), "utf8");
+    const brightMobileEntryCss = readFileSync(new URL("./themes/bright-school/mobile/home-shell/entries-utility-footer.css", import.meta.url), "utf8");
+    expect(cssImports(corruptionEntry)).toEqual([
+      "./sigrika-corruption/shell.css",
+      "./sigrika-corruption/damage-field.css",
+      "./sigrika-corruption/transition.css",
+      "./sigrika-corruption/transition-motion.css",
+      "./sigrika-corruption/room-atmosphere.css",
+      "./sigrika-corruption/room-panels.css",
+      "./sigrika-corruption/room-timers.css",
+      "./sigrika-corruption/room-controls.css",
+      "./sigrika-corruption/room-icons.css",
+      "./sigrika-corruption/room-secondary-surfaces.css",
+      "./sigrika-corruption/room-mobile-readability.css",
+      "./sigrika-corruption/room-system-log.css",
+      "./sigrika-corruption/room-lifecycle.css",
+      "./sigrika-corruption/room-replay.css",
+      "./sigrika-corruption/room-presentation.css",
+      "./sigrika-corruption/marks.css",
+      "./sigrika-corruption/home-contamination.css",
+      "./sigrika-corruption/handbook-contamination.css",
+      "./sigrika-corruption/handbook-cards.css",
+      "./sigrika-corruption/handbook-mobile.css",
+      "./sigrika-corruption/match-duel.css",
+      "./sigrika-corruption/match-duel-mobile.css",
+      "./sigrika-corruption/match-duel-theme-guard.css"
+    ]);
+    expect(corruptionShellCss).toContain("backdrop-filter: invert(1) grayscale(1) contrast(2.8)");
+    expect(corruptionShellCss).toContain(".sigrika-corruption-field, .sigrika-theme-transition)");
+    expect(corruptionTransitionCss).toContain("--sigrika-theme-transition-z: 100300");
+    expect(corruptionTransitionCss).toContain("z-index: var(--sigrika-theme-transition-z)");
+    expect(corruptionTransitionCss).toContain("pointer-events: auto");
+    expect(corruptionTransitionCss).toContain("filter: none !important");
+    expect(corruptionTransitionCss).not.toContain("backdrop-filter");
+    expect(corruptionTransitionMotionCss).toContain("@keyframes sigrika-theme-slice-cover");
+    expect(corruptionTransitionMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(corruptionShellCss).toContain("> :is(.match-mode-backdrop, .sigrika-corruption-house-backdrop)");
+    expect(corruptionShellCss).toContain("z-index: var(--sigrika-corruption-action-z)");
+    expect(corruptionShellCss).toContain(":has(.home-screen.is-sigrika-corrupted-home)");
+    expect(corruptionShellCss).toContain("background-blend-mode: luminosity !important");
+    expect(corruptionShellCss).toMatch(/main\.home-screen\.is-sigrika-corrupted-home > section\.home-main-panel\.home-terminal-main\s*\{[^}]*background-image: none !important;/);
+    expect(corruptionShellCss).toMatch(/is-sigrika-corrupted > \.home-footer-strip\s*\{[^}]*filter: grayscale\(1\) saturate\(0\)/);
+    expect(corruptionShellCss).not.toContain("overflow: hidden");
+    expect(corruptionShellCss).not.toContain("repeating-linear-gradient");
+    expect(corruptionShellCss).not.toContain(".utility-entry:disabled,");
+    expect(corruptionRoomPanelsCss).toContain(".sigrika-corrupted-skill-chip");
+    expect(corruptionRoomPanelsCss).toMatch(/\.sigrika-corrupted-skill-chip\s*\{[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
+    expect(corruptionRoomLifecycleCss).toContain(".sigrika-duel-modal-atmosphere");
+    expect(corruptionRoomLifecycleCss).toContain(".sigrika-duel-confirm-modal .danger-action");
+    expect(corruptionRoomLifecycleCss).toContain("--bright-sheet: var(--sigrika-duel-line-strong)");
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.danger-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-line-strong\) !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.secondary-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).not.toMatch(/\.portrait-wrap\s*\{[^}]*background:/);
+    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.white-portrait\s*\{[^}]*background: var\(--sigrika-duel-inverse-surface\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.black-portrait\s*\{[^}]*background: var\(--sigrika-duel-ink\) !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-opening-modal\s*\{[^}]*max-width: 460px !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-opening-icon\s*\{[^}]*width: 56px;[^}]*height: 56px;[^}]*border: 2px solid var\(--sigrika-duel-hot\);[^}]*color: var\(--sigrika-duel-text\) !important;/);
+    expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal\s*\{[^}]*max-width: 420px !important;/);
+    expect(corruptionRoomLifecycleCss).toContain("overflow: hidden !important");
+    expect(corruptionRoomLifecycleCss).toContain("inset: 0;");
+    expect(corruptionRoomSecondarySurfacesCss).toContain("(max-height: 820px)");
+    expect(corruptionRoomSecondarySurfacesCss).toContain("--board-size: clamp(430px, calc(100dvh - 205px), 560px)");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue > img");
+    expect(corruptionRoomPresentationCss).toContain("grid-template-columns: auto minmax(0, 1fr)");
+    expect(corruptionRoomPresentationCss).toContain("linear-gradient(105deg, var(--sigrika-duel-surface-accent) 0%, var(--sigrika-duel-interactive) 48%, var(--sigrika-duel-ink) 100%)");
+    expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-skill-burst");
+    expect(corruptionRoomPresentationCss).toContain("linear-gradient(105deg");
+    expect(corruptionRoomPresentationCss).toContain("var(--sigrika-duel-hot) 28%");
+    expect(corruptionRoomPresentationCss).toContain("var(--sigrika-duel-line-strong) 52%");
+    expect(corruptionRoomPresentationCss).toContain("z-index: var(--sigrika-corruption-action-z)");
+    expect(corruptionRoomPresentationCss).not.toContain("box-shadow: inset 3px 0 0");
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-dialogue-copy").join("\n")).not.toMatch(/(?:border|background):/);
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-skill-portrait").join("\n")).toMatch(/border: 0;[\s\S]*background: transparent;/);
+    expect(cssBlocksContaining(corruptionRoomPresentationCss, ".sigrika-duel-skill-copy").join("\n")).toMatch(/border: 0;[\s\S]*background: transparent;/);
+    expect(corruptionRoomPresentationCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(corruptionRoomPresentationCss).not.toMatch(/z-index:\s*\d{4,}/);
+    expect(corruptionRoomAtmosphereCss).toContain(".room-screen.sigrika-candy-duel-room");
+    expect(corruptionRoomAtmosphereCss).toContain("filter: none !important");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-void: rgb(40 31 34)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-surface: rgb(67 43 51)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-hot: rgb(236 94 115)");
+    expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-shadow-soft: rgb(17 9 12 / 0.24)");
+    expect(corruptionRoomAtmosphereCss).not.toContain("--sigrika-duel-void: rgb(7 2 4)");
+    expect(corruptionRoomAtmosphereCss).toMatch(/> \.sigrika-duel-presentation\s*\{[^}]*filter: none !important;/);
+    expect(corruptionRoomPanelsCss).toContain(".sigrika-candy-duel-room .player-info");
+    expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-border");
+    expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-surface");
+    expect(corruptionRoomControlsCss).toContain(".action-bar .resign-action:not(:disabled)");
+    expect(corruptionRoomControlsCss).toContain(".action-bar .counting-action:disabled");
+    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer \.timer-label\s*\{[^}]*display: block !important;[^}]*color: var\(--sigrika-duel-muted\) !important;/);
+    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer :is\(\.timer-digits, \.timer-primary, \.timer-periods\)\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;/);
+    expect(corruptionRoomTimersCss).toContain('grid-template-areas: "label digits track" !important');
+    expect(corruptionRoomTimersCss).toContain("grid-template-columns: max-content max-content minmax(0, 1fr) !important");
+    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen \.digital-timer\s*\{[^}]*gap: 4px !important;[^}]*padding: 2px 4px !important;/);
+    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen :is\(\.timer-digits, \.timer-primary\)\s*\{[^}]*font-size: 16px !important;/);
+    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen \.timer-track\s*\{[^}]*width: 100% !important;[^}]*min-width: 0 !important;[^}]*margin-top: 0 !important;/);
+    expect(corruptionRoomIconsCss).toContain(".room-mobile-menu-panel button,");
+    expect(corruptionRoomIconsCss).toContain(".action-bar button,");
+    expect(corruptionRoomIconsCss).toContain(".chat-toggle-button");
+    expect(corruptionRoomIconsCss).toMatch(/stroke: var\(--sigrika-duel-text\) !important;[\s\S]*stroke-width: 2\.4 !important;/);
+    expect(corruptionRoomIconsCss).toMatch(/\.counting-action:disabled svg\s*\{[^}]*stroke: var\(--sigrika-duel-disabled-text\) !important;/);
+    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer\s*\{[^}]*min-height: 66px;[^}]*grid-template-columns: minmax\(0, 1fr\) !important;[^}]*background: var\(--sigrika-duel-surface\) !important;/);
+    expect(corruptionRoomSecondarySurfacesCss).toContain(".mobile-tab-button.active");
+    expect(corruptionRoomMobileReadabilityCss).toMatch(/\.replay-step-indicator\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;/);
+    expect(corruptionRoomMobileReadabilityCss).toMatch(/\.room-mobile-menu-panel button > span\s*\{[^}]*color: inherit !important;/);
+    expect(corruptionRoomMobileReadabilityCss).toMatch(/\.chat-toggle-button > strong\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
+    expect(corruptionRoomMobileReadabilityCss).toMatch(/\.captures > \* strong,[\s\S]*color: var\(--sigrika-duel-muted\) !important;/);
+    expect(corruptionRoomSystemLogCss).toContain("> .sigrika-duel-system-log");
+    expect(corruptionRoomSystemLogCss).toMatch(/\.sigrika-duel-system-log\s*\{[^}]*background-color: var\(--sigrika-duel-surface\) !important;[^}]*filter: none !important;/);
+    expect(corruptionRoomSystemLogCss).toMatch(/\.sigrika-duel-system-log \.chat-log\s*\{[^}]*background-color: var\(--sigrika-duel-ink\) !important;/);
+    expect(corruptionRoomSystemLogCss).toMatch(/\.sigrika-duel-system-log \.chat-form-disabled :is\(input:disabled, button:disabled\)\s*\{[^}]*color: var\(--sigrika-duel-disabled-text\) !important;[^}]*background-color: var\(--sigrika-duel-disabled-surface\) !important;/);
+    expect(corruptionRoomReplayCss).toContain(".sigrika-corruption-result-backdrop");
+    expect(corruptionRoomReplayCss).toMatch(/\.sigrika-corruption-result-backdrop \.sigrika-corruption-result-modal\s*\{[^}]*width: min\(360px, 100%\) !important;[^}]*min-width: 0 !important;[^}]*height: auto !important;/);
+    expect(corruptionRoomReplayCss).toMatch(/\.sigrika-corruption-result-modal \.result-summary > button\s*\{[^}]*min-height: 44px;/);
+    expect(corruptionRoomReplayCss).toContain(".is-sigrika-candy-duel-replay");
+    expect(corruptionRoomReplayCss).toContain("--sigrika-replay-surface: color-mix");
+    expect(corruptionRoomReplayCss).toContain("background: linear-gradient(135deg, var(--sigrika-replay-surface), var(--sigrika-replay-surface-strong)) !important");
+    expect(corruptionRoomReplayCss).toMatch(/\.sigrika-duel-boss-icon\s*\{[^}]*border: 1px solid var\(--sigrika-replay-surface\);[^}]*background: var\(--sigrika-replay-boss\);/);
+    expect(corruptionRoomReplayCss).not.toContain(".sigrika-duel-replay-label");
+    expect([
+      corruptionRoomAtmosphereCss,
+      corruptionRoomPanelsCss,
+      corruptionRoomTimersCss,
+      corruptionRoomControlsCss,
+      corruptionRoomSecondarySurfacesCss,
+      corruptionRoomLifecycleCss,
+      corruptionRoomReplayCss,
+    ].join("\n")).not.toContain("repeating-linear-gradient");
+    const corruptionHomeCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/home-contamination.css", import.meta.url), "utf8");
+    const corruptionHandbookCss = [
+      "./mobile-adaptive/sigrika-corruption/handbook-contamination.css",
+      "./mobile-adaptive/sigrika-corruption/handbook-cards.css",
+      "./mobile-adaptive/sigrika-corruption/handbook-mobile.css"
+    ].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+    const corruptionMatchCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel.css", import.meta.url), "utf8");
+    const corruptionMatchThemeGuardCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-theme-guard.css", import.meta.url), "utf8");
+    expect(corruptionHomeCss).toContain("background: transparent !important");
+    expect(corruptionHomeCss).toContain("filter: none !important");
+    expect(corruptionHomeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(corruptionHomeCss).toContain(".utility-data-fragments {");
+    expect(corruptionHomeCss).toContain(".house-manual-data-fragments {");
+    expect(corruptionHomeCss).toContain("display: block !important");
+    expect(hologramEntryCss).toContain(".home-image-entry.hologram-entry .home-entry-motion > img {");
+    expect(hologramEntryCss).not.toContain(".home-image-entry.hologram-entry img {");
+    expect(brightMobileEntryCss).toContain(".home-image-entry .home-entry-motion > img {");
+    expect(corruptionHomeCss).toContain(".is-corruption-access-point .home-entry-motion > img {");
+    expect(corruptionHomeCss).toMatch(/\.house-manual-data-fragments \.corruption-fragment-piece\s*\{[^}]*height: 100% !important;/);
+    expect(corruptionHomeCss).toMatch(/\.utility-entry:disabled \.utility-entry-art\s*\{[^}]*opacity: 0;/);
+    expect(corruptionHomeCss).toMatch(/\.house-manual-entry\.is-corruption-access-point \.house-manual-corruption-source\s*\{[^}]*opacity: 0 !important;/);
+    expect(corruptionHomeCss).not.toContain("house-manual-corruption-noise");
+    expect(corruptionHomeCss).not.toContain('mask: url("/assets/home/book-entry.webp")');
+    expect(corruptionHomeCss).not.toContain("background: #d6d1cd");
+    expect(corruptionHomeCss).not.toContain("home-brand-corruption-marks");
+    expect(corruptionHomeCss).not.toContain("corruption-scribble");
+    expect(corruptionHandbookCss).toContain(".character-card.is-corruption-focus");
+    expect(corruptionHandbookCss).toContain("linear-gradient(135deg, #f3c1c7 0%, #dc8e99 31%, #efb2bb 57%, #c96876 100%)");
+    expect(corruptionHandbookCss).toContain(".character-card-corruption-noise");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-noise-fault");
+    expect(corruptionHandbookCss).toContain("var(--corruption-card-duration, 7s)");
+    expect(corruptionHandbookCss).not.toContain("background-size: 7px 7px, 9px 9px");
+    expect(corruptionHandbookCss).toContain("backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important");
+    expect(corruptionHandbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(corruptionHandbookCss).toContain("inset: 50% auto auto 50% !important");
+    expect(corruptionHandbookCss).toContain(".character-data-fragments");
+    expect(corruptionHandbookCss).toMatch(/\.character-card\.is-corruption-obscured > img\.character-corruption-source\s*\{[^}]*opacity: 0 !important;/);
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-data-break");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-fragment-flash");
+    expect(corruptionHandbookCss).toContain("sigrika-handbook-error-scan");
+    expect(corruptionHandbookCss).toContain("filter: grayscale(1) contrast(1.06) !important");
+    expect(corruptionHandbookCss).not.toContain("padding-right: 10px");
+    expect(corruptionHandbookCss).not.toContain("border-radius: 6px");
+    expect(corruptionHandbookCss).not.toContain("max-height: min(88dvh, 720px)");
+    expect(corruptionHandbookCss).not.toContain("house-corruption-integrity");
+    expect(corruptionHandbookCss).not.toContain("ARCHIVE CHECK");
+    expect(corruptionHandbookCss).not.toContain("SUBJECT 08");
+    expect(corruptionHandbookCss).not.toContain("animation: none !important");
+    expect(corruptionMatchCss).not.toContain(".sigrika-corruption-duel-zone");
+    expect(corruptionMatchCss).not.toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(corruptionMatchCss).toContain(".sigrika-corruption-duel-button");
+    expect(corruptionMatchCss).toContain(".sigrika-corruption-duel-button.is-spectate");
+    expect(corruptionMatchCss).toContain("--sigrika-corruption-duel-background: var(--bright-cream, var(--bright-sheet))");
+    expect(corruptionMatchCss).toContain("position: absolute");
+    expect(corruptionMatchCss).toContain("blur(2.8px)");
+    expect(corruptionMatchCss).toContain(".match-mode-modal.is-sigrika-corrupted::before");
+    expect(corruptionMatchCss).toContain("background: rgb(54 52 53 / 0.14) !important");
+    expect(corruptionMatchCss).toContain("backdrop-filter: grayscale(1) brightness(0.82) contrast(0.98) !important");
+    expect(corruptionMatchCss).toContain("background: #5d5a5b !important");
+    expect(corruptionMatchCss).not.toContain("sigrika-corruption-duel-copy");
+    expect(corruptionMatchThemeGuardCss).not.toContain("sigrika-corruption-duel-copy");
+    expect(corruptionMatchThemeGuardCss).not.toContain("sigrika-corruption-duel-sigil");
+    expect(corruptionMatchThemeGuardCss).toContain("background: linear-gradient(145deg, #858183, #615e60) !important");
+    expect(corruptionMatchThemeGuardCss).toContain(".match-mode-modal.is-sigrika-corrupted > .secondary-action");
+    expect(corruptionMatchThemeGuardCss).toContain("var(--sigrika-corruption-duel-background, #8c1020)");
+    expect(corruptionHomeCss).toContain("background-image: var(--home-main-panel-bg) !important");
+    expect(corruptionHomeCss).toContain(".home-player-zone {");
+    expect(corruptionHomeCss).toContain("width: auto !important");
+    expect(corruptionHomeCss).toContain("height: auto !important");
+    const corruptionMarksCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/marks.css", import.meta.url), "utf8");
+    expect(corruptionMarksCss).toContain("contain: paint");
+    expect(corruptionMarksCss).toContain("corruption-fragment-desync");
+    expect(corruptionMarksCss).toContain("var(--corruption-slice-forward, 5px)");
+    expect(corruptionMarksCss).not.toContain("corruption-scribble");
+    const corruptionMatchMobileCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-mobile.css", import.meta.url), "utf8");
+    expect(corruptionMatchMobileCss).toContain("@media (max-width: 768px)");
+    expect(corruptionMatchMobileCss).toContain("min-height: 74px");
+    const corruptionMatchGuardCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/match-duel-theme-guard.css", import.meta.url), "utf8");
+    expect(corruptionMatchGuardCss).toContain("theme-bright-school.theme-bright-school.is-sigrika-corrupted");
+    expect(corruptionMatchGuardCss).toContain("background: var(--sigrika-corruption-duel-background, #8c1020) !important");
+    expect(corruptionMatchGuardCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(corruptionDamageCss).toContain("pointer-events: none");
+    expect(corruptionDamageCss).toContain("sigrika-corruption-tear-middle");
+    expect(corruptionDamageCss).toContain("sigrika-corruption-fragment");
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-denia-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain("color: #fffdf4 !important");
+    expect(finalNameplateCss).toContain("color: #fffaf5 !important");
+    expect(finalNameplateCss).toContain("color: #f5ffff !important");
+    expect(finalNameplateCss).toContain("height: var(--user-nameplate-height) !important");
+    expect(finalNameplateCss).toContain("font-style: italic !important");
+    expect(finalNameplateCss).toContain("font-weight: 800 !important");
+    expect(finalNameplateCss).toContain("padding-inline-end: calc(3px * var(--user-nameplate-scale))");
+    expect(finalNameplateCss).toContain("margin-inline-end: calc(-3px * var(--user-nameplate-scale))");
+    expect(finalNameplateCss).toContain("text-shadow:");
+    expect(finalNameplateCss).toContain("overflow: visible !important");
+
+    const phoneCoreEntry = readFileSync(new URL("./mobile-adaptive/phone-core.css", import.meta.url), "utf8");
+    expect(cssImports(phoneCoreEntry)).toEqual([
+      "./phone-core/match-mode.css",
+      "./phone-core/practice-difficulty.css",
+      "./phone-core/global-shell-controls.css",
+      "./phone-core/modal-tabs-shell.css",
+      "./phone-core/scroll-detail-result.css"
+    ]);
+    expect(phoneCoreEntry).not.toContain(".match-mode-modal {");
+
+    const phoneGachaEntry = readFileSync(new URL("./mobile-adaptive/phone-gacha.css", import.meta.url), "utf8");
+    expect(cssImports(phoneGachaEntry)).toEqual([
+      "./phone-gacha/modal-tabs.css",
+      "./phone-gacha/stage-machine.css",
+      "./phone-gacha/controls-actions.css",
+      "./phone-gacha/list-result-dialogs.css"
+    ]);
+    expect(phoneGachaEntry).not.toContain(".gacha-modal {");
+
+    const mobileProfileRecordsEntry = readFileSync(
+      new URL("./mobile-adaptive/mobile-profile-records.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(mobileProfileRecordsEntry)).toEqual([
+      "./mobile-profile-records/profile-shell-hero.css",
+      "./mobile-profile-records/profile-summary-results.css",
+      "./mobile-profile-records/character-record-list.css",
+      "./mobile-profile-records/character-record-cards.css",
+      "./mobile-profile-records/footer-resume-stats.css"
+    ]);
+    expect(mobileProfileRecordsEntry).not.toContain(".user-profile-card {");
+  });
+
+  it("keeps mobile room portrait safety styles as an import-only sub-entry", () => {
+    const mobileRoomPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/mobile-room-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileRoomPortraitEntry)).toEqual([
+      "./mobile-room-portrait/shell-header-menu.css",
+      "./mobile-room-portrait/neutral-chrome-reset.css",
+      "./mobile-room-portrait/viewport-shell.css",
+      "./mobile-room-portrait/player-strips.css",
+      "./mobile-room-portrait/board-viewport.css",
+      "./mobile-room-portrait/dock-panels.css",
+      "./mobile-room-portrait/action-decision-controls.css"
+    ]);
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileRoomPortraitEntry).not.toContain(".player-info {");
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-tab-panel .action-bar");
+    expect(mobileRoomPortraitEntry).not.toContain("@media (max-width");
+  });
+
+  it("keeps Bright School mobile overrides as an import-only guard entry", () => {
+    const brightSchoolOverridesEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(brightSchoolOverridesEntry)).toEqual([
+      "./bright-school-overrides/character-deploy-state.css",
+      "./bright-school-overrides/home-auth-header.css",
+      "./bright-school-overrides/home-header-menu.css",
+      "./bright-school-overrides/auth-login-lockup.css",
+      "./bright-school-overrides/replay-dialog.css",
+      "./bright-school-overrides/profile-house-records.css",
+      "./bright-school-overrides/shop-cards.css",
+      "./bright-school-overrides/leaderboard-cards.css",
+      "./bright-school-overrides/leaderboard-top-ranks.css",
+      "./bright-school-overrides/preload.css"
+    ]);
+    expect(brightSchoolOverridesEntry).not.toContain(".home-mobile-menu-panel");
+    expect(brightSchoolOverridesEntry).not.toContain(".character-record-dialog");
+    expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
+
+    const leaderboardCardsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/leaderboard-cards.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(leaderboardCardsEntry)).toEqual([
+      "./leaderboard-cards/modal-list-shell.css",
+      "./leaderboard-cards/player-identity.css",
+      "./leaderboard-cards/score-record.css",
+      "./leaderboard-cards/rank-current.css"
+    ]);
+    expect(leaderboardCardsEntry).not.toContain(".leaderboard-modal {");
+  });
+
+  it("keeps Bright School mobile profile-house-records as an import-only guard sub-entry", () => {
+    const profileHouseRecordsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/profile-house-records.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(profileHouseRecordsEntry)).toEqual([
+      "./profile-house-records/house-profile-stats.css",
+      "./profile-house-records/character-record-dialog.css"
+    ]);
+    expect(profileHouseRecordsEntry).not.toContain(".profile-grid.top-stats-bar");
+    expect(profileHouseRecordsEntry).not.toContain(".character-record-dialog");
+    expect(profileHouseRecordsEntry).not.toContain(".resume-character-records");
+    expect(profileHouseRecordsEntry).not.toContain("@media (max-width");
+  });
+
+  it("keeps Bright School narrow desktop home safety as an import-only guard entry", () => {
+    const homeNarrowDesktopEntry = readFileSync(
+      new URL("./mobile-adaptive/home-narrow-desktop.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(homeNarrowDesktopEntry)).toEqual([
+      "./home-narrow-desktop/region-reset.css",
+      "./home-narrow-desktop/wide-stage.css",
+      "./home-narrow-desktop/compact-stage.css",
+      "./home-narrow-desktop/micro-stage-scroll.css",
+      "./home-narrow-desktop/short-height-stack.css"
+    ]);
+    expect(homeNarrowDesktopEntry).not.toContain(".home-player-zone");
+    expect(homeNarrowDesktopEntry).not.toContain(".home-grid-featured.home-stage");
+    expect(homeNarrowDesktopEntry).not.toContain("@media (min-width");
+  });
+
+  it("keeps Bright School portrait as an import-only final guard entry", () => {
+    const brightSchoolPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(brightSchoolPortraitEntry)).toEqual([
+      "./bright-school-portrait/resume-modal-layout.css",
+      "./bright-school-portrait/home-player-plaque.css",
+      "./bright-school-portrait/shop-wallet.css",
+      "./bright-school-portrait/settings-tabs.css",
+      "./bright-school-portrait/mobile-room-chat.css",
+      "./bright-school-portrait/mailbox-modal.css",
+      "./bright-school-portrait/character-detail.css",
+      "./bright-school-portrait/house-character-cards.css"
+    ]);
+    expect(brightSchoolPortraitEntry).not.toContain(".resume-header-actions {");
+    expect(brightSchoolPortraitEntry).not.toContain(".mobile-room-screen .chat-popover");
+    expect(brightSchoolPortraitEntry).not.toContain(".character-detail-heading");
+
+    const resumeModalLayoutEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait/resume-modal-layout.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(resumeModalLayoutEntry)).toEqual([
+      "./resume-modal-layout/header-grid.css",
+      "./resume-modal-layout/achievement-personalization.css"
+    ]);
+    expect(resumeModalLayoutEntry).not.toContain(".resume-header-actions {");
+
+    const settingsTabsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait/settings-tabs.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(settingsTabsEntry)).toEqual([
+      "./settings-tabs/shell-theme-grid.css",
+      "./settings-tabs/audio-volume-title.css",
+      "./settings-tabs/shared-active-tabs.css"
+    ]);
+    expect(settingsTabsEntry).not.toContain(".settings-modal h2");
+  });
+
+  it("keeps semantic accent typography above Bright School broad resets", () => {
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const semanticAccentCss = readFileSync(
+      new URL("./mobile-adaptive/semantic-accent-typography.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(semanticAccentCss).toContain(".text-display-accent");
+    expect(semanticAccentCss).toContain(".text-rating-value");
+    expect(semanticAccentCss).toContain(".text-clock-value");
+    expect(semanticAccentCss).toContain("font-family: var(--font-numeric-accent), var(--font-ui-default) !important");
+    expect(semanticAccentCss).toContain("text-transform: uppercase !important");
+    expect(semanticAccentCss).toContain(".timer .text-clock-value .timer-primary");
+    expect(semanticAccentCss).toContain(".timer.main-time .text-clock-value");
+    expect(semanticAccentCss).toContain("color: #1c171a !important");
+    expect(semanticAccentCss).toContain("color: #df2f2f !important");
+    expect(semanticAccentCss).toContain("border: 0 !important");
+    expect(semanticAccentCss).toContain("box-shadow: none !important");
+    expect(semanticAccentCss).toContain("background: var(--timer-track-fill) !important");
+    expect(semanticAccentCss).not.toContain(".digital-timer");
+
+    expect(mobileCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(\n  .text-rating-value,\n  .text-clock-value\n)"
+    );
+    expect(mobileCss).toContain(".timer.final-byo-yomi .text-clock-value");
+  });
+
+  it("keeps nested CSS files under approved domain entry maps", () => {
+    const nestedCssFiles = cssFilesUnder(stylesDir)
+      .map((filePath) => relative(stylesDir, filePath).replaceAll("\\", "/"))
+      .filter((filePath) => filePath.includes("/"));
+
+    expect(nestedCssFiles.every((filePath) => DOMAIN_STYLE_DIRECTORIES.has(filePath.split("/")[0]))).toBe(true);
+  });
+
+  it("keeps commerce-settings.css as an import-only domain entry", () => {
+    const commerceEntry = readFileSync(new URL("./commerce-settings.css", import.meta.url), "utf8");
+
+    expect(cssImports(commerceEntry)).toEqual([
+      "./commerce/gacha.css",
+      "./commerce/recruitment.css",
+      "./commerce/social-profile.css",
+      "./commerce/shop-settings.css",
+      "./commerce/terminal-polish.css",
+      "./commerce/warehouse-toast.css"
+    ]);
+    expect(commerceEntry).not.toContain(".gacha-modal {");
+    expect(commerceEntry).not.toContain(".shop-modal {");
+    expect(commerceEntry).not.toContain(".warehouse-modal {");
+  });
+
+  it("keeps commerce shop-settings.css as an import-only commerce sub-entry", () => {
+    const shopSettingsEntry = readFileSync(new URL("./commerce/shop-settings.css", import.meta.url), "utf8");
+
+    expect(cssImports(shopSettingsEntry)).toEqual([
+      "./shop-settings/owned-decoration-header.css",
+      "./shop-settings/shop-shell-tabs.css",
+      "./shop-settings/settings-panel.css",
+      "./shop-settings/shop-grid-cards.css",
+      "./shop-settings/shop-detail-pagination.css",
+      "./shop-settings/compact-shop-media.css",
+      "./shop-settings/compact-modal-safety.css",
+      "./shop-settings/phone-layouts.css",
+      "./shop-settings/shop-window-redesign.css",
+      "./shop-settings/shop-window-card-layout.css",
+      "./shop-settings/shop-card-badges.css",
+      "./shop-settings/costume-store.css"
+    ]);
+    expect(shopSettingsEntry).not.toContain(".shop-modal {");
+    expect(shopSettingsEntry).not.toContain(".shop-item {");
+    expect(shopSettingsEntry).not.toContain(".warehouse-grid {");
+  });
+
+  it("keeps commerce warehouse-toast.css as an import-only commerce sub-entry", () => {
+    const warehouseToastEntry = readFileSync(new URL("./commerce/warehouse-toast.css", import.meta.url), "utf8");
+
+    expect(cssImports(warehouseToastEntry)).toEqual([
+      "./warehouse-toast/modal-list.css",
+      "./warehouse-toast/character-target.css",
+      "./warehouse-toast/toast-stack.css",
+      "./warehouse-toast/phone-layouts.css"
+    ]);
+    expect(warehouseToastEntry).not.toContain(".warehouse-modal {");
+    expect(warehouseToastEntry).not.toContain(".toast-stack {");
+    expect(warehouseToastEntry).not.toContain("@keyframes toast-fade");
+  });
+
+  it("keeps purposeful reveal motion scoped to story choices and result reward tiles", () => {
+    const storyCss = readFileSync(new URL("./modals/onboarding-story/actions-skip.css", import.meta.url), "utf8");
+    const resultCss = readFileSync(new URL("./modals/result-reward-motion.css", import.meta.url), "utf8");
+    const skillPopoverCss = readFileSync(new URL("./base/skill-description.css", import.meta.url), "utf8");
+
+    expect(storyCss).toContain("onboarding-story-option-in 180ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(storyCss).toContain("nth-child(n + 4) { animation-delay: 120ms; }");
+    expect(storyCss).toContain("onboarding-story-option-fade-in 80ms ease");
+    expect(resultCss).toContain(".result-rewards > span");
+    expect(resultCss).toContain("result-reward-tile-in 200ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(resultCss).toContain("nth-child(2)");
+    expect(resultCss).toContain("animation-delay: 40ms");
+    expect(resultCss).toContain("result-reward-tile-fade-in 80ms ease");
+    expect(skillPopoverCss).toContain("transform-origin: var(--skill-trait-arrow-x) 100%");
+    expect(skillPopoverCss).toContain("--skill-trait-enter-y: -4px");
+    expect(skillPopoverCss).toContain("transform-origin: var(--skill-trait-arrow-x) 0%");
+    expect(skillPopoverCss).toContain("translateY(var(--skill-trait-enter-y)) scale(0.98)");
+  });
+
+  it("releases desktop modal transform components after their entrances", () => {
+    const modalMotionCss = readFileSync(new URL("./modals/window-entry-motion.css", import.meta.url), "utf8");
+
+    expect(modalMotionCss).toContain("@media screen and (min-width: 769px)");
+    expect(modalMotionCss).toContain("modal-backdrop-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("modal-window-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("nested-modal-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards");
+    expect(modalMotionCss).toContain("information-center-master-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) 40ms backwards");
+    expect(modalMotionCss).toContain("information-center-reader-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) 70ms backwards");
+    expect(modalMotionCss).not.toMatch(/animation:[^;]+\b(?:both|forwards)\s*;/g);
+    expect(modalMotionCss).toContain("translate: 0 16px");
+    expect(modalMotionCss).toContain("scale: 0.96");
+    expect(modalMotionCss).toContain("translate: 0 8px");
+    expect(modalMotionCss).toContain("scale: 0.98");
+    expect(modalMotionCss).toContain("scale: 0.94");
+    expect(modalMotionCss).toContain("translate: -10px 0");
+    expect(modalMotionCss).toContain("translate: 10px 0");
+    expect(modalMotionCss).not.toMatch(/\n\s+(?:width|height|margin|padding|top|left):/i);
+    expect(modalMotionCss).not.toContain("transition: all");
+  });
+
+  it("keeps commerce gacha.css as an import-only commerce sub-entry", () => {
+    const gachaEntry = readFileSync(new URL("./commerce/gacha.css", import.meta.url), "utf8");
+
+    expect(cssImports(gachaEntry)).toEqual([
+      "./gacha/modal-tabs.css",
+      "./gacha/featured-stack.css",
+      "./gacha/machine-stage.css",
+      "./gacha/featured-prize.css",
+      "./gacha/control-panel.css",
+      "./gacha/list-result-dialogs.css",
+      "./gacha/animations.css"
+    ]);
+    expect(gachaEntry).not.toContain(".gacha-modal {");
+    expect(gachaEntry).not.toContain(".gacha-main {");
+    expect(gachaEntry).not.toContain(".gacha-result-card");
+    expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
+  });
+
+  it("keeps commerce recruitment.css as an import-only commerce sub-entry", () => {
+    const recruitmentEntry = readFileSync(new URL("./commerce/recruitment.css", import.meta.url), "utf8");
+    const recruitmentShell = readFileSync(new URL("./commerce/recruitment/modal-shell.css", import.meta.url), "utf8");
+    const recruitmentBoardEntry = readFileSync(new URL("./commerce/recruitment/board.css", import.meta.url), "utf8");
+    const recruitmentBoard = readCssWithImports(new URL("./commerce/recruitment/board.css", import.meta.url));
+    const phoneRecruitment = readFileSync(new URL("./mobile-adaptive/phone-recruitment.css", import.meta.url), "utf8");
+
+    expect(cssImports(recruitmentEntry)).toEqual([
+      "./recruitment/modal-shell.css",
+      "./recruitment/cinematic.css",
+      "./recruitment/board.css",
+      "./recruitment/countdown.css",
+      "./recruitment/actions.css"
+    ]);
+    expect(cssImports(recruitmentBoardEntry)).toEqual([
+      "./board/surface.css",
+      "./board/cards.css",
+      "./board/motion.css"
+    ]);
+    expect(recruitmentEntry).not.toContain(".recruitment-modal {");
+    expect(recruitmentBoardEntry).not.toContain(".recruitment-board {");
+    expect(recruitmentShell).toContain("position: relative;");
+    const recruitmentCinematic = readFileSync(new URL("./commerce/recruitment/cinematic.css", import.meta.url), "utf8");
+    expect(recruitmentCinematic).toContain(".recruitment-cinematic-overlay");
+    expect(recruitmentCinematic).toContain("aemeath-cinematic-flight-frames");
+    const recruitmentCountdown = readFileSync(new URL("./commerce/recruitment/countdown.css", import.meta.url), "utf8");
+    expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-flat-candidate.webp\")");
+    expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
+    expect(recruitmentBoard).toContain("/assets/recruitment/celebration-flat-candidate.webp");
+    expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
+    expect(recruitmentBoard).not.toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(recruitmentBoard).not.toContain(".recruitment-result-miss::after");
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-empty-board").join("\n")).toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-selection-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-status-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-result-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(recruitmentBoard).toContain(".recruitment-item-watermark-art");
+    expect(recruitmentBoard).toContain("transform: translate(-50%, -50%) rotate(20deg) scale(1.04);");
+    expect(recruitmentBoard).toContain("opacity: 0.3;");
+    expect(recruitmentBoard).toContain(".recruitment-ready-card");
+    expect(recruitmentBoard).toContain(".recruitment-pending-panel");
+    expect(recruitmentBoard).toContain("border: 0;");
+    expect(recruitmentBoard).toContain("background: transparent;");
+    expect(recruitmentBoard).toContain(".recruitment-pending-panel > div");
+    expect(recruitmentBoard).toContain("align-self: center;");
+    expect(recruitmentBoard).toContain("@keyframes recruitment-paper-pop");
+    expect(recruitmentBoard).toContain(".recruitment-selection-card p");
+    expect(recruitmentBoard).toContain("color: #b53434;");
+    expect(statSync(new URL("../../public/assets/recruitment/notice-board-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/celebration-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/stationery-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/recruitment-letter-paper-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(recruitmentCountdown).toContain(".recruitment-countdown-row");
+    expect(recruitmentCountdown).toContain(".recruitment-pending-panel b");
+    expect(recruitmentCountdown).toContain("background: transparent;");
+    expect(recruitmentCountdown).toContain("box-shadow: none;");
+    expect(recruitmentCountdown).not.toContain("repeating-linear-gradient");
+    expect(recruitmentCountdown).not.toContain("border: 3px solid #3d2b25;");
+    expect(recruitmentCountdown).toContain("font-family: \"Courier New\", Consolas, monospace;");
+    expect(recruitmentCountdown).toContain("text-shadow:");
+    expect(recruitmentCountdown).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-empty-board::before");
+    expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-result-actions");
+    expect(phoneRecruitment).not.toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
+    expect(phoneRecruitment).toContain(".recruitment-status-card");
+    expect(phoneRecruitment).toContain("grid-template-columns: minmax(0, 1fr) !important;");
+    expect(phoneRecruitment).not.toContain(".recruitment-result-miss::after");
+    expect(phoneRecruitment).toContain(".recruitment-ready-card .primary-action");
+    expect(phoneRecruitment).toContain(".recruitment-pending-panel");
+    expect(phoneRecruitment).toContain("border: 0 !important;");
+    expect(phoneRecruitment).toContain("background: transparent !important;");
+    expect(phoneRecruitment).toContain(".recruitment-item-watermark-art");
+    expect(phoneRecruitment).toContain("height: 142% !important;");
+    expect(phoneRecruitment).toContain("opacity: 0.28 !important;");
+    expect(phoneRecruitment).toContain(".recruitment-item-button span:not(.recruitment-item-icon)");
+    expect(phoneRecruitment).toContain("display: none !important;");
+    expect(phoneRecruitment).not.toContain(".recruitment-use-button:disabled");
+  });
+
+  it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {
+    const socialProfileEntry = readFileSync(new URL("./commerce/social-profile.css", import.meta.url), "utf8");
+
+    expect(cssImports(socialProfileEntry)).toEqual([
+      "./social-profile/modal-shells.css",
+      "./social-profile/friends-toolbar-search.css",
+      "./social-profile/friends-list-status.css",
+      "./social-profile/friend-actions-notices.css",
+      "./social-profile/duel-request-banner.css",
+      "./social-profile/leaderboard-table.css",
+      "./social-profile/owned-decoration-section.css"
+    ]);
+    expect(socialProfileEntry).not.toContain(".friends-row {");
+    expect(socialProfileEntry).not.toContain(".duel-request-banner {");
+    expect(socialProfileEntry).not.toContain(".leaderboard-table {");
+    expect(socialProfileEntry).not.toContain("@keyframes duel-request-drop");
+  });
+
+  it("keeps commerce terminal-polish.css as an import-only commerce sub-entry", () => {
+    const terminalPolishEntry = readFileSync(new URL("./commerce/terminal-polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalPolishEntry)).toEqual([
+      "./terminal-polish/headers-profile.css",
+      "./terminal-polish/character-cards.css",
+      "./terminal-polish/shop-shell-tabs.css",
+      "./terminal-polish/item-cards-empty.css",
+      "./terminal-polish/lists-status.css",
+      "./terminal-polish/settings-warehouse-target.css",
+      "./terminal-polish/compact-phone.css"
+    ]);
+    expect(terminalPolishEntry).not.toContain(".leaderboard-header,");
+    expect(terminalPolishEntry).not.toContain(".shop-modal {");
+    expect(terminalPolishEntry).not.toContain(".leaderboard-row,");
+    expect(terminalPolishEntry).not.toContain("@media (max-width");
+  });
+
+  it("keeps responsive.css as an import-only breakpoint entry", () => {
+    const responsiveEntry = readFileSync(new URL("./responsive.css", import.meta.url), "utf8");
+
+    expect(cssImports(responsiveEntry)).toEqual([
+      "./responsive/tablet-home-admin-room.css",
+      "./responsive/tablet-landscape.css",
+      "./responsive/compact-battle-room.css",
+      "./responsive/phone-portrait-room.css",
+      "./responsive/short-landscape-room.css",
+      "./responsive/small-phone-admin-forms.css"
+    ]);
+    expect(responsiveEntry).not.toContain(".home-grid-featured {");
+    expect(responsiveEntry).not.toContain(".mobile-room-screen {");
+    expect(responsiveEntry).not.toContain(".admin-crud-drawer {");
+
+    const phonePortraitRoomEntry = readFileSync(new URL("./responsive/phone-portrait-room.css", import.meta.url), "utf8");
+    expect(cssImports(phonePortraitRoomEntry)).toEqual([
+      "./phone-portrait-room/shell-layout.css",
+      "./phone-portrait-room/player-panels.css",
+      "./phone-portrait-room/board-viewport.css",
+      "./phone-portrait-room/tabs-actions.css"
+    ]);
+    expect(phonePortraitRoomEntry).not.toContain(".mobile-room-screen {");
+  });
+
+  it("keeps mobile-room.css as an import-only mobile battle entry", () => {
+    const mobileRoomEntry = readFileSync(new URL("./mobile-room.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileRoomEntry)).toEqual([
+      "./mobile-room/base-shell-dock.css",
+      "./mobile-room/portrait-room.css",
+      "./mobile-room/narrow-portrait.css",
+      "./mobile-room/landscape-room.css",
+      "./mobile-room/short-landscape-room.css",
+      "./mobile-room/reduced-motion.css"
+    ]);
+    expect(mobileRoomEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileRoomEntry).not.toContain(".mobile-room-viewport {");
+    expect(mobileRoomEntry).not.toContain(".mobile-tab-panel .action-bar");
+
+    const portraitRoomEntry = readFileSync(new URL("./mobile-room/portrait-room.css", import.meta.url), "utf8");
+    expect(cssImports(portraitRoomEntry)).toEqual([
+      "./portrait-room/shell-viewport.css",
+      "./portrait-room/player-card-layout.css",
+      "./portrait-room/header-menu.css",
+      "./portrait-room/portrait-badges.css",
+      "./portrait-room/player-meta-timers.css",
+      "./portrait-room/skill-replay-popover.css",
+      "./portrait-room/board-dock-tabs.css",
+      "./portrait-room/decision-actions-hint.css"
+    ]);
+    expect(portraitRoomEntry).not.toContain(".mobile-room-screen {");
+  });
+
+  it("keeps mobile room base shell and dock styles as an import-only sub-entry", () => {
+    const baseShellDockEntry = readFileSync(new URL("./mobile-room/base-shell-dock.css", import.meta.url), "utf8");
+
+    expect(cssImports(baseShellDockEntry)).toEqual([
+      "./base-shell-dock/shell-header-menu.css",
+      "./base-shell-dock/flat-control-reset.css",
+      "./base-shell-dock/viewport-dock-shell.css",
+      "./base-shell-dock/player-timer-strip.css",
+      "./base-shell-dock/board-viewport.css",
+      "./base-shell-dock/dock-tabs-actions.css",
+      "./base-shell-dock/decision-chat-panel.css"
+    ]);
+    expect(baseShellDockEntry).not.toContain(".mobile-room-screen {");
+    expect(baseShellDockEntry).not.toContain(".mobile-room-viewport {");
+    expect(baseShellDockEntry).not.toContain(".mobile-tab-panel .action-bar");
+  });
+
+  it("keeps mobile-home.css as an import-only mobile lobby entry", () => {
+    const mobileHomeEntry = readFileSync(new URL("./mobile-home.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileHomeEntry)).toEqual([
+      "./mobile-home/base-portrait.css",
+      "./mobile-home/narrow-phone.css",
+      "./mobile-home/landscape.css"
+    ]);
+    expect(mobileHomeEntry).not.toContain(".app-shell:has(.home-screen)");
+    expect(mobileHomeEntry).not.toContain(".home-grid-featured");
+    expect(mobileHomeEntry).not.toContain("@media (max-width: 900px)");
+  });
+
+  it("keeps mobile-modals.css as an import-only mobile modal entry", () => {
+    const mobileModalsEntry = readFileSync(new URL("./mobile-modals.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileModalsEntry)).toEqual([
+      "./mobile-modals/backdrop-base.css",
+      "./mobile-modals/compact-modal-shell.css",
+      "./mobile-modals/phone-modal-shell-watch.css",
+      "./mobile-modals/phone-replay-profile.css",
+      "./mobile-modals/phone-shop-buttons.css",
+      "./mobile-modals/phone-leaderboard.css",
+      "./mobile-modals/phone-friends.css",
+      "./mobile-modals/phone-house-resume.css",
+      "./mobile-modals/reduced-motion.css"
+    ]);
+    expect(mobileModalsEntry).not.toContain(".modal-backdrop {");
+    expect(mobileModalsEntry).not.toContain(".leaderboard-row");
+    expect(mobileModalsEntry).not.toContain(".house-modal .character-list");
+
+    const phoneHouseResumeEntry = readFileSync(new URL("./mobile-modals/phone-house-resume.css", import.meta.url), "utf8");
+    expect(cssImports(phoneHouseResumeEntry)).toEqual([
+      "./phone-house-resume/shell-header.css",
+      "./phone-house-resume/stats-records.css",
+      "./phone-house-resume/character-list.css",
+      "./phone-house-resume/decorations.css",
+      "./phone-house-resume/achievement-personalization.css"
+    ]);
+    expect(phoneHouseResumeEntry).not.toContain(".house-modal {");
+  });
+
+  it("keeps hud-components.css as an import-only HUD compatibility entry", () => {
+    const hudEntry = readFileSync(new URL("./hud-components.css", import.meta.url), "utf8");
+
+    expect(cssImports(hudEntry)).toEqual([
+      "./hud-components/hud-hardening.css",
+      "./hud-components/narrow-hud-tweaks.css",
+      "./hud-components/pop-tech-terminal.css",
+      "./hud-components/handbook-readability.css",
+      "./hud-components/character-chain-badge.css",
+      "./hud-components/user-identity.css"
+    ]);
+    expect(hudEntry).not.toContain(".app-shell {");
+    expect(hudEntry).not.toContain(".shop-tabs button.active");
+    expect(hudEntry).not.toContain(".character-chain-badge");
+
+    const popTechEntry = readFileSync(new URL("./hud-components/pop-tech-terminal.css", import.meta.url), "utf8");
+    expect(cssImports(popTechEntry)).toEqual([
+      "./pop-tech-terminal/tokens.css",
+      "./pop-tech-terminal/modal-surfaces.css",
+      "./pop-tech-terminal/interactive-motion.css",
+      "./pop-tech-terminal/home-hologram.css",
+      "./pop-tech-terminal/character-deploy.css",
+      "./pop-tech-terminal/tabs-actions.css",
+      "./pop-tech-terminal/keyframes.css"
+    ]);
+    expect(popTechEntry).not.toContain(".small-modal,");
+
+    const userIdentityEntry = readFileSync(new URL("./hud-components/user-identity.css", import.meta.url), "utf8");
+    expect(cssImports(userIdentityEntry)).toEqual([
+      "./user-identity/core.css",
+      "./user-identity/context-surfaces.css",
+      "./user-identity/phone-layouts.css",
+      "./user-identity/semantic-ignition-nameplate.css",
+      "./user-identity/denia-echo-nameplate.css",
+      "./user-identity/aemeath-digital-flight-nameplate.css",
+      "./user-identity/semantic-ignition-motion.css",
+      "./user-identity/denia-echo-nameplate-motion.css",
+      "./user-identity/aemeath-digital-flight-nameplate-motion.css"
+    ]);
+    expect(userIdentityEntry).not.toContain(".user-identity {");
+    expect(userIdentityEntry).not.toContain(".leaderboard-player .user-identity");
+    expect(userIdentityEntry).not.toContain("@media (max-width");
+  });
+
+  it("keeps HUD hardening as an import-only component sub-entry", () => {
+    const hudHardeningEntry = readFileSync(new URL("./hud-components/hud-hardening.css", import.meta.url), "utf8");
+
+    expect(cssImports(hudHardeningEntry)).toEqual([
+      "./hud-hardening/tokens-shell-scrollbars.css",
+      "./hud-hardening/inputs-settings-auth.css",
+      "./hud-hardening/inventory-state-tags.css",
+      "./hud-hardening/home-hologram-entries.css",
+      "./hud-hardening/character-deploy-detail.css",
+      "./hud-hardening/shop-pagination-owned.css",
+      "./hud-hardening/warehouse-surfaces.css",
+      "./hud-hardening/friend-actions.css"
+    ]);
+    expect(hudHardeningEntry).not.toContain(":root {");
+    expect(hudHardeningEntry).not.toContain(".login-card-container");
+    expect(hudHardeningEntry).not.toContain(".character-detail");
+    expect(hudHardeningEntry).not.toContain(".shop-pagination button");
+  });
+
+  it("keeps room.css as an import-only domain entry", () => {
+    const roomEntry = readFileSync(new URL("./room.css", import.meta.url), "utf8");
+    const tutorialBattleEntry = readFileSync(new URL("./room/tutorial-battle-screen.css", import.meta.url), "utf8");
+    const tutorialBattleSource = readFileSync(new URL("../tutorial/TutorialBattleScreen.jsx", import.meta.url), "utf8");
+
+    expect(cssImports(roomEntry)).toEqual([
+      "./room/layout-tabs.css",
+      "./room/players-timers-skills.css",
+      "./room/board.css",
+      "./room/actions-requests.css",
+      "./room/people-floating-replay.css",
+      "./room/chat-responsive.css"
+    ]);
+    expect(tutorialBattleSource).toContain('import "../styles/room/tutorial-battle-screen.css";');
+    expect(cssImports(tutorialBattleEntry)).toEqual([
+      "./tutorial-battle-screen/overlay-choice.css",
+      "./tutorial-battle-screen/actions-targets.css",
+      "./tutorial-battle-screen/target-ring.css",
+      "./tutorial-battle-screen/no-character-portraits.css",
+      "./tutorial-battle-screen/loading-motion.css"
+    ]);
+    expect(roomEntry).not.toContain(".battle-layout {");
+    expect(roomEntry).not.toContain(".board {");
+    expect(roomEntry).not.toContain(".chat-widget {");
+    expect(roomEntry).not.toContain("./room/tutorial-battle-screen.css");
+    expect(tutorialBattleEntry).not.toContain(".tutorial-battle-dialogue {");
+
+    const actionsRequestsEntry = readFileSync(new URL("./room/actions-requests.css", import.meta.url), "utf8");
+    expect(cssImports(actionsRequestsEntry)).toEqual([
+      "./actions-requests/toggles-action-bar.css",
+      "./actions-requests/decision-scoring.css",
+      "./actions-requests/request-toast.css",
+      "./actions-requests/action-states-tools.css",
+      "./actions-requests/replay-disabled.css"
+    ]);
+    expect(actionsRequestsEntry).not.toContain(".decision-bar {");
+  });
+
+  it("keeps room board styles as an import-only board sub-entry", () => {
+    const boardEntry = readFileSync(new URL("./room/board.css", import.meta.url), "utf8");
+
+    expect(cssImports(boardEntry)).toEqual([
+      "./board/frame-coordinates.css",
+      "./board/row-slash.css",
+      "./board/ambient-fog.css",
+      "./board/effects-canvas-motion.css",
+      "./board/points-preview.css",
+      "./board/stones-skill-effects.css",
+      "./board/row-slash-stone-effects.css",
+      "./board/liberty-purge-stone-effects.css",
+      "./board/spray-stone-effects.css",
+      "./board/gomoku-winning-line.css",
+      "./board/latest-touch-void.css",
+      "./board/aemeath-rainbow-move.css",
+      "./board/aemeath-rainbow-move-particles.css",
+      "./board/grid-scoring.css"
+    ]);
+    expect(boardEntry).not.toContain(".board-wrap {");
+    expect(boardEntry).not.toContain(".board-row-slash {");
+    expect(boardEntry).not.toContain(".point {");
+    expect(boardEntry).not.toContain(".board-lines {");
+
+    const stonesSkillEffectsEntry = readFileSync(
+      new URL("./room/board/stones-skill-effects.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(stonesSkillEffectsEntry)).toEqual([
+      "./stones-skill-effects/stone-base.css",
+      "./stones-skill-effects/hidden-flip-double.css",
+      "./stones-skill-effects/transient-markers.css",
+      "./stones-skill-effects/voyage-star-keyframes.css",
+      "./stones-skill-effects/protocol-ban.css",
+      "./stones-skill-effects/liberty-purge.css",
+      "./stones-skill-effects/stone-effect-keyframes.css"
+    ]);
+    expect(stonesSkillEffectsEntry).not.toContain(".stone {");
+  });
+
+  it("keeps room players, timers, and skills as an import-only room sub-entry", () => {
+    const playersTimersSkillsEntry = readFileSync(new URL("./room/players-timers-skills.css", import.meta.url), "utf8");
+
+    expect(cssImports(playersTimersSkillsEntry)).toEqual([
+      "./players-timers-skills/side-layout.css",
+      "./players-timers-skills/player-card.css",
+      "./players-timers-skills/captures-tooltips.css",
+      "./players-timers-skills/timers.css",
+      "./players-timers-skills/skill-chips.css",
+      "./players-timers-skills/mobile-tap-tooltip.css",
+      "./players-timers-skills/color-badges.css"
+    ]);
+    expect(playersTimersSkillsEntry).not.toContain(".player-info {");
+    expect(playersTimersSkillsEntry).not.toContain(".timer {");
+    expect(playersTimersSkillsEntry).not.toContain(".skill-chip");
+    expect(playersTimersSkillsEntry).not.toContain(".mobile-tap-tooltip");
+  });
+
+  it("keeps room-terminal.css as an import-only battlefield skin entry", () => {
+    const roomTerminalEntry = readFileSync(new URL("./room-terminal.css", import.meta.url), "utf8");
+
+    expect(cssImports(roomTerminalEntry)).toEqual([
+      "./room-terminal/shell-theme.css",
+      "./room-terminal/header-tags.css",
+      "./room-terminal/players-timers-skills.css",
+      "./room-terminal/board-actions.css",
+      "./room-terminal/panels-chat-replay.css",
+      "./room-terminal/mobile-portrait.css",
+      "./room-terminal/mobile-landscape.css"
+    ]);
+    expect(roomTerminalEntry).not.toContain(".app-shell:has(.room-screen)");
+    expect(roomTerminalEntry).not.toContain(".player-info.self");
+    expect(roomTerminalEntry).not.toContain(".mobile-room-screen .mobile-room-viewport");
+
+    const roomTerminalPlayersEntry = readFileSync(
+      new URL("./room-terminal/players-timers-skills.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(roomTerminalPlayersEntry)).toEqual([
+      "./players-timers-skills/player-panels.css",
+      "./players-timers-skills/identity-captures.css",
+      "./players-timers-skills/timers.css",
+      "./players-timers-skills/skill-chip-detail.css",
+      "./players-timers-skills/keyframes.css"
+    ]);
+    expect(roomTerminalPlayersEntry).not.toContain(".player-info {");
+  });
+
+  it("keeps home-terminal.css as an import-only lobby skin entry", () => {
+    const homeTerminalEntry = readFileSync(new URL("./home-terminal.css", import.meta.url), "utf8");
+
+    expect(cssImports(homeTerminalEntry)).toEqual([
+      "./home-terminal/shell-background.css",
+      "./home-terminal/top-strip.css",
+      "./home-terminal/layout-player.css",
+      "./home-terminal/entries.css",
+      "./home-terminal/utility-footer-motion.css",
+      "./home-terminal/recruitment-alert.css",
+      "./home-terminal/iris-database-entry.css",
+      "./home-terminal/mobile.css"
+    ]);
+    expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");
+    expect(homeTerminalEntry).not.toContain(".home-player-zone");
+    expect(homeTerminalEntry).not.toContain("@media (max-width: 768px)");
+  });
+
+  it("keeps modals.css as an import-only domain entry", () => {
+    const modalsEntry = readFileSync(new URL("./modals.css", import.meta.url), "utf8");
+
+    expect(cssImports(modalsEntry)).toEqual([
+      "./modals/base-result-skill.css",
+      "./modals/window-entry-motion.css",
+      "./modals/result-modal.css",
+      "./modals/result-reward-motion.css",
+      "./modals/replay-mode-resume.css",
+      "./modals/nested-profile.css",
+      "./modals/profile-character-records.css",
+      "./modals/profile-hero-cleanup.css",
+      "./modals/profile-overview.css",
+      "./modals/profile-social-actions.css",
+      "./modals/character-opening.css",
+      "./modals/character-music-player.css",
+      "./modals/phone.css",
+      "./modals/terminal-system.css",
+      "./modals/information-center.css",
+      "./modals/mailbox.css",
+      "./modals/announcement.css",
+      "./modals/onboarding-story.css",
+      "./modals/tutorial-session.css",
+      "./modals/iris-database.css",
+      "./modals/iris-database-greeting.css",
+      "./modals/iris-database-portrait.css",
+      "./modals/iris-database-archive.css",
+      "./modals/iris-database-records.css"
+    ]);
+    expect(modalsEntry).not.toContain(".modal-backdrop {");
+    expect(modalsEntry).not.toContain(".resume-modal {");
+    expect(modalsEntry).not.toContain(".character-detail {");
+
+    const characterMusicPlayerEntry = readFileSync(new URL("./modals/character-music-player.css", import.meta.url), "utf8");
+    expect(cssImports(characterMusicPlayerEntry)).toEqual([
+      "./character-music-player/shell-title.css",
+      "./character-music-player/track-sheet.css",
+      "./character-music-player/motion.css"
+    ]);
+
+    const characterOpeningEntry = readFileSync(new URL("./modals/character-opening.css", import.meta.url), "utf8");
+    expect(cssImports(characterOpeningEntry)).toEqual([
+      "./character-opening/detail.css",
+      "./character-opening/skill-copy.css",
+      "./character-opening/replay-match.css",
+      "./character-opening/opening-animation.css",
+      "./character-opening/keyframes.css",
+      "./character-opening/costume-wardrobe.css",
+      "./character-opening/costume-wardrobe-mobile.css"
+    ]);
+    expect(characterOpeningEntry).not.toContain(".character-detail {");
+
+    const onboardingStoryEntry = readFileSync(new URL("./modals/onboarding-story.css", import.meta.url), "utf8");
+    expect(cssImports(onboardingStoryEntry)).toEqual([
+      "./onboarding-story/shell.css",
+      "./onboarding-story/portrait-text.css",
+      "./onboarding-story/actions-skip.css",
+      "./onboarding-story/mobile.css"
+    ]);
+    expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
+  });
+
+  it("keeps wardrobe costume detail as a left-aligned modifier of the shop detail template", () => {
+    const costumeWardrobeCss = readFileSync(
+      new URL("./modals/character-opening/costume-wardrobe.css", import.meta.url),
+      "utf8"
+    );
+    const handbookDecorationCss = readFileSync(
+      new URL("./themes/bright-school/modals/handbook-decoration.css", import.meta.url),
+      "utf8"
+    );
+    const shopDetailCss = readFileSync(
+      new URL("./commerce/shop-settings/shop-detail-pagination.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(costumeWardrobeCss).toMatch(
+      /\.character-costume-detail-heading\s*\{[^}]*display:\s*grid;[^}]*justify-items:\s*start;[^}]*gap:\s*4px;/s
+    );
+    expect(costumeWardrobeCss).toMatch(
+      /\.character-costume-detail-credit\s*\{[^}]*max-width:\s*100%;[^}]*justify-self:\s*start;[^}]*text-align:\s*left;/s
+    );
+    expect(costumeWardrobeCss).toMatch(
+      /\.shop-detail-art\.character-costume-detail-art img\s*\{[^}]*filter:\s*none;/s
+    );
+    expect(handbookDecorationCss).toMatch(
+      /\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.shop-detail-art\.character-costume-detail-art img\s*\{[^}]*filter:\s*none !important;/s
+    );
+    expect(shopDetailCss).toContain("filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.32));");
+    expect(costumeWardrobeCss).not.toContain(".character-costume-detail-title-row");
+  });
+
+  it("keeps admin console full-width after theme and HUD layers", () => {
+    const mobileAdaptiveEntry = readFileSync(new URL("./mobile-adaptive.css", import.meta.url), "utf8");
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+
+    expect(cssImports(mobileAdaptiveEntry)).toContain("./mobile-adaptive/admin-fullscreen.css");
+    expect(mobileCss).toContain(".app-shell:has(.admin-screen)");
+    expect(mobileCss).toContain("background: #f6f7fb !important");
+    expect(mobileCss).toContain(".app-shell:has(.admin-screen)::before");
+    expect(mobileCss).toContain(".admin-screen");
+    expect(mobileCss).toContain("width: 100vw");
+    expect(mobileCss).toContain("max-width: none");
+  });
+
+  it("keeps terminal modal system styles as an import-only sub-entry", () => {
+    const terminalSystemEntry = readFileSync(new URL("./modals/terminal-system.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalSystemEntry)).toEqual([
+      "./terminal-system/tokens-backdrop.css",
+      "./terminal-system/modal-chrome.css",
+      "./terminal-system/close-header-actions.css",
+      "./terminal-system/terminal-buttons.css",
+      "./terminal-system/replay-profile-surfaces.css",
+      "./terminal-system/result-modal.css",
+      "./terminal-system/outcomes-resume-actions.css"
+    ]);
+    expect(terminalSystemEntry).not.toContain(":root {");
+    expect(terminalSystemEntry).not.toContain(".small-modal,");
+    expect(terminalSystemEntry).not.toContain(".primary-action,");
+    expect(terminalSystemEntry).not.toContain(".result-modal.black-win");
+  });
+
+  it("keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry", () => {
+    const replayModeResumeEntry = readFileSync(new URL("./modals/replay-mode-resume.css", import.meta.url), "utf8");
+
+    expect(cssImports(replayModeResumeEntry)).toEqual([
+      "./replay-mode-resume/replay-list-table.css",
+      "./replay-mode-resume/match-mode-tabs.css",
+      "./replay-mode-resume/practice-difficulty.css",
+      "./replay-mode-resume/resume-modal-layout.css",
+      "./replay-mode-resume/achievement-modal.css",
+      "./replay-mode-resume/personalization-preview-grid.css",
+      "./replay-mode-resume/personalization-picker.css"
+    ]);
+    expect(replayModeResumeEntry).not.toContain(".replay-list {");
+    expect(replayModeResumeEntry).not.toContain(".resume-modal {");
+    expect(replayModeResumeEntry).not.toContain(".achievement-modal,");
+    expect(replayModeResumeEntry).not.toContain(".personalization-modal {");
+    expect(replayModeResumeEntry).not.toContain(".resume-character-records {");
+  });
+});

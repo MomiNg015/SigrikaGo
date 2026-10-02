@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend route, domain, and Prisma schema guidelines for mailbox service/API work."}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Prisma migration and schema integrity expectations for mailbox tables."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Route error shaping and domain error propagation expectations."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend component, overlay, state, and CSS architecture guidance for mailbox UI."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component structure guidance for player modal and admin mailbox view."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "App overlay and summary polling state placement for mailbox badge and modal."}
+{"file": ".trellis/spec/guides/code-reuse.md", "reason": "Cross-layer helper reuse for inventory, ledger, and admin API patterns."}

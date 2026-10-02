@@ -1,0 +1,10 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import OpeningModal from '/src/modals/gameLifecycle/OpeningModal.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const players = ['sigrika','denia'].map((id,i)=>({characterId:id,color:i?'white':'black',user:{id,username:i?'ABCDEFGHIJKLMNOPQRSTUVWXYZ':'这是一个很长的中文用户名'}}));
+await Promise.all(players.map(p=>new Promise(resolve=>{const img=new Image(); img.onload=resolve; img.onerror=resolve; img.src=CHARACTERS[p.characterId].portrait;})));
+const duration=Number(new URLSearchParams(location.search).get('duration'))||10000;
+window.openingDeadline=Date.now()+duration;
+createRoot(document.getElementById('root')).render(<div className="app-shell player-theme-enabled theme-bright-school"><iframe title="对局背景" src={'./battle-polish.html'+(innerWidth>768?'?desktop':'')} style={{position:'fixed',inset:0,width:'100%',height:'100%',border:0}}/><OpeningModal room={{code:'preview',role:'player',__openingPresentation:true,openingEndsAt:window.openingDeadline,players}} player={players[0]} characters={CHARACTERS}/></div>);

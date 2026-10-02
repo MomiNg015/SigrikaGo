@@ -1,0 +1,353 @@
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\Fetch.js
+  20:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\IDBStore.js
+  12:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\audio_worklet.js
+  24:5  error  Parsing error: Unexpected token ASSERTIONS
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libaddfunction.js
+  11:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libasync.js
+  22:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libatomic.js
+  17:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libautodebug.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libbase64.js
+  25:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libbootstrap.js
+  10:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libbrowser.js
+  13:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libc_preprocessor.js
+  46:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libccall.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libcore.js
+  45:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libdylink.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libegl.js
+  51:23  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libembind.js
+  28:1  error  Parsing error: Unexpected token #include
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libembind_gen.js
+  5:1  error  Parsing error: Unexpected token #include
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libembind_shared.js
+  108:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libemval.js
+  35:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libeventloop.js
+  47:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libexceptions.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libexceptions_stub.js
+  24:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libexports.js
+  22:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libfetch.js
+  7:1  error  Parsing error: Unexpected token #include
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libformatString.js
+  56:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libfs.js
+  13:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libfs_shared.js
+  11:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libgetvalue.js
+  16:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libglemu.js
+  38:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libglfw.js
+  91:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libglut.js
+  421:51  error  Parsing error: Unexpected token )
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libhtml5.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libhtml5_webgl.js
+  10:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libhtml5_webgpu.js
+  34:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libidbfs.js
+  19:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libidbstore.js
+  7:1  error  Parsing error: Unexpected token #include
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libint53.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\liblegacy.js
+  23:3  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\liblz4.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libmath.js
+  27:18  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libmemfs.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libmemoryprofiler.js
+  3:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libnodefs.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libnoderawfs.js
+  35:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libopenal.js
+  49:29  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libpath.js
+  77:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libpipefs.js
+  15:40  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libpromise.js
+  22:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libproxyfs.js
+  199:25  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libpthread.js
+  10:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libpthread_stub.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libsdl.js
+  65:19  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libsockfs.js
+  13:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libstack_trace.js
+  11:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libstrings.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libsyscall.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libtime.js
+  13:26  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libtrace.js
+  256:26  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libtty.js
+  13:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libuuid.js
+  44:18  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasi.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasm_worker.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs.js
+  39:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs_fetch.js
+  134:52  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs_js_file.js
+  35:20  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs_jsimpl.js
+  14:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs_node.js
+  13:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwasmfs_opfs.js
+  17:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwebaudio.js
+  1:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwebgl.js
+  48:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwebgl2.js
+  18:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwebgpu.js
+  201:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libwebsocket.js
+  23:37  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\lib\libworkerfs.js
+  10:16  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\memoryprofiler.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\node_shell_read.js
+  11:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\polyfill\bigint64array.js
+  1:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\postamble.js
+  9:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\postamble_minimal.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\postamble_modularize.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\postlibrary.js
+  4:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\preamble.js
+  17:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\preamble_minimal.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\proxyClient.js
+  14:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\proxyWorker.js
+  15:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_asan.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_common.js
+  7:1  error  Parsing error: Unexpected token #include
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_debug.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_exceptions.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_init_memory.js
+  8:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_pthread.js
+  11:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_safe_heap.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\runtime_stack_check.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\shell.js
+  6:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\shell_minimal.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\source_map_support.js
+  66:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\threadprofiler.js
+  1:1  error  Parsing error: Unexpected token #preprocess
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\wasm2js.js
+  17:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\wasm_offset_converter.js
+  104:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\wasm_worker.js
+  10:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\src\web_or_worker_shell_read.js
+  7:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\core\test_custom_js_settings.js
+  3:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\core\test_jslib_i64_params.js
+  4:21  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\core\test_module_wasm_memory.js
+  1:1  error  Parsing error: Unexpected token #preprocess
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\embind\test.post.js
+  1:3  error  Parsing error: 'return' outside of function
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\embind\test.pre.js
+  2:1  error  Parsing error: Unexpected token
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\embind\test_i64_binding.js
+  10:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\error_in_js_libraries.js
+  1:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\modularize_post_js.js
+  1:1  error  Parsing error: Unexpected token #preprocess
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\other\test_extra_struct_info.js
+  1:38  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\other\test_parseTools.js
+  5:40  error  Parsing error: Unexpected token {
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\return64bit\testbindend.js
+  2:1  error  Parsing error: Unexpected token }
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\return64bit\testbindstart.js
+  2:1  error  Parsing error: Unexpected token
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\test\warning_in_js_libraries.js
+  1:1  error  Parsing error: Unexpected token #if
+
+C:\codex\SigrikaGo\.codex-run\practice-local\emsdk\upstream\emscripten\tools\acorn-optimizer.mjs
+  398:40  warning  Unused eslint-disable directive (no problems were reported from 'no-empty')
+
+✖ 115 problems (114 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

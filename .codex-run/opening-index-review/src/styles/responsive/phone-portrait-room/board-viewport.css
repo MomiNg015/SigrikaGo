@@ -1,0 +1,16 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .board-wrap {
+    padding: clamp(8px, 2.4vw, 12px);
+    grid-template-columns: 15px 1fr 15px;
+    grid-template-rows: 15px 1fr 15px;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: min(calc(100vw - 14px), calc(100dvh - 380px), 310px);
+  }
+
+  .mobile-room-screen .coord-row,
+  .mobile-room-screen .coord-col {
+    font-size: 11px;
+  }
+}

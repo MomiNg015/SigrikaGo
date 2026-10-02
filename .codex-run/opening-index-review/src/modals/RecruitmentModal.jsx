@@ -1,0 +1,303 @@
+import WindowLoadingState from "./WindowLoadingState.jsx";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
+import { useEffect, useRef, useState } from "react";
+import { ClipboardList, Radio, Ticket, X } from "lucide-react";
+import { playRecruitmentMagicClockFastForwardSound, playRecruitmentResultSound } from "../audio/playback.jsx";
+import { RECRUITMENT_FAST_FORWARD_TIMING, RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
+import { ModalDialog } from "./modalComponents.jsx";
+import { characterPortraitImageProps } from "../shared/characterPortraits.js";
+import RecruitmentCinematicOverlay from "./recruitment/RecruitmentCinematicOverlay.jsx";
+import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
+
+export default function RecruitmentModal({
+  audioSettings,
+  characters = {},
+  token,
+  user,
+  onUserChange,
+  onNotice,
+  onClose,
+  onStatusChange,
+  onInteractionLockChange
+}) {
+  const {
+    busy,
+    cinematicPlaybackTaskId,
+    clearResult,
+    claim,
+    fastForward,
+    fastForwardPresentation,
+    finishCinematic,
+    interruptCinematic,
+    items,
+    loading,
+    presentationReadyAt,
+    result,
+    selectedItem,
+    selectedItemType,
+    setSelectedItemType,
+    start,
+    task,
+    utilities
+  } = useRecruitmentCatalog({ token, user, onNotice, onUserChange, onStatusChange });
+
+  const phase = result ? "result" : task?.status === "ready" ? "ready" : task?.status === "pending" ? "pending" : "idle";
+  const canUse = phase === "idle" && selectedItem && selectedItem.quantity > 0 && !busy;
+  const playedResultSoundRef = useRef(null);
+  const fastForwardSoundRef = useRef(null);
+  const countdownRef = useRef(null);
+  const [cinematicElapsedMs, setCinematicElapsedMs] = useState(null);
+  const cinematicPlaying = phase === "pending"
+    && Boolean(task?.cinematic)
+    && cinematicPlaybackTaskId === task.id;
+  const magicClock = utilities.find((item) => item.itemType === RECRUITMENT_ITEM_TYPES.magicClock) ?? null;
+  const remainingMs = task?.readyAt ? Math.max(0, new Date(task.readyAt).getTime() - Date.now()) : 0;
+  const showMagicClock = phase === "pending"
+    && !task?.cinematic
+    && !task?.fastForwarded
+    && remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs;
+
+  useEffect(() => {
+    if (!result) {
+      playedResultSoundRef.current = null;
+      return;
+    }
+    const soundKey = `${result.type}:${result.characterId ?? "miss"}:${result.text ?? ""}`;
+    if (playedResultSoundRef.current === soundKey) return;
+    playedResultSoundRef.current = soundKey;
+    playRecruitmentResultSound(result.type, audioSettings);
+  }, [audioSettings, result]);
+
+  useEffect(() => {
+    if (!cinematicPlaying) setCinematicElapsedMs(null);
+  }, [cinematicPlaying]);
+
+  useEffect(() => () => fastForwardSoundRef.current?.stop(), []);
+
+  async function useMagicClock() {
+    const applied = await fastForward();
+    if (!applied) return;
+    fastForwardSoundRef.current?.stop();
+    fastForwardSoundRef.current = playRecruitmentMagicClockFastForwardSound(audioSettings);
+  }
+
+  const closeModal = cinematicPlaying ? undefined : onClose;
+
+  return (
+    <div className={`modal-backdrop recruitment-backdrop ${cinematicPlaying ? "is-cinematic-locked" : ""}`} onClick={closeModal}>
+      <ModalDialog
+        className={`recruitment-modal ${cinematicPlaying ? "" : "window-sticker-host"} recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
+        ariaLabelledBy="recruitment-modal-title"
+        onClose={closeModal}
+        onClick={(event) => event.stopPropagation()}
+      >
+        {!cinematicPlaying && <button data-button-role="secondary" className="close-button" type="button" onClick={onClose}><X size={20} /></button>}
+        <header className="recruitment-header window-sticker-header">
+          <div>
+            <WindowTitleSticker titleKey="recruitment" id="recruitment-modal-title" enabled={!cinematicPlaying} />
+          </div>
+        </header>
+
+        <main className={`recruitment-board recruitment-board-${phase}`}>
+          {loading && <WindowLoadingState>加载招新公示中...</WindowLoadingState>}
+          {!loading && phase === "idle" && <IdleBoard selectedItem={selectedItem} />}
+          {!loading && phase === "pending" && (
+            <PendingBoard
+              task={task}
+              busy={busy}
+              magicClock={showMagicClock ? magicClock : null}
+              fastForwardPresentation={fastForwardPresentation}
+              cinematicElapsedMs={cinematicPlaying ? cinematicElapsedMs : null}
+              presentationReadyAt={presentationReadyAt}
+              countdownRef={countdownRef}
+              onFastForward={useMagicClock}
+            />
+          )}
+          {!loading && phase === "ready" && <ReadyBoard task={task} busy={busy} onClaim={claim} />}
+          {!loading && phase === "result" && <ResultBoard result={result} task={task} characters={characters} user={user} />}
+        </main>
+
+        {phase === "idle" && (
+          <footer className="recruitment-actions">
+            <div
+              className="recruitment-item-strip"
+              role="group"
+              aria-label="招募道具"
+              style={{ "--recruitment-item-count": items.length }}
+            >
+              {items.map((item) => (
+                <button
+                  key={item.itemType}
+                  className={`recruitment-item-button ${item.appearanceId ? `recruitment-item-${item.appearanceId}` : ""} ${selectedItemType === item.itemType ? "active" : ""}`}
+                  type="button"
+                  aria-pressed={selectedItemType === item.itemType}
+                  onClick={() => setSelectedItemType(item.itemType)}
+                >
+                  <RecruitmentItemIcon item={item} />
+                  <span>{item.name}</span>
+                  <b>x{item.quantity}</b>
+                </button>
+              ))}
+            </div>
+            <button data-button-role="primary" className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
+              {busy ? "张贴中" : canUse ? "使用" : "数量不足"}
+            </button>
+          </footer>
+        )}
+        {phase === "result" && (
+          <footer className="recruitment-actions recruitment-result-actions">
+            <button data-button-role="secondary" className="primary-action recruitment-use-button" type="button" onClick={clearResult}>
+              {result?.type === "success" ? "欢迎新部员！" : "收回道具"}
+            </button>
+          </footer>
+        )}
+      </ModalDialog>
+      {cinematicPlaying && (
+        <RecruitmentCinematicOverlay
+          audioSettings={audioSettings}
+          task={task}
+          targetRef={countdownRef}
+          onComplete={finishCinematic}
+          onElapsedChange={setCinematicElapsedMs}
+          onInteractionLockChange={onInteractionLockChange}
+          onInterrupt={interruptCinematic}
+        />
+      )}
+    </div>
+  );
+}
+
+function IdleBoard({ selectedItem }) {
+  if (!selectedItem) {
+    return (
+      <section className="recruitment-empty-board">
+        <strong>今日招新公示</strong>
+        <span>选择一个招募道具后，这里会贴上本次招新说明。</span>
+      </section>
+    );
+  }
+  return (
+    <section className="recruitment-selection-card">
+      <RecruitmentItemWatermark item={selectedItem} />
+      <div>
+        <strong>{selectedItem.name}</strong>
+        {selectedItem.scopeLabel !== selectedItem.confidenceText && <span>{selectedItem.scopeLabel}</span>}
+        <p>{selectedItem.confidenceText}</p>
+      </div>
+    </section>
+  );
+}
+
+function PendingBoard({
+  task,
+  busy,
+  magicClock,
+  fastForwardPresentation,
+  cinematicElapsedMs,
+  presentationReadyAt,
+  countdownRef,
+  onFastForward
+}) {
+  const fastForwarding = Boolean(
+    fastForwardPresentation && Date.now() < fastForwardPresentation.animationEndsAt
+  );
+  const clockUnavailable = !magicClock || magicClock.quantity <= 0;
+  return (
+    <section className="recruitment-pending-panel">
+      <RecruitmentItemWatermark item={task} />
+      <div>
+        <strong>{task.itemName}</strong>
+        <div className={`recruitment-countdown-row ${magicClock ? "has-fast-forward" : ""} ${fastForwarding ? "is-fast-forwarding" : ""}`}>
+          <b ref={countdownRef} aria-live={fastForwarding ? "off" : "polite"}>
+            {formatRecruitmentCountdown(task, cinematicElapsedMs, presentationReadyAt, fastForwardPresentation)}
+          </b>
+          {fastForwarding && (
+            <span className="recruitment-time-warp-clock" aria-hidden="true">
+              <img src="/assets/items/magic-clock.svg" alt="" />
+            </span>
+          )}
+          {magicClock && (
+            <button data-button-role="tool"
+              className="recruitment-fast-forward-button"
+              type="button"
+              disabled={busy || clockUnavailable}
+              onClick={onFastForward}
+              title={clockUnavailable ? "神奇小钟表数量不足" : magicClock.description}
+              aria-label={`使用神奇小钟表，持有 ${magicClock.quantity} 个`}
+            >
+              <img src="/assets/items/magic-clock.svg" alt="" />
+              <span className="recruitment-fast-forward-count" aria-hidden="true">{magicClock.quantity}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReadyBoard({ task, busy, onClaim }) {
+  return (
+    <section className="recruitment-status-card recruitment-ready-card">
+      <RecruitmentItemWatermark item={task} />
+      <div>
+        <button data-button-role="success" className="primary-action" type="button" disabled={busy} onClick={onClaim}>
+          瞧瞧有没有新部员！
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ResultBoard({ result, task, characters, user }) {
+  const character = result?.characterId ? characters[result.characterId] : null;
+  if (result?.type !== "success") {
+    return (
+      <section className="recruitment-result-card recruitment-result-miss">
+        <RecruitmentItemIcon item={task} large />
+        <div>
+          <p>{result?.text}</p>
+        </div>
+      </section>
+    );
+  }
+  return (
+    <section className="recruitment-result-card recruitment-result-success">
+      {character?.portrait
+        ? <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} />
+        : <RecruitmentItemIcon item={task} large />}
+      <div>
+        <strong>{character?.name ?? result.characterId}</strong>
+        <p>{result.text}</p>
+      </div>
+    </section>
+  );
+}
+
+function RecruitmentItemIcon({ item, large = false }) {
+  const isRadio = String(item?.itemType ?? "").includes("radio");
+  const isAemeathTicket = item?.itemType === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket;
+  const className = `recruitment-item-icon ${large ? "large" : ""}`;
+  const imageUrl = recruitmentItemImageUrl(item);
+  if (imageUrl) return <img className={className} src={imageUrl} alt="" loading="lazy" decoding="async" />;
+  return (
+    <span className={className} aria-hidden="true">
+      {isAemeathTicket
+        ? <Ticket size={large ? 36 : 22} />
+        : isRadio ? <Radio size={large ? 36 : 22} /> : <ClipboardList size={large ? 36 : 22} />}
+    </span>
+  );
+}
+
+function RecruitmentItemWatermark({ item }) {
+  const imageUrl = recruitmentItemImageUrl(item);
+  if (!imageUrl) return null;
+  return (
+    <span className="recruitment-item-watermark" aria-hidden="true">
+      <img className="recruitment-item-watermark-art" src={imageUrl} alt="" loading="lazy" decoding="async" />
+    </span>
+  );
+}
+
+function recruitmentItemImageUrl(item) {
+  return String(item?.imageUrl || item?.itemImageUrl || "").trim();
+}

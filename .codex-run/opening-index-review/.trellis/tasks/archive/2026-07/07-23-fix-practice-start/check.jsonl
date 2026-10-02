@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify callback forwarding, memo stability, focused tests, and the full repository quality gate."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Verify that the repaired wrapper keeps the HomeScreen public prop contract intact."}

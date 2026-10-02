@@ -1,0 +1,82 @@
+/* Bright School unobtained roster entries behave like damaged monochrome displays. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned {
+  --handbook-signal-white: var(--bright-sheet-clean);
+  --handbook-signal-silver: color-mix(in srgb, var(--bright-ink) 18%, var(--bright-sheet-clean));
+  --handbook-signal-gray: color-mix(in srgb, var(--bright-ink) 48%, var(--bright-sheet-clean));
+  --handbook-signal-ink: color-mix(in srgb, var(--bright-ink) 82%, var(--bright-sheet-clean));
+  --handbook-signal-surface: color-mix(in srgb, var(--bright-ink) 10%, var(--bright-sheet-clean));
+  --handbook-signal-surface-edge: color-mix(in srgb, var(--bright-ink) 27%, var(--bright-sheet-clean));
+  --handbook-crt-delay: 0s;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding-inline: clamp(10px, 1vw, 12px) !important;
+  filter: grayscale(1) !important;
+  color: var(--handbook-signal-ink) !important;
+  border-color: var(--handbook-signal-gray) !important;
+  background:
+    linear-gradient(180deg, var(--handbook-signal-surface), var(--handbook-signal-surface-edge)),
+    var(--handbook-signal-surface) !important;
+  box-shadow: 2px 3px 0 color-mix(in srgb, var(--handbook-signal-ink) 42%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned > :where(img, strong, .character-item-effect-badges) {
+  position: relative !important;
+  z-index: 2 !important;
+  justify-self: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:not(.hidden-intel-card) > img {
+  filter: grayscale(1) contrast(0.82) brightness(0.9) opacity(0.58);
+  transform: translate3d(0, 0, 0);
+  animation: bright-handbook-crt-image-fault 3.6s steps(1, end) infinite !important;
+  animation-delay: var(--handbook-crt-delay) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:not(.hidden-intel-card) > strong {
+  color: var(--handbook-signal-ink) !important;
+  animation: bright-handbook-crt-label-fault 3.6s steps(1, end) infinite !important;
+  animation-delay: var(--handbook-crt-delay) !important;
+}
+
+/* Keep the resting surface clear: malfunction appears only in short sync-loss bursts. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  animation: none !important;
+}
+
+/* Horizontal sync loss: hard bars jump sideways instead of sweeping decoratively. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 4 !important;
+  inset: 0 !important;
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(90deg, transparent 0 8%, color-mix(in srgb, var(--handbook-signal-white) 84%, transparent) 8% 26%, color-mix(in srgb, var(--handbook-signal-gray) 50%, transparent) 26% 29%, transparent 29% 100%) 0 22% / 100% 8px no-repeat,
+    linear-gradient(90deg, transparent 0 34%, color-mix(in srgb, var(--handbook-signal-ink) 42%, transparent) 34% 58%, color-mix(in srgb, var(--handbook-signal-white) 72%, transparent) 58% 75%, transparent 75% 100%) 0 61% / 100% 5px no-repeat,
+    linear-gradient(90deg, color-mix(in srgb, var(--handbook-signal-ink) 28%, transparent) 0 12%, transparent 12% 69%, color-mix(in srgb, var(--handbook-signal-white) 58%, transparent) 69% 93%, transparent 93% 100%) 0 78% / 100% 3px no-repeat !important;
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  animation: bright-handbook-crt-sync-loss 3.6s steps(1, end) infinite !important;
+  animation-delay: var(--handbook-crt-delay) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:nth-child(4n + 2) {
+  --handbook-crt-delay: -0.9s;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:nth-child(4n + 3) {
+  --handbook-crt-delay: -1.8s;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:nth-child(4n) {
+  --handbook-crt-delay: -2.7s;
+}

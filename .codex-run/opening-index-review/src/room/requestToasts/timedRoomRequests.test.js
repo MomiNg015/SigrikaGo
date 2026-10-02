@@ -1,0 +1,199 @@
+import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { GAME_PHASES } from "../../shared/game.js";
+import TimedRoomRequestToast from "./TimedRoomRequestToast.jsx";
+import {
+  timedRoomRequestEffectKey,
+  timedRoomRequestSnapshot,
+  timedRoomRequestToastForPlayer,
+  timedRoomResponseToast
+} from "./timedRoomRequests.js";
+
+const players = [
+  { user: { id: "black", username: "黑方" }, color: "black" },
+  { user: { id: "white", username: "白方" }, color: "white" }
+];
+
+describe("timed room request toasts", () => {
+  it("builds actionable draw and counting request toasts for the receiving player", () => {
+    const drawRoom = room({
+      phase: GAME_PHASES.drawRequested,
+      drawRequest: { requestedBy: "black" },
+      drawDeadline: 1000
+    });
+
+    expect(timedRoomRequestToastForPlayer(drawRoom, "white")).toMatchObject({
+      type: "draw",
+      title: "收到和棋申请",
+      actions: [
+        { action: "draw:accept" },
+        { action: "draw:reject" }
+      ]
+    });
+    expect(timedRoomRequestToastForPlayer(drawRoom, "black")).toMatchObject({
+      type: "draw",
+      title: "和棋申请已发送",
+      actions: []
+    });
+
+    const countingRoom = room({
+      phase: GAME_PHASES.countingRequested,
+      scoring: { requestedBy: "white" },
+      countingDeadline: 2000
+    });
+    expect(timedRoomRequestToastForPlayer(countingRoom, "black")).toMatchObject({
+      type: "counting",
+      title: "收到数子申请",
+      actions: [
+        { action: "counting:accept" },
+        { action: "counting:reject" }
+      ]
+    });
+  });
+
+  it("builds result confirmation toasts and switches accepted players to waiting", () => {
+    const result = { text: "黑胜1子", formula: [] };
+    const reviewRoom = room({
+      phase: GAME_PHASES.resultReview,
+      scoring: { result, resultDeadline: 3000, resultAcceptedBy: ["black"] }
+    });
+
+    expect(timedRoomRequestToastForPlayer(reviewRoom, "white")).toMatchObject({
+      type: "result",
+      title: "数子结果确认",
+      score: result,
+      actions: [
+        { action: "result:accept" },
+        { action: "result:reject" }
+      ]
+    });
+    expect(timedRoomRequestToastForPlayer(reviewRoom, "black")).toMatchObject({
+      title: "已同意数子结果",
+      actions: []
+    });
+  });
+
+  it("formats response toasts when timed requests leave their waiting phase", () => {
+    const previous = timedRoomRequestSnapshot(room({
+      phase: GAME_PHASES.countingRequested,
+      scoring: { requestedBy: "black" }
+    }), "white");
+
+    expect(timedRoomResponseToast(previous, room({ phase: GAME_PHASES.markingDead }))).toMatchObject({
+      title: "数子申请已回应",
+      message: "对方同意数子，请确认死子。",
+      autoDismiss: true
+    });
+    expect(timedRoomResponseToast(previous, room({ phase: GAME_PHASES.playing }))).toMatchObject({
+      message: "数子申请未通过，对局继续。"
+    });
+  });
+
+  it("keeps the timed request effect key stable across clock-only player time changes", () => {
+    const currentRoom = room({
+      phase: GAME_PHASES.drawRequested,
+      drawRequest: { requestedBy: "black" },
+      drawDeadline: 1000
+    });
+    const clockOnlyRoom = {
+      ...currentRoom,
+      players: currentRoom.players.map((player) => ({
+        ...player,
+        time: { main: player.color === "black" ? 299 : 300 }
+      }))
+    };
+    const nextDeadlineRoom = { ...currentRoom, drawDeadline: 2000 };
+
+    expect(timedRoomRequestEffectKey(clockOnlyRoom, "white")).toBe(timedRoomRequestEffectKey(currentRoom, "white"));
+    expect(timedRoomRequestEffectKey(nextDeadlineRoom, "white")).not.toBe(timedRoomRequestEffectKey(currentRoom, "white"));
+  });
+
+  it("changes the timed request effect key when result review acceptance changes", () => {
+    const result = { text: "black wins by 1", formula: [] };
+    const pendingRoom = room({
+      phase: GAME_PHASES.resultReview,
+      scoring: { result, resultDeadline: 3000, resultAcceptedBy: [] }
+    });
+    const acceptedRoom = room({
+      phase: GAME_PHASES.resultReview,
+      scoring: { result, resultDeadline: 3000, resultAcceptedBy: ["white"] }
+    });
+
+    expect(timedRoomRequestEffectKey(acceptedRoom, "white")).not.toBe(timedRoomRequestEffectKey(pendingRoom, "white"));
+  });
+
+  it("renders timed room request toasts without a manual close button", () => {
+    const actionableHtml = renderToStaticMarkup(createElement(TimedRoomRequestToast, {
+      toast: {
+        title: "收到和棋申请",
+        message: "对方申请和棋。",
+        deadline: Date.now() + 10_000,
+        actions: [
+          { action: "draw:accept", label: "同意", tone: "agree" },
+          { action: "draw:reject", label: "不同意", tone: "reject" }
+        ]
+      },
+      onAction: () => {}
+    }));
+    const passiveHtml = renderToStaticMarkup(createElement(TimedRoomRequestToast, {
+      toast: {
+        title: "数子结果确认",
+        message: "等待对方确认结果。",
+        actions: []
+      },
+      onAction: () => {}
+    }));
+
+    expect(actionableHtml).toContain("room-request-toast actionable");
+    expect(actionableHtml).toContain("--room-request-toast-duration:");
+    expect(actionableHtml).toContain("同意");
+    expect(actionableHtml).not.toContain("room-request-toast-close");
+    expect(actionableHtml).not.toContain("关闭提示");
+    expect(passiveHtml).toContain("room-request-toast passive");
+    expect(passiveHtml).not.toContain("room-request-toast-close");
+    expect(passiveHtml).not.toContain("关闭提示");
+  });
+  it("portals browser request toasts to body so they do not affect room layout", () => {
+    const source = readFileSync(new URL("./TimedRoomRequestToast.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("createPortal(content, document.body)");
+    expect(source).toContain("typeof document === \"undefined\"");
+  });
+
+  it("uses a transform-only countdown while preserving its reduced-motion duration", () => {
+    const chatCss = readFileSync(new URL("../../styles/room/chat-responsive.css", import.meta.url), "utf8");
+    const requestCss = readFileSync(
+      new URL("../../styles/room/actions-requests/request-toast.css", import.meta.url),
+      "utf8"
+    );
+    const reducedMotionCss = readFileSync(
+      new URL("../../styles/themes/bright-school/effects/reduced-motion.css", import.meta.url),
+      "utf8"
+    );
+    const progressKeyframes = chatCss.match(/@keyframes room-request-progress-shrink\s*\{[\s\S]*?\n\}/)?.[0] ?? "";
+
+    expect(progressKeyframes).toContain("transform: scaleX(1)");
+    expect(progressKeyframes).toContain("transform: scaleX(0)");
+    expect(progressKeyframes).not.toContain("width:");
+    expect(requestCss).toContain("transform-origin: left center");
+    expect(requestCss).toContain("var(--room-request-toast-duration, 10s) linear forwards");
+    expect(reducedMotionCss).toContain(":not(.room-request-toast-progress span)");
+  });
+});
+
+function room({ phase, drawRequest = null, scoring = null, drawDeadline, countingDeadline }) {
+  return {
+    code: "12345",
+    role: "player",
+    players,
+    drawDeadline,
+    countingDeadline,
+    game: {
+      phase,
+      drawRequest,
+      scoring
+    }
+  };
+}

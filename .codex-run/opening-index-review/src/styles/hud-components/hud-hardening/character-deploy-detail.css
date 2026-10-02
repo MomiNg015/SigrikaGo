@@ -1,0 +1,98 @@
+/* Startorch HUD character deploy tags and detail panels. */
+.deploy-tag,
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 3;
+  min-height: 18px;
+  padding: 3px 9px;
+  border: 1px solid currentColor;
+  border-radius: 0;
+  clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+  background: transparent !important;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.deploy-tag {
+  color: var(--hud-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 190, 0.2);
+}
+
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  content: "STANDBY";
+  color: rgba(185, 233, 228, 0.56);
+  box-shadow: inset 0 0 8px rgba(185, 233, 228, 0.05);
+}
+
+.deploy-tag::before,
+.character-card.portrait-card:not(.is-deployed):not(.locked)::before {
+  pointer-events: none;
+}
+
+.character-detail,
+.character-detail.unowned {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(0, 255, 190, 0.12), transparent 34%),
+    linear-gradient(145deg, rgba(5, 15, 22, 0.95), rgba(2, 8, 13, 0.98)) !important;
+  color: var(--hud-text);
+}
+
+.character-detail::before {
+  border-color: rgba(0, 255, 190, 0.22);
+  border-radius: 2px;
+}
+
+.character-detail-art,
+.character-detail.unowned .character-detail-art {
+  border: 1px solid rgba(0, 191, 255, 0.24);
+  border-radius: 2px;
+  background:
+    linear-gradient(rgba(0, 255, 190, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 191, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 40%, rgba(0, 255, 190, 0.12), transparent 58%),
+    rgba(4, 15, 21, 0.76);
+  background-size: 18px 18px, 18px 18px, cover, cover;
+}
+
+.character-detail .close-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0, 255, 190, 0.72);
+  border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  background: rgba(3, 12, 20, 0.78);
+  color: transparent;
+  box-shadow:
+    0 0 14px rgba(0, 255, 190, 0.22),
+    inset 0 0 12px rgba(0, 255, 190, 0.14);
+}
+
+.character-detail .close-button svg {
+  opacity: 0;
+}
+
+.character-detail .close-button::before,
+.character-detail .close-button::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 1px;
+  background: var(--hud-cyan);
+  box-shadow: 0 0 8px var(--hud-cyan);
+}
+
+.character-detail .close-button::before {
+  transform: rotate(45deg);
+}
+
+.character-detail .close-button::after {
+  transform: rotate(-45deg);
+}

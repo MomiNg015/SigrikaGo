@@ -1,0 +1,27 @@
+/* Compact phone fixes for Startorch Academy tactical terminal commerce surfaces. */
+@media (max-width: 560px) {
+  .shop-modal {
+    overflow: hidden;
+  }
+
+  .shop-layout,
+  .shop-sidebar {
+    overflow: hidden;
+  }
+
+  .shop-mascot-slot {
+    width: min(190px, 58vw);
+    height: 172px;
+    margin: -8px auto -4px;
+  }
+
+  .profile-grid .stat {
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  }
+
+  .deploy-tag {
+    top: 7px;
+    right: 7px;
+    font-size: 9px;
+  }
+}

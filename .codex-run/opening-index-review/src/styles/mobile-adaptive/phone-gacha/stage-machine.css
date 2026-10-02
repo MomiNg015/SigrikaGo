@@ -1,0 +1,67 @@
+@media (max-width: 768px) {
+  .gacha-main {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .gacha-featured-stage {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    grid-template-rows: minmax(168px, 1fr) auto !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .gacha-machine {
+    min-height: min(238px, 34dvh) !important;
+  }
+
+  .gacha-drum {
+    width: min(220px, 58vw, 30dvh) !important;
+    border-width: 6px !important;
+  }
+
+  .gacha-capsule {
+    width: 42px !important;
+    height: 28px !important;
+    border-width: 2px !important;
+  }
+
+  .gacha-slot {
+    width: 98px !important;
+    height: 32px !important;
+    border-width: 4px !important;
+  }
+
+  .gacha-featured-prize {
+    min-width: 0 !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 9px !important;
+  }
+
+  .gacha-featured-prize img {
+    width: 72px !important;
+    height: 72px !important;
+  }
+
+  .gacha-featured-prize .gacha-featured-stack.large {
+    grid-auto-columns: 42px !important;
+    min-width: 72px !important;
+  }
+
+  .gacha-featured-prize .gacha-featured-stack.large img + img {
+    margin-left: -30px !important;
+  }
+
+  .gacha-featured-prize strong {
+    font-size: clamp(17px, 4.6vw, 21px) !important;
+    line-height: 1.15 !important;
+  }
+}

@@ -1,0 +1,46 @@
+/* Startorch HUD home hologram entry projections. */
+.home-image-entry.hologram-entry,
+.home-image-entry.hologram-entry:hover,
+.home-image-entry.hologram-entry:focus-visible {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  clip-path: none;
+  overflow: visible;
+}
+
+.home-image-entry.hologram-entry::before {
+  opacity: 0;
+}
+
+.home-image-entry.hologram-entry::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: clamp(4px, 2vh, 18px);
+  z-index: 0;
+  height: 0;
+  opacity: 0;
+  background: transparent;
+  clip-path: none;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}
+
+.match-image-entry.hologram-entry::after {
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-image-entry.hologram-entry:hover::after,
+.home-image-entry.hologram-entry:focus-visible::after {
+  opacity: 0;
+  animation: none;
+}
+
+.home-image-entry.hologram-entry .home-entry-motion > img {
+  position: relative;
+  z-index: 1;
+}

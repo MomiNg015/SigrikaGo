@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"Follow the established admin-default snapshot and database safety contracts."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Keep CSP and deployment changes covered by focused server tests."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Preserve the existing motion contract while fixing skill-effect delivery."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Trace admin persistence, server headers, browser workers, and deployment as one data path."}
+{"file":".trellis/tasks/07-22-cloud-onboarding-animation-fixes/research/csp-static-delivery.md","reason":"Use the verified production symptoms and repository evidence for implementation."}

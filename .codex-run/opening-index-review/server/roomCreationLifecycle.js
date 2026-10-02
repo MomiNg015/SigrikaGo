@@ -1,0 +1,107 @@
+import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
+import { createPracticeRoom as buildPracticeRoom, createRoom, createSigrikaCandyDuelRoom as buildSigrikaCandyDuelRoom } from "./roomFactory.js";
+
+export function createRoomCreationLifecycle({
+  rooms,
+  matchmakingQueue,
+  isRoomCodeTaken,
+  persistRoom,
+  startGameClock,
+  scheduleRoomPreloadTimeout = () => {},
+  roomView,
+  appendSystem,
+  prewarmSigrikaEngine = () => {},
+  registerRoom = () => {}
+}) {
+  function joinMatchmaking(player, io, { canPair = () => true } = {}) {
+    const match = matchmakingQueue.join(player, { canPair });
+    if (!match.matched) return null;
+
+    const first = match.opponent;
+    const room = createRoom(first, match.player, {
+      modeInput: match.mode,
+      rated: true,
+      matchSource: "matchmaking",
+      isCodeTaken: isRoomCodeTaken
+    });
+    appendRoomCreatedNotices(room, "匹配成功");
+    registerCreatedRoom(room, io);
+    emitMatchFound(io, room, first, player);
+    return room;
+  }
+
+  function createDirectRoom(first, second, io, modeInput = "spark") {
+    const mode = normalizeGameModeId(modeInput);
+    matchmakingQueue.removeUser(first.user.id);
+    matchmakingQueue.removeUser(second.user.id);
+    const room = createRoom({ ...first, mode }, { ...second, mode }, {
+      modeInput: mode,
+      rated: false,
+      matchSource: "duel",
+      isCodeTaken: isRoomCodeTaken
+    });
+    appendRoomCreatedNotices(room, "对局申请已同意");
+    registerCreatedRoom(room, io);
+    emitMatchFound(io, room, first, second);
+    return room;
+  }
+
+  function createPracticeRoom(player, io, options = {}) {
+    matchmakingQueue.removeUser(player.user.id);
+    const room = buildPracticeRoom(player, {
+      ...options,
+      isCodeTaken: isRoomCodeTaken
+    });
+    appendRoomCreatedNotices(room, "人机练习已准备");
+    appendSystem(room, "本局不计成长，也不会保存棋谱。");
+    registerCreatedRoom(room, io);
+    io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
+    return room;
+  }
+
+  function createSigrikaCandyDuelRoom(player, io) {
+    matchmakingQueue.removeUser(player.user.id);
+    const room = buildSigrikaCandyDuelRoom(player, { isCodeTaken: isRoomCodeTaken });
+    appendSystem(room, "匹配数据损坏。已锁定特殊对局。", { kind: "special-match" });
+    appendSystem(room, "本局为 13 路围棋，贴 2.75 目；双方各有 30 分钟包干用时、没有读秒，双方不使用技能。", { kind: "special-rule" });
+    registerCreatedRoom(room, io);
+    startSigrikaEnginePrewarm();
+    io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
+    return room;
+  }
+
+  function startSigrikaEnginePrewarm() {
+    try {
+      void Promise.resolve(prewarmSigrikaEngine()).catch(() => {});
+    } catch {}
+  }
+
+  function registerCreatedRoom(room, io) {
+    rooms.set(room.code, room);
+    registerRoom(room);
+    persistRoom(room, { force: true });
+    startGameClock(room, io);
+    scheduleRoomPreloadTimeout(room, io);
+  }
+
+  function emitMatchFound(io, room, first, second) {
+    io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
+    io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
+  }
+
+  function appendRoomCreatedNotices(room, prefix) {
+    const mode = gameModeById(room.mode ?? room.game?.mode);
+    appendSystem(room, `${prefix}，3秒后进入${mode.shortTitle}对弈。`);
+    if (mode.family === "gomoku") {
+      const blackPlayer = room.players.find((player) => player.color === "black");
+      appendSystem(room, `已自动猜先，${blackPlayer?.user?.username ?? "黑方"}执黑先行。`);
+    }
+  }
+
+  return {
+    joinMatchmaking,
+    createDirectRoom,
+    createPracticeRoom,
+    createSigrikaCandyDuelRoom
+  };
+}

@@ -1,0 +1,66 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header > h2 {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions {
+    position: static !important;
+    inset: auto !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .resume-mini-action {
+    flex: 0 1 auto !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 7px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .resume-wallet {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 7px 8px !important;
+    font-size: clamp(11px, 3.1vw, 13px) !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .resume-close-button {
+    position: static !important;
+    inset: auto !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 var(--modal-close-size, 44px) !important;
+    width: var(--modal-close-size, 44px) !important;
+    min-width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+    min-height: var(--modal-close-size, 44px) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+}

@@ -1,0 +1,60 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button {
+  min-height: 48px !important;
+  color: #472717 !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+  filter: drop-shadow(3px 4px 0 rgba(47, 20, 13, 0.62)) !important;
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 160ms ease-out !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button::before {
+  inset: 0 !important;
+  background: var(--shop-sign-image) center / contain no-repeat !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  transform: scaleX(var(--shop-sign-image-scale-x)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button::after {
+  content: none !important;
+  background: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button > span {
+  transform: translateY(-3px) !important;
+  text-shadow:
+    0 1px 0 rgba(255, 229, 151, 0.72),
+    1px 2px 0 rgba(87, 43, 20, 0.22) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:focus-visible {
+  background: transparent !important;
+  transform: translateY(-1px) rotate(-1deg) !important;
+  filter: brightness(1.04) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:active {
+  transform: translateY(2px) rotate(0.5deg) !important;
+  filter:
+    brightness(0.97)
+    drop-shadow(1px 2px 0 rgba(47, 20, 13, 0.62)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button {
+    transition: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-switch-button:active {
+    transform: none !important;
+  }
+}

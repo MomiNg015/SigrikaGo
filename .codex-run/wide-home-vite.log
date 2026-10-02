@@ -1,0 +1,87 @@
+
+> sigrika-go@0.1.0 dev:client
+> vite --host 0.0.0.0 --port 5175
+
+
+  VITE v6.4.3  ready in 843 ms
+
+  ➜  Local:   http://localhost:5175/
+  ➜  Network: http://192.168.1.9:5175/
+15:06:00 [vite] (client) hmr update /src/home/components/HomeStage.jsx, /src/styles.css
+15:06:00 [vite] (client) hmr update /src/styles.css
+15:06:00 [vite] (client) page reload src/home/components/PlayerPlaque.dom.test.jsx
+15:06:00 [vite] (client) page reload src/home/components/HomeStage.dom.test.jsx
+15:06:00 [vite] (client) page reload src/styles/cssLayerInventory.js
+15:06:12 [vite] (client) page reload docs/system-design.html
+15:08:17 [vite] (client) page reload docs/system-design.html
+15:15:13 [vite] (client) page reload .codex-run/guided-button-redesign.html
+15:16:44 [vite] (client) hmr update /src/styles.css
+15:16:44 [vite] (client) page reload src/tutorial/TutorialBattleScreen.jsx
+15:16:44 [vite] (client) page reload src/modals/StoryPlayerModal.jsx
+15:17:37 [vite] (client) hmr update /src/styles.css
+15:17:37 [vite] (client) page reload src/modals/StoryPlayerModal.jsx
+15:17:37 [vite] (client) page reload src/tutorial/TutorialBattleScreen.jsx
+15:17:37 [vite] (client) page reload src/styles/cssLayerInventory.js
+15:17:38 [vite] (client) page reload docs/system-design.html
+15:18:28 [vite] (client) page reload .codex-run/guided-actual.html
+15:19:26 [vite] (client) page reload docs/system-design.html
+15:19:37 [vite] (client) hmr update /src/styles.css
+15:19:38 [vite] (client) page reload src/styles/cssLayerInventory.js
+15:52:06 [vite] (client) hmr update /src/styles.css
+15:52:06 [vite] (client) page reload src/styles/cssLayerInventory.js
+15:52:08 [vite] (client) page reload docs/system-design.html
+15:52:49 [vite] (client) page reload .codex-run/guided-actual.jsx
+16:13:37 [vite] (client) hmr update /src/styles.css
+16:13:37 [vite] (client) hmr update /src/styles.css
+16:13:37 [vite] (client) page reload src/modals/OnboardingStoryModal.test.jsx
+16:13:38 [vite] (client) page reload src/styles/cssLayerInventory.js
+16:13:39 [vite] (client) page reload docs/system-design.html
+16:14:24 [vite] (client) page reload .codex-run/story-spacing.html
+16:19:54 [vite] (client) hmr update /src/styles.css
+16:20:27 [vite] (client) page reload .codex-run/story-spacing.jsx
+16:20:30 [vite] (client) page reload docs/system-design.html
+16:28:28 [vite] (client) hmr update /@fs/C:\codex\SigrikaGo\src\modals\StoryPlayerModal.jsx, /src/styles.css
+16:28:28 [vite] (client) hmr update /@fs/C:\codex\SigrikaGo\src\tutorial\TutorialBattleScreen.jsx, /src/styles.css
+16:28:29 [vite] (client) page reload docs/system-design.html
+16:46:27 [vite] (client) hmr update /@fs/C:\codex\SigrikaGo\src\modals\ProfileResumeView.jsx, /src/styles.css
+16:46:27 [vite] (client) hmr update /src/styles.css
+16:46:28 [vite] (client) page reload src/modals/ProfileResumeView.dom.test.jsx
+16:46:28 [vite] (client) page reload src/styles/cssLayerInventory.js
+16:46:30 [vite] (client) page reload docs/system-design.html
+16:46:31 [vite] (client) hmr invalidate /@fs/C:\codex\SigrikaGo\src\modals\ProfileResumeView.jsx Could not Fast Refresh ("PROFILE_RESUME_MODE_ORDER" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+16:46:31 [vite] (client) hmr update /src/styles.css, /@fs/C:\codex\SigrikaGo\src\modals\UserProfileCard.jsx
+16:46:32 [vite] (client) hmr invalidate /@fs/C:\codex\SigrikaGo\src\modals\UserProfileCard.jsx Could not Fast Refresh ("characterRecordColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+16:46:32 [vite] (client) hmr update /src/styles.css, /@fs/C:\codex\SigrikaGo\src\room\RoomPeopleList.jsx
+16:46:32 [vite] (client) hmr invalidate /@fs/C:\codex\SigrikaGo\src\room\RoomPeopleList.jsx Could not Fast Refresh ("areRoomPeopleListPropsEqual" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+16:46:32 [vite] (client) hmr update /src/styles.css, /@fs/C:\codex\SigrikaGo\src\room\RoomBattleStage.jsx
+16:47:13 [vite] (client) page reload .codex-run/empty-card.html
+16:57:15 [vite] (client) hmr update /src/styles.css
+16:57:17 [vite] (client) page reload src/styles/cssLayerInventory.js
+16:57:18 [vite] (client) page reload docs/system-design.html
+16:58:02 [vite] (client) hmr update /src/styles.css
+16:58:04 [vite] (client) page reload .codex-run/summary-card.html
+16:58:27 [vite] (client) page reload src/styles/cssLayerInventory.js
+17:57:42 [vite] http proxy error: /api/auth/refresh
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1193:18)
+    at afterConnectMultiple (node:net:1783:7)
+17:57:42 [vite] http proxy error: /api/site-settings
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1193:18)
+    at afterConnectMultiple (node:net:1783:7)
+17:59:21 [vite] (client) page reload .codex-run/audit-a.html
+17:59:40 [vite] (client) page reload .codex-run/beauty-b.html
+18:02:18 [vite] (client) page reload .codex-run/beauty-b-extra.html
+18:43:56 [vite] (client) hmr update /src/styles.css
+18:43:56 [vite] (client) hmr update /src/styles.css
+18:43:56 [vite] (client) hmr update /src/styles.css
+18:43:56 [vite] (client) hmr update /@fs/C:\codex\SigrikaGo\src\modals\SettingsModal.jsx, /src/styles.css
+18:45:11 [vite] (client) hmr update /src/styles.css
+18:45:11 [vite] (client) hmr update /src/styles.css
+18:45:11 [vite] (client) hmr update /src/styles.css
+18:45:50 [vite] (client) hmr update /src/styles.css
+18:45:50 [vite] (client) hmr update /src/styles.css
+18:46:24 [vite] (client) hmr update /@fs/C:\codex\SigrikaGo\src\modals\PersonalizationModal.jsx, /src/styles.css
+18:46:24 [vite] (client) hmr update /src/styles.css
+18:48:22 [vite] (client) hmr update /src/styles.css
+18:48:22 [vite] (client) hmr update /src/styles.css

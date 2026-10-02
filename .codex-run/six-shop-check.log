@@ -1,0 +1,18 @@
+1440 {
+  text: '你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？',
+  width: 340,
+  height: 149.140625,
+  padding: '21px 27px 39px',
+  font: '15px',
+  lineHeight: '21.75px',
+  overflow: 'visible'
+}
+390 {
+  text: '欢迎。请先随意看看，不必急着开口。',
+  width: 224.4375,
+  height: 40,
+  padding: '13px 22px 27px',
+  font: '13px',
+  lineHeight: '16.9px',
+  overflow: 'visible'
+}

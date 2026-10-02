@@ -1,0 +1,45 @@
+.app-shell.player-theme-enabled.theme-bright-school .timer-track {
+  display: block !important;
+  height: 10px !important;
+  background: #fff9ed !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+  margin-top: 6px !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .timer-track span {
+  display: block !important;
+  height: 100% !important;
+  background: #ff9ebb !important;
+  box-shadow: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .board-stage::before,
+.app-shell.player-theme-enabled.theme-bright-school .player-info::before {
+  content: none !important;
+  display: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .skill-chip,
+.app-shell.player-theme-enabled.theme-bright-school .action-bar .skill-action,
+.app-shell.player-theme-enabled.theme-bright-school .action-bar .skill-action.active {
+  background: linear-gradient(135deg, #ff9ebb, #9ad3de) !important;
+  color: #4a3736 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  clip-path: none !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  animation: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .skill-chip::after {
+  display: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .action-bar,
+.app-shell.player-theme-enabled.theme-bright-school .action-bar button,
+.app-shell.player-theme-enabled.theme-bright-school .decision-actions button {
+  transform: none !important;
+  clip-path: none !important;
+  border-radius: 12px !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .action-bar button::before {
+  display: none !important;
+}

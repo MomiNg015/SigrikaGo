@@ -1,0 +1,6 @@
+/* Static gallery parity polish. Theme-specific polish now lives in the files below. */
+@import "./themes/shared.css";
+@import "./themes/isolation.css";
+@import "./themes/theme-components.css";
+@import "./themes/bright-school.css";
+@import "./mobile-adaptive.css";

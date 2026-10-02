@@ -1,0 +1,105 @@
+{
+  rect: {
+    x: 1289.953125,
+    y: 142,
+    width: 97.90625,
+    height: 179.625,
+    top: 142,
+    right: 1387.859375,
+    bottom: 321.625,
+    left: 1289.953125
+  },
+  styles: {
+    width: '97.9062px',
+    left: '5.85938px',
+    right: '-5.85938px',
+    top: '-10px',
+    transform: 'none',
+    maxWidth: '100%',
+    variable: 'clamp(210px, 19vw, 260px)'
+  },
+  matches: [
+    {
+      selector: '.home-player-zone',
+      css: 'position: absolute; left: 2%; top: 0px; width: 36%; height: 15%; min-width: 0px; min-height: 0px; display: flex; align-items: center; justify-content: flex-start; padding: 0px; border: 0px; border-radius: 0px; background: transparent; box-shadow: none; overflow: hidden;'
+    },
+    {
+      selector: '.home-player-zone, .house-manual-entry, .home-match-feature, .home-grid-featured > .home-utility-grid',
+      css: 'position: static; left: auto; top: auto; bottom: auto;'
+    },
+    {
+      selector: '.home-player-zone',
+      css: 'grid-area: player; width: 100%; height: auto; align-self: start;'
+    },
+    {
+      selector: '.home-player-zone, .house-manual-entry, .home-match-feature, .home-grid-featured > .home-utility-grid',
+      css: 'position: static; inset: auto;'
+    },
+    {
+      selector: '.home-player-zone',
+      css: 'grid-area: player; width: 100%; height: auto; align-self: start;'
+    },
+    { selector: '.home-player-zone', css: 'width: min(100%, 380px);' },
+    {
+      selector: '.home-player-zone, .house-manual-entry, .home-match-feature, .home-grid-featured > .home-utility-grid',
+      css: 'position: static; inset: auto;'
+    },
+    {
+      selector: '.home-player-zone',
+      css: 'grid-area: player; width: min(520px, 100%); height: auto; overflow: visible;'
+    },
+    { selector: '.home-player-zone', css: 'width: 100%;' },
+    {
+      selector: 'html:has(.app-shell.player-theme-enabled.theme-bright-school), body:has(.app-shell.player-theme-enabled.theme-bright-school), .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *',
+      css: 'scrollbar-width: thin !important; scrollbar-color: rgb(213, 140, 171) rgb(255, 246, 221) !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'position: absolute !important; top: clamp(-88px, -6vw, -54px) !important; left: clamp(22px, 4.6vw, 64px) !important; width: clamp(390px, 36vw, 470px) !important; max-width: none !important; height: auto !important; z-index: 40 !important; overflow: visible !important; pointer-events: auto !important; transform: rotate(-0.7deg) !important; transform-origin: 44% -80px !important; filter: drop-shadow(rgba(61, 43, 37, 0.14) 0px 18px 18px) !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'left: auto !important; width: 100% !important; transform-origin: center center !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'top: -62px !important; left: 50% !important; width: min(360px, 100% - 26px) !important; max-width: calc(100% - 26px) !important; transform: translateX(-50%) rotate(-0.5deg) !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen :where(*)',
+      css: 'max-width: 100% !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'position: relative !important; top: auto !important; left: auto !important; grid-area: player !important; width: 100% !important; max-width: 100% !important; justify-self: stretch !important; transform: rotate(-0.4deg) !important; filter: drop-shadow(rgba(61, 43, 37, 0.12) 0px 10px 10px) !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid',
+      css: 'position: static !important; inset: auto !important; min-width: 0px !important; transform: none !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'width: 100% !important; max-width: 100% !important; filter: none !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone',
+      css: 'grid-area: player !important; width: 100% !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid',
+      css: 'position: static !important; inset: auto !important; width: 100% !important; max-width: 100% !important; min-width: 0px !important; transform: none !important; justify-self: stretch !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid',
+      css: 'position: static !important; inset: auto !important; width: 100% !important; max-width: 100% !important; min-width: 0px !important; transform: none !important; justify-self: stretch !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone.home-student-id-zone',
+      css: 'position: absolute !important; inset: -10px auto auto 6% !important; width: var(--home-hanging-id-width) !important; max-width: 100% !important; height: auto !important; place-self: center !important; transform: none !important; filter: drop-shadow(rgba(61, 43, 37, 0.18) 2px 4px 2px) !important; padding: 0px !important; border: 0px !important; border-radius: 0px !important; background: none !important; box-shadow: none !important;'
+    },
+    {
+      selector: '.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone.home-student-id-zone',
+      css: 'inset: -4px auto auto 6% !important;'
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+vite v6.4.3 building for production...
+transforming...
+
+__VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+__VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 1765 modules transformed.
+rendering chunks...
+computing gzip size...
+.codex-run/friends-dist/.codex-run/audit-a.html              0.28 kB │ gzip:   0.20 kB
+.codex-run/friends-dist/assets/audit-a-C4a4OGj_.css      1,202.58 kB │ gzip: 169.82 kB
+.codex-run/friends-dist/assets/react-vendor-BgOYjjRM.js    193.70 kB │ gzip:  60.50 kB
+.codex-run/friends-dist/assets/audit-a-cAuKlxLx.js         231.47 kB │ gzip:  70.43 kB
+✓ built in 13.16s
+PASS 1440 { parts: [ 390, 459, 525, 1003 ], width: 760, overflow: 0 }
+PASS 390 { parts: [ 57, 111, 149, 293 ], width: 356, overflow: 0 }
+PASS 320 { parts: [ 57, 111, 149, 223 ], width: 286, overflow: 0 }
+PASS long list { scrollable: true, gutter: 14 }
+PASS empty

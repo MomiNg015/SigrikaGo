@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec index and checklist for reviewing app-shell changes."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Review component boundary changes against composition and no-visual-migration rules."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Review overlay, match, room, and socket-sensitive app-shell state contracts."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Review targeted tests, docs generation, and handoff verification expectations."}

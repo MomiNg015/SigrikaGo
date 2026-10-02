@@ -1,0 +1,25 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side {
+  background: #1f1714 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 3px solid #1f1714 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side :where(span, strong, small) {
+  color: #ffffff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #1f1714 !important;
+  border: 3px solid #1f1714 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side :where(span, strong, small) {
+  color: #1f1714 !important;
+}

@@ -1,0 +1,73 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 2 failed) 759ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 162ms
+     → totalFiles: expected 691 to be less than or equal to 687
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 141ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 157ms
+   × CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 157ms
+     → expected [ …(2) ] to deeply equal []
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 39ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 3ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 1ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 12ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 56ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 1ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 1ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 9ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 3ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 6ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 2ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 691 to be less than or equal to 687
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126| 
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > registers responsive breakpoint families used by current CSS media queries
+AssertionError: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "mobile-adaptive/window-bookmark-mobile.css: (max-width: 360px)",
++   "mobile-adaptive/window-bookmark-paper.css: (hover: hover)",
++ ]
+
+ ❯ src/styles/cssLayerInventory.test.js:197:31
+    195|       "regular desktop"
+    196|     ]);
+    197|     expect(unexpectedQueries).toEqual([]);
+       |                               ^
+    198|   });
+    199| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 18 passed (20)
+   Start at  09:33:53
+   Duration  4.11s (transform 100ms, setup 0ms, collect 128ms, tests 759ms, environment 0ms, prepare 128ms)
+

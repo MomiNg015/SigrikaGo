@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/shared/rankProgression.test.js src/shared/ratingRules.test.js src/shared/resultRewards.test.js server/roomRewards.test.js server/roomResultPersistence.test.js server/rooms.test.js server/db.test.js server/leaderboard.test.js server/adminRoutes.test.js server/serverStartup.test.js src/modals/ResumeModal.dom.test.jsx src/modals/LeaderboardModal.test.jsx src/room/PlayerInfo.test.js src/room/RoomPeopleList.test.js src/modals/GameLifecycleModals.test.js src/modals/FeedbackModals.test.js --reporter=json --outputFile=.codex-run/rank-stars-focused.json
+
+JSON report written to C:/codex/SigrikaGo/.codex-run/rank-stars-focused.json

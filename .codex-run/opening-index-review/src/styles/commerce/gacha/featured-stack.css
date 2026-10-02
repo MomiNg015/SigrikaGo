@@ -1,0 +1,31 @@
+.gacha-featured-stack {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 36px;
+  align-items: center;
+  justify-content: start;
+  min-width: 58px;
+}
+
+.gacha-featured-stack img {
+  width: 58px;
+  height: 62px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(42, 31, 18, 0.16));
+}
+
+.gacha-featured-stack img + img {
+  margin-left: -24px;
+}
+
+.gacha-ticket-tab span,
+.gacha-ticket-tab small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gacha-ticket-tab span {
+  font-weight: 900;
+}

@@ -1,0 +1,39 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item {
+  width: var(--shop-card-width) !important;
+  height: var(--shop-card-height) !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 38px !important;
+  gap: 6px !important;
+  padding: 10px !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.78) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item-detail-trigger {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: 112px 28px 36px !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item-detail-trigger > img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item-detail-trigger > svg,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item-detail-trigger .stone-decoration-preview {
+  height: 104px !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+}

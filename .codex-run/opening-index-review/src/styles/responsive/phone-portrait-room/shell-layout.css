@@ -1,0 +1,73 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen {
+    --mobile-room-target-max-height: 640px;
+    height: 100dvh;
+    min-height: 0;
+    padding: 4px 0;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-battle-layout {
+    grid-template-areas:
+      "opponent"
+      "board"
+      "self"
+      "tabs";
+    grid-template-rows: minmax(0, 64px) minmax(0, auto) minmax(0, 64px) auto;
+    align-content: start;
+    gap: 8px;
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-opponent-slot,
+  .mobile-room-screen .mobile-self-slot {
+    min-width: 0;
+    min-height: 0;
+    overflow: visible;
+    z-index: 4;
+  }
+
+  .mobile-room-screen .mobile-board-slot {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .mobile-room-screen .mobile-board-slot {
+    align-self: center;
+    justify-content: center;
+  }
+
+  .mobile-room-screen .room-title-stack {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .mobile-room-screen .room-info-tag.close-countdown {
+    display: block;
+  }
+
+  .mobile-room-screen .room-toggles {
+    gap: 5px;
+  }
+
+  .mobile-room-screen .room-toggles .toggle {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    justify-content: center;
+    gap: 0;
+    line-height: 0;
+  }
+
+  .mobile-room-screen .room-toggles .toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+}

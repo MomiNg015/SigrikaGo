@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 6ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 78ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 832ms
+
+ Test Files  3 passed (3)
+      Tests  27 passed (27)
+   Start at  17:17:06
+   Duration  3.68s (transform 150ms, setup 0ms, collect 367ms, tests 916ms, environment 1ms, prepare 373ms)
+

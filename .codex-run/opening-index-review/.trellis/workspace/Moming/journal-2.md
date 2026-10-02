@@ -1,0 +1,1990 @@
+# Journal - Moming (Part 2)
+
+> Continuation from `journal-1.md` (archived at ~2000 lines)
+> Started: 2026-07-23
+
+---
+
+
+
+## Session 61: Polish replay practice watch and shop UI
+
+**Date**: 2026-07-23
+**Task**: Polish replay practice watch and shop UI
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Removed terminal replay/result copy, expanded Zhunshibao entry, fixed its hover transform at the final theme owner, added watch-mode room counts and tab typography, renamed the practice rank, enlarged Zahira dialogue, updated specs/docs, and passed npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `39f48a7b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 62: Align Zhunshibao practice entry shadow
+
+**Date**: 2026-07-23
+**Task**: Align Zhunshibao practice entry shadow
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+Matched the Zhunshibao practice badge to the Bright School home utility hard-shadow contract for rest, hover, focus, and active states; added regression coverage, updated CSS debt baseline, specs, and system design, and passed npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f2e37c98` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 63: 桌面端主界面零视觉性能优化与登录后资源预载
+
+**Date**: 2026-07-23
+**Task**: 桌面端主界面零视觉性能优化与登录后资源预载
+**Branch**: `codex/human-vs-ai`
+
+### Summary
+
+保留现有视觉和动效，拆分主界面位移与滤镜合成层并稳定路由；登录后加载页以 6 并发预载当前账号可访问的大部分图片、音乐与角色音声，保留单资源超时和房间/回放资源按需加载；npm run check 全量通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `58e3001f` | (see git log) |
+| `78110ec0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 64: 修复首页模式与准时宝陪练启动无响应
+
+**Date**: 2026-07-23
+**Task**: 修复首页模式与准时宝陪练启动无响应
+**Branch**: `codex/fix-practice-start`
+
+### Summary
+
+修复 HomeRoute memo 边界对 onStartMatch、onStartPractice、onLogout、onSelectCharacter 的属性命名断链；新增三种匹配、准时宝陪练、退出与角色选择的回调透传回归测试，保留首页渲染稳定化，并通过 2148 项测试和完整质量门禁。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `15e951c0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 65: Add Lynae rainbow candy story and voice effect
+
+**Date**: 2026-07-23
+**Task**: Add Lynae rainbow candy story and voice effect
+**Branch**: `master`
+
+### Summary
+
+Added Lynae accepted/rejected rainbow candy story, 35 percent rejection handling, persistent contrary-voice effect with deterministic event swaps, valid-game cleanup and result snapshot, deployment snapshot, tests, and system design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `439df835` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 66: Allow Rainbow Candy On Lynae
+
+**Date**: 2026-07-23
+**Task**: Allow Rainbow Candy On Lynae
+**Branch**: `master`
+
+### Summary
+
+Fixed the warehouse candy target whitelist drift by sharing supported target rules across frontend and backend, added Lynae target regression coverage, synchronized the candy contract and system-design docs, and passed the full project check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `da66d4ae` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 67: Costume portrait calibration and dynamic shop stage
+
+**Date**: 2026-07-24
+**Task**: Costume portrait calibration and dynamic shop stage
+**Branch**: `master`
+
+### Summary
+
+Added persisted costume portrait framing across admin, rooms, results and replays; replaced the costume shop fixed slots with Zahira's measured count-aware layout and whole-card rotation/float motion; updated tests, specs, and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `72702e97` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 68: Normalize character portrait assets
+
+**Date**: 2026-07-24
+**Task**: Normalize character portrait assets
+**Branch**: `codex/normalize-character-portraits`
+
+### Summary
+
+Added catalog-driven 900x900 portrait normalization, migrated built-in character and costume URLs safely, and added validation, tests, and system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `89b899d4ceb7b4d748ab80b8ae935bf5981239ef` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 69: Preserve Denia candy portrait animation
+
+**Date**: 2026-07-24
+**Task**: Preserve Denia candy portrait animation
+**Branch**: `codex/normalize-character-portraits`
+
+### Summary
+
+Restored the 16-frame Denia candy WebP and made portrait normalization preserve animated frame geometry, timing, loops, and required-animation validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9114100d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 70: Polish costume shop purchase flow
+
+**Date**: 2026-07-24
+**Task**: Polish costume shop purchase flow
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Unified Residual Star costume details with Zahira's structure, added success-only equip confirmation, preserved both shop mascots' feedback until explicit actions, brightened price tags, and validated desktop/mobile behavior.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a86b83e6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 71: 修正服装详情与后台保存
+
+**Date**: 2026-07-24
+**Task**: 修正服装详情与后台保存
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+统一残星会服装详情标签、价格布局和深红金色配色；修复后台服装编辑器误用角色 slug 字段导致保存失败，并补充交互、服务端测试与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b58054a9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 72: Zahira shop crayon backgrounds
+
+**Date**: 2026-07-25
+**Task**: Zahira shop crayon backgrounds
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Added independent desktop and portrait mobile crayon backgrounds for Zahira shop, a Zahira-only header treatment, runtime preload registration, responsive CSS contracts, browser QA, tests, and system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d4185bd7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 73: Fractsidus costume shop crayon backgrounds
+
+**Date**: 2026-07-26
+**Task**: Fractsidus costume shop crayon backgrounds
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Researched Fractsidus visual language, generated and integrated independent desktop/mobile deep-red crayon stage backgrounds, registered preload assets, fixed Bright School mobile background specificity, and verified 1440x900, 375x812, and 375x600 layouts plus the full repository check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `234ccc54` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 74: Style Fractsidus shop header
+
+**Date**: 2026-07-26
+**Task**: Style Fractsidus shop header
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Added a deep-red crayon curtain header for the Fractsidus costume shop, preserved 44px mobile controls, added CSS contracts, synced system design docs, and visually verified desktop plus portrait layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `20b232c1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 75: Simplify Zahira shop header and align mobile controls
+
+**Date**: 2026-07-26
+**Task**: Simplify Zahira shop header and align mobile controls
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Replaced Zahira's scene-like header crop with a simple blue-gray to muted-purple color band, fixed the portrait close button to share the refresh button grid center, added CSS contracts, synchronized system-design docs, and verified desktop plus 375x812/375x600 layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d3074297` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 76: Fill shop side gutters
+
+**Date**: 2026-07-26
+**Task**: Fill shop side gutters
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+Removed inherited stable both-edge scrollbar gutters from the fixed shop shell, added regression contracts, verified both stores on desktop and portrait mobile, and synchronized system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ee943db` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 77: 商店切换路标按钮
+
+**Date**: 2026-07-26
+**Task**: 商店切换路标按钮
+**Branch**: `codex/frontend-chores`
+
+### Summary
+
+将扎希拉与残星会商店切换按钮改为左右镜像的蜡笔木制路标，精简店名文案，补齐移动端触控尺寸、主题与 CSS 契约测试，并同步系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cf2e3a04` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 78: 统一角色语音响度并修复准时宝 TTS
+
+**Date**: 2026-07-26
+**Task**: 统一角色语音响度并修复准时宝 TTS
+**Branch**: `codex/audio-work`
+
+### Summary
+
+批量校准 187 条角色语音，补齐仇远静态系统语音，移除运行时 RMS 修正，并让无角色的准时宝读秒保持独立 zh-CN TTS 身份而不回退到西格莉卡。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `00d579c2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 79: Use GNU Go for Zhunshibao difficulty tiers
+
+**Date**: 2026-07-29
+**Task**: Use GNU Go for Zhunshibao difficulty tiers
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Replaced custom practice move selection with a local single-slot GNU Go GTP adapter, retained beginner/intermediate/advanced UI tiers at engine levels 1/5/10, added readiness and deployment checks, documented the runtime contract, and covered engine failures without a homemade fallback.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8a221237` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 80: 修复 Windows 本地 GNU Go 发现
+
+**Date**: 2026-07-29
+**Task**: 修复 Windows 本地 GNU Go 发现
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Windows 后端现按环境变量、用户目录、Program Files 和 PATH 发现 GNU Go；本机 GNU Go 3.8、GTP 落子、适配器测试、构建和生产配置均已验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a0ff470b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 81: Restore beginner Zhunshibao practice heuristic
+
+**Date**: 2026-07-29
+**Task**: Restore beginner Zhunshibao practice heuristic
+**Branch**: `codex/zhunshibao-ai`
+
+### Summary
+
+Restored the original local heuristic for public beginner practice while keeping GNU Go for intermediate and advanced, updated the difficulty dialog copy, added strategy-specific coverage, and synchronized system and deployment documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2e523317` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 82: 修复生产部署样式与后台同步
+
+**Date**: 2026-07-30
+**Task**: 修复生产部署样式与后台同步
+**Branch**: `master`
+
+### Summary
+
+修复生产构建弹窗遮罩模糊，增加构建 CSS 合同检查；在后台默认快照同步前执行幂等 SQLite schema 兼容；刷新角色 illust 与服装后台默认快照，并更新部署文档和系统设计。完整 npm run check 通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0fac40ff` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 83: Loading and spectator polish
+
+**Date**: 2026-07-30
+**Task**: Loading and spectator polish
+**Branch**: `master`
+
+### Summary
+
+Fixed tutorial loading progress initialization, removed Baconbits from shared loading screens, and corrected spectator mode count spacing and badge shape.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c3ff926e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 84: Polish spectator tabs and leaderboard ranks
+
+**Date**: 2026-07-31
+**Task**: Polish spectator tabs and leaderboard ranks
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Made the watch-list mode wrapper transparent, centered tab contents, removed leaderboard rank-number fills across Bright School desktop/mobile winners, and added tests, browser QA, specs, and system-design updates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2013d1df` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 85: Fix pending skill state leaking across rooms
+
+**Date**: 2026-07-31
+**Task**: Fix pending skill state leaking across rooms
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Scoped the client pending-skill targeting draft to room code and role, cleared it before resign actions, added hook and resignation regressions, and synchronized the state-management spec and system design.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `50f44288` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 86: Simplify utility window headers
+
+**Date**: 2026-07-31
+**Task**: Simplify utility window headers
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Removed warehouse and leaderboard header icon/subtitle chrome, added the Social System friends header, made the friends tab wrapper transparent and borderless, and updated responsive CSS, regression tests, and system-design contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `09e40462` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 87: Tint Bright School social and record cards
+
+**Date**: 2026-07-31
+**Task**: Tint Bright School social and record cards
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Applied distinct mist-blue and wheat Bright School card surfaces for social users and character records, darkened positive record text for WCAG AA contrast, added theme contract coverage, and synchronized system design docs. Lint, 2298 tests, CSS inventory, portrait checks, build, built CSS contracts, and production config passed; the broad gate remains blocked only by an unrelated stale siteSettings admin snapshot.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6976a8b5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 88: 统一履历与用户详情面板配色
+
+**Date**: 2026-07-31
+**Task**: 统一履历与用户详情面板配色
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Bright School 履历与用户详细信息共用统计卡配色，并统一两处角色战绩卡的浅麦黄与正向数值色；补充主题合同、前端规范和系统设计文档。自动化测试、lint、构建、产物 CSS 与生产配置通过；总门禁仅被既有 siteSettings 后台快照漂移截断。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aec73d4d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 89: 角色主题色战绩卡
+
+**Date**: 2026-07-31
+**Task**: 角色主题色战绩卡
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+履历与用户详情的角色战绩卡统一读取当前角色目录 palette，以 18% 混白生成浅色卡面；补齐数组角色目录查找、可读性颜色、主题契约测试及系统设计文档。lint、构建、2299 项测试、构建 CSS 合同和生产配置检查均通过；完整门禁仅被既有 siteSettings 管理快照漂移中断，未改动该无关快照。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9f8934c5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 90: 修复积分说明气泡文字溢出
+
+**Date**: 2026-07-31
+**Task**: 修复积分说明气泡文字溢出
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+修复履历积分与段位问号气泡继承统计卡 word-break: keep-all 后中文整句越界的问题；气泡显式恢复正常换行并保留极端长串应急断行，补充同规则块回归断言、前端规范及系统设计。135 项聚焦测试和完整 2299 项测试通过，lint、生产构建、构建 CSS 合同、生产配置与文档生成通过；完整门禁仅被既有 siteSettings 管理快照漂移中断，未改动该无关快照。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e4f3e847` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 91: 商店金币移入页头
+
+**Date**: 2026-07-31
+**Task**: 商店金币移入页头
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+移除扎希拉与残星会接待区的钱包图片和重复余额，将当前激活商店的实时金币统一放到页头关闭按钮左侧；同步桌面/竖屏样式、预加载契约、测试与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `83c3205e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 92: 商店路牌固定到底角
+
+**Date**: 2026-07-31
+**Task**: 商店路牌固定到底角
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+将扎希拉页切换路牌固定在左下、残星会页路牌固定在右下，桌面使用14px统一边距、竖屏使用8px统一边距；同步CSS回归测试、Trellis契约与系统设计文档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5363ceb3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 93: 商店金币复用履历样式
+
+**Date**: 2026-07-31
+**Task**: 商店金币复用履历样式
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+商店页头金币余额改为复用履历的 shop-wallet 视觉契约与 CircleDollarSign 图标，移除独立纯色覆盖和可见单位；同步移动端规则、回归测试、前端规范及系统设计文档。定向 191 条与全量 2299 条测试通过，lint、构建、built CSS 和生产配置检查通过；仓库总检查仅被既有 siteSettings 后台快照过期拦住。按用户要求未做视觉检查。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `246271f5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 94: Refine responsive login mascot composition
+
+**Date**: 2026-07-31
+**Task**: Refine responsive login mascot composition
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Replaced the login mascot, grouped it with the auth panel as one responsive composition, added a layered divider shelf with calibrated alpha clearance, covered desktop/mobile contracts with tests, and synchronized frontend/system-design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9e08f4bc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 95: 登录页角色立绘预热
+
+**Date**: 2026-08-01
+**Task**: 登录页角色立绘预热
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+登录页后台低并发预热基础角色立绘，登录后加载页优先使用已解码就绪角色；补充测试、系统设计和前端质量规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `304bde7d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 96: Hand-painted character music radio player
+
+**Date**: 2026-08-01
+**Task**: Hand-painted character music radio player
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Generated and integrated a transparent Bright School academy radio shell, aligned live playback controls and clipped marquee titles to the painted display, added critical image preloading and regressions for play/pause state and long-to-short title scrolling, and synchronized specs/system design.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `031cfecd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 97: 修复加载页与角色音乐按钮
+
+**Date**: 2026-08-02
+**Task**: 修复加载页与角色音乐按钮
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+统一加载提示 Tip 前缀，修复移动端橘子末端压扁，并提升角色详情播放器播放暂停图标对比度且移除悬停聚焦按下圆形底。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d9484f1d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 98: Fix music shop metadata
+
+**Date**: 2026-08-03
+**Task**: Fix music shop metadata
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Corrected player music product category and ownership metadata, replaced corrupted admin music labels with a shared category mapping, preserved category music on save, added regression tests, and synchronized system design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e5a6131d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 99: Add recruitment magic-clock booster
+
+**Date**: 2026-08-03
+**Task**: Add recruitment magic-clock booster
+**Branch**: `codex/frontend-work`
+
+### Summary
+
+Added the mail-distributable magic-clock item, server-authoritative one-time recruitment fast-forward transaction, 3-second motion plus 3-2-1 tail, stoppable 3-second SFX, warehouse/shop rules, persistence, docs, tests, and desktop/portrait visual QA.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a8b74b3f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 100: Corrupted Sigrika BGM
+
+**Date**: 2026-08-07
+**Task**: Corrupted Sigrika BGM
+**Branch**: `codex/mail-ui-polish`
+
+### Summary
+
+Selected the light corrupted home mix and detuned-shadow duel mix, generated final loop-safe OGG assets, integrated resolver and preload behavior, updated tests and system design, and verified lint, tests, build, and audio boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `57c3d770` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 101: Allow desktop phone-window emulation
+
+**Date**: 2026-08-13
+**Task**: Allow desktop phone-window emulation
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Added the 1440x768 desktop viewport gate, then corrected phone-layout classification so desktop windows intentionally resized into the bounded common-phone viewport range remain playable while tablet identities stay excluded.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `18601b7a` | (see git log) |
+| `d0291efc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 102: Make viewport gate device-agnostic
+
+**Date**: 2026-08-14
+**Task**: Make viewport gate device-agnostic
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Changed the application shell gate to select compact or full-desktop layout solely from current viewport geometry, removed UA/touch/tablet detection, removed the secondary minimum-size copy, and changed the notice to 请用合适尺寸窗口进行游玩.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9f5f5573` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 103: Finalize and archive all pending work
+
+**Date**: 2026-08-14
+**Task**: Finalize and archive all pending work
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Validated and committed the selected Sigrika, Danya, and Aemeath achievement nameplates with runtime motion, username readability, tests, specs, and system-design sync; exported pending non-user admin defaults; archived all 41 active Trellis tasks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `72755bb7` | (see git log) |
+| `b724a451` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 104: Polish shared profile dossier portraits
+
+**Date**: 2026-08-24
+**Task**: Polish shared profile dossier portraits
+**Branch**: `codex/nameplate-fixes`
+
+### Summary
+
+Completed the shared resume/profile dossier redesign and follow-up fixes: transparent structural surfaces, standalone replay dialog, stable long-list footer, aligned header controls, and borderless transparent character-record portrait masks with centered 80% contain sizing. Verified focused contracts, lint, production build, built CSS, docs generation, and six desktop/mobile viewport stability coverage.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `07201a07` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 105: Interaction and modal motion polish
+
+**Date**: 2026-08-27
+**Task**: Interaction and modal motion polish
+**Branch**: `codex/animation-polish-audit-fixes`
+
+### Summary
+
+Completed three animation-audit batches and added the first desktop modal-entry motion family with browser QA, style contracts, system-design documentation, and a full npm run check pass.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `899c5e14` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 106: 首页挂扣学生证
+
+**Date**: 2026-09-16
+**Task**: 首页挂扣学生证
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+使用用户确认的几何学院风透明挂扣学生证，右侧显示动态角色立绘、下方显示用户名；移除首页段位与成就装饰。完成桌面及360/390/412竖屏、长用户名、角色切换、点击与键盘验证。npm run check通过：356文件、2517测试。仅提交本任务代码和文档片段，保留其他WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4c84f002` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 107: Cloud Sigrika candy restriction
+
+**Date**: 2026-09-18
+**Task**: Cloud Sigrika candy restriction
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Production blocks candy use on Sigrika before state changes; warehouse displays server restriction; development and other characters unchanged. 357 test files and 2524 tests passed with two workers; lint, build, asset, snapshot, production configuration and documentation checks passed. No cloud deployment or push performed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `31d64d1c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 108: Profile empty states, guided actions and circular watch counts
+
+**Date**: 2026-09-18
+**Task**: Profile empty states, guided actions and circular watch counts
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Compact empty character records; gold guided actions with animated multicolor rings; non-shrinking circular watch counts. Full check passed with 2526 tests, follow-up 32 focused tests and desktop/portrait browser QA passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a4089eac` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 109: Compact wide desktop home composition
+
+**Date**: 2026-09-18
+**Task**: Compact wide desktop home composition
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Aligned the student ID with the bounded central stage on wide desktop, allowing handbook centering to follow. Verified 2542/1920/1440 desktop and unchanged 390 portrait bounds; npm run check passed with 2527 tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ebdde75e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 110: Soft gold guided reply controls
+
+**Date**: 2026-09-18
+**Task**: Soft gold guided reply controls
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Implemented user-approved soft gold paper buttons, localized edge shimmer, reply glyphs and chevrons. Verified desktop/mobile, submission disabled state and reduced motion; full gate passed, final style/build checks passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c4d90a39` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 111: Guided choice border and responsive sizing
+
+**Date**: 2026-09-18
+**Task**: Guided choice border and responsive sizing
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Set guided borders to 3px; equal-height desktop grids and full-width portrait choices. Verified four viewport widths, 105 focused tests, production build and built-CSS checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a0633cfa` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 112: Story action bottom clearance
+
+**Date**: 2026-09-18
+**Task**: Story action bottom clearance
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Reserved natural action-track height and bounded option scrolling, preserving bottom padding for wrapped replies. Verified real modal desktop, short viewport, portrait and eight-option scrolling; 66 tests and build checks passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `668d1553` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 113: Full-width story continue action
+
+**Date**: 2026-09-18
+**Task**: Full-width story continue action
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Removed obsolete 280px width cap. Real modal desktop/mobile buttons match footer widths with bottom spacing preserved; 28 focused tests passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0190473d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 114: Consistent guided continue icons
+
+**Date**: 2026-09-18
+**Task**: Consistent guided continue icons
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Added the existing outline Play glyph to story continue, preview continue-now and explicit continue choices. Verified actual desktop/mobile rendering and unchanged full-row width/spacing; 36 tests passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fcc42de0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 115: Preserve empty character record cards
+
+**Date**: 2026-09-18
+**Task**: Preserve empty character record cards
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored the shared character-record card shell for empty self and social profiles while retaining compact centered placeholder text and hiding table content. Updated system design and CSS contracts. Verified 70 focused tests, production build, built CSS checks, and desktop/mobile browser layouts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7dd64023` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 116: Unify desktop profile summary cards
+
+**Date**: 2026-09-18
+**Task**: Unify desktop profile summary cards
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Unified desktop card widths, padding and value typography across rank, rating, total games and win rate. Preserved replay action and mobile layout. Verified both contexts at desktop and mobile sizes, 23 focused tests, production build and built CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7cd4ecaf` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 117: Polish six home window issues
+
+**Date**: 2026-09-18
+**Task**: Polish six home window issues
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Completed six approved UI improvements: shop dialogue sizing, audio controls, desktop friend grouping, leaderboard name/rank hierarchy, personalization state markers and auth selected state. Full check passed with 2528 tests; final CSS regression 126 tests and production browser fixtures at 1440, 390 and 360 passed. Updated system design and CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8dbb8c2d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 118: Fix home window shadow clipping
+
+**Date**: 2026-09-18
+**Task**: Fix home window shadow clipping
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored settings scroller gutters and reserved motion/shadow bounds in shop card layout. Inspected 15 real-component views/tabs across desktop and portrait sizes and both scroll endpoints. Added maximum-motion geometry regression; npm run check passed with 2529 tests. Updated system design and CSS contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f11b8de` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 119: Compact friends window
+
+**Date**: 2026-09-18
+**Task**: Compact friends window
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Restored status before portrait, removed friends/blacklist column headings and capped desktop window at 760px. Browser validation passed at desktop and two portrait sizes, including actions, blacklist, empty and long lists with shadow clearance. Full check passed with 2529 tests; docs and CSS contract updated.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9d0c9590` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 120: Center friend status and align mobile rows
+
+**Date**: 2026-09-18
+**Task**: Center friend status and align mobile rows
+**Branch**: `codex/campus-home-handbook-polish`
+
+### Summary
+
+Centered status text on both axes and aligned portrait rows using a fixed status column and left-aligned identity beside the avatar. Verified desktop, 390px and 320px layouts, actions, long lists and shadow gutters. Full check rerun passed all 2529 tests after one transient engine child-process timeout. Updated docs and CSS contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2ed3303a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

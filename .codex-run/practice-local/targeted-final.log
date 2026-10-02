@@ -1,0 +1,30 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/localPracticeEngine.test.js server/practiceBotEngine.test.js server/practiceBotDecision.test.js server/socketPracticeEvents.test.js server/socketEvents.test.js server/socketGuards.test.js server/practiceRoomAutomation.test.js server/roomClockLifecycle.test.js server/roomView.test.js server/captureChallenge.test.js server/roomResultPersistence.test.js src/practice src/app/useMatchActions.test.js server/securityHeaders.test.js scripts/deploymentConfig.test.js docs/systemDesignHtml.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/securityHeaders.test.js (1 test) 4ms
+ ✓ scripts/deploymentConfig.test.js (5 tests) 8ms
+ ✓ server/socketGuards.test.js (8 tests) 13ms
+ ✓ src/practice/practiceEngineClient.test.js (4 tests) 13ms
+ ✓ src/practice/localPracticeController.test.js (4 tests) 17ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 60ms
+ ✓ server/socketPracticeEvents.test.js (12 tests) 15ms
+ ✓ server/roomClockLifecycle.test.js (6 tests) 14ms
+ ✓ server/roomView.test.js (13 tests) 21ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 126ms
+ ✓ src/app/useMatchActions.test.js (6 tests) 12ms
+ ✓ server/roomResultPersistence.test.js (6 tests) 15ms
+ ✓ server/socketEvents.test.js (3 tests) 11ms
+ ✓ server/practiceRoomAutomation.test.js (18 tests) 218ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 874ms
+ ✓ server/captureChallenge.test.js (9 tests) 518ms
+ ✓ server/localPracticeEngine.test.js (9 tests) 1343ms
+
+ Test Files  17 passed (17)
+      Tests  125 passed (125)
+   Start at  09:50:15
+   Duration  4.74s (transform 3.04s, setup 0ms, collect 13.80s, tests 3.28s, environment 5ms, prepare 2.92s)
+

@@ -1,0 +1,227 @@
+import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import FriendsModal from "./FriendsModal.jsx";
+import FriendsList from "./friends/FriendsList.jsx";
+import FriendsOverlays from "./friends/FriendsOverlays.jsx";
+import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
+
+describe("FriendsModal mobile layout", () => {
+  it("normalizes friend search names with the same width budget as registration", () => {
+    expect(normalizeFriendSearchInput("\u4e00\u4e8c\u4e09\u56db\u4e94")).toBe("\u4e00\u4e8c\u4e09\u56db");
+    expect(normalizeFriendSearchInput("Alice_123")).toBe("Alice_12");
+    expect(normalizeFriendSearchInput("\u9732\u9732A_123")).toBe("\u9732\u9732A_12");
+    expect(normalizeFriendSearchInput("bad<script>")).toBe("badscrip");
+  });
+
+  it("renders a social-system header and an explicit close button in the main friends sheet", () => {
+    const html = renderToStaticMarkup(createElement(FriendsModal, {
+      token: "token",
+      socket: null,
+      characters: {},
+      onNotice: () => {},
+      onClose: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("friends-modal-close");
+    expect(html).toContain("aria-label=\"关闭好友窗口\"");
+    expect(html).toContain('<header class="friends-modal-header window-sticker-header">');
+    expect(html).toContain('<span class="window-title-sticker-label">社交系统</span>');
+    expect(html).toContain('/assets/window-titles/friends.webp');
+  });
+
+  it("omits rank and rating from friends and blacklist list rows", () => {
+    const rows = [{
+      id: "user-1",
+      username: "moming",
+      rank: "9段",
+      rating: 1860,
+      status: "online",
+      characterId: "sigrika"
+    }];
+    const renderList = (activeTab) => renderToStaticMarkup(createElement(FriendsList, {
+      actionRow: null,
+      activeTab,
+      characters: {},
+      loading: false,
+      rows,
+      onOpenConfirm: () => {},
+      onOpenProfile: () => {},
+      onRequestMatch: () => {},
+      onToggleAction: () => {}
+    }));
+
+    for (const activeTab of ["friends", "blacklist"]) {
+      const html = renderList(activeTab);
+
+      expect(html).toContain("moming");
+      expect(html).not.toContain("friends-list-heading");
+      expect(html).not.toContain("friend-stats");
+      expect(html).not.toContain("friend-rank");
+      expect(html).not.toContain("friend-rating");
+      expect(html).not.toContain("9段");
+      expect(html).not.toContain("1860分");
+    }
+  });
+
+  it("removes whisper and keeps unavailable friend actions disabled", () => {
+    const rows = [{
+      id: "user-1",
+      username: "moming",
+      rank: "9段",
+      rating: 1860,
+      status: "offline",
+      characterId: "sigrika"
+    }];
+    const html = renderToStaticMarkup(createElement(FriendsList, {
+      actionRow: rows[0],
+      activeTab: "friends",
+      characters: {},
+      loading: false,
+      rows,
+      onOpenConfirm: () => {},
+      onOpenProfile: () => {},
+      onRequestMatch: () => {},
+      onToggleAction: () => {}
+    }));
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const hudFriendCss = readCssWithImports(new URL("../styles/hud-components/hud-hardening.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/surface-contracts.css", import.meta.url));
+    const actionRowBlock = commerceCss.match(/\.friend-action-row\s*\{[^}]+\}/)?.[0] ?? "";
+    const actionButtonBlock = commerceCss.match(/\.friend-action-row button\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(html).not.toContain("密谈");
+    expect(html).toContain(">详细信息</button>");
+    expect(html).toContain(">解除好友</button>");
+    expect(html).toMatch(/<button[^>]*data-button-role="primary"[^>]*disabled=""[^>]*>对局申请<\/button>/);
+    expect(actionRowBlock).toContain("display: flex");
+    expect(actionRowBlock).toContain("flex-wrap: nowrap");
+    expect(actionButtonBlock).toContain("flex: 1 1 0");
+    expect(actionButtonBlock).toContain("white-space: nowrap");
+    expect(hudFriendCss).toContain(".friend-action-row button:disabled");
+    expect(hudFriendCss).toContain("cursor: not-allowed");
+    expect(brightSchoolCss).toContain(".friend-action-row button:disabled");
+    expect(brightSchoolCss).toContain("background-color: #e7e3e7 !important");
+  });
+
+  it("centers blacklist removal confirmation overlays with the shared inline modal contract", () => {
+    const html = renderToStaticMarkup(createElement(FriendsOverlays, {
+      characters: [],
+      confirmTarget: {
+        type: "blacklist",
+        user: { id: "user-1", username: "moming" }
+      },
+      duelModeTarget: null,
+      profileUser: null,
+      token: "token",
+      onAddBlacklist: () => {},
+      onAddFriend: () => {},
+      onCloseConfirm: () => {},
+      onCloseDuelMode: () => {},
+      onCloseProfile: () => {},
+      onOpenReplay: () => {},
+      onNotice: () => {},
+      onRequestMatchMode: () => {},
+      onRemoveTarget: () => {}
+    }));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(html).toContain("room-floating-modal confirm-inline-modal");
+    expect(html).toContain("inline-confirm-panel");
+    expect(finalMobileCss).toContain(".confirm-inline-modal");
+    expect(finalMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .confirm-inline-modal");
+    expect(finalMobileCss).toContain("inset: 50% auto auto 50% !important");
+    expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(finalMobileCss).toContain("width: min(360px, calc(100vw - 44px)) !important");
+  });
+
+  it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
+    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
+    const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
+    const phoneActionRowBlock = phoneModalMedia.match(/\.friend-action-row\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(phoneModalMedia).toContain(".friends-list-heading");
+    expect(phoneModalMedia).toContain("display: none");
+    expect(phoneModalMedia).toContain(".friends-row");
+    expect(phoneModalMedia).toContain("grid-template-areas:");
+    expect(phoneModalMedia).toContain("\"status avatar info action\"");
+    expect(phoneModalMedia).toContain(".friends-row > .friend-main");
+    expect(phoneModalMedia).toContain("align-content: center");
+    expect(phoneModalMedia).toContain("justify-items: center");
+    expect(phoneModalMedia).not.toContain(".friends-row .friend-stats");
+    expect(phoneModalMedia).toContain(".friends-list .quiet-text");
+    expect(phoneModalMedia).toContain("padding-right: 6px");
+    expect(phoneModalMedia).toContain("padding-bottom: 6px");
+    expect(phoneModalMedia).toContain("scroll-padding: 0 6px 6px 0");
+    expect(phoneModalMedia).toContain("width: 100%");
+    expect(phoneModalMedia).not.toContain(".friends-row,\n  .friend-action-row {\n    min-width: 560px;");
+    expect(phoneActionRowBlock).toContain("display: flex");
+    expect(phoneActionRowBlock).not.toContain("grid-template-columns");
+    expect(adaptivePhoneMedia).toContain(".friends-list");
+    expect(adaptivePhoneMedia).toContain("grid-template-rows: auto auto minmax(0, 1fr)");
+    expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
+    expect(adaptivePhoneMedia).toContain("padding-right: 6px");
+    expect(adaptivePhoneMedia).toContain("padding-bottom: 6px");
+    expect(adaptivePhoneMedia).toContain("scroll-padding: 0 6px 6px 0");
+    expect(adaptivePhoneMedia).toContain(".friends-row");
+    expect(adaptivePhoneMedia).toContain("min-width: 0");
+    expect(adaptivePhoneMedia).toContain("grid-template-areas:");
+    expect(adaptivePhoneMedia).toContain("\"status avatar info action\"");
+    expect(brightSchoolMobileCss).toContain(".friends-list,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {\n    overflow-x: hidden !important;");
+    expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-list");
+    expect(brightSchoolMobileCss).toContain("padding-right: 6px !important");
+    expect(brightSchoolMobileCss).toContain("padding-bottom: 6px !important");
+    expect(brightSchoolMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
+    expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
+  });
+
+  it("keeps the friends title clear of the close button without shrinking the toolbar", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolRepairCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const desktopCommerceBlock = mediaBlock(commerceCss, "@media (min-width: 769px)");
+    const desktopBrightSchoolBlock = mediaBlock(brightSchoolRepairCss, "@media (min-width: 769px)");
+    const headerBlock = commerceCss.match(/\.friends-modal-header\s*\{[^}]+\}/)?.[0] ?? "";
+    const tabsShellBlock = brightSchoolRepairCss.match(/\.friends-tabs\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(headerBlock).toContain("padding-right: 44px");
+    expect(headerBlock).toContain("margin-bottom: 16px");
+    expect(desktopCommerceBlock).not.toContain(".friends-modal-toolbar");
+    expect(desktopBrightSchoolBlock).not.toContain(".friends-modal .friends-modal-toolbar");
+    expect(tabsShellBlock).toContain("background: transparent !important");
+    expect(tabsShellBlock).toContain("border: 0 !important");
+    expect(tabsShellBlock).toContain("box-shadow: none !important");
+    expect(commerceCss).toContain(".friends-tabs button.active");
+  });
+});
+
+function mediaBlock(css, marker) {
+  const blocks = [];
+  let start = css.indexOf(marker);
+  while (start >= 0) {
+    const next = css.indexOf("\n@media", start + 1);
+    blocks.push(css.slice(start, next >= 0 ? next : undefined));
+    start = css.indexOf(marker, start + marker.length);
+  }
+  return blocks.join("\n");
+}
+
+function readText(url) {
+  return readFileSync(url, "utf8").replace(/\r\n/g, "\n");
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readText(url);
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}

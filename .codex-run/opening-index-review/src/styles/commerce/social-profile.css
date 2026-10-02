@@ -1,0 +1,8 @@
+/* Social, profile, house, friends, duel, and leaderboard windows. */
+@import "./social-profile/modal-shells.css";
+@import "./social-profile/friends-toolbar-search.css";
+@import "./social-profile/friends-list-status.css";
+@import "./social-profile/friend-actions-notices.css";
+@import "./social-profile/duel-request-banner.css";
+@import "./social-profile/leaderboard-table.css";
+@import "./social-profile/owned-decoration-section.css";

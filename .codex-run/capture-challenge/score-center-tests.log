@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 815ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1065ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  326ms
+
+ Test Files  2 passed (2)
+      Tests  77 passed (77)
+   Start at  15:51:49
+   Duration  4.50s (transform 231ms, setup 0ms, collect 414ms, tests 1.88s, environment 1ms, prepare 383ms)
+

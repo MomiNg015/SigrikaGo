@@ -1,0 +1,70 @@
+.gacha-control-panel {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-content: stretch;
+  gap: 14px;
+  padding: clamp(14px, 2vw, 18px);
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 255, 0.96)),
+    linear-gradient(135deg, rgba(255, 211, 111, 0.2), rgba(141, 217, 255, 0.18));
+}
+
+.gacha-wallet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gacha-wallet span {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(128, 102, 142, 0.2);
+  background: #fff8d9;
+  color: #4f3d55;
+  font-weight: 900;
+}
+
+.blue-gem-wallet {
+  background: linear-gradient(135deg, #e7fbff, #8fd9ff 46%, #5d7fe8 100%) !important;
+}
+
+.gacha-round-actions,
+.gacha-draw-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.gacha-round-button {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(128, 102, 142, 0.2);
+  background: #ffffff;
+  color: #4f3d55;
+}
+
+.gacha-draw-actions {
+  align-self: end;
+  flex-direction: column;
+}
+
+.gacha-draw-actions .primary-action {
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

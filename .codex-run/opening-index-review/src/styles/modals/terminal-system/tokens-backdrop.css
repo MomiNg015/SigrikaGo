@@ -1,0 +1,37 @@
+/* Startorch terminal tokens and backdrop */
+
+:root {
+  --terminal-bg: rgba(12, 22, 29, 0.85);
+  --terminal-bg-strong: rgba(7, 14, 20, 0.94);
+  --terminal-panel: rgba(14, 34, 42, 0.62);
+  --terminal-panel-soft: rgba(22, 53, 61, 0.42);
+  --terminal-cyan: #00ffbe;
+  --terminal-blue: #00bfff;
+  --terminal-green: #b7ff45;
+  --terminal-orange: #ffb23f;
+  --terminal-purple: #b792ff;
+  --terminal-text: #e0f7f4;
+  --terminal-muted: rgba(185, 233, 228, 0.72);
+  --terminal-dim: rgba(123, 181, 180, 0.58);
+  --terminal-line: rgba(0, 255, 190, 0.54);
+  --terminal-line-soft: rgba(0, 191, 255, 0.28);
+  --terminal-cut: polygon(18px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  --terminal-row-cut: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  --terminal-shadow:
+    0 0 0 1px rgba(0, 255, 190, 0.36),
+    0 0 26px rgba(0, 255, 190, 0.18),
+    0 28px 90px rgba(0, 0, 0, 0.45),
+    inset 0 0 24px rgba(0, 191, 255, 0.12);
+}
+
+.terminal-cut-shape {
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+}
+
+.modal-backdrop {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0, 255, 190, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(3, 9, 14, 0.82), rgba(3, 12, 18, 0.92));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}

@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/src/styles.css"></head><body><div id="fixture"></div><script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import ActionBar from '/src/room/ActionBar.jsx';
+import RoomPeopleList from '/src/room/RoomPeopleList.jsx';
+const h=React.createElement, root=createRoot(document.getElementById('fixture'));
+window.showFixture=(extra=0, mobile=false, controls={})=>root.render(h('div',{className:'app-shell player-theme-enabled theme-bright-school',style:{padding:20,minHeight:'100vh'}},h('div',{className:mobile?'room-screen mobile-room-screen':'room-screen desktop-room-screen',style:{display:'block',height:'auto',width:'100%'}},h('div',{style:{width:mobile?'100%':620}},h(ActionBar,{phase:'playing',role:'player',me:{user:{id:'me'}},isMyTurn:true,skillName:'泡影幻梦',skillUses:1,drawEnabled:false,...controls})),h('div',{style:{width:280,marginTop:30}},h(RoomPeopleList,{user:{id:'me'},room:{players:[{color:'black',isBot:true,user:{id:'bot',username:'准时宝',rank:'高级陪练'}},{color:'white',user:{id:'me',username:'moming',rank:'7段',rating:826}}],spectators:Array.from({length:extra},(_,i)=>({user:{id:'s'+i,username:'观战'+i,rank:'1段',rating:100}}))}})))));
+window.showFixture();
+</script></body></html>
+

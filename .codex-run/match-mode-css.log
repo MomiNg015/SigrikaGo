@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 633ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  17:56:44
+   Duration  2.90s (transform 59ms, setup 0ms, collect 80ms, tests 633ms, environment 0ms, prepare 102ms)
+

@@ -1,0 +1,138 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
+  min-height: 74px !important;
+  padding: 14px 18px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 rgba(74, 55, 54, 0.9) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-version {
+  margin: 4px 0 0;
+  text-align: right;
+  transform: translateX(8px);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .login-title-text {
+  margin-bottom: 0;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: var(--auth-header-rule-space);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::before {
+  right: 0;
+  bottom: var(--auth-header-main-rule-bottom);
+  left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
+  height: 3px;
+  background: var(--bright-border);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .auth-panel-header::after {
+  right: 10px;
+  bottom: 0;
+  left: calc(18px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
+  height: 2px;
+  background: var(--bright-blue);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented > button[aria-pressed="true"] {
+  background: var(--bright-blue) !important;
+  box-shadow: inset 0 -3px 0 var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field-error {
+  color: #c0182d !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form input::placeholder {
+  color: #6b5d5a !important;
+  opacity: 0.76 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field.invalid input {
+  border-color: #c0182d !important;
+  box-shadow:
+    0 0 0 3px rgba(192, 24, 45, 0.2),
+    inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-label-row small {
+  color: var(--bright-muted) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle {
+  position: absolute !important;
+  top: 50% !important;
+  right: 3px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: var(--bright-muted) !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:focus-visible {
+  background: transparent !important;
+  color: #d8507a !important;
+  transform: translateY(-50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form button:disabled {
+  cursor: wait !important;
+  opacity: 0.58 !important;
+  filter: saturate(0.55) !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .form-error {
+  color: #c0182d !important;
+  font-weight: 900 !important;
+  line-height: 1.4 !important;
+}

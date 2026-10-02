@@ -1,0 +1,18 @@
+1000 {
+  fill: 'linear-gradient(rgb(255, 243, 196), rgb(255, 224, 154))',
+  height: 56,
+  text: 'left',
+  arrow: 'block',
+  ring: 'conic-gradient(from 114.514deg, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 245deg, rgb(148, 203, 188) 275deg, rgb(234, 164, 187) 312deg, rgb(237, 187, 95) 342deg, rgba(0, 0, 0, 0) 360deg)',
+  animation: 'guided-action-ring'
+}
+390 {
+  fill: 'linear-gradient(rgb(255, 243, 196), rgb(255, 224, 154))',
+  height: 77.59375,
+  text: 'left',
+  arrow: 'block',
+  ring: 'conic-gradient(from 115.013deg, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 245deg, rgb(148, 203, 188) 275deg, rgb(234, 164, 187) 312deg, rgb(237, 187, 95) 342deg, rgba(0, 0, 0, 0) 360deg)',
+  animation: 'guided-action-ring'
+}
+disabled { disabled: true, ring: 'none' }
+reduced { ring: 'none', transform: 'none' }

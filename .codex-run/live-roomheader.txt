@@ -1,0 +1,269 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/@fs/C:\\codex\\SigrikaGo\\src\\room\\header\\RoomHeader.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=4b571792"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=4b571792"; const useState = __vite__cjsImport3_react["useState"];
+import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "/node_modules/.vite/deps/lucide-react.js?v=4b571792";
+import TestTools from "/src/room/actionBar/TestTools.jsx";
+import { isCaptureChallenge } from "/src/shared/captureChallenge.js";
+import { gameModeById } from "/src/shared/gameModes.js";
+export default function RoomHeader({
+  room,
+  roomGameInfo,
+  showCoords,
+  onOpenMessageBoard,
+  onOpenSettings,
+  onBack,
+  exitLabel = "退出房间",
+  showUtilityControls = true,
+  showTestTools = false,
+  testToolsDisabled = false,
+  onGameAction,
+  onToggleCoords
+}) {
+  _s();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const modeLabel = isCaptureChallenge(room) ? "吃子赛" : room.matchSource === "practice" ? "人机" : gameModeById(room.game?.mode).shortTitle;
+  const closeMobileMenu = (action) => () => {
+    setMobileMenuOpen(false);
+    action?.();
+  };
+  return /* @__PURE__ */ jsxDEV("header", { className: "room-header", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "room-title-stack", children: /* @__PURE__ */ jsxDEV("p", { className: "room-title-line", children: [
+      /* @__PURE__ */ jsxDEV("span", { className: "room-code-label", children: [
+        modeLabel,
+        room.sigrikaCandyDuel ? "ERROR" : room.code
+      ] }, void 0, true, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 55,
+        columnNumber: 11
+      }, this),
+      room.team && /* @__PURE__ */ jsxDEV("span", { className: "room-info-tag", children: [
+        "Round ",
+        room.team.round
+      ] }, void 0, true, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 56,
+        columnNumber: 25
+      }, this),
+      roomGameInfo && /* @__PURE__ */ jsxDEV(Fragment, { children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "room-info-tag black-side", children: [
+          "黑方：",
+          roomGameInfo.black
+        ] }, void 0, true, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 59,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "room-info-tag white-side", children: [
+          "白方：",
+          roomGameInfo.white
+        ] }, void 0, true, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 60,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "room-info-tag move-count", children: roomGameInfo.moves }, void 0, false, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 61,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 58,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+      lineNumber: 54,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+      lineNumber: 53,
+      columnNumber: 7
+    }, this),
+    showTestTools && !isCaptureChallenge(room) && /* @__PURE__ */ jsxDEV(TestTools, { disabled: testToolsDisabled, onGameAction }, void 0, false, {
+      fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+      lineNumber: 66,
+      columnNumber: 54
+    }, this),
+    showUtilityControls && /* @__PURE__ */ jsxDEV("div", { className: "room-toggles", children: [
+      /* @__PURE__ */ jsxDEV("button", { className: "toggle", onClick: onOpenMessageBoard, title: "留言板", children: /* @__PURE__ */ jsxDEV(MessageSquareText, { size: 16 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 68,
+        columnNumber: 77
+      }, this) }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 68,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "toggle", onClick: onOpenSettings, title: "设置", children: /* @__PURE__ */ jsxDEV(Settings, { size: 16 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 69,
+        columnNumber: 72
+      }, this) }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 69,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "toggle coordinate-toggle", "aria-pressed": showCoords, onClick: onToggleCoords, title: "显示坐标", children: /* @__PURE__ */ jsxDEV(PanelRight, { size: 16 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 70,
+        columnNumber: 118
+      }, this) }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 70,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+      lineNumber: 67,
+      columnNumber: 31
+    }, this),
+    onBack && /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        className: "toggle room-mobile-exit",
+        type: "button",
+        "aria-label": exitLabel,
+        title: exitLabel,
+        onClick: onBack,
+        children: /* @__PURE__ */ jsxDEV(DoorOpen, { size: 18 }, void 0, false, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 80,
+          columnNumber: 11
+        }, this)
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 73,
+        columnNumber: 7
+      },
+      this
+    ),
+    showUtilityControls && /* @__PURE__ */ jsxDEV("div", { className: `room-mobile-menu ${mobileMenuOpen ? "open" : ""}`, children: [
+      /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          className: "toggle room-mobile-menu-toggle",
+          type: "button",
+          "aria-expanded": mobileMenuOpen,
+          "aria-controls": "room-mobile-menu-panel",
+          "aria-label": "选项",
+          title: "选项",
+          onClick: () => setMobileMenuOpen((open) => !open),
+          children: /* @__PURE__ */ jsxDEV(Menu, { size: 18 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 93,
+            columnNumber: 11
+          }, this)
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 84,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV("div", { className: "room-mobile-menu-panel", id: "room-mobile-menu-panel", "aria-hidden": !mobileMenuOpen, children: [
+        /* @__PURE__ */ jsxDEV("button", { type: "button", onClick: closeMobileMenu(onOpenMessageBoard), children: [
+          /* @__PURE__ */ jsxDEV(MessageSquareText, { size: 17 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 97,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { children: "留言" }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 98,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 96,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("button", { type: "button", onClick: closeMobileMenu(onOpenSettings), children: [
+          /* @__PURE__ */ jsxDEV(Settings, { size: 17 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 101,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { children: "设置" }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 102,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 100,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("button", { className: "coordinate-toggle", "aria-pressed": showCoords, type: "button", onClick: closeMobileMenu(onToggleCoords), children: [
+          /* @__PURE__ */ jsxDEV(PanelRight, { size: 17 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 105,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { children: "坐标" }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+            lineNumber: 106,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+          lineNumber: 104,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+        lineNumber: 95,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+      lineNumber: 83,
+      columnNumber: 31
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx",
+    lineNumber: 52,
+    columnNumber: 5
+  }, this);
+}
+_s(RoomHeader, "d7gXMF6mPDUhHBNUSEb8mLK4AII=");
+_c = RoomHeader;
+var _c;
+$RefreshReg$(_c, "RoomHeader");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/codex/SigrikaGo/src/room/header/RoomHeader.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFBLGlCQUFRO0FBQUEsYUFGVjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBR0E7QUFBQSxRQUNBLHVCQUFDLFlBQU8sTUFBSyxVQUFTLFNBQVNpQixnQkFBZ0JoQixjQUFjLEdBQzNEO0FBQUEsaUNBQUMsWUFBUyxNQUFNLE1BQWhCO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBQW1CO0FBQUEsVUFDbkIsdUJBQUMsVUFBSyxrQkFBTjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFRO0FBQUEsYUFGVjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBR0E7QUFBQSxRQUNBLHVCQUFDLFlBQU8sV0FBVSxxQkFBb0IsZ0JBQWNGLFlBQVksTUFBSyxVQUFTLFNBQVNrQixnQkFBZ0JULGNBQWMsR0FDbkg7QUFBQSxpQ0FBQyxjQUFXLE1BQU0sTUFBbEI7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBcUI7QUFBQSxVQUNyQix1QkFBQyxVQUFLLGtCQUFOO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBQVE7QUFBQSxhQUZWO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFHQTtBQUFBLFdBWkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQWFBO0FBQUEsU0F6QnNCO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0EwQnhCO0FBQUEsT0F6REY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQTBEQTtBQUVKO0FBQUNDLEdBdEZ1QmIsWUFBVTtBQUFBLEtBQVZBO0FBQVUsSUFBQStCO0FBQUEsYUFBQUEsSUFBQSIsIm5hbWVzIjpbInVzZVN0YXRlIiwiRG9vck9wZW4iLCJNZW51IiwiTWVzc2FnZVNxdWFyZVRleHQiLCJQYW5lbFJpZ2h0IiwiU2V0dGluZ3MiLCJUZXN0VG9vbHMiLCJpc0NhcHR1cmVDaGFsbGVuZ2UiLCJnYW1lTW9kZUJ5SWQiLCJSb29tSGVhZGVyIiwicm9vbSIsInJvb21HYW1lSW5mbyIsInNob3dDb29yZHMiLCJvbk9wZW5NZXNzYWdlQm9hcmQiLCJvbk9wZW5TZXR0aW5ncyIsIm9uQmFjayIsImV4aXRMYWJlbCIsInNob3dVdGlsaXR5Q29udHJvbHMiLCJzaG93VGVzdFRvb2xzIiwidGVzdFRvb2xzRGlzYWJsZWQiLCJvbkdhbWVBY3Rpb24iLCJvblRvZ2dsZUNvb3JkcyIsIl9zIiwibW9iaWxlTWVudU9wZW4iLCJzZXRNb2JpbGVNZW51T3BlbiIsIm1vZGVMYWJlbCIsIm1hdGNoU291cmNlIiwiZ2FtZSIsIm1vZGUiLCJzaG9ydFRpdGxlIiwiY2xvc2VNb2JpbGVNZW51IiwiYWN0aW9uIiwic2lncmlrYUNhbmR5RHVlbCIsImNvZGUiLCJ0ZWFtIiwicm91bmQiLCJibGFjayIsIndoaXRlIiwibW92ZXMiLCJvcGVuIiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiUm9vbUhlYWRlci5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUgfSBmcm9tIFwicmVhY3RcIjtcclxuaW1wb3J0IHsgRG9vck9wZW4sIE1lbnUsIE1lc3NhZ2VTcXVhcmVUZXh0LCBQYW5lbFJpZ2h0LCBTZXR0aW5ncyB9IGZyb20gXCJsdWNpZGUtcmVhY3RcIjtcclxuaW1wb3J0IFRlc3RUb29scyBmcm9tIFwiLi4vYWN0aW9uQmFyL1Rlc3RUb29scy5qc3hcIjtcclxuaW1wb3J0IHsgaXNDYXB0dXJlQ2hhbGxlbmdlIH0gZnJvbSBcIi4uLy4uL3NoYXJlZC9jYXB0dXJlQ2hhbGxlbmdlLmpzXCI7XG5pbXBvcnQgeyBnYW1lTW9kZUJ5SWQgfSBmcm9tIFwiLi4vLi4vc2hhcmVkL2dhbWVNb2Rlcy5qc1wiO1xuXHJcbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIFJvb21IZWFkZXIoe1xyXG4gIHJvb20sXHJcbiAgcm9vbUdhbWVJbmZvLFxyXG4gIHNob3dDb29yZHMsXHJcbiAgb25PcGVuTWVzc2FnZUJvYXJkLFxyXG4gIG9uT3BlblNldHRpbmdzLFxyXG4gIG9uQmFjayxcclxuICBleGl0TGFiZWwgPSBcIumAgOWHuuaIv+mXtFwiLFxyXG4gIHNob3dVdGlsaXR5Q29udHJvbHMgPSB0cnVlLFxyXG4gIHNob3dUZXN0VG9vbHMgPSBmYWxzZSxcclxuICB0ZXN0VG9vbHNEaXNhYmxlZCA9IGZhbHNlLFxyXG4gIG9uR2FtZUFjdGlvbixcclxuICBvblRvZ2dsZUNvb3Jkc1xyXG59KSB7XHJcbiAgY29uc3QgW21vYmlsZU1lbnVPcGVuLCBzZXRNb2JpbGVNZW51T3Blbl0gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IG1vZGVMYWJlbCA9IGlzQ2FwdHVyZUNoYWxsZW5nZShyb29tKVxuICAgID8gXCLlkIPlrZDotZtcIlxuICAgIDogcm9vbS5tYXRjaFNvdXJjZSA9PT0gXCJwcmFjdGljZVwiXG4gICAgICA/IFwi5Lq65py6XCJcbiAgICAgIDogZ2FtZU1vZGVCeUlkKHJvb20uZ2FtZT8ubW9kZSkuc2hvcnRUaXRsZTtcbiAgY29uc3QgY2xvc2VNb2JpbGVNZW51ID0gKGFjdGlvbikgPT4gKCkgPT4ge1xyXG4gICAgc2V0TW9iaWxlTWVudU9wZW4oZmFsc2UpO1xyXG4gICAgYWN0aW9uPy4oKTtcclxuICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGhlYWRlciBjbGFzc05hbWU9XCJyb29tLWhlYWRlclwiPlxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvb20tdGl0bGUtc3RhY2tcIj5cclxuICAgICAgICA8cCBjbGFzc05hbWU9XCJyb29tLXRpdGxlLWxpbmVcIj5cclxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInJvb20tY29kZS1sYWJlbFwiPnttb2RlTGFiZWx9e3Jvb20uc2lncmlrYUNhbmR5RHVlbCA/IFwiRVJST1JcIiA6IHJvb20uY29kZX08L3NwYW4+XG4gICAgICAgICAge3Jvb20udGVhbSAmJiA8c3BhbiBjbGFzc05hbWU9XCJyb29tLWluZm8tdGFnXCI+Um91bmQge3Jvb20udGVhbS5yb3VuZH08L3NwYW4+fVxyXG4gICAgICAgICAge3Jvb21HYW1lSW5mbyAmJiAoXHJcbiAgICAgICAgICAgIDw+XHJcbiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicm9vbS1pbmZvLXRhZyBibGFjay1zaWRlXCI+6buR5pa577yae3Jvb21HYW1lSW5mby5ibGFja308L3NwYW4+XHJcbiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicm9vbS1pbmZvLXRhZyB3aGl0ZS1zaWRlXCI+55m95pa577yae3Jvb21HYW1lSW5mby53aGl0ZX08L3NwYW4+XHJcbiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicm9vbS1pbmZvLXRhZyBtb3ZlLWNvdW50XCI+e3Jvb21HYW1lSW5mby5tb3Zlc308L3NwYW4+XG4gICAgICAgICAgICA8Lz5cclxuICAgICAgICAgICl9XHJcbiAgICAgICAgPC9wPlxyXG4gICAgICA8L2Rpdj5cclxuICAgICAge3Nob3dUZXN0VG9vbHMgJiYgIWlzQ2FwdHVyZUNoYWxsZW5nZShyb29tKSAmJiA8VGVzdFRvb2xzIGRpc2FibGVkPXt0ZXN0VG9vbHNEaXNhYmxlZH0gb25HYW1lQWN0aW9uPXtvbkdhbWVBY3Rpb259IC8+fVxyXG4gICAgICB7c2hvd1V0aWxpdHlDb250cm9scyAmJiA8ZGl2IGNsYXNzTmFtZT1cInJvb20tdG9nZ2xlc1wiPlxyXG4gICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwidG9nZ2xlXCIgb25DbGljaz17b25PcGVuTWVzc2FnZUJvYXJkfSB0aXRsZT1cIueVmeiogOadv1wiPjxNZXNzYWdlU3F1YXJlVGV4dCBzaXplPXsxNn0gLz48L2J1dHRvbj5cclxuICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInRvZ2dsZVwiIG9uQ2xpY2s9e29uT3BlblNldHRpbmdzfSB0aXRsZT1cIuiuvue9rlwiPjxTZXR0aW5ncyBzaXplPXsxNn0gLz48L2J1dHRvbj5cclxuICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInRvZ2dsZSBjb29yZGluYXRlLXRvZ2dsZVwiIGFyaWEtcHJlc3NlZD17c2hvd0Nvb3Jkc30gb25DbGljaz17b25Ub2dnbGVDb29yZHN9IHRpdGxlPVwi5pi+56S65Z2Q5qCHXCI+PFBhbmVsUmlnaHQgc2l6ZT17MTZ9IC8+PC9idXR0b24+XHJcbiAgICAgIDwvZGl2Pn1cclxuICAgICAge29uQmFjayAmJiAoXHJcbiAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgY2xhc3NOYW1lPVwidG9nZ2xlIHJvb20tbW9iaWxlLWV4aXRcIlxyXG4gICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICBhcmlhLWxhYmVsPXtleGl0TGFiZWx9XHJcbiAgICAgICAgICB0aXRsZT17ZXhpdExhYmVsfVxyXG4gICAgICAgICAgb25DbGljaz17b25CYWNrfVxyXG4gICAgICAgID5cclxuICAgICAgICAgIDxEb29yT3BlbiBzaXplPXsxOH0gLz5cclxuICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgKX1cclxuICAgICAge3Nob3dVdGlsaXR5Q29udHJvbHMgJiYgPGRpdiBjbGFzc05hbWU9e2Byb29tLW1vYmlsZS1tZW51ICR7bW9iaWxlTWVudU9wZW4gPyBcIm9wZW5cIiA6IFwiXCJ9YH0+XHJcbiAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgY2xhc3NOYW1lPVwidG9nZ2xlIHJvb20tbW9iaWxlLW1lbnUtdG9nZ2xlXCJcclxuICAgICAgICAgIHR5cGU9XCJidXR0b25cIlxyXG4gICAgICAgICAgYXJpYS1leHBhbmRlZD17bW9iaWxlTWVudU9wZW59XHJcbiAgICAgICAgICBhcmlhLWNvbnRyb2xzPVwicm9vbS1tb2JpbGUtbWVudS1wYW5lbFwiXHJcbiAgICAgICAgICBhcmlhLWxhYmVsPVwi6YCJ6aG5XCJcclxuICAgICAgICAgIHRpdGxlPVwi6YCJ6aG5XCJcclxuICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldE1vYmlsZU1lbnVPcGVuKChvcGVuKSA9PiAhb3Blbil9XHJcbiAgICAgICAgPlxyXG4gICAgICAgICAgPE1lbnUgc2l6ZT17MTh9IC8+XHJcbiAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyb29tLW1vYmlsZS1tZW51LXBhbmVsXCIgaWQ9XCJyb29tLW1vYmlsZS1tZW51LXBhbmVsXCIgYXJpYS1oaWRkZW49eyFtb2JpbGVNZW51T3Blbn0+XHJcbiAgICAgICAgICA8YnV0dG9uIHR5cGU9XCJidXR0b25cIiBvbkNsaWNrPXtjbG9zZU1vYmlsZU1lbnUob25PcGVuTWVzc2FnZUJvYXJkKX0+XHJcbiAgICAgICAgICAgIDxNZXNzYWdlU3F1YXJlVGV4dCBzaXplPXsxN30gLz5cclxuICAgICAgICAgICAgPHNwYW4+55WZ6KiAPC9zcGFuPlxyXG4gICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICA8YnV0dG9uIHR5cGU9XCJidXR0b25cIiBvbkNsaWNrPXtjbG9zZU1vYmlsZU1lbnUob25PcGVuU2V0dGluZ3MpfT5cclxuICAgICAgICAgICAgPFNldHRpbmdzIHNpemU9ezE3fSAvPlxyXG4gICAgICAgICAgICA8c3Bhbj7orr7nva48L3NwYW4+XHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwiY29vcmRpbmF0ZS10b2dnbGVcIiBhcmlhLXByZXNzZWQ9e3Nob3dDb29yZHN9IHR5cGU9XCJidXR0b25cIiBvbkNsaWNrPXtjbG9zZU1vYmlsZU1lbnUob25Ub2dnbGVDb29yZHMpfT5cclxuICAgICAgICAgICAgPFBhbmVsUmlnaHQgc2l6ZT17MTd9IC8+XHJcbiAgICAgICAgICAgIDxzcGFuPuWdkOaghzwvc3Bhbj5cclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj59XHJcbiAgICA8L2hlYWRlcj5cclxuICApO1xyXG59XHJcbiJdLCJmaWxlIjoiQzovY29kZXgvU2lncmlrYUdvL3NyYy9yb29tL2hlYWRlci9Sb29tSGVhZGVyLmpzeCJ9

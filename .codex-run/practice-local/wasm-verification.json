@@ -1,0 +1,91 @@
+{
+  "wasmBytes": 6343132,
+  "gzipBytes": 1075806,
+  "nativeAvailable": true,
+  "results": [
+    {
+      "position": "empty",
+      "difficulty": "intermediate",
+      "elapsedMs": 31,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "sameMove": true
+    },
+    {
+      "position": "empty",
+      "difficulty": "advanced",
+      "elapsedMs": 10,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "sameMove": true
+    },
+    {
+      "position": "position-20",
+      "difficulty": "intermediate",
+      "elapsedMs": 613,
+      "action": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "10,3"
+      },
+      "sameMove": true
+    },
+    {
+      "position": "position-20",
+      "difficulty": "advanced",
+      "elapsedMs": 1653,
+      "action": {
+        "type": "move",
+        "pointId": "8,1"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "8,1"
+      },
+      "sameMove": true
+    },
+    {
+      "position": "position-70",
+      "difficulty": "intermediate",
+      "elapsedMs": 711,
+      "action": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "sameMove": true
+    },
+    {
+      "position": "position-70",
+      "difficulty": "advanced",
+      "elapsedMs": 2373,
+      "action": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "native": {
+        "type": "move",
+        "pointId": "10,11"
+      },
+      "sameMove": true
+    }
+  ]
+}

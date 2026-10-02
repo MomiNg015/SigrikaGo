@@ -1,0 +1,48 @@
+
+> sigrika-go@0.1.0 test:e2e:practice
+> playwright test --config tests/e2e/local-practice.config.js --project development --grep intermediate
+
+[WebServer] (node:37644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:41560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:28916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:41824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 13:53:18 [vite] Internal server error: Failed to load url /engines/gnugo-3.8/gnugo.js?v=gnugo-3.8-v1 (resolved id: /engines/gnugo-3.8/gnugo.js?v=gnugo-3.8-v1). This file is in /public and will be copied as-is during build without going through the plugin transforms, and therefore should not be imported from source code. It can only be referenced via HTML tags.
+[WebServer]       at loadAndTransform (file:///C:/codex/SigrikaGo/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+  x  1 [development] › tests\e2e\local-practice.spec.js:8:3 › browser engine plays and resumes intermediate (1.3m)
+
+
+  1) [development] › tests\e2e\local-practice.spec.js:8:3 › browser engine plays and resumes intermediate 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m1[39m
+    Received: [31mundefined[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      17 |     await page.evaluate((token) => window.practiceTest.connect(token), token);
+      18 |     await page.evaluate((options) => window.practiceTest.start(options), options);
+    > 19 |     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(1);
+         |                                                                                             ^
+      20 |     expect(await page.evaluate(() => window.practiceTest.room.practice.engineBackend)).toBe("browser");
+      21 |     expect(await page.evaluate(() => window.practiceTest.move())).toMatchObject({ ok: true });
+      22 |     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(3);
+        at C:\codex\SigrikaGo\tests\e2e\local-practice.spec.js:19:93
+
+    Error Context: test-results\local-practice-browser-engine-plays-and-resumes-intermediate-development\error-context.md
+
+  1 failed
+    [development] › tests\e2e\local-practice.spec.js:8:3 › browser engine plays and resumes intermediate 

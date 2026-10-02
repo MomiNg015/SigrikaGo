@@ -1,0 +1,22 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/styleContract.test.js docs/systemDesignHtml.test.js src/home/TeamLineupPicker.dom.test.jsx src/app/useBackgroundMusicTrack.test.js src/shared/musicLibrary.test.js server/teamMatch.test.js server/rooms.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/shared/musicLibrary.test.js (68 tests) 21ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 70ms
+ ✓ src/styles/styleContract.test.js (57 tests) 979ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  391ms
+ ✓ server/teamMatch.test.js (7 tests) 36ms
+ ✓ server/rooms.test.js (44 tests) 372ms
+ ✓ src/app/useBackgroundMusicTrack.test.js (3 tests) 36ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (3 tests) 573ms
+   ✓ team selection > uses click order, removes selected cards and remembers the confirmed lineup  352ms
+
+ Test Files  7 passed (7)
+      Tests  185 passed (185)
+   Start at  20:23:22
+   Duration  7.81s (transform 1.87s, setup 0ms, collect 6.42s, tests 2.09s, environment 4.30s, prepare 1.15s)
+

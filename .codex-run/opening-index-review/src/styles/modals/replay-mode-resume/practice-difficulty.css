@@ -1,0 +1,118 @@
+.practice-difficulty-backdrop {
+  padding: 16px;
+}
+
+.nested-modal-backdrop .practice-difficulty-modal {
+  display: grid;
+  gap: 16px;
+  width: min(520px, calc(100vw - 32px));
+  padding: 22px;
+  text-align: left;
+}
+
+.practice-difficulty-heading {
+  display: grid;
+  gap: 5px;
+  text-align: center;
+}
+
+.practice-difficulty-heading h2,
+.practice-difficulty-heading p {
+  margin: 0;
+}
+
+.practice-difficulty-heading p {
+  color: var(--terminal-muted, #68707a);
+  line-height: 1.45;
+}
+
+.practice-difficulty-eyebrow {
+  color: var(--terminal-cyan, #087f68);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.practice-difficulty-options {
+  display: grid;
+  gap: 9px;
+}
+
+.practice-difficulty-modal .practice-difficulty-option {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 15px;
+  border: 1px solid rgba(0, 191, 255, 0.34);
+  border-radius: 2px;
+  background: rgba(10, 35, 45, 0.72);
+  color: var(--terminal-text, #eefbf9);
+  box-shadow: inset 0 0 18px rgba(0, 191, 255, 0.07);
+  text-align: left;
+  transition:
+    border-color 140ms ease-out,
+    background 140ms ease-out,
+    transform 140ms ease-out;
+}
+
+.practice-difficulty-modal .practice-difficulty-option:hover,
+.practice-difficulty-modal .practice-difficulty-option:focus-visible {
+  border-color: var(--practice-difficulty-accent, #00bfff);
+  background: rgba(15, 55, 65, 0.88);
+  transform: translateY(-1px);
+}
+
+.practice-difficulty-modal .practice-difficulty-option:focus-visible {
+  outline: 2px solid var(--practice-difficulty-accent, #00bfff);
+  outline-offset: 2px;
+}
+
+.practice-difficulty-beginner {
+  --practice-difficulty-accent: #00d9ad;
+}
+
+.practice-difficulty-intermediate {
+  --practice-difficulty-accent: #44a7ff;
+}
+
+.practice-difficulty-advanced {
+  --practice-difficulty-accent: #f2a23a;
+}
+
+.practice-difficulty-index {
+  color: var(--practice-difficulty-accent);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.practice-difficulty-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.practice-difficulty-copy strong {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.practice-difficulty-copy small {
+  color: var(--terminal-muted, #68707a);
+  line-height: 1.35;
+}
+
+.practice-difficulty-modal > .secondary-action {
+  justify-self: center;
+  min-width: 112px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-difficulty-modal .practice-difficulty-option {
+    transition: none;
+  }
+}

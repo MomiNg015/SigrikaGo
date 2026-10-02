@@ -1,0 +1,34 @@
+/* Bright School portrait mobile room board stage. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size) !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    aspect-ratio: 1 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-width: 2px !important;
+    border-radius: 18px !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.56) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .board-wrap {
+    width: 100% !important;
+    height: min(100%, var(--mobile-room-board-size)) !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    min-width: 0 !important;
+    padding: 10px !important;
+    grid-template-columns: 15px minmax(0, 1fr) 15px !important;
+    grid-template-rows: 15px minmax(0, 1fr) 15px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .coord-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .coord-col {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+}

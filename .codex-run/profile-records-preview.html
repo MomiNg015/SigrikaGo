@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body><div id="root"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {UserProfileCard} from '/src/modals/UserProfileCard.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const root=createRoot(document.getElementById('root'));
+const user={id:2,username:'测试玩家',selectedCharacter:'sigrika',mode:'spark',rank:'5级',rating:1000,totalGames:20,wins:12,losses:8,recentResults:['win','loss','win'],characterStats:Object.values(CHARACTERS).map((c,i)=>({characterId:c.id,totalGames:20-i,wins:10,losses:2,draws:1}))};
+window.renderProfile=(stickers=false)=>root.render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement('div',{className:'modal-backdrop'},React.createElement(UserProfileCard,{user,characters:CHARACTERS,titleStickers:stickers,onClose:()=>{}}))));
+window.renderProfile();
+</script></body></html>

@@ -1,0 +1,52 @@
+/* Bright School portrait mobile replay cards. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table.compact .replay-table-row {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: grid !important;
+    grid-template-areas:
+      "time moves result"
+      "black black white" !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    gap: 6px 10px !important;
+    align-items: center !important;
+    padding: 9px 10px !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row > span:nth-child(1) {
+    grid-area: time !important;
+    font-size: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row > .replay-player-cell:nth-child(2) {
+    grid-area: black !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row > .replay-player-cell:nth-child(3) {
+    grid-area: white !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row > span:nth-child(4) {
+    grid-area: result !important;
+    justify-self: end !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row > span:nth-child(5) {
+    grid-area: moves !important;
+    justify-self: center !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-player-cell {
+    min-width: 0 !important;
+    display: inline-grid !important;
+    grid-template-columns: 24px minmax(0, 1fr) !important;
+    gap: 6px !important;
+  }
+}

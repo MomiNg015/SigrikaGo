@@ -1,0 +1,12 @@
+/* Bright School shop modal polish layer. */
+@import "./shop/sidebar-wallet.css";
+@import "./shop/product-grid.css";
+@import "./shop/detail-dialog.css";
+@import "./shop/detail-credits.css";
+@import "./shop/responsive.css";
+@import "./shop/window-redesign.css";
+@import "./shop/background-crayon.css";
+@import "./shop/window-card-layout.css";
+@import "./shop/card-badges.css";
+@import "./shop/signpost-switch.css";
+@import "./shop/costume-store.css";

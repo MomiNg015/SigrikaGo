@@ -1,0 +1,32 @@
+/* Player-facing Bright School theme foundation. Admin views intentionally opt out. */
+.app-shell.player-theme-enabled {
+  --theme-bg: #fffbf2;
+  --theme-paper-grid:
+    linear-gradient(rgba(154, 211, 222, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, transparent 1px);
+  --theme-panel-bg: #ffffff;
+  --theme-panel-strong: #ffffff;
+  --theme-text: #4a3736;
+  --theme-muted: rgba(74, 55, 54, 0.68);
+  --theme-accent: #ff9ebb;
+  --theme-accent-2: #86e3ce;
+  --theme-blue: #9ad3de;
+  --theme-danger: #ff6f86;
+  --theme-border: #4a3736;
+  --theme-border-soft: #4a3736;
+  --theme-radius: 16px;
+  --theme-cut-corner: 0;
+  --theme-blur: none;
+  --theme-glow: 5px 5px 0 rgba(74, 55, 54, 0.95);
+  --theme-inner-glow: none;
+  --theme-text-glow: none;
+  --theme-scanline-opacity: 0;
+  --theme-noise-opacity: 0;
+  --theme-motion-scale: 1;
+  --theme-transition: 180ms ease;
+  color: var(--theme-text);
+}
+
+.app-shell.admin-theme-isolated {
+  color: inherit;
+}

@@ -1,0 +1,21 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/HomeScreen.test.jsx src/home/components/PlayerPlaque.dom.test.jsx src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 907ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  366ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1206ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  407ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (3 tests) 251ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1502ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  346ms
+   ✓ HomeScreen > keeps achievement nameplates out of the student ID while retaining their source assets  313ms
+
+ Test Files  4 passed (4)
+      Tests  102 passed (102)
+   Start at  08:46:40
+   Duration  7.20s (transform 1.06s, setup 0ms, collect 2.76s, tests 3.87s, environment 2.03s, prepare 794ms)
+

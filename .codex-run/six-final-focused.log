@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/LeaderboardModal.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themeContract.test.js (38 tests) 605ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 311ms
+ ✓ src/styles/styleContract.test.js (57 tests) 989ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  314ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1382ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  344ms
+
+ Test Files  4 passed (4)
+      Tests  126 passed (126)
+   Start at  19:28:17
+   Duration  4.82s (transform 619ms, setup 0ms, collect 1.44s, tests 3.29s, environment 1ms, prepare 636ms)
+

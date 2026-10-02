@@ -1,0 +1,59 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app/siteEntryPreload.test.js src/app/siteEntryBootstrap.test.js src/app/authPortraitPrewarm.test.js src/app/siteSettingsCatalog.test.js src/app/characterCatalog.test.js src/app/App.test.js src/auth/AuthScreen.dom.test.jsx src/shared/preloadAssets.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/app/App.test.js (19 tests) 20ms
+ ✓ src/app/characterCatalog.test.js (2 tests) 8ms
+ ✓ src/app/siteSettingsCatalog.test.js (3 tests) 8ms
+ ✓ src/app/authPortraitPrewarm.test.js (3 tests) 10ms
+ ✓ src/shared/preloadAssets.test.js (23 tests) 98ms
+ ✓ src/app/siteEntryPreload.test.js (4 tests) 77ms
+ ❯ src/app/siteEntryBootstrap.test.js (2 tests | 2 failed) 17ms
+   × site entry handoff > keeps the real HTML progress visible until both application code and resources finish 13ms
+     → The URL must be of scheme file
+   × site entry handoff > provides a visible reload action when the application module cannot load 2ms
+     → The URL must be of scheme file
+ ✓ src/auth/AuthScreen.dom.test.jsx (10 tests) 2974ms
+   ✓ AuthScreen DOM interaction > starts portrait prewarming without making authentication wait for it  613ms
+   ✓ AuthScreen DOM interaction > keeps both registration password toggles disabled without replacing their owner class  431ms
+   ✓ AuthScreen DOM interaction > accepts a successful response after the Strict Mode effect rehearsal  338ms
+   ✓ AuthScreen DOM interaction > uses the accessible confirmation layer for active-session conflicts  307ms
+   ✓ AuthScreen DOM interaction > turns Retry-After into one concise recovery message  313ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/siteEntryBootstrap.test.js > site entry handoff > keeps the real HTML progress visible until both application code and resources finish
+TypeError: The URL must be of scheme file
+ ❯ shell src/app/siteEntryBootstrap.test.js:9:16
+      7| 
+      8| function shell() {
+      9|   const html = readFileSync(new URL("../../index.html", import.meta.ur…
+       |                ^
+     10|   document.body.innerHTML = html.match(/<body>([\s\S]*?)<script type="…
+     11|   return document.getElementById("root");
+ ❯ src/app/siteEntryBootstrap.test.js:16:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/app/siteEntryBootstrap.test.js > site entry handoff > provides a visible reload action when the application module cannot load
+TypeError: The URL must be of scheme file
+ ❯ shell src/app/siteEntryBootstrap.test.js:9:16
+      7| 
+      8| function shell() {
+      9|   const html = readFileSync(new URL("../../index.html", import.meta.ur…
+       |                ^
+     10|   document.body.innerHTML = html.match(/<body>([\s\S]*?)<script type="…
+     11|   return document.getElementById("root");
+ ❯ src/app/siteEntryBootstrap.test.js:37:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  2 failed | 64 passed (66)
+   Start at  20:11:48
+   Duration  8.03s (transform 1.38s, setup 0ms, collect 5.15s, tests 3.21s, environment 3.52s, prepare 1.39s)
+

@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import cp from 'node:child_process';
+const paths=['src/styles/mobile-adaptive/handbook-book.css','src/styles/mobile-adaptive/handbook-student-cards.css'];
+const sources=paths.map(p=>fs.readFileSync(p,'utf8').replace(/\r\n/g,'\n'));
+const before=cp.execFileSync('git',['show','HEAD:src/styles/mobile-adaptive.css'],{encoding:'utf8'}).replace(/\r\n/g,'\n');
+const after=fs.readFileSync('src/styles/mobile-adaptive.css','utf8').replace(/\r\n/g,'\n');
+const delta={totalFiles:2,totalBytes:sources.reduce((s,c)=>s+Buffer.byteLength(c),0)+Buffer.byteLength(after)-Buffer.byteLength(before),importantCount:sources.reduce((s,c)=>s+(c.match(/!important/g)||[]).length,0),importantFiles:2,hardcodedHexCount:sources.reduce((s,c)=>s+(c.match(/#[0-9a-fA-F]{3,8}\b/g)||[]).length,0),mediaFiles:2,reducedMotionFiles:1};
+const p='src/styles/cssLayerInventory.js'; let s=fs.readFileSync(p,'utf8');
+for(const [key,value] of Object.entries(delta)) s=s.replace(new RegExp(`(${key}: )(\\d+)`),(_,a,b)=>a+(Number(b)+value));
+s=s.replace('  featureDeltas: [','  featureDeltas: [\n    "Member handbook: two bounded final owners for the right-page raster, reduced-motion cover opening and palette-tinted student IDs; reset legacy fixed grid rows, retain shared bookmarks and exclude corruption. No new breakpoint or high-z-index family.",');
+fs.writeFileSync(p,s); console.log({delta,sizes:sources.map(c=>Buffer.byteLength(c))});

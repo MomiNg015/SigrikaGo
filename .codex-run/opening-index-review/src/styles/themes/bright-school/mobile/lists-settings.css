@@ -1,0 +1,8 @@
+/* Bright School portrait mobile list, settings, replay, and social layout. */
+@import "./lists-settings/list-scroll-widths.css";
+@import "./lists-settings/watch-rows.css";
+@import "./lists-settings/friends-rows.css";
+@import "./lists-settings/table-shells.css";
+@import "./lists-settings/leaderboard-cards.css";
+@import "./lists-settings/replay-cards.css";
+@import "./lists-settings/toolbars-card-borders.css";

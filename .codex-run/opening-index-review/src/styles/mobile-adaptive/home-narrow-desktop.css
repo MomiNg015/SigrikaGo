@@ -1,0 +1,6 @@
+/* Bright School narrow desktop home-stage safety rules. */
+@import "./home-narrow-desktop/region-reset.css";
+@import "./home-narrow-desktop/wide-stage.css";
+@import "./home-narrow-desktop/compact-stage.css";
+@import "./home-narrow-desktop/micro-stage-scroll.css";
+@import "./home-narrow-desktop/short-height-stack.css";

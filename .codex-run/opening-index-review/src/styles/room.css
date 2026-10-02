@@ -1,0 +1,6 @@
+@import "./room/layout-tabs.css";
+@import "./room/players-timers-skills.css";
+@import "./room/board.css";
+@import "./room/actions-requests.css";
+@import "./room/people-floating-replay.css";
+@import "./room/chat-responsive.css";

@@ -1,0 +1,20 @@
+.costume-shop-card-slot:has(
+  .costume-shop-card:hover,
+  .costume-shop-card:focus-within,
+  .costume-shop-card:active
+) .shop-card-float {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-store-track,
+  .costume-shop-mascot,
+  .costume-shop-card::before,
+  .costume-shop-card-trigger {
+    transition: none;
+  }
+
+  .costume-shop-batch-layer {
+    animation: shop-batch-fade 80ms linear both;
+  }
+}

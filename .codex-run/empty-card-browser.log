@@ -1,0 +1,36 @@
+1280 self {
+  height: 52,
+  border: '2px',
+  bg: 'rgb(255, 250, 240)',
+  shadow: 'rgba(61, 43, 37, 0.78) 4px 5px 0px 0px',
+  text: '暂无',
+  table: false,
+  centerError: 0
+}
+1280 social {
+  height: 52,
+  border: '2px',
+  bg: 'rgb(255, 250, 240)',
+  shadow: 'rgba(61, 43, 37, 0.78) 4px 5px 0px 0px',
+  text: '暂无',
+  table: false,
+  centerError: 0
+}
+390 self {
+  height: 52,
+  border: '2px',
+  bg: 'rgb(255, 250, 240)',
+  shadow: 'rgba(61, 43, 37, 0.78) 4px 5px 0px 0px',
+  text: '暂无',
+  table: false,
+  centerError: 0
+}
+390 social {
+  height: 51.36279296875,
+  border: '2px',
+  bg: 'rgb(255, 250, 240)',
+  shadow: 'rgba(61, 43, 37, 0.78) 4px 5px 0px 0px',
+  text: '暂无',
+  table: false,
+  centerError: 0
+}

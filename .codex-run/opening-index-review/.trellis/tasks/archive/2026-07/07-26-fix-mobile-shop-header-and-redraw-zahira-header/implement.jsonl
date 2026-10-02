@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Keep store-specific artwork under semantic owners and put the geometry correction in the final mobile layer."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Preserve CSS debt baselines and require desktop plus portrait visual verification."}

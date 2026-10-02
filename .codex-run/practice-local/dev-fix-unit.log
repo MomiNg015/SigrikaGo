@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/practice src/app/useMatchActions.test.js server/localPracticeEngine.test.js docs/systemDesignHtml.test.js scripts/deploymentConfig.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ scripts/deploymentConfig.test.js (5 tests) 9ms
+ ✓ src/practice/practiceEngineClient.test.js (4 tests) 14ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 69ms
+ ✓ src/practice/localPracticeController.test.js (4 tests) 18ms
+ ✓ src/app/useMatchActions.test.js (6 tests) 12ms
+ ✓ server/localPracticeEngine.test.js (9 tests) 1293ms
+
+ Test Files  6 passed (6)
+      Tests  31 passed (31)
+   Start at  13:54:35
+   Duration  4.72s (transform 725ms, setup 0ms, collect 2.45s, tests 1.42s, environment 2ms, prepare 1.06s)
+

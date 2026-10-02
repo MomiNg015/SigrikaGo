@@ -1,0 +1,78 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
+  grid-column: 1 / -1 !important;
+  position: absolute !important;
+  z-index: 2 !important;
+  left: var(--home-student-id-stats-center-x) !important;
+  top: var(--home-student-id-stats-center-y) !important;
+  width: var(--home-student-id-stats-width) !important;
+  height: var(--home-student-id-stats-height) !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  box-sizing: border-box !important;
+  container-type: inline-size !important;
+  padding: 4px 3px !important;
+  gap: clamp(2px,1cqw,3px) !important;
+  align-self: center !important;
+  place-content: center !important;
+  place-items: center !important;
+  transform: translate(-50%, -50%) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
+  height: 100% !important;
+  width: 100% !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  gap: clamp(1px, 1cqw, 2px) !important;
+  align-content: center !important;
+  align-items: center !important;
+  justify-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  text-align: center !important;
+  line-height: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-icon {
+  display: block !important;
+  width: clamp(24px, 22cqw, 30px) !important;
+  height: clamp(24px, 22cqw, 30px) !important;
+  object-fit: contain !important;
+  opacity: 0.9 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank {
+  font-family: var(--font-numeric-accent), var(--font-ui-default) !important;
+  font-size: clamp(18px, 17cqw, 24px) !important;
+  font-weight: 900 !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1 !important;
+  text-transform: uppercase !important;
+  line-height: 0.9 !important;
+  letter-spacing: 0 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  justify-self: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank-dan {
+  color: #c4322e !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank-kyu {
+  color: #4a2772 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-results {
+  grid-column: 1 / -1 !important;
+  justify-content: start !important;
+}

@@ -1,0 +1,7 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip-wrap {
+  z-index: var(--room-floating-z, 60) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-detail-panel {
+  z-index: var(--room-floating-z, 80) !important;
+}

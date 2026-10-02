@@ -1,0 +1,491 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e "process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ scripts/export-admin-default-snapshot.test.js (3 tests) 455ms
+   ✓ admin default snapshot export > serializes non-user admin configuration with catalog credit fields  448ms
+ ✓ server/jsonBody.test.js (3 tests) 321ms
+ ✓ src/styles/themeContract.test.js (38 tests) 1268ms
+ ✓ src/modals/AchievementModal.test.jsx (2 tests) 177ms
+ ✓ src/modals/GachaModal.test.js (6 tests) 221ms
+ ✓ src/styles/styleContract.test.js (57 tests) 2169ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  538ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files  730ms
+ ✓ scripts/check-production-config.test.js (6 tests) 2441ms
+   ✓ production config check script > loads the production values from the current working directory .env  407ms
+   ✓ production config check script > prints ok for valid production deployment config  333ms
+   ✓ production config check script > exits non-zero and prints errors for invalid production deployment config  486ms
+   ✓ production config check script > checks production rules even when NODE_ENV is omitted  382ms
+   ✓ production config check script > rejects enabled test actions in production checks  401ms
+   ✓ production config check script > rejects explicit multi-instance production checks  427ms
+ ✓ src/home/IrisDatabase.test.jsx (2 tests) 89ms
+ ✓ src/admin/storyScriptWorkbook.test.js (5 tests) 1005ms
+   ✓ storyScriptWorkbook > round-trips an exported workbook back into a draft import  308ms
+   ✓ storyScriptWorkbook > allows the workbook title to update while rejecting script identity changes  353ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 2920ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  605ms
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale  691ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family  627ms
+   ✓ CSS layer inventory > registers responsive breakpoint families used by current CSS media queries  546ms
+ ✓ src/modals/WatchModal.test.js (9 tests) 464ms
+ ✓ scripts/characterNameplateSkill.test.js (8 tests) 170ms
+ ✓ src/modals/WarehouseModal.test.js (14 tests) 1227ms
+   ✓ WarehouseModal candy feedback > lays out desktop warehouse items as a two-column collection with mobile fallback  403ms
+   ✓ WarehouseModal candy feedback > renders unusable item actions as disabled gray buttons on desktop and mobile  443ms
+ ✓ src/shared/game.test.js (80 tests) 294ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 967ms
+   ✓ LeaderboardModal layout > uses textured row-level gold, silver, and bronze highlights instead of top-rank number triangles  376ms
+ ✓ src/modals/ReplayList.test.jsx (12 tests) 379ms
+ ✓ src/shared/windowTitleStickers.test.js (1 test) 4249ms
+   ✓ window title asset delivery > ships matching PNG and WebP with actual transparent margins for every title  4246ms
+ ✓ src/modals/ProfileMobileLayout.test.js (3 tests) 135ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 253ms
+ ✓ src/room/BoardSkillEffects.test.js (21 tests) 224ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 148ms
+ ✓ src/modals/SettingsModal.test.jsx (9 tests) 214ms
+ ✓ server/adminDefaultSnapshot.test.js (10 tests) 171ms
+ ✓ src/room/ActionBar.test.js (17 tests) 245ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 162ms
+ ✓ server/zhiziKataGoEngine.test.js (11 tests) 131ms
+ ✓ src/modals/PersonalizationModal.test.jsx (1 test) 91ms
+ ✓ src/modals/FeedbackModals.test.js (6 tests) 67ms
+ ✓ server/practiceRoomAutomation.test.js (15 tests) 413ms
+ ✓ src/shared/preloadAssets.test.js (23 tests) 131ms
+ ❯ server/practiceBotEngine.test.js (14 tests | 1 failed) 2511ms
+   ✓ GNU Go practice engine adapter > resolves Windows engines from explicit, managed, installed, then PATH locations 4ms
+   ✓ GNU Go practice engine adapter > keeps the Linux production default independent from Windows setup 0ms
+   ✓ GNU Go practice engine adapter > serializes only the bot-visible black and white position 7ms
+   ✓ GNU Go practice engine adapter > maps coordinates while skipping the GTP I column 1ms
+   ✓ GNU Go practice engine adapter > gives GNU Go only points that Spark currently considers legal 123ms
+   ✓ GNU Go practice engine adapter > uses GNU Go basic level 1 135ms
+   ✓ GNU Go practice engine adapter > uses GNU Go intermediate level 5 125ms
+   ✓ GNU Go practice engine adapter > uses GNU Go advanced level 10 119ms
+   ✓ GNU Go practice engine adapter > keeps one engine process active and rejects concurrent searches as busy 194ms
+   ✓ GNU Go practice engine adapter > probes and caches the configured executable before room creation 7ms
+   ✓ GNU Go practice engine adapter > returns an explicit failure instead of falling back to a homemade move 150ms
+   ✓ GNU Go practice engine adapter > maps a killed GNU Go process to a retryable timeout result 159ms
+   × GNU Go practice engine adapter > runs the real child-process boundary without a shell 1205ms
+     → GNU Go exceeded 1000ms
+   ✓ GNU Go practice engine adapter > kills and reaps a child that exceeds its hard timeout 277ms
+ ✓ scripts/playwrightTestDatabase.test.js (1 test) 771ms
+   ✓ Playwright test database > uses a unique temporary database instead of prisma/dev.db  768ms
+ ✓ src/room/PlayerInfo.test.js (17 tests) 850ms
+ ✓ src/auth/AuthScreen.test.js (17 tests) 1035ms
+   ✓ AuthScreen submit validation > keeps Bright School auth chrome paper-flat except for the outer card shadow  303ms
+ ✓ src/room/roomView.test.js (16 tests) 85ms
+ ✓ scripts/characterPortraitNormalization.test.js (12 tests) 6935ms
+   ✓ character portrait normalization > trims alpha, preserves aspect ratio, and anchors the subject bottom-center  324ms
+   ✓ character portrait normalization > is pixel- and byte-idempotent after the first normalization  313ms
+   ✓ character portrait normalization > preserves animated WebP frames, timing, loop, and one shared placement  939ms
+   ✓ character portrait normalization > rejects a static portrait when its asset contract requires animation  301ms
+   ✓ character portrait normalization > keeps the committed Denia candy portrait at its authored animation timing  3628ms
+   ✓ character portrait normalization > rebuilds a required animation from its legacy source when the output is static  1075ms
+ ✓ src/admin/AdminMailbox.test.jsx (1 test) 64ms
+ ✓ src/admin/AdminTableScroll.test.jsx (3 tests) 67ms
+ ✓ src/app/App.test.js (19 tests) 45ms
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 69ms
+ ✓ src/shared/CharacterChainBadge.test.jsx (2 tests) 53ms
+ ✓ src/room/BoardAmbientEffects.test.js (4 tests) 50ms
+ ✓ src/app/socketHandlers.test.js (42 tests) 92ms
+ ✓ src/room/Board.test.js (50 tests) 2953ms
+ ✓ server/storyScripts.test.js (22 tests) 73ms
+ ✓ src/room/ChatBox.test.js (14 tests) 83ms
+ ✓ src/admin/AdminGachaPools.test.jsx (9 tests) 105ms
+ ✓ server/items.test.js (25 tests) 68ms
+ ✓ src/modals/FriendsModal.test.jsx (7 tests) 423ms
+ ✓ src/room/boardSkillEffectRegistry.test.js (19 tests) 47ms
+ ✓ server/schemaIntegrity.test.js (19 tests) 33ms
+ ✓ src/admin/AdminAudit.test.jsx (3 tests) 58ms
+ ✓ server/adminDefaultSeed.test.js (12 tests) 56ms
+ ✓ src/admin/AdminShell.test.jsx (8 tests) 113ms
+ ✓ src/modals/RecruitmentModal.test.js (9 tests) 42ms
+ ✓ server/skillTraits.test.js (7 tests) 24ms
+ ✓ src/tutorial/TutorialSessionModal.test.jsx (8 tests) 184ms
+ ✓ src/modals/HouseModal.test.js (28 tests) 1108ms
+   ✓ deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable  325ms
+ ✓ src/modals/ModalActionButton.test.jsx (8 tests) 21ms
+ ✓ server/recruitment.test.js (15 tests) 33ms
+ ✓ server/roomConnectionLifecycle.test.js (8 tests) 26ms
+ ✓ server/roomView.test.js (12 tests) 44ms
+ ✓ src/ui/CorruptionMarks.test.jsx (6 tests) 52ms
+ ✓ server/loginSessions.test.js (9 tests) 25ms
+ ✓ server/achievements.test.js (12 tests) 46ms
+ ✓ src/shared/musicLibrary.test.js (68 tests) 28ms
+ ✓ server/roomCreationLifecycle.test.js (6 tests) 35ms
+ ✓ server/roomSkillResolution.test.js (17 tests) 40ms
+ ✓ server/socketRoomEvents.test.js (16 tests) 37ms
+ ✓ src/tutorial/tutorialGameState.test.js (8 tests) 42ms
+ ✓ server/mailbox.test.js (15 tests) 39ms
+ ✓ src/modals/StoryPlayerModal.test.jsx (12 tests) 51ms
+ ✓ src/app/AssetPreloadScreen.test.jsx (19 tests) 62ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 67ms
+ ✓ src/admin/AdminActionButton.test.jsx (2 tests) 27ms
+ ✓ src/home/HomeActionButton.test.jsx (2 tests) 57ms
+ ✓ server/socketGameEvents.test.js (8 tests) 25ms
+ ✓ server/security.test.js (16 tests) 25ms
+ ✓ src/api/client.test.js (5 tests) 18ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 2942ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  382ms
+   ✓ HomeScreen > uses a tactical ID card and skewed navigation cards  432ms
+   ✓ HomeScreen > renders the equipped username nameplate inside the student ID and retains its source assets  373ms
+   ✓ HomeScreen > keeps the practice difficulty picker compact, theme-scoped, and mobile-safe  412ms
+ ✓ src/shared/MarkdownLiteContent.test.jsx (3 tests) 25ms
+ ✓ src/shared/UserIdentity.test.jsx (4 tests) 30ms
+ ✓ server/shop.test.js (24 tests) 42ms
+ ✓ src/audio/playback.test.jsx (14 tests) 31ms
+ ✓ src/modals/ShopModal.test.js (27 tests) 424ms
+ ✓ src/modals/house/CharacterCostumeDialog.test.jsx (3 tests) 36ms
+ ✓ server/gacha.test.js (8 tests) 27ms
+ ✓ server/costumes.test.js (11 tests) 32ms
+ ✓ server/socketSigrikaCandyEvents.test.js (9 tests) 38ms
+ ✓ server/social.test.js (15 tests) 34ms
+ ✓ src/admin/AdminTableEmpty.test.jsx (2 tests) 26ms
+ ✓ server/adminRoutes.test.js (48 tests) 845ms
+ ✓ src/audio/CharacterMusicPreview.test.jsx (4 tests) 26ms
+ ✓ server/roomCloseLifecycle.test.js (6 tests) 24ms
+ ✓ src/shared/gomokuRules.test.js (7 tests) 28ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 35ms
+ ✓ src/room/SigrikaDuelPresentation.test.jsx (2 tests) 25ms
+ ✓ src/app/AppOverlays.test.jsx (9 tests) 63ms
+ ✓ src/room/TimeBar.test.js (3 tests) 32ms
+ ✓ server/serverProcessRestart.test.js (1 test) 16817ms
+   ✓ server process restart recovery > restores an acknowledged move from SQLite after a real process restart  16815ms
+ ✓ src/room/requestToasts/timedRoomRequests.test.js (8 tests) 32ms
+ ✓ src/app/skillTraitCatalog.test.js (4 tests) 22ms
+ ✓ server/roomBroadcasts.test.js (11 tests) 24ms
+ ✓ server/db.test.js (6 tests) 20ms
+ ✓ server/roomActionLifecycle.test.js (8 tests) 23ms
+ ✓ server/roomFactory.test.js (10 tests) 26ms
+ ✓ server/roomResultPersistence.test.js (6 tests) 32ms
+ ✓ server/roomStatePersistence.test.js (11 tests) 30ms
+ ✓ src/audio/skillEffectSounds.test.js (5 tests) 25ms
+ ✓ src/admin/AdminMusicTracks.test.jsx (1 test) 22ms
+ ✓ server/userFacingText.test.js (1 test) 12ms
+ ✓ src/app/resumeSession.test.js (12 tests) 22ms
+ ✓ server/staticAssets.test.js (9 tests) 20ms
+ ✓ src/app/gameActionDelivery.test.js (5 tests) 15ms
+ ✓ server/serverLifecycle.test.js (4 tests) 20ms
+ ✓ server/socketMatchEvents.test.js (7 tests) 22ms
+ ✓ src/admin/AdminAchievements.test.jsx (3 tests) 27ms
+ ✓ src/ui/primitives/ScrollArea.test.jsx (2 tests) 18ms
+ ✓ server/siteSettings.test.js (10 tests) 27ms
+ ✓ server/roomScoringFlow.test.js (2 tests) 33ms
+ ✓ server/authRoutes.test.js (11 tests) 24ms
+ ✓ server/socketGuards.test.js (8 tests) 24ms
+ ✓ server/userAssets.test.js (17 tests) 22ms
+ ✓ server/adminAnalytics.test.js (3 tests) 21ms
+ ✓ server/roomRestoreLifecycle.test.js (8 tests) 23ms
+ ✓ server/zhiziKataGoProtocol.test.js (6 tests) 21ms
+ ✓ server/socketAuth.test.js (4 tests) 22ms
+ ✓ server/runtimeServiceState.test.js (5 tests) 20ms
+ ✓ src/app/modalDismissal.test.js (7 tests) 14ms
+ ✓ src/shared/adminDrafts.test.js (12 tests) 20ms
+ ✓ server/roomClockLifecycle.test.js (5 tests) 23ms
+ ✓ server/announcements.test.js (5 tests) 18ms
+ ✓ server/characters.test.js (32 tests) 26ms
+ ✓ src/app/overlayRegistry.test.js (5 tests) 17ms
+ ✓ server/legacyDeniaCleanup.test.js (3 tests) 19ms
+ ✓ src/ui/primitives/Badge.test.jsx (2 tests) 19ms
+ ✓ server/socketPracticeEvents.test.js (8 tests) 21ms
+ ✓ src/app/useMatchActions.test.js (5 tests) 16ms
+ ✓ scripts/deploymentConfig.test.js (5 tests) 16ms
+ ✓ server/replayPagination.test.js (3 tests) 18ms
+ ✓ src/shared/systemVoices.test.js (16 tests) 15ms
+ ✓ server/roomRequestLifecycle.test.js (7 tests) 23ms
+ ✓ server/socketDuelEvents.test.js (6 tests) 17ms
+ ✓ server/rooms.test.js (43 tests) 563ms
+ ✓ server/onboardingStory.test.js (7 tests) 15ms
+ ✓ server/sigrikaCandyArc.test.js (9 tests) 19ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 1106ms
+ ✓ scripts/stabilityVerification.test.js (4 tests) 16ms
+ ✓ src/modals/modalComponents.test.jsx (1 test) 19ms
+ ✓ src/shared/gameBoard.test.js (3 tests) 13ms
+ ✓ scripts/sync-admin-default-story.test.js (3 tests) 19ms
+ ✓ server/legacyDerivedSkillCleanup.test.js (3 tests) 14ms
+ ✓ server/roomRuntime.test.js (9 tests) 17ms
+ ✓ server/roomTimers.test.js (4 tests) 14ms
+ ✓ server/adminCostumeManagement.test.js (3 tests) 16ms
+ ✓ scripts/exportSkillGifs.test.js (8 tests) 17ms
+ ✓ scripts/migrationBaselineVerification.test.js (3 tests) 13ms
+ ✓ server/onlineSessions.test.js (6 tests) 17ms
+ ✓ server/lobbyStatsBroadcaster.test.js (3 tests) 16ms
+ ✓ src/audio/effectPlayback.test.js (7 tests) 15ms
+ ✓ server/roomPreparationLifecycle.test.js (2 tests) 14ms
+ ✓ src/ui/primitives/EmptyState.test.jsx (2 tests) 19ms
+ ✓ server/duelRequests.test.js (4 tests) 14ms
+ ✓ server/roomQueries.test.js (8 tests) 16ms
+ ✓ src/app/InteractionFeedback.test.js (3 tests) 15ms
+ ✓ server/socketDisconnectEvents.test.js (3 tests) 15ms
+ ✓ server/roomPersistenceRestoreLifecycle.test.js (4 tests) 18ms
+ ✓ server/sigrikaDuelEngine.test.js (5 tests) 15ms
+ ✓ server/roomDeadlineScheduler.test.js (6 tests) 20ms
+ ✓ server/sigrikaAiAgreement.test.js (5 tests) 18ms
+ ✓ server/httpErrors.test.js (6 tests) 14ms
+ ✓ server/socketChatEvents.test.js (4 tests) 14ms
+ ✓ src/app/matchTransition.test.js (5 tests) 12ms
+ ✓ server/socialRoutes.test.js (8 tests) 16ms
+ ✓ src/app/BattleAssetPreloadScreen.test.js (2 tests) 18ms
+ ✓ server/socketEvents.test.js (3 tests) 22ms
+ ✓ server/runtimeStabilityMetrics.test.js (2 tests) 11ms
+ ✓ server/feedback.test.js (3 tests) 13ms
+ ✓ server/devServerScript.test.js (1 test) 9ms
+ ✓ server/rainbowBeanCandyStory.test.js (4 tests) 13ms
+ ✓ src/shared/gameSkillHandlers.test.js (4 tests) 12ms
+ ✓ src/app/appShellProps.test.js (2 tests) 14ms
+ ✓ src/ui/primitives/Button.test.jsx (2 tests) 19ms
+ ✓ src/app/roomPatch.test.js (7 tests) 12ms
+ ✓ src/app/authPortraitPrewarm.test.js (3 tests) 14ms
+ ✓ server/musicTracks.test.js (5 tests) 13ms
+ ✓ server/aemeathAcquisition.test.js (3 tests) 17ms
+ ✓ scripts/capacityVerification.test.js (5 tests) 12ms
+ ✓ server/builtinPortraitAssetMigration.test.js (2 tests) 13ms
+ ✓ src/room/pixiPrewarm.test.js (5 tests) 14ms
+ ✓ server/adminConfig.test.js (3 tests) 13ms
+ ✓ src/app/gameSocket.test.js (4 tests) 15ms
+ ✓ server/roomChatLifecycle.test.js (4 tests) 13ms
+ ✓ src/shared/storyTiming.test.js (5 tests) 10ms
+ ✓ src/shared/skillPresentation.test.js (14 tests) 13ms
+ ✓ scripts/pngTrim.test.js (2 tests) 12ms
+ ✓ src/audio/audioSettings.test.js (6 tests) 12ms
+ ✓ server/leaderboard.test.js (4 tests) 14ms
+ ✓ server/onboardingStoryRoutes.test.js (5 tests) 14ms
+ ✓ server/mailboxRoutes.test.js (3 tests) 10ms
+ ✓ server/gachaRoutes.test.js (5 tests) 12ms
+ ✓ src/tutorial/tutorialBattleRoom.test.js (2 tests) 11ms
+ ✓ src/shared/gameSkills.test.js (3 tests) 11ms
+ ✓ src/app/characterCatalog.test.js (2 tests) 12ms
+ ✓ src/shared/shopMascotDialogues.test.js (3 tests) 10ms
+ ✓ server/roomMatchmakingQueue.test.js (5 tests) 10ms
+ ✓ server/musicSelection.test.js (5 tests) 13ms
+ ✓ src/shared/gameSkillRegistry.test.js (5 tests) 10ms
+ ✓ src/shared/ratingRules.test.js (6 tests) 8ms
+ ✓ server/roomSkillMessages.test.js (7 tests) 12ms
+ ✓ server/usernameCleanup.test.js (3 tests) 11ms
+ ✓ server/commerceRoutes.test.js (8 tests) 16ms
+ ✓ server/recruitmentRoutes.test.js (2 tests) 12ms
+ ✓ src/admin/AdminOnboardingStory.test.jsx (16 tests) 30ms
+ ✓ server/roomOpeningLifecycle.test.js (3 tests) 13ms
+ ✓ src/shared/skillEffectCatalog.test.js (8 tests) 14ms
+ ✓ src/shared/gameRecords.test.js (6 tests) 9ms
+ ✓ src/app/visualTheme.test.js (4 tests) 9ms
+ ✓ server/roomItemEffects.test.js (4 tests) 12ms
+ ✓ src/app/playableReadyPreload.test.js (3 tests) 11ms
+ ✓ scripts/releaseCandidateVerification.test.js (2 tests) 12ms
+ ✓ scripts/voiceLoudnessNormalization.test.js (7 tests) 13ms
+ ✓ src/shared/characters.test.js (12 tests) 17ms
+ ✓ server/announcementRoutes.test.js (3 tests) 12ms
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (2 tests) 10ms
+ ✓ src/shared/irisGreeting.test.js (4 tests) 10ms
+ ✓ server/resume.test.js (5 tests) 8ms
+ ✓ server/serverStartup.test.js (2 tests) 16ms
+ ✓ src/app/siteSettingsCatalog.test.js (3 tests) 11ms
+ ✓ src/shared/timeAnnouncements.test.js (5 tests) 6ms
+ ✓ server/playerRoutes.test.js (6 tests) 16ms
+ ✓ src/room/mobilePointConfirmation.test.js (3 tests) 7ms
+ ✓ src/shared/gameResults.test.js (3 tests) 7ms
+ ✓ src/audio/proceduralSounds.test.js (2 tests) 11ms
+ ✓ src/shared/practiceMode.test.js (3 tests) 8ms
+ ✓ src/app/sigrikaCandyResultNavigation.test.js (1 test) 10ms
+ ✓ src/shared/characterPortraits.test.js (8 tests) 10ms
+ ✓ server/publicRoutes.test.js (7 tests) 14ms
+ ✓ src/app/roomSnapshot.test.js (5 tests) 11ms
+ ✓ server/roomGameActions.test.js (1 test) 13ms
+ ✓ src/shared/boardView.test.js (10 tests) 10ms
+ ✓ server/adminGachaManagement.test.js (2 tests) 9ms
+ ✓ src/shared/gameModes.test.js (2 tests) 9ms
+ ✓ server/zhiziKataGoConfig.test.js (5 tests) 10ms
+ ✓ server/roomRewards.test.js (4 tests) 11ms
+ ✓ server/verificationFixtureRoutes.test.js (5 tests) 13ms
+ ✓ server/userProgressLedger.test.js (3 tests) 7ms
+ ✓ server/roomTestActions.test.js (3 tests) 12ms
+ ✓ server/characterSelection.test.js (8 tests) 11ms
+ ✓ server/roomMembershipIndex.test.js (6 tests) 9ms
+ ✓ server/roomSystemMessages.test.js (4 tests) 10ms
+ ✓ server/roomActionReceipts.test.js (3 tests) 11ms
+ ✓ server/roomClockTiming.test.js (3 tests) 5ms
+ ✓ src/room/boardSkillEffectAssets.test.js (3 tests) 7ms
+ ✓ src/tutorial/tutorialPointGuidance.test.js (3 tests) 7ms
+ ✓ src/shared/audioScheduling.test.js (6 tests) 10ms
+ ✓ src/shared/voiceEffects.test.js (3 tests) 9ms
+ ✓ src/shared/irisLinks.test.js (2 tests) 8ms
+ ✓ src/shared/resultRewards.test.js (3 tests) 9ms
+ ✓ server/replayRoutes.test.js (3 tests) 9ms
+ ✓ src/shared/skillTraits.test.js (3 tests) 8ms
+ ✓ scripts/sqliteBackupVerification.test.js (3 tests) 9ms
+ ✓ src/app/replayOpening.test.js (3 tests) 8ms
+ ✓ src/app/useMatchSessionState.test.js (2 tests) 7ms
+ ✓ server/authRouteOrder.test.js (2 tests) 7ms
+ ✓ src/tutorial/tutorialChoiceFeedback.test.js (3 tests) 10ms
+ ✓ src/audio/systemVoicePlayback.test.js (2 tests) 9ms
+ ✓ src/app/useRoomSessionState.test.js (5 tests) 8ms
+ ✓ src/admin/AdminCharacters.test.jsx (2 tests) 12ms
+ ✓ scripts/viteBuildConfig.test.js (5 tests) 10ms
+ ✓ server/gameRecords.test.js (3 tests) 8ms
+ ✓ server/userProfile.test.js (1 test) 8ms
+ ✓ src/app/roomClock.test.js (4 tests) 8ms
+ ✓ server/securityHeaders.test.js (1 test) 8ms
+ ✓ src/shared/rankProgression.test.js (4 tests) 10ms
+ ✓ src/room/actions/useRoomPointActions.test.js (7 tests) 9ms
+ ✓ scripts/checkBuiltCssContracts.test.js (2 tests) 8ms
+ ✓ src/admin/AdminSkillTraits.test.jsx (1 test) 8ms
+ ✓ src/app/roomUserSync.test.js (4 tests) 8ms
+ ✓ src/app/sessionState.test.js (4 tests) 8ms
+ ✓ src/shared/derivedSkills.test.js (4 tests) 8ms
+ ✓ src/room/view/useRoomBoardView.test.js (5 tests) 9ms
+ ✓ src/room/boardSkillEffectSoundScheduler.test.js (3 tests) 8ms
+ ✓ scripts/verificationScripts.test.js (3 tests) 8ms
+ ✓ src/app/roomNavigation.test.js (3 tests) 7ms
+ ✓ server/roomActionValidation.test.js (4 tests) 7ms
+ ✓ src/shared/shopItemIllust.test.js (2 tests) 7ms
+ ✓ src/shared/ratingRank.test.js (15 tests) 9ms
+ ✓ src/audio/voicePlaybackProfiles.test.js (2 tests) 6ms
+ ✓ scripts/qiuyuanSystemVoiceGenerator.test.js (1 test) 5ms
+ ✓ src/shared/characterCv.test.js (2 tests) 6ms
+ ✓ src/shared/stoneFormatting.test.js (2 tests) 8ms
+ ✓ scripts/sync-admin-default-config.test.js (2 tests) 7ms
+ ✓ server/loginConflicts.test.js (3 tests) 5ms
+ ✓ server/roomPresence.test.js (4 tests) 6ms
+ ✓ src/app/useOverlayState.test.js (2 tests) 6ms
+ ✓ src/audio/backgroundMusicPause.test.js (2 tests) 5ms
+ ✓ server/uploadPaths.test.js (3 tests) 5ms
+ ✓ src/app/useMailboxSummary.test.js (2 tests) 6ms
+ ✓ src/audio/backgroundDucking.test.js (1 test) 6ms
+ ✓ src/shared/boardAudio.test.js (4 tests) 7ms
+ ✓ src/audio/voiceBackgroundIndependence.test.js (1 test) 5ms
+ ✓ src/app/useOnboardingStory.test.js (1 test) 7ms
+ ✓ server/userAssetsBackfill.test.js (1 test) 6ms
+ ✓ server/healthRoutes.test.js (2 tests) 8ms
+ ✓ src/shared/candyPortraits.test.js (2 tests) 5ms
+ ✓ src/app/useRecruitmentReadyState.test.js (2 tests) 6ms
+ ✓ src/room/roomAudioBaseline.test.js (2 tests) 8ms
+ ✓ src/app/useIncomingDuelState.test.js (1 test) 5ms
+ ✓ src/ui/classNames.test.js (2 tests) 6ms
+ ✓ src/app/useHomeUserRefresh.test.js (1 test) 7ms
+ ✓ server/skillRegistry.test.js (1 test) 5ms
+ ✓ src/room/OperationHint.test.js (2 tests) 6ms
+ ✓ src/app/useRoomMemory.test.js (2 tests) 5ms
+ ✓ src/modals/SkillBanner.test.js (1 test) 5ms
+ ✓ src/admin/AdminAnnouncements.test.jsx (1 test) 5ms
+ ✓ src/room/RoomPeopleList.test.js (3 tests) 7ms
+ ✓ src/admin/AdminSiteSettings.test.jsx (1 test) 6ms
+ ✓ src/room/audio/useRoomAudioEffects.test.js (1 test) 5ms
+ ✓ src/modals/InformationCenterLayout.dom.test.jsx (1 test) 656ms
+   ✓ InformationCenterLayout mobile navigation > hides the inactive pane semantically and restores the list trigger on back  654ms
+ ✓ src/audio/CharacterMusicPreview.dom.test.jsx (4 tests) 955ms
+   ✓ CharacterMusicPreview interaction > switches skill tabs and keeps the floating track sheet open after selection  611ms
+ ✓ src/modals/house/CharacterCostumeDialog.dom.test.jsx (2 tests) 603ms
+   ✓ CharacterCostumeDialog overlay > portals the wardrobe outside the clipped character-detail parent  502ms
+ ✓ src/modals/shop/CostumeDetailDialog.dom.test.jsx (4 tests) 720ms
+   ✓ CostumeDetailDialog > closes after a successful purchase and hands the purchased costume to the parent prompt  444ms
+ ✓ src/modals/modalComponents.dom.test.jsx (3 tests) 526ms
+   ✓ ModalDialog DOM interaction > focuses the first control, traps Tab, and closes on Escape  488ms
+ ✓ src/home/IrisDatabase.dom.test.jsx (6 tests) 1342ms
+   ✓ IRIS Database home interaction > opens an image-free database dialog and restores focus on Escape  599ms
+ ✓ src/modals/WindowTitleSticker.dom.test.jsx (3 tests) 402ms
+   ✓ campus window title artwork > keeps one accessible heading through image loading and failure  344ms
+ ✓ src/shared/SkillDescription.test.jsx (5 tests) 523ms
+   ✓ SkillDescription > renders confirmed fallback traits as buttons on the first render  317ms
+ ✓ src/modals/PersonalizationModal.dom.test.jsx (1 test) 803ms
+   ✓ distinguishes saved equipment from an unsaved preview and only persists on save  801ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (2 tests) 516ms
+   ✓ profile character record empty state > collapses empty records and restores the table in self profiles  421ms
+ ✓ src/admin/AdminCostumes.test.jsx (2 tests) 556ms
+   ✓ AdminCostumes > keeps the canonical character id when editing and saving a costume  550ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (4 tests) 403ms
+ ✓ src/modals/AnnouncementModal.test.jsx (5 tests) 1637ms
+   ✓ AnnouncementModal information center > automatically opens and marks the newest announcement as read  605ms
+   ✓ AnnouncementModal information center > uses shared master-detail CSS instead of a nested detail modal contract  740ms
+ ✓ src/admin/AdminShopItems.test.jsx (1 test) 618ms
+   ✓ AdminShopItems > renders and saves the music category without corrupting its value  616ms
+ ✓ src/modals/useReplayPagination.dom.test.jsx (2 tests) 197ms
+ ✓ src/app/DesktopViewportGate.dom.test.jsx (6 tests) 318ms
+ ✓ src/admin/AdminRecruitmentSettings.test.jsx (1 test) 1095ms
+   ✓ AdminRecruitmentSettings > loads, saves, and reloads the memorial-ticket copy  1093ms
+ ✓ src/modals/MailboxModal.test.jsx (11 tests) 1920ms
+   ✓ MailboxModal information center > automatically opens the newest mail, marks it read, and keeps list buttons semantic  568ms
+   ✓ MailboxModal information center > keeps the quiet paper reader, text-only list, stable attachment stage, and mobile safety  379ms
+ ✓ src/modals/WatchModal.dom.test.jsx (1 test) 393ms
+   ✓ WatchModal room counts > shows all mode room counts from the selected-mode response  391ms
+ ✓ src/app/AssetPreloadScreen.dom.test.jsx (1 test) 341ms
+   ✓ AssetPreloadScreen progress motion > breathes while idle and enters rolling state during meaningful progress  339ms
+ ✓ src/modals/house/HouseCharacterGrid.dom.test.jsx (2 tests) 593ms
+   ✓ HouseCharacterGrid candy effect cancellation > cancels from the candy icon without opening the character card  462ms
+ ✓ src/room/RoomPeopleList.dom.test.jsx (1 test) 522ms
+   ✓ RoomPeopleList floating actions > portals member actions outside the clipped mobile dock  520ms
+ ✓ src/room/ChatBox.dom.test.jsx (2 tests) 1127ms
+   ✓ ChatBox popover draft > keeps the draft when the popover is closed and reopened  897ms
+ ✓ src/room/PlayerInfo.dom.test.jsx (2 tests) 844ms
+   ✓ PlayerInfo mobile skill traits > opens a trait immediately from the mobile skill tooltip without closing the skill tooltip  649ms
+ ✓ src/auth/AuthScreen.dom.test.jsx (10 tests) 4837ms
+   ✓ AuthScreen DOM interaction > starts portrait prewarming without making authentication wait for it  852ms
+   ✓ AuthScreen DOM interaction > preserves username, clears passwords on mode change, and exposes selected semantics  553ms
+   ✓ AuthScreen DOM interaction > allows only one in-flight request across repeated synchronous submits  432ms
+   ✓ AuthScreen DOM interaction > keeps both registration password toggles disabled without replacing their owner class  719ms
+   ✓ AuthScreen DOM interaction > aborts an in-flight request on unmount and ignores its later result  445ms
+   ✓ AuthScreen DOM interaction > accepts a successful response after the Strict Mode effect rehearsal  506ms
+   ✓ AuthScreen DOM interaction > uses the accessible confirmation layer for active-session conflicts  574ms
+   ✓ AuthScreen DOM interaction > turns Retry-After into one concise recovery message  483ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 1651ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  863ms
+   ✓ ResumeModal authoritative record stats > keeps the selected mode and data aligned after failure, then retries explicitly  322ms
+ ✓ src/home/MatchModeRulesTooltip.dom.test.jsx (3 tests) 1208ms
+   ✓ mode rules hover > keeps rules out of cards and shows and dismisses desktop hover rules  725ms
+ ✓ src/admin/AdminMascotSettings.test.jsx (4 tests) 2783ms
+   ✓ AdminMascotSettings > renders all three mascot editors from one admin destination  664ms
+   ✓ AdminMascotSettings > keeps edited fields when parent callbacks change and focus moves  602ms
+   ✓ AdminMascotSettings > saves shop dialogue pools, IRIS greeting, and IRIS links together  1252ms
+ ✓ src/tutorial/TutorialChoiceActions.dom.test.jsx (2 tests) 388ms
+   ✓ TutorialChoiceActions > focuses the first reply and submits only one choice  353ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (13 tests) 3055ms
+   ✓ UserProfileCard dossier interactions > opts report titles in explicitly and restores focus (stickers: false)  621ms
+   ✓ UserProfileCard dossier interactions > keeps social actions in the identity area and locks the mode tab order  385ms
+   ✓ UserProfileCard dossier interactions > keeps report submission disabled and labelled while it is pending  315ms
+ ✓ src/app/SigrikaCorruptionOverlay.dom.test.jsx (1 test) 54ms
+ ✓ src/app/SigrikaCorruptionTransition.dom.test.jsx (2 tests) 65ms
+ ✓ src/app/useSigrikaCorruptionTransition.dom.test.jsx (5 tests) 68ms
+ ✓ src/app/useBackgroundMusicTrack.test.js (2 tests) 34ms
+ ✓ src/home/components/HomeStage.dom.test.jsx (2 tests) 137ms
+ ✓ src/app/useRoomSessionState.dom.test.jsx (1 test) 30ms
+ ✓ src/modals/StoryPlayerModal.dom.test.jsx (2 tests) 120ms
+ ✓ src/home/HomeScreen.dom.test.jsx (7 tests) 3423ms
+   ✓ HomeScreen practice difficulty picker > opens three levels and starts the selected one with a random color  1127ms
+   ✓ HomeScreen practice difficulty picker > keeps both onboarding actions inert during Sigrika corruption  320ms
+   ✓ HomeScreen practice difficulty picker > requires an explicit high-difficulty confirmation before starting the Sigrika duel  551ms
+   ✓ HomeScreen practice difficulty picker > turns the occupied duel entry pale yellow and watches directly without closing the picker  342ms
+   ✓ HomeScreen practice difficulty picker > returns the button to challenge state when the watched duel has just ended  374ms
+   ✓ HomeScreen practice difficulty picker > reopens the picker in occupied state when a challenge loses the creation race  445ms
+ ✓ src/tutorial/TypewriterText.dom.test.jsx (1 test) 33ms
+ ✓ src/app/AppRoutes.dom.test.jsx (2 tests) 46ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/practiceBotEngine.test.js > GNU Go practice engine adapter > runs the real child-process boundary without a shell
+Error: GNU Go exceeded 1000ms
+ ❯ stopWithCode server/practiceBotEngine.js:199:21
+    197|     const stopWithCode = (code, message) => {
+    198|       if (settled || forcedError) return;
+    199|       const error = new Error(message);
+       |                     ^
+    200|       error.code = code;
+    201|       forcedError = error;
+ ❯ Timeout.<anonymous> server/practiceBotEngine.js:205:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 358 passed (359)
+      Tests  1 failed | 2528 passed (2529)
+   Start at  19:55:32
+   Duration  62.13s (transform 153.47s, setup 0ms, collect 890.12s, tests 101.60s, environment 196.17s, prepare 140.65s)
+

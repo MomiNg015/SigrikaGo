@@ -1,0 +1,13 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import Stage from '/src/room/RoomBattleStage.jsx';
+import RoomHeader from '/src/room/header/RoomHeader.jsx';
+import ActionBar from '/src/room/ActionBar.jsx';
+import {tutorialPlayersForSetup,createTutorialBattleRoom} from '/src/tutorial/tutorialBattleRoom.js';
+import {createTutorialGameState} from '/src/tutorial/tutorialGameState.js';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const players=tutorialPlayersForSetup({playerCharacterId:'sigrika',npcCharacterId:'denia'},{id:'preview',username:new URLSearchParams(location.search).has('long')?'这是一个很长的部员名字':'星炬部员'},CHARACTERS);
+players.forEach(p=>{p.isTutorialPlayer=false;p.time={main:300,byoYomi:30,periodRemaining:30,periods:3};p.user.rank='3段';p.user.rating=1600;});
+const game=createTutorialGameState({players}); const room=createTutorialBattleRoom({game,players,code:'123456'}); const noop=()=>{};
+function Preview(){const [pending,setPending]=React.useState(false);return <div className="app-shell player-theme-enabled theme-bright-school"><main className={new URLSearchParams(location.search).has("desktop")?"room-screen desktop-room-screen":"room-screen mobile-room-screen"}><RoomHeader showTestTools onGameAction={noop} room={room} roomGameInfo={{black:'西格莉卡',white:'达妮娅',moves:'第 1 手'}} showCoords onBack={noop}/><Stage battleLayoutClassName={new URLSearchParams(location.search).has("desktop")?"battle-layout":"mobile-battle-layout"} characters={CHARACTERS} displayRoom={room} me={players[0]} opponent={players[1]} user={players[0].user} role="player" viewColor="black" showCoords skillAvailable pendingSkill={pending} setPendingSkill={setPending} onGameAction={noop} onScoringAction={noop} actionPanelOverride={<ActionBar role="player" mode={game.mode} phase="playing" me={players[0]} isMyTurn={!new URLSearchParams(location.search).has('waiting')} skillEnabled skillName="星辉符文" skillUses={1} skillAvailable pendingSkill={pending} setPendingSkill={setPending} countingEnabled drawEnabled opponentConnected hasAnyStones onPass={noop} onCountingRequest={noop} onDrawRequest={noop} onResign={noop}/>} /></main></div>};createRoot(document.getElementById('root')).render(<Preview/>);

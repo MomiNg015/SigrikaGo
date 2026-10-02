@@ -1,0 +1,4 @@
+{"file":"docs/system-design/05-assets-audio-preload.md","reason":"Runtime asset, audio, battle preload, and room ready protocol contracts"}
+{"file":"docs/system-design/07-performance-tech-debt.md","reason":"Performance debt, lazy chunking, and app-shell optimization context"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Startup preload and handoff quality contracts"}
+{"file":".trellis/spec/frontend/state-management.md","reason":"App shell, match session, and room preloading state contracts"}

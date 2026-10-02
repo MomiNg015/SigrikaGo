@@ -1,0 +1,28 @@
+@theme inline {
+  --font-sigrika-ui: var(--font-ui-default);
+  --font-sigrika-display: var(--font-display-accent);
+  --font-sigrika-numeric: var(--font-numeric-accent);
+
+  --color-sigrika-paper: var(--bright-paper, #fffbf2);
+  --color-sigrika-surface: var(--bright-sheet, #ffffff);
+  --color-sigrika-surface-clean: var(--bright-sheet-clean, #ffffff);
+  --color-sigrika-ink: var(--bright-ink, #3d2b25);
+  --color-sigrika-muted: var(--bright-ink-soft, rgba(61, 43, 37, 0.7));
+  --color-sigrika-border: var(--bright-border, #3d2b25);
+  --color-sigrika-accent: var(--bright-pink, #ff9ebb);
+  --color-sigrika-accent-soft: var(--bright-pink-soft, #ffdfeb);
+  --color-sigrika-info: var(--bright-blue, #9ad3de);
+  --color-sigrika-success: var(--bright-mint, #bfe8dd);
+
+  --spacing-sigrika-page: var(--page-pad);
+  --spacing-sigrika-gap: var(--fluid-gap);
+  --spacing-sigrika-control-x: var(--control-pad-x);
+  --spacing-sigrika-control-y: var(--control-pad-y);
+
+  --radius-sigrika-control: 8px;
+  --radius-sigrika-card: 8px;
+  --shadow-sigrika-paper: var(--bright-shadow, 4px 4px 0 #3d2b25);
+  --shadow-sigrika-paper-soft: var(--bright-shadow-soft, 4px 5px 0 rgba(61, 43, 37, 0.82));
+  --shadow-sigrika-paper-lift: var(--bright-shadow-lift, 7px 8px 0 rgba(61, 43, 37, 0.86), 0 14px 28px rgba(255, 158, 187, 0.2));
+  --ease-sigrika-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

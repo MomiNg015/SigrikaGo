@@ -1,0 +1,33 @@
+.app-shell.player-theme-enabled.theme-bright-school .friends-row,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-row,
+.app-shell.player-theme-enabled.theme-bright-school .shop-item,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item,
+.app-shell.player-theme-enabled.theme-bright-school .friend-action-row,
+.app-shell.player-theme-enabled.theme-bright-school .watch-room-row,
+.app-shell.player-theme-enabled.theme-bright-school .character-record-row {
+  --bright-commerce-card-surface: var(--bright-sheet-clean);
+  --bright-commerce-card-outline: #4a3736;
+  background: var(--bright-commerce-card-surface) !important;
+  border: 2px solid var(--bright-commerce-card-outline) !important;
+  border-radius: 12px !important;
+  clip-path: none !important;
+  box-shadow: 3px 3px 0 var(--bright-commerce-card-outline) !important;
+  color: var(--bright-commerce-card-outline) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .friends-row {
+  --bright-commerce-card-surface: var(--bright-sheet);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-record-row {
+  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-record-row b {
+  color: #3b6048;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .shop-item::after,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item::after {
+  display: none !important;
+}

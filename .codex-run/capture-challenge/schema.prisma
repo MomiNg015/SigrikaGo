@@ -1,0 +1,766 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "./generated-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  username           String   @unique
+  passwordHash       String
+  role               String   @default("player")
+  status             String   @default("active")
+  banReason          String?
+  bannedAt           DateTime?
+  rank               String   @default("3段")
+  rating             Int      @default(1000)
+  wins               Int      @default(0)
+  losses             Int      @default(0)
+  coins              Int      @default(300)
+  blueGems           Int      @default(0)
+  selectedCharacter  String   @default("sigrika")
+  selectedStoneDecoration String @default("")
+  ownedCharacters    String   @default("sigrika,denia")
+  ownedItems         String   @default("")
+  itemPurchaseCounts String   @default("")
+  itemEffects        String   @default("")
+  ownedDecorations   String   @default("")
+  ownedMusicIds      String   @default("")
+  musicSelections    String   @default("{}")
+  onboardingRequired Boolean  @default(false)
+  onboardingAutoShownAt DateTime?
+  onboardingCompletedAt DateTime?
+  welcomeMailNoticeShownAt DateTime?
+  sigrikaCandyUseCount Int @default(0)
+  sigrikaCandyPhase String @default("normal")
+  sigrikaCandyOutcome String @default("")
+  sigrikaCandyRoomCode String @default("")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  userCharacters     UserCharacter[]
+  userDecorations    UserDecoration[]
+  userItems          UserItem[]
+  userItemEffects    UserItemEffect[]
+  userCostumes       UserCostume[]
+  costumeEquipment   UserCostumeEquipment[]
+  modeStats          UserModeStats[]
+  gachaDraws         GachaDraw[]
+  recruitmentTasks   RecruitmentTask[]
+  recruitmentMissStreaks RecruitmentMissStreak[]
+  achievements       UserAchievement[]
+  achievementCounters AchievementCounter[]
+  achievementEquipment UserAchievementEquipment?
+  profileLikesGiven UserProfileLike[] @relation("ProfileLikesGiven")
+  profileLikesReceived UserProfileLike[] @relation("ProfileLikesReceived")
+  reportsSubmitted UserReport[] @relation("ReportsSubmitted")
+  reportsReceived UserReport[] @relation("ReportsReceived")
+  mailboxMessages   MailboxMessage[]
+  mailboxBatches    MailboxBatch[] @relation("MailboxAdminBatches")
+  announcementReads AnnouncementRead[]
+  captureChallengeBest CaptureChallengeBest?
+  captureChallengeResults CaptureChallengeResult[]
+}
+
+model CaptureChallengeBest {
+  userId          String @id
+  captures        Int
+  characterId     String
+  costumeSnapshot String @default("null")
+  bestRank        Int
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([captures])
+}
+
+model CaptureChallengeResult {
+  id           String @id
+  userId       String
+  captures     Int
+  rank         Int
+  breakthrough Boolean
+  createdAt    DateTime @default(now())
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RecruitmentTask {
+  id                 String   @id @default(cuid())
+  userId             String
+  itemType           String
+  status             String   @default("pending")
+  resultType         String
+  resultCharacterSlug String?
+  successRatePercent Int
+  missStreakAtStart  Int      @default(0)
+  responseText       String   @default("")
+  startedAt          DateTime @default(now())
+  readyAt            DateTime
+  fastForwardedAt    DateTime?
+  claimedAt          DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, readyAt])
+  @@index([itemType])
+}
+
+model RecruitmentMissStreak {
+  id        String   @id @default(cuid())
+  userId    String
+  itemType  String
+  streak    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType])
+  @@index([itemType])
+}
+
+model UserModeStats {
+  id        String   @id @default(cuid())
+  userId    String
+  mode      String
+  rating    Int      @default(1000)
+  rank      String   @default("3段")
+  recentResults String @default("")
+  wins      Int      @default(0)
+  losses    Int      @default(0)
+  draws     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mode])
+  @@index([mode, rating])
+}
+
+model LoginSession {
+  id               String   @id
+  userId           String
+  refreshTokenHash String   @unique
+  revokedAt        DateTime?
+  expiresAt        DateTime
+  lastSeenAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model UserCharacter {
+  id            String   @id @default(cuid())
+  userId        String
+  characterSlug String
+  chainCount    Int      @default(0)
+  source        String   @default("legacy")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, characterSlug])
+  @@index([characterSlug])
+}
+
+model GachaPool {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @default("")
+  enabled         Boolean  @default(true)
+  permanent       Boolean  @default(false)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  singleDrawPrice Int      @default(50)
+  tenDrawPrice    Int      @default(500)
+  featuredPrizeId String?
+  featuredPrizeIds String?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  prizes          GachaPrize[]
+  draws           GachaDraw[]
+
+  @@index([enabled, sortOrder])
+  @@index([startsAt, endsAt])
+}
+
+model GachaPrize {
+  id                     String   @id @default(cuid())
+  poolId                 String
+  type                   String
+  targetId               String   @default("")
+  quantity               Int      @default(1)
+  probabilityBasisPoints Int
+  enabled                Boolean  @default(true)
+  name                   String   @default("")
+  imageUrl               String   @default("")
+  sortOrder              Int      @default(0)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  pool                   GachaPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  rewards                GachaDrawReward[]
+
+  @@index([poolId, enabled, sortOrder])
+  @@index([type, targetId])
+}
+
+model GachaDraw {
+  id        String   @id @default(cuid())
+  userId    String
+  poolId    String
+  drawCount Int
+  coinCost  Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pool      GachaPool @relation(fields: [poolId], references: [id], onDelete: Restrict)
+  rewards   GachaDrawReward[]
+
+  @@index([userId, createdAt])
+  @@index([poolId, createdAt])
+}
+
+model GachaDrawReward {
+  id                String   @id @default(cuid())
+  drawId            String
+  poolId            String
+  prizeId           String?
+  drawIndex         Int
+  type              String
+  targetId          String   @default("")
+  quantity          Int
+  unlockedQuantity  Int      @default(0)
+  duplicateQuantity Int      @default(0)
+  blueGemsAdded     Int      @default(0)
+  chainAdded        Int      @default(0)
+  coinsAdded        Int      @default(0)
+  createdAt         DateTime @default(now())
+  draw              GachaDraw @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  prize             GachaPrize? @relation(fields: [prizeId], references: [id], onDelete: SetNull)
+
+  @@index([drawId, drawIndex])
+  @@index([poolId, createdAt])
+  @@index([type, targetId])
+}
+
+model UserDecoration {
+  id             String   @id @default(cuid())
+  userId         String
+  decorationSlug String
+  source         String   @default("legacy")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, decorationSlug])
+  @@index([decorationSlug])
+}
+
+model UserItem {
+  id        String   @id @default(cuid())
+  userId    String
+  itemId    String
+  quantity  Int      @default(0)
+  source    String   @default("legacy")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([itemId])
+}
+
+model UserItemEffect {
+  id          String   @id @default(cuid())
+  userId      String
+  effectKey   String
+  effectValue String   @default("true")
+  source      String   @default("legacy")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, effectKey])
+  @@index([effectKey])
+}
+
+model Costume {
+  id                       String   @id
+  name                     String
+  characterSlug            String
+  portraitUrl              String
+  candyEffectPortraitUrl   String   @default("")
+  portraitScalePercent     Int      @default(100)
+  portraitOffsetXPercent   Int      @default(0)
+  portraitOffsetYPercent   Int      @default(0)
+  description              String   @default("")
+  illustName               String   @default("")
+  illustUrl                String   @default("")
+  priceCoins               Int
+  discountPercent          Int      @default(0)
+  shopVisible              Boolean  @default(true)
+  purchasable              Boolean  @default(true)
+  enabled                  Boolean  @default(true)
+  sortOrder                Int      @default(0)
+  source                   String   @default("default")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  owners                   UserCostume[]
+  equippedBy               UserCostumeEquipment[]
+
+  @@index([characterSlug, enabled, sortOrder])
+  @@index([shopVisible, purchasable, enabled, sortOrder])
+}
+
+model UserCostume {
+  id        String   @id @default(cuid())
+  userId    String
+  costumeId String
+  source    String   @default("purchase")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  costume   Costume  @relation(fields: [costumeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, costumeId])
+  @@index([costumeId])
+}
+
+model UserCostumeEquipment {
+  id            String   @id @default(cuid())
+  userId        String
+  characterSlug String
+  costumeId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  costume       Costume  @relation(fields: [costumeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, characterSlug])
+  @@index([costumeId])
+}
+
+model UserProgressLedger {
+  id          String   @id @default(cuid())
+  userId      String
+  metric      String
+  delta       Int
+  beforeValue Int?
+  afterValue  Int?
+  reason      String   @default("")
+  refType     String   @default("")
+  refId       String   @default("")
+  createdAt   DateTime @default(now())
+
+  @@index([userId, metric, createdAt])
+  @@index([refType, refId])
+}
+
+model MailboxBatch {
+  id                 String   @id @default(cuid())
+  adminUserId        String
+  adminUsername      String
+  targetMode         String
+  recipientUserId    String   @default("")
+  sender             String   @default("")
+  title              String
+  body               String
+  attachmentType     String   @default("none")
+  attachmentItemId   String   @default("")
+  attachmentQuantity Int      @default(0)
+  includeFutureUsers Boolean  @default(false)
+  deliveredCount     Int      @default(0)
+  skippedCount       Int      @default(0)
+  createdAt          DateTime @default(now())
+  admin              User     @relation("MailboxAdminBatches", fields: [adminUserId], references: [id], onDelete: Restrict)
+  messages           MailboxMessage[]
+
+  @@index([targetMode, createdAt])
+  @@index([includeFutureUsers, createdAt])
+  @@index([adminUserId, createdAt])
+}
+
+model MailboxMessage {
+  id                 String   @id @default(cuid())
+  batchId            String?
+  userId             String
+  sender             String   @default("")
+  title              String
+  body               String
+  attachmentType     String   @default("none")
+  attachmentItemId   String   @default("")
+  attachmentQuantity Int      @default(0)
+  isRead             Boolean  @default(false)
+  readAt             DateTime?
+  claimedAt          DateTime?
+  deletedAt          DateTime?
+  createdAt          DateTime @default(now())
+  batch              MailboxBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
+  @@index([batchId, userId])
+  @@index([userId, deletedAt, createdAt])
+}
+
+model UserRelationship {
+  id           String   @id @default(cuid())
+  ownerUserId  String
+  targetUserId String
+  type         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([ownerUserId, targetUserId])
+  @@index([ownerUserId, type])
+  @@index([targetUserId])
+}
+
+model UserProfileLike {
+  id           String   @id @default(cuid())
+  likerUserId  String
+  targetUserId String
+  dayKey       String
+  createdAt    DateTime @default(now())
+  liker        User     @relation("ProfileLikesGiven", fields: [likerUserId], references: [id], onDelete: Cascade)
+  target       User     @relation("ProfileLikesReceived", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@unique([likerUserId, targetUserId, dayKey])
+  @@index([targetUserId])
+  @@index([likerUserId, createdAt])
+}
+
+model UserReport {
+  id               String   @id @default(cuid())
+  reporterUserId   String
+  reportedUserId   String
+  reporterUsername String
+  reportedUsername String
+  content          String
+  createdAt        DateTime @default(now())
+  reporter         User     @relation("ReportsSubmitted", fields: [reporterUserId], references: [id], onDelete: Cascade)
+  reported         User     @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([reporterUserId])
+  @@index([reportedUserId])
+}
+
+model GameRecord {
+  id          String   @id @default(cuid())
+  roomCode    String
+  blackUserId String
+  whiteUserId String
+  blackName   String
+  whiteName   String
+  blackCharacter String
+  whiteCharacter String
+  blackCostumeId String @default("")
+  whiteCostumeId String @default("")
+  blackCostumePortraitUrl String @default("")
+  whiteCostumePortraitUrl String @default("")
+  blackCostumePortraitScalePercent Int @default(100)
+  whiteCostumePortraitScalePercent Int @default(100)
+  blackCostumePortraitOffsetXPercent Int @default(0)
+  whiteCostumePortraitOffsetXPercent Int @default(0)
+  blackCostumePortraitOffsetYPercent Int @default(0)
+  whiteCostumePortraitOffsetYPercent Int @default(0)
+  resultText  String
+  winnerColor String?
+  resultReason String?
+  rated       Boolean  @default(true)
+  matchSource String   @default("matchmaking")
+  blackRatingDelta Int @default(0)
+  whiteRatingDelta Int @default(0)
+  blackCoinsDelta  Int @default(0)
+  whiteCoinsDelta  Int @default(0)
+  blackRankDelta   Int @default(0)
+  whiteRankDelta   Int @default(0)
+  moveCount   Int
+  mode        String   @default("spark")
+  snapshot    String
+  snapshotVersion Int @default(1)
+  createdAt   DateTime @default(now())
+
+  @@index([blackUserId, createdAt])
+  @@index([whiteUserId, createdAt])
+  @@index([mode, rated, createdAt])
+}
+
+model Character {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  description    String          @default("")
+  portraitUrl    String
+  portraitSource String          @default("url")
+  acquisitionMethod String       @default("")
+  cvName         String          @default("")
+  cvUrl          String          @default("")
+  illustName     String          @default("")
+  illustUrl      String          @default("")
+  source         String          @default("default")
+  palette        String          @default("#5d7fe8")
+  enabled        Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  skill          CharacterSkill?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model CharacterSkill {
+  id          String    @id @default(cuid())
+  characterId String    @unique
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  effectType  String
+  name        String
+  description String
+  uses        Int       @default(1)
+  freeTurn    Boolean   @default(false)
+  targetRule  String
+  paramsJson  String    @default("{}")
+  costType    String    @default("numeric")
+  costValue   String    @default("0")
+  systemMessage String   @default("{fromColor}{player}使用了{character}的“{skill}”技能，目标是{point}。")
+  enabled     Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model SkillTrait {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  definition String
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Decoration {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String   @default("")
+  imageUrl    String   @default("")
+  source      String   @default("default")
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ShopItem {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  targetId        String
+  itemTargetType  String   @default("self")
+  stockQuantity   Int      @default(-1)
+  priceCoins      Int
+  discountPercent Int      @default(0)
+  purchasable     Boolean  @default(true)
+  enabled         Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  description     String   @default("")
+  imageUrl         String   @default("")
+  illustName       String   @default("")
+  illustUrl        String   @default("")
+  source           String   @default("default")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AchievementRewardAsset {
+  id          String   @id @default(cuid())
+  type        String
+  name        String
+  description String  @default("")
+  imageUrl    String  @default("")
+  text        String  @default("")
+  targetType  String  @default("")
+  targetId    String  @default("")
+  amount      Int     @default(0)
+  enabled     Boolean @default(true)
+  deletedAt   DateTime?
+  sortOrder   Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  achievements Achievement[]
+
+  @@index([type, enabled, sortOrder])
+}
+
+model Achievement {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  name            String
+  content         String
+  conditionType   String
+  conditionParams String   @default("{}")
+  rewardAssetId   String?
+  rewardAsset     AchievementRewardAsset? @relation(fields: [rewardAssetId], references: [id], onDelete: SetNull)
+  enabled         Boolean  @default(true)
+  deletedAt       DateTime?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userAchievements UserAchievement[]
+
+  @@index([enabled, sortOrder])
+  @@index([conditionType])
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  achievedAt    DateTime @default(now())
+  rewardGrantedAt DateTime?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, achievedAt])
+  @@index([achievementId])
+}
+
+model AchievementCounter {
+  id        String   @id @default(cuid())
+  userId    String
+  metric    String
+  targetId  String   @default("")
+  value     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, metric, targetId])
+  @@index([metric, targetId])
+}
+
+model UserAchievementEquipment {
+  userId          String   @id
+  titleAssetId    String   @default("")
+  badgeAssetId    String   @default("")
+  nameplateAssetId String  @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MusicTrackSetting {
+  id          String   @id
+  displayName String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  adminUserId String
+  action      String
+  targetType  String
+  targetId    String
+  beforeJson  String?
+  afterJson   String?
+  createdAt   DateTime @default(now())
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnnouncementEntry {
+  id               String   @id @default(cuid())
+  kind             String
+  title            String
+  body             String   @default("")
+  isPublished      Boolean  @default(false)
+  pinned           Boolean  @default(false)
+  firstPublishedAt DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  reads            AnnouncementRead[]
+
+  @@index([kind, isPublished, deletedAt, pinned, firstPublishedAt])
+  @@index([kind, deletedAt, createdAt])
+}
+
+model AnnouncementRead {
+  id             String            @id @default(cuid())
+  userId         String
+  announcementId String
+  readAt         DateTime          @default(now())
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement   AnnouncementEntry @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+  @@index([userId, readAt])
+  @@index([announcementId])
+}
+
+model StoryScript {
+  id                   String   @id
+  key                  String   @unique
+  title                String   @default("")
+  triggerType          String
+  triggerParamsJson    String   @default("{}")
+  draftStartNodeId     String   @default("")
+  draftInitialBoardJson String  @default("")
+  draftNodesJson       String   @default("[]")
+  isPublished          Boolean  @default(false)
+  publishedStartNodeId String   @default("")
+  publishedInitialBoardJson String @default("")
+  publishedNodesJson   String   @default("[]")
+  firstPublishedAt     DateTime?
+  publishedAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([triggerType, isPublished])
+}
+
+model OnboardingStoryScript {
+  id                   String   @id
+  draftStartNodeId     String   @default("")
+  draftNodesJson       String   @default("[]")
+  isPublished          Boolean  @default(false)
+  publishedStartNodeId String   @default("")
+  publishedNodesJson   String   @default("[]")
+  firstPublishedAt     DateTime?
+  publishedAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model FeedbackMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  username  String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model PersistedRoom {
+  code      String   @id
+  status    String   @default("active")
+  snapshot  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}

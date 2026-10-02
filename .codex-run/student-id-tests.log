@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+························
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  10:10:03
+   Duration  4.56s (transform 528ms, setup 0ms, collect 1.46s, tests 1.58s, environment 1.89s, prepare 251ms)
+

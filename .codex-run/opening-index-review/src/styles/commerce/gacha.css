@@ -1,0 +1,8 @@
+/* Gacha modal, prize/result dialogs, and capsule animation contracts. */
+@import "./gacha/modal-tabs.css";
+@import "./gacha/featured-stack.css";
+@import "./gacha/machine-stage.css";
+@import "./gacha/featured-prize.css";
+@import "./gacha/control-panel.css";
+@import "./gacha/list-result-dialogs.css";
+@import "./gacha/animations.css";

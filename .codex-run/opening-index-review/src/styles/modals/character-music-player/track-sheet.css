@@ -1,0 +1,78 @@
+/* Floating skill-slot and track selection sheet. */
+.character-music-sheet {
+  position: fixed;
+  z-index: 95;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #9aabb8;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #263341;
+  box-shadow: 0 6px 8px rgba(24, 36, 48, 0.2);
+  overflow: hidden;
+}
+
+.character-music-tabs { display: flex; gap: 5px; min-width: 0; padding: 1px; overflow-x: auto; scrollbar-width: none; }
+.character-music-tabs::-webkit-scrollbar { display: none; }
+.character-music-tab {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: #e6edf2;
+  color: #405465;
+  font: 700 11px/1.2 var(--font-ui-default);
+  cursor: pointer;
+}
+.character-music-tab[aria-selected="true"] { background: #bdd8e8; color: #233744; }
+.character-music-panel { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 7px; min-height: 0; }
+.character-music-options {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-height: 0;
+  max-height: 176px;
+  padding: 1px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.character-music-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: #edf2f6;
+  color: #263341;
+  font: 700 12px/1.2 var(--font-ui-default);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.character-music-option:hover,
+.character-music-option:focus-visible { background: #dfeaf1; transform: translateY(-1px); }
+.character-music-option.is-selected { background: #cfe5d8; color: #254637; }
+.character-music-option.is-pending { cursor: wait; }
+.character-music-option-check { display: inline-grid; place-items: center; flex: 0 0 20px; width: 20px; height: 20px; border-radius: 999px; background: rgba(255, 255, 255, 0.76); font-size: 14px; font-weight: 900; }
+.character-music-option-pending { flex: 0 0 auto; letter-spacing: 1px; }
+.character-music-sheet-error {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: #f8dde1;
+  color: #8e3040;
+  font: 700 11px/1.35 var(--font-ui-default);
+  text-align: left;
+  cursor: pointer;
+}

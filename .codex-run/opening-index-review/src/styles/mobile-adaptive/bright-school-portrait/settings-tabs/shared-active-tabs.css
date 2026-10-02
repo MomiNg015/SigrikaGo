@@ -1,0 +1,18 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"],
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button.active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button[aria-selected="true"],
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button.active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-tabs button.active {
+    background: #ff9ebb !important;
+    color: #3d2b25 !important;
+    border-color: #3d2b25 !important;
+    transform: translateY(4px) scale(0.97) !important;
+    box-shadow:
+      0 0 0 #3d2b25,
+      inset 3px 3px 0 rgba(61, 43, 37, 0.24),
+      inset -1px -1px 0 rgba(255, 255, 255, 0.58) !important;
+    filter: brightness(0.96) saturate(1.05) !important;
+  }
+}

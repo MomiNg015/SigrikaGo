@@ -1,0 +1,83 @@
+.gacha-main {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(242px, 310px);
+  gap: 16px;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.gacha-featured-stage {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(250px, 1fr) auto;
+  gap: 14px;
+  padding: clamp(14px, 2vw, 20px);
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 211, 111, 0.24), transparent 25%),
+    radial-gradient(circle at 82% 18%, rgba(141, 217, 255, 0.26), transparent 28%),
+    linear-gradient(rgba(116, 185, 214, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116, 185, 214, 0.16) 1px, transparent 1px),
+    #fffafd;
+  background-size: 22px 22px;
+  overflow: hidden;
+}
+
+.gacha-machine {
+  position: relative;
+  min-height: clamp(250px, 42dvh, 360px);
+  display: grid;
+  place-items: center;
+}
+
+.gacha-drum {
+  position: relative;
+  width: min(340px, 72%, 48dvh);
+  aspect-ratio: 1;
+  border: 8px solid #514354;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0 22%, #dff7ff 24% 58%, #f8d3e5 60% 100%);
+  box-shadow: inset 0 0 0 12px rgba(255, 255, 255, 0.72), 0 18px 40px rgba(72, 44, 86, 0.16);
+  animation: gacha-drum-spin 2.2s ease-in-out infinite;
+}
+
+.gacha-capsule {
+  position: absolute;
+  width: 58px;
+  height: 38px;
+  border: 3px solid #514354;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd36f 0 48%, #ffffff 49% 51%, #ff87b0 52% 100%);
+  animation: gacha-capsule-roll 1.3s ease-in-out infinite;
+}
+
+.gacha-capsule.cap-a {
+  left: 24%;
+  top: 30%;
+}
+
+.gacha-capsule.cap-b {
+  right: 22%;
+  top: 48%;
+  animation-delay: 0.2s;
+}
+
+.gacha-capsule.cap-c {
+  left: 42%;
+  bottom: 24%;
+  animation-delay: 0.38s;
+}
+
+.gacha-slot {
+  position: absolute;
+  bottom: 7%;
+  width: 128px;
+  height: 42px;
+  border: 5px solid #514354;
+  border-radius: 999px;
+  background: #fff1be;
+}

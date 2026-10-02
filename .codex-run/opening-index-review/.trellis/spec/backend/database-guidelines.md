@@ -1,0 +1,1141 @@
+# Database Guidelines
+
+> Database patterns and conventions for this project.
+
+---
+
+## Overview
+
+<!--
+Document your project's database conventions here.
+
+Questions to answer:
+- What ORM/query library do you use?
+- How are migrations managed?
+- What are the naming conventions for tables/columns?
+- How do you handle transactions?
+-->
+
+(To be filled by the team)
+
+---
+
+## Query Patterns
+
+<!-- How should queries be written? Batch operations? -->
+
+(To be filled by the team)
+
+---
+
+## Migrations
+
+<!-- How to create and run migrations -->
+
+### Scenario: Non-User Admin Deployment Defaults
+
+#### 1. Scope / Trigger
+- Trigger: any change to startup seeding, admin-managed catalog/configuration defaults, or the contents of `server/adminDefaultSnapshot.js`.
+- The snapshot is deployment configuration, not runtime history. It exists so a fresh cloud database receives the current local admin configuration without copying `prisma/dev.db`.
+
+#### 2. Signatures
+- `ADMIN_DEFAULT_CONFIG` in `server/adminDefaultSnapshot.js`.
+- `seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` in `server/adminDefaultSeed.js`.
+- `syncAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` is the explicit overwrite-capable deployment path; it is never called by ordinary startup.
+- `npm run admin:snapshot` runs `scripts/export-admin-default-snapshot.mjs` to regenerate `server/adminDefaultSnapshot.js` from the local `prisma/dev.db` non-user admin rows.
+- `npm run check:admin-snapshot` compares the local allowed collections with the committed snapshot; `npm run admin:sync-defaults [-- --apply]` previews/applies the committed snapshot to the current database.
+- `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
+- `ensureServerSchema()` in `server/serverStartup.js` runs only the audited `SERVER_SCHEMA_TASK_ORDER`; `npm run production:schema-compat` invokes it during deployment without running any seed task.
+
+#### 3. Contracts
+- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Costume`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
+- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, game records, live-room state, and internal `SiteSetting` keys prefixed with `migration.`.
+- When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
+- `npm run check` must run `check:admin-snapshot` so unexported local admin edits fail before commit/build handoff.
+- Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
+- `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
+- Formal deployment is a separate boundary: after the verified backup and migrations, run `production:schema-compat`, then preview and apply `admin:sync-defaults`. The compatibility step must finish before Prisma reads the full snapshot model; sync updates matching snapshot rows and creates missing rows, but does not delete cloud-only rows or touch excluded user/history/runtime tables.
+- When a built-in catalog resource has a code-owned current asset, API payload helpers should normalize that built-in row from the shared/static source of truth across every player-visible projection, including shop, inventory, and gacha reward/prize payloads. If an old default path must be cleaned up at startup, use a narrowly keyed `updateMany` for empty values or exact stale default paths only; do not overwrite arbitrary admin-managed custom image URLs.
+- Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
+- Startup order matters: schema guards for achievement, gacha, music track, recruitment, and costume tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
+
+#### 4. Validation & Error Matrix
+- Existing row found during startup by stable key/slug/id -> skip without changing admin-managed fields.
+- Existing row found during explicit deployment sync -> update from the committed snapshot.
+- Production migration history reports no pending migration but a known model column/table is absent -> the stopped-service compatibility task runs the shared schema guards before snapshot preview; a remaining Prisma `P2022` aborts deployment.
+- Cloud-only row absent from the committed snapshot -> report as preserved and do not delete it.
+- Existing built-in catalog row with an empty or exact stale default image path -> may be backfilled to the current code-owned asset path.
+- Missing row -> create from the committed snapshot.
+- Delegate missing in a narrowed test double -> seeder returns without throwing.
+- User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
+- Date-like optional fields from snapshots -> pass as nullable values accepted by Prisma for the target model.
+- Snapshot export run after admin edits -> rewrites only `server/adminDefaultSnapshot.js` from allowed non-user admin tables.
+- Local allowed collections differ from the committed snapshot -> `check:admin-snapshot` exits non-zero and lists mismatched domains.
+
+#### 5. Good/Base/Bad Cases
+- Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, shop item illust credits, published/draft story scripts, admin announcement/changelog entries, and the legacy onboarding singleton from `server/adminDefaultSnapshot.js`.
+- Good: replacing a code-owned built-in shop item image updates the shared/static config, normalizes shop and inventory API payloads, and only backfills empty or exact stale default image paths during startup.
+- Good: after editing admin settings locally, run `npm run admin:snapshot`, pass `check:admin-snapshot`, commit, and let the production update script preview/apply the full non-user sync.
+- Base: an existing cloud database keeps its admin values on ordinary restart; a formal deployment intentionally replaces matching values from the committed snapshot while preserving cloud-only and user/history rows.
+- Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
+- Bad: changing only `prisma/dev.db` and assuming Git/deployment can see ignored local data.
+- Bad: changing `server/adminDefaultSnapshot.js` but omitting the explicit deployment sync, because create-only startup still preserves existing cloud values.
+- Bad: importing `prisma/dev.db` at runtime on the server.
+- Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, or audit rows to the snapshot.
+
+#### 6. Tests Required
+- Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
+- Unit tests assert existing rows are not updated by startup seeding.
+- Unit tests assert `SiteSetting` and `MusicTrackSetting` seed upserts use empty `update` payloads.
+- Unit tests for `syncAdminDefaultConfig()` assert every included domain updates matching rows, creates missing rows, and does not call delete operations.
+- Sync-plan tests assert create/update/unchanged/cloud-only counts, and freshness tests assert mismatched local domains fail the check.
+- Unit tests for built-in catalog resource replacements assert stale default rows are normalized in all player-visible API payloads, including shop, inventory, and gacha reward/prize payloads, and any startup backfill is limited to empty or exact stale default image paths.
+- Unit tests for `scripts/export-admin-default-snapshot.mjs` assert exported settings and catalog credit fields are present and dates serialize deterministically.
+- Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
+- A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.siteSetting.upsert({
+  where: { key: row.key },
+  create: row,
+  update: { value: row.value }
+});
+```
+
+Correct startup bootstrap:
+
+```js
+await prisma.siteSetting.upsert({
+  where: { key: row.key },
+  create: { key: row.key, value: row.value },
+  update: {}
+});
+```
+
+The correct form creates missing bootstrap defaults without overwriting a value saved later from the admin console.
+
+Correct formal deployment:
+
+```bash
+npm run production:schema-compat
+npm run admin:sync-defaults
+npm run admin:sync-defaults -- --apply
+```
+
+The schema compatibility and explicit apply paths run only after a verified backup and migrations, so deployment can repair known historical SQLite drift and make committed local admin configuration authoritative without turning every restart into an overwrite.
+
+### Scenario: Site Setting Public Configuration
+
+#### 1. Scope / Trigger
+- Trigger: any change to public site settings, admin system settings fields, `/api/site-settings`, `/api/admin/site-settings`, or frontend lobby/about/footer copy that is backed by `SiteSetting`.
+- Site settings are a cross-layer key/value contract: shared defaults define allowed keys, backend sanitizes and persists them, public/admin APIs return the merged values, and frontend components render them.
+
+#### 2. Signatures
+- `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
+- `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
+- Current keys include `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, `characterLoadingLines`, `skillEffectsEnabled`, `ratingRules`, `shopMascotDialogues`, `irisGreeting`, and `irisLinks`.
+- `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
+- `preloadTips` stores one loading-screen tip per line. The frontend parses non-empty trimmed lines, chooses one random tip for the preload screen, and rotates to another random tip every 10 seconds while the preload view stays mounted.
+- `ratingRules` stores JSON for dynamic rating deltas, rank-gap scaling, optional anti-boosting, rank-change rating bonuses/penalties, and friendly-match coin reward limits.
+- `shopMascotDialogues` stores normalized JSON for `zahira` and `nabomo`. Each mascot owns `greetingLines`, `refreshLines`, `loadingLine`, `emptyLine`, `errorLine`, and `thanksLine`; Nabomo additionally owns `insufficientLine`. Random pools contain at most 12 non-empty lines, and every line is capped at 120 characters.
+- `irisLinks` stores a JSON array of at most 30 `{ title, description, href, host }` records. `src/shared/irisLinks.js` requires HTTP(S), bounds field lengths, and derives `host`; the admin UI edits title/description/href rather than accepting raw JSON.
+
+#### 3. Contracts
+- `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
+- `getPublicSiteSettings(prisma)` must ignore unknown database rows and merge only supported keys over shared defaults.
+- `updateSiteSettings({ prisma, adminUser, body })` is a partial PATCH boundary. Inside one transaction it must read the current supported settings, merge `body` over that snapshot, sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
+- New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, frontend rendering tests, and system-design docs together.
+- The player lobby header must consume both `siteSettings.homeTitle` and `siteSettings.homeSubtitle`; do not hard-code either copy in `HomeScreen`, `HomeHeader`, or theme-specific lobby components.
+- The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
+- Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
+- `ratingRules` must be normalized through `normalizeRatingRules()` on both admin save and backend sanitize paths; backend persistence stores the normalized JSON string.
+- `shopMascotDialogues` must be normalized through `normalizeShopMascotDialogues()` / `shopMascotDialoguesSettingJson()` on the shared, admin-save, and backend boundaries. Player shop hooks consume the parsed configuration passed from the current public site-settings snapshot rather than importing editable copy as runtime constants.
+- `irisLinks` must be normalized through `normalizeIrisLinks()` on the backend boundary and parsed through `irisLinksFromSettings()` in admin/player consumers; a valid empty array is distinct from malformed JSON.
+- The unified `AdminMascotSettings` page owns `shopMascotDialogues`, `irisGreeting`, and `irisLinks`. `irisGreeting` stores a normalized JSON array with at most 12 entries of 80 characters each; legacy plain-text values must be accepted as a one-entry pool and normalized on the next save. `AdminSiteSettings` must omit those keys so each setting has one editing owner.
+
+#### 4. Validation & Error Matrix
+- Missing key in request body with an existing stored value -> preserve the current value.
+- Missing key in both request body and database -> use the shared default for that key.
+- Blank or whitespace-only value -> fall back to the shared default.
+- Overlong value -> trim and slice to the key-specific `SITE_SETTING_LIMITS` length.
+- Unknown stored key -> ignored by `rowsToSettings`.
+- Footer text containing raw HTML -> React escapes it as text; it must not be inserted with `dangerouslySetInnerHTML`.
+- Footer Markdown link with non-HTTP protocol -> stays plain text because only `http://` and `https://` links are recognized.
+- Admin saves a custom `homeSubtitle` and returns to the lobby -> the header renders the saved subtitle without requiring a reload.
+- Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
+- `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
+- Invalid or partial `ratingRules` JSON -> merge with `DEFAULT_RATING_RULES` and clamp numeric values before storage.
+- Malformed or partial `shopMascotDialogues` JSON -> normalize each known mascot field independently; invalid or empty pools fall back to that mascot's shared default pool; unknown fields are omitted.
+- Malformed `irisLinks` JSON -> use shared defaults; a valid empty array -> preserve an intentionally empty catalog; unsafe/incomplete rows -> omit them.
+
+#### 5. Good/Base/Bad Cases
+- Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
+- Good: `HomeScreen` passes `siteSettings.homeSubtitle` to `HomeHeader`, and the configured subtitle appears in `.home-brand-subtitle`.
+- Good: adding `preloadTips` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, preload component tests, style contract tests, and system-design docs in one change.
+- Good: adding `ratingRules` updates shared defaults, backend limits, admin structured controls, settlement tests, admin/site settings tests, and system-design docs in one change.
+- Good: the mascot page PATCHes only `shopMascotDialogues`, `irisGreeting`, and `irisLinks`; unrelated saved titles, preload copy, effects, and rating rules remain byte-for-byte equivalent after the transaction.
+- Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
+- Bad: accepting arbitrary HTML for the footer to make links work.
+- Bad: adding a field only to the admin form while `SITE_SETTING_KEYS` still rejects it.
+- Bad: hard-coding loading tips only in `AssetPreloadScreen`, because admins cannot change them through the existing system settings flow.
+- Bad: treating an omitted PATCH field as a reset request, because a specialized admin page would silently replace settings owned by other pages with defaults.
+
+#### 6. Tests Required
+- Backend defaults tests assert `ensureDefaultSiteSettings()` seeds every supported key.
+- Admin route tests assert PATCH/GET round-trip for newly added keys.
+- Public settings loader tests assert API values merge over defaults without dropping new keys.
+- Home rendering tests assert configured `homeTitle` and `homeSubtitle` both render from `siteSettings`.
+- Frontend component tests assert configured footer text renders and raw HTML stays escaped.
+- Preload component tests assert configured tips are parsed from newline text and render below the progress bar.
+- CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
+- CSS/static tests assert final theme safety layers preserve the borderless preload panel when theme panel rules would otherwise add a frame.
+- Rating-rule tests assert sanitized defaults and admin-saved values cannot persist malformed/clashing rule objects.
+- Mascot-dialogue tests assert per-field fallback, whitespace/length/pool bounds, both shop runtime consumers, the unified admin form, and a partial PATCH that preserves unrelated persisted settings.
+- IRIS-link tests assert HTTP(S)-only normalization, standalone admin navigation, add/remove/save behavior, unsaved draft preservation across parent rerenders, public round-trip, valid empty arrays, malformed fallback, and player list scrolling.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<span className="home-brand-subtitle">连罗伊人的都爱玩的智力游戏</span>
+```
+
+Correct:
+
+```jsx
+<HomeHeader
+  siteTitle={siteSettings.homeTitle}
+  siteSubtitle={siteSettings.homeSubtitle}
+/>
+```
+
+Wrong:
+
+```jsx
+<footer dangerouslySetInnerHTML={{ __html: settings.footerText }} />
+```
+
+Correct:
+
+```jsx
+<HomeFooter footerText={siteSettings.footerText} />
+```
+
+`HomeFooter` parses only safe Markdown link syntax and lets React escape all other text.
+
+Wrong:
+
+```jsx
+const tips = ["tip A", "tip B"];
+<AssetPreloadScreen tips={tips} />
+```
+
+Correct:
+
+```jsx
+<AssetPreloadScreen tipsText={siteSettings.preloadTips} />
+```
+
+`preloadTips` stays in the same `SiteSetting` key/value contract as other public system settings.
+
+Wrong:
+
+```js
+const rules = JSON.parse(settings.ratingRules);
+```
+
+Correct:
+
+```js
+const rules = ratingRulesFromSettings(settings);
+```
+
+`ratingRulesFromSettings()` handles missing, malformed, and partial stored values through the shared normalizer.
+
+Wrong:
+
+```js
+const nextSettings = sanitizeSiteSettings(body);
+```
+
+Correct:
+
+```js
+const before = await getPublicSiteSettings(tx);
+const nextSettings = sanitizeSiteSettings({ ...before, ...body });
+```
+
+The correct partial-PATCH path preserves settings owned by other specialized admin pages while still normalizing the complete persisted snapshot.
+
+### Scenario: Announcement And Changelog Content Persistence
+
+#### 1. Scope / Trigger
+- Trigger: changing announcement/changelog Prisma models, startup schema guards, authenticated player announcement APIs, admin announcement CRUD routes, unread badge behavior, or Markdown-lite content limits.
+- Announcement and changelog entries are one cross-layer content contract: admin writes bounded draft/published rows, backend exposes only published rows to authenticated players, and frontend unread badges depend on per-user read rows.
+
+#### 2. Signatures
+- `AnnouncementEntry { id, kind, title, body, isPublished, pinned, firstPublishedAt, deletedAt, createdAt, updatedAt }`.
+- `AnnouncementRead { id, userId, announcementId, readAt }` with unique `(userId, announcementId)`.
+- Valid `kind` values are `announcement` and `changelog`.
+- Authenticated player routes live under `/api/announcements`: summary, list, detail, and mark-read.
+- Admin routes live under `/api/admin/announcements`: list, create, patch, and soft-delete.
+- `ensureAnnouncementSchema(prisma)` must run during server startup before player or admin announcement routes are relied on in older SQLite development databases.
+
+#### 3. Contracts
+- Player announcement/changelog APIs require an authenticated user; do not add anonymous visitor or anonymous read-state branches.
+- Admin draft saves require a trimmed non-empty title and may store an empty body.
+- Admin publish actions require a trimmed non-empty title and body.
+- Titles are capped at 80 characters, and bodies are capped at 10,000 characters at the backend boundary.
+- Deletion is soft-delete: set `deletedAt` and hide the entry from normal player/admin lists instead of hard-removing the row.
+- First publish sets `firstPublishedAt` once. Edits, unpublish, and republish must preserve it.
+- Player lists sort by `firstPublishedAt`; pinned entries apply only to `announcement`, never to `changelog`.
+- Unread state exists only for published entries whose `firstPublishedAt` is later than the user's `createdAt` and that lack an `AnnouncementRead` row.
+- Opening an entry detail is the operation that marks that one entry as read.
+
+#### 4. Validation & Error Matrix
+- Unknown `kind` -> validation error before querying.
+- Unknown status filter -> validation error before querying.
+- Empty draft title -> validation error.
+- Empty publish title or body -> validation error.
+- Overlong title/body -> validation error.
+- Missing or unpublished player detail entry -> `404`.
+- Soft-deleted entries -> hidden from normal lists and unread summary calculations.
+- Missing announcement tables in an older SQLite dev database -> startup guard creates tables and indexes idempotently.
+
+#### 5. Good/Base/Bad Cases
+- Good: publishing a new changelog entry sets `firstPublishedAt`, makes it visible to authenticated players, and can create unread state for eligible users.
+- Good: fixing a typo on a published announcement preserves `firstPublishedAt` and does not make already-read rows unread again.
+- Base: a new account can see older published entries, but those historical entries do not create red dots because they predate `User.createdAt`.
+- Bad: using `updatedAt` for player ordering or unread calculations because edits would reorder old posts and re-notify players.
+- Bad: deleting rows directly from `AnnouncementEntry`, which removes operational history and can orphan read-state expectations.
+
+#### 6. Tests Required
+- Schema integrity tests assert Prisma models and migration SQL include announcement entry/read tables and indexes.
+- Startup tests assert `ensureAnnouncementSchema()` runs in server startup.
+- Domain tests assert validation, first-publish preservation, pinned/changelog behavior, soft-delete filtering, and unread eligibility.
+- Route tests assert authenticated player handlers pass `req.user.id` into list/detail/read/summary operations and surface domain errors consistently.
+- Admin route tests assert create/update/delete actions validate server-side and write audit logs.
+- Frontend tests assert overlay registry coverage, toolbar/mobile entry points, row/detail read behavior, and Markdown-lite escaping.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.announcementEntry.update({
+  where: { id },
+  data: { title, body, firstPublishedAt: new Date() }
+});
+```
+
+This refreshes the first-publish timestamp on every edit and can reorder or re-notify old content.
+
+Correct:
+
+```js
+const nextFirstPublishedAt = existing.firstPublishedAt ?? now;
+await prisma.announcementEntry.update({
+  where: { id },
+  data: { title, body, isPublished: true, firstPublishedAt: nextFirstPublishedAt }
+});
+```
+
+The first-publish timestamp is created by the first publish transition and then remains stable.
+
+---
+
+### Scenario: Rated Results And Friendly Match Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any change to room creation source, result settlement, rating/rank/coin rewards, replay APIs, public profile stats, or leaderboard stats.
+- This is a cross-layer contract because room metadata is created by matchmaking/duel flows, stored on `GameRecord`, included in snapshots/API responses, and rendered by result/replay UI.
+
+#### 2. Signatures
+- `createRoom(first, second, { rated = true, matchSource = "matchmaking" })`
+- `GameRecord.rated Boolean @default(true)`
+- `GameRecord.matchSource String @default("matchmaking")`
+- `GameRecord.blackRatingDelta`, `whiteRatingDelta`, `blackCoinsDelta`, `whiteCoinsDelta`, `blackRankDelta`, `whiteRankDelta`
+- `room.game.resultRewards[userId] = { rating, coins, rank, rewardLimitReached, outcome, rated, matchSource }`
+- `src/shared/ratingRules.js` owns dynamic rating calculation, anti-boost multipliers, friendly coin rewards, and settings normalization.
+
+#### 3. Contracts
+- Random matchmaking rooms must be `rated: true` and `matchSource: "matchmaking"`.
+- Direct/private duel rooms must be `rated: false` and `matchSource: "duel"`.
+- Rated games update rating, coins, mode stats, recent ten-game rank windows, public profile stats, and leaderboard stats.
+- Friendly games do not update rating, mode stats, rank windows, public profile stats, or leaderboard stats.
+- Friendly games are still persisted as `GameRecord` rows, included in replay lists, and marked in replay UI.
+- Friendly coin rewards are limited per user per server day, using Asia/Shanghai day boundaries by default.
+- Rated rank movement still uses decisive results only: 7 wins promote, 8 losses demote, draws do not enter `recentResults`.
+- Promotion/demotion applies the configured fixed rating delta in addition to the game rating delta.
+- Anti-boosting is configurable and may be disabled for launch; when enabled, it scales repeat-opponent rating deltas without suppressing replay persistence.
+
+#### 4. Validation & Error Matrix
+- Missing `rated` on old records -> treat as rated for backward compatibility.
+- Missing `matchSource` on old records -> treat as `matchmaking`.
+- Friendly game after daily reward limit -> persist replay and store zero friendly coin delta for that user.
+- Draw in rated game -> may move rating through Elo actual score `0.5`, increments draw stats, and does not enter rank recent-results.
+- Malformed `ratingRules` -> normalize to defaults and clamp limits before settlement.
+
+#### 5. Good/Base/Bad Cases
+- Good: direct duel creates a replay with `rated=false`, shows a handshake marker, but leaves profile stats unchanged.
+- Good: matchmaking between uneven ranks applies rank-gap scaling so high-rank farming low-rank opponents is less profitable and riskier.
+- Base: old records without `rated` remain visible in leaderboard/profile history as rated records.
+- Bad: checking `matchSource === "duel"` in one profile query while leaderboard forgets to exclude friendly rows.
+- Bad: awarding friendly-match coins from frontend state instead of audited server settlement.
+
+#### 6. Tests Required
+- Room factory/lifecycle tests assert matchmaking and direct-room metadata.
+- Room view and replay route tests assert `rated`, `matchSource`, and audit deltas are exposed.
+- Settlement tests assert rated dynamic deltas, rank-change rating delta, draw behavior, friendly no-stat behavior, and friendly daily coin limit.
+- Leaderboard/profile tests assert friendly records are excluded from public stats while replay lists still include them.
+- Frontend result/replay tests assert friendly result copy, reward-limit copy, and handshake replay marker.
+- Schema integrity tests assert Prisma schema and migration include every new audit field.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const ratingDelta = winner ? 20 : -20;
+await prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId } });
+```
+
+Correct:
+
+```js
+const rules = ratingRulesFromSettings(settings);
+const ratingDelta = resultRewardDelta(color, winnerColor, { self, opponent, rules });
+await prisma.gameRecord.create({
+  data: { roomCode, blackUserId, whiteUserId, rated: room.rated !== false, matchSource: room.matchSource, blackRatingDelta, whiteRatingDelta }
+});
+```
+
+Wrong:
+
+```js
+const profileRecords = await prisma.gameRecord.findMany({ where: { OR: userRecordWhere(userId) } });
+```
+
+Correct:
+
+```js
+const profileRecords = await prisma.gameRecord.findMany({
+  where: { rated: true, OR: userRecordWhere(userId) }
+});
+```
+
+### Scenario: Game Mode Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any feature that adds or changes a playable game mode, ranking bucket, replay filter, matchmaking queue, or room result contract.
+- This is a cross-layer contract because the value is written by matchmaking/duel room creation, stored on game records, exposed through API filters, and rendered by frontend tabs.
+
+#### 2. Signatures
+- `GameRecord.mode String @default("spark")`
+- `UserModeStats { userId, mode, rating, rank, recentResults, wins, losses, draws }` with unique `(userId, mode)`
+- `ensureGameModeSchema(prisma)` must run during server startup before auth/profile routes can read users with `modeStats`.
+- Runtime mode ids must come from `src/shared/gameModes.js`, not duplicated string lists.
+
+#### 3. Contracts
+- Accepted mode ids: `spark`, `standard`, and `gomoku`. Unknown or missing ids normalize to `spark`.
+- `spark` mirrors legacy `User.rating`, `User.wins`, and `User.losses` for backward compatibility.
+- `spark` also mirrors legacy `User.rank` after decisive results, but mode rank source of truth is `UserModeStats.rank`.
+- Non-spark modes such as `standard` and `gomoku` keep rating, rank, recent result window, and record data in `UserModeStats`; do not write their wins/losses/draws/rating/rank into legacy `User` fields.
+- Rank is independent from rating. New users/new mode rows default to `3段`; decisive mode results append `win`/`loss` to `recentResults` from old to new, promote at 7 wins, demote at 8 losses, cap at `9段`/`18级`, and clear `recentResults` after a promotion or demotion trigger.
+- `GameRecord.mode` must be written for every saved room result, including draw records.
+- Older SQLite development databases must be upgraded in place at startup: create `UserModeStats`, add `GameRecord.mode`, add `UserModeStats.rank`/`recentResults`, and backfill required shared mode rows (`spark`, `standard`, `gomoku`) per existing user before login/profile reads include `modeStats`.
+
+#### 4. Validation & Error Matrix
+- Missing mode in old data -> treat as `spark`.
+- Missing `UserModeStats` table or `GameRecord.mode` column in a dev SQLite database -> `ensureGameModeSchema` creates/backfills them at startup; login must not fail before a manual migration command runs.
+- Invalid mode from socket/API input -> normalize to `spark`.
+- Result is invalid before the record threshold -> no `GameRecord`, no `UserModeStats`, no reward writes.
+- Result is a draw after the threshold -> create the record and increment mode `draws`, but do not apply rating, coin, rank, or recent-result updates.
+
+#### 5. Good/Base/Bad Cases
+- Good: `joinMatchmaking({ mode: "gomoku" })` only pairs with gomoku queued players and saves records as `gomoku`.
+- Base: old records without `mode` still appear in spark-only history and leaderboard views.
+- Bad: leaderboard filters by mode but room persistence saves all records as `spark`.
+
+#### 6. Tests Required
+- Shared mode config normalization and ordering.
+- Matchmaking queue isolation by mode.
+- Game record persistence includes `mode`.
+- Startup schema guard creates missing mode tables/columns and backfills legacy spark data plus default non-spark mode rows.
+- Mode-specific leaderboard/profile/history filters.
+- Draw persistence increments `UserModeStats.draws` without reward writes.
+- Rank progression tests cover 7-win promotion, 8-loss demotion, cap/floor behavior, and clearing `recentResults` after a trigger.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId } });
+```
+
+Correct:
+
+```js
+const mode = normalizeGameModeId(room.mode ?? room.game.mode);
+prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId, mode } });
+```
+
+---
+
+### Scenario: Gacha Featured Prize Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha pool schema, admin gacha save flow, player/admin gacha payload projection, or startup schema guards.
+- Featured prizes are display metadata stored on `GachaPool`; they must not affect draw probability or reward settlement.
+
+#### 2. Signatures
+- `GachaPool.featuredPrizeIds String?`: JSON string array of `GachaPrize.id` values.
+- `GachaPool.featuredPrizeId String?`: legacy first-featured compatibility mirror.
+- `ensureGachaSchema(prisma)` must create `featuredPrizeIds` on fresh SQLite databases and add it to older dev databases with `ALTER TABLE "GachaPool" ADD COLUMN "featuredPrizeIds" TEXT`.
+
+#### 3. Contracts
+- Create/update gacha pool mutations recreate prize rows, then persist featured ids after the new prize ids exist.
+- `featuredPrizeIds` stores every selected featured prize id in admin selection order.
+- `featuredPrizeId` mirrors `featuredPrizeIds[0] ?? null` for older readers.
+- Empty featured selection stores both `featuredPrizeIds: null` and `featuredPrizeId: null`.
+- Payload projection may read `featuredPrizeIds`; if missing, it may fall back to legacy `featuredPrizeId`.
+
+#### 4. Validation & Error Matrix
+- `featuredPrizeIndexes: []` -> valid, store no featured ids.
+- Any featured index outside the submitted prize array -> reject before writing.
+- Stored JSON parse failure -> ignore the malformed list or fall back to comma splitting; do not invent `prizes[0]`.
+- Missing `featuredPrizeIds` column in an older dev database -> startup guard adds it before gacha routes use Prisma models.
+
+#### 5. Good/Base/Bad Cases
+- Good: two selected admin prize rows persist as `featuredPrizeIds: "[\"prize-a\",\"prize-b\"]"` and `featuredPrizeId: "prize-a"`.
+- Base: older pools with only `featuredPrizeId` still expose a one-item `featuredPrizes` array.
+- Bad: storing only the first selected featured prize and dropping the rest.
+- Bad: deriving featured prizes from array position after persistence, because prize ids change when admin updates recreate prize rows.
+
+#### 6. Tests Required
+- Admin management tests assert multiple featured indexes validate.
+- Gacha payload tests assert `featuredPrizes` returns all stored featured ids and keeps `featuredPrize` as the first item.
+- Schema integrity tests assert Prisma schema and migration SQL include `featuredPrizeIds`.
+- Startup schema tests assert `ensureGachaSchema()` adds `featuredPrizeIds` to old `GachaPool` tables.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await tx.gachaPool.update({ data: { featuredPrizeId: createdPrizes[input.featuredPrizeIndex]?.id ?? null } });
+```
+
+Correct:
+
+```js
+const ids = featuredPrizeIndexes.map((index) => createdPrizes[index]?.id).filter(Boolean);
+await tx.gachaPool.update({
+  data: {
+    featuredPrizeId: ids[0] ?? null,
+    featuredPrizeIds: ids.length ? JSON.stringify(ids) : null
+  }
+});
+```
+
+---
+
+### Scenario: Recruitment Task Start, Candidate Ownership, And Ready Badge Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to recruitment item start rules, `RecruitmentTask` status projection, `/api/recruitment`, `/api/recruitment/start`, `/api/recruitment/fast-forward`, or the home recruitment entry ready indicator.
+- Recruitment is a cross-layer contract because one API call consumes inventory, creates a persisted task, exposes a computed pending/ready status, and drives a home-shell notification after the modal may be closed.
+
+#### 2. Signatures
+- `POST /api/recruitment/start` accepts `{ itemType }`.
+- `POST /api/recruitment/fast-forward` accepts `{ itemType: "magic-clock" }` and returns `{ user, task, utilities }`.
+- `GET /api/recruitment` returns `{ items, utilities, task, config }`; starter items and auxiliary utilities are separate lists.
+- `task.status` is projected as `"pending"` before `readyAt`, `"ready"` after `readyAt`, and `"claimed"` only after claim.
+- `RecruitmentTask { userId, itemType, status, resultType, resultCharacterSlug?, responseText, startedAt, readyAt, fastForwardedAt?, claimedAt? }`.
+- `App.jsx` stores the current recruitment task for badge timing and receives updates through `onRecruitmentStatusChange(task)`.
+
+#### 3. Contracts
+- Start must reject immediately when the selected recruitment item has no unowned candidates for that user.
+- Remaining candidates must be computed from `publicUserAssets(user).ownedCharacters`, with `userCharacters` included in the user query, so structured `UserCharacter` rows and legacy `ownedCharacters` strings cannot diverge for recruitment eligibility.
+- That rejection must happen before consuming the item or creating `RecruitmentTask`.
+- The rejection message is player-facing: `好像已经没有可以用该道具招募的角色了`.
+- Only one active recruitment task is allowed per user.
+- A pending task's result is decided at start time, but result details remain hidden until claim.
+- The home recruitment entry pink ready background appears only when `task.status === "ready"`.
+- The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready pink background shortly after the countdown ends.
+- `magic-clock` is a production auxiliary item distributed through admin mail, hidden from the player shop, visible without an action in Warehouse, and always projected in `utilities` even at quantity zero.
+- Fast-forward is restricted to ordinary pending recruitment. Cinematic tasks, tasks with `fastForwardedAt`, and tasks with no more than the complete six-second presentation window remaining must reject before inventory changes.
+- One transaction must atomically win `RecruitmentTask.fastForwardedAt: null`, set `readyAt = now + 6000ms`, decrement exactly one clock, and sync the structured item mirror. Concurrent losing requests must not consume inventory.
+- `fastForwardedAt` is the persisted no-replay/idempotency marker. Refresh or re-entry never restores the client animation and never permits a second use on the same task.
+
+#### 4. Validation & Error Matrix
+- Unknown `itemType` -> `400`.
+- Active pending recruitment exists -> `400`.
+- Selected item has zero remaining candidates, including candidates present only in `UserCharacter` rows -> `400` with the exact player-facing no-candidate message.
+- User has no selected item quantity -> `400`.
+- Unknown or non-utility fast-forward `itemType` -> `400`.
+- Cinematic, repeated, near-ready, or missing-clock fast-forward -> `400` without writes.
+- Concurrent request loses the conditional task update -> `409` without inventory consumption.
+- Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home pink ready background.
+- Pending task is still before `readyAt` -> no pink ready background.
+
+#### 5. Good/Base/Bad Cases
+- Good: a player owns QiuYuan and ChangLi through structured `UserCharacter` rows, then using `radio-recruitment-ticket` shows the no-candidate message and keeps the item count unchanged.
+- Good: a player starts recruitment, closes the modal, waits until `readyAt`, and sees the home recruitment button pink ready background without waiting for the next long polling interval.
+- Good: an ordinary pending task with more than six seconds remaining consumes one `magic-clock`, persists `fastForwardedAt`, and moves to a six-second authoritative deadline.
+- Base: periodic `/api/recruitment` polling still repairs stale client state after tab sleep or missed timers.
+- Bad: checking only the legacy `ownedCharacters` string for recruitment candidates while public user payloads merge structured rows.
+- Bad: consuming the item first and refunding it only after discovering all candidates are owned.
+- Bad: accepting a clock on a cinematic task, decrementing inventory before winning the conditional task update, or reconstructing the animation after refresh.
+
+#### 6. Tests Required
+- Backend recruitment tests assert the no-candidate start path rejects with the exact message and does not update the user or create a task.
+- Backend recruitment tests assert structured `UserCharacter` rows block recruitment for already-owned candidates.
+- Backend recruitment tests assert successful consumption, the six-second deadline, the persistent marker, guard failures, and concurrent-loser no-consumption.
+- Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id and requested utility item type.
+- App shell tests assert pending recruitment task state is stored and `readyAt` schedules a refresh that can set `recruitmentReady`.
+- Modal/source tests assert the quantity badge/zero disabled state, eligibility guards, 3-second fast-forward presentation, full 3-2-1 tail, sound asset, and absence of development flags.
+- Home screen tests assert the recruitment entry renders a pink ready background only when `recruitmentReady` is true.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
+const candidateIds = item.candidates.filter((id) => !ownedCharacters.includes(id));
+```
+
+Correct:
+
+```js
+const user = await tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } });
+const ownedCharacters = publicUserAssets(user).ownedCharacters;
+const candidateIds = item.candidates.filter((id) => !ownedCharacters.includes(id));
+```
+
+Wrong:
+
+```jsx
+{magicClock.quantity > 0 && (
+  <button className="recruitment-fast-forward-button" onClick={fastForward} />
+)}
+// This hides the required zero-inventory disabled state and ignores task eligibility.
+```
+
+Correct:
+
+```jsx
+const showMagicClock = phase === "pending"
+  && !task.cinematic
+  && !task.fastForwarded
+  && remainingMs > RECRUITMENT_FAST_FORWARD_TIMING.totalMs;
+
+<PendingBoard magicClock={showMagicClock ? magicClock : null} />
+// PendingBoard keeps quantity zero visible and disables the action locally.
+```
+
+Wrong:
+
+```jsx
+setInterval(refreshRecruitmentBadge, 30000);
+```
+
+Correct:
+
+```jsx
+const remainingMs = new Date(recruitmentBadgeTask.readyAt).getTime() - Date.now();
+window.setTimeout(refreshRecruitmentBadge, Math.max(0, remainingMs) + 400);
+```
+
+---
+
+### Scenario: Music Track Display Name Settings
+
+#### 1. Scope / Trigger
+- Trigger: any change to music track display names, admin music management, music prize payloads, shop music labels, or startup schema guards for music settings.
+- This is a cross-layer contract because static audio configuration, database overrides, public/admin APIs, audit logging, and frontend music selectors all share the same track id namespace.
+
+#### 2. Signatures
+- `MusicTrackSetting { id, displayName, createdAt, updatedAt }`
+- `id` must match an existing static `MUSIC_TRACKS` key from `src/shared/musicLibrary.js`.
+- `ensureMusicTrackSettingsSchema(prisma)` must run during server startup before public or admin music track routes are used.
+- Music list helpers should return the static track payload plus `defaultName` and the effective display `name`.
+
+#### 3. Contracts
+- `MUSIC_TRACKS` remains the source of truth for playable track ids, type, character binding, unlock flags, purchase flags, playback mode, and audio paths.
+- `MusicTrackSetting` stores only display-name overrides. It must not create tracks or change audio behavior.
+- Blank, missing, or whitespace-only `displayName` values fall back to the static `track.name`.
+- Public `GET /api/music-tracks` is available to authenticated players so gameplay, shop, and gacha displays share the same effective names.
+- Admin `GET /api/admin/music-tracks` and `PATCH /api/admin/music-tracks/:id` must use the same merge helper as the public route.
+- Admin updates must write a `music-track.update` audit entry.
+
+#### 4. Validation & Error Matrix
+- Unknown track id -> reject before writing a database row.
+- Missing `MusicTrackSetting` table in an older SQLite development database -> startup guard creates it in place.
+- Missing Prisma delegate in a narrow unit test mock -> list helpers may fall back to static names, but update helpers still require the delegate.
+- Overlong display names -> normalize to the accepted display-name length before persistence.
+- Empty display name -> valid, stores an empty override and renders the static default name.
+
+#### 5. Good/Base/Bad Cases
+- Good: editing `main-home` to `Lobby Theme` changes the shown name while keeping the original `src`, `loop`, and `type` fields.
+- Base: no row exists for a track, so API payload returns `name: track.name` and `defaultName: track.name`.
+- Bad: admin PATCH accepts a new id and creates a playable track that is not in `MUSIC_TRACKS`.
+- Bad: frontend dropdowns import `MUSIC_TRACKS` directly after the merged catalog has already been loaded.
+
+#### 6. Tests Required
+- Schema guard creates the table and remains idempotent.
+- Public/admin list routes merge static defaults with stored overrides.
+- Admin PATCH rejects unknown ids, accepts valid display names, and writes audit logs.
+- Music resolver helper preserves playback configuration while replacing only the effective display name.
+- Admin tab rendering and save flow refresh the list after a successful update.
+- Gacha music prize options and character BGM selectors use the injected merged catalog.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.musicTrackSetting.upsert({ where: { id: req.params.id }, data: req.body });
+```
+
+Correct:
+
+```js
+if (!MUSIC_TRACKS[trackId]) {
+  throw routeError(404, "TRACK_NOT_FOUND", "Music track not found.");
+}
+
+const displayName = normalizeDisplayName(body.displayName);
+await prisma.musicTrackSetting.upsert({
+  where: { id: trackId },
+  create: { id: trackId, displayName },
+  update: { displayName }
+});
+```
+
+---
+
+### Scenario: Achievement Persistence And Personalization Equipment
+
+#### 1. Scope / Trigger
+- Trigger: any change to achievements, achievement reward assets, player achievement equipment, reward-source resources, commerce/gacha achievement unlocks, or startup schema guards for achievement tables.
+- This is a cross-layer contract because code/seeded achievement definitions drive backend domain evaluation, admin edits only display/reward/sort metadata, player APIs expose achieved state, and frontend profile overlays render/equip achievement rewards.
+
+#### 2. Signatures
+- `Achievement { id, key, name, description, conditionType, conditionParams, rewardAssetId?, isEnabled, createdAt, updatedAt }`
+- `AchievementRewardAsset { id, type, name, description?, imageUrl?, textValue?, sourceType?, sourceId?, currencyType?, amount?, isEnabled, createdAt, updatedAt }`
+- `UserAchievement { id, userId, achievementId, achievedAt, rewardGrantedAt? }` with unique `(userId, achievementId)`.
+- `AchievementCounter { id, userId, type, value }` with unique `(userId, type)`.
+- `UserAchievementEquipment { userId, titleAssetId?, badgeAssetId?, nameplateAssetId?, updatedAt }`
+- `ensureAchievementSchema(prisma)` must run during startup before player/admin achievement routes or public profile payloads use these models.
+- `seedBuiltinAchievements(prisma)` runs after `ensureAchievementSchema(prisma)` and creates missing code-owned achievements/reward assets without overwriting existing rows. It also creates missing `UserAchievement` rows for admin users for every built-in achievement, with `rewardGrantedAt` set, so newly added built-in achievement cosmetics are immediately available to admins.
+- Because it adds `Character.source`, `Decoration.source`, and `ShopItem.source` to older SQLite databases, it must also run before any seed task or query that reads those Prisma models.
+
+#### 3. Contracts
+- Static gameplay/resource data remains authoritative unless an enabled achievement reward asset points at a `source=achievement` resource.
+- Achievement goals are code-owned: admin HTTP routes must not create/delete achievements or mutate `key`, `conditionType`, `conditionParams`, `enabled`, or `deletedAt`; admin PATCH may only update `name`, `content`, `rewardAssetId`, and `sortOrder`.
+- Built-in trigger-event achievements should be seeded as missing-only rows so startup does not overwrite later admin display/reward/sort edits.
+- Mode-and-character achievements should use a reusable condition type such as `mode_character_wins` with JSON params `{ "mode": "spark", "characterId": "sigrika", "value": 100 }` instead of hard-coding a one-off evaluator branch.
+- Resource reward assets of type `character`, `decoration`, and `item` must only target records with `source === "achievement"`; they must not silently grant default/shop resources.
+- Reward grants must be idempotent: an already achieved row with `rewardGrantedAt` set must not grant currency/assets again.
+- Player `GET /api/achievements` returns all enabled achievements merged with the current user's `isAchieved`, `achievedAt`, and reward display payload, plus only the unlocks newly achieved during that request.
+- Player `GET/PATCH /api/me/achievement-equipment` may equip only unlocked enabled reward assets whose type matches the slot (`title`, `badge`, `nameplate`).
+- Public profile payloads may expose compact equipped achievement asset ids/display data, but must not include every achievement or counter row. When a UI needs to render equipped cosmetics immediately, return both the equipment id fields and the selected reward asset payloads (`achievementEquipmentAssets` / `equipmentAssets`) so the frontend does not have to re-query name, text, or `imageUrl`.
+- Commerce/gacha/item-use responses should include `achievementUnlocks` only when at least one achievement was newly achieved.
+
+#### 4. Validation & Error Matrix
+- Unknown admin achievement id -> `404 ACHIEVEMENT_NOT_FOUND`.
+- Direct admin achievement create/delete -> `405` because achievement goals are code-managed.
+- Code-owned field in admin achievement update -> reject before writing the achievement.
+- Unknown reward asset id on achievement update -> reject before writing the achievement.
+- Unknown or disabled equipment asset -> reject equipment update.
+- Equipment asset not unlocked by the user -> reject equipment update.
+- Equipment asset type does not match the slot -> reject equipment update.
+- Missing achievement tables in an older SQLite database -> startup guard creates them in place.
+- Missing `source` columns in an older SQLite database -> startup guard must add them before `seedCharacters()` or shop seed/query code runs.
+- Narrow unit-test Prisma mocks with no achievement delegates -> stats/evaluation helpers should return empty unlocks or zero stats instead of crashing unrelated route tests.
+
+#### 5. Good/Base/Bad Cases
+- Good: using a rainbow bean candy on Denia evaluates the trigger event, creates one `UserAchievement`, grants its reward once, and returns one unlock toast payload.
+- Good: the built-in `denia-rainbow-bean-candy` achievement unlocks only when `ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy` is passed after the achievement exists, not when the player merely opens the achievement list later.
+- Good: built-in character milestones such as `achievement-denia-spark-100-wins` and `achievement-aemeath-spark-100-wins` use the shared `mode_character_wins` condition with the exact canonical character id and `value: 100`, grant their matching nameplate reward exactly once, and stay mirrored in `server/adminDefaultSnapshot.js` so fresh/default-admin databases expose the same reward definition.
+- Base: a player with no achievements receives enabled achievements with `isAchieved: false`, empty `achievedAt`, and zero stats.
+- Bad: adding an achievement by writing a `UserAchievement` row directly without running reward grant logic.
+- Bad: letting a badge slot equip a `title` asset or an asset the user has not unlocked.
+
+#### 6. Tests Required
+- Schema guard tests assert tables/indexes/source columns are created and the guard is idempotent.
+- Server startup tests assert `ensureAchievementSchema()` runs before `seedCharacters()` and `seedBuiltinShopItems()`.
+- Admin route/domain tests assert unknown track/resource ids and disabled assets are rejected and audit actions are written.
+- Player list tests assert enabled achievements merge default state, achieved state, reward display, and new unlocks.
+- Equipment tests assert locked, disabled, wrong-type, and valid unlocked assets.
+- Commerce/gacha/item-use tests assert `achievementUnlocks` appears only when new achievements unlock.
+- Public profile/social tests assert only compact equipment/stat fields are exposed.
+- Built-in mode-character reward tests assert every added character reward/achievement seed pair and matching admin snapshot pair, no unlock at 99 qualifying wins or from another mode/character, and one unlock at 100 qualifying Spark wins. Current coverage includes Denia and Aemeath.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.userAchievement.create({ data: { userId, achievementId } });
+await grantAchievementReward(prisma, userId, rewardAsset);
+```
+
+Correct:
+
+```js
+const unlocks = await evaluateAchievementsForUser({ prisma, userId, triggerEvent });
+if (unlocks.length) {
+  res.json({ ...payload, achievementUnlocks: unlocks });
+}
+```
+
+---
+
+### Scenario: Legacy Character Slug Cleanup
+
+#### 1. Scope / Trigger
+- Trigger: any change that retires, renames, or canonicalizes a persisted character slug.
+- This is a startup data contract because character slugs exist in static fallbacks, Prisma defaults, user legacy fields, structured user assets, catalog targets, reward targets, and game-record snapshots.
+
+#### 2. Signatures
+- `cleanupLegacyDeniaCharacterData(prisma)` runs from `initializeServerData()` after achievement schema/seed work and before `seedCharacters()`.
+- Legacy Denia slugs are `danea` and `denea`; canonical Denia slug is `denia`.
+- `User.ownedCharacters` default must use canonical slugs only, for example `sigrika,denia,aemeath`.
+
+#### 3. Contracts
+- Retired character slugs should be handled by an idempotent startup cleanup instead of long-lived frontend/backend alias mapping.
+- Cleanup must preserve correct canonical access where appropriate: legacy user `selectedCharacter`, `ownedCharacters`, and `UserCharacter` rows migrate to the canonical slug.
+- Cleanup may delete historical records only when the product decision explicitly allows it; for retired Denia slugs, `GameRecord` rows with either color set to a legacy slug are deleted.
+- Catalog and reward targets that point at the retired character should be rewritten to the canonical slug rather than left as broken ids.
+- Public character listing must defensively omit retired slugs so a stale database row cannot reappear in player-facing catalogs.
+
+#### 4. Validation & Error Matrix
+- No legacy rows exist -> cleanup is a no-op and startup continues.
+- User owns both legacy and canonical rows -> keep one canonical `UserCharacter` row with the maximum known `chainCount`.
+- User legacy CSV contains both old spellings and canonical slug -> serialize one canonical slug.
+- Old `Character` row exists with a cascading `CharacterSkill` -> deleting the character row removes the skill through the model relation.
+- Narrow unit-test Prisma mocks omit optional delegates -> cleanup should skip missing operations or perform only available deletes.
+
+#### 5. Good/Base/Bad Cases
+- Good: startup migrates `ownedCharacters: "sigrika,danea"` to `"sigrika,denia"` and deletes `GameRecord` rows where `blackCharacter` or `whiteCharacter` is `danea`.
+- Base: a clean database with only `denia` changes nothing.
+- Bad: keeping `danea -> denia` in shared alias code forever, because stale API rows can keep surfacing a duplicate character.
+- Bad: deleting legacy ownership without granting canonical `denia` when the intent is to preserve access.
+
+#### 6. Tests Required
+- Focused cleanup tests cover slug normalization, user field migration, structured row merge, catalog target rewrites, game-record deletion, character deletion, and narrow mocks.
+- Server startup tests assert cleanup runs before `seedCharacters()`.
+- Shared character and selection tests assert canonical `denia` is the built-in fallback and retired slugs do not resolve through static alias paths.
+- Public character tests assert retired slugs are omitted from `/api/characters`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+export const CHARACTER_ALIASES = { danea: "denia" };
+```
+
+Correct:
+
+```js
+await cleanupLegacyDeniaCharacterData(prisma);
+await seedCharacters(prisma);
+```
+
+---
+
+### Scenario: Mailbox Sender Snapshot And Legacy Projection
+
+#### 1. Scope / Trigger
+- Trigger: any change to mailbox compose fields, `MailboxBatch` / `MailboxMessage`, future-user delivery, mailbox payloads, or player/admin sender display.
+- This is cross-layer because one admin input must survive batch storage, current and deferred delivery, player API projection, and both list/detail rendering.
+
+#### 2. Signatures
+- `MailboxBatch.sender String @default("")` stores the display sender chosen for one send operation.
+- `MailboxMessage.sender String @default("")` stores the recipient-visible snapshot.
+- `POST /api/admin/mailbox/batches` accepts `sender`, `targetMode`, recipient fields, title/body, and attachment fields.
+- Admin batch payloads and player message payloads both return `sender` as a non-empty display string.
+
+#### 3. Contracts
+- New sends require a trimmed `sender` between 1 and 40 characters; the backend is authoritative even though the admin input also uses `required` and `maxLength={40}`.
+- Creating a batch persists `sender`, and every current or future delivery copies that value to `MailboxMessage` rather than looking up the current admin username later.
+- `ensureMailboxSchema()` must create the sender columns on fresh SQLite databases and idempotently add them to both existing mailbox tables.
+- Historical rows with an empty sender project as `系统`; never substitute `adminUsername`, because the internal operator identity is not the public display sender.
+- Admin history, the player mail list, and the player detail reader must all consume the payload sender. Existing read, claim, delete, ordering, and mobile list/detail behavior remains unchanged.
+
+#### 4. Validation & Error Matrix
+- Missing or whitespace-only sender on a new send -> `400 邮件发件人不能为空`.
+- Sender longer than 40 characters -> `400 邮件发件人不能超过40字`.
+- Existing batch/message sender is empty -> response sender is `系统`.
+- Legacy future-eligible batch is delivered after upgrade -> created message snapshots the normalized sender `系统`.
+- Explicit sender is present -> preserve the trimmed text through batch, message, audit payload, and UI.
+
+#### 5. Good/Base/Bad Cases
+- Good: `运营团队` is stored on the batch, copied to every message, and shown in admin history plus player list/detail.
+- Base: an old message with `sender = ""` remains readable and displays `系统` without destructive data backfill.
+- Bad: deriving the player-visible sender from `adminUsername`, because it can expose an internal account and change the meaning of historical mail.
+- Bad: validating only with the browser `required` attribute, because direct API requests could create senderless mail.
+
+#### 6. Tests Required
+- Domain tests assert blank/overlong validation, current and future delivery snapshots, payload projection, and legacy `系统` fallback.
+- Startup-schema tests assert both create-table definitions and both legacy `ALTER TABLE` paths include `sender`.
+- Admin route/component tests assert the sender request/payload field, required compose control, and history cell.
+- Player mailbox tests assert the same sender appears in both the semantic list button and detail reader without changing desktop/mobile selection behavior.
+- Schema validation, focused mailbox tests, CSS debt contracts, and the broad project check must pass.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const sender = batch.adminUsername;
+await prisma.mailboxMessage.create({ data: { batchId: batch.id, userId, title: batch.title } });
+```
+
+Correct:
+
+```js
+const sender = String(batch.sender ?? "").trim() || "系统";
+await prisma.mailboxMessage.create({
+  data: { batchId: batch.id, userId, sender, title: batch.title }
+});
+```
+
+The correct path preserves the explicit public sender and gives legacy data a stable non-sensitive projection.
+
+---
+
+## Naming Conventions
+
+### Scenario: User Profile Likes And Reports
+
+#### 1. Scope / Trigger
+- Trigger: any change to public user profile like/report buttons, `/api/users/:id/like`, `/api/users/:id/report`, `/api/admin/user-reports`, profile payloads, or the `UserProfileLike` / `UserReport` schema.
+- This is cross-layer because storage enforces daily limits, social routes expose mutations, profile payloads expose count/state, and admin UI reads submitted reports.
+
+#### 2. Signatures
+- `UserProfileLike { id, likerUserId, targetUserId, dayKey, createdAt }` with unique `(likerUserId, targetUserId, dayKey)`.
+- `UserReport { id, reporterUserId, reportedUserId, reporterUsername, reportedUsername, content, createdAt }`.
+- `POST /api/users/:id/like` returns `{ likeCount, likedToday }`.
+- `POST /api/users/:id/report` accepts `{ content }` and returns `{ report }`.
+- `GET /api/admin/user-reports` returns `{ reports }`, latest 100 by `createdAt desc`.
+
+#### 3. Contracts
+- Server-side daily like limits use Asia/Shanghai natural days. Store the normalized `YYYY-MM-DD` key in `dayKey`; do not trust client dates.
+- Liking and reporting self are rejected before database writes.
+- Friend/blacklist relationship does not block liking or reporting.
+- Like insertion should be idempotent for the same day through the unique key and `INSERT OR IGNORE`, then re-read count/state.
+- Report content reuses feedback content validation: trim, remove control characters, require non-empty, and cap at 400 characters.
+- Store reporter/reported usernames as snapshots so admin review stays readable after future username changes.
+- Use raw SQL helpers for new social tables when runtime code must work before a regenerated Prisma client delegate is available.
+- Startup schema guard and Prisma migration must both create the tables and indexes.
+
+#### 4. Validation & Error Matrix
+- `likerUserId === targetUserId` -> `400`.
+- `reporter.id === reportedUserId` -> `400`.
+- Target user missing -> `404`.
+- Blank report content after trim/control stripping -> validation error from the feedback validator.
+- Duplicate like for same liker/target/day -> no new row, response still returns current `{ likeCount, likedToday: true }`.
+- Missing tables in older SQLite dev databases -> startup guard creates them in place.
+
+#### 5. Good/Base/Bad Cases
+- Good: a viewer likes another user once, sees the count increment, and receives `likedToday: true`.
+- Good: a blacklisted user can still submit a report, because moderation reporting is independent from social relation state.
+- Base: unauthenticated users cannot hit the authenticated mutation routes.
+- Bad: computing the daily limit in the browser or with the host local timezone.
+- Bad: only storing `reporterUserId` and `reportedUserId` without username snapshots for admin review.
+
+#### 6. Tests Required
+- Domain tests for Asia/Shanghai `dayKey`, duplicate-like behavior, self-like/self-report rejection, report content sanitation, and admin report list mapping.
+- Route handler tests for delegated like/report arguments and mounted authenticated routes.
+- Schema integrity tests for Prisma models and migration SQL.
+- Admin UI tests for the `reports` tab and read-only report table.
+- Profile component tests for disabled self/already-liked states and icon-only actions.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const dayKey = new Date().toISOString().slice(0, 10);
+await prisma.userProfileLike.create({ data: { likerUserId, targetUserId, dayKey } });
+```
+
+Correct:
+
+```js
+const dayKey = profileLikeDayKey(now);
+await prisma.$executeRaw`
+  INSERT OR IGNORE INTO UserProfileLike (id, likerUserId, targetUserId, dayKey, createdAt)
+  VALUES (${id}, ${likerUserId}, ${targetUserId}, ${dayKey}, ${now})
+`;
+```
+
+<!-- Table names, column names, index names -->
+
+(To be filled by the team)
+
+---
+
+## Common Mistakes
+
+### Scenario: Prisma Production Migration Baseline
+
+#### 1. Scope / Trigger
+- Trigger: changing `prisma/schema.prisma`, active migration history, production database setup, deployment migration commands, or startup schema compatibility behavior.
+- The migration directory is the production schema history; startup guards remain legacy-development compatibility helpers and do not replace reviewed migrations.
+
+#### 2. Signatures
+- `prisma/migrations/0_init/migration.sql` is the complete SQLite schema baseline.
+- `prisma/migrations/migration_lock.toml` pins `provider = "sqlite"`.
+- `npm run verify:migrations` verifies fresh deployment and existing-database adoption using disposable files only.
+- `SERVER_SCHEMA_TASK_ORDER` and `ensureServerSchema()` expose the existing idempotent compatibility guards without seed work; `npm run production:schema-compat` is the stopped-service deployment entry.
+
+#### 3. Contracts
+- Fresh databases use `prisma migrate deploy`; never use `prisma db push` for production deployment.
+- Do not edit a migration that may already be deployed. While the repository is explicitly in prelaunch single-baseline mode and `migrationBaselineVerification.test.js` requires exactly `[0_init]`, fold new schema into the complete baseline and rerun `npm run verify:migrations`. After the first production baseline adoption, add a new ordered migration for every later schema change and update the active-history contract test deliberately.
+- An existing data-bearing database may adopt `0_init` only after service shutdown, a verified backup, confirmation that no conflicting migration history exists, and a zero schema diff against `prisma/schema.prisma`.
+- Existing-database adoption uses `prisma migrate resolve --applied 0_init`, then `prisma migrate deploy`; application startup must never write or infer `_prisma_migrations` rows.
+- A historically drifted production database that already records `0_init` may run `production:schema-compat` after `migrate deploy` to add structures covered by existing audited guards. This is a transitional repair layer: it never edits migration history and never authorizes future schema changes without a new migration.
+- Migration verification databases must resolve below `.tmp/migration-baseline/`; the verifier must reject `prisma/dev.db` and any caller-selected external path.
+
+#### 4. Validation & Error Matrix
+- Empty database -> `migrate deploy` creates the full schema and one completed `0_init` record.
+- Current-schema database with no migration history -> preserve a sentinel row, resolve `0_init`, deploy with no pending SQL, and retain the sentinel.
+- Schema diff exits 2 -> stop adoption and review the drift; do not resolve the baseline.
+- `_prisma_migrations` contains old or unknown rows -> stop for manual reconciliation.
+- Repository still enforces a single prelaunch baseline and no production database has adopted it -> update `0_init`, keep one active migration directory, and verify fresh/adoption fixtures.
+- Production has already adopted `0_init` -> never rewrite it; create a later migration and review the changed active-history expectation.
+- Production reports no pending migration but a known guarded table/column is missing -> stop service, keep the verified backup, run `production:schema-compat`, and abort before admin snapshot sync if Prisma still reports `P2022`.
+- Backup, database-path, or service-stop uncertainty -> stop before any migration-history write.
+
+#### 5. Good/Base/Bad Cases
+- Good: a fresh database records one completed `0_init`, a second deploy is a no-op, and schema diff is empty.
+- Good: a current-schema legacy database keeps sentinel data after the operator resolves the baseline and deploys.
+- Base: on Windows, initialize the disposable SQLite file with a harmless Prisma Client `PRAGMA` before invoking the Prisma 6 schema engine; this works around file-creation failures without creating application tables. Build the adoption fixture by executing `0_init` SQL directly so it has the baseline structure but no migration history.
+- Bad: resolving `0_init` before checking schema parity, because Prisma will then trust a structure it never created or verified.
+- Bad: retaining an incomplete pre-baseline migration chain whose first operation alters a table that no active migration creates.
+
+#### 6. Tests Required
+- Assert the active history contains only the full baseline plus the SQLite migration lock while the repository remains in explicit prelaunch single-baseline mode; the first legitimate post-baseline migration must update this assertion and deployment documentation together.
+- Assert every Prisma model has a matching baseline `CREATE TABLE` statement.
+- Run the disposable end-to-end verifier for fresh deploy, repeated deploy, existing-schema adoption, sentinel preservation, migration status, and zero schema diff.
+- Unit-test path guards so repository and external database paths are rejected.
+- Unit-test the schema-only task order and assert it cannot invoke seed tasks; deployment-script tests must lock `migrate deploy -> production:schema-compat -> admin:sync-defaults`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```bash
+npx prisma db push
+npx prisma migrate reset
+```
+
+Correct for a fresh production database:
+
+```bash
+npx prisma migrate deploy
+```
+
+Correct for a backed-up, stopped, schema-identical prelaunch database:
+
+```bash
+npx prisma migrate resolve --applied 0_init
+npx prisma migrate deploy
+```
+
+### Scenario: SQLite Backup And Restore Verification
+
+#### 1. Scope / Trigger
+- Trigger: changing SQLite backup commands, release-candidate verification, production restore documentation, or disposable database path guards.
+- Operator backup and automated restore rehearsal are separate contracts: the former accepts an explicit production path, while the latter must never touch a real development or production database.
+
+#### 2. Signatures
+- `npm run backup:sqlite -- --source <database> --output <backup>` creates an SQLite-native consistent copy.
+- `npm run verify:backup-restore` runs migration, sentinel, backup, restore, integrity, and sentinel-read checks below `.tmp/backup-restore/`.
+- `resolveOperatorBackupPaths()` requires distinct explicit paths and rejects `prisma/dev.db` unless the human provides `--allow-dev-database`.
+
+#### 3. Contracts
+- Operator backup refuses a missing source, an existing output, and source/output identity. It uses `VACUUM INTO` and validates the output with `PRAGMA integrity_check`.
+- Automated verification paths must resolve strictly below `.tmp/backup-restore/`; repository `prisma/dev.db` and external paths are rejected before database access.
+- The restore rehearsal changes the source after backup, restores to a third path, and proves that the backed-up sentinel—not the later source value—survives.
+- Production restore remains a stopped-service operator action. Preserve the failed database, validate the chosen backup, deploy forward migrations, and record post-backup data loss before reopening traffic.
+
+#### 4. Validation & Error Matrix
+- Missing source/output argument -> fail before opening SQLite.
+- Source equals output or output already exists -> fail without overwrite.
+- Disposable path escapes the verification root -> fail before file creation.
+- `integrity_check` returns anything other than one `ok` row -> fail the backup/release gate.
+- Restored sentinel differs -> fail and delete only the disposable run directory.
+
+#### 5. Tests Required
+- Unit tests cover disposable-root confinement, real development database rejection, explicit arguments, and source/output identity.
+- The end-to-end verifier must use the real Prisma migration baseline and clean its run directory in `finally`.
+- Release-candidate verification must run backup/restore before capacity smoke.
+
+<!-- Database-related mistakes your team has made -->
+
+(To be filled by the team)
+
+### Scenario: Scoped Admin Story Snapshot And Production Reconciliation
+
+#### 1. Scope / Trigger
+- Trigger: moving a locally published `StoryScript` into repository defaults or applying that default to an existing deployment.
+- The committed snapshot is a bootstrap source; ordinary startup seeding must continue to preserve existing cloud rows.
+
+#### 2. Signatures
+- `npm run admin:snapshot:onboarding` replaces only the committed `onboarding.default` snapshot row.
+- `mergeSelectedStoryScripts(baseConfig, sourceConfig, storyKeys) -> config` preserves every unselected collection and story.
+- `npm run admin:sync-onboarding` previews; `npm run admin:sync-onboarding -- --apply` writes only `StoryScript.key = "onboarding.default"`.
+
+#### 3. Contracts
+- A scoped export reads the selected local row but uses the current committed snapshot as the base, so unrelated local admin drift cannot enter the generated file.
+- Production sync maps every editable/published story field but preserves an existing database row's `id` and touches no user, audit, or other admin table.
+- Preview is the default. Apply requires an operator backup and stopped service in the deployment runbook.
+- A database row with a later `publishedAt` than the committed snapshot is protected from accidental overwrite; `--force` is an explicit reviewed escape hatch.
+
+#### 4. Validation & Error Matrix
+- Empty key -> fail before a database write.
+- Selected key missing from local export source or committed snapshot -> fail with the missing key.
+- Existing row equals the snapshot -> successful no-op.
+- Existing row is older -> preview reports update; `--apply` updates exactly that key.
+- Existing row is newer -> reject unless the operator explicitly supplies `--force` after review.
+
+#### 5. Good/Base/Bad Cases
+- Good: publish onboarding locally, run the scoped snapshot command, commit only that story change, back up cloud SQLite, preview, then apply.
+- Base: a fresh database receives the row from normal bootstrap seeding and needs no sync.
+- Bad: run the full `admin:snapshot` for a one-story release and accidentally commit unrelated site, catalog, character, or shop edits.
+- Bad: delete the whole production database merely to make create-only seeding pick up one changed script.
+
+#### 6. Tests Required
+- Export tests assert a selected story changes while unrelated collections and stories remain byte-equivalent in data.
+- Sync tests cover preview/no-write, update, create, identical no-op, missing key, and newer-cloud rejection.
+- Snapshot tests parse and validate both draft/published onboarding graphs and lock the intended node hashes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```bash
+npm run admin:snapshot
+npx prisma migrate reset
+```
+
+Correct:
+
+```bash
+npm run admin:snapshot:onboarding
+npm run admin:sync-onboarding
+npm run admin:sync-onboarding -- --apply
+```

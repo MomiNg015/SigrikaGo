@@ -1,0 +1,155 @@
+vite v6.4.3 building for production...
+transforming...
+
+__VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+__VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 2687 modules transformed.
+rendering chunks...
+computing gzip size...
+.codex-run/six-dist/.codex-run/beauty-b-extra.html                   0.92 kB │ gzip:   0.36 kB
+.codex-run/six-dist/index.html                                       1.13 kB │ gzip:   0.44 kB
+.codex-run/six-dist/.codex-run/beauty-b.html                         1.50 kB │ gzip:   0.49 kB
+.codex-run/six-dist/.codex-run/audit-a.html                          1.70 kB │ gzip:   0.49 kB
+.codex-run/six-dist/assets/TutorialBattleScreen-xOahuKah.css        12.10 kB │ gzip:   3.08 kB
+.codex-run/six-dist/assets/AdminConsole-BmTk_mFw.css                64.24 kB │ gzip:  11.18 kB
+.codex-run/six-dist/assets/styles-qEVjPtdM.css                   1,202.01 kB │ gzip: 169.78 kB
+.codex-run/six-dist/assets/shopItemIllust-ByHg065x.js                0.13 kB │ gzip:   0.12 kB
+.codex-run/six-dist/assets/check-D0g6dPzl.js                         0.29 kB │ gzip:   0.24 kB
+.codex-run/six-dist/assets/search-BB9vUGum.js                        0.34 kB │ gzip:   0.27 kB
+.codex-run/six-dist/assets/StoneDecorationPreview-CWQ1fc84.js        0.37 kB │ gzip:   0.25 kB
+.codex-run/six-dist/assets/circle-dollar-sign-C3OhCVQI.js            0.42 kB │ gzip:   0.31 kB
+.codex-run/six-dist/assets/award-DquFo8Y1.js                         0.44 kB │ gzip:   0.33 kB
+.codex-run/six-dist/assets/ticket-B4JBC1-N.js                        0.50 kB │ gzip:   0.32 kB
+.codex-run/six-dist/assets/refresh-cw-DhpvslUK.js                    0.50 kB │ gzip:   0.33 kB
+.codex-run/six-dist/assets/trash-2-AV3JIFrg.js                       0.53 kB │ gzip:   0.36 kB
+.codex-run/six-dist/assets/package-D6dibYBY.js                       0.55 kB │ gzip:   0.36 kB
+.codex-run/six-dist/assets/beauty-b-extra-BXDegAQr.js                0.60 kB │ gzip:   0.42 kB
+.codex-run/six-dist/assets/trophy-Cywxc1n5.js                        0.64 kB │ gzip:   0.39 kB
+.codex-run/six-dist/assets/palette-CTYqhY6e.js                       0.68 kB │ gzip:   0.38 kB
+.codex-run/six-dist/assets/audit-a-BxNRULDE.js                       1.33 kB │ gzip:   0.79 kB
+.codex-run/six-dist/assets/MessageBoardModal-BrDacgdT.js             1.35 kB │ gzip:   0.83 kB
+.codex-run/six-dist/assets/beauty-b-BGORyp0Y.js                      1.47 kB │ gzip:   0.94 kB
+.codex-run/six-dist/assets/MarkdownLiteContent-DO4bP3rb.js           2.40 kB │ gzip:   1.02 kB
+.codex-run/six-dist/assets/InformationCenterLayout-DEG7YwZU.js       2.46 kB │ gzip:   1.18 kB
+.codex-run/six-dist/assets/BattleAssetPreloadScreen-jPz4w-T6.js      2.81 kB │ gzip:   1.40 kB
+.codex-run/six-dist/assets/LeaderboardModal-Dd3KCVpv.js              4.11 kB │ gzip:   1.72 kB
+.codex-run/six-dist/assets/AchievementModal-CTLD1H0s.js              4.11 kB │ gzip:   1.88 kB
+.codex-run/six-dist/assets/WatchModal-BpdveGoq.js                    4.25 kB │ gzip:   1.80 kB
+.codex-run/six-dist/assets/ResumeModal-kqA8Z0o6.js                   4.35 kB │ gzip:   2.08 kB
+.codex-run/six-dist/assets/SettingsModal-B2nJkuJ-.js                 5.28 kB │ gzip:   2.05 kB
+.codex-run/six-dist/assets/PersonalizationModal-DdqW4YlT.js          5.67 kB │ gzip:   2.19 kB
+.codex-run/six-dist/assets/FriendsModal-a_xmVGEa.js                  7.96 kB │ gzip:   2.93 kB
+.codex-run/six-dist/assets/AnnouncementModal-yfPm6aVW.js             8.52 kB │ gzip:   3.21 kB
+.codex-run/six-dist/assets/WarehouseModal-B-j-IEMX.js                8.92 kB │ gzip:   3.61 kB
+.codex-run/six-dist/assets/MailboxModal-D8I1--Fj.js                  9.57 kB │ gzip:   3.72 kB
+.codex-run/six-dist/assets/styles-DfGwysbu.js                       10.14 kB │ gzip:   4.37 kB
+.codex-run/six-dist/assets/visualTheme-DRz-i5oJ.js                  12.21 kB │ gzip:   5.07 kB
+.codex-run/six-dist/assets/HouseModal-DnFm4QoV.js                   12.56 kB │ gzip:   4.44 kB
+.codex-run/six-dist/assets/RecruitmentModal-BpZ80m4i.js             17.04 kB │ gzip:   5.81 kB
+.codex-run/six-dist/assets/TutorialBattleScreen-mYwu3ZCM.js         21.83 kB │ gzip:   7.68 kB
+.codex-run/six-dist/assets/ShopModal-R2PicVsT.js                    25.98 kB │ gzip:   8.50 kB
+.codex-run/six-dist/assets/realtime-vendor-QyAzXPig.js              41.59 kB │ gzip:  13.02 kB
+.codex-run/six-dist/assets/siteSettings-DOOb-jeS.js                 72.95 kB │ gzip:  23.38 kB
+.codex-run/six-dist/assets/UserProfileCard-BuaUO-Xt.js              95.48 kB │ gzip:  30.76 kB
+.codex-run/six-dist/assets/react-vendor-DvgcfV-f.js                193.93 kB │ gzip:  60.58 kB
+.codex-run/six-dist/assets/AdminConsole-CJRCnhfT.js                214.05 kB │ gzip:  58.26 kB
+.codex-run/six-dist/assets/index-CngLTrtL.js                       293.44 kB │ gzip:  90.34 kB
+.codex-run/six-dist/assets/pixi-vendor-DKLUOadx.js                 870.42 kB │ gzip: 249.95 kB
+.codex-run/six-dist/assets/exceljs.min-CkSz_nNj.js                 940.20 kB │ gzip: 271.34 kB
+
+(!) Some chunks are larger than 900 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 24.40s
+{"width":1440,"view":"shop","edge":"top","issues":[]}
+{"width":1440,"view":"shop","edge":"bottom","issues":[]}
+{"width":1440,"view":"friends","edge":"top","issues":[]}
+{"width":1440,"view":"friends","edge":"bottom","issues":[]}
+{"width":1440,"view":"leaderboard","edge":"top","issues":[]}
+{"width":1440,"view":"leaderboard","edge":"bottom","issues":[]}
+{"width":1440,"view":"house","edge":"top","issues":[]}
+{"width":1440,"view":"house","edge":"bottom","issues":[]}
+{"width":1440,"view":"warehouse","edge":"top","issues":[]}
+{"width":1440,"view":"warehouse","edge":"bottom","issues":[]}
+{"width":1440,"view":"watch","edge":"top","issues":[]}
+{"width":1440,"view":"watch","edge":"bottom","issues":[]}
+{"width":1440,"view":"recruitment","edge":"top","issues":[]}
+{"width":1440,"view":"recruitment","edge":"bottom","issues":[]}
+{"width":1440,"view":"settings","edge":"top","issues":[]}
+{"width":1440,"view":"settings","edge":"bottom","issues":[]}
+{"width":1440,"view":"theme","edge":"top","issues":[]}
+{"width":1440,"view":"theme","edge":"bottom","issues":[]}
+{"width":1440,"view":"about","edge":"top","issues":[]}
+{"width":1440,"view":"about","edge":"bottom","issues":[]}
+{"width":1440,"view":"mailbox","edge":"top","issues":[]}
+{"width":1440,"view":"mailbox","edge":"bottom","issues":[]}
+{"width":1440,"view":"announcement","edge":"top","issues":[]}
+{"width":1440,"view":"announcement","edge":"bottom","issues":[]}
+{"width":1440,"view":"message","edge":"top","issues":[]}
+{"width":1440,"view":"message","edge":"bottom","issues":[]}
+{"width":1440,"view":"personalization","edge":"top","issues":[]}
+{"width":1440,"view":"personalization","edge":"bottom","issues":[]}
+{"width":1440,"view":"achievement","edge":"top","issues":[]}
+{"width":1440,"view":"achievement","edge":"bottom","issues":[]}
+{"width":390,"view":"shop","edge":"top","issues":[]}
+{"width":390,"view":"shop","edge":"bottom","issues":[]}
+{"width":390,"view":"friends","edge":"top","issues":[]}
+{"width":390,"view":"friends","edge":"bottom","issues":[]}
+{"width":390,"view":"leaderboard","edge":"top","issues":[]}
+{"width":390,"view":"leaderboard","edge":"bottom","issues":[]}
+{"width":390,"view":"house","edge":"top","issues":[]}
+{"width":390,"view":"house","edge":"bottom","issues":[]}
+{"width":390,"view":"warehouse","edge":"top","issues":[]}
+{"width":390,"view":"warehouse","edge":"bottom","issues":[]}
+{"width":390,"view":"watch","edge":"top","issues":[]}
+{"width":390,"view":"watch","edge":"bottom","issues":[]}
+{"width":390,"view":"recruitment","edge":"top","issues":[]}
+{"width":390,"view":"recruitment","edge":"bottom","issues":[]}
+{"width":390,"view":"settings","edge":"top","issues":[]}
+{"width":390,"view":"settings","edge":"bottom","issues":[]}
+{"width":390,"view":"theme","edge":"top","issues":[]}
+{"width":390,"view":"theme","edge":"bottom","issues":[]}
+{"width":390,"view":"about","edge":"top","issues":[]}
+{"width":390,"view":"about","edge":"bottom","issues":[]}
+{"width":390,"view":"mailbox","edge":"top","issues":[]}
+{"width":390,"view":"mailbox","edge":"bottom","issues":[]}
+{"width":390,"view":"announcement","edge":"top","issues":[]}
+{"width":390,"view":"announcement","edge":"bottom","issues":[]}
+{"width":390,"view":"message","edge":"top","issues":[]}
+{"width":390,"view":"message","edge":"bottom","issues":[]}
+{"width":390,"view":"personalization","edge":"top","issues":[]}
+{"width":390,"view":"personalization","edge":"bottom","issues":[]}
+{"width":390,"view":"achievement","edge":"top","issues":[]}
+{"width":390,"view":"achievement","edge":"bottom","issues":[]}
+{"width":320,"view":"shop","edge":"top","issues":[]}
+{"width":320,"view":"shop","edge":"bottom","issues":[]}
+{"width":320,"view":"friends","edge":"top","issues":[]}
+{"width":320,"view":"friends","edge":"bottom","issues":[]}
+{"width":320,"view":"leaderboard","edge":"top","issues":[]}
+{"width":320,"view":"leaderboard","edge":"bottom","issues":[]}
+{"width":320,"view":"house","edge":"top","issues":[]}
+{"width":320,"view":"house","edge":"bottom","issues":[]}
+{"width":320,"view":"warehouse","edge":"top","issues":[]}
+{"width":320,"view":"warehouse","edge":"bottom","issues":[]}
+{"width":320,"view":"watch","edge":"top","issues":[]}
+{"width":320,"view":"watch","edge":"bottom","issues":[]}
+{"width":320,"view":"recruitment","edge":"top","issues":[]}
+{"width":320,"view":"recruitment","edge":"bottom","issues":[]}
+{"width":320,"view":"settings","edge":"top","issues":[]}
+{"width":320,"view":"settings","edge":"bottom","issues":[]}
+{"width":320,"view":"theme","edge":"top","issues":[]}
+{"width":320,"view":"theme","edge":"bottom","issues":[]}
+{"width":320,"view":"about","edge":"top","issues":[]}
+{"width":320,"view":"about","edge":"bottom","issues":[]}
+{"width":320,"view":"mailbox","edge":"top","issues":[]}
+{"width":320,"view":"mailbox","edge":"bottom","issues":[]}
+{"width":320,"view":"announcement","edge":"top","issues":[]}
+{"width":320,"view":"announcement","edge":"bottom","issues":[]}
+{"width":320,"view":"message","edge":"top","issues":[]}
+{"width":320,"view":"message","edge":"bottom","issues":[]}
+{"width":320,"view":"personalization","edge":"top","issues":[]}
+{"width":320,"view":"personalization","edge":"bottom","issues":[]}
+{"width":320,"view":"achievement","edge":"top","issues":[]}
+{"width":320,"view":"achievement","edge":"bottom","issues":[]}

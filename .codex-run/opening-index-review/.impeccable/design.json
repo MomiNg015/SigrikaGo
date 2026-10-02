@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-31T20:17:00.0000000+08:00",
+  "title": "Design System: SigrikaGo Bright School",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Notebook Paper",
+        "canonical": "#fffbf2",
+        "tonalRamp": ["#332f24", "#514b3b", "#706958", "#918977", "#b3aa98", "#d5ccbc", "#eee7da", "#fffbf2"]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Warm Sheet",
+        "canonical": "#fffaf0",
+        "tonalRamp": ["#332e22", "#534b39", "#736957", "#948977", "#b6aa98", "#d8cdbc", "#f0e6d8", "#fffaf0"]
+      },
+      "sheet-clean": {
+        "role": "neutral",
+        "displayName": "Clean Sheet",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#454545", "#656565", "#878787", "#aaaaaa", "#cccccc", "#e8e8e8", "#ffffff"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Dark Ink",
+        "canonical": "#3d2b25",
+        "tonalRamp": ["#211713", "#3d2b25", "#5b4138", "#79594d", "#987267", "#b99186", "#d9b6ae", "#f6ded9"]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#6a554d",
+        "tonalRamp": ["#211a18", "#3f322e", "#5d4a44", "#79645c", "#988077", "#b79d95", "#d8beb7", "#f4dfda"]
+      },
+      "campus-pink": {
+        "role": "primary",
+        "displayName": "Campus Pink",
+        "canonical": "#ff9ebb",
+        "tonalRamp": ["#35141f", "#5c2638", "#843b53", "#ad526f", "#d76d8e", "#ef89a8", "#ffb5ca", "#ffe3ec"]
+      },
+      "notebook-blue": {
+        "role": "secondary",
+        "displayName": "Notebook Blue",
+        "canonical": "#9ad3de",
+        "tonalRamp": ["#102c32", "#1f4a53", "#316975", "#468995", "#61a9b6", "#7fc3ce", "#aedfe7", "#e1f4f7"]
+      },
+      "club-mint": {
+        "role": "secondary",
+        "displayName": "Club Mint",
+        "canonical": "#bfe8dd",
+        "tonalRamp": ["#17312c", "#2b5148", "#427267", "#5d9587", "#7bb8a8", "#9ed6c8", "#c5eee3", "#e9faf5"]
+      },
+      "danger": {
+        "role": "primary",
+        "displayName": "Validation Red",
+        "canonical": "#c0182d",
+        "tonalRamp": ["#31050b", "#570b16", "#7f1020", "#a71629", "#c92d3f", "#e65d6c", "#f49aa4", "#ffdce0"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Identity Accent", "purpose": "Short Latin identity marks only." },
+      "title": { "displayName": "Window Title", "purpose": "Player-facing window and feature titles." },
+      "body": { "displayName": "UI Body", "purpose": "Controls, forms, messages, and gameplay copy." },
+      "label": { "displayName": "UI Label", "purpose": "Tabs, fields, states, and compact controls." }
+    },
+    "shadows": [
+      { "name": "paper-rest", "value": "4px 5px 0 rgba(61, 43, 37, 0.82)", "purpose": "Default raised Bright School surfaces." },
+      { "name": "paper-lift", "value": "7px 8px 0 rgba(61, 43, 37, 0.86), 0 14px 28px rgba(255, 158, 187, 0.2)", "purpose": "Meaningful interactive lift." },
+      { "name": "login-panel", "value": "6px 6px 0 #3d2b25", "purpose": "Authentication panel silhouette." }
+    ],
+    "motion": [
+      { "name": "state-fast", "value": "160ms ease", "purpose": "Basic control hover and press feedback." },
+      { "name": "state-standard", "value": "180ms ease", "purpose": "Theme-aware state transitions." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Purposeful lift and settle motion." }
+    ],
+    "breakpoints": [
+      { "name": "portrait-mobile", "value": "760px" },
+      { "name": "mobile-layout", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary confirmation and authentication action.",
+      "html": "<button class=\"ds-btn-primary\">开门！</button>",
+      "css": ".ds-btn-primary { min-height: 44px; padding: 10px 14px; border: 3px solid var(--bright-border, #3d2b25); border-radius: 14px; background: var(--bright-pink, #ff9ebb); color: var(--bright-ink, #3d2b25); box-shadow: 4px 4px 0 var(--bright-border, #3d2b25); font: 900 14px/1.2 var(--font-ui-default, system-ui, sans-serif); transition: transform 160ms ease, filter 160ms ease, outline-color 160ms ease; cursor: pointer; } .ds-btn-primary:hover { transform: translateY(-2px); filter: brightness(1.04) saturate(1.04); } .ds-btn-primary:focus-visible { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 3px; } .ds-btn-primary:active { transform: translateY(1px); box-shadow: 2px 2px 0 var(--bright-border, #3d2b25); }"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Familiar secondary action with the same sticker silhouette.",
+      "html": "<button class=\"ds-btn-secondary\">注册</button>",
+      "css": ".ds-btn-secondary { min-height: 44px; padding: 10px 14px; border: 3px solid var(--bright-border, #3d2b25); border-radius: 14px; background: var(--bright-sheet-clean, #ffffff); color: var(--bright-ink, #3d2b25); box-shadow: 4px 4px 0 var(--bright-border, #3d2b25); font: 900 14px/1.2 var(--font-ui-default, system-ui, sans-serif); transition: transform 160ms ease, background-color 160ms ease; cursor: pointer; } .ds-btn-secondary:hover { transform: translateY(-2px); background: var(--bright-pink-soft, #ffdfeb); } .ds-btn-secondary:focus-visible { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 3px; }"
+    },
+    {
+      "name": "Authentication Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Readable account field with explicit focus and invalid states.",
+      "html": "<label class=\"ds-field\"><span>用户名</span><input placeholder=\"请输入用户名\" /></label>",
+      "css": ".ds-field { display: grid; gap: 6px; color: var(--bright-muted, #6a554d); font: 700 14px/1.35 var(--font-ui-default, system-ui, sans-serif); } .ds-field input { min-height: 44px; padding: 12px 14px; border: 2px solid var(--bright-border, #3d2b25); border-radius: 8px; background: var(--bright-sheet-clean, #ffffff); color: var(--bright-ink, #3d2b25); font: 400 16px/1.5 var(--font-ui-default, system-ui, sans-serif); outline: none; } .ds-field input::placeholder { color: #6b5d5a; opacity: .76; } .ds-field input:hover { border-color: #6a554d; } .ds-field input:focus-visible { border-color: var(--bright-pink, #ff9ebb); box-shadow: 0 0 0 3px rgba(255, 158, 187, .28); }"
+    },
+    {
+      "name": "Segmented Choice",
+      "kind": "nav",
+      "refersTo": "button-secondary",
+      "description": "Two-state account mode control with stable geometry.",
+      "html": "<div class=\"ds-segmented\" role=\"group\" aria-label=\"账号操作\"><button class=\"is-active\">登录</button><button>注册</button></div>",
+      "css": ".ds-segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; } .ds-segmented button { min-height: 44px; border: 2px solid transparent; border-radius: 8px; background: transparent; color: var(--bright-muted, #6a554d); font: 800 14px/1.2 var(--font-ui-default, system-ui, sans-serif); cursor: pointer; } .ds-segmented button:hover { background: var(--bright-pink-soft, #ffdfeb); color: var(--bright-ink, #3d2b25); } .ds-segmented button:focus-visible { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 2px; } .ds-segmented .is-active { border-color: var(--bright-border, #3d2b25); background: var(--bright-pink, #ff9ebb); color: var(--bright-ink, #3d2b25); box-shadow: 2px 2px 0 var(--bright-border, #3d2b25); }"
+    },
+    {
+      "name": "Bright School Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Notebook-paper surface for player-facing task regions.",
+      "html": "<section class=\"ds-paper-panel\"><h2>星炬学院围棋部</h2><p>清晰、可靠、带有校园手账质感。</p></section>",
+      "css": ".ds-paper-panel { max-width: 420px; padding: 26px; border: 3px solid var(--bright-border, #3d2b25); border-radius: 16px; background-color: var(--bright-paper, #fffbf2); background-image: linear-gradient(rgba(154, 211, 222, .18) 1px, transparent 1px), linear-gradient(90deg, rgba(154, 211, 222, .18) 1px, transparent 1px); background-size: 20px 20px; color: var(--bright-ink, #3d2b25); box-shadow: 5px 5px 0 var(--bright-border, #3d2b25); font-family: var(--font-ui-default, system-ui, sans-serif); } .ds-paper-panel h2 { margin: 0 0 10px; font: 400 24px/1.2 var(--font-window-title, var(--font-ui-default, system-ui, sans-serif)); } .ds-paper-panel p { margin: 0; max-width: 38ch; line-height: 1.5; } .ds-paper-panel:focus-within { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 4px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Bright School Club Notebook",
+    "overview": "SigrikaGo presents a playful school-club world without weakening the precision required by a live strategy game. Paper surfaces, dark ink outlines, campus pink, notebook blue, and mint accents provide the anime-school energy; familiar controls, explicit states, and compact information hierarchy keep every action dependable.",
+    "keyCharacteristics": [
+      "Warm notebook paper with visible but quiet grid structure.",
+      "Dark, high-contrast ink outlines and short hard shadows.",
+      "Pink for primary confirmation, blue and mint for supporting state roles.",
+      "Familiar form controls, explicit feedback, and legible game state before decoration.",
+      "Motion communicates state in roughly 160–250ms and disappears under reduced-motion preferences."
+    ],
+    "rules": [
+      { "name": "The Ink-First Rule", "body": "A surface is not complete until its text, border, and active state remain readable without relying on color alone.", "section": "colors" },
+      { "name": "The Familiar-Control Rule", "body": "Buttons, labels, form values, and dense operational text always use the UI sans; display faces are reserved for identity and titles.", "section": "typography" },
+      { "name": "The Short-Shadow Rule", "body": "Bright School depth uses crisp paper offsets; broad blur is not the default visual language.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do make game state legible before making it decorative.",
+      "Do preserve the Bright School paper-and-campus identity while keeping standard controls familiar.",
+      "Do use explicit loading, error, unread, disabled, selected, and dangerous states."
+    ],
+    "donts": [
+      "Don't let generic dark sci-fi HUD styling bleed into the Bright School theme.",
+      "Don't use marketing-page hero layouts inside app surfaces.",
+      "Don't add decorative motion that does not communicate state.",
+      "Don't build overbuilt card stacks or vague AI-tool aesthetics.",
+      "Don't use unreadable low-contrast paper tints.",
+      "Don't allow mobile overflow or treat mobile as a late shrink pass.",
+      "Don't replace context with modal flows when a separate detail window is expected."
+    ]
+  }
+}

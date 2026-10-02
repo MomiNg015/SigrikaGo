@@ -1,0 +1,42 @@
+
+  VITE v6.4.3  ready in 767 ms
+
+  ➜  Local:   http://127.0.0.1:5173/
+  ➜  press h + enter to show help
+10:09:59 [vite] (client) page reload src/home/HomeScreen.test.jsx
+10:11:42 [vite] (client) hmr update /src/styles.css
+10:12:57 [vite] (client) page reload src/styles/styleContract.test.js
+10:12:57 [vite] (client) page reload src/shared/CharacterChainBadge.test.jsx
+10:13:38 [vite] (client) hmr update /src/home/components/PlayerPlaque.jsx, /src/styles.css
+10:13:38 [vite] (client) hmr update /src/styles.css
+10:13:40 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:13:41 [vite] (client) page reload docs/system-design.html
+10:13:59 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:13:59 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:15:04 [vite] (client) hmr update /src/styles.css
+10:15:04 [vite] (client) page reload src/styles/styleContract.test.js
+10:15:23 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:15:23 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:16:19 [vite] (client) page reload docs/system-design.html
+10:17:19 [vite] (client) hmr update /src/styles.css
+10:28:09 [vite] (client) hmr update /src/home/HomeScreen.jsx, /src/styles.css
+10:28:09 [vite] (client) hmr update /src/home/components/HomeStage.jsx, /src/styles.css
+10:28:09 [vite] (client) hmr update /src/home/components/PlayerPlaque.jsx, /src/styles.css
+10:28:09 [vite] (client) hmr update /src/styles.css
+10:29:38 [vite] (client) hmr update /src/styles.css
+10:30:50 [vite] (client) hmr update /src/styles.css
+10:30:50 [vite] (client) page reload src/home/components/PlayerPlaque.dom.test.jsx
+10:30:52 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:30:54 [vite] (client) page reload docs/system-design.html
+10:31:32 [vite] (client) page reload .tmp/handbook-system-design.html
+10:31:57 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:32:46 [vite] (client) page reload src/home/components/PlayerPlaque.dom.test.jsx
+10:32:48 [vite] (client) hmr update /src/styles.css
+10:32:48 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:33:45 [vite] (client) page reload src/home/components/PlayerPlaque.dom.test.jsx
+10:33:45 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:33:47 [vite] (client) hmr update /src/styles.css
+10:33:47 [vite] (client) page reload src/styles/cssLayerInventory.js
+10:34:05 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:34:05 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+10:35:06 [vite] (client) page reload docs/system-design.html

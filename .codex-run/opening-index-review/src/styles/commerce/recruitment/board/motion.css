@@ -1,0 +1,22 @@
+@keyframes recruitment-paper-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) rotate(-2deg) scale(0.98);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recruitment-empty-board,
+  .recruitment-selection-card,
+  .recruitment-status-card,
+  .recruitment-result-card {
+    animation: none;
+  }
+
+  .recruitment-board::after {
+    transition: none;
+  }
+}

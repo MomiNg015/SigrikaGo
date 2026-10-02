@@ -1,0 +1,14 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/rankStarsMigration.test.js server/roomResultPersistence.test.js scripts/export-admin-default-snapshot.test.js src/shared/gameRecords.test.js docs/systemDesignHtml.test.js --reporter=dot
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+························
+
+ Test Files  5 passed (5)
+      Tests  24 passed (24)
+   Start at  09:55:09
+   Duration  4.79s (transform 716ms, setup 0ms, collect 2.01s, tests 2.47s, environment 1ms, prepare 683ms)
+

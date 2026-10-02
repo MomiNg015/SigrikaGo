@@ -1,0 +1,68 @@
+/* Startorch Academy tactical main terminal */
+
+.app-shell:has(.home-screen) {
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #04080c;
+}
+
+.app-shell:has(.home-screen)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: url("/assets/home/multipurpose-classroom-bg.webp");
+  background-size: cover;
+  background-position: center;
+  filter: none;
+  transform: none;
+}
+
+.app-shell:has(.home-screen)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(224, 247, 244, 0.055) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 48% 18%, rgba(0, 255, 190, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(3, 8, 13, 0.38), rgba(3, 10, 16, 0.76));
+  background-size: 100% 4px, cover, cover;
+  backdrop-filter: none;
+}
+
+.home-screen {
+  --home-terminal-bg: rgba(10, 22, 30, 0.75);
+  --home-terminal-panel: rgba(7, 18, 26, 0.7);
+  --home-terminal-cyan: #00ffbe;
+  --home-terminal-blue: #00bfff;
+  --home-terminal-green: #b7ff45;
+  --home-terminal-text: #e0f7f4;
+  --home-terminal-muted: rgba(185, 233, 228, 0.68);
+  --home-terminal-cut: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  width: min(100%, 100vw);
+  min-width: 0;
+  max-width: none;
+  min-height: 100dvh;
+  padding: clamp(12px, 1.8vw, 22px);
+  gap: clamp(12px, 1.6vw, 22px);
+  overflow-x: hidden;
+  color: var(--home-terminal-text);
+}
+
+.home-terminal-screen::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.17;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.42) 0 1px, transparent 1px),
+    radial-gradient(circle at 84% 32%, rgba(0, 255, 190, 0.55) 0 1px, transparent 1px);
+  background-size: 23px 23px, 31px 31px;
+  mix-blend-mode: screen;
+}

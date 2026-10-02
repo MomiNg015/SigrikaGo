@@ -1,0 +1,1 @@
+import{j as s}from"./react-vendor-DvgcfV-f.js";function t({decoration:e,label:a="",large:i=!1}){return s.jsxs("div",{className:`stone-decoration-preview ${i?"large":""}`,"aria-label":a||e.name,children:[s.jsx("span",{style:{"--preview-stone-image":`url("${e.images.black}")`}}),s.jsx("span",{style:{"--preview-stone-image":`url("${e.images.white}")`}})]})}export{t as S};

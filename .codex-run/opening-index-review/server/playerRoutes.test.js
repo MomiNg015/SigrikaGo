@@ -1,0 +1,185 @@
+import { describe, expect, it } from "vitest";
+import {
+  createCharacterSelectionData,
+  createPlayerRouteHandlers,
+  validateOptionalRoomCode
+} from "./playerRoutes.js";
+
+function createResponse() {
+  return {
+    statusCode: 200,
+    body: null,
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(payload) {
+      this.body = payload;
+      return this;
+    }
+  };
+}
+
+describe("player route helpers", () => {
+  it("normalizes optional resume room codes before hitting resume logic", async () => {
+    let payloadArgs = null;
+    const handlers = createPlayerRouteHandlers({
+      prisma: { gameRecord: { findMany: async () => [] } },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({ characters: {}, disabledSlugs: new Set() }),
+      resumePayloadForUserFn: async (args) => {
+        payloadArgs = args;
+        return { type: "none" };
+      }
+    });
+    const res = createResponse();
+
+    await handlers.resume({
+      user: { id: "user-1" },
+      query: { roomCode: "<bad>" }
+    }, res);
+
+    expect(payloadArgs.roomCode).toBe("");
+    expect(res.body).toEqual({ type: "none" });
+  });
+
+  it("keeps the socket-safe room code normalizer export focused", () => {
+    expect(validateOptionalRoomCode(" 12345 ")).toBe("12345");
+    expect(validateOptionalRoomCode("<bad>")).toBe("");
+    expect(validateOptionalRoomCode()).toBe("");
+  });
+
+  it("builds selectable characters with disabled slugs", async () => {
+    const characterSelectionData = createCharacterSelectionData({
+      prisma: {
+        character: {
+          findMany: async () => [
+            { slug: "sigrika", enabled: true },
+            { slug: "denia", enabled: false }
+          ]
+        }
+      },
+      listCharacters: async () => [{ id: "sigrika", name: "Sigrika" }]
+    });
+
+    await expect(characterSelectionData()).resolves.toEqual({
+      characters: { sigrika: { id: "sigrika", name: "Sigrika" } },
+      disabledSlugs: new Set(["denia"])
+    });
+  });
+
+  it("rejects owned but currently blocked character selections", async () => {
+    const updatedUsers = [];
+    const handlers = createPlayerRouteHandlers({
+      prisma: {
+        gameRecord: { findMany: async () => [] },
+        user: {
+          update: async ({ data }) => {
+            updatedUsers.push(data);
+            return { id: "user-1", selectedCharacter: data.selectedCharacter };
+          }
+        }
+      },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({
+        characters: { sigrika: { id: "sigrika" } },
+        disabledSlugs: new Set()
+      }),
+      publicUserFn: (user) => ({
+        id: user.id,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: [],
+        itemEffects: []
+      }),
+      blockedCharactersForEffects: () => new Set(["sigrika"])
+    });
+    const res = createResponse();
+
+    await handlers.updateCharacter({
+      user: { id: "user-1" },
+      body: { characterId: "sigrika" }
+    }, res);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toEqual({ error: "\u7cd6\u679c\u6548\u679c\u4e2d\uff0c\u6682\u65f6\u65e0\u6cd5\u51fa\u6218" });
+    expect(updatedUsers).toEqual([]);
+  });
+
+  it("forwards derived skill slot identity to music selection logic", async () => {
+    let selectionArgs = null;
+    const handlers = createPlayerRouteHandlers({
+      prisma: { gameRecord: { findMany: async () => [] } },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({ characters: {}, disabledSlugs: new Set() }),
+      selectSkillMusic: async (args) => {
+        selectionArgs = args;
+        return { user: { id: "user-1" } };
+      }
+    });
+    const res = createResponse();
+
+    await handlers.updateMusicSelection({
+      user: { id: "user-1" },
+      body: {
+        characterId: "aemeath",
+        trackId: "aemeath-voyage-star-default",
+        effectType: "voyage-star"
+      }
+    }, res);
+
+    expect(selectionArgs).toMatchObject({
+      characterId: "aemeath",
+      trackId: "aemeath-voyage-star-default",
+      effectType: "voyage-star"
+    });
+    expect(res.statusCode).toBe(200);
+  });
+
+  it("returns character chain counts after selecting a sortie character", async () => {
+    const handlers = createPlayerRouteHandlers({
+      prisma: {
+        gameRecord: { findMany: async () => [] },
+        user: {
+          update: async ({ data, include }) => ({
+            id: "user-1",
+            username: "moming",
+            rating: 1000,
+            wins: 0,
+            losses: 0,
+            coins: 0,
+            selectedCharacter: data.selectedCharacter,
+            ownedCharacters: "sigrika,denia",
+            userCharacters: include?.userCharacters
+              ? [{ characterSlug: "denia", chainCount: 3 }]
+              : []
+          })
+        }
+      },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({
+        characters: { denia: { id: "denia" } },
+        disabledSlugs: new Set()
+      })
+    });
+    const res = createResponse();
+
+    await handlers.updateCharacter({
+      user: {
+        id: "user-1",
+        selectedCharacter: "sigrika",
+        rating: 1000,
+        ownedCharacters: "sigrika,denia",
+        userCharacters: [{ characterSlug: "denia", chainCount: 3 }]
+      },
+      body: { characterId: "denia" }
+    }, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.user.selectedCharacter).toBe("denia");
+    expect(res.body.user.characterChains).toEqual({ denia: 3 });
+  });
+});

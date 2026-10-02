@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>履历 · 实际窗口预览</title></head><body><div id="root"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import { UserProfileCard } from '/src/modals/UserProfileCard.jsx';
+import AppOverlays from '/src/app/AppOverlays.jsx';
+import { RECRUITMENT_ITEMS } from '/src/shared/recruitment.js';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const user={id:1,username:'测试玩家',coins:12500,selectedCharacter:'sigrika',rank:'5级',rating:1000,itemEffects:{}};
+const nativeFetch=window.fetch.bind(window);
+window.fetch=async(input,options)=>{
+ const url=String(input);
+ if(url.startsWith('/api/users/1/profile')){
+  const mode=new URL(url,location.origin).searchParams.get('mode');
+  const rating=mode==='standard'?1200:mode==='gomoku'?1400:1000;
+  await new Promise(resolve=>setTimeout(resolve,120));
+  return new Response(JSON.stringify({profile:{...user,rating,rank:'5级',recordStats:{totalGames:20,wins:12,losses:7,draws:1},recentResults:['win','loss','win','draw','win','win','loss','win','win','win'],characterStats:Object.values(CHARACTERS).slice(0, Number(new URLSearchParams(location.search).get("rows")) || 99).map((c,i)=>({characterId:c.id,total:20-i,wins:12-i,losses:7,draws:1}))}}),{headers:{'Content-Type':'application/json'}});
+ }
+ if(url==='/api/social') return new Response(JSON.stringify({friends:Array.from({length:Number(new URLSearchParams(location.search).get('friends'))||1},(_,i)=>({...user,id:i+2,username:'好友'+(i+1),online:false})),blacklist:[]}),{headers:{'Content-Type':'application/json'}});
+ if(url==='/api/recruitment') return new Response(JSON.stringify({items:Object.values(RECRUITMENT_ITEMS).filter(i=>i.itemType!=='magic-clock').map(i=>({...i,quantity:3}))}),{headers:{'Content-Type':'application/json'}});
+ if(url.startsWith('/api/leaderboard')) return new Response(JSON.stringify({players:Array.from({length:15},(_,i)=>({...user,id:i+1,username:'测试玩家'+i,commonCharacter:'sigrika',rating:1400-i,totalGames:20,wins:12,losses:7,draws:1}))}),{headers:{'Content-Type':'application/json'}});
+ if(url.startsWith('/api/announcements')) {const kind=url.includes('changelog')?'changelog':'announcement';const item={id:kind,kind,title:kind==='changelog'?'版本更新笔记':'欢迎来到星炬学院',firstPublishedAt:'2026-09-18T10:00:00Z',isUnread:true};return new Response(JSON.stringify(url.includes('?')?{items:[item],hasMore:false}:{entry:{...item,body:'这是用于验证书签切换和手机详情阅读的示例公告。'.repeat(30)},summary:{}}),{headers:{'Content-Type':'application/json'}});}
+ if(url.startsWith('/api/')) return new Response(JSON.stringify({items:[],friends:[],blacklist:[],players:[],rooms:[],roomCounts:{spark:3,standard:2,gomoku:1},summary:{},assets:[]}),{headers:{'Content-Type':'application/json'}});
+ return nativeFetch(input,options);
+};
+function Preview(){
+ const [showAchievements,setShowAchievements]=React.useState(false);
+ const [showPersonalization,setShowPersonalization]=React.useState(false);
+ if(new URLSearchParams(location.search).get('view')==='profile') return React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement('div',{className:'modal-backdrop profile-modal-backdrop'},React.createElement(UserProfileCard,{user,characters:CHARACTERS,token:'local-preview-only',titleStickers:true,onClose:()=>{}})));
+ return React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(AppOverlays,{token:'local-preview-only',user,toasts:[],showResume:false,[new URLSearchParams(location.search).get('view')||'showSettings']:true,audioSettings:{master:80,bgm:60,sfx:70,voice:80},setAudioSettings:()=>{},announcementUnreadByKind:{changelog:true},characters:CHARACTERS,characterListView:CHARACTERS,showAchievements:showAchievements||new URLSearchParams(location.search).get('view')==='showAchievements',setShowAchievements,showPersonalization,setShowPersonalization,setShowResume:()=>{}}));
+}
+createRoot(document.getElementById('root')).render(React.createElement(Preview));
+</script></body></html>

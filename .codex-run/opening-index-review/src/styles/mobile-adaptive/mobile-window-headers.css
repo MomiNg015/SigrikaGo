@@ -1,0 +1,52 @@
+/* Final Bright School mobile alignment for utility-window title rows. */
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+    --mobile-window-title-size: clamp(20px, 6vw, 28px);
+    --mobile-window-header-clearance: 12px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .leaderboard-header,
+    .warehouse-header,
+    .house-header,
+    .friends-modal-header,
+    .watch-list-header
+  ) {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    min-height: calc(
+      var(--modal-close-size, 44px)
+      + var(--mobile-window-header-clearance)
+      + 2px
+    ) !important;
+    align-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .leaderboard-header,
+    .warehouse-header,
+    .house-header,
+    .friends-modal-header,
+    .watch-list-header
+  ) > h2 {
+    min-width: 0 !important;
+    margin: 0 !important;
+    font-size: var(--mobile-window-title-size) !important;
+    line-height: 1.12 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-list-actions {
+    align-self: center !important;
+    align-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-list-actions :is(
+    .icon-button,
+    .close-button
+  ) {
+    position: static !important;
+    inset: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+}

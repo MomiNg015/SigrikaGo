@@ -1,0 +1,40 @@
+.home-grid-featured > .home-utility-grid .utility-entry {
+  width: 100%;
+  min-width: 0;
+  min-height: clamp(54px, 5.2cqw, 68px);
+  height: auto;
+  display: grid;
+  grid-template-columns: clamp(28px, 2.6cqw, 34px) minmax(0, 1fr);
+  align-items: center;
+  justify-items: start;
+  gap: clamp(6px, 0.7vw, 10px);
+  padding: clamp(8px, 0.9vw, 12px);
+  box-shadow: none;
+  text-align: left;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry-icon {
+  width: clamp(28px, 2.6cqw, 34px);
+  height: clamp(28px, 2.6cqw, 34px);
+  display: grid;
+  place-items: center;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry > strong {
+  grid-column: 2;
+}
+
+@container (max-width: 1260px) {
+  .home-grid-featured > .home-utility-grid .utility-entry {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry-icon,
+  .home-grid-featured > .home-utility-grid .utility-entry > strong {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}

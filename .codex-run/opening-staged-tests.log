@@ -1,0 +1,17 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo/.codex-run/opening-index-review
+
+ ✓ src/app/roomSnapshot.test.js (6 tests) 6ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 73ms
+ ✓ server/roomView.test.js (13 tests) 23ms
+ ✓ src/app/socketHandlers.test.js (44 tests) 53ms
+ ✓ src/styles/styleContract.test.js (57 tests) 780ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 988ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 31ms
+ ✓ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (15 tests) 165ms
+
+ Test Files  8 passed (8)
+      Tests  175 passed (175)
+   Start at  17:15:33
+   Duration  4.47s (transform 1.50s, setup 0ms, collect 4.34s, tests 2.12s, environment 1.60s, prepare 1.42s)
+

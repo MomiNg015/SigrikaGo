@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/localPracticeEngine.test.js server/socketPracticeEvents.test.js server/practiceRoomAutomation.test.js server/roomClockLifecycle.test.js src/practice/practiceEngineClient.test.js src/app/useMatchActions.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/practice/practiceEngineClient.test.js (3 tests) 11ms
+ ✓ server/socketPracticeEvents.test.js (12 tests) 17ms
+ ✓ server/roomClockLifecycle.test.js (6 tests) 13ms
+ ✓ src/app/useMatchActions.test.js (6 tests) 14ms
+ ✓ server/practiceRoomAutomation.test.js (18 tests) 201ms
+ ✓ server/localPracticeEngine.test.js (9 tests) 1104ms
+
+ Test Files  6 passed (6)
+      Tests  54 passed (54)
+   Start at  09:37:47
+   Duration  3.82s (transform 857ms, setup 0ms, collect 3.00s, tests 1.36s, environment 1ms, prepare 707ms)
+

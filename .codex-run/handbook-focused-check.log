@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/HouseModal.test.js (28 tests | 19 skipped) 33ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed | 19 skipped (28)
+   Start at  10:25:46
+   Duration  3.34s (transform 528ms, setup 0ms, collect 1.18s, tests 33ms, environment 0ms, prepare 107ms)
+

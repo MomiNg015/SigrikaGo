@@ -1,0 +1,58 @@
+@media (max-width: 768px) {
+  .nested-modal-backdrop .gacha-list-dialog,
+  .nested-modal-backdrop .gacha-result-dialog {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 14px !important;
+    overflow: hidden !important;
+  }
+
+  .gacha-prize-list,
+  .gacha-history-list,
+  .gacha-result-grid {
+    min-height: 0 !important;
+    overflow: auto !important;
+    overscroll-behavior: contain !important;
+  }
+
+  .gacha-prize-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 6px 8px !important;
+    padding: 8px !important;
+  }
+
+  .gacha-prize-row img {
+    grid-row: 1 / span 2 !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .gacha-prize-row span {
+    grid-column: 2 !important;
+  }
+
+  .gacha-result-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .gacha-result-grid.ten-pull {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .gacha-result-card {
+    grid-template-rows: 58px auto auto !important;
+    gap: 6px !important;
+    padding: 8px !important;
+  }
+
+  .gacha-result-image,
+  .gacha-result-image img {
+    width: 58px !important;
+    height: 58px !important;
+  }
+}

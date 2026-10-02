@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 320">
+  <defs>
+    <radialGradient id="base" cx="50%" cy="86%" r="52%">
+      <stop offset="0" stop-color="#fff6bc" stop-opacity=".86"/>
+      <stop offset=".42" stop-color="#ff9d2c" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#ff361f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#fff0a6"/>
+      <stop offset=".34" stop-color="#ff8e25"/>
+      <stop offset=".78" stop-color="#ff3920" stop-opacity=".74"/>
+      <stop offset="1" stop-color="#ff2b19" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-25%" width="180%" height="150%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+  <g filter="url(#soft)">
+    <path d="M128 300c-66-36-76-98-39-151 25-36 22-69 13-99 46 29 67 72 63 113 20-31 25-64 11-103 54 45 78 105 51 168-18 42-50 62-99 72Z" fill="url(#flame)" opacity=".92"/>
+    <path d="M126 292c-39-26-45-66-22-101 16-25 20-50 11-75 32 23 47 52 40 84 18-20 25-43 22-69 31 35 41 77 21 119-15 30-38 43-72 42Z" fill="#ffd56a" opacity=".82"/>
+    <ellipse cx="128" cy="275" rx="84" ry="36" fill="url(#base)"/>
+  </g>
+</svg>

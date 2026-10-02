@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const p='src/styles/mobile-adaptive/home-student-id.css';let s=fs.readFileSync(p,'utf8');
+const pinStart=s.indexOf('.home-student-id-zone .home-student-id-pin {');
+const pinEnd=s.indexOf('\n}\n',pinStart)+3;
+const pin=s.slice(pinStart,pinEnd);s=s.slice(0,pinStart)+s.slice(pinEnd);
+const artStart=s.indexOf('.home-student-id .home-student-id-shell {');
+const artEnd=s.indexOf('.app-shell.player-theme-enabled',artStart);
+const art=s.slice(artStart,artEnd);s=s.slice(0,artStart)+s.slice(artEnd);
+fs.writeFileSync('src/styles/mobile-adaptive/home-student-id-art.css',pin+'\n\n'+art.trim()+'\n');
+fs.writeFileSync(p,'@import "./home-student-id-art.css";\n\n'+s);

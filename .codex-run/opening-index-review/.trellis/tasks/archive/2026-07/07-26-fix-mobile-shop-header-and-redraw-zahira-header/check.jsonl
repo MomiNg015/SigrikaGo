@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Verify selector ownership, import order, and isolation from the Fractsidus header."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify button geometry, asset rendering, tests, documentation, and non-growth metrics."}

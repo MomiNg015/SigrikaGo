@@ -1,0 +1,53 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e "process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+[low_level_alloc.cc : 554] RAW: Check new_pages != nullptr failed: VirtualAlloc failed
+
+
+#
+# Fatal process out of memory: Re-embedded builtins: set permissions
+#
+----- Native stack trace -----
+
+ 1: 00007FF766DC6F4D 
+ 2: 00007FF76822DAC6 
+ 3: 00007FF767ABFA86 
+ 4: 00007FF767926DFE 
+ 5: 00007FF76795A3FF 
+ 6: 00007FF76795AEB2 
+ 7: 00007FF76795B892 
+ 8: 00007FF767457703 
+ 9: 00007FF767AEA946 
+10: 00007FF766F83F3D 
+11: 00007FF766E02A5E 
+12: 00007FF766ED1AD4 
+13: 00007FF767EEE942 
+14: 00007FF768D639B4 
+15: 00007FFBAEB1CD87 BaseThreadInitThunk+23
+16: 00007FFBAF3ECAEC RtlUserThreadStart+44
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Channel closed
+ ❯ target.send node:internal/child_process:777:16
+ ❯ ProcessWorker.send node_modules/tinypool/dist/index.js:140:41
+ ❯ MessagePort.<anonymous> node_modules/tinypool/dist/index.js:149:62
+ ❯ [nodejs.internal.kHybridDispatch] node:internal/event_target:843:20
+ ❯ MessagePort.<anonymous> node:internal/per_context/messageport:23:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_IPC_CHANNEL_CLOSED' }
+
+
+

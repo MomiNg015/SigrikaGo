@@ -1,0 +1,5 @@
+ docs/system-design.html                 |  1 +
+ docs/system-design.md                   |  2 ++
+ src/app/useBackgroundMusicTrack.test.js | 27 +++++++++++++++++++++++++++
+ src/shared/musicLibrary.js              | 10 +++++++++-
+ 4 files changed, 39 insertions(+), 1 deletion(-)

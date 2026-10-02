@@ -1,0 +1,246 @@
+/* Base layout, shared controls, home entries */
+
+@font-face {
+  font-family: "Sigrika Accent Latin";
+  src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range:
+    U+0030-0039,
+    U+0041-005A,
+    U+0061-007A;
+}
+
+@font-face {
+  font-family: "Sigrika Window Title";
+  src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IRIS Dotted Songti Circle";
+  src: url("/assets/fonts/DottedSongtiCircleRegular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  color: #2d2430;
+  background: #fff8fb;
+  --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-display-accent: "Sigrika Accent Latin";
+  --font-numeric-accent: "Sigrika Accent Latin";
+  --font-window-title: "Sigrika Window Title";
+  --font-iris-dotted: "IRIS Dotted Songti Circle", "Microsoft YaHei UI", "Microsoft YaHei", serif;
+  --font-iris-mixed: var(--font-display-accent), var(--font-iris-dotted);
+  font-family: var(--font-ui-default);
+  letter-spacing: 0;
+  --page-pad: clamp(10px, 1.6vw, 24px);
+  --fluid-gap: clamp(10px, 1.35vw, 18px);
+  --board-size: clamp(430px, 50vw, 620px);
+  --left-panel: clamp(160px, 18vw, 220px);
+  --right-panel: clamp(220px, 22vw, 280px);
+  --side-portrait: clamp(112px, 13vw, 170px);
+  --control-pad-y: clamp(9px, 0.95vw, 12px);
+  --control-pad-x: clamp(10px, 1.1vw, 14px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  touch-action: manipulation;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+button {
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.text-display-accent {
+  font-family: var(--font-display-accent), var(--font-ui-default);
+  text-transform: uppercase;
+}
+
+.text-window-title,
+:where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2 {
+  font-family: var(--font-window-title), var(--font-ui-default);
+}
+
+.text-rating-value,
+.text-clock-value {
+  font-family: var(--font-numeric-accent), var(--font-ui-default);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(255, 232, 238, 0.9), rgba(238, 247, 255, 0.96)),
+    #fff8fb;
+}
+
+.app-shell:has(.home-screen) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #f4f3f6;
+}
+
+.app-shell:has(.home-screen)::before {
+  content: "";
+  position: fixed;
+  inset: -24px;
+  z-index: -2;
+  background-image: url("/assets/home/multipurpose-classroom-bg.webp");
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px) saturate(0.95);
+  transform: scale(1.04);
+}
+
+.app-shell:has(.home-screen)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 250, 0.42), rgba(235, 246, 255, 0.4)),
+    rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.app-error-boundary {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  padding: clamp(18px, 5vw, 48px);
+  text-align: center;
+  background: #f4f3f6;
+  color: #2d2430;
+}
+
+.app-error-boundary h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+}
+
+.app-error-boundary p {
+  max-width: 30rem;
+  margin: 0;
+  color: rgba(45, 36, 48, 0.72);
+}
+
+.app-error-boundary button {
+  justify-self: center;
+  min-height: 42px;
+  border: 1px solid rgba(45, 36, 48, 0.16);
+  border-radius: 8px;
+  padding: 0 18px;
+  background: #ffffff;
+  color: #2d2430;
+  box-shadow: 0 10px 26px rgba(32, 24, 35, 0.12);
+}
+
+.desktop-viewport-gate {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: inherit;
+}
+
+.desktop-viewport-gate-panel {
+  width: min(520px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 36px 40px 40px;
+  border: 2px solid var(--bright-border, currentColor);
+  border-radius: 12px;
+  background: var(--bright-sheet, Canvas);
+  text-align: center;
+  box-shadow: var(--bright-shadow, 4px 4px 0 currentColor);
+}
+
+.desktop-viewport-gate-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: var(--bright-blue, color-mix(in srgb, currentColor 12%, Canvas));
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.desktop-viewport-gate h1 {
+  margin: 0;
+  font-family: var(--font-window-title), var(--font-ui-default);
+  font-size: 26px;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.auth-screen,
+.home-screen,
+.room-screen,
+.admin-screen {
+  width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
+  margin: 0 auto;
+  padding: var(--page-pad) 0;
+}
+
+.home-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1vw, 14px);
+  overflow: visible;
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}

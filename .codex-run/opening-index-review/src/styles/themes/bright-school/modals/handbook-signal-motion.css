@@ -1,0 +1,66 @@
+/* Shared CRT fault motion for unobtained and hidden-intel handbook cards. */
+@keyframes bright-handbook-crt-sync-loss {
+  0%, 76%, 84%, 94%, 100% { transform: translate3d(0, 0, 0); opacity: 0; }
+  77% { transform: translate3d(-7px, 0, 0); opacity: 0.72; }
+  79% { transform: translate3d(5px, 1px, 0); opacity: 0.52; }
+  82% { transform: translate3d(-2px, -1px, 0); opacity: 0.34; }
+  95% { transform: translate3d(4px, 0, 0); opacity: 0.48; }
+  97% { transform: translate3d(-3px, 0, 0); opacity: 0.26; }
+}
+
+@keyframes bright-handbook-crt-image-fault {
+  0%, 76%, 84%, 94%, 100% {
+    transform: translate3d(0, 0, 0);
+    filter: grayscale(1) contrast(0.82) brightness(0.9) opacity(0.58);
+  }
+  77% {
+    transform: translate3d(3px, 0, 0);
+    filter: grayscale(1) contrast(1.18) brightness(0.88) opacity(0.48);
+  }
+  79% {
+    transform: translate3d(-2px, 1px, 0);
+    filter: grayscale(1) contrast(0.7) brightness(1.18) opacity(0.64);
+  }
+  82% { transform: translate3d(1px, -1px, 0); }
+  95% { transform: translate3d(-2px, 0, 0); opacity: 0.42; }
+  97% { transform: translate3d(1px, 0, 0); opacity: 0.6; }
+}
+
+@keyframes bright-handbook-crt-label-fault {
+  0%, 76%, 84%, 94%, 100% { transform: translate3d(0, 0, 0); opacity: 1; }
+  77% { transform: translate3d(-3px, 0, 0); opacity: 0.62; }
+  79% { transform: translate3d(2px, 0, 0); opacity: 0.86; }
+  82% { transform: translate3d(-1px, 0, 0); opacity: 0.74; }
+  95% { transform: translate3d(2px, 0, 0); opacity: 0.58; }
+  97% { transform: translate3d(0, 0, 0); opacity: 0.9; }
+}
+
+@keyframes bright-handbook-crt-glyph-fault {
+  0%, 70%, 78%, 91%, 100% { transform: translate3d(0, -3px, 0); opacity: 1; }
+  71% { transform: translate3d(-5px, -3px, 0) scaleX(1.08); opacity: 0.48; }
+  73% { transform: translate3d(4px, -2px, 0) scaleX(0.92); opacity: 0.82; }
+  76% { transform: translate3d(-1px, -4px, 0); opacity: 0.62; }
+  92% { transform: translate3d(3px, -3px, 0); opacity: 0.4; }
+  94% { transform: translate3d(-2px, -3px, 0); opacity: 0.88; }
+}
+
+@keyframes bright-handbook-crt-fragment {
+  0%, 68%, 76%, 100% { transform: translate3d(0, 0, 0); opacity: 0.26; }
+  69% { transform: translate3d(var(--handbook-fragment-shift), 0, 0) scaleX(1.12); opacity: 0.9; }
+  72% { transform: translate3d(var(--handbook-fragment-return), 1px, 0) scaleX(0.86); opacity: 0.58; }
+  75% { transform: translate3d(1px, -1px, 0); opacity: 0.36; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned::after,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned:not(.hidden-intel-card) > :where(img, strong),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .hidden-intel-card .locked-portrait,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .hidden-intel-card .hidden-intel-fragment {
+    animation: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.unowned::after {
+    opacity: 0 !important;
+    transform: none !important;
+  }
+}

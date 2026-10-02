@@ -1,0 +1,39 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ scripts/migrationBaselineVerification.test.js (3 tests) 12ms
+ ✓ docs/systemDesignHtml.test.js (3 tests) 67ms
+ ✓ server/socketPracticeEvents.test.js (9 tests) 15ms
+ ✓ server/roomView.test.js (12 tests) 24ms
+ ✓ src/styles/styleContract.test.js (57 tests) 1043ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  323ms
+ ✓ server/roomCloseLifecycle.test.js (6 tests) 16ms
+ ✓ src/modals/LeaderboardModal.test.jsx (11 tests) 310ms
+ ✓ server/roomGameActions.test.js (1 test) 7ms
+ ✓ server/roomRestoreLifecycle.test.js (9 tests) 14ms
+ ✓ server/roomFactory.test.js (10 tests) 13ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1364ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  311ms
+ ✓ src/room/ActionBar.test.js (17 tests) 136ms
+ ✓ server/roomSkillResolution.test.js (17 tests) 33ms
+ ✓ server/publicRoutes.test.js (8 tests) 15ms
+ ✓ server/roomResultPersistence.test.js (6 tests) 23ms
+ ✓ server/practiceRoomAutomation.test.js (16 tests) 327ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 48ms
+ ✓ src/room/header/RoomHeader.test.jsx (3 tests) 300ms
+ ✓ server/serverStartup.test.js (2 tests) 11ms
+ ✓ server/captureChallenge.test.js (9 tests) 440ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1508ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  305ms
+   ✓ HomeScreen > renders the equipped username nameplate inside the student ID and retains its source assets  301ms
+ ✓ src/modals/CaptureChallenge.dom.test.jsx (5 tests) 650ms
+   ✓ capture challenge player flow > starts advanced random-color challenge directly from the picker  514ms
+ ✓ src/home/HomeScreen.dom.test.jsx (7 tests) 2106ms
+   ✓ HomeScreen practice difficulty picker > opens three levels and starts the selected one with a random color  632ms
+   ✓ HomeScreen practice difficulty picker > requires an explicit high-difficulty confirmation before starting the Sigrika duel  373ms
+
+ Test Files  23 passed (23)
+      Tests  270 passed (270)
+   Start at  15:23:00
+   Duration  8.92s (transform 9.41s, setup 0ms, collect 43.35s, tests 8.48s, environment 5.22s, prepare 5.84s)
+

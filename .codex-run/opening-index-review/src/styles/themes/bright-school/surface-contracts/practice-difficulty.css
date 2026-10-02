@@ -1,0 +1,24 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-option {
+  background: rgba(255, 250, 235, 0.96) !important;
+  color: var(--bright-ink) !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.22) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal {
+  width: min(520px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-option:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-option:focus-visible {
+  background: #fff3c9 !important;
+  border-color: var(--bright-border) !important;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.24) !important;
+  transform: translateY(-1px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-copy small {
+  color: var(--bright-ink-soft) !important;
+}

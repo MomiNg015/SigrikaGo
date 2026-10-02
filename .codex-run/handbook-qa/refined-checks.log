@@ -1,0 +1,144 @@
+{
+  "output": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "namesVisible": true,
+      "shell": {
+        "x": 325,
+        "y": 54,
+        "width": 900,
+        "height": 560,
+        "top": 54,
+        "right": 1225,
+        "bottom": 614,
+        "left": 325
+      },
+      "cols": 3,
+      "overlaps": false,
+      "lastReachable": true,
+      "overflow": false,
+      "noCover": true,
+      "portraitContained": true,
+      "detail": {
+        "visible": true,
+        "overlay": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 1000,
+          "top": 0,
+          "right": 1440,
+          "bottom": 1000,
+          "left": 0
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "namesVisible": true,
+      "shell": {
+        "x": 64,
+        "y": 46,
+        "width": 314,
+        "height": 725.828125,
+        "top": 46,
+        "right": 378,
+        "bottom": 771.828125,
+        "left": 64
+      },
+      "cols": 2,
+      "overlaps": false,
+      "lastReachable": true,
+      "overflow": false,
+      "noCover": true,
+      "portraitContained": true,
+      "detail": {
+        "visible": true,
+        "overlay": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      }
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "namesVisible": true,
+      "shell": {
+        "x": 64,
+        "y": 46,
+        "width": 284,
+        "height": 550.390625,
+        "top": 46,
+        "right": 348,
+        "bottom": 596.390625,
+        "left": 64
+      },
+      "cols": 2,
+      "overlaps": false,
+      "lastReachable": true,
+      "overflow": false,
+      "noCover": true,
+      "portraitContained": true,
+      "detail": {
+        "visible": true,
+        "overlay": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 640,
+          "top": 0,
+          "right": 360,
+          "bottom": 640,
+          "left": 0
+        }
+      }
+    },
+    {
+      "width": 412,
+      "height": 915,
+      "namesVisible": true,
+      "shell": {
+        "x": 64,
+        "y": 46,
+        "width": 336,
+        "height": 740,
+        "top": 46,
+        "right": 400,
+        "bottom": 786,
+        "left": 64
+      },
+      "cols": 2,
+      "overlaps": false,
+      "lastReachable": true,
+      "overflow": false,
+      "noCover": true,
+      "portraitContained": true,
+      "detail": {
+        "visible": true,
+        "overlay": {
+          "x": 0,
+          "y": 0,
+          "width": 412,
+          "height": 915,
+          "top": 0,
+          "right": 412,
+          "bottom": 915,
+          "left": 0
+        }
+      }
+    },
+    {
+      "noOpeningAnimation": true
+    }
+  ],
+  "errors": []
+}

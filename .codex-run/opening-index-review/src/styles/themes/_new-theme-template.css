@@ -1,0 +1,50 @@
+/* Template: register in visualTheme.js and import from themes.css before visual polish. */
+.app-shell.player-theme-enabled.theme-example {
+  --theme-bg: #ffffff;
+  --theme-surface: #ffffff;
+  --theme-text: #222222;
+  --theme-border: #222222;
+  color: var(--theme-text);
+  background: var(--theme-bg);
+}
+
+.app-shell.player-theme-enabled.theme-example :where(
+  .auth-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .room-header,
+  .player-info,
+  .board-stage,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .nested-modal
+) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.app-shell.player-theme-enabled.theme-example .theme-choice-button.active {
+  border-color: var(--theme-border);
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-example :where(
+    .small-modal,
+    .shop-modal,
+    .house-modal,
+    .warehouse-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .settings-modal,
+    .nested-modal
+  ) {
+    max-width: calc(100vw - 24px);
+  }
+}

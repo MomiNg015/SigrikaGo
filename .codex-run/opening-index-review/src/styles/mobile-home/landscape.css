@@ -1,0 +1,19 @@
+@media (max-width: 900px) and (orientation: landscape) {
+  .home-screen {
+    min-height: 100dvh;
+    padding-top: calc(4px + env(safe-area-inset-top));
+  }
+
+  .home-grid-featured {
+    grid-template-columns: minmax(0, 0.56fr) minmax(0, 1fr);
+    grid-template-areas:
+      "player match"
+      "manual match"
+      "utility match";
+    align-items: center;
+  }
+
+  .house-manual-entry {
+    width: min(76%, 230px);
+  }
+}

@@ -1,0 +1,628 @@
+360 800 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 776,
+    scroll: 770,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.265625,
+    h: 682.734375,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.265625,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.265625,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.265625,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 554.265625,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 590.265625,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 360 800 false {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 682.734375,
+  listHeight: 712
+}
+360 800 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 724,
+    scroll: 718,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.375,
+    h: 640.625,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.375,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.375,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.375,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 580.375,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 616.375,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 360 800 true {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 640.625,
+  listHeight: 712
+}
+390 844 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 820,
+    scroll: 814,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.46875,
+    h: 726.53125,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.46875,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.46875,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.46875,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 554.46875,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 590.46875,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 390 844 false {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 726.53125,
+  listHeight: 712
+}
+390 844 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 768,
+    scroll: 762,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.578125,
+    h: 684.421875,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.578125,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.578125,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.578125,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 580.578125,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 616.578125,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 390 844 true {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 684.421875,
+  listHeight: 712
+}
+412 915 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 891,
+    scroll: 885,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 88.75,
+    h: 797.25,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 92.75,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 342.75,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 346.75,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 554.75,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 590.75,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 412 915 false {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 797.25,
+  listHeight: 712
+}
+412 915 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 839,
+    scroll: 833,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 114.875,
+    h: 755.125,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 118.875,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 368.875,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 372.875,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 580.875,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 616.875,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 412 915 true {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 755.125,
+  listHeight: 712
+}
+360 640 false [
+  {
+    s: '.user-profile-modal',
+    y: 10,
+    h: 616,
+    scroll: 610,
+    overflow: 'hidden',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 87.328125,
+    h: 523.671875,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 91.328125,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 341.328125,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 345.328125,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 553.328125,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 589.328125,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 360 640 false {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 523.671875,
+  listHeight: 712
+}
+360 640 true [
+  {
+    s: '.user-profile-modal',
+    y: 46,
+    h: 564,
+    scroll: 558,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 113.390625,
+    h: 481.609375,
+    scroll: 1244,
+    overflow: 'hidden auto',
+    rows: 'auto auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 117.390625,
+    h: 172,
+    scroll: 168,
+    overflow: 'visible',
+    rows: '96px 44px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 367.390625,
+    h: 990,
+    scroll: 990,
+    overflow: 'visible',
+    rows: 'auto auto minmax(0px, 1fr) auto'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 371.390625,
+    h: 208,
+    scroll: 208,
+    overflow: 'visible',
+    rows: '142px 52px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 579.390625,
+    h: 762,
+    scroll: 758,
+    overflow: 'visible',
+    rows: 'auto minmax(0px, 1fr)'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 615.390625,
+    h: 712,
+    scroll: 712,
+    overflow: 'visible',
+    rows: 'none'
+  }
+]
+SCROLL_CHECK 360 640 true {
+  lastVisible: true,
+  overflow: false,
+  bodyHeight: 481.609375,
+  listHeight: 712
+}
+1440 900 false [
+  {
+    s: '.user-profile-modal',
+    y: 28,
+    h: 868,
+    scroll: 862,
+    overflow: 'hidden',
+    rows: '59px 759px'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 110,
+    h: 759,
+    scroll: 759,
+    overflow: 'hidden',
+    rows: '204px 70px 485px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 114,
+    h: 192,
+    scroll: 188,
+    overflow: 'visible',
+    rows: '152px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 384,
+    h: 485,
+    scroll: 485,
+    overflow: 'visible',
+    rows: '0px 128px 345px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 388,
+    h: 128,
+    scroll: 217,
+    overflow: 'visible',
+    rows: '112px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 516,
+    h: 337,
+    scroll: 333,
+    overflow: 'hidden',
+    rows: '20px 283px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 556,
+    h: 283,
+    scroll: 884,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]
+1440 900 true [
+  {
+    s: '.user-profile-modal',
+    y: 54,
+    h: 824,
+    scroll: 818,
+    overflow: 'visible',
+    rows: '44px 742px'
+  },
+  {
+    s: '.profile-resume-view',
+    y: 109,
+    h: 742,
+    scroll: 742,
+    overflow: 'hidden',
+    rows: '204px 70px 468px'
+  },
+  {
+    s: '.profile-resume-hero',
+    y: 113,
+    h: 192,
+    scroll: 188,
+    overflow: 'visible',
+    rows: '152px'
+  },
+  {
+    s: '.profile-record-panel',
+    y: 383,
+    h: 468,
+    scroll: 468,
+    overflow: 'visible',
+    rows: '0px 128px 328px 0px'
+  },
+  {
+    s: '.profile-overview-grid',
+    y: 387,
+    h: 128,
+    scroll: 217,
+    overflow: 'visible',
+    rows: '112px'
+  },
+  {
+    s: '.profile-character-section',
+    y: 515,
+    h: 320,
+    scroll: 316,
+    overflow: 'hidden',
+    rows: '20px 266px'
+  },
+  {
+    s: '.profile-character-table-scroll',
+    y: 555,
+    h: 266,
+    scroll: 884,
+    overflow: 'hidden auto',
+    rows: 'none'
+  }
+]

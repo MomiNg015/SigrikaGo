@@ -1,0 +1,78 @@
+.duel-request-banner {
+  position: fixed;
+  left: 50%;
+  top: 18px;
+  z-index: 50;
+  width: min(560px, calc(100vw - 28px));
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 18px;
+  border: 1px solid rgba(113, 96, 130, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 46px rgba(54, 38, 68, 0.2);
+  transform: translateX(-50%);
+  animation: duel-request-drop 220ms ease-out;
+}
+
+.duel-request-banner strong,
+.duel-request-banner span {
+  display: block;
+}
+
+.duel-request-banner span {
+  margin-top: 3px;
+  color: #7d6a82;
+  font-weight: 800;
+}
+
+.duel-request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.duel-request-actions button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 13px;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.duel-request-actions .agree {
+  background: #3ca66a;
+}
+
+.duel-request-actions .reject {
+  background: #d94a62;
+}
+
+.duel-request-banner > i {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 9px;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5d7fe8 var(--duel-progress), #e8e0ec var(--duel-progress));
+}
+
+.duel-request-banner > b {
+  color: #5d4c62;
+  font-size: 18px;
+}
+
+@keyframes duel-request-drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -24px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

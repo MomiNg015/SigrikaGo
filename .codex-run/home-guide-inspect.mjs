@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+const browser=await chromium.launch({channel:'chrome'});const page=await browser.newPage({viewport:{width:360,height:640},reducedMotion:'reduce'});
+await page.goto('http://127.0.0.1:5298/tests/e2e/fixtures/home-onboarding.html');
+await page.getByRole('button',{name:'点击任意位置继续',exact:true}).click();
+await page.locator('.home-guide-target').click();
+await page.waitForTimeout(700);
+console.log(await page.locator('.house-modal').evaluate(e=>({rect:e.getBoundingClientRect().toJSON(),max:getComputedStyle(e).maxHeight,min:getComputedStyle(e).minHeight,space:getComputedStyle(document.documentElement).getPropertyValue('--home-guide-panel-height')})));
+console.log(await page.locator('.home-guide-panel').boundingBox());
+console.log(await page.locator('.house-modal').evaluate(e=>{const out=[]; const walk=rules=>{for(const r of rules){if(r.selectorText && e.matches(r.selectorText) && (r.style.maxHeight||r.style.minHeight||r.style.height))out.push({selector:r.selectorText,max:r.style.maxHeight,min:r.style.minHeight,height:r.style.height}); if(r.cssRules)walk(r.cssRules);}}; for(const s of document.styleSheets) {try{walk(s.cssRules)}catch{}} return out;}));
+await page.screenshot({path:'.codex-run/home-guide-small-debug.png'});
+await browser.close();

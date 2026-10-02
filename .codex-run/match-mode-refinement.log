@@ -1,0 +1,18 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/MatchModeExpansion.dom.test.jsx src/home/MatchModeRulesTooltip.dom.test.jsx src/home/HomeScreen.test.jsx src/modals/CaptureChallenge.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 958ms
+ ✓ src/home/MatchModeRulesTooltip.dom.test.jsx (3 tests) 502ms
+ ✓ src/modals/CaptureChallenge.dom.test.jsx (5 tests) 400ms
+ ✓ src/home/MatchModeExpansion.dom.test.jsx (4 tests) 783ms
+   ✓ Spark mode expansion > expands without queuing, keeps practice available, and queues only the regular child  434ms
+
+ Test Files  4 passed (4)
+      Tests  34 passed (34)
+   Start at  18:04:36
+   Duration  4.75s (transform 795ms, setup 0ms, collect 3.70s, tests 2.64s, environment 3.28s, prepare 396ms)
+

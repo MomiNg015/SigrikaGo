@@ -1,0 +1,17 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" server/replayPagination.test.js server/replayRoutes.test.js src/modals/ReplayList.test.jsx src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/replayPagination.test.js (3 tests) 10ms
+ ✓ server/replayRoutes.test.js (3 tests) 6ms
+ ✓ src/styles/styleContract.test.js (57 tests) 781ms
+ ✓ src/modals/ReplayList.test.jsx (12 tests) 158ms
+
+ Test Files  4 passed (4)
+      Tests  75 passed (75)
+   Start at  21:34:46
+   Duration  4.56s (transform 689ms, setup 0ms, collect 1.68s, tests 956ms, environment 1ms, prepare 729ms)
+

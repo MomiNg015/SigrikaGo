@@ -1,0 +1,179 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
+import {
+  CAPTURE_SOUND,
+  HIDDEN_HAND_REVEAL_SOUND,
+  playBoardSound,
+  playEffectSound,
+  playRecruitmentMagicClockFastForwardSound,
+  playRecruitmentResultSound,
+  playUiFriendsOpenSound,
+  playUiIrisDatabaseOpenSound,
+  playUiLeaderboardOpenSound,
+  playUiRecruitmentOpenSound,
+  playUiResumeOpenSound,
+  playUiWarehouseOpenSound,
+  playUiWatchOpenSound,
+  RECRUITMENT_MISS_SOUND,
+  RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
+  RECRUITMENT_SUCCESS_SOUND,
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_FRIENDS_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_IRIS_DATABASE_OPEN_SOUND,
+  UI_LEADERBOARD_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_RECRUITMENT_OPEN_SOUND,
+  UI_RESUME_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_WAREHOUSE_OPEN_SOUND,
+  UI_WATCH_OPEN_SOUND,
+  UI_UNAVAILABLE_SHAKE_MS,
+  UI_UNAVAILABLE_SOUND
+} from "./effectPlayback.js";
+
+describe("effect playback", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("no-ops when browser audio APIs are unavailable", () => {
+    expect(() => playEffectSound("/assets/music/missing.ogg")).not.toThrow();
+  });
+
+  it("keeps optional cinematic sound slots silent when no asset is configured", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        played.push(src);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    playEffectSound("");
+
+    expect(played).toEqual([]);
+  });
+
+  it("routes board sound actions to their effect assets", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.play = vi.fn(() => Promise.resolve());
+        played.push(this);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    playBoardSound({ sound: BOARD_SOUND_TYPES.stone });
+    playBoardSound({ sound: BOARD_SOUND_TYPES.capture });
+    playBoardSound({ sound: BOARD_SOUND_TYPES.hiddenReveal });
+
+    expect(played.map((audio) => audio.src)).toEqual([
+      STONE_SOUND,
+      CAPTURE_SOUND,
+      HIDDEN_HAND_REVEAL_SOUND
+    ]);
+  });
+
+  it("exposes stable UI interaction effect assets", () => {
+    expect(UI_CONFIRM_SOUND).toBe("/assets/music/ui_confirm.ogg");
+    expect(UI_CLOSE_WINDOW_SOUND).toBe("/assets/music/ui_close_window.ogg");
+    expect(UI_DETAIL_OPEN_SOUND).toBe("/assets/music/ui_detail_open.ogg");
+    expect(UI_HOUSE_OPEN_SOUND).toBe("/assets/music/ui_house_open.ogg");
+    expect(UI_IRIS_DATABASE_OPEN_SOUND).toBe("/assets/music/ui_iris_database_open.ogg");
+    expect(UI_MATCH_OPEN_SOUND).toBe("/assets/music/ui_match_open.ogg");
+    expect(UI_RESUME_OPEN_SOUND).toBe("/assets/music/ui_resume_open.ogg");
+    expect(UI_WAREHOUSE_OPEN_SOUND).toBe("/assets/music/ui_warehouse_open.ogg");
+    expect(UI_WATCH_OPEN_SOUND).toBe("/assets/music/ui_watch_open.ogg");
+    expect(UI_FRIENDS_OPEN_SOUND).toBe("/assets/music/ui_friends_open.ogg");
+    expect(UI_LEADERBOARD_OPEN_SOUND).toBe("/assets/music/ui_leaderboard_open.ogg");
+    expect(UI_RECRUITMENT_OPEN_SOUND).toBe("/assets/music/recruitment-open.ogg");
+    expect(UI_SHOP_OPEN_SOUND).toBe("/assets/music/ui_shop_open.ogg");
+    expect(UI_UNAVAILABLE_SOUND).toBe("/assets/music/ui_unavailable.ogg");
+    expect(UI_UNAVAILABLE_SHAKE_MS).toBe(1063);
+  });
+
+  it("routes home profile and utility interactions to their dedicated assets", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.play = vi.fn(() => Promise.resolve());
+        played.push(this);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    playUiResumeOpenSound();
+    playUiWarehouseOpenSound();
+    playUiWatchOpenSound();
+    playUiFriendsOpenSound();
+    playUiLeaderboardOpenSound();
+    playUiIrisDatabaseOpenSound();
+
+    expect(played.map((audio) => audio.src)).toEqual([
+      UI_RESUME_OPEN_SOUND,
+      UI_WAREHOUSE_OPEN_SOUND,
+      UI_WATCH_OPEN_SOUND,
+      UI_FRIENDS_OPEN_SOUND,
+      UI_LEADERBOARD_OPEN_SOUND,
+      UI_IRIS_DATABASE_OPEN_SOUND
+    ]);
+  });
+
+  it("routes recruitment interaction sounds to converted effect assets", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.play = vi.fn(() => Promise.resolve());
+        played.push(this);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    expect(RECRUITMENT_SUCCESS_SOUND).toBe("/assets/music/recruitment-success.ogg");
+    expect(RECRUITMENT_MISS_SOUND).toBe("/assets/music/recruitment-miss.ogg");
+    expect(RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND).toBe(
+      "/assets/music/recruitment-magic-clock-fast-forward.ogg"
+    );
+
+    playUiRecruitmentOpenSound();
+    playRecruitmentMagicClockFastForwardSound();
+    playRecruitmentResultSound("success");
+    playRecruitmentResultSound("miss");
+
+    expect(played.map((audio) => audio.src)).toEqual([
+      UI_RECRUITMENT_OPEN_SOUND,
+      RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND,
+      RECRUITMENT_SUCCESS_SOUND,
+      RECRUITMENT_MISS_SOUND
+    ]);
+  });
+
+  it("returns a stoppable handle for interrupted magic-clock playback", () => {
+    const audio = {
+      play: vi.fn(() => Promise.resolve()),
+      pause: vi.fn(),
+      currentTime: 1
+    };
+    vi.stubGlobal("Audio", class FakeAudio {
+      constructor(src) {
+        audio.src = src;
+        return audio;
+      }
+    });
+
+    const playback = playRecruitmentMagicClockFastForwardSound();
+    playback.stop();
+
+    expect(audio.src).toBe(RECRUITMENT_MAGIC_CLOCK_FAST_FORWARD_SOUND);
+    expect(audio.pause).toHaveBeenCalledOnce();
+    expect(audio.currentTime).toBe(0);
+  });
+});

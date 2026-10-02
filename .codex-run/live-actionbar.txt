@@ -1,0 +1,241 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/@fs/C:\\codex\\SigrikaGo\\src\\room\\ActionBar.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=4b571792"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/codex/SigrikaGo/src/room/ActionBar.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=4b571792"; const memo = __vite__cjsImport3_react["memo"];
+import {
+  Calculator,
+  Flag,
+  Hand,
+  Handshake,
+  Sparkles
+} from "/node_modules/.vite/deps/lucide-react.js?v=4b571792";
+import { GAME_PHASES } from "/src/shared/game.js";
+import { gameModeFamily } from "/src/shared/gameModes.js";
+import { canRequestOpponentDecision } from "/src/room/actionBar/actionAvailability.js";
+import DeadStoneDecisionBar from "/src/room/actionBar/DeadStoneDecisionBar.jsx";
+import ReplayActionBar from "/src/room/actionBar/ReplayActionBar.jsx";
+function ActionBar({
+  role,
+  mode = "spark",
+  phase,
+  me,
+  isMyTurn,
+  pendingSkill,
+  setPendingSkill,
+  skillLocked = false,
+  skillActionLocked = skillLocked,
+  decisionLocked = skillLocked,
+  skillEnabled = true,
+  skillName = "技能",
+  skillUses,
+  skillAvailable = true,
+  countingEnabled = true,
+  drawEnabled = true,
+  hasAnyStones = true,
+  opponentConnected = true,
+  scoring,
+  replayStep = 0,
+  replayMax = 0,
+  replayMode = "replay",
+  onReplayStep,
+  onPass,
+  onCountingRequest,
+  onDrawRequest,
+  onConfirmScoring,
+  onResetScoring,
+  onResign
+}) {
+  if (role === "spectator") {
+    return /* @__PURE__ */ jsxDEV(
+      ReplayActionBar,
+      {
+        replayStep,
+        replayMax,
+        mode: replayMode,
+        onReplayStep
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 67,
+        columnNumber: 7
+      },
+      this
+    );
+  }
+  const hasDecision = phase === GAME_PHASES.markingDead && scoring;
+  if (hasDecision) {
+    return /* @__PURE__ */ jsxDEV(
+      DeadStoneDecisionBar,
+      {
+        userId: me?.user?.id,
+        scoring,
+        onConfirmScoring,
+        onResetScoring
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 79,
+        columnNumber: 7
+      },
+      this
+    );
+  }
+  const isGomoku = gameModeFamily(mode) === "gomoku";
+  return /* @__PURE__ */ jsxDEV("nav", { className: "action-bar", children: [
+    /* @__PURE__ */ jsxDEV("button", { className: "pass-action", onClick: onPass, disabled: isGomoku || phase !== "playing" || skillLocked, children: [
+      /* @__PURE__ */ jsxDEV(Hand, { size: 18 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 91,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("span", { className: "action-label mobile-action-button-label", children: "弃手" }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 92,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+      lineNumber: 90,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        className: "counting-action",
+        onClick: onCountingRequest,
+        disabled: isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }),
+        title: isGomoku || !countingEnabled ? "该对局无法数子" : void 0,
+        children: [
+          /* @__PURE__ */ jsxDEV(Calculator, { size: 18 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+            lineNumber: 100,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { className: "action-label mobile-action-button-label", children: "数子" }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+            lineNumber: 101,
+            columnNumber: 9
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 94,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        className: `skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`,
+        onClick: () => setPendingSkill(!pendingSkill),
+        disabled: !skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable,
+        children: [
+          /* @__PURE__ */ jsxDEV(Sparkles, { size: 20 }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+            lineNumber: 108,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { className: "action-label mobile-action-button-label", children: skillEnabled ? `${skillName} · ${skillUses ?? 0}` : "技能" }, void 0, false, {
+            fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+            lineNumber: 109,
+            columnNumber: 9
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 103,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ jsxDEV("button", { className: "draw-action", onClick: onDrawRequest, disabled: !drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected }), children: [
+      /* @__PURE__ */ jsxDEV(Handshake, { size: 18 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 112,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("span", { className: "action-label mobile-action-button-label", children: "和棋" }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 113,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+      lineNumber: 111,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("button", { className: "resign-action", onClick: onResign, disabled: phase === "finished" || skillLocked, children: [
+      /* @__PURE__ */ jsxDEV(Flag, { size: 18 }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 115,
+        columnNumber: 107
+      }, this),
+      /* @__PURE__ */ jsxDEV("span", { className: "action-label mobile-action-button-label", children: "认输" }, void 0, false, {
+        fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+        lineNumber: 115,
+        columnNumber: 125
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+      lineNumber: 115,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/codex/SigrikaGo/src/room/ActionBar.jsx",
+    lineNumber: 89,
+    columnNumber: 5
+  }, this);
+}
+_c = ActionBar;
+export function areActionBarPropsEqual(previous, next) {
+  if (previous.role !== next.role) return false;
+  if (previous.role === "spectator") {
+    return previous.replayStep === next.replayStep && previous.replayMax === next.replayMax && previous.replayMode === next.replayMode && previous.onReplayStep === next.onReplayStep;
+  }
+  return previous.mode === next.mode && previous.phase === next.phase && previous.me?.user?.id === next.me?.user?.id && Boolean(previous.me) === Boolean(next.me) && previous.isMyTurn === next.isMyTurn && Boolean(previous.pendingSkill) === Boolean(next.pendingSkill) && previous.setPendingSkill === next.setPendingSkill && previous.skillLocked === next.skillLocked && previous.skillActionLocked === next.skillActionLocked && previous.decisionLocked === next.decisionLocked && previous.skillEnabled === next.skillEnabled && previous.skillName === next.skillName && previous.skillUses === next.skillUses && previous.skillAvailable === next.skillAvailable && previous.countingEnabled === next.countingEnabled && previous.drawEnabled === next.drawEnabled && previous.hasAnyStones === next.hasAnyStones && previous.opponentConnected === next.opponentConnected && previous.scoring === next.scoring && previous.onPass === next.onPass && previous.onCountingRequest === next.onCountingRequest && previous.onDrawRequest === next.onDrawRequest && previous.onConfirmScoring === next.onConfirmScoring && previous.onResetScoring === next.onResetScoring && previous.onResign === next.onResign;
+}
+export { canRequestOpponentDecision } from "/src/room/actionBar/actionAvailability.js";
+export default _c2 = memo(ActionBar, areActionBarPropsEqual);
+var _c, _c2;
+$RefreshReg$(_c, "ActionBar");
+$RefreshReg$(_c2, "%default%");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/codex/SigrikaGo/src/room/ActionBar.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/codex/SigrikaGo/src/room/ActionBar.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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c0JxQixLQUFLckIscUJBQ3BDb0IsU0FBU25CLFlBQVlvQixLQUFLcEIsV0FDMUJtQixTQUFTZCxXQUFXZSxLQUFLZixVQUN6QmMsU0FBU2Isc0JBQXNCYyxLQUFLZCxxQkFDcENhLFNBQVNaLGtCQUFrQmEsS0FBS2IsaUJBQ2hDWSxTQUFTWCxxQkFBcUJZLEtBQUtaLG9CQUNuQ1csU0FBU1YsbUJBQW1CVyxLQUFLWCxrQkFDakNVLFNBQVNULGFBQWFVLEtBQUtWO0FBQ2xDO0FBRUEsU0FBU2hDLGtDQUFrQztBQUUzQyxlQUFBNEMsTUFBZXBELEtBQUtXLFdBQVdxQyxzQkFBc0I7QUFBRSxJQUFBRCxJQUFBSztBQUFBLGFBQUFMLElBQUE7QUFBQSxhQUFBSyxLQUFBIiwibmFtZXMiOlsibWVtbyIsIkNhbGN1bGF0b3IiLCJGbGFnIiwiSGFuZCIsIkhhbmRzaGFrZSIsIlNwYXJrbGVzIiwiR0FNRV9QSEFTRVMiLCJnYW1lTW9kZUZhbWlseSIsImNhblJlcXVlc3RPcHBvbmVudERlY2lzaW9uIiwiRGVhZFN0b25lRGVjaXNpb25CYXIiLCJSZXBsYXlBY3Rpb25CYXIiLCJBY3Rpb25CYXIiLCJyb2xlIiwibW9kZSIsInBoYXNlIiwibWUiLCJpc015VHVybiIsInBlbmRpbmdTa2lsbCIsInNldFBlbmRpbmdTa2lsbCIsInNraWxsTG9ja2VkIiwic2tpbGxBY3Rpb25Mb2NrZWQiLCJkZWNpc2lvbkxvY2tlZCIsInNraWxsRW5hYmxlZCIsInNraWxsTmFtZSIsInNraWxsVXNlcyIsInNraWxsQXZhaWxhYmxlIiwiY291bnRpbmdFbmFibGVkIiwiZHJhd0VuYWJsZWQiLCJoYXNBbnlTdG9uZXMiLCJvcHBvbmVudENvbm5lY3RlZCIsInNjb3JpbmciLCJyZXBsYXlTdGVwIiwicmVwbGF5TWF4IiwicmVwbGF5TW9kZSIsIm9uUmVwbGF5U3RlcCIsIm9uUGFzcyIsIm9uQ291bnRpbmdSZXF1ZXN0Iiwib25EcmF3UmVxdWVzdCIsIm9uQ29uZmlybVNjb3JpbmciLCJvblJlc2V0U2NvcmluZyIsIm9uUmVzaWduIiwiaGFzRGVjaXNpb24iLCJtYXJraW5nRGVhZCIsInVzZXIiLCJpZCIsImlzR29tb2t1IiwidW5kZWZpbmVkIiwiX2MiLCJhcmVBY3Rpb25CYXJQcm9wc0VxdWFsIiwicHJldmlvdXMiLCJuZXh0IiwiQm9vbGVhbiIsIl9jMiJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJBY3Rpb25CYXIuanN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IG1lbW8gfSBmcm9tIFwicmVhY3RcIjtcclxuaW1wb3J0IHtcclxuICBDYWxjdWxhdG9yLFxyXG4gIEZsYWcsXHJcbiAgSGFuZCxcclxuICBIYW5kc2hha2UsXHJcbiAgU3BhcmtsZXMsXHJcbn0gZnJvbSBcImx1Y2lkZS1yZWFjdFwiO1xyXG5pbXBvcnQgeyBHQU1FX1BIQVNFUyB9IGZyb20gXCIuLi9zaGFyZWQvZ2FtZS5qc1wiO1xyXG5pbXBvcnQgeyBnYW1lTW9kZUZhbWlseSB9IGZyb20gXCIuLi9zaGFyZWQvZ2FtZU1vZGVzLmpzXCI7XHJcbmltcG9ydCB7IGNhblJlcXVlc3RPcHBvbmVudERlY2lzaW9uIH0gZnJvbSBcIi4vYWN0aW9uQmFyL2FjdGlvbkF2YWlsYWJpbGl0eS5qc1wiO1xyXG5pbXBvcnQgRGVhZFN0b25lRGVjaXNpb25CYXIgZnJvbSBcIi4vYWN0aW9uQmFyL0RlYWRTdG9uZURlY2lzaW9uQmFyLmpzeFwiO1xyXG5pbXBvcnQgUmVwbGF5QWN0aW9uQmFyIGZyb20gXCIuL2FjdGlvbkJhci9SZXBsYXlBY3Rpb25CYXIuanN4XCI7XHJcblxyXG5mdW5jdGlvbiBBY3Rpb25CYXIoe1xyXG4gIHJvbGUsXHJcbiAgbW9kZSA9IFwic3BhcmtcIixcclxuICBwaGFzZSxcclxuICBtZSxcclxuICBpc015VHVybixcclxuICBwZW5kaW5nU2tpbGwsXHJcbiAgc2V0UGVuZGluZ1NraWxsLFxyXG4gIHNraWxsTG9ja2VkID0gZmFsc2UsXHJcbiAgc2tpbGxBY3Rpb25Mb2NrZWQgPSBza2lsbExvY2tlZCxcclxuICBkZWNpc2lvbkxvY2tlZCA9IHNraWxsTG9ja2VkLFxyXG4gIHNraWxsRW5hYmxlZCA9IHRydWUsXHJcbiAgc2tpbGxOYW1lID0gXCLmioDog71cIixcclxuICBza2lsbFVzZXMsXHJcbiAgc2tpbGxBdmFpbGFibGUgPSB0cnVlLFxyXG4gIGNvdW50aW5nRW5hYmxlZCA9IHRydWUsXHJcbiAgZHJhd0VuYWJsZWQgPSB0cnVlLFxyXG4gIGhhc0FueVN0b25lcyA9IHRydWUsXHJcbiAgb3Bwb25lbnRDb25uZWN0ZWQgPSB0cnVlLFxyXG4gIHNjb3JpbmcsXHJcbiAgcmVwbGF5U3RlcCA9IDAsXHJcbiAgcmVwbGF5TWF4ID0gMCxcclxuICByZXBsYXlNb2RlID0gXCJyZXBsYXlcIixcclxuICBvblJlcGxheVN0ZXAsXHJcbiAgb25QYXNzLFxyXG4gIG9uQ291bnRpbmdSZXF1ZXN0LFxyXG4gIG9uRHJhd1JlcXVlc3QsXHJcbiAgb25Db25maXJtU2NvcmluZyxcclxuICBvblJlc2V0U2NvcmluZyxcclxuICBvblJlc2lnblxyXG59KSB7XHJcbiAgaWYgKHJvbGUgPT09IFwic3BlY3RhdG9yXCIpIHtcclxuICAgIHJldHVybiAoXHJcbiAgICAgIDxSZXBsYXlBY3Rpb25CYXJcclxuICAgICAgICByZXBsYXlTdGVwPXtyZXBsYXlTdGVwfVxyXG4gICAgICAgIHJlcGxheU1heD17cmVwbGF5TWF4fVxyXG4gICAgICAgIG1vZGU9e3JlcGxheU1vZGV9XHJcbiAgICAgICAgb25SZXBsYXlTdGVwPXtvblJlcGxheVN0ZXB9XHJcbiAgICAgIC8+XHJcbiAgICApO1xyXG4gIH1cclxuICBjb25zdCBoYXNEZWNpc2lvbiA9XHJcbiAgICBwaGFzZSA9PT0gR0FNRV9QSEFTRVMubWFya2luZ0RlYWQgJiYgc2NvcmluZztcclxuICBpZiAoaGFzRGVjaXNpb24pIHtcclxuICAgIHJldHVybiAoXHJcbiAgICAgIDxEZWFkU3RvbmVEZWNpc2lvbkJhclxyXG4gICAgICAgIHVzZXJJZD17bWU/LnVzZXI/LmlkfVxyXG4gICAgICAgIHNjb3Jpbmc9e3Njb3Jpbmd9XHJcbiAgICAgICAgb25Db25maXJtU2NvcmluZz17b25Db25maXJtU2NvcmluZ31cclxuICAgICAgICBvblJlc2V0U2NvcmluZz17b25SZXNldFNjb3Jpbmd9XHJcbiAgICAgIC8+XHJcbiAgICApO1xyXG4gIH1cclxuICBjb25zdCBpc0dvbW9rdSA9IGdhbWVNb2RlRmFtaWx5KG1vZGUpID09PSBcImdvbW9rdVwiO1xyXG4gIHJldHVybiAoXHJcbiAgICA8bmF2IGNsYXNzTmFtZT1cImFjdGlvbi1iYXJcIj5cclxuICAgICAgPGJ1dHRvbiBjbGFzc05hbWU9XCJwYXNzLWFjdGlvblwiIG9uQ2xpY2s9e29uUGFzc30gZGlzYWJsZWQ9e2lzR29tb2t1IHx8IHBoYXNlICE9PSBcInBsYXlpbmdcIiB8fCBza2lsbExvY2tlZH0+XG4gICAgICAgIDxIYW5kIHNpemU9ezE4fSAvPlxyXG4gICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImFjdGlvbi1sYWJlbCBtb2JpbGUtYWN0aW9uLWJ1dHRvbi1sYWJlbFwiPuW8g+aJizwvc3Bhbj5cclxuICAgICAgPC9idXR0b24+XG4gICAgICA8YnV0dG9uXG4gICAgICAgIGNsYXNzTmFtZT1cImNvdW50aW5nLWFjdGlvblwiXHJcbiAgICAgICAgb25DbGljaz17b25Db3VudGluZ1JlcXVlc3R9XHJcbiAgICAgICAgZGlzYWJsZWQ9e2lzR29tb2t1IHx8ICFjb3VudGluZ0VuYWJsZWQgfHwgIWNhblJlcXVlc3RPcHBvbmVudERlY2lzaW9uKHsgcGhhc2UsIHNraWxsTG9ja2VkOiBkZWNpc2lvbkxvY2tlZCwgaGFzQW55U3RvbmVzLCBvcHBvbmVudENvbm5lY3RlZCB9KX1cbiAgICAgICAgdGl0bGU9e2lzR29tb2t1IHx8ICFjb3VudGluZ0VuYWJsZWQgPyBcIuivpeWvueWxgOaXoOazleaVsOWtkFwiIDogdW5kZWZpbmVkfVxuICAgICAgPlxyXG4gICAgICAgIDxDYWxjdWxhdG9yIHNpemU9ezE4fSAvPlxyXG4gICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImFjdGlvbi1sYWJlbCBtb2JpbGUtYWN0aW9uLWJ1dHRvbi1sYWJlbFwiPuaVsOWtkDwvc3Bhbj5cclxuICAgICAgPC9idXR0b24+XG4gICAgICA8YnV0dG9uXHJcbiAgICAgICAgY2xhc3NOYW1lPXtgc2tpbGwtYWN0aW9uICR7cGVuZGluZ1NraWxsID8gXCJhY3RpdmVcIiA6IFwiXCJ9ICR7c2tpbGxVc2VzIDw9IDAgPyBcInNwZW50XCIgOiBcIlwifWB9XHJcbiAgICAgICAgb25DbGljaz17KCkgPT4gc2V0UGVuZGluZ1NraWxsKCFwZW5kaW5nU2tpbGwpfVxyXG4gICAgICAgIGRpc2FibGVkPXshc2tpbGxFbmFibGVkIHx8ICFtZSB8fCBwaGFzZSAhPT0gXCJwbGF5aW5nXCIgfHwgIWlzTXlUdXJuIHx8IHNraWxsQWN0aW9uTG9ja2VkIHx8IHNraWxsVXNlcyA8PSAwIHx8ICFza2lsbEF2YWlsYWJsZX1cbiAgICAgID5cclxuICAgICAgICA8U3BhcmtsZXMgc2l6ZT17MjB9IC8+XHJcbiAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiYWN0aW9uLWxhYmVsIG1vYmlsZS1hY3Rpb24tYnV0dG9uLWxhYmVsXCI+e3NraWxsRW5hYmxlZCA/IGAke3NraWxsTmFtZX0gwrcgJHtza2lsbFVzZXMgPz8gMH1gIDogXCLmioDog71cIn08L3NwYW4+XG4gICAgICA8L2J1dHRvbj5cclxuICAgICAgPGJ1dHRvbiBjbGFzc05hbWU9XCJkcmF3LWFjdGlvblwiIG9uQ2xpY2s9e29uRHJhd1JlcXVlc3R9IGRpc2FibGVkPXshZHJhd0VuYWJsZWQgfHwgIWNhblJlcXVlc3RPcHBvbmVudERlY2lzaW9uKHsgcGhhc2UsIHNraWxsTG9ja2VkOiBkZWNpc2lvbkxvY2tlZCwgb3Bwb25lbnRDb25uZWN0ZWQgfSl9PlxuICAgICAgICA8SGFuZHNoYWtlIHNpemU9ezE4fSAvPlxyXG4gICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImFjdGlvbi1sYWJlbCBtb2JpbGUtYWN0aW9uLWJ1dHRvbi1sYWJlbFwiPuWSjOajizwvc3Bhbj5cclxuICAgICAgPC9idXR0b24+XG4gICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInJlc2lnbi1hY3Rpb25cIiBvbkNsaWNrPXtvblJlc2lnbn0gZGlzYWJsZWQ9e3BoYXNlID09PSBcImZpbmlzaGVkXCIgfHwgc2tpbGxMb2NrZWR9PjxGbGFnIHNpemU9ezE4fSAvPjxzcGFuIGNsYXNzTmFtZT1cImFjdGlvbi1sYWJlbCBtb2JpbGUtYWN0aW9uLWJ1dHRvbi1sYWJlbFwiPuiupOi+kzwvc3Bhbj48L2J1dHRvbj5cclxuICAgIDwvbmF2PlxyXG4gICk7XHJcbn1cclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBhcmVBY3Rpb25CYXJQcm9wc0VxdWFsKHByZXZpb3VzLCBuZXh0KSB7XHJcbiAgaWYgKHByZXZpb3VzLnJvbGUgIT09IG5leHQucm9sZSkgcmV0dXJuIGZhbHNlO1xyXG4gIGlmIChwcmV2aW91cy5yb2xlID09PSBcInNwZWN0YXRvclwiKSB7XHJcbiAgICByZXR1cm4gcHJldmlvdXMucmVwbGF5U3RlcCA9PT0gbmV4dC5yZXBsYXlTdGVwXHJcbiAgICAgICYmIHByZXZpb3VzLnJlcGxheU1heCA9PT0gbmV4dC5yZXBsYXlNYXhcclxuICAgICAgJiYgcHJldmlvdXMucmVwbGF5TW9kZSA9PT0gbmV4dC5yZXBsYXlNb2RlXHJcbiAgICAgICYmIHByZXZpb3VzLm9uUmVwbGF5U3RlcCA9PT0gbmV4dC5vblJlcGxheVN0ZXA7XHJcbiAgfVxyXG5cclxuICByZXR1cm4gcHJldmlvdXMubW9kZSA9PT0gbmV4dC5tb2RlXHJcbiAgICAmJiBwcmV2aW91cy5waGFzZSA9PT0gbmV4dC5waGFzZVxyXG4gICAgJiYgcHJldmlvdXMubWU/LnVzZXI/LmlkID09PSBuZXh0Lm1lPy51c2VyPy5pZFxyXG4gICAgJiYgQm9vbGVhbihwcmV2aW91cy5tZSkgPT09IEJvb2xlYW4obmV4dC5tZSlcclxuICAgICYmIHByZXZpb3VzLmlzTXlUdXJuID09PSBuZXh0LmlzTXlUdXJuXHJcbiAgICAmJiBCb29sZWFuKHByZXZpb3VzLnBlbmRpbmdTa2lsbCkgPT09IEJvb2xlYW4obmV4dC5wZW5kaW5nU2tpbGwpXHJcbiAgICAmJiBwcmV2aW91cy5zZXRQZW5kaW5nU2tpbGwgPT09IG5leHQuc2V0UGVuZGluZ1NraWxsXHJcbiAgICAmJiBwcmV2aW91cy5za2lsbExvY2tlZCA9PT0gbmV4dC5za2lsbExvY2tlZFxyXG4gICAgJiYgcHJldmlvdXMuc2tpbGxBY3Rpb25Mb2NrZWQgPT09IG5leHQuc2tpbGxBY3Rpb25Mb2NrZWRcclxuICAgICYmIHByZXZpb3VzLmRlY2lzaW9uTG9ja2VkID09PSBuZXh0LmRlY2lzaW9uTG9ja2VkXHJcbiAgICAmJiBwcmV2aW91cy5za2lsbEVuYWJsZWQgPT09IG5leHQuc2tpbGxFbmFibGVkXHJcbiAgICAmJiBwcmV2aW91cy5za2lsbE5hbWUgPT09IG5leHQuc2tpbGxOYW1lXHJcbiAgICAmJiBwcmV2aW91cy5za2lsbFVzZXMgPT09IG5leHQuc2tpbGxVc2VzXHJcbiAgICAmJiBwcmV2aW91cy5za2lsbEF2YWlsYWJsZSA9PT0gbmV4dC5za2lsbEF2YWlsYWJsZVxyXG4gICAgJiYgcHJldmlvdXMuY291bnRpbmdFbmFibGVkID09PSBuZXh0LmNvdW50aW5nRW5hYmxlZFxyXG4gICAgJiYgcHJldmlvdXMuZHJhd0VuYWJsZWQgPT09IG5leHQuZHJhd0VuYWJsZWRcclxuICAgICYmIHByZXZpb3VzLmhhc0FueVN0b25lcyA9PT0gbmV4dC5oYXNBbnlTdG9uZXNcclxuICAgICYmIHByZXZpb3VzLm9wcG9uZW50Q29ubmVjdGVkID09PSBuZXh0Lm9wcG9uZW50Q29ubmVjdGVkXHJcbiAgICAmJiBwcmV2aW91cy5zY29yaW5nID09PSBuZXh0LnNjb3JpbmdcclxuICAgICYmIHByZXZpb3VzLm9uUGFzcyA9PT0gbmV4dC5vblBhc3NcclxuICAgICYmIHByZXZpb3VzLm9uQ291bnRpbmdSZXF1ZXN0ID09PSBuZXh0Lm9uQ291bnRpbmdSZXF1ZXN0XHJcbiAgICAmJiBwcmV2aW91cy5vbkRyYXdSZXF1ZXN0ID09PSBuZXh0Lm9uRHJhd1JlcXVlc3RcclxuICAgICYmIHByZXZpb3VzLm9uQ29uZmlybVNjb3JpbmcgPT09IG5leHQub25Db25maXJtU2NvcmluZ1xyXG4gICAgJiYgcHJldmlvdXMub25SZXNldFNjb3JpbmcgPT09IG5leHQub25SZXNldFNjb3JpbmdcclxuICAgICYmIHByZXZpb3VzLm9uUmVzaWduID09PSBuZXh0Lm9uUmVzaWduO1xyXG59XHJcblxyXG5leHBvcnQgeyBjYW5SZXF1ZXN0T3Bwb25lbnREZWNpc2lvbiB9IGZyb20gXCIuL2FjdGlvbkJhci9hY3Rpb25BdmFpbGFiaWxpdHkuanNcIjtcclxuXHJcbmV4cG9ydCBkZWZhdWx0IG1lbW8oQWN0aW9uQmFyLCBhcmVBY3Rpb25CYXJQcm9wc0VxdWFsKTtcclxuIl0sImZpbGUiOiJDOi9jb2RleC9TaWdyaWthR28vc3JjL3Jvb20vQWN0aW9uQmFyLmpzeCJ9

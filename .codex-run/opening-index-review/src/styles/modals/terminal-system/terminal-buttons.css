@@ -1,0 +1,51 @@
+/* Startorch terminal button states */
+
+.primary-action,
+.secondary-action,
+.danger-action,
+.confirm-modal button,
+.result-summary button,
+.profile-replay-button,
+.profile-relation-actions button,
+.inline-confirm-panel button,
+.replay-open-button,
+.settings-tabs button,
+.friends-tabs button,
+.shop-tabs button,
+.shop-pagination button,
+.watch-room-row,
+.friend-action-row button {
+  border-radius: 2px;
+  clip-path: var(--terminal-row-cut);
+  border: 1px solid rgba(0, 191, 255, 0.34);
+  background: rgba(10, 35, 45, 0.64);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 14px rgba(0, 191, 255, 0.08);
+}
+
+.primary-action,
+.result-summary button,
+.confirm-modal .secondary-action {
+  background: linear-gradient(135deg, rgba(0, 255, 190, 0.24), rgba(0, 191, 255, 0.18));
+  border-color: rgba(0, 255, 190, 0.62);
+}
+
+.danger-action,
+.confirm-modal .danger-action {
+  background: linear-gradient(135deg, rgba(255, 95, 95, 0.28), rgba(255, 178, 63, 0.12));
+  border-color: rgba(255, 178, 63, 0.68);
+  color: #fff4dc;
+}
+
+.primary-action:disabled,
+.secondary-action:disabled,
+.shop-modal button:disabled,
+.warehouse-modal button:disabled,
+.friends-modal button:disabled,
+.room-floating-modal button:disabled,
+.small-modal button:disabled {
+  border-color: rgba(125, 165, 168, 0.18);
+  background: rgba(87, 107, 112, 0.18);
+  color: rgba(185, 233, 228, 0.42);
+  box-shadow: none;
+}

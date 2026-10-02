@@ -1,0 +1,139 @@
+/* Bright School final explicit anti-bleed contract.
+   Root cause: shared HUD layers define unscoped neon, cut-corner, skew, and
+   pseudo-element rules before themes.css. Keep this final block last so the
+   notebook skin wins without touching React markup or other themes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  --bright-paper: #fffbf2;
+  --bright-sheet: #ffffff;
+  --bright-ink: #3d2b25;
+  --bright-ink-soft: rgba(61, 43, 37, 0.7);
+  --bright-border: #3d2b25;
+  --bright-pink: #ff9ebb;
+  --bright-blue: #9ad3de;
+  --bright-shadow: 4px 4px 0 #3d2b25;
+  background-color: var(--bright-paper) !important;
+  color: var(--bright-ink) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.asset-preload-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen) {
+  background-color: var(--bright-paper) !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.2) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-terminal-screen::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-terminal-screen::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  filter: none !important;
+  opacity: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .auth-panel,
+  .asset-preload-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .room-header,
+  .player-info,
+  .chat-box,
+  .chat-log,
+  .room-people,
+  .operation-hint,
+  .board-stage,
+  .action-bar,
+  .decision-bar,
+  .small-modal,
+  .shop-modal,
+  .shop-item,
+  .house-modal,
+  .warehouse-modal,
+  .warehouse-item,
+  .leaderboard-modal,
+  .leaderboard-row,
+  .friends-modal,
+  .friend-row,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .settings-modal-content,
+  .settings-panel,
+  .about-panel-block,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .skill-chip,
+  button,
+  input,
+  textarea,
+  select
+),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .home-image-entry,
+  .utility-entry,
+  .player-info,
+  .board-stage,
+  .shop-item,
+  .warehouse-item,
+  .leaderboard-row,
+  .friend-row,
+  .watch-room-row,
+  .character-card,
+  .skill-chip
+)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .home-image-entry,
+  .utility-entry,
+  .shop-item,
+  .warehouse-item,
+  .leaderboard-row,
+  .friend-row,
+  .watch-room-row,
+  .character-card,
+  .skill-chip
+)::after {
+  text-shadow: none !important;
+}

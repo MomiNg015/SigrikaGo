@@ -1,0 +1,20 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/HomeScreen.test.jsx src/home/components/HomeStage.dom.test.jsx src/home/components/PlayerPlaque.dom.test.jsx src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 490ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 676ms
+ ✓ src/home/components/HomeStage.dom.test.jsx (1 test) 64ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (3 tests) 232ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 1353ms
+   ✓ HomeScreen > uses alpha-trimmed compact WebP home entry images instead of source PNGs  307ms
+   ✓ HomeScreen > keeps achievement nameplates out of the student ID while retaining their source assets  325ms
+
+ Test Files  5 passed (5)
+      Tests  103 passed (103)
+   Start at  08:54:44
+   Duration  4.87s (transform 731ms, setup 0ms, collect 2.44s, tests 2.82s, environment 3.24s, prepare 711ms)
+

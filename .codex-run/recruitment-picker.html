@@ -1,0 +1,5 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
+import React from 'react'; import {createRoot} from 'react-dom/client'; import RecruitmentModal from '/src/modals/RecruitmentModal.jsx'; import {RECRUITMENT_ITEMS} from '/src/shared/recruitment.js'; import '/src/styles.css';
+window.fetch=async()=>new Response(JSON.stringify({items:Object.values(RECRUITMENT_ITEMS).filter(i=>i.itemType!=='magic-clock').map(i=>({...i,quantity:3}))}),{headers:{'Content-Type':'application/json'}});
+createRoot(document.getElementById('root')).render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(RecruitmentModal,{token:'fixture',user:{id:1},characters:{},onClose:()=>{}})));
+</script></body></html>

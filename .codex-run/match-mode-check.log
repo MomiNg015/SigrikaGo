@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/MatchModeExpansion.dom.test.jsx src/home/MatchModeRulesTooltip.dom.test.jsx src/home/HomeScreen.test.jsx src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/styleContract.test.js (57 tests) 599ms
+ ✓ src/home/HomeScreen.test.jsx (22 tests) 986ms
+ ✓ src/home/MatchModeRulesTooltip.dom.test.jsx (3 tests) 562ms
+   ✓ mode rules hover > keeps rules out of cards and shows and dismisses desktop hover rules  311ms
+ ✓ src/home/MatchModeExpansion.dom.test.jsx (4 tests) 890ms
+   ✓ Spark mode expansion > expands without queuing, keeps practice available, and queues only the regular child  489ms
+
+ Test Files  4 passed (4)
+      Tests  86 passed (86)
+   Start at  17:55:27
+   Duration  4.93s (transform 789ms, setup 0ms, collect 2.91s, tests 3.04s, environment 1.92s, prepare 383ms)
+

@@ -1,0 +1,164 @@
+.home-grid-featured > .home-utility-grid {
+  grid-area: utility;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-self: end;
+  justify-self: start;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  justify-items: start;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 255, 190, 0.24);
+  border-radius: 0;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  background:
+    linear-gradient(90deg, rgba(0, 255, 190, 0.12), rgba(6, 17, 26, 0.84) 38%),
+    rgba(6, 17, 26, 0.84);
+  color: var(--home-terminal-text);
+  box-shadow: inset 0 0 18px rgba(0, 255, 190, 0.06);
+  transform: skewX(-15deg);
+  overflow: hidden;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 190, 0.38), transparent);
+  transform: translateX(-110%);
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry > * {
+  position: relative;
+  z-index: 1;
+  transform: skewX(15deg);
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry-icon {
+  min-width: 0;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry-icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry > strong {
+  grid-column: 2;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry svg {
+  width: 22px;
+  height: 22px;
+  color: var(--home-terminal-cyan);
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry strong {
+  display: block;
+  max-width: none;
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.home-grid-featured > .home-utility-grid .leaderboard-entry {
+  border-color: rgba(0, 191, 255, 0.24);
+  background:
+    linear-gradient(90deg, rgba(0, 191, 255, 0.12), rgba(6, 17, 26, 0.84) 38%),
+    rgba(6, 17, 26, 0.84);
+}
+
+.home-grid-featured > .home-utility-grid .leaderboard-entry svg {
+  color: var(--home-terminal-blue);
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry:hover,
+.home-grid-featured > .home-utility-grid .utility-entry:focus-visible {
+  color: var(--home-terminal-cyan);
+  border-color: var(--home-terminal-cyan);
+  box-shadow: -8px 0 22px rgba(0, 255, 190, 0.24), inset 0 0 18px rgba(0, 255, 190, 0.1);
+}
+
+.home-grid-featured > .home-utility-grid .leaderboard-entry:hover,
+.home-grid-featured > .home-utility-grid .leaderboard-entry:focus-visible {
+  color: var(--home-terminal-blue);
+  border-color: var(--home-terminal-blue);
+  box-shadow: -8px 0 22px rgba(0, 191, 255, 0.24), inset 0 0 18px rgba(0, 191, 255, 0.1);
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry:hover::before,
+.home-grid-featured > .home-utility-grid .utility-entry:focus-visible::before {
+  opacity: 1;
+  animation: home-nav-flow 880ms ease forwards;
+}
+
+.home-footer-strip {
+  position: fixed;
+  right: clamp(12px, 2vw, 24px);
+  bottom: clamp(8px, 1.4vw, 16px);
+  z-index: 3;
+  width: auto;
+  min-height: 0;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--home-terminal-cyan);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0.4;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.home-footer-strip span {
+  white-space: nowrap;
+}
+
+.home-footer-strip a {
+  color: inherit;
+  pointer-events: auto;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.home-orientation-guard {
+  display: none;
+}
+
+@keyframes home-hud-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes home-nav-flow {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(110%); }
+}

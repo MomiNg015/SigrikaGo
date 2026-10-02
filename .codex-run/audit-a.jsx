@@ -1,0 +1,17 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import Home from '/src/home/HomeScreen.jsx';
+import House from '/src/modals/HouseModal.jsx';
+import Shop from '/src/modals/ShopModal.jsx';
+import Warehouse from '/src/modals/WarehouseModal.jsx';
+import Watch from '/src/modals/WatchModal.jsx';
+import Leaderboard from '/src/modals/LeaderboardModal.jsx';
+import Friends from '/src/modals/FriendsModal.jsx';
+import Recruitment from '/src/modals/RecruitmentModal.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const params=new URLSearchParams(location.search); const name=params.get('view');
+const user={id:'preview',username:'测试部员',selectedCharacter:'sigrika',ownedCharacters:Object.keys(CHARACTERS),coins:1000};
+const props={token:'local-review-fixture',user,characters:CHARACTERS,characterListView:Object.values(CHARACTERS),audioSettings:{},onClose:()=>{},onNotice:()=>{},musicTracks:[]};
+const C={house:House,shop:Shop,warehouse:Warehouse,watch:Watch,leaderboard:Leaderboard,friends:Friends,recruitment:Recruitment}[name];
+createRoot(document.getElementById('root')).render(<div className="app-shell player-theme-enabled theme-bright-school"><Home {...props}/>{C&&<C {...props}/>}</div>);

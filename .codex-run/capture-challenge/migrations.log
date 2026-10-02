@@ -1,0 +1,25 @@
+
+> sigrika-go@0.1.0 verify:migrations
+> node scripts/verify-migration-baseline.mjs
+
+file:///C:/codex/SigrikaGo/scripts/migrationBaselineVerification.mjs:45
+    throw new Error([
+          ^
+
+Error: Prisma command failed (generate --schema C:\codex\SigrikaGo\prisma\schema.prisma) with status 1.
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Error: 
+EPERM: operation not permitted, rename 'C:\codex\SigrikaGo\node_modules\.prisma\client\query_engine-windows.dll.node.tmp33292' -> 'C:\codex\SigrikaGo\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+
+
+    at runPrisma (file:///C:/codex/SigrikaGo/scripts/migrationBaselineVerification.mjs:45:11)
+    at verifyMigrationBaseline (file:///C:/codex/SigrikaGo/scripts/migrationBaselineVerification.mjs:179:5)
+    at file:///C:/codex/SigrikaGo/scripts/verify-migration-baseline.mjs:3:7
+    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+    at async node:internal/modules/esm/loader:639:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.15.0

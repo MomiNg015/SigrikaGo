@@ -1,0 +1,7 @@
+{"file":".trellis/spec/backend/index.md","reason":"后端规范入口：道具结算、剧情分支、效果持久化与对局后清理。"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"服务端边界与回归测试要求。"}
+{"file":".trellis/spec/frontend/index.md","reason":"前端规范入口：仓库目标、效果展示和房间棋盘。"}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"React 组件数据流与表现层职责。"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"新增棋盘动效样式的分层与归属。"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"前端交互和测试质量要求。"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"核对道具结算、API、房间状态和棋盘渲染的跨层链路。"}

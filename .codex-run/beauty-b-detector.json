@@ -1,0 +1,404 @@
+[
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\FeedbackModals.test.js",
+    "line": 70,
+    "snippet": "Undocumented color #48b978 is outside DESIGN.md colors",
+    "ignoreValue": "#48b978"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\FeedbackModals.test.js",
+    "line": 70,
+    "snippet": "Undocumented color #23985f is outside DESIGN.md colors",
+    "ignoreValue": "#23985f"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\FeedbackModals.test.js",
+    "line": 71,
+    "snippet": "Undocumented color #e8f9e8 is outside DESIGN.md colors",
+    "ignoreValue": "#e8f9e8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\FeedbackModals.test.js",
+    "line": 71,
+    "snippet": "Undocumented color #ccefd5 is outside DESIGN.md colors",
+    "ignoreValue": "#ccefd5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\FeedbackModals.test.js",
+    "line": 72,
+    "snippet": "Undocumented color #28573b is outside DESIGN.md colors",
+    "ignoreValue": "#28573b"
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\friends\\FriendsList.jsx",
+    "line": 41,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: row.itemEffects, user: row })} alt={c",
+    "importedBy": [
+      "FriendsModal.jsx",
+      "FriendsModal.test.jsx"
+    ]
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\gameLifecycle\\MatchModal.jsx",
+    "line": 22,
+    "snippet": "<img className=\"match-portrait\" {...characterPortraitImageProps(character, { itemEffects: user?.item"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\GameLifecycleModals.test.js",
+    "line": 66,
+    "snippet": "Undocumented color #c62828 is outside DESIGN.md colors",
+    "ignoreValue": "#c62828"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\house\\CharacterCostumeDialog.test.jsx",
+    "line": 121,
+    "snippet": "Undocumented color #ddf7df is outside DESIGN.md colors",
+    "ignoreValue": "#ddf7df"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\HouseModal.test.js",
+    "line": 741,
+    "snippet": "Undocumented color #7b3fa0 is outside DESIGN.md colors",
+    "ignoreValue": "#7b3fa0"
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\leaderboard\\LeaderboardRow.jsx",
+    "line": 18,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: player.itemEffects, user: player })} ",
+    "importedBy": [
+      "LeaderboardModal.jsx",
+      "LeaderboardModal.test.jsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\LeaderboardModal.test.jsx",
+    "line": 116,
+    "snippet": "Undocumented color rgba(226, 255, 228, 0.96) is outside DESIGN.md colors",
+    "ignoreValue": "rgba(226, 255, 228, 0.96)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\OnboardingStoryModal.test.jsx",
+    "line": 85,
+    "snippet": "Undocumented color rgba(35, 27, 31, 0.64) is outside DESIGN.md colors",
+    "ignoreValue": "rgba(35, 27, 31, 0.64)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\OnboardingStoryModal.test.jsx",
+    "line": 91,
+    "snippet": "Undocumented color rgba(35, 27, 31, 0.64) is outside DESIGN.md colors",
+    "ignoreValue": "rgba(35, 27, 31, 0.64)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\OnboardingStoryModal.test.jsx",
+    "line": 128,
+    "snippet": "Undocumented color #e4f8dc is outside DESIGN.md colors",
+    "ignoreValue": "#e4f8dc"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\OnboardingStoryModal.test.jsx",
+    "line": 129,
+    "snippet": "Undocumented color #ffd6e7 is outside DESIGN.md colors",
+    "ignoreValue": "#ffd6e7"
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\RecruitmentModal.jsx",
+    "line": 264,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={char"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 268,
+    "snippet": "Undocumented color #dff9e7 is outside DESIGN.md colors",
+    "ignoreValue": "#dff9e7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 268,
+    "snippet": "Undocumented color #f2fff5 is outside DESIGN.md colors",
+    "ignoreValue": "#f2fff5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 269,
+    "snippet": "Undocumented color #ececef is outside DESIGN.md colors",
+    "ignoreValue": "#ececef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 269,
+    "snippet": "Undocumented color #f8f8f8 is outside DESIGN.md colors",
+    "ignoreValue": "#f8f8f8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 270,
+    "snippet": "Undocumented color #fff4bd is outside DESIGN.md colors",
+    "ignoreValue": "#fff4bd"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 270,
+    "snippet": "Undocumented color #fffbe7 is outside DESIGN.md colors",
+    "ignoreValue": "#fffbe7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 290,
+    "snippet": "Undocumented color #dff9e7 is outside DESIGN.md colors",
+    "ignoreValue": "#dff9e7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 290,
+    "snippet": "Undocumented color #f2fff5 is outside DESIGN.md colors",
+    "ignoreValue": "#f2fff5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 291,
+    "snippet": "Undocumented color #ececef is outside DESIGN.md colors",
+    "ignoreValue": "#ececef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 291,
+    "snippet": "Undocumented color #f8f8f8 is outside DESIGN.md colors",
+    "ignoreValue": "#f8f8f8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 292,
+    "snippet": "Undocumented color #fff4bd is outside DESIGN.md colors",
+    "ignoreValue": "#fff4bd"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ReplayList.test.jsx",
+    "line": 292,
+    "snippet": "Undocumented color #fffbe7 is outside DESIGN.md colors",
+    "ignoreValue": "#fffbe7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 572,
+    "snippet": "Undocumented color #fff8c7 is outside DESIGN.md colors",
+    "ignoreValue": "#fff8c7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 572,
+    "snippet": "Undocumented color #f6cf6a is outside DESIGN.md colors",
+    "ignoreValue": "#f6cf6a"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 572,
+    "snippet": "Undocumented color #d89b2b is outside DESIGN.md colors",
+    "ignoreValue": "#d89b2b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 633,
+    "snippet": "Undocumented color rgb(211 215 217) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(211 215 217)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 633,
+    "snippet": "Undocumented color rgb(154 139 166) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(154 139 166)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\ShopModal.test.js",
+    "line": 674,
+    "snippet": "Undocumented color #f4cfc4 is outside DESIGN.md colors",
+    "ignoreValue": "#f4cfc4"
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\warehouse\\WarehouseTargetModal.jsx",
+    "line": 50,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={char",
+    "importedBy": [
+      "WarehouseModal.jsx",
+      "WarehouseModal.test.js"
+    ]
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\warehouse\\WarehouseTargetModal.jsx",
+    "line": 71,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: targetState.itemEffects, user })} alt",
+    "importedBy": [
+      "WarehouseModal.jsx",
+      "WarehouseModal.test.js"
+    ]
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\WarehouseModal.test.js",
+    "line": 242,
+    "snippet": "Undocumented color #d8d4cc is outside DESIGN.md colors",
+    "ignoreValue": "#d8d4cc"
+  },
+  {
+    "antipattern": "broken-image",
+    "name": "Broken or placeholder image",
+    "description": "<img> tags with empty src, missing src, or placeholder values ship as broken-image boxes. Use real images, generated assets, or remove the tag.",
+    "severity": "warning",
+    "file": "C:\\codex\\SigrikaGo\\src\\modals\\watch\\WatchRoomRow.jsx",
+    "line": 30,
+    "snippet": "<img {...characterPortraitImageProps(character, { itemEffects: player.user?.itemEffects, user: playe",
+    "importedBy": [
+      "WatchModal.jsx"
+    ]
+  }
+]

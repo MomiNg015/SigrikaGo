@@ -1,0 +1,37 @@
+import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { renderSystemDesignHtml, SYSTEM_DESIGN_SOURCE_PATHS } from '../scripts/render-system-design-html.mjs';
+const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:20*1024*1024});
+if(git('diff','--cached','--name-only').trim()) throw Error('Index is not empty; preserve existing staged work.');
+const head=p=>git('show',`HEAD:${p}`).replaceAll('\r\n','\n');
+const current=p=>fs.readFileSync(p,'utf8').replaceAll('\r\n','\n');
+const staged=new Map();
+const insertAfter=(p,anchor,addition)=>staged.set(p,head(p).replace(anchor,anchor+addition));
+const summary=current('docs/system-design.md').split('\n').find(l=>l.startsWith('首页用户铭牌改为'));
+insertAfter('docs/system-design.md','# SigrikaGo 系统设计',`\n\n${summary}`);
+let section=current('docs/system-design/06-ui-theme-mobile.md');
+section=section.slice(section.indexOf('## 首页挂扣学生证'),section.indexOf('停用摆动。')+'停用摆动。'.length);
+insertAfter('docs/system-design/06-ui-theme-mobile.md','# UI 主题、移动端与交互体验',`\n\n${section}`);
+let spec=current('.trellis/spec/frontend/css-architecture.md');
+spec=spec.slice(spec.indexOf('### Home hanging student ID'),spec.indexOf('Allowed patterns:'));
+insertAfter('.trellis/spec/frontend/css-architecture.md','## Selector Rules\n\n',spec);
+staged.set('src/styles/mobile-adaptive.css',head('src/styles/mobile-adaptive.css').replace('@import "./mobile-adaptive/sigrika-corruption.css";', '@import "./mobile-adaptive/home-student-id.css";\n@import "./mobile-adaptive/sigrika-corruption.css";'));
+staged.set('src/styles/styleContract.test.js',head('src/styles/styleContract.test.js').replace('      "./mobile-adaptive/sigrika-corruption.css"','      "./mobile-adaptive/home-student-id.css",\n      "./mobile-adaptive/sigrika-corruption.css"'));
+let inventory=head('src/styles/cssLayerInventory.js');
+const css=current('src/styles/mobile-adaptive/home-student-id.css');
+const delta={totalFiles:1,totalBytes:Buffer.byteLength(css)+Buffer.byteLength('@import "./mobile-adaptive/home-student-id.css";\n'),importantCount:(css.match(/!important/g)||[]).length,importantFiles:1,hardcodedHexCount:(css.match(/#[0-9a-fA-F]{3,8}\b/g)||[]).length,mediaFiles:1,reducedMotionFiles:1};
+for(const [key,value] of Object.entries(delta)) inventory=inventory.replace(new RegExp(`    ${key}: (\\d+)`),(_,n)=>`    ${key}: ${+n+value}`);
+const note=current('src/styles/cssLayerInventory.js').split('\n').find(l=>l.includes('2026-09-16: adds one final hanging'));
+inventory=inventory.replace('  featureDeltas: [','  featureDeltas: [\n'+note);
+staged.set('src/styles/cssLayerInventory.js',inventory);
+const markdown=SYSTEM_DESIGN_SOURCE_PATHS.map(url=>path.relative(process.cwd(),fileURLToPath(url)).replaceAll('\\','/')).map(p=>(staged.get(p)??head(p)).trim()).filter(Boolean).join('\n\n---\n\n')+'\n';
+staged.set('docs/system-design.html',renderSystemDesignHtml(markdown));
+for(const [p,content] of staged){
+ const oid=execFileSync('git',['hash-object','-w','--stdin'],{input:content,encoding:'utf8'}).trim();
+ git('update-index','--add','--cacheinfo',`100644,${oid},${p}`);
+}
+git('add','--','src/home/components/PlayerPlaque.jsx','src/home/components/PlayerPlaque.dom.test.jsx','src/home/components/HomeStage.jsx','src/home/HomeScreen.test.jsx','src/shared/CharacterChainBadge.test.jsx','src/styles/mobile-adaptive/home-student-id.css','public/assets/home/student-id-hanging.png','public/assets/home/student-id-hanging.webp');
+console.log(git('diff','--cached','--stat'));
+console.log(git('diff','--cached','--check'));

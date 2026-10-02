@@ -1,0 +1,525 @@
+{
+  "errors": [],
+  "results": [
+    {
+      "view": "profile",
+      "width": 1280,
+      "overflow": false,
+      "summary": "289.922px 193.281px 193.297px",
+      "ranks": [
+        {
+          "label": "8段 3/8星",
+          "width": 100.921875,
+          "height": 27.5,
+          "stars": [
+            390,
+            390,
+            390,
+            390,
+            404,
+            404,
+            404,
+            404
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "leaderboard",
+      "width": 1280,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 0,
+          "height": 0,
+          "stars": [],
+          "visible": false
+        },
+        {
+          "label": "9段 1200分",
+          "width": 75.734375,
+          "height": 14,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 82.921875,
+          "height": 26,
+          "stars": [
+            288,
+            288,
+            288,
+            288,
+            302,
+            302,
+            302,
+            302
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 68.921875,
+          "height": 26,
+          "stars": [
+            372,
+            372,
+            372,
+            386,
+            386,
+            386
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 82.921875,
+          "height": 14,
+          "stars": [
+            463,
+            463,
+            463,
+            463
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "profile",
+      "width": 360,
+      "overflow": false,
+      "summary": "114px 114px",
+      "ranks": [
+        {
+          "label": "8段 3/8星",
+          "width": 92.734375,
+          "height": 26,
+          "stars": [
+            278,
+            278,
+            278,
+            278,
+            292,
+            292,
+            292,
+            292
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "leaderboard",
+      "width": 360,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 85.6875,
+          "height": 20,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "9段 1200分",
+          "width": 0,
+          "height": 0,
+          "stars": [],
+          "visible": false
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 86.1875,
+          "height": 26,
+          "stars": [
+            252,
+            252,
+            252,
+            252,
+            266,
+            266,
+            266,
+            266
+          ],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 72.1875,
+          "height": 26,
+          "stars": [
+            335,
+            335,
+            335,
+            349,
+            349,
+            349
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 86.1875,
+          "height": 20,
+          "stars": [
+            426,
+            426,
+            426,
+            426
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        }
+      ]
+    },
+    {
+      "view": "profile",
+      "width": 390,
+      "overflow": false,
+      "summary": "129px 129px",
+      "ranks": [
+        {
+          "label": "8段 3/8星",
+          "width": 92.734375,
+          "height": 26,
+          "stars": [
+            302,
+            302,
+            302,
+            302,
+            316,
+            316,
+            316,
+            316
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "leaderboard",
+      "width": 390,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 85.6875,
+          "height": 20,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "9段 1200分",
+          "width": 0,
+          "height": 0,
+          "stars": [],
+          "visible": false
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 86.1875,
+          "height": 26,
+          "stars": [
+            252,
+            252,
+            252,
+            252,
+            266,
+            266,
+            266,
+            266
+          ],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 72.1875,
+          "height": 26,
+          "stars": [
+            335,
+            335,
+            335,
+            349,
+            349,
+            349
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 86.1875,
+          "height": 20,
+          "stars": [
+            426,
+            426,
+            426,
+            426
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        }
+      ]
+    },
+    {
+      "view": "profile",
+      "width": 412,
+      "overflow": false,
+      "summary": "140px 140px",
+      "ranks": [
+        {
+          "label": "8段 3/8星",
+          "width": 92.734375,
+          "height": 26,
+          "stars": [
+            302,
+            302,
+            302,
+            302,
+            316,
+            316,
+            316,
+            316
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "leaderboard",
+      "width": 412,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 85.6875,
+          "height": 20,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "9段 1200分",
+          "width": 0,
+          "height": 0,
+          "stars": [],
+          "visible": false
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 86.1875,
+          "height": 26,
+          "stars": [
+            252,
+            252,
+            252,
+            252,
+            266,
+            266,
+            266,
+            266
+          ],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 72.1875,
+          "height": 26,
+          "stars": [
+            335,
+            335,
+            335,
+            349,
+            349,
+            349
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 86.1875,
+          "height": 20,
+          "stars": [
+            426,
+            426,
+            426,
+            426
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 0,
+          "height": 0,
+          "stars": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "visible": false
+        }
+      ]
+    }
+  ]
+}

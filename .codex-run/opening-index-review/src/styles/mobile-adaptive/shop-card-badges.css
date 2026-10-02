@@ -1,0 +1,20 @@
+@media (max-width: 768px) {
+  .shop-card-position .shop-corner-badge,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-corner-badge {
+    top: 7px !important;
+    min-width: 32px !important;
+    min-height: 22px !important;
+    padding: 3px 7px !important;
+    font-size: 11px !important;
+  }
+
+  .shop-card-position .shop-category-badge,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge {
+    left: 7px !important;
+  }
+
+  .shop-card-position .shop-quantity-badge,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-quantity-badge {
+    right: 7px !important;
+  }
+}

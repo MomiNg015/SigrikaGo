@@ -1,0 +1,26 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section {
+  padding: 18px !important;
+  gap: 16px !important;
+  background: #fffaf0 !important;
+  border: 2px dashed var(--bright-border) !important;
+  border-radius: 18px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  margin-bottom: 10px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 2px dashed rgba(74, 55, 54, 0.36) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  gap: 14px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
+  padding: 10px !important;
+  background: #fff6dd !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}

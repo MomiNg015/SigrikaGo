@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --reporter=json --outputFile=.codex-run/rank-stars-tests.json
+
+JSON report written to C:/codex/SigrikaGo/.codex-run/rank-stars-tests.json

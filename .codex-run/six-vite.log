@@ -1,0 +1,121 @@
+
+> sigrika-go@0.1.0 dev:client
+> vite --host 0.0.0.0 --port 5176
+
+
+  VITE v6.4.3  ready in 686 ms
+
+  ➜  Local:   http://localhost:5176/
+  ➜  Network: http://192.168.1.9:5176/
+19:15:50 [vite] (client) page reload docs/system-design.html
+19:17:46 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:17:48 [vite] (client) page reload .codex-run/six-dist/index.html
+19:17:48 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:17:48 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:17:48 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:19:31 [vite] (client) hmr update /src/styles.css
+19:19:44 [vite] (client) hmr update /src/styles.css
+19:19:44 [vite] (client) hmr update /src/styles.css
+19:20:01 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:20:01 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:20:01 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:20:01 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:20:01 [vite] (client) page reload .codex-run/six-dist/index.html
+19:20:03 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:20:04 [vite] (client) page reload .codex-run/six-dist/index.html
+19:20:05 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:20:05 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:20:05 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:20:15 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:22:22 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:22:22 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:22:22 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:22:23 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:22:23 [vite] (client) page reload .codex-run/six-dist/index.html
+19:22:25 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:22:26 [vite] (client) page reload .codex-run/six-dist/index.html
+19:22:26 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:22:26 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:22:26 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:24:12 [vite] (client) hmr update /src/styles.css
+19:24:38 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:24:38 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:24:38 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:24:38 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:24:38 [vite] (client) page reload .codex-run/six-dist/index.html
+19:24:40 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:24:42 [vite] (client) page reload .codex-run/six-dist/index.html
+19:24:42 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:24:42 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:24:42 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:24:43 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:25:18 [vite] (client) hmr update /src/styles.css
+19:26:11 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:26:30 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:26:30 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:26:30 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:26:31 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:26:31 [vite] (client) page reload .codex-run/six-dist/index.html
+19:26:33 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:26:34 [vite] (client) page reload .codex-run/six-dist/index.html
+19:26:34 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:26:34 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:26:34 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:27:53 [vite] (client) hmr update /src/styles.css
+19:27:55 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:28:02 [vite] (client) page reload docs/system-design.html
+19:28:16 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:28:16 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:28:16 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:28:16 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:28:16 [vite] (client) page reload .codex-run/six-dist/index.html
+19:28:18 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:28:19 [vite] (client) page reload .codex-run/six-dist/index.html
+19:28:19 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:28:19 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:28:19 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:35:59 [vite] (client) hmr update /src/styles.css
+19:35:59 [vite] (client) hmr update /src/modals/shop/ShopProductStage.jsx, /src/styles.css, /src/modals/shop/CostumeStorePanel.jsx
+19:36:41 [vite] (client) hmr update /src/modals/shop/ShopProductStage.jsx, /src/styles.css, /src/modals/shop/CostumeStorePanel.jsx
+19:36:41 [vite] (client) page reload src/modals/ShopModal.test.js
+19:37:14 [vite] (client) hmr update /src/modals/shop/ShopProductStage.jsx, /src/styles.css, /src/modals/shop/CostumeStorePanel.jsx
+19:38:09 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:38:20 [vite] (client) page reload docs/system-design.html
+19:38:31 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:38:31 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:38:31 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:38:32 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:38:32 [vite] (client) page reload .codex-run/six-dist/index.html
+19:38:34 [vite] (client) page reload .codex-run/six-dist/hotspot-prototype.html
+19:38:35 [vite] (client) page reload .codex-run/six-dist/index.html
+19:38:35 [vite] (client) page reload .codex-run/six-dist/.codex-run/audit-a.html
+19:38:35 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b-extra.html
+19:38:35 [vite] (client) page reload .codex-run/six-dist/.codex-run/beauty-b.html
+19:38:50 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+19:38:50 [vite] (client) page reload .trellis/tasks/__character-nameplate-skill-test/nameplate-preview/index.html
+19:40:06 [vite] (client) page reload docs/system-design.html
+19:47:33 [vite] (client) hmr update /src/modals/friends/FriendsList.jsx, /src/styles.css
+19:47:33 [vite] (client) hmr update /src/styles.css
+19:47:33 [vite] (client) hmr update /src/styles.css
+19:47:33 [vite] (client) page reload src/modals/FriendsModal.test.jsx
+19:48:41 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:48:42 [vite] (client) page reload docs/system-design.html
+19:49:03 [vite] (client) page reload .codex-run/friends-dist/hotspot-prototype.html
+19:49:45 [vite] (client) page reload .codex-run/friends-dist/.codex-run/audit-a.html
+19:49:48 [vite] (client) page reload .tmp/handbook-system-design.html
+19:50:47 [vite] (client) page reload docs/system-design.html
+19:53:41 [vite] (client) hmr update /src/styles.css
+19:53:41 [vite] (client) hmr update /src/styles.css
+19:54:53 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:55:04 [vite] (client) page reload .codex-run/friends-dist/.codex-run/audit-a.html
+19:55:04 [vite] (client) page reload docs/system-design.html
+19:55:04 [vite] (client) page reload .codex-run/friends-dist/hotspot-prototype.html
+19:55:07 [vite] (client) page reload .codex-run/friends-dist/hotspot-prototype.html
+19:55:07 [vite] (client) page reload .codex-run/friends-dist/.codex-run/audit-a.html
+19:57:26 [vite] (client) hmr update /src/styles.css
+19:57:29 [vite] (client) page reload src/styles/cssLayerInventory.js
+19:57:41 [vite] (client) page reload .codex-run/friends-dist/.codex-run/audit-a.html
+19:57:42 [vite] (client) page reload .codex-run/friends-dist/hotspot-prototype.html
+19:57:44 [vite] (client) page reload .codex-run/friends-dist/hotspot-prototype.html
+19:57:46 [vite] (client) page reload .codex-run/friends-dist/.codex-run/audit-a.html
+20:02:07 [vite] (client) page reload docs/system-design.html

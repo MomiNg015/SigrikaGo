@@ -1,0 +1,68 @@
+@media (max-width: 860px) {
+  .admin-skill-trait-layout,
+  .admin-character-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-gacha-board .admin-crud-drawer {
+    inset: 12px;
+    width: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+  }
+
+  .admin-gacha-board .admin-crud-drawer .admin-character-form {
+    padding-right: 28px;
+  }
+
+  .admin-gacha-prize-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-gacha-prize-editor-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-achievement-board .admin-section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-character-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-skill-trait-references li,
+  .admin-trait-description-field .admin-trait-insert-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-trait-description-field .admin-trait-insert-row select {
+    width: 100%;
+  }
+
+  .admin-gacha-form .admin-character-form-grid,
+  .admin-gacha-prize-controls,
+  .admin-gacha-prize-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-gacha-prize-row label {
+    min-height: 40px;
+    align-items: center;
+  }
+
+  .admin-gacha-prize-resource {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .admin-gacha-prize-thumb {
+    width: 44px;
+    height: 44px;
+  }
+}

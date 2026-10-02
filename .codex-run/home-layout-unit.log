@@ -1,0 +1,15 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --maxWorkers=2 src/home/onboarding
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/home/onboarding/useHomeOnboarding.dom.test.jsx (4 tests) 332ms
+ ✓ src/home/onboarding/HomeOnboarding.dom.test.jsx (3 tests) 321ms
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  22:32:22
+   Duration  4.19s (transform 262ms, setup 0ms, collect 1.05s, tests 653ms, environment 3.61s, prepare 253ms)
+

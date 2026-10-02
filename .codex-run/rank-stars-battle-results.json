@@ -1,0 +1,233 @@
+{
+  "errors": [],
+  "results": [
+    {
+      "view": "battle",
+      "width": 1280,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 76.1767578125,
+          "height": 16.63458251953125,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 83.77880859375,
+          "height": 28.8780517578125,
+          "stars": [
+            801,
+            801,
+            800,
+            800,
+            815,
+            815,
+            814,
+            814
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 69.787353515625,
+          "height": 28.389404296875,
+          "stars": [
+            1324,
+            1323,
+            1323,
+            1338,
+            1337,
+            1337
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 83.35986328125,
+          "height": 16.8853759765625,
+          "stars": [
+            1852,
+            1852,
+            1851,
+            1851
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "battle",
+      "width": 360,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 65.765625,
+          "height": 12,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 79.640625,
+          "height": 26,
+          "stars": [
+            125,
+            125,
+            125,
+            125,
+            139,
+            139,
+            139,
+            139
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 65.640625,
+          "height": 26,
+          "stars": [
+            225,
+            225,
+            225,
+            239,
+            239,
+            239
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 79.640625,
+          "height": 12,
+          "stars": [
+            332,
+            332,
+            332,
+            332
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "battle",
+      "width": 390,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 65.765625,
+          "height": 12,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 79.640625,
+          "height": 26,
+          "stars": [
+            125,
+            125,
+            125,
+            125,
+            139,
+            139,
+            139,
+            139
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 65.640625,
+          "height": 26,
+          "stars": [
+            225,
+            225,
+            225,
+            239,
+            239,
+            239
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 79.640625,
+          "height": 12,
+          "stars": [
+            332,
+            332,
+            332,
+            332
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "view": "battle",
+      "width": 412,
+      "overflow": false,
+      "summary": null,
+      "ranks": [
+        {
+          "label": "9段 1200分",
+          "width": 65.765625,
+          "height": 12,
+          "stars": [],
+          "visible": true
+        },
+        {
+          "label": "8段 3/8星",
+          "width": 79.640625,
+          "height": 26,
+          "stars": [
+            125,
+            125,
+            125,
+            125,
+            139,
+            139,
+            139,
+            139
+          ],
+          "visible": true
+        },
+        {
+          "label": "6段 3/6星",
+          "width": 65.640625,
+          "height": 26,
+          "stars": [
+            225,
+            225,
+            225,
+            239,
+            239,
+            239
+          ],
+          "visible": true
+        },
+        {
+          "label": "3段 3/4星",
+          "width": 79.640625,
+          "height": 12,
+          "stars": [
+            332,
+            332,
+            332,
+            332
+          ],
+          "visible": true
+        }
+      ]
+    }
+  ]
+}

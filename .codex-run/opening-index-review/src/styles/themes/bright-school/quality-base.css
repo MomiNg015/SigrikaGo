@@ -1,0 +1,12 @@
+/* Bright School quality base layer.
+   Keep this entry import-only so audit and refinement rules stay reviewable. */
+@import "./quality-base/audit-foundation.css";
+@import "./quality-base/audit-home.css";
+@import "./quality-base/audit-commerce.css";
+@import "./quality-base/audit-profile-modals.css";
+@import "./quality-base/audit-room.css";
+@import "./quality-base/audit-compact.css";
+@import "./quality-base/refinement-foundation.css";
+@import "./quality-base/refinement-controls.css";
+@import "./quality-base/refinement-board.css";
+@import "./quality-base/sticker-motion.css";

@@ -1,0 +1,24 @@
+/* Bright School portrait mobile settings toolbars and list card borders. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal-toolbar,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-board-toolbar {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button {
+    flex: 1 1 calc(50% - 8px) !important;
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-card,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
+    border-width: 2px !important;
+    border-radius: 14px !important;
+  }
+}

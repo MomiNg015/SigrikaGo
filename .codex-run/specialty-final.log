@@ -1,0 +1,5 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/themes/bright-school/buttonColors.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/ResumeModal.dom.test.jsx src/modals/UserProfileCard.dom.test.jsx src/modals/RecruitmentModal.test.js src/modals/shop/CostumeDetailDialog.dom.test.jsx --reporter=json --outputFile=.codex-run/specialty-final.json
+
+JSON report written to C:/codex/SigrikaGo/.codex-run/specialty-final.json

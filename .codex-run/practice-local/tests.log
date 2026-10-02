@@ -1,0 +1,17 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ server/securityHeaders.test.js (1 test) 4ms
+ ✓ .codex-run/opening-index-review/server/securityHeaders.test.js (1 test) 4ms
+ ✓ src/practice/practiceEngineClient.test.js (3 tests) 11ms
+ ✓ .codex-run/opening-index-review/server/roomView.test.js (12 tests) 18ms
+ ✓ .codex-run/opening-index-review/src/app/useMatchActions.test.js (5 tests) 9ms
+ ✓ server/roomView.test.js (13 tests) 21ms
+ ✓ src/app/useMatchActions.test.js (5 tests) 9ms
+ ✓ server/localPracticeEngine.test.js (9 tests) 1045ms
+
+ Test Files  8 passed (8)
+      Tests  49 passed (49)
+   Start at  09:30:26
+   Duration  3.66s (transform 1.16s, setup 0ms, collect 3.44s, tests 1.12s, environment 2ms, prepare 979ms)
+

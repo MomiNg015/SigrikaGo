@@ -1,0 +1,40 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button {
+    width: 100% !important;
+    inline-size: 100% !important;
+    max-inline-size: 100% !important;
+    min-width: 0 !important;
+    min-inline-size: 0 !important;
+    min-height: 40px !important;
+    display: grid !important;
+    grid-template-columns: 22px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    align-items: center !important;
+    justify-content: start !important;
+    padding: 7px 10px !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    text-align: left !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button svg {
+    justify-self: center !important;
+    flex: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button.active {
+    background: #dff3dc !important;
+    border-color: #3d2b25 !important;
+    color: #235534 !important;
+  }
+}

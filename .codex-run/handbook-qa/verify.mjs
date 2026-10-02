@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage();
+const errors=[];
+page.on('pageerror', e=>errors.push(e.message));
+const output=[];
+for (const [width,height] of [[1440,1000],[390,844],[360,640],[412,915]]) {
+  await page.setViewportSize({width,height});
+  await page.goto('http://localhost:5173/.codex-run/handbook-qa/');
+  await page.waitForTimeout(1000);
+  const geometry=await page.evaluate(()=>{
+    const shell=document.querySelector('.handbook-modal');
+    const scroller=document.querySelector('.handbook-pages');
+    const cards=[...document.querySelectorAll('.handbook-character-card')];
+    const boxes=cards.map(e=>e.getBoundingClientRect());
+    const cols=getComputedStyle(document.querySelector('.handbook-character-grid')).gridTemplateColumns.split(' ').length;
+    const overlaps=boxes.slice(cols).some((r,i)=>r.top<boxes[i].bottom);
+    scroller.scrollTop=scroller.scrollHeight;
+    const last=cards.at(-1).getBoundingClientRect();
+    const sr=scroller.getBoundingClientRect();
+    return {namesVisible:cards.every(e=>{const n=e.querySelector('strong'),r=n.getBoundingClientRect(),c=e.getBoundingClientRect();return getComputedStyle(n).display!=='none'&&r.bottom<=c.bottom&&r.top>=c.top;}),shell:shell.getBoundingClientRect().toJSON(),cols,overlaps,lastReachable:last.bottom<=sr.bottom+1,overflow:document.documentElement.scrollWidth>innerWidth,noCover:!document.querySelector('.handbook-opening-cover'),portraitContained:cards.every(e=>{const r=e.getBoundingClientRect(),i=e.querySelector(':scope > img').getBoundingClientRect();return i.top>=r.top&&i.bottom<=r.bottom;})};
+  });
+  await page.locator('.handbook-pages').evaluate(e=>e.scrollTop=0);
+  await page.screenshot({path:`.codex-run/handbook-qa/${width}.png`});
+  await page.getByRole('tab',{name:'装饰',exact:true}).click();
+  if(!(await page.getByRole('tabpanel',{name:'装饰',exact:true}).isVisible())) throw new Error('Decoration switch failed');
+  if(width===390) await page.screenshot({path:'.codex-run/handbook-qa/decorations.png'});
+  await page.getByRole('tab',{name:'装饰',exact:true}).press('Home');
+  await page.getByRole('button',{name:'西格莉卡的角色卡片',exact:true}).press('Space');
+  await page.waitForTimeout(350);
+  const detail=await page.locator('.character-details-modal').evaluate(e=>({visible:e.getBoundingClientRect().height>0,overlay:e.parentElement.getBoundingClientRect().toJSON()}));
+  output.push({width,height,...geometry,detail});
+}
+await page.emulateMedia({reducedMotion:'reduce'});
+await page.reload();
+output.push({noOpeningAnimation:await page.locator('.handbook-opening-cover').count()===0});
+fs.writeFileSync('.codex-run/handbook-qa/visual-checks.json',JSON.stringify({output,errors},null,2));
+console.log(JSON.stringify({output,errors},null,2));
+await browser.close();

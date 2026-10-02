@@ -1,0 +1,68 @@
+/* Startorch Academy tactical terminal shop and warehouse cards/empty states. */
+.shop-item,
+.warehouse-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  clip-path: var(--terminal-cut);
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  background:
+    radial-gradient(circle at 50% 8%, rgba(0, 255, 190, 0.1), transparent 28%),
+    rgba(10, 32, 40, 0.54);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 18px rgba(0, 191, 255, 0.08);
+}
+
+.shop-item::after,
+.warehouse-item::after,
+.warehouse-effect-result::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 3px;
+  background: var(--terminal-blue);
+  box-shadow: 0 0 16px currentColor;
+}
+
+.shop-category-character::after {
+  background: var(--terminal-purple);
+  color: var(--terminal-purple);
+}
+
+.shop-category-item::after,
+.warehouse-item-category-character::after {
+  background: var(--terminal-orange);
+  color: var(--terminal-orange);
+}
+
+.shop-category-decoration::after,
+.warehouse-item-category-self::after {
+  background: var(--terminal-blue);
+  color: var(--terminal-blue);
+}
+
+.shop-item.owned {
+  border-color: rgba(183, 255, 69, 0.44);
+  background: rgba(20, 48, 35, 0.58);
+  color: var(--terminal-text);
+}
+
+.shop-item.owned::after {
+  background: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.shop-item-empty,
+.warehouse-empty,
+.watch-empty,
+.watch-error {
+  border-radius: 2px;
+  clip-path: var(--terminal-cut);
+  border: 1px dashed rgba(0, 255, 190, 0.28);
+  background:
+    linear-gradient(30deg, rgba(0, 255, 190, 0.07) 12%, transparent 12.5%, transparent 87%, rgba(0, 255, 190, 0.07) 87.5%) 0 0 / 22px 38px,
+    rgba(8, 24, 31, 0.6);
+  color: var(--terminal-dim);
+}

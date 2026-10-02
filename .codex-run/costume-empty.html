@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root" class="app-shell player-theme-enabled theme-bright-school"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import '/src/styles.css';
+import CostumeStorePanel from '/src/modals/shop/CostumeStorePanel.jsx';
+createRoot(document.getElementById('root')).render(React.createElement('div',{className:'shop-modal shop-window',style:{width:'100vw',height:'100dvh'}},React.createElement(CostumeStorePanel,{batch:[],batchVersion:1,mascotLine:'',mascotMood:'normal',onShowDetail:()=>{},onSwitchShop:()=>{}})));
+</script></body></html>
+
+

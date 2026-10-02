@@ -1,0 +1,143 @@
+/* Bright School handbook decoration and roster cleanup layer. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned {
+  background: linear-gradient(135deg, #eee9e2, #ddd7cf) !important;
+  color: #746a62 !important;
+  border: 3px dashed rgba(61, 43, 37, 0.48) !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.36) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked .sortie-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned .sortie-button {
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked :where(strong, small, span),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned :where(strong, small, span) {
+  color: #746a62 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag {
+  background: #dff5df !important;
+  color: #235534 !important;
+  border: 2px solid #235534 !important;
+  border-radius: 999px !important;
+  box-shadow: 2px 2px 0 rgba(35, 85, 52, 0.62) !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section {
+  background: transparent !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 14px 0 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  background: transparent !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
+  width: 80px !important;
+  height: 80px !important;
+  min-height: 80px !important;
+  padding: 10px !important;
+  background: #fffaf0 !important;
+  color: #3d2b25 !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 14px !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected {
+  background: #dff5df !important;
+  color: #235534 !important;
+  border-color: #235534 !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected strong {
+  color: #235534 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip .stone-decoration-preview {
+  position: relative;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip .stone-decoration-preview span {
+  position: absolute;
+  width: 32px;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.house-modal .owned-decoration-chip .stone-decoration-preview span:first-child {
+  top: 0;
+  left: 0;
+}
+
+.house-modal .owned-decoration-chip .stone-decoration-preview span:last-child {
+  right: 0;
+  bottom: 0;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card .character-costume-detail-trigger:active {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-card.is-equipped {
+  background: #ddf7df !important;
+  border-color: #4f8b63 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-art.character-costume-detail-art img {
+  filter: none !important;
+}

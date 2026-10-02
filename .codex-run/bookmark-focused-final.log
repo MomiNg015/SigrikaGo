@@ -1,0 +1,20 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" docs/systemDesignHtml.test.js src/modals/WindowBookmarkTabs.dom.test.jsx src/modals/HouseModal.test.js src/modals/ResumeModal.dom.test.jsx src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ docs/systemDesignHtml.test.js (3 tests) 83ms
+ ✓ src/styles/styleContract.test.js (57 tests) 787ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1034ms
+ ✓ src/modals/HouseModal.test.js (28 tests) 473ms
+ ✓ src/modals/WindowBookmarkTabs.dom.test.jsx (4 tests) 340ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 666ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  326ms
+
+ Test Files  6 passed (6)
+      Tests  116 passed (116)
+   Start at  09:43:32
+   Duration  6.33s (transform 1.51s, setup 0ms, collect 3.93s, tests 3.38s, environment 2.97s, prepare 904ms)
+

@@ -1,0 +1,4 @@
+[migration-baseline] fresh database: migrate deploy
+[migration-baseline] existing database fixture: baseline schema and sentinel seed
+[migration-baseline] existing database fixture: resolve baseline and deploy
+[migration-baseline] verification passed

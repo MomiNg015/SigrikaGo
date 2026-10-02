@@ -1,0 +1,4 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
+import React from 'react'; import {createRoot} from 'react-dom/client'; import Loading from '/src/modals/WindowLoadingState.jsx'; import '/src/styles.css';
+createRoot(document.getElementById('root')).render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement('div',{style:{width:'min(700px, 100%)',margin:'30px auto',padding:20,border:'3px solid #49352e',borderRadius:18}},React.createElement(Loading,null,'正在读取成就…'),React.createElement(Loading,{compact:true},'正在载入标准战绩，当前仍显示星辉。'))));
+</script></body></html>

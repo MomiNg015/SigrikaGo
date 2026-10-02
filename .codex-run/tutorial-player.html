@@ -1,0 +1,5 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
+import React from 'react'; import {createRoot} from 'react-dom/client'; import PlayerInfo from '/src/room/PlayerInfo.jsx'; import {tutorialPlayersForSetup} from '/src/tutorial/tutorialBattleRoom.js'; import {createTutorialGameState} from '/src/tutorial/tutorialGameState.js'; import {CHARACTERS} from '/src/shared/characters.js'; import '/src/styles.css'; import '/src/styles/room/tutorial-battle-screen.css';
+const players=tutorialPlayersForSetup({playerCharacterId:'',npcCharacterId:'sigrika'},{id:'fixture',username:'玩家'},CHARACTERS);const game=createTutorialGameState({players});
+createRoot(document.getElementById('root')).render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement('div',{style:{width:300,margin:'30px auto'}},React.createElement(PlayerInfo,{player:players[0],game,characters:CHARACTERS,align:'self',viewColor:'black'}))));
+</script></body></html>

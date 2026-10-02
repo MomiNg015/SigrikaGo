@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"Verify snapshot fidelity and safe production reconciliation."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify security headers and deployment behavior through tests."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify all texture-backed skill effects without changing animation timing."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check the complete local-edit-to-cloud-rendering path."}
+{"file":".trellis/tasks/07-22-cloud-onboarding-animation-fixes/research/csp-static-delivery.md","reason":"Recheck each observed production symptom against the delivered fixes."}

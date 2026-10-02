@@ -1,0 +1,26 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>履历 · 实际窗口预览</title></head><body><div id="root"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import AppOverlays from '/src/app/AppOverlays.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import '/src/styles.css';
+const user={id:1,username:'测试玩家',coins:12500,selectedCharacter:'sigrika',rank:'5级',rating:1000,itemEffects:{}};
+const nativeFetch=window.fetch.bind(window);
+window.fetch=async(input,options)=>{
+ const url=String(input);
+ if(url.startsWith('/api/users/1/profile')){
+  const mode=new URL(url,location.origin).searchParams.get('mode');
+  const rating=mode==='standard'?1200:mode==='gomoku'?1400:1000;
+  await new Promise(resolve=>setTimeout(resolve,120));
+  return new Response(JSON.stringify({profile:{...user,rating,rank:'5级',recordStats:{totalGames:20,wins:12,losses:7,draws:1},recentResults:['win','loss','win','draw','win','win','loss','win','win','win'],characterStats:Object.values(CHARACTERS).slice(0, Number(new URLSearchParams(location.search).get("rows")) || 99).map((c,i)=>({characterId:c.id,total:20-i,wins:12-i,losses:7,draws:1}))}}),{headers:{'Content-Type':'application/json'}});
+ }
+ if(url==='/api/achievements'||url==='/api/me/achievement-equipment') return new Response('{}',{headers:{'Content-Type':'application/json'}});
+ return nativeFetch(input,options);
+};
+function Preview(){
+ const [showAchievements,setShowAchievements]=React.useState(false);
+ const [showPersonalization,setShowPersonalization]=React.useState(false);
+ return React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(AppOverlays,{token:'local-preview-only',user,toasts:[],showResume:true,characterListView:CHARACTERS,showAchievements,setShowAchievements,showPersonalization,setShowPersonalization,setShowResume:()=>{}}));
+}
+createRoot(document.getElementById('root')).render(React.createElement(Preview));
+</script></body></html>

@@ -1,0 +1,568 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it, vi } from "vitest";
+import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
+import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import {
+  SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
+  SIGRIKA_CORRUPTED_PORTRAIT_ASSET
+} from "./characterPortraitAssetCatalog.js";
+import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
+import { modeOrderedEntries } from "./gameModes.js";
+import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
+import {
+  COSTUME_SHOP_BACKGROUND_IMAGE,
+  COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
+  COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE,
+  SHOP_BACKGROUND_IMAGE,
+  SHOP_DIALOGUE_FRAME_IMAGE,
+  SHOP_DIRECTION_SIGN_IMAGE,
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MOBILE_BACKGROUND_IMAGE
+} from "./shopMascotAssets.js";
+import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadImageAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
+
+describe("deployment preload asset helpers", () => {
+  it("uses same-origin socket connections in the browser", () => {
+    expect(deploymentSocketBase({ origin: "https://sigrika.fun" })).toBe("https://sigrika.fun");
+  });
+
+  it("extracts intro-loop playback assets for preloading", () => {
+    expect(playbackAssetSources(MUSIC_TRACKS["battle-default"].playback)).toEqual([
+      "/assets/music/shanjifu_intro_once.ogg",
+      "/assets/music/shanjifu_loop.ogg"
+    ]);
+  });
+
+  it("blocks login on the current account's accessible non-replay media", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" }
+      },
+      user: {
+        ownedCharacters: ["sigrika"],
+        selectedCharacter: "sigrika",
+        ownedMusicIds: ["qiuyuan-skill-zhouwo"],
+        ownedDecorations: ["paw-stone"],
+        achievementEquipmentAssets: {
+          nameplate: { imageUrl: "/assets/achievements/semantic-nameplate.png" }
+        }
+      },
+      shopItems: [
+        { imageUrl: "/assets/items/shop-only.webp" }
+      ],
+      inventoryItems: [
+        { imageUrl: "/assets/items/inventory-only.webp" }
+      ],
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: CHARACTER_SYSTEM_VOICES
+    });
+
+    expect(assets.images).toContain("/assets/sigrika_centered.webp");
+    expect(assets.images).not.toContain("/assets/Aemeath_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.images).toContain("/assets/home/fantasy-match-entry.webp");
+    expect(assets.images).toContain("/assets/home/book-entry.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-recruitment.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-shop.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-warehouse.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-leaderboard.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-watch.webp");
+    expect(assets.images).toContain("/assets/home/home-utility-friends.webp");
+    expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.images).toContain("/assets/characters/bright-school-radio-player.png");
+    expect(assets.criticalImages).toContain("/assets/recruitment/notice-board-flat-candidate.webp");
+    expect(assets.criticalImages).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
+    expect(assets.criticalImages).toContain("/assets/recruitment/celebration-flat-candidate.webp");
+    expect(assets.criticalImages).not.toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(assets.criticalImages).toContain("/assets/home/fantasy-match-entry.webp");
+    expect(assets.criticalImages).toContain("/assets/home/book-entry.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-recruitment.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-shop.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-warehouse.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-leaderboard.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-watch.webp");
+    expect(assets.criticalImages).toContain("/assets/home/home-utility-friends.webp");
+    expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/bright-school-radio-player.png");
+    for (const mode of modeOrderedEntries()) {
+      expect(assets.images).toContain(mode.iconUrl);
+      expect(assets.criticalImages).toContain(mode.iconUrl);
+    }
+    expect(assets.images).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(assets.images).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(assets.images).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(assets.images).toContain(SHOP_DIRECTION_SIGN_IMAGE);
+    expect(assets.images).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
+    expect(assets.images).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
+    expect(assets.images).toContain("/assets/items/qiuyuan-zhouwo.webp");
+    expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
+    expect(assets.criticalImages).toContain("/assets/items/shop-only.webp");
+    expect(assets.criticalImages).toContain("/assets/items/inventory-only.webp");
+    expect(assets.criticalImages).toContain("/assets/achievements/semantic-nameplate.png");
+    expect(assets.deferredImages).toEqual([]);
+    expect(assets.images).toEqual(assets.criticalImages);
+    expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_close_window.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_confirm.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_detail_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_house_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_iris_database_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_match_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_resume_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_warehouse_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_watch_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_friends_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_leaderboard_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_shop_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_unavailable.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/godown_clear.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/ui_confirm.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_once.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
+    expect(assets.audio).not.toContain("/assets/music/aemeath0_loop.ogg");
+    expect(assets.audio).not.toContain("/assets/music/qiuyuan_loop.ogg");
+    expect(assets.audio).not.toContain("/assets/music/lynae_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/sigrika_skill_cast.ogg");
+    expect(assets.deferredAudio).toEqual([]);
+    expect(assets.audio).toEqual(assets.criticalAudio);
+    expect(assets.audio).not.toContain("/assets/voice/qiuyuan_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
+  });
+
+  it("derives static image preload groups from the runtime asset registry", () => {
+    const assets = loginPreloadAssets();
+
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_DIRECTION_SIGN_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/shop/zahira-wallet-v1.webp");
+    expect(fs.existsSync(path.resolve("public", SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_DIALOGUE_FRAME_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", COSTUME_SHOP_DIALOGUE_FRAME_IMAGE.slice(1)))).toBe(true);
+    expect(fs.existsSync(path.resolve("public", SHOP_DIRECTION_SIGN_IMAGE.slice(1)))).toBe(true);
+    expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(RUNTIME_IMAGE_ASSETS.corruption).toEqual([
+      SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
+    ]);
+    expect(assets.deferredImages).toEqual([]);
+  });
+
+  it("preloads the corrupted Sigrika portrait only for a corrupted login user", () => {
+    const normalAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: false } } });
+    const corruptedAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: true } } });
+
+    expect(normalAssets.criticalImages).not.toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(normalAssets.criticalImages).not.toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+    expect(corruptedAssets.criticalImages).toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(corruptedAssets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+  });
+
+  it("preloads the dedicated corrupted home BGM only for a corrupted login user", () => {
+    const normalAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: false } } });
+    const corruptedAssets = loginPreloadAssets({ user: { sigrikaCandyArc: { corrupted: true } } });
+
+    expect(normalAssets.criticalAudio).not.toContain("/assets/music/sigrika_corruption_home_loop.ogg");
+    expect(corruptedAssets.criticalAudio).toContain("/assets/music/sigrika_corruption_home_loop.ogg");
+  });
+
+  it("blocks on every owned character portrait", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" }
+      },
+      user: {
+        ownedCharacters: ["sigrika", "aemeath"],
+        selectedCharacter: "aemeath",
+        ownedMusicIds: []
+      }
+    });
+
+    expect(assets.criticalImages).toContain("/assets/Aemeath_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.deferredImages).toEqual([]);
+  });
+
+  it("derives critical interaction audio from the runtime asset registry", () => {
+    const assets = loginPreloadAssets();
+
+    expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
+  });
+
+  it("builds battle preload assets from both room player characters", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        players: [
+          { characterId: "changli" },
+          { characterId: "nabomo" }
+        ]
+      },
+      characters: {
+        changli: { id: "changli", portrait: "/assets/characters/changli.png" },
+        nabomo: { id: "nabomo", portrait: "/assets/nabomo.webp" }
+      },
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: CHARACTER_SYSTEM_VOICES
+    });
+
+    expect(assets.criticalImages).toContain("/assets/characters/changli.png");
+    expect(assets.criticalImages).toContain("/assets/nabomo.webp");
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toContain("/assets/music/changli_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/busizhe_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/changli_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/changli_wuzi_match_start.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/nabomo_skill_cast.ogg");
+  });
+
+  it("includes a practice bot portrait in battle preload assets", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        mode: "spark",
+        players: [
+          { characterId: "sigrika" },
+          { isBot: true, characterId: null, botProfile: { portraitUrl: "/assets/characters/zhunshibao.png" } }
+        ]
+      },
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" }
+      },
+      tracks: {},
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalImages).toContain("/assets/characters/zhunshibao.png");
+  });
+
+  it("preloads the corrupted Sigrika portrait for the special duel even with skills disabled", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        mode: "gomoku",
+        matchSource: SIGRIKA_CANDY_DUEL.matchSource,
+        players: [{ characterId: null, isBot: true }]
+      },
+      characters: {},
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
+    expect(assets.criticalImages).toContain(SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url);
+    expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_corruption_duel_once.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_corruption_duel_loop.ogg");
+    expect(assets.criticalAudio).not.toContain("/assets/music/shanjifu_loop.ogg");
+  });
+
+  it("preloads only the battle track selected for the current user", () => {
+    const tracks = {
+      "battle-default": MUSIC_TRACKS["battle-default"],
+      "battle-owned": {
+        id: "battle-owned",
+        type: "battle",
+        selectable: true,
+        playback: { mode: "single-loop", src: "/assets/music/battle-owned.ogg", loop: true }
+      }
+    };
+    const assets = battlePreloadAssets({
+      room: { mode: "gomoku", game: { phase: "preloading" }, players: [] },
+      tracks,
+      user: {
+        ownedMusicIds: ["battle-owned"],
+        musicSelections: { battle: "battle-owned", skill: {} }
+      },
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalAudio).toContain("/assets/music/battle-owned.ogg");
+    expect(assets.criticalAudio).not.toContain("/assets/music/shanjifu_loop.ogg");
+  });
+
+  it("preloads derived skill tracks for matching room characters even when selectable", () => {
+    const assets = battlePreloadAssets({
+      room: { players: [{ characterId: "aemeath" }] },
+      characters: { aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" } },
+      tracks: {
+        ...MUSIC_TRACKS,
+        "aemeath-voyage-star-default": {
+          ...MUSIC_TRACKS["aemeath-voyage-star-default"],
+          selectable: true,
+          playback: { mode: "single-loop", src: "/assets/music/voyage-star-test.ogg", loop: true }
+        }
+      },
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalAudio).toContain("/assets/music/voyage-star-test.ogg");
+  });
+
+  it("skips skill-specific battle resources when the current mode disables skills", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        mode: "gomoku",
+        players: [
+          { characterId: "changli" }
+        ]
+      },
+      characters: {
+        changli: { id: "changli", portrait: "/assets/characters/changli.png" }
+      },
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: CHARACTER_SYSTEM_VOICES
+    });
+
+    expect(assets.criticalImages).toContain("/assets/characters/changli.png");
+    expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
+    expect(assets.criticalAudio).not.toContain("/assets/music/changli_loop.ogg");
+    expect(assets.criticalAudio).not.toContain("/assets/voice/changli_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/changli_wuzi_match_start.ogg");
+  });
+
+
+  it("includes every configured skill voice candidate in battle preload assets", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        players: [
+          { characterId: "qiuyuan" }
+        ]
+      },
+      characters: {
+        qiuyuan: { id: "qiuyuan", portrait: "/assets/characters/qiuyuan.png" }
+      },
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: {}
+    });
+
+    expect(assets.criticalAudio).toContain("/assets/voice/qiuyuan_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
+  });
+
+  it("keeps the accessible login manifest blocking while leaving room-specific assets to battle preload", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" }
+      },
+      user: {
+        ownedCharacters: ["sigrika"],
+        selectedCharacter: "sigrika",
+        ownedMusicIds: []
+      }
+    });
+
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.deferredImages).toEqual([]);
+    expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_once.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/sigrika_loop.ogg");
+    expect(assets.deferredAudio).toEqual([]);
+  });
+
+  it("keeps the runtime asset registry independent from playback implementations", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/shared/assetRegistry.js"), "utf8");
+
+    expect(registrySource).not.toContain("../audio/");
+  });
+
+  it("only preloads the candy portrait when it is visible through accessible shop or inventory resources", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        denia: { id: "denia", portrait: "/assets/Danea_centered.webp" }
+      },
+      user: { ownedCharacters: ["denia"] },
+      inventoryItems: [{ imageUrl: DENIA_CANDY_PORTRAIT }]
+    });
+
+    expect(assets.images).toContain("/assets/Danea_centered.webp");
+    expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
+  });
+
+  it("resolves after critical assets and defers non-critical media with a concurrency limit", async () => {
+    const events = [];
+    let activeDeferred = 0;
+    let maxDeferred = 0;
+    const deferredCompletions = [];
+    const deferredPromise = new Promise((resolve) => deferredCompletions.push(resolve));
+    const load = async (src) => {
+      events.push(`start:${src}`);
+      if (src.startsWith("deferred")) {
+        activeDeferred += 1;
+        maxDeferred = Math.max(maxDeferred, activeDeferred);
+        await deferredPromise;
+        activeDeferred -= 1;
+      }
+      events.push(`done:${src}`);
+      return src;
+    };
+
+    await preloadLoginAssets({
+      criticalImages: ["critical-image"],
+      criticalAudio: ["critical-audio"],
+      deferredImages: ["deferred-image-1", "deferred-image-2"],
+      deferredAudio: ["deferred-audio-1", "deferred-audio-2"]
+    }, {
+      concurrency: 1,
+      loadImage: load,
+      loadAudio: load,
+      loadEffectAudio: load
+    });
+
+    expect(events).toEqual([
+      "start:critical-image",
+      "done:critical-image",
+      "start:critical-audio",
+      "done:critical-audio",
+      "start:deferred-image-1"
+    ]);
+    expect(maxDeferred).toBe(1);
+    deferredCompletions.forEach((resolve) => resolve());
+  });
+
+  it("waits for browser image decoding before treating an image as preloaded", async () => {
+    const OriginalImage = globalThis.Image;
+    let releaseDecode;
+    let imageInstance;
+    const onLoaded = vi.fn();
+
+    class DecodingImage {
+      constructor() {
+        imageInstance = this;
+      }
+
+      set src(value) {
+        this.currentSrc = value;
+        queueMicrotask(() => this.onload?.());
+      }
+
+      decode() {
+        return new Promise((resolve) => {
+          releaseDecode = resolve;
+        });
+      }
+    }
+
+    globalThis.Image = DecodingImage;
+    try {
+      let settled = false;
+      const preloadPromise = preloadImageAssets(["/assets/home/test.webp"], { onLoaded, taskTimeoutMs: 1000 })
+        .then(() => {
+          settled = true;
+        });
+
+      await vi.waitFor(() => expect(releaseDecode).toBeTypeOf("function"));
+      expect(imageInstance.decoding).toBe("async");
+      expect(imageInstance.currentSrc).toBe("/assets/home/test.webp");
+      expect(settled).toBe(false);
+      expect(onLoaded).not.toHaveBeenCalled();
+
+      releaseDecode();
+      await preloadPromise;
+      expect(settled).toBe(true);
+      expect(onLoaded).toHaveBeenCalledWith("/assets/home/test.webp");
+    } finally {
+      globalThis.Image = OriginalImage;
+    }
+  });
+
+  it("does not keep login preload stuck when a critical asset loader never settles", async () => {
+    const events = [];
+    const skipped = [];
+    const never = () => new Promise(() => {});
+    const load = async (src) => {
+      events.push(`done:${src}`);
+      return src;
+    };
+
+    const result = await Promise.race([
+      preloadLoginAssets({
+        criticalImages: ["hung-image"],
+        criticalAudio: ["critical-audio"]
+      }, {
+        concurrency: 1,
+        taskTimeoutMs: 1,
+        loadImage: never,
+        loadAudio: load,
+        loadEffectAudio: load,
+        onSkipped: (src) => skipped.push(src),
+        onProgress: (progress) => events.push(`progress:${progress}`)
+      }).then(() => "resolved"),
+      new Promise((resolve) => setTimeout(() => resolve("stuck"), 25))
+    ]);
+
+    expect(result).toBe("resolved");
+    expect(events).toEqual([
+      "progress:0.5",
+      "done:critical-audio",
+      "progress:1"
+    ]);
+    expect(skipped).toEqual(["hung-image"]);
+  });
+
+  it("retries skipped preload assets in the background with the retry concurrency limit", async () => {
+    vi.useFakeTimers();
+    const events = [];
+    const load = async (src) => {
+      events.push(src);
+      return src;
+    };
+
+    const cancel = retrySkippedPreloadAssets(["/assets/a.webp", "/assets/b.ogg"], {
+      concurrency: 1,
+      loadImage: load,
+      loadAudio: load,
+      loadEffectAudio: load,
+      retryDelaysMs: [0],
+      taskTimeoutMs: 1000
+    });
+
+    await vi.runOnlyPendingTimersAsync();
+    expect(events).toEqual(["/assets/a.webp", "/assets/b.ogg"]);
+    cancel();
+    vi.useRealTimers();
+  });
+
+  it("keeps the project check command as the core handoff gate", () => {
+    const packageJson = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf8"));
+
+    expect(packageJson.scripts.check).toContain("npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build");
+    expect(packageJson.scripts.check).toContain("scripts/check-production-config.mjs");
+    expect(packageJson.scripts.check).toContain("JWT_SECRET");
+    expect(packageJson.scripts.check).toContain("PUBLIC_ORIGIN");
+    expect(packageJson.scripts.check).toContain("npm run docs:system-design");
+    expect(packageJson.scripts["check:production"]).toBe("node scripts/check-production-config.mjs");
+  });
+});

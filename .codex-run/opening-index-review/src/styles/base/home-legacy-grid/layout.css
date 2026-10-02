@@ -1,0 +1,16 @@
+.home-grid,
+.home-grid-featured {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--fluid-gap);
+}
+
+.home-grid-featured {
+  grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.55fr);
+  grid-template-areas:
+    "house match"
+    "utilities match";
+  align-items: stretch;
+  margin-top: 0;
+  margin-bottom: 0;
+}

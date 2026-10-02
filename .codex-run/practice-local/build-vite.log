@@ -1,0 +1,60 @@
+
+> sigrika-go@0.1.0 build
+> vite build
+
+vite v6.4.3 building for production...
+transforming...
+
+__VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+__VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 2700 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                       2.75 kB │ gzip:   1.24 kB
+dist/assets/practiceEngine.worker-D8CcaFfK.js        26.07 kB
+dist/assets/TutorialBattleScreen-xOahuKah.css        12.10 kB │ gzip:   3.08 kB
+dist/assets/AdminConsole-BmTk_mFw.css                64.24 kB │ gzip:  11.18 kB
+dist/assets/index-BNG7RxH5.css                    1,251.61 kB │ gzip: 175.66 kB
+dist/assets/shopItemIllust-Bvx9j-WV.js                0.12 kB │ gzip:   0.11 kB
+dist/assets/check-CVgrwfIz.js                         0.30 kB │ gzip:   0.24 kB
+dist/assets/search-DV541HLa.js                        0.35 kB │ gzip:   0.27 kB
+dist/assets/circle-dollar-sign-cJX1KSZh.js            0.42 kB │ gzip:   0.31 kB
+dist/assets/award-DBklEzD8.js                         0.45 kB │ gzip:   0.33 kB
+dist/assets/ticket-Dalq8oAz.js                        0.49 kB │ gzip:   0.32 kB
+dist/assets/refresh-cw-BGaBSLVR.js                    0.49 kB │ gzip:   0.33 kB
+dist/assets/trash-2-Bv3XjWtr.js                       0.53 kB │ gzip:   0.36 kB
+dist/assets/package-YmGLcm-m.js                       0.54 kB │ gzip:   0.36 kB
+dist/assets/StoneDecorationPreview-uCGSoDZ2.js        0.57 kB │ gzip:   0.38 kB
+dist/assets/palette-D_qUdu9r.js                       0.68 kB │ gzip:   0.38 kB
+dist/assets/MessageBoardModal-Dpa-BTIo.js             1.38 kB │ gzip:   0.85 kB
+dist/assets/MarkdownLiteContent-DO4bP3rb.js           2.40 kB │ gzip:   1.02 kB
+dist/assets/InformationCenterLayout-CIRRV7Cc.js       2.46 kB │ gzip:   1.18 kB
+dist/assets/BattleAssetPreloadScreen-BGIzNtwT.js      2.68 kB │ gzip:   1.33 kB
+dist/assets/WatchModal-CeJ2HVh1.js                    3.94 kB │ gzip:   1.70 kB
+dist/assets/AchievementModal-DRQRO-Ez.js              4.22 kB │ gzip:   1.95 kB
+dist/assets/LeaderboardModal-C6tjtktm.js              4.47 kB │ gzip:   1.92 kB
+dist/assets/ResumeModal-B5VPzx1q.js                   4.68 kB │ gzip:   2.16 kB
+dist/assets/SettingsModal-ClYFCjZo.js                 5.33 kB │ gzip:   2.08 kB
+dist/assets/PersonalizationModal-V9-NDGGu.js          5.74 kB │ gzip:   2.23 kB
+dist/assets/WarehouseModal-CwaMMl8d.js                7.85 kB │ gzip:   3.13 kB
+dist/assets/FriendsModal-DwTgDb6U.js                  7.86 kB │ gzip:   2.94 kB
+dist/assets/AnnouncementModal-C5Owm5dC.js             8.09 kB │ gzip:   3.19 kB
+dist/assets/MailboxModal-Tygw8lk9.js                  9.25 kB │ gzip:   3.66 kB
+dist/assets/HouseModal-BbNWAexV.js                   13.48 kB │ gzip:   4.83 kB
+dist/assets/RecruitmentModal-B0BcxaaK.js             17.19 kB │ gzip:   5.85 kB
+dist/assets/TutorialBattleScreen-D6KG15UT.js         21.81 kB │ gzip:   7.66 kB
+dist/assets/ShopModal-JRspbrrh.js                    26.24 kB │ gzip:   8.53 kB
+dist/assets/realtime-vendor-QyAzXPig.js              41.59 kB │ gzip:  13.02 kB
+dist/assets/index-B3Z_jhRL.js                        77.98 kB │ gzip:  25.48 kB
+dist/assets/react-vendor-DvgcfV-f.js                193.93 kB │ gzip:  60.58 kB
+dist/assets/AdminConsole-Cu6KkstD.js                213.92 kB │ gzip:  58.20 kB
+dist/assets/App-Cx5yLIqv.js                         437.04 kB │ gzip: 136.96 kB
+dist/assets/pixi-vendor-DKLUOadx.js                 870.42 kB │ gzip: 249.95 kB
+dist/assets/exceljs.min-CkSz_nNj.js                 940.20 kB │ gzip: 271.34 kB
+
+(!) Some chunks are larger than 900 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 18.72s

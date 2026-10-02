@@ -1,0 +1,26 @@
+@media (max-width: 800px) and (orientation: landscape) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(100%, calc(100dvh - 126px), calc(100vw - 230px));
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(96px, 0.55fr) minmax(220px, 1.35fr) minmax(96px, 0.55fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .mobile-room-screen .player-info {
+    height: 100%;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "meta" "portrait" "time" "skill";
+    grid-template-rows: auto minmax(38px, 1fr) auto auto;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: min(100%, var(--mobile-room-board-size));
+    max-width: 100%;
+  }
+}

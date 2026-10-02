@@ -1,0 +1,50 @@
+{
+  "renderer": "real UserIdentity inside Bright School home-player-plaque",
+  "assets": [
+    "reward-sigrika-spark-100-wins-nameplate",
+    "reward-denia-spark-100-wins-nameplate",
+    "reward-aemeath-spark-100-wins-nameplate"
+  ],
+  "contexts": [
+    {
+      "scale": 1,
+      "tagWidth": 150,
+      "tagHeight": 32,
+      "fontSize": 14
+    },
+    {
+      "scale": 0.88,
+      "tagWidth": 132,
+      "tagHeight": 28.16,
+      "fontSize": 12.32
+    },
+    {
+      "scale": 0.78,
+      "tagWidth": 117,
+      "tagHeight": 24.96,
+      "fontSize": 10.92
+    }
+  ],
+  "sharedComputedContract": {
+    "rootOverflow": "visible",
+    "tagOverflow": "visible",
+    "effectOverflow": "visible",
+    "fontWeight": 800,
+    "fontStyle": "italic"
+  },
+  "characterText": {
+    "sigrika": {
+      "color": "rgb(255, 253, 244)",
+      "shadow": "dark plum plus warm soft glow"
+    },
+    "danya": {
+      "color": "rgb(255, 250, 245)",
+      "shadow": "blueberry violet plus lavender soft glow"
+    },
+    "aemeath": {
+      "color": "rgb(245, 255, 255)",
+      "shadow": "deep teal plus cyan soft glow"
+    }
+  },
+  "reducedMotionInfiniteAnimations": 0
+}

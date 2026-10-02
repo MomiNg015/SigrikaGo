@@ -1,0 +1,123 @@
+/* Bright School 701px to 1023px home stage horizontal safety. */
+@media (min-width: 701px) and (max-width: 1023px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen {
+    min-width: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
+    --home-micro-stage-width: 960px;
+    width: min(100%, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: clamp(8px, 1.6dvh, 16px) auto clamp(12px, 2dvh, 22px) !important;
+    padding: clamp(44px, 5vw, 56px) clamp(52px, 6vw, 64px) clamp(38px, 4.5vw, 52px) !important;
+    justify-content: start !important;
+    justify-items: start !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    overscroll-behavior-inline: contain;
+    scrollbar-gutter: stable both-edges;
+    scrollbar-width: thin;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::-webkit-scrollbar-track {
+    background: rgba(61, 43, 37, 0.1);
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::-webkit-scrollbar-thumb {
+    background: rgba(61, 43, 37, 0.38);
+    border-radius: 999px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    display: grid !important;
+    grid-template-areas:
+      "player match"
+      "manual match"
+      "utility match" !important;
+    grid-template-columns: minmax(360px, 0.78fr) minmax(560px, 1.22fr) !important;
+    grid-template-rows: auto minmax(260px, auto) auto !important;
+    gap: clamp(10px, 1.5vw, 16px) !important;
+    width: var(--home-micro-stage-width) !important;
+    min-width: var(--home-micro-stage-width) !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: clamp(18px, 3dvh, 32px) 0 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
+    grid-area: player !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    grid-area: manual !important;
+    justify-self: center !important;
+    height: clamp(250px, 40dvh, 370px) !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
+    grid-area: match !important;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    grid-area: utility !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: clamp(4px, 0.55vw, 8px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+    min-height: 60px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    --home-plaque-name-column-min: calc(12ch + 1.2em);
+    --home-student-id-avatar-size: clamp(54px, 7vw, 64px);
+    --home-student-id-stats-center-x: 88%;
+    --home-student-id-stats-width: clamp(82px, 24%, 96px);
+    --home-student-id-stats-height: 60px;
+    grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) var(--home-student-id-stats-width) !important;
+    column-gap: clamp(8px, 1.2vw, 12px) !important;
+    min-height: 96px !important;
+    padding: 16px 12px 12px 22px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
+    width: var(--home-student-id-avatar-size) !important;
+    height: var(--home-student-id-avatar-size) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
+    font-size: clamp(18px, 2.1vw, 22px) !important;
+  }
+}

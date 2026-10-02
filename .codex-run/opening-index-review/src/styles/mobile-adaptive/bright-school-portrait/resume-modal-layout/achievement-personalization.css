@@ -1,0 +1,40 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) var(--modal-close-size, 44px) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header h2 {
+    min-width: 0 !important;
+    margin: 0 !important;
+    line-height: 1.12 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header .close-button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header .close-button {
+    position: static !important;
+    inset: auto !important;
+    justify-self: end !important;
+    align-self: center !important;
+    width: var(--modal-close-size, 44px) !important;
+    min-width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+    min-height: var(--modal-close-size, 44px) !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-picker-modal .personalization-picker-header .close-button {
+    position: static !important;
+    inset: auto !important;
+    justify-self: end !important;
+    align-self: center !important;
+    transform: none !important;
+  }
+}

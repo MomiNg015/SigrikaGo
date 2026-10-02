@@ -1,0 +1,35 @@
+1280 900 3 {
+  bottomGap: 33,
+  optionsGap: 27,
+  padding: 24,
+  scroll: false,
+  rows: '224.172px 280.234px 93.5938px'
+}
+1000 600 3 {
+  bottomGap: 33.015625,
+  optionsGap: 27.015625,
+  padding: 24,
+  scroll: false,
+  rows: '174.391px 218px 93.6094px'
+}
+390 844 3 {
+  bottomGap: 24,
+  optionsGap: 18,
+  padding: 16,
+  scroll: false,
+  rows: '251.375px 314.234px 198.391px'
+}
+360 640 8 {
+  bottomGap: 23.21875,
+  optionsGap: 18,
+  padding: 16,
+  scroll: true,
+  rows: '152.172px 190.234px 217.594px'
+}
+1000 600 8 {
+  bottomGap: 33,
+  optionsGap: 27,
+  padding: 24,
+  scroll: false,
+  rows: '125.328px 156.672px 204px'
+}

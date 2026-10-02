@@ -1,0 +1,141 @@
+@media (max-width: 768px) {
+  .shop-window,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window {
+    width: calc(100vw - 12px) !important;
+    height: calc(100dvh - 12px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-height: 0 !important;
+    display: block !important;
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+
+  .shop-header {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 60px !important;
+    grid-template-columns: 44px minmax(0, 1fr) max-content 44px !important;
+    gap: 6px !important;
+    padding: 6px 8px !important;
+  }
+
+  .shop-header h2 {
+    font-size: clamp(20px, 6.4vw, 28px) !important;
+    text-align: center !important;
+    letter-spacing: 0.03em !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .shop-header h2.is-costume-title {
+    font-size: clamp(17px, 4.9vw, 22px) !important;
+    letter-spacing: 0 !important;
+  }
+
+  .shop-header-balance,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header-balance {
+    min-height: 34px !important;
+    gap: 3px !important;
+    padding: 4px 8px !important;
+  }
+
+  .shop-header-balance-value {
+    font-size: clamp(12px, 3.8vw, 16px) !important;
+  }
+
+  .shop-refresh-button,
+  .shop-close-button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header :is(.shop-refresh-button, .shop-close-button) {
+    align-self: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header .shop-close-button {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+
+  .shop-layout.shop-window-body,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout.shop-window-body {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: calc(100% - 60px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .shop-product-stage,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-product-stage {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 56% !important;
+    overflow: hidden !important;
+  }
+
+  .shop-sidebar.shop-host,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar.shop-host {
+    position: static !important;
+    display: contents !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .shop-mascot-bubble,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
+    top: 57% !important;
+    bottom: auto !important;
+    right: auto !important;
+    left: 3% !important;
+    width: 62% !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 13px 22px 27px !important;
+    font-size: clamp(13px, 3.3vw, 16px) !important;
+    line-height: 1.3 !important;
+    transform: none !important;
+  }
+
+  .shop-mascot-slot,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+    right: -6% !important;
+    bottom: -2% !important;
+    width: 100% !important;
+    height: 43% !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .shop-mascot-slot img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+  }
+
+  .shop-wallet,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet {
+    min-height: 30px !important;
+    max-width: 100% !important;
+    padding: 4px 9px !important;
+    overflow: hidden !important;
+  }
+
+}

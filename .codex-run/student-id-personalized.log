@@ -1,0 +1,177 @@
+{
+  src: '/assets/characters/portraits/sigrika.webp',
+  css: '',
+  rect: {
+    x: 259.5625,
+    y: 328.03125,
+    width: 92.640625,
+    height: 92.640625,
+    top: 328.03125,
+    right: 352.203125,
+    bottom: 420.671875,
+    left: 259.5625
+  },
+  parent: {
+    x: 259.5625,
+    y: 306.765625,
+    width: 92.640625,
+    height: 135.1875,
+    top: 306.765625,
+    right: 352.203125,
+    bottom: 441.953125,
+    left: 259.5625
+  },
+  transform: 'none',
+  scale: 'none',
+  translate: 'none'
+}
+1440 sigrika {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '18px',
+  color: 'rgb(255, 253, 244)',
+  name: {
+    x: 287.5625,
+    y: 510.59375,
+    width: 80.453125,
+    height: 21.234375,
+    top: 510.59375,
+    right: 368.015625,
+    bottom: 531.828125,
+    left: 287.5625
+  },
+  plate: {
+    x: 242.296875,
+    y: 505.21875,
+    width: 150,
+    height: 32,
+    top: 505.21875,
+    right: 392.296875,
+    bottom: 537.21875,
+    left: 242.296875
+  }
+}
+1440 denia {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '18px',
+  color: 'rgb(255, 250, 245)',
+  name: {
+    x: 287.5625,
+    y: 510.59375,
+    width: 80.453125,
+    height: 21.234375,
+    top: 510.59375,
+    right: 368.015625,
+    bottom: 531.828125,
+    left: 287.5625
+  },
+  plate: {
+    x: 242.296875,
+    y: 505.21875,
+    width: 150,
+    height: 32,
+    top: 505.21875,
+    right: 392.296875,
+    bottom: 537.21875,
+    left: 242.296875
+  }
+}
+1440 aemeath {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '18px',
+  color: 'rgb(245, 255, 255)',
+  name: {
+    x: 287.5625,
+    y: 509.59375,
+    width: 80.453125,
+    height: 21.234375,
+    top: 509.59375,
+    right: 368.015625,
+    bottom: 530.828125,
+    left: 287.5625
+  },
+  plate: {
+    x: 242.296875,
+    y: 505.21875,
+    width: 150,
+    height: 32,
+    top: 505.21875,
+    right: 392.296875,
+    bottom: 537.21875,
+    left: 242.296875
+  }
+}
+390 sigrika {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '13px',
+  color: 'rgb(255, 253, 244)',
+  name: {
+    x: 102.578125,
+    y: 302.46875,
+    width: 57.671875,
+    height: 15.328125,
+    top: 302.46875,
+    right: 160.25,
+    bottom: 317.796875,
+    left: 102.578125
+  },
+  plate: {
+    x: 82.015625,
+    y: 300.546875,
+    width: 90,
+    height: 19.1875,
+    top: 300.546875,
+    right: 172.015625,
+    bottom: 319.734375,
+    left: 82.015625
+  }
+}
+390 denia {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '13px',
+  color: 'rgb(255, 250, 245)',
+  name: {
+    x: 102.578125,
+    y: 302.46875,
+    width: 57.671875,
+    height: 15.328125,
+    top: 302.46875,
+    right: 160.25,
+    bottom: 317.796875,
+    left: 102.578125
+  },
+  plate: {
+    x: 82.015625,
+    y: 300.546875,
+    width: 90,
+    height: 19.1875,
+    top: 300.546875,
+    right: 172.015625,
+    bottom: 319.734375,
+    left: 82.015625
+  }
+}
+390 aemeath {
+  portrait: { fit: 'contain', position: '50% 50%', natural: [ 900, 900 ] },
+  font: '13px',
+  color: 'rgb(245, 255, 255)',
+  name: {
+    x: 102.578125,
+    y: 301.8687438964844,
+    width: 57.671875,
+    height: 15.328125,
+    top: 301.8687438964844,
+    right: 160.25,
+    bottom: 317.1968688964844,
+    left: 102.578125
+  },
+  plate: {
+    x: 82.015625,
+    y: 300.546875,
+    width: 90,
+    height: 19.1875,
+    top: 300.546875,
+    right: 172.015625,
+    bottom: 319.734375,
+    left: 82.015625
+  }
+}

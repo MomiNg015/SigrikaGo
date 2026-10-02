@@ -1,0 +1,5 @@
+/* Bright School portrait mobile house/profile layout */
+@import "./house-profile/shell-profile-stats.css";
+@import "./house-profile/character-grid-cards.css";
+@import "./house-profile/owned-decorations.css";
+@import "./house-profile/character-detail-music.css";

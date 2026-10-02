@@ -1,0 +1,19 @@
+/* Reduced-motion mobile safety rules. */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  button:active:not(:disabled),
+  [role="button"]:active,
+  a:active,
+  .point.previewable:active,
+  .point.touch-confirming {
+    transform: none;
+  }
+}

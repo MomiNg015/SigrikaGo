@@ -1,0 +1,16 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/modals/FriendsModal.test.jsx src/styles/cssLayerInventory.test.js src/styles/themeContract.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/themeContract.test.js (38 tests) 543ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 1187ms
+ ✓ src/modals/FriendsModal.test.jsx (7 tests) 176ms
+
+ Test Files  3 passed (3)
+      Tests  65 passed (65)
+   Start at  19:58:25
+   Duration  5.43s (transform 845ms, setup 0ms, collect 2.06s, tests 1.91s, environment 1ms, prepare 478ms)
+

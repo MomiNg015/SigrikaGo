@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Implement SiteSetting defaults, normalization, partial PATCH persistence, audit, and deployment snapshot safely."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Keep the unified admin editor and shop consumers aligned with existing React component boundaries."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Preserve site-settings flow and existing shop catalogue state machines while changing copy ownership."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Preserve IRIS editor draft behavior and its single admin editing owner."}
+{"file": ".trellis/tasks/07-28-admin-mascot-dialogue-management/research/current-dialogue-data-flow.md", "reason": "Follow the traced Zahira, Nabomo, IRIS, persistence, and deployment data paths."}

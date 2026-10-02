@@ -1,0 +1,156 @@
+.mailbox-list {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+
+.mailbox-list > li {
+  min-width: 0;
+}
+
+.mailbox-list > li + li {
+  border-top: 1px solid color-mix(in srgb, var(--theme-border) 12%, transparent);
+}
+
+.mailbox-list-item {
+  position: relative;
+  width: 100%;
+  min-height: 72px;
+  display: grid;
+  align-content: center;
+  gap: 9px;
+  padding: 13px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--theme-text);
+  text-align: left;
+  box-shadow: none;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item {
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--theme-text) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.mailbox-list-item:hover {
+  background: color-mix(in srgb, var(--theme-panel-bg) 68%, transparent);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item:hover {
+  background: color-mix(in srgb, var(--theme-panel-bg) 68%, transparent) !important;
+}
+
+.mailbox-list-item:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--theme-blue) 70%, transparent);
+  outline-offset: -3px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item:focus-visible {
+  outline: 3px solid var(--bright-blue) !important;
+  outline-offset: -3px !important;
+}
+
+.mailbox-list-item.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.active {
+  border: 1px solid color-mix(in srgb, var(--theme-border) 58%, transparent) !important;
+  background: color-mix(in srgb, var(--theme-text) 8%, var(--theme-panel-bg)) !important;
+  box-shadow: none !important;
+}
+
+.mailbox-list-item.state-open,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open {
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-accent) 72%, transparent) !important;
+}
+
+.mailbox-list-item.state-open:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open:hover {
+  background: color-mix(in srgb, var(--theme-accent) 8%, transparent) !important;
+}
+
+.mailbox-list-item.state-open.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open.active {
+  background: color-mix(in srgb, var(--theme-text) 8%, var(--theme-panel-bg)) !important;
+}
+
+.mailbox-list-item.state-done,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-done {
+  color: var(--theme-muted) !important;
+}
+
+.mailbox-list-item.state-done:not(.active) {
+  background: color-mix(in srgb, var(--theme-text) 4%, transparent);
+}
+
+.mailbox-list-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.mailbox-list-item.state-done .mailbox-list-title {
+  font-weight: 700;
+}
+
+.mailbox-list-meta {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  color: var(--theme-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mailbox-list-sender {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailbox-list-time {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.mailbox-list-item.state-done .mailbox-list-meta {
+  color: var(--theme-muted);
+}
+
+.mailbox-list-empty {
+  min-height: 98px;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  color: var(--theme-muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mailbox-list-item {
+    transition: none;
+  }
+}

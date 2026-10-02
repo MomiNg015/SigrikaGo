@@ -1,0 +1,39 @@
+/* Final Bright School portrait header/menu geometry. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen .home-top-strip {
+    --home-header-mascot-drop: clamp(28px, calc(8.5vw - 2px), 34px) !important;
+    grid-template-areas: "brand mascot actions" !important;
+    grid-template-columns: minmax(0, 1fr) var(--home-header-mascot-visible-width) 44px !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen .home-top-strip .topbar-actions {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen .home-mobile-menu {
+    grid-area: actions !important;
+    position: relative !important;
+    display: grid !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    overflow: visible !important;
+    justify-self: end !important;
+    justify-items: end !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen .home-mobile-menu-panel {
+    left: auto !important;
+    right: 0 !important;
+    width: min(148px, calc(100vw - 28px)) !important;
+    min-width: min(148px, calc(100vw - 28px)) !important;
+    max-width: min(148px, calc(100vw - 28px)) !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen .home-mobile-menu-panel button {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}

@@ -1,0 +1,99 @@
+.admin-story-workbench-flow-path {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border: 1px solid rgba(79, 111, 223, 0.16);
+  border-radius: var(--story-wb-radius);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 20px rgba(31, 43, 77, 0.08);
+}
+
+.admin-story-workbench-flow-path button,
+.admin-story-workbench-flow-path span {
+  min-height: 28px;
+  border: 1px solid var(--story-wb-border);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: var(--story-wb-surface);
+  color: var(--story-wb-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-story-workbench-flow-path span {
+  background: var(--story-wb-primary-soft);
+  color: var(--story-wb-primary);
+}
+
+.admin-story-workbench-flow-branches {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+}
+
+.admin-story-workbench-branch-lane {
+  min-width: max-content;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(183, 196, 220, 0.72);
+  border-radius: var(--story-wb-radius);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-story-workbench-branch-lane.nested {
+  margin-left: 18px;
+  border-style: dashed;
+  background: rgba(248, 250, 252, 0.82);
+}
+
+.admin-story-workbench-lane-title {
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 9px;
+  border-radius: var(--story-wb-radius);
+  background: var(--story-wb-primary-soft);
+  color: var(--story-wb-primary);
+}
+
+.admin-story-workbench-lane-title strong,
+.admin-story-workbench-lane-title span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-story-workbench-lane-title span {
+  color: var(--story-wb-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.admin-story-workbench-branch-chain {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.admin-story-workbench-nested-lanes {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-story-workbench-branch-line {
+  align-self: center;
+  width: 18px;
+  height: 2px;
+  background: var(--story-wb-border-strong);
+}

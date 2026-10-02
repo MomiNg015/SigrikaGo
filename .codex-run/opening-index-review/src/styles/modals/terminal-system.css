@@ -1,0 +1,8 @@
+/* Startorch Academy tactical terminal modal system */
+@import "./terminal-system/tokens-backdrop.css";
+@import "./terminal-system/modal-chrome.css";
+@import "./terminal-system/close-header-actions.css";
+@import "./terminal-system/terminal-buttons.css";
+@import "./terminal-system/replay-profile-surfaces.css";
+@import "./terminal-system/result-modal.css";
+@import "./terminal-system/outcomes-resume-actions.css";

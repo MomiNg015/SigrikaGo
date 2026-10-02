@@ -1,0 +1,64 @@
+/* Replace every __PLACEHOLDER__ from the selected character visual-language card. */
+.user-identity[data-nameplate-id="__ASSET_ID__"] {
+  --user-nameplate-base-width: __BASE_WIDTH_PX__px;
+  --user-nameplate-base-height: __BASE_HEIGHT_PX__px;
+  --user-nameplate-padding-left: calc(__PADDING_LEFT_PX__px * var(--user-nameplate-scale));
+  --user-nameplate-padding-right: calc(__PADDING_RIGHT_PX__px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(__FONT_SIZE_PX__px * var(--user-nameplate-scale));
+  color: __TEXT_COLOR__;
+  text-shadow: __TEXT_SHADOW__;
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect,
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect * {
+  pointer-events: none;
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-background {
+  /* Keep the primary illumination visible at every animation phase. */
+  filter:
+    drop-shadow(0 0 calc(__RIM_NEAR_PX__px * var(--user-nameplate-scale)) __RIM_NEAR_COLOR__)
+    drop-shadow(0 0 calc(__RIM_FAR_PX__px * var(--user-nameplate-scale)) __RIM_FAR_COLOR__);
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-glow {
+  /* Align this geometry to the selected illustration's primary anchor. */
+  top: calc(__GLOW_TOP_PX__px * var(--user-nameplate-scale));
+  left: calc(__GLOW_LEFT_PX__px * var(--user-nameplate-scale));
+  width: calc(__GLOW_WIDTH_PX__px * var(--user-nameplate-scale));
+  height: calc(__GLOW_HEIGHT_PX__px * var(--user-nameplate-scale));
+  background: __PRIMARY_LIGHT_GRADIENT__;
+  opacity: __PRIMARY_LIGHT_MIN_OPACITY__;
+  transform-origin: __PRIMARY_LIGHT_ORIGIN__;
+  animation: __KEYFRAME_PREFIX__-primary-light __PRIMARY_LIGHT_DURATION__ ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-core {
+  /* Use for one illustration-bound secondary action, not a generic rotating ring. */
+  top: calc(__CORE_TOP_PX__px * var(--user-nameplate-scale));
+  left: calc(__CORE_LEFT_PX__px * var(--user-nameplate-scale));
+  width: calc(__CORE_WIDTH_PX__px * var(--user-nameplate-scale));
+  height: calc(__CORE_HEIGHT_PX__px * var(--user-nameplate-scale));
+  background: __CORE_EFFECT__;
+  opacity: __CORE_MIN_OPACITY__;
+  animation: __KEYFRAME_PREFIX__-local-motif __CORE_DURATION__ ease-in-out infinite;
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sweep {
+  /* Keep carrier/tail light bounded to authored geometry. */
+  top: calc(__CARRIER_TOP_PX__px * var(--user-nameplate-scale));
+  left: __CARRIER_LEFT_PERCENT__%;
+  width: __CARRIER_WIDTH_PERCENT__%;
+  height: calc(__CARRIER_HEIGHT_PX__px * var(--user-nameplate-scale));
+  background: __CARRIER_EFFECT__;
+  opacity: __CARRIER_MIN_OPACITY__;
+  animation: __KEYFRAME_PREFIX__-carrier-light __CARRIER_DURATION__ ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sparkles {
+  /* Sparse secondary accents only. */
+  inset: 0;
+  background: __ACCENT_EFFECT__;
+  opacity: __ACCENT_MIN_OPACITY__;
+  animation: __KEYFRAME_PREFIX__-accents __ACCENT_DURATION__ ease-in-out infinite alternate;
+}

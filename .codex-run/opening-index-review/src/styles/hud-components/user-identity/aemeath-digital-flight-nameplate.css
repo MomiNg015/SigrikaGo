@@ -1,0 +1,108 @@
+/* Aemeath's paper-flight beacon nameplate. */
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] {
+  --user-nameplate-base-width: 150px;
+  --user-nameplate-base-height: 32px;
+  --user-nameplate-padding-left: calc(34px * var(--user-nameplate-scale));
+  --user-nameplate-padding-right: calc(28px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(14px * var(--user-nameplate-scale));
+  --aemeath-nameplate-home-offset-x: calc(12px * var(--user-nameplate-scale));
+  --aemeath-nameplate-text-offset-y: calc(-1px * var(--user-nameplate-scale));
+}
+
+.home-player-plaque .user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-name-tag {
+  translate: var(--aemeath-nameplate-home-offset-x) 0;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-name {
+  transform: translateY(var(--aemeath-nameplate-text-offset-y));
+  color: #f5ffff;
+  font-family: var(--font-ui-default);
+  font-style: italic;
+  letter-spacing: calc(0.08px * var(--user-nameplate-scale));
+  text-shadow:
+    0 1px 1px rgba(1, 37, 68, 0.98),
+    0 0 3px rgba(201, 246, 255, 0.8);
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-background {
+  filter:
+    drop-shadow(0 0 calc(1.4px * var(--user-nameplate-scale)) rgba(84, 234, 255, 0.9))
+    drop-shadow(0 0 calc(2.6px * var(--user-nameplate-scale)) rgba(255, 118, 204, 0.56));
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
+  top: calc(4px * var(--user-nameplate-scale));
+  left: calc(8px * var(--user-nameplate-scale));
+  width: calc(46px * var(--user-nameplate-scale));
+  height: calc(24px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(90deg, transparent 2%, rgba(95, 239, 255, 0.12) 24%, rgba(240, 255, 255, 0.9) 51%, rgba(255, 139, 213, 0.34) 69%, transparent 100%),
+    linear-gradient(90deg, transparent 7%, rgba(255, 133, 208, 0.08) 28%, rgba(255, 213, 242, 0.76) 54%, rgba(91, 230, 255, 0.24) 73%, transparent 100%),
+    linear-gradient(90deg, transparent 12%, rgba(92, 231, 255, 0.08) 36%, rgba(198, 251, 255, 0.7) 61%, transparent 100%);
+  background-position: 0 3px, 9px 12px, 4px 20px;
+  background-repeat: no-repeat;
+  background-size: 78% calc(1.2px * var(--user-nameplate-scale)), 66% calc(1px * var(--user-nameplate-scale)), 52% calc(0.9px * var(--user-nameplate-scale));
+  filter:
+    drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(83, 235, 255, 0.7))
+    drop-shadow(0 0 calc(1.4px * var(--user-nameplate-scale)) rgba(255, 128, 207, 0.44));
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: aemeath-nameplate-paper-wake 2.6s linear -0.18s infinite;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-core {
+  top: calc(4px * var(--user-nameplate-scale));
+  left: calc(12px * var(--user-nameplate-scale));
+  width: calc(30px * var(--user-nameplate-scale));
+  height: calc(24px * var(--user-nameplate-scale));
+  background:
+    linear-gradient(144deg, transparent 0 39%, rgba(236, 255, 255, 0.9) 45% 48%, rgba(85, 230, 255, 0.18) 52%, transparent 59%),
+    linear-gradient(31deg, transparent 0 43%, rgba(255, 190, 229, 0.72) 48% 51%, rgba(255, 131, 207, 0.16) 55%, transparent 62%);
+  filter:
+    drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(216, 253, 255, 0.76))
+    drop-shadow(0 0 calc(1.6px * var(--user-nameplate-scale)) rgba(255, 125, 207, 0.42));
+  mix-blend-mode: screen;
+  opacity: 0.38;
+  animation: aemeath-nameplate-plane-signal 2.6s linear -0.18s infinite;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
+  top: calc(1px * var(--user-nameplate-scale));
+  left: 24%;
+  width: 68%;
+  height: calc(30px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(94deg, transparent 5%, rgba(95, 237, 255, 0.2) 23%, rgba(236, 255, 255, 0.9) 48%, rgba(255, 139, 213, 0.38) 65%, transparent 88%),
+    linear-gradient(87deg, transparent 9%, rgba(255, 130, 207, 0.16) 29%, rgba(255, 215, 242, 0.84) 53%, rgba(88, 228, 255, 0.32) 69%, transparent 92%),
+    linear-gradient(98deg, transparent 15%, rgba(99, 238, 255, 0.12) 35%, rgba(202, 250, 255, 0.7) 58%, transparent 90%);
+  background-position: 1% 4px, 28% calc(100% - 4px), 68% 8px;
+  background-repeat: no-repeat;
+  background-size:
+    54% calc(1.3px * var(--user-nameplate-scale)),
+    50% calc(1.2px * var(--user-nameplate-scale)),
+    34% calc(1px * var(--user-nameplate-scale));
+  filter:
+    drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(93, 234, 255, 0.64))
+    drop-shadow(0 0 calc(1.4px * var(--user-nameplate-scale)) rgba(255, 126, 208, 0.48));
+  mix-blend-mode: screen;
+  opacity: 0.14;
+  animation: aemeath-nameplate-rim-flight 2.6s linear -0.18s infinite;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
+  inset: calc(2px * var(--user-nameplate-scale)) calc(4px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(rgba(244, 255, 255, 0.96), rgba(244, 255, 255, 0.96)),
+    linear-gradient(rgba(89, 235, 255, 0.92), rgba(89, 235, 255, 0.92)),
+    linear-gradient(rgba(255, 142, 214, 0.92), rgba(255, 142, 214, 0.92));
+  background-position: 9% 18%, 22% 84%, 94% 26%;
+  background-repeat: no-repeat;
+  background-size:
+    calc(2px * var(--user-nameplate-scale)) calc(2px * var(--user-nameplate-scale)),
+    calc(3px * var(--user-nameplate-scale)) calc(2px * var(--user-nameplate-scale)),
+    calc(2px * var(--user-nameplate-scale)) calc(2px * var(--user-nameplate-scale));
+  filter: drop-shadow(0 0 calc(1px * var(--user-nameplate-scale)) rgba(102, 237, 255, 0.78));
+  mix-blend-mode: screen;
+  opacity: 0.2;
+  animation: aemeath-nameplate-pixel-glints 2.3s ease-in-out -0.5s infinite alternate;
+}

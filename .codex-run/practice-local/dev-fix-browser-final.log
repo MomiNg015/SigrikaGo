@@ -1,0 +1,60 @@
+
+> sigrika-go@0.1.0 test:e2e:practice
+> playwright test --config tests/e2e/local-practice.config.js
+
+[WebServer] (node:46240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:3532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 2 workers
+
+(node:31796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner (13.1s)
+  ok 3 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate (12.8s)
+  ok 4 [production] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes capture-challenge (12.8s)
+  ok 5 [production] › tests\e2e\local-practice.spec.js:42:1 › failed WASM download prevents admission and a fresh attempt recovers (6.7s)
+  x  1 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner (1.5m)
+(node:47180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 6 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes intermediate (1.1m)
+  ok 7 [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes capture-challenge (12.9s)
+  ok 8 [development] › tests\e2e\local-practice.spec.js:42:1 › failed WASM download prevents admission and a fresh attempt recovers (6.8s)
+
+
+  1) [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner 
+
+    [31mTest timeout of 90000ms exceeded.[39m
+
+    Error: page.goto: Test timeout of 90000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:5294/tests/e2e/fixtures/local-practice.html", waiting until "load"[22m
+
+
+      21 |     page.on("pageerror", (error) => { browserErrors.push(error.message); });
+      22 |     page.on("request", (request) => { if (request.url().includes("/engines/")) downloads.push(request.url()); });
+    > 23 |     await page.goto("/tests/e2e/fixtures/local-practice.html");
+         |                ^
+      24 |     await page.evaluate((token) => window.practiceTest.connect(token), token);
+      25 |     await page.evaluate((options) => window.practiceTest.start(options), options);
+      26 |     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(1);
+        at C:\codex\SigrikaGo\tests\e2e\local-practice.spec.js:23:16
+
+    Error Context: test-results\local-practice-browser-engine-plays-and-resumes-beginner-development\error-context.md
+
+  1 failed
+    [development] › tests\e2e\local-practice.spec.js:15:3 › browser engine plays and resumes beginner 
+  7 passed (3.3m)

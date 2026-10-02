@@ -1,0 +1,234 @@
+import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import {
+  SIGRIKA_CANDY_STORY_NODE_IDS,
+  sigrikaCandyUseStartNodeId
+} from "../src/shared/sigrikaCandyArc.js";
+
+export const RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY = 0.35;
+
+export const RAINBOW_BEAN_CANDY_OUTCOMES = Object.freeze({
+  accepted: "accepted",
+  rejected: "rejected"
+});
+
+export const RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS = Object.freeze({
+  [RAINBOW_BEAN_CANDY_OUTCOMES.accepted]: "accepted-start",
+  [RAINBOW_BEAN_CANDY_OUTCOMES.rejected]: "rejected-start"
+});
+
+const SUPPORTED_CHARACTER_IDS = new Set(["sigrika", "denia", "aemeath", "lynae"]);
+
+export function rollRainbowBeanCandyOutcome(characterId, random = Math.random) {
+  const canonicalId = canonicalCharacterId(characterId);
+  if (canonicalId === "sigrika" || !SUPPORTED_CHARACTER_IDS.has(canonicalId)) {
+    return RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
+  }
+  const value = Number(typeof random === "function" ? random() : random);
+  const roll = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 1;
+  return roll < RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY
+    ? RAINBOW_BEAN_CANDY_OUTCOMES.rejected
+    : RAINBOW_BEAN_CANDY_OUTCOMES.accepted;
+}
+
+export function selectRainbowBeanCandyStoryBranch(script, outcome, { characterId = "", useCount = 0 } = {}) {
+  if (!script) return null;
+  const startNodeId = canonicalCharacterId(characterId) === "sigrika"
+    ? sigrikaCandyUseStartNodeId(useCount)
+    : RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS[outcome];
+  if (!startNodeId || !(script.nodes ?? []).some((node) => node.id === startNodeId)) return script;
+  return { ...script, startNodeId };
+}
+
+export function defaultRainbowBeanCandyStoryDraft(characterId) {
+  const canonicalId = canonicalCharacterId(characterId);
+  if (canonicalId === "sigrika") return sigrikaStoryDraft();
+  if (canonicalId === "denia") return deniaStoryDraft();
+  if (canonicalId === "aemeath") return aemeathStoryDraft();
+  if (canonicalId === "lynae") return lynaeStoryDraft();
+  return null;
+}
+
+function sigrikaStoryDraft() {
+  return {
+    startNodeId: "use-1-start",
+    nodes: [
+      ...Array.from({ length: 7 }, (_, index) => narrationNode(
+        `use-${index + 1}-start`,
+        `（西格莉卡第 ${index + 1} 次阅读《棋魂》的剧情占位，待后续编写。）`,
+        SIGRIKA_CANDY_STORY_NODE_IDS.sharedEffect
+      )),
+      choiceNode(SIGRIKA_CANDY_STORY_NODE_IDS.sharedEffect, "把彩虹豆豆跳跳糖递给西格莉卡", "shared-effect-eat"),
+      narrationNode("shared-effect-eat", "西格莉卡吃下了彩虹豆豆跳跳糖。熟悉的副作用很快出现，她暂时无法继续出战。", "shared-effect-unavailable"),
+      narrationNode("shared-effect-unavailable", "（通用糖果效果剧情占位，实际效果维持现有逻辑。）"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.corruptionStart, "（第 8 次使用：西格莉卡黑化剧情起始占位。）", SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax),
+      characterNode(SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax, "西格莉卡？", "sigrika", "（黑化高潮节点占位：进入此节点后，界面开始数据损坏。）", "corruption-end"),
+      narrationNode("corruption-end", "（黑化剧情结束占位。接下来只能打开部员手册或进入特殊匹配。）"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.recoveryWin, "（玩家获胜后的恢复剧情占位。）", "recovery-win-end"),
+      narrationNode("recovery-win-end", "西格莉卡恢复了原状。"),
+      narrationNode(SIGRIKA_CANDY_STORY_NODE_IDS.recoveryLoss, "（玩家落败后的恢复剧情占位。）", "recovery-loss-end"),
+      narrationNode("recovery-loss-end", "西格莉卡恢复了原状。")
+    ]
+  };
+}
+
+function deniaStoryDraft() {
+  return {
+    startNodeId: RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted,
+    nodes: [
+      narrationNode("accepted-start", "达妮娅靠在椅背上，似乎已经睡着了。", "accepted-swallow", [
+        option("偷偷把彩虹豆豆跳跳糖塞进达妮娅嘴里", "accepted-swallow")
+      ]),
+      characterNode("accepted-swallow", "达妮娅", "denia", "唔……咕咚。", "accepted-rays"),
+      narrationNode("accepted-rays", "达妮娅迷迷糊糊地咽下糖果。下一秒，她猛然睁开双眼——彩虹射线同时从她的双眼和嘴巴里喷射而出！", "accepted-shock"),
+      characterNode("accepted-shock", "达妮娅", "denia-rainbow-glow", "唔唔唔——？！", "accepted-accuse", [
+        option("成功了！真的会喷彩虹诶！", "accepted-accuse")
+      ]),
+      characterNode("accepted-accuse", "达妮娅", "denia-rainbow-glow", "所以你早就知道会变成这样？！", "accepted-angry", [
+        option("别动别动，让我再看清楚一点！", "accepted-angry")
+      ]),
+      characterNode("accepted-angry", "达妮娅", "denia-rainbow-glow", "{username}——！！", "accepted-chase"),
+      narrationNode("accepted-chase", "达妮娅顶着三道乱晃的彩虹射线站了起来。在她爆发之前，还是赶紧溜了吧。"),
+      narrationNode("rejected-start", "达妮娅靠在椅背上，似乎已经睡着了。", "rejected-warning", [
+        option("偷偷把彩虹豆豆跳跳糖塞进达妮娅嘴里", "rejected-warning")
+      ]),
+      characterNode("rejected-warning", "达妮娅", "denia", "……不要趁别人睡着的时候往别人嘴里塞奇怪的东西。", "rejected-awake", [
+        option("原来你醒着？", "rejected-awake")
+      ]),
+      characterNode("rejected-awake", "达妮娅", "denia", "本来没有。可是包装袋都快贴到我脸上了……", "rejected-suspicious"),
+      characterNode("rejected-suspicious", "达妮娅", "denia", "而且这颗糖的颜色，看起来就像吃下去会发生很麻烦的事情。", "rejected-return"),
+      characterNode("rejected-return", "达妮娅", "denia", "你自己留着吧……我要继续睡了。下次不许偷袭哦。", "rejected-sleep"),
+      narrationNode("rejected-sleep", "达妮娅趴在桌子上，把脸埋在了臂弯中。糖果被完整地退了回来。")
+    ]
+  };
+}
+
+function aemeathStoryDraft() {
+  return {
+    startNodeId: RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted,
+    nodes: [
+      narrationNode("accepted-start", "午后的围棋部，爱弥斯坐在棋盘前，指尖转着一枚黑棋，认真研究棋盘上的一道死活题。", "accepted-puzzle"),
+      characterNode("accepted-puzzle", "爱弥斯", "aemeath", "这里扳一下，那边就会被打吃……唔，这本《鬼手魔手》死活题到底是哪位神仙出的？每道题的陷阱路线是不是有点太多了？", "", [
+        option("把彩虹豆豆跳跳糖递给爱弥斯", "accepted-reward")
+      ]),
+      characterNode("accepted-reward", "爱弥斯", "aemeath", "好鲜艳！这是围棋部给勤奋思考死活题的人准备的限定奖励吗？", "", [
+        option("差不多吧，要尝一颗吗？", "accepted-taste")
+      ]),
+      characterNode("accepted-taste", "爱弥斯", "aemeath", "虽然我现在已经不需要吃东西了，不过作为跟风尝鲜派，流行新品还是要积极体验一下的——", "accepted-afterimages"),
+      narrationNode("accepted-afterimages", "爱弥斯将糖果放进口中。细碎的噼啪声刚刚响起，她的电子轮廓便猛地闪烁了一下。\n红、橙、黄、绿、青、蓝、紫七道像素残影依次从她身后弹开，又摇摇晃晃地重叠在一起。", "accepted-frequency"),
+      characterNode("accepted-frequency", "爱弥斯", "aemeath", "咦？我的频率怎么突然被拆成七种颜色了？！", "", [
+        option("原来爱弥斯吃了糖果会变成这样啊。", "accepted-prank")
+      ]),
+      characterNode("accepted-prank", "爱弥斯", "aemeath", "‘会变成这样’？原来这不是奖励，是你的整蛊道具啊！", "accepted-drop"),
+      narrationNode("accepted-drop", "爱弥斯眯起眼睛看向你，手中的黑棋却不小心落在了棋盘上。", "accepted-ripple"),
+      narrationNode("accepted-ripple", "棋子接触交叉点的瞬间，一圈七彩像素光纹“啪”地绽开，沿着棋盘线飞快扩散。", "accepted-again"),
+      characterNode("accepted-again", "爱弥斯", "aemeath", "哇——等等！刚才那是什么？再来一次！", "accepted-white-move"),
+      narrationNode("accepted-white-move", "爱弥斯又拿起一枚白棋，兴致勃勃地拍上棋盘。新的彩虹光纹随之炸开，围棋部里的其他成员也纷纷围了过来。", "", [
+        option("太酷了！每次落子都会触发彩虹特效！", "accepted-explain")
+      ]),
+      characterNode("accepted-explain", "爱弥斯", "aemeath", "原来如此……糖果影响了我的频率，棋子在接触我的时候也会受到影响。", "accepted-name"),
+      characterNode("accepted-name", "爱弥斯", "aemeath", "好！这个状态就叫——彩虹落子模式！"),
+      narrationNode("rejected-start", "爱弥斯趴在棋盘前，捧着脸拿着手机浏览着校内论坛上最新的美食推荐。", "", [
+        option("把彩虹豆豆跳跳糖递给爱弥斯", "rejected-trend")
+      ]),
+      characterNode("rejected-trend", "爱弥斯", "aemeath", "新品糖果？颜色倒是很符合最近的流行趋势……", "", [
+        option("只是普通的糖，尝一颗吧。", "rejected-smile")
+      ]),
+      characterNode("rejected-smile", "爱弥斯", "aemeath", "嗯——糖可能很普通，但刚刚你说‘普通’的时候，脸上诡异的笑容像是触发了隐藏成就。", "", [
+        option("啊？有这么明显的吗？", "rejected-obvious")
+      ]),
+      characterNode("rejected-obvious", "爱弥斯", "aemeath", "很明显噢。我可是电子幽灵，观察表情可算是基本功~", "rejected-rules"),
+      characterNode("rejected-rules", "爱弥斯", "aemeath", "想让我当新品测试玩家也不是不行，不过测试规则得公平一点。", "", [
+        option("怎样才算公平？", "rejected-record")
+      ]),
+      characterNode("rejected-record", "爱弥斯", "aemeath", "你先吃，我负责录像、剪辑，再把全过程上传到学院论坛。这样我们谁也不吃亏，对吧？", "rejected-withdraw"),
+      narrationNode("rejected-withdraw", "你默默收回了糖果。爱弥斯托着脸，满是遗憾地看着你。", "rejected-title"),
+      characterNode("rejected-title", "爱弥斯", "aemeath", "诶，别走呀？标题我都想好了——《{username}的整蛊糖果首秀》！真的不考虑一下吗？")
+    ]
+  };
+}
+
+function lynaeStoryDraft() {
+  return {
+    startNodeId: RAINBOW_BEAN_CANDY_STORY_START_NODE_IDS.accepted,
+    nodes: [
+      narrationNode("accepted-start", "傍晚的活动部，琳奈盘腿坐在地板上，正在给几个旧棋罐做重新喷涂。", "accepted-paint"),
+      characterNode("accepted-paint", "琳奈", "lynae", "黑色、白色、黑色、白色……围棋本身明明很有趣，装棋子的东西也可以再大胆一点嘛。", "", [
+        option("把彩虹豆豆跳跳糖递给琳奈", "accepted-color")
+      ]),
+      characterNode("accepted-color", "琳奈", "lynae", "哇，这个配色不错！是糖果，还是某种可以吃的颜料？", "", [
+        option("是糖，要尝一颗吗？", "accepted-try")
+      ]),
+      characterNode("accepted-try", "琳奈", "lynae", "当然！越是猜不出味道，才越值得试试看。", "accepted-eat"),
+      narrationNode("accepted-eat", "琳奈将糖果丢进口中。细碎的噼啪声响起，她饶有兴致地嚼了几下。", "accepted-taste"),
+      characterNode("accepted-taste", "琳奈", "lynae", "嗯，味道还挺难吃的……", "accepted-freeze"),
+      narrationNode("accepted-freeze", "琳奈脸上的笑容突然僵住了。", "", [
+        option("这么难吃吗？", "accepted-correct")
+      ]),
+      characterNode("accepted-correct", "琳奈", "lynae", "不是！我刚才明明想说难吃！", "accepted-boring"),
+      characterNode("accepted-boring", "琳奈", "lynae", "这颗糖很无聊——不对，是无聊！非常无聊！", "", [
+        option("难道......你说的话全都变成反话了？！", "accepted-realize")
+      ]),
+      characterNode("accepted-realize", "琳奈", "lynae", "呜哇，看来是这样。真方便……", "accepted-shrug"),
+      narrationNode("accepted-shrug", "琳奈愣了一下，耸了耸肩。", "accepted-silence"),
+      characterNode("accepted-silence", "琳奈", "lynae", "……我还是等时效过去再说话吧。"),
+      narrationNode("rejected-start", "琳奈坐在围棋部的窗边，正对着一个旧棋罐试验新的喷涂配色。", "", [
+        option("把彩虹豆豆跳跳糖递给琳奈", "rejected-color")
+      ]),
+      characterNode("rejected-color", "琳奈", "lynae", "这个颜色挺有意思。是最近流行的新品吗？", "", [
+        option("只是普通的糖，尝一颗吧。", "rejected-ordinary")
+      ]),
+      characterNode("rejected-ordinary", "琳奈", "lynae", "普通？", "rejected-boring"),
+      characterNode("rejected-boring", "琳奈", "lynae", "那不是对食物最无聊的评价吗？", "rejected-inspect"),
+      narrationNode("rejected-inspect", "琳奈接过糖果翻看了一圈，又抬眼看向你始终压在包装背面的手指。", "rejected-unmarked"),
+      characterNode("rejected-unmarked", "琳奈", "lynae", "没有配料，没有厂牌，你还一直把背面藏在手心里……", "rejected-prank"),
+      characterNode("rejected-prank", "琳奈", "lynae", "这听起来可不像‘普通的糖’，更像某场恶作剧的开场白。", "", [
+        option("你想多了。", "rejected-boundary")
+      ]),
+      characterNode("rejected-boundary", "琳奈", "lynae", "我喜欢惊喜，但不喜欢别人替我决定惊喜什么时候爆开。", "rejected-return"),
+      narrationNode("rejected-return", "琳奈把糖果放回你的掌心，又拿起喷罐晃了晃。", "rejected-invite"),
+      characterNode("rejected-invite", "琳奈", "lynae", "等你愿意把知道的都告诉我，再来邀请我吧。", "rejected-interest"),
+      characterNode("rejected-interest", "琳奈", "lynae", "到时候，我说不定真的会很感兴趣哦。", "rejected-finish"),
+      narrationNode("rejected-finish", "琳奈继续给棋罐喷上新的颜色。彩虹豆豆跳跳糖被完整地退了回来。")
+    ]
+  };
+}
+
+function choiceNode(id, label, nextNodeId) {
+  return {
+    id,
+    type: "player-choice",
+    speakerName: "",
+    characterId: "",
+    text: "",
+    nextNodeId: "",
+    options: [option(label, nextNodeId)]
+  };
+}
+
+function narrationNode(id, text, nextNodeId = "", options = []) {
+  return {
+    id,
+    type: "story",
+    speakerName: "",
+    characterId: "",
+    text,
+    nextNodeId,
+    options
+  };
+}
+
+function characterNode(id, speakerName, characterId, text, nextNodeId = "", options = []) {
+  return {
+    id,
+    type: "story",
+    speakerName,
+    characterId,
+    text,
+    nextNodeId,
+    options
+  };
+}
+
+function option(label, nextNodeId) {
+  return { label, nextNodeId };
+}

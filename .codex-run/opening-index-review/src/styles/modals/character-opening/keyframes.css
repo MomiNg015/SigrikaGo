@@ -1,0 +1,9 @@
+@keyframes opening-fade {
+  0%, 78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes match-hop {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-12px); }
+}

@@ -1,0 +1,19 @@
+{"width":1280,"context":"self","emptyHeight":34,"table":false,"overflow":false,"buttons":[{"text":"继续","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"等待中","fill":"rgb(255, 250, 240)","ring":"none","content":"none","mask":"add"},{"text":"这是较长的剧情选","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"第二个选项","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"释放技能","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"}]}
+{"width":390,"context":"self","emptyHeight":34,"table":false,"overflow":false,"buttons":[{"text":"继续","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"等待中","fill":"rgb(255, 250, 240)","ring":"none","content":"none","mask":"add"},{"text":"这是较长的剧情选","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"第二个选项","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"释放技能","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"}]}
+{"width":360,"context":"social","emptyHeight":33.489990234375,"table":false,"overflow":false,"buttons":[{"text":"继续","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"等待中","fill":"rgb(255, 250, 240)","ring":"none","content":"none","mask":"add"},{"text":"这是较长的剧情选","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"第二个选项","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"},{"text":"释放技能","fill":"rgb(255, 207, 64)","ring":"guided-action-ring","content":"\"\"","mask":"exclude, exclude"}]}
+ringDetails {
+  opacity: '1',
+  display: 'block',
+  width: '324px',
+  height: '50px',
+  top: '-5px',
+  left: '-5px',
+  transform: 'none',
+  visibility: 'visible',
+  background: 'rgba(0, 0, 0, 0) linear-gradient(114.828deg, rgb(255, 103, 135), rgb(255, 209, 66), rgb(92, 214, 175), rgb(96, 164, 255), rgb(188, 121, 244), rgb(255, 103, 135)) repeat scroll 0% 0% / auto padding-box border-box',
+  padding: '3px',
+  zIndex: 'auto',
+  filter: 'drop-shadow(rgba(188, 121, 244, 0.65) 0px 0px 2px)',
+  borderRadius: '18px'
+}
+reducedMotion none

@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/src/styles.css"></head><body><div id="fixture"></div><script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import RoomScreen from '/src/room/RoomScreen.jsx';
+import {CHARACTERS} from '/src/shared/characters.js';
+import {createGameState} from '/src/shared/game.js';
+const players=['black','white'].map((color,i)=>({color,user:{id:color,username:i?'moming':'对手玩家',rank:'7段',rating:826},characterId:i?'denia':'sigrika',character:i?CHARACTERS.denia:CHARACTERS.sigrika,captures:0,skillRemovals:0,time:{main:300,byoYomi:30,periodRemaining:30,periods:3}}));
+const game=createGameState(players);game.phase='playing';game.turn=new URLSearchParams(location.search).get('turn')||'black';game.moveNumber=42;
+const noop=()=>{};
+createRoot(document.getElementById('fixture')).render(React.createElement('div',{className:'app-shell player-theme-enabled theme-bright-school'},React.createElement(RoomScreen,{room:{code:'QA123',role:'player',players,spectators:[],spectatorCount:0,chat:[],game},user:players[1].user,characters:CHARACTERS,replayStep:null,setReplayStep:noop,pendingSkill:false,setPendingSkill:noop,audioSettings:{master:0,bgm:0,sfx:0,voice:0},onOpenSettings:noop,onOpenMessageBoard:noop,onBack:noop,onGameAction:noop,onCountingRequest:noop,onDrawRequest:noop,onScoringAction:noop,onToast:noop})));
+</script></body></html>
+

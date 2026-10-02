@@ -1,0 +1,807 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import ShopModal from "./ShopModal.jsx";
+import ShopItemCard from "./shop/ShopItemCard.jsx";
+import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
+import CostumeSidebar from "./shop/CostumeSidebar.jsx";
+import ShopSidebar from "./shop/ShopSidebar.jsx";
+import {
+  COSTUME_REFRESH_COOLDOWN_MS,
+  COSTUME_MASCOT_IMAGES,
+  eligibleCostumes,
+  selectCostumeBatch
+} from "./costumeShopHelpers.js";
+import { layoutShopCards } from "./shop/shopLayout.js";
+import {
+  COSTUME_SHOP_BACKGROUND_IMAGE,
+  COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
+  COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE,
+  buildShopCardPresentation,
+  eligibleShopItems,
+  getShopItemCategoryLabel,
+  getShopItemDescription,
+  getShopItemQuantityBadge,
+  getShopItemQuantityLabel,
+  isShopItemOwned,
+  isShopItemSoldOut,
+  pickShopMascotLine,
+  selectShopBatch,
+  SHOP_BATCH_SIZE,
+  SHOP_BACKGROUND_IMAGE,
+  SHOP_DIALOGUE_FRAME_IMAGE,
+  SHOP_DIRECTION_SIGN_IMAGE,
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_EMPTY_LINE,
+  SHOP_MASCOT_ERROR_LINE,
+  SHOP_MASCOT_LINES,
+  SHOP_MASCOT_LOADING_LINE,
+  SHOP_MASCOT_MOODS,
+  SHOP_MASCOT_REFRESH_LINES,
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MASCOT_THANKS_LINE,
+  SHOP_MOBILE_BACKGROUND_IMAGE,
+  SHOP_REFRESH_COOLDOWN_MS
+} from "./shopModalHelpers.js";
+import {
+  getShopCategoryLabel,
+  getShopItemDetailOwned,
+  getShopItemDetailStatus,
+  getShopOwnedItemQuantity
+} from "./shop/shopItemDetail.js";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
+import { shopMascotDialoguesSettingJson } from "../shared/shopMascotDialogues.js";
+
+const sampleItem = {
+  id: "test-card",
+  category: "item",
+  targetId: "rainbow-bean-candy",
+  name: "测试商品",
+  description: "商品说明",
+  imageUrl: "/assets/items/rainbow-bean-candy.webp",
+  priceCoins: 100,
+  finalPrice: 80,
+  discountPercent: 20,
+  stockQuantity: 10,
+  remainingStock: 4,
+  purchasable: true
+};
+
+describe("Zahira shop window", () => {
+  it("renders refresh, title, live coin balance, and close in one semantic header", () => {
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('aria-labelledby="shop-window-title"');
+    expect(html).toContain("shop-refresh-button");
+    expect(html).toContain("扎希拉商铺");
+    expect(html).toContain('data-store="zahira"');
+    expect(html).toContain("shop-close-button");
+    const headerHtml = html.slice(html.indexOf("<header"), html.indexOf("</header>"));
+    expect(headerHtml.indexOf("shop-refresh-button")).toBeLessThan(headerHtml.indexOf("shop-window-title"));
+    expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-header-balance"));
+    expect(headerHtml.indexOf("shop-header-balance")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
+    expect(headerHtml).toContain('aria-label="持有金币 90610"');
+    expect(headerHtml).toContain('class="shop-wallet shop-header-balance"');
+    expect(headerHtml).toContain("lucide-circle-dollar-sign");
+    expect(headerHtml).toContain("90610");
+    expect(headerHtml).toContain("金币");
+    expect(headerHtml).not.toContain("shop-header-balance-unit");
+    expect(html).not.toContain("shop-wallet-image");
+    expect(html).not.toContain("/assets/shop/zahira-wallet-v1.webp");
+    expect(html).toContain("shop-product-stage");
+    expect(html).not.toContain("shop-tabs");
+    expect(html).not.toContain("shop-pagination");
+    expect(html).not.toContain("暂未上架");
+    expect(html).toContain(SHOP_MASCOT_LOADING_LINE);
+  });
+
+  it("renders both Zahira mascot layers without duplicating the header balance", () => {
+    const html = renderToStaticMarkup(createElement(ShopSidebar, {
+      mascotLine: SHOP_MASCOT_THANKS_LINE,
+      mascotMood: SHOP_MASCOT_MOODS.thanks
+    }));
+
+    expect(html).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
+    expect(html).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
+    expect(html).toContain('shop-mascot-image-thanks is-active');
+    expect(html).not.toContain("shop-header-balance");
+    expect(html).not.toContain("shop-wallet");
+  });
+
+  it("uses configured mascot dialogue without changing the shop presentation", () => {
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
+      siteSettings: {
+        shopMascotDialogues: shopMascotDialoguesSettingJson({
+          zahira: {
+            greetingLines: ["自定义欢迎"],
+            refreshLines: ["自定义刷新"],
+            loadingLine: "扎希拉正在读取后台台词。",
+            emptyLine: "自定义空目录",
+            errorLine: "自定义失败",
+            thanksLine: "自定义感谢"
+          },
+          nabomo: {
+            greetingLines: ["自定义娜波摩欢迎"],
+            refreshLines: ["自定义娜波摩刷新"],
+            loadingLine: "娜波摩正在读取后台台词。",
+            emptyLine: "自定义娜波摩空目录",
+            errorLine: "自定义娜波摩失败",
+            thanksLine: "自定义娜波摩感谢",
+            insufficientLine: "自定义金币不足"
+          }
+        })
+      },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("扎希拉正在读取后台台词。");
+    expect(html).toContain("娜波摩正在读取后台台词。");
+    expect(html).toContain("shop-product-stage");
+    expect(html).toContain("costume-shop-stage");
+  });
+
+  it("keeps the clothing reception free of duplicate balance UI", () => {
+    const html = renderToStaticMarkup(createElement(CostumeSidebar, {
+      line: "欢迎光临。",
+      mood: "greeting"
+    }));
+
+    expect(html).toContain('class="costume-shop-host"');
+    expect(html).not.toContain("shop-header-balance");
+    expect(html).not.toContain("shop-wallet");
+    expect(html).not.toContain("✉️");
+  });
+
+  it("keeps both Zahira mascot WebP assets at their source dimensions", () => {
+    expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
+    expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
+  });
+
+  it("keeps both complete dialogue frames lossless and wide enough for live copy", () => {
+    expect(webpInfo("../../public/assets/shop/zahira-dialogue-frame-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1060,
+      height: 465
+    });
+    expect(webpInfo("../../public/assets/shop/nivora-dialogue-frame-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1060,
+      height: 470
+    });
+  });
+
+  it("keeps the reusable generated shop signpost lossless with transparent-source proportions", () => {
+    expect(webpInfo("../../public/assets/shop/shop-direction-sign-sticker-right-v2.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1420,
+      height: 430
+    });
+  });
+
+  it("ships alpha-trimmed costume art and square mascot art as lossless WebP assets", () => {
+    const costumeSizes = {
+      "sigrika-01": { width: 756, height: 900 },
+      "denia-01": { width: 780, height: 900 },
+      "denia-02": { width: 848, height: 900 },
+      "nabomo-01": { width: 719, height: 900 },
+      "nabomo-02": { width: 711, height: 900 }
+    };
+    for (const [name, size] of Object.entries(costumeSizes)) {
+      expect(webpInfo(`../../public/assets/costumes/${name}.webp`)).toEqual({
+        encoding: "VP8L",
+        ...size
+      });
+    }
+    for (const name of ["nivora-greeting", "nivora-thanks", "nivora-empty"]) {
+      expect(webpInfo(`../../public/assets/costumes/${name}.webp`)).toEqual({
+        encoding: "VP8L",
+        width: 1024,
+        height: 1024
+      });
+    }
+  });
+
+  it("mounts the sliding clothing-store page with all three Nivora states", () => {
+    const source = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("shop-store-track");
+    expect(html).toContain(">残星会</span>");
+    expect(html).toContain(">扎希拉商店</span>");
+    expect(html).not.toContain("前往残星会");
+    expect(html).not.toContain("前往扎希拉商店");
+    expect(html).not.toContain("← 残星会");
+    expect(html).not.toContain("扎希拉商店 →");
+    expect(source).toContain('"残星会cosplay部"');
+    expect(source).not.toContain("残星会 cosplay 服装店");
+    for (const src of Object.values(COSTUME_MASCOT_IMAGES)) {
+      expect(html).toContain(`src="${src}"`);
+    }
+  });
+
+  it("keeps the portrait home width guard from collapsing the two-page shop track", () => {
+    const mobileHomeShell = readFileSync(
+      new URL("../styles/themes/bright-school/mobile/home-shell/shell-base.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(mobileHomeShell).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen :where(*, *::before, *::after)"
+    );
+    expect(mobileHomeShell).not.toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(*, *::before, *::after)"
+    );
+  });
+
+  it("prioritizes purchasable costumes, excludes owned entries, and caps batches at five", () => {
+    const costumes = Array.from({ length: 7 }, (_, index) => ({
+      id: `costume-${index}`,
+      enabled: true,
+      shopVisible: true,
+      owned: index === 6,
+      characterOwned: index < 3
+    }));
+    const batch = selectCostumeBatch(costumes, [], () => 0.5);
+
+    expect(eligibleCostumes(costumes)).toHaveLength(6);
+    expect(batch).toHaveLength(5);
+    expect(batch.slice(0, 3).every((costume) => costume.characterOwned)).toBe(true);
+    expect(batch.some((costume) => costume.owned)).toBe(false);
+  });
+
+  it("filters owned one-time goods and per-user sold-out consumables from new batches", () => {
+    const items = [
+      { ...sampleItem, id: "available", remainingStock: 1 },
+      { ...sampleItem, id: "sold", remainingStock: 0 },
+      { ...sampleItem, id: "owned", category: "decoration", targetId: "paw-stone" },
+      { ...sampleItem, id: "music", category: "music", targetId: "track-a" }
+    ];
+    const user = { ownedDecorations: ["paw-stone"], ownedMusicIds: [] };
+
+    expect(eligibleShopItems(items, user).map((item) => item.id)).toEqual(["available", "music"]);
+  });
+
+  it("selects at most five unique products and prioritizes the previous batch's unseen item", () => {
+    const items = Array.from({ length: 6 }, (_, index) => ({
+      ...sampleItem,
+      id: `item-${index + 1}`,
+      targetId: `target-${index + 1}`,
+      stockQuantity: -1,
+      remainingStock: -1
+    }));
+    const previousIds = items.slice(0, 5).map((item) => item.id);
+    const batch = selectShopBatch(items, {}, previousIds, () => 0.4);
+
+    expect(batch).toHaveLength(SHOP_BATCH_SIZE);
+    expect(batch[0].id).toBe("item-6");
+    expect(new Set(batch.map((item) => item.id)).size).toBe(batch.length);
+  });
+
+  it("creates fixed per-batch rotation and balanced 6-9px, 4.2-6s float parameters", () => {
+    const minimum = buildShopCardPresentation([sampleItem], sequenceRandom([0, 0, 0, 0]))[0];
+    const maximum = buildShopCardPresentation(
+      [sampleItem],
+      sequenceRandom([0.999, 0.999, 0.999, 0.999])
+    )[0];
+
+    expect(minimum.rotation).toBe(-2);
+    expect(minimum.floatDistance).toBe(6);
+    expect(minimum.floatDuration).toBe(4.2);
+    expect(Math.abs(minimum.floatDelay)).toBe(0);
+    expect(maximum.floatDistance).toBe(9);
+    expect(maximum.floatDuration).toBe(6);
+  });
+
+  it("reuses the measured count-aware stage and whole-card motion for costume products", () => {
+    const panelSource = readFileSync(new URL("./shop/CostumeStorePanel.jsx", import.meta.url), "utf8");
+    const cardSource = readFileSync(new URL("./shop/CostumeCard.jsx", import.meta.url), "utf8");
+    const cardsCss = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/cards.css", import.meta.url),
+      "utf8"
+    );
+    const motionCss = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/motion.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(panelSource).toContain("useShopStageSize(stageRef)");
+    expect(panelSource).toContain("layoutShopCards({");
+    expect(panelSource).toContain("buildShopCardPresentation(");
+    expect(panelSource).toContain('className="shop-card-position costume-shop-card-slot"');
+    expect(panelSource).toContain('className="shop-card-rotation"');
+    expect(panelSource).toContain('className="shop-card-float"');
+    expect(cardSource.indexOf("costume-shop-price")).toBeGreaterThan(cardSource.indexOf("costume-shop-art"));
+    expect(cardsCss).not.toContain(".costume-shop-card-slot:nth-child");
+    expect(cardsCss).toContain("--costume-shop-visual-scale: 1.14");
+    expect(cardsCss).toContain("transform: scale(var(--costume-shop-visual-scale))");
+    expect(motionCss).toContain(".costume-shop-card-slot:has(");
+    expect(motionCss).toContain("animation-play-state: paused");
+  });
+
+  it("uses balanced desktop 2+3, 2+2, and 2+1 rows with safe seeded jitter", () => {
+    const five = layoutShopCards({ width: 760, height: 540, count: 5, seed: 22 });
+    const four = layoutShopCards({ width: 760, height: 540, count: 4, seed: 22 });
+    const three = layoutShopCards({ width: 760, height: 540, count: 3, seed: 22 });
+    const two = layoutShopCards({ width: 760, height: 540, count: 2, seed: 22 });
+    const one = layoutShopCards({ width: 760, height: 540, count: 1, seed: 22 });
+    const constrained = layoutShopCards({ width: 420, height: 330, count: 5, seed: 22 });
+
+    expect(five).toHaveLength(5);
+    expect(constrained).toHaveLength(5);
+    expect(constrained.every((placement) => placement.scale < 1)).toBe(true);
+    expectTwoRowTopology(five, 2, 760);
+    expectTwoRowTopology(four, 2, 760);
+    expectTwoRowTopology(three, 2, 760);
+    expect(Math.abs(rowCenter(two) - 380)).toBeLessThanOrEqual(32);
+    expect(Math.abs(rowCenter(one) - 380)).toBeLessThanOrEqual(32);
+
+    for (const placements of [five, four, three, two, one]) {
+      for (let left = 0; left < placements.length; left += 1) {
+        for (let right = left + 1; right < placements.length; right += 1) {
+          expect(overlap(placements[left], placements[right])).toBe(false);
+          expect(cardSeparation(placements[left], placements[right])).toBeGreaterThanOrEqual(28);
+        }
+      }
+    }
+  });
+
+  it("uses mobile 2+3 and 2+1 compositions, tighter gaps, wider cards, and sub-44px scaling", () => {
+    const stageSource = readFileSync(new URL("./shop/useShopStageSize.js", import.meta.url), "utf8");
+    const five = layoutShopCards({ width: 360, height: 470, count: 5, mobile: true });
+    const four = layoutShopCards({ width: 351, height: 407, count: 4, mobile: true });
+    const three = layoutShopCards({ width: 351, height: 407, count: 3, mobile: true });
+    const tiny = layoutShopCards({ width: 100, height: 90, count: 5, mobile: true });
+
+    expect(new Set(five.slice(0, 2).map((placement) => placement.y)).size).toBe(1);
+    expect(new Set(five.slice(2).map((placement) => placement.y)).size).toBe(1);
+    expect(five[2].y).toBeGreaterThan(five[0].y);
+    expect(four[0].width).toBeGreaterThan(145);
+    expect(four[1].x - (four[0].x + four[0].width)).toBeGreaterThanOrEqual(4);
+    expect(four[1].x - (four[0].x + four[0].width)).toBeLessThanOrEqual(5);
+    expect(four[2].y - (four[0].y + four[0].height)).toBeGreaterThanOrEqual(8);
+    expect(four[0].y).toBeGreaterThanOrEqual(22);
+    expect(407 - (four[3].y + four[3].height)).toBeGreaterThanOrEqual(22);
+    expect(three[0].y).toBe(three[1].y);
+    expect(three[2].y).toBeGreaterThan(three[0].y);
+    expect(three[2].x + (three[2].width / 2)).toBeCloseTo(351 / 2);
+    expect(tiny.every((placement) => placement.width < 44)).toBe(true);
+    expect(stageSource).toContain('window.matchMedia("(max-width: 768px)").matches');
+    expect(stageSource).not.toContain("size.width <= 760");
+  });
+
+  it("uses category and quantity corner badges while preserving card interactions and disabled states", () => {
+    const availableHtml = renderCard(sampleItem, { coins: 200 });
+    const soldOutHtml = renderCard({ ...sampleItem, remainingStock: 0 }, { coins: 200 });
+    const unlimitedHtml = renderCard({ ...sampleItem, stockQuantity: -1, remainingStock: -1 }, { coins: 200 });
+    const limitOneHtml = renderCard({ ...sampleItem, stockQuantity: 1, remainingStock: 1 }, { coins: 200 });
+    const source = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
+
+    expect(availableHtml).toContain('aria-label="分类：道具"');
+    expect(availableHtml).toContain('aria-label="剩余 4"');
+    expect(availableHtml).toContain("shop-quantity-badge");
+    expect(unlimitedHtml).toContain('aria-label="不限量"');
+    expect(unlimitedHtml).toContain("∞");
+    expect(limitOneHtml).not.toContain("shop-quantity-badge");
+    expect(availableHtml).toContain("shop-original-price");
+    expect(availableHtml).toContain("shop-item-detail-trigger");
+    expect(availableHtml).toContain('aria-label="查看测试商品详情"');
+    expect(availableHtml).not.toContain('role="button"');
+    expect(soldOutHtml).toContain("已售罄");
+    expect(soldOutHtml).toContain("disabled");
+    expect(source).toContain("event.stopPropagation()");
+    expect(source).not.toContain("openDetailFromKeyboard");
+    expect(source).toContain('className="shop-item-detail-trigger"');
+    expect(source).not.toContain("暂未上架");
+  });
+
+  it("does not show a limit line for one-time goods", () => {
+    expect(getShopItemCategoryLabel({ category: "character" })).toBe("部员");
+    expect(getShopItemCategoryLabel({ category: "decoration" })).toBe("棋子");
+    expect(getShopItemQuantityBadge({ category: "decoration" })).toBe(null);
+    expect(getShopItemQuantityBadge({ category: "item", stockQuantity: 1, remainingStock: 1 })).toBe(null);
+    expect(getShopItemQuantityBadge({ category: "item", stockQuantity: -1 })).toEqual({ text: "∞", ariaLabel: "不限量" });
+    expect(getShopItemQuantityLabel({ category: "decoration" })).toBe("");
+    expect(getShopItemQuantityLabel({ category: "music" })).toBe("");
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBe("不限量");
+  });
+
+  it("preserves detail copy, ownership status, and illustration credit behavior", () => {
+    const user = {
+      ownedCharacters: ["denia"],
+      ownedDecorations: ["paw-stone"],
+      ownedItems: [{ itemId: "rainbow-bean-candy", quantity: 3 }]
+    };
+    const html = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: { ...sampleItem, illustName: "画师", illustUrl: "https://example.com/artist" },
+      user,
+      onClose: () => {}
+    }));
+
+    expect(getShopOwnedItemQuantity(sampleItem, user)).toBe(3);
+    expect(getShopItemDetailOwned(sampleItem, user)).toBe(true);
+    expect(getShopItemDetailStatus(sampleItem, user)).toBe("拥有 3");
+    expect(getShopItemDescription({ description: "  sample desc  " })).toBe("sample desc");
+    expect(html).toContain("illust：画师");
+    expect(html).toContain('target="_blank"');
+  });
+
+  it("keeps rotated, floating card shadows inside the clipped product stage", () => {
+    const angle = 2 * Math.PI / 180;
+    for (const mobile of [false, true]) {
+      for (const [width, height] of [[294, 260], [351, 407], [760, 540]]) {
+        for (let count = 1; count <= 5; count += 1) {
+          for (const card of layoutShopCards({ width, height, count, mobile, seed: 22 })) {
+            const bob = 9 * (mobile ? 1.5 : 2) * card.scale;
+            const rotationX = card.height * Math.sin(angle) / 2;
+            const rotationY = card.width * Math.sin(angle) / 2;
+            const shadow = 5 * card.scale;
+            expect(card.x - rotationX - bob * Math.sin(angle)).toBeGreaterThanOrEqual(0);
+            expect(card.x + card.width + rotationX + bob * Math.sin(angle) + shadow).toBeLessThanOrEqual(width);
+            expect(card.y - rotationY - bob).toBeGreaterThanOrEqual(0);
+            expect(card.y + card.height + rotationY + bob + shadow).toBeLessThanOrEqual(height);
+          }
+        }
+      }
+    }
+  });
+
+  it("renders music detail category and known ownership states", () => {
+    const musicItem = {
+      ...sampleItem,
+      id: "qiuyuan-skill-zhouwo",
+      category: "music",
+      targetId: "qiuyuan-skill-zhouwo",
+      name: "肘我"
+    };
+    const ownedUser = { ownedMusicIds: [musicItem.targetId] };
+    const ownedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: musicItem,
+      user: ownedUser,
+      onClose: () => {}
+    }));
+    const unownedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: musicItem,
+      user: { ownedMusicIds: [] },
+      onClose: () => {}
+    }));
+
+    expect(getShopCategoryLabel("music")).toBe("音乐");
+    expect(getShopItemDetailOwned(musicItem, ownedUser)).toBe(true);
+    expect(getShopItemDetailStatus(musicItem, ownedUser)).toBe("已持有");
+    expect(getShopItemDetailOwned(musicItem, {})).toBe(false);
+    expect(getShopItemDetailStatus(musicItem, {})).toBe("尚未拥有该音乐");
+    expect(ownedHtml).toContain('<span class="shop-detail-category">音乐</span>');
+    expect(ownedHtml).toContain("已持有");
+    expect(unownedHtml).toContain("尚未拥有该音乐");
+    expect(ownedHtml).not.toContain("状态未知");
+    expect(unownedHtml).not.toContain("状态未知");
+  });
+
+  it("keeps opening, refresh, loading, empty, failure, and purchase dialogue contracts", () => {
+    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0));
+    expect(SHOP_MASCOT_REFRESH_LINES).toContain(pickShopMascotLine(() => 0.99, SHOP_MASCOT_REFRESH_LINES));
+    expect(SHOP_MASCOT_LOADING_LINE).toBe("请稍等……我正在把它们一件件摆好。");
+    expect(SHOP_MASCOT_EMPTY_LINE).toBe("今天的货物都已有归处了。等下次集市再见吧。");
+    expect(SHOP_MASCOT_ERROR_LINE).toBe("……这一批货物没能顺利抵达。请再给我一点时间。");
+    expect(SHOP_MASCOT_THANKS_LINE).toBe("请收好……看来，它也一直在等你。");
+  });
+
+  it("keeps refresh local, preloads the prepared batch, and uses the one-second cooldown", () => {
+    const source = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
+    const refreshBlock = source.slice(source.indexOf("function refreshCatalog"), source.indexOf("const eligibleCount"));
+
+    expect(SHOP_REFRESH_COOLDOWN_MS).toBe(1000);
+    expect(COSTUME_REFRESH_COOLDOWN_MS).toBe(1000);
+    expect(source).toContain("preloadImageAssets(nextItems.map");
+    expect(source).toContain("setPreparedBatch(nextPresentation)");
+    expect(refreshBlock).not.toContain('api("/api/shop"');
+    expect(refreshBlock).toContain("setCurrentBatch(preparedBatch)");
+  });
+
+  it("keeps Zahira and Nivora feedback until an explicit shop action changes it", () => {
+    const zahiraSource = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
+    const costumeSource = readFileSync(new URL("./shop/useCostumeCatalog.js", import.meta.url), "utf8");
+    const zahiraRefreshBlock = zahiraSource.slice(zahiraSource.indexOf("function refreshCatalog"), zahiraSource.indexOf("const eligibleCount"));
+    const costumeRefreshBlock = costumeSource.slice(costumeSource.indexOf("function refreshCatalog"), costumeSource.indexOf("function setMascotFeedback"));
+
+    expect(zahiraSource).toContain("setMascotMood(SHOP_MASCOT_MOODS.thanks)");
+    expect(zahiraSource).not.toContain("setTimeout");
+    expect(zahiraRefreshBlock).toContain("setMascotMood(SHOP_MASCOT_MOODS.default)");
+    expect(costumeSource).not.toContain("setTimeout");
+    expect(costumeSource).toContain('setMascotFeedback("thanks", dialogueConfig.thanksLine)');
+    expect(costumeSource).toContain('setMascotFeedback("empty", dialogueConfig.insufficientLine)');
+    expect(costumeRefreshBlock).toContain('setMascotMood(preparedBatch.length ? "greeting" : "empty")');
+  });
+
+  it("encodes no-scroll, fixed rotation, float pause, reduced-motion, and final mobile overrides in CSS", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const themeCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const shopBackgroundSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/background-crayon.css", import.meta.url),
+      "utf8"
+    );
+    const shopWindowSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/window-redesign.css", import.meta.url),
+      "utf8"
+    );
+    const sidebarWalletSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/sidebar-wallet.css", import.meta.url),
+      "utf8"
+    );
+    const costumeThemeSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/costume-store.css", import.meta.url),
+      "utf8"
+    );
+    const signpostSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/signpost-switch.css", import.meta.url),
+      "utf8"
+    );
+    const shopMobileSource = readFileSync(
+      new URL("../styles/mobile-adaptive/shop-window-redesign.css", import.meta.url),
+      "utf8"
+    );
+    const costumeMobileSource = readFileSync(
+      new URL("../styles/mobile-adaptive/costume-store.css", import.meta.url),
+      "utf8"
+    );
+    const costumeStorefrontSource = readFileSync(
+      new URL("../styles/commerce/shop-settings/costume-store/storefront.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(commerceCss).toContain(".shop-product-stage");
+    expect(commerceCss).toContain(".shop-header-balance");
+    expect(commerceCss).toContain("grid-template-columns: 52px minmax(0, 1fr) max-content 52px;");
+    expect(commerceCss).toContain("white-space: nowrap;");
+    expect(commerceCss).toContain("overflow: visible;");
+    expect(commerceCss).toContain("text-overflow: clip;");
+    expect(commerceCss).toContain("font-size: 15px;");
+    expect(commerceCss).toContain("overflow: hidden");
+    expect(commerceCss).toContain("transform: rotate(var(--shop-card-rotation))");
+    expect(commerceCss).toContain("--shop-card-float-travel: calc(var(--shop-card-float) * 2)");
+    expect(commerceCss).toContain("translateY(calc(var(--shop-card-float-travel) * -0.5))");
+    expect(commerceCss).toContain("animation-play-state: paused");
+    expect(commerceCss).toContain(".shop-card-position .shop-corner-badge");
+    expect(commerceCss).toContain(".shop-card-position .shop-quantity-badge");
+    expect(commerceCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(commerceCss).toContain(".costume-shop-card::before");
+    expect(commerceCss).toContain("radial-gradient");
+    expect(commerceCss).toContain(".costume-shop-art");
+    expect(commerceCss).toContain(".costume-shop-price");
+    expect(commerceCss).toContain("right: -5px;");
+    expect(commerceCss).toContain("bottom: 4px;");
+    expect(themeCss).toContain(".shop-layout.shop-window-body");
+    expect(themeCss).toContain(".shop-header h2");
+    expect(sidebarWalletSource).toContain(
+      "background: linear-gradient(135deg, #fff8c7, #f6cf6a 42%, #d89b2b 100%) !important"
+    );
+    expect(shopWindowSource).not.toContain("background: #f6cf6a !important");
+    expect(commerceCss).toContain("--shop-sign-image");
+    expect(commerceCss).toContain("--shop-sign-image-scale-x: -1");
+    expect(commerceCss).toContain(".zahira-to-costume");
+    expect(commerceCss).toContain(".costume-to-zahira");
+    expect(costumeStorefrontSource).toMatch(
+      /\.zahira-to-costume\s*\{[^}]*top:\s*auto;[^}]*right:\s*auto;[^}]*left:\s*14px;[^}]*bottom:\s*14px;/s
+    );
+    expect(costumeStorefrontSource).toMatch(
+      /\.costume-to-zahira\s*\{[^}]*top:\s*auto;[^}]*right:\s*14px;[^}]*bottom:\s*14px;[^}]*left:\s*auto;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.zahira-to-costume\s*\{[^}]*right:\s*auto !important;[^}]*bottom:\s*8px !important;[^}]*left:\s*8px !important;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.costume-to-zahira\s*\{[^}]*top:\s*auto !important;[^}]*right:\s*8px !important;[^}]*bottom:\s*8px !important;[^}]*left:\s*auto !important;/s
+    );
+    expect(signpostSource).toMatch(
+      /\.shop-switch-button::before\s*\{[^}]*background:\s*var\(--shop-sign-image\) center \/ contain no-repeat !important;[^}]*clip-path:\s*none !important;[^}]*transform:\s*scaleX\(var\(--shop-sign-image-scale-x\)\) !important;/s
+    );
+    expect(signpostSource).toMatch(/\.shop-switch-button::after\s*\{[^}]*content:\s*none !important;/s);
+    expect(signpostSource).not.toContain("linear-gradient");
+    expect(signpostSource).not.toContain("radial-gradient");
+    expect(commerceCss).toContain(SHOP_DIRECTION_SIGN_IMAGE);
+    expect(signpostSource).toContain("filter: drop-shadow");
+    expect(signpostSource).toMatch(
+      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\) rotate\(-1deg\) !important;[^}]*filter:\s*brightness\(1\.04\) !important;/s
+    );
+    expect(signpostSource).not.toMatch(
+      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*drop-shadow/s
+    );
+    expect(signpostSource).toContain(".shop-switch-button:active");
+    expect(shopWindowSource).toContain("overflow: hidden !important");
+    expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");
+    expect(sidebarWalletSource).toMatch(
+      /:is\(\.shop-mascot-bubble, \.costume-shop-bubble\)\s*\{[^}]*aspect-ratio:\s*var\(--shop-dialogue-frame-aspect\) !important;[^}]*background-image:\s*var\(--shop-dialogue-frame-image\) !important;[^}]*background-size:\s*100% 100% !important;[^}]*border:\s*0 !important;[^}]*font-weight:\s*800 !important;[^}]*text-align:\s*left !important;/s
+    );
+    expect(sidebarWalletSource).toContain(":is(.shop-mascot-bubble, .costume-shop-bubble)::before,");
+    expect(sidebarWalletSource).toContain("content: none !important");
+    expect(sidebarWalletSource).not.toContain("--shop-dialogue-tail-tip");
+    expect(sidebarWalletSource).not.toContain("clip-path: polygon");
+    expect(costumeThemeSource).toMatch(
+      /\.costume-shop-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/nivora-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*1060 \/ 470;/s
+    );
+    expect(costumeThemeSource).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(shopWindowSource).toMatch(
+      /\.shop-mascot-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/zahira-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*1060 \/ 465;/s
+    );
+    expect(shopWindowSource).toContain(SHOP_DIALOGUE_FRAME_IMAGE);
+    expect(shopMobileSource).toMatch(
+      /\.shop-mascot-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.shop-mascot-bubble\s*\{[^}]*width:\s*62% !important;[^}]*padding:\s*13px 22px 27px !important;/s
+    );
+    expect(costumeMobileSource).toMatch(
+      /\.costume-shop-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.costume-shop-bubble\s*\{[^}]*top:\s*35% !important;[^}]*right:\s*3% !important;[^}]*left:\s*auto !important;[^}]*width:\s*54% !important;[^}]*padding:\s*13px 22px 27px !important;/s
+    );
+    expect(shopMobileSource).not.toContain("--shop-dialogue-tail-right");
+    expect(costumeMobileSource).not.toContain("--shop-dialogue-tail-left");
+    expect(themeCss).toContain('.shop-header[data-store="zahira"]');
+    expect(shopBackgroundSource).toContain(
+      "background: linear-gradient(90deg, rgb(211 215 217), rgb(154 139 166) 48%, rgb(215 204 194)) !important"
+    );
+    expect(shopBackgroundSource).not.toContain("zahira-shop-header");
+    expect(shopBackgroundSource).toContain('.shop-header[data-store="costume"]');
+    expect(shopBackgroundSource).toContain("var(--costume-shop-background-image)");
+    expect(shopBackgroundSource).toContain("--shop-header-title: rgb(244, 228, 196)");
+    expect(themeCss).toContain("color: var(--shop-header-title, #3d2b25) !important");
+    expect(themeCss).toContain(SHOP_BACKGROUND_IMAGE);
+    expect(themeCss).toContain(SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(commerceCss).toContain(COSTUME_SHOP_BACKGROUND_IMAGE);
+    expect(commerceCss).toContain(COSTUME_SHOP_MOBILE_BACKGROUND_IMAGE);
+    expect(themeCss).toContain("var(--costume-shop-background-image)");
+    expect(mobileCss).toContain("var(--costume-shop-mobile-background-image)");
+    expect(costumeMobileSource).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .costume-store-panel"
+    );
+    expect(costumeMobileSource).toContain("var(--costume-shop-mobile-background-image)");
+    expect(themeCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
+    expect(themeCss).toContain("display: contents !important");
+    expect(themeCss).toContain(".shop-category-badge-decoration");
+    expect(themeCss).toContain("bottom: 52% !important");
+    expect(themeCss).toContain("--shop-background-image:");
+    expect(themeCss).toContain("--shop-mobile-background-image:");
+    expect(themeCss).toContain(".shop-layout.shop-window-body::before");
+    expect(themeCss).toContain(".shop-layout.shop-window-body::after");
+    expect(shopBackgroundSource).toContain("var(--shop-background-image) center / cover");
+    expect(themeCss).toContain("content: none !important");
+    expect(mobileCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-header .shop-close-button"
+    );
+    expect(shopMobileSource).toContain(
+      "grid-template-columns: 44px minmax(0, 1fr) max-content 44px !important"
+    );
+    expect(shopMobileSource).toContain(".shop-header-balance-value");
+    expect(mobileCss).toContain("position: static !important");
+    expect(mobileCss).toContain("inset: auto !important");
+    expect(themeCss).toContain(".costume-shop-card-trigger:hover");
+    expect(themeCss).toContain("background: transparent !important");
+    expect(themeCss).toContain(".costume-detail-purchase-button");
+    expect(themeCss).toContain(".costume-equip-prompt-modal");
+    expect(themeCss).toContain("width: min(430px, calc(100vw - 32px)) !important");
+    expect(themeCss).toContain("background: #f4cfc4 !important");
+    expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
+    expect(mobileCss).toContain("height: 56% !important");
+    expect(mobileCss).toContain("font-size: clamp(13px, 3.3vw, 16px) !important");
+    expect(mobileCss).toContain("var(--shop-mobile-background-image)");
+    expect(mobileCss).toContain("background-position: 0 0, center !important");
+    expect(mobileCss).toContain("background-size: auto, cover !important");
+    expect(mobileCss).toContain("padding: 0 !important");
+    expect(mobileCss).toContain("gap: 0 !important");
+    expect(mobileCss).toContain("max-width: none !important");
+    expect(mobileCss).toContain(".shop-window .shop-card-scale");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item");
+    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(mobileCss).toContain("justify-content: stretch !important");
+    expect(mobileCss).toContain("justify-items: stretch !important");
+    expect(mobileCss).toContain("grid-template-rows: minmax(0, 1fr) 34px !important");
+    expect(mobileCss).toContain("grid-template-rows: 88px 22px 24px !important");
+    expect(mobileCss).toContain("height: 82px !important");
+    expect(mobileCss).toContain("height: var(--shop-card-height) !important");
+    expect(mobileCss).toContain("min-height: 0 !important");
+    expect(mobileCss).toContain("--shop-card-float-travel: calc(var(--shop-card-float) * 1.5)");
+    expect(costumeMobileSource).toContain("--costume-shop-visual-scale: 1.18");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-card-meta-price-only .shop-price");
+    expect(mobileCss).toContain("justify-content: center !important");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item .primary-action");
+    expect(mobileCss).toContain("width: 100% !important");
+    expect(mobileCss).toContain("justify-self: stretch !important");
+    expect(mobileCss.lastIndexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-item"
+    )).toBeGreaterThan(mobileCss.lastIndexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item"
+    ));
+    expect(mobileCss).toContain("bottom: -2% !important");
+    expect(mobileCss).toContain("height: 30% !important");
+    expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
+    expect(mobileCss).not.toContain("margin-left: -16px !important");
+    expect(mobileCss).toContain("width: 44px !important");
+    expect(mobileCss).toContain("min-height: 44px !important");
+    expect(mobileCss).toContain("min-width: 146px !important");
+    expect(mobileCss).toContain("min-width: 164px !important");
+    expect(mobileCss).toContain(".shop-header h2.is-costume-title");
+    expect(mobileCss).toContain("font-size: clamp(17px, 4.9vw, 22px) !important");
+    expect(mobileCss).toContain(".costume-shop-price");
+    expect(mobileCss).toContain("right: -3px !important");
+    expect(mobileCss).toContain("bottom: 1px !important");
+    expect(mobileCss).not.toContain(".shop-window-body {\n    overflow: auto");
+  });
+
+  it("uses server ownership and stock fields without changing purchase semantics", () => {
+    expect(isShopItemOwned({ category: "character", targetId: "denia" }, { ownedCharacters: ["denia"] })).toBe(true);
+    expect(isShopItemOwned({ category: "decoration", targetId: "paw-stone" }, { ownedDecorations: ["paw-stone"] })).toBe(true);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 0 })).toBe(true);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: -1, remainingStock: -1 })).toBe(false);
+  });
+});
+
+function renderCard(item, user) {
+  return renderToStaticMarkup(createElement(ShopItemCard, {
+    item,
+    purchasingId: "",
+    user,
+    onBuy: () => {},
+    onShowDetail: () => {}
+  }));
+}
+
+function sequenceRandom(values) {
+  let index = 0;
+  return () => values[index++] ?? values.at(-1) ?? 0;
+}
+
+function overlap(a, b) {
+  return a.x < b.x + b.width
+    && a.x + a.width > b.x
+    && a.y < b.y + b.height
+    && a.y + a.height > b.y;
+}
+
+function cardSeparation(a, b) {
+  const horizontal = Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.width, b.x + b.width));
+  const vertical = Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.height, b.y + b.height));
+  return Math.max(horizontal, vertical);
+}
+
+function expectTwoRowTopology(placements, firstRowCount, width) {
+  const top = placements.slice(0, firstRowCount);
+  const bottom = placements.slice(firstRowCount);
+  expect(Math.max(...top.map((placement) => placement.y)) - Math.min(...top.map((placement) => placement.y))).toBeLessThanOrEqual(6);
+  expect(Math.max(...bottom.map((placement) => placement.y)) - Math.min(...bottom.map((placement) => placement.y))).toBeLessThanOrEqual(6);
+  expect(Math.min(...bottom.map((placement) => placement.y))).toBeGreaterThanOrEqual(
+    Math.max(...top.map((placement) => placement.y + placement.height)) + 28
+  );
+  expect(Math.abs(rowCenter(top) - (width / 2))).toBeLessThanOrEqual(32);
+  expect(Math.abs(rowCenter(bottom) - (width / 2))).toBeLessThanOrEqual(32);
+}
+
+function rowCenter(placements) {
+  return placements.reduce((sum, placement) => sum + placement.x + (placement.width / 2), 0) / placements.length;
+}
+
+function webpInfo(path) {
+  const buffer = readFileSync(new URL(path, import.meta.url));
+  const losslessChunk = buffer.indexOf(Buffer.from("VP8L"));
+  if (losslessChunk < 0) return { encoding: "lossy", width: 0, height: 0 };
+  const byte0 = buffer[losslessChunk + 9];
+  const byte1 = buffer[losslessChunk + 10];
+  const byte2 = buffer[losslessChunk + 11];
+  const byte3 = buffer[losslessChunk + 12];
+  return {
+    encoding: "VP8L",
+    width: 1 + (((byte1 & 0x3f) << 8) | byte0),
+    height: 1 + (((byte3 & 0x0f) << 10) | (byte2 << 2) | ((byte1 & 0xc0) >> 6))
+  };
+}

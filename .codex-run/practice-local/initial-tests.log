@@ -1,0 +1,91 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ .codex-run/opening-index-review/server/socketPracticeEvents.test.js (8 tests) 12ms
+ ✓ server/socketPracticeEvents.test.js (9 tests) 13ms
+ ✓ server/roomClockLifecycle.test.js (5 tests) 12ms
+ ✓ .codex-run/opening-index-review/server/roomView.test.js (12 tests) 21ms
+ ✓ .codex-run/opening-index-review/server/roomClockLifecycle.test.js (5 tests) 12ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 140ms
+ ✓ .codex-run/opening-index-review/server/practiceBotDecision.test.js (4 tests) 139ms
+ ❯ server/roomView.test.js (13 tests | 1 failed) 37ms
+   ✓ room view serialization > provides server time only during opening for device-independent countdowns 8ms
+   ✓ room view serialization > exposes rating and match-source metadata 1ms
+   ✓ room view serialization > returns the player-specific board view and player counters 1ms
+   ✓ room view serialization > includes player connection state 1ms
+   ✓ room view serialization > exposes the completed item-effect snapshot for result-only presentation 1ms
+   ✓ room view serialization > serializes each player's room-start costume snapshot 1ms
+   ✓ room view serialization > uses game as the black spectator view and includes only the white alternate view 1ms
+   × room view serialization > projects only safe practice metadata and treats the virtual bot as connected 13ms
+     → expected { botId: 'zhunshibao', …(5) } to deeply equal { botId: 'zhunshibao', …(4) }
+   ✓ room view serialization > exposes only the Sigrika trigger signal and keeps agreement metrics server-side 3ms
+   ✓ room view serialization > keeps the Sigrika duel music silent until the opening skill stage 2ms
+   ✓ room view serialization > treats finished room players as spectator viewers 1ms
+   ✓ room view serialization > builds only the needed color view for players 1ms
+   ✓ room view serialization > builds both color views once for spectators 0ms
+ ✓ .codex-run/opening-index-review/server/roomFactory.test.js (10 tests) 13ms
+ ✓ server/roomFactory.test.js (10 tests) 14ms
+ ✓ .codex-run/opening-index-review/src/app/useMatchActions.test.js (5 tests) 12ms
+ ❯ src/app/useMatchActions.test.js (5 tests | 1 failed) 21ms
+   ✓ match success action helpers > preloads playable resources for the selected mode before joining matchmaking 5ms
+   ✓ match success action helpers > uses the latest pending match room when the countdown completes 0ms
+   × match success action helpers > starts practice through its acknowledged socket contract 11ms
+     → expected "spy" to be called with arguments: [ 'practice:start', …(2) ]
+
+Number of calls: 0
+
+   ✓ match success action helpers > applies a stale special-duel rollback before asking the player to retry 2ms
+   ✓ match success action helpers > returns the occupied state and exact race toast without joining as a spectator 1ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 952ms
+ ✓ .codex-run/opening-index-review/server/practiceBotEngine.test.js (14 tests) 970ms
+ ✓ .codex-run/opening-index-review/server/practiceRoomAutomation.test.js (15 tests) 276ms
+ ✓ server/practiceRoomAutomation.test.js (16 tests) 289ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/roomView.test.js > room view serialization > projects only safe practice metadata and treats the virtual bot as connected
+AssertionError: expected { botId: 'zhunshibao', …(5) } to deeply equal { botId: 'zhunshibao', …(4) }
+
+- Expected
++ Received
+
+  {
+    "botColor": "white",
+    "botId": "zhunshibao",
+    "captureResignThreshold": 22,
+    "difficulty": "beginner",
++   "engineBackend": "server",
+    "humanColor": "black",
+  }
+
+ ❯ server/roomView.test.js:146:27
+    144|     const view = buildRoomView(room, "black-user");
+    145| 
+    146|     expect(view.practice).toEqual({
+       |                           ^
+    147|       botId: "zhunshibao",
+    148|       difficulty: "beginner",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/app/useMatchActions.test.js > match success action helpers > starts practice through its acknowledged socket contract
+AssertionError: expected "spy" to be called with arguments: [ 'practice:start', …(2) ]
+
+Number of calls: 0
+
+ ❯ src/app/useMatchActions.test.js:66:25
+     64| 
+     65|     expect(setMatchStart).toHaveBeenCalledWith({ startedAt: 55, mode: …
+     66|     expect(socket.emit).toHaveBeenCalledWith(
+       |                         ^
+     67|       "practice:start",
+     68|       { difficulty: "beginner", playerColor: "random" },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 14 passed (16)
+      Tests  2 failed | 147 passed (149)
+   Start at  09:26:00
+   Duration  4.93s (transform 3.42s, setup 0ms, collect 14.32s, tests 2.93s, environment 5ms, prepare 3.52s)
+
