@@ -11,7 +11,7 @@
     battle: '试下棋子或使用技能，观察半身立绘与信息卡。',
     team: '切换出战角色，比较三张头肩裁切。',
     result: '切换胜负，查看结算时的表情与构图。',
-    handbook: '点开角色详情，查看完整立绘和表情。',
+    handbook: '点击部员证查看详情，或直接选择出战角色。',
     student: '点击学生证打开履历；可切换三名出战角色。',
     resume: '切换角色、战绩模式或空状态，检查头像与信息布局。'
   };
@@ -125,6 +125,7 @@
     const button = event.target.closest('[data-action]');
     if (!button || button.disabled) return;
     const { action, value } = button.dataset;
+    const handbookScrollTop = scene.querySelector('.handbook-grid')?.scrollTop || 0;
     if (action === 'set-expression') { void setExpression(value); return; }
     if (action === 'set-scene') {
       setScene(value);
@@ -140,8 +141,10 @@
       state.handbookExpressions = false;
       state.expression = 'smile';
     } else if (action === 'handbook-sortie') {
-      state.sortieId = state.characterId;
-      toast(`${names[state.characterId]}已出战，仅在样板中生效。`);
+      const memberId = value || state.characterId;
+      if (!catalog[memberId]) return;
+      state.sortieId = memberId;
+      toast(`${catalog[memberId].name}已出战，仅在样板中生效。`);
     } else if (action === 'toggle-handbook-expressions') state.handbookExpressions = !state.handbookExpressions;
     else if (action === 'view-full-art') state.fullArt = true;
     else if (action === 'close-full-art') state.fullArt = false;
@@ -176,6 +179,10 @@
     else if (action === 'demo-note') { toast(button.dataset.message || '这里仅展示界面。'); return; }
     else return;
     render();
+    if (action === 'handbook-sortie' && value) {
+      scene.querySelector('.handbook-grid').scrollTop = handbookScrollTop;
+      document.querySelector(`.member-${value} .handbook-member-open`)?.focus({ preventScroll: true });
+    }
     if (action === 'close-full-art') document.querySelector('[data-action="view-full-art"]').focus({ preventScroll: true });
   });
   document.addEventListener('keydown', event => {

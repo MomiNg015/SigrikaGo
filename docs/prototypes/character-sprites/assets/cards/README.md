@@ -1,0 +1,13 @@
+# 浅色横版学生证底图
+
+交付资产：`student-id-light.png`。内置 `imagegen` 生成，保留透明外缘；角色、姓名和出战按钮均由样板叠加，未烘焙到图片。浅色主题适合深色姓名与原透明角色图，色相滤镜仅作用于此底图。
+
+笔触参考仓库已有 `public/assets/home/student-id-hanging.png`、`public/assets/home/student-id-nameplate.png`；版式参考用户附图。参考中的学部、生日、联系地、条码和人物均未进入底图。
+
+图像输出：`C:/Users/Moming/.codex/generated_images/01a0fbc7-ae53-71a3-90eb-82bdaae98b51/exec-eef7f841-33b9-46c1-9894-8b8b0c303bce.png`，原样复制到本目录。样板以 CSS 调整透明留白和站位，并定义西格莉卡暖橙、达妮娅淡紫、爱弥斯浅青主题；不是正式角色资源合同。
+
+最终提示词：
+
+```text
+Generate an original EMPTY Star Torch Academy character student-ID UI card skin. Reference 1 (hanging student ID) and Reference 2 (long paper nameplate) are the PRIMARY ART STYLE guides: match their visible hand-painted colored-pencil/gouache strokes, tactile chalky pastel pigments, softly irregular umber pencil outlines, paper edges and modest illustrated craftsmanship. This must read as a hand-painted GAME PROP, not a crisp vector UI, not fancy vintage stationery, not a watercolor invitation. Reference 3 is ONLY the LAYOUT guide: landscape aspect ratio 1.85:1; left roughly 38% reserved for a large half-body character portrait; right 62% reserved for character name near the top and a button below it. Keep a gentle curved or angular divider similar to the reference. Make ALL areas LIGHT, including the portrait area and the top-right name area: ivory paper, very pale warm peach and light sandy orange accents for Sigrika. Absolutely NO dark purple, navy, black filled panels or dark banners. Names will be dark umber live UI text. Keep the interior clean and sparse, with >85% of it quiet blank paper. Academy identity through 3-4 restrained fine hand-drawn geometric tech lines (right angles, one small circular node, one thin partial orbit) near the OUTER corners and a very small four-point star emblem in a pale orange square near the top-left, echoing reference 1's school graphic language. No floral motifs, no leaves, no ornamental gold filigree, no dense stars. Add a subtle pencil photo boundary around the left 35% region, but leave it completely empty. The right name area may have a very pale peach wash, NEVER dark. Keep the right lower area blank for a real DOM button. NO TEXT AT ALL: no school name, no character name, no department, no birthday, no address, no numbers, no barcode, no placeholder labels, NO PEOPLE OR SILHOUETTES, NO BUTTON GRAPHIC. Flat front-facing orthographic single physical card filling the image with only a tiny transparent outside margin. Genuinely transparent outside the rounded physical card silhouette; opaque pale paper inside. No lanyard, no perspective, no shadow, no surrounding desk. Render the same simple light warm hand-painted school-prop finish as references 1 and 2.
+```

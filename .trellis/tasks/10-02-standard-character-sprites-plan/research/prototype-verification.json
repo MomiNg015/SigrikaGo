@@ -4,6 +4,7 @@
   "scope": "Independent local prototype; production app, API, database and runtime assets unchanged",
   "browser": "Codex in-app browser",
   "viewports": [
+    { "width": 320, "height": 800, "mode": "phone" },
     { "width": 1440, "height": 960, "mode": "desktop" },
     { "width": 1400, "height": 920, "mode": "desktop" },
     { "width": 900, "height": 900, "mode": "desktop" },
@@ -20,7 +21,9 @@
     "allExpressionImagesLoaded": true,
     "secondaryCharacterMapping": { "denia": "denia", "amis": "aemeath" },
     "rasterImagesEdited": false,
-    "productionDerivedAssetsCreated": false
+    "productionDerivedAssetsCreated": false,
+    "generatedPrototypeCardSkins": 1,
+    "cardSkin": { "file": "assets/cards/student-id-light.png", "width": 1706, "height": 922, "bytes": 1896355, "rgba": true }
   },
   "checks": {
     "storyAdvanceAndBack": "passed",
@@ -31,7 +34,13 @@
     "skillSeriousExpressionBannerAndDisable": "passed",
     "threeCharacterTeamSelection": "passed",
     "winLossDrawExpressionMapping": "passed",
-    "handbookNineMemberGridAndPhone88pxCards": "passed",
+    "handbookNineMemberGridAndPhone88pxCards": "superseded by horizontal student-ID cards",
+    "handbookStudentIdCardLayoutAndThemes": "passed",
+    "handbookSortieDoesNotOpenDetails": "passed",
+    "handbookCardButtonsAreSiblings": "passed",
+    "handbookSortiePreservesScroll": "passed; 926px before and after selecting last member",
+    "handbookCardRowsDoNotOverlap": "passed at 320, 360, 390, 900 and 1440px",
+    "handbookCardNameAndButtonDoNotOverlap": "passed at 320, 360, 390, 900 and 1440px",
     "handbookThreeCharacterNineExpressionSwitches": "passed",
     "handbookFullArtEscapeAndFocusRestore": "passed",
     "handbookDetailScrollAndReturnToGrid": "passed",
@@ -58,6 +67,8 @@
     "Reset handbook navigation to grid on scene entry",
     "Clear skill timer and restore the prior expression after skill presentation",
     "Use focusable native scrolling in handbook details and resume records",
+    "Use light hand-painted card skin based on existing student ID and nameplate",
+    "Preserve list scroll position after sortie and override shared hover specificity",
     "Support direct scene links and narrow physical browser viewports"
   ],
   "intentionalDesignExceptions": [
@@ -65,6 +76,6 @@
   ],
   "screenshots": {
     "directory": "C:/Users/Moming/.codex/visualizations/2026/10/02/01a0fbc7-ae53-71a3-90eb-82bdaae98b51/character-sprite-sample",
-    "files": ["story-desktop.jpg", "battle-phone.jpg", "team-phone.jpg", "result-phone.jpg", "handbook-desktop.jpg", "handbook-detail-desktop.jpg", "handbook-phone.jpg", "student-desktop.jpg", "resume-desktop.jpg", "resume-phone.jpg"]
+    "files": ["story-desktop.jpg", "battle-phone.jpg", "team-phone.jpg", "result-phone.jpg", "handbook-desktop.jpg", "handbook-detail-desktop.jpg", "handbook-phone.jpg", "student-desktop.jpg", "resume-desktop.jpg", "resume-phone.jpg", "handbook-id-desktop.jpg", "handbook-id-phone.jpg"]
   }
 }

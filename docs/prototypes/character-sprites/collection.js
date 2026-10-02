@@ -11,9 +11,10 @@
     const { state, art } = context;
     const character = catalog[state.characterId];
     if (!state.handbookOpen) {
-      return `<section class="scene-collection scene-handbook" aria-label="部员手册样板"><header class="collection-window-header">${title('部员手册')}<span>当前出战 · ${catalog[state.sortieId].name}</span></header><div class="handbook-grid">${Object.values(catalog).map(member => {
+      return `<section class="scene-collection scene-handbook" aria-label="部员手册样板"><header class="collection-window-header">${title('部员手册')}<span>当前出战 · ${catalog[state.sortieId].name}</span></header><div class="handbook-grid" tabindex="0" aria-label="角色学生证列表">${Object.values(catalog).map(member => {
         const standard = !!member.expressions;
-        return `<button class="handbook-member${state.sortieId === member.id ? ' is-sortie' : ''}" data-action="${standard ? 'open-handbook' : 'demo-note'}" data-value="${member.id}" data-message="这轮先展示西格莉卡、达妮娅和爱弥斯的详情。" aria-label="查看${member.name}详情"><div class="handbook-member-portrait">${standard ? art(member.id, 'smile', 'avatar') : `<img src="${member.legacyPortrait}" alt="">`}</div><strong>${member.name}</strong><small>${escape(member.skill.name)}</small>${state.sortieId === member.id ? '<span class="handbook-sortie">出战</span>' : ''}</button>`;
+        const selected = state.sortieId === member.id;
+        return `<article class="handbook-member member-${member.id}${selected ? ' is-sortie' : ''}${standard ? '' : ' member-legacy'}" aria-label="${member.name}部员证"><img class="student-id-skin" src="./assets/cards/student-id-light.png" alt="" draggable="false"><button class="handbook-member-open" data-action="${standard ? 'open-handbook' : 'demo-note'}" data-value="${member.id}" data-message="这轮先展示西格莉卡、达妮娅和爱弥斯的详情。" aria-label="查看${member.name}详情"><span class="handbook-member-portrait">${standard ? art(member.id, 'smile', 'bust') : `<img src="${member.legacyPortrait}" alt="">`}</span><strong class="student-id-name">${member.name}</strong><span class="student-id-school">星炬学院</span></button><button class="handbook-card-sortie" data-action="handbook-sortie" data-value="${member.id}" aria-label="${selected ? member.name + '已出战' : '派' + member.name + '出战'}" ${selected ? 'disabled' : ''}>${selected ? '✓ 已出战' : '出战'}</button></article>`;
       }).join('')}</div></section>`;
     }
     const expressionButtons = Object.entries(character.expressions).map(([key, label]) => `<button data-action="set-expression" data-value="${key}" aria-pressed="${state.expression === key}">${label}</button>`).join('');
