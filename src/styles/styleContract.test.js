@@ -634,19 +634,23 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/battle-paper-portrait.css",
       "./mobile-adaptive/battle-paper-panels.css",
       "./mobile-adaptive/battle-paper-panels-mobile.css",
+      "./mobile-adaptive/battle-paper-player-mobile.css",
+      "./mobile-adaptive/battle-paper-skill-mobile.css",
+      "./mobile-adaptive/battle-paper-nameplate-mobile.css",
       "./mobile-adaptive/home-student-id.css",
       "./mobile-adaptive/guided-actions.css",
       "./mobile-adaptive/window-bookmarks.css",
       "./mobile-adaptive/window-empty-states.css",
       "./mobile-adaptive/sigrika-corruption.css",
-      "./mobile-adaptive/home-onboarding.css"
+      "./mobile-adaptive/home-onboarding.css",
+      "./mobile-adaptive/battle-info-typography.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/home-onboarding.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/battle-info-typography.css");
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");
@@ -1514,7 +1518,8 @@ describe("root CSS entry contract", () => {
       "./room/actions-requests.css",
       "./room/people-floating-replay.css",
       "./room/chat-responsive.css",
-      "./room/team-match.css"
+      "./room/team-match.css",
+      "./room/team-portraits.css"
     ]);
     expect(tutorialBattleSource).toContain('import "../styles/room/tutorial-battle-screen.css";');
     expect(cssImports(tutorialBattleEntry)).toEqual([

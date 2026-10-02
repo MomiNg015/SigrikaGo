@@ -1,0 +1,18 @@
+/* Reuse WuWa only for digits; all other glyphs fall back to LXGW. */
+@font-face {
+  font-family: "Battle WuWa Digits";
+  src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0030-0039;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen.room-screen .player-info.player-info,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen.room-screen .player-info.player-info * {
+  font-family: "Battle WuWa Digits", var(--font-window-title), sans-serif !important;
+}
+
+/* Mobile numeric values use the regular WuWa face, without synthesized bold. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info[data-paper-player] :is(.timer-periods, .captures > *, .player-skill-count, .rank-tag, .rating-tag) {
+  font-weight: 400 !important;
+}

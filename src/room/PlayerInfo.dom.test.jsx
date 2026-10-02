@@ -21,6 +21,10 @@ import PlayerInfo from "./PlayerInfo.jsx";
 
 describe("PlayerInfo mobile skill traits", () => {
   beforeEach(() => {
+    vi.stubGlobal("ResizeObserver", class {
+      observe() {}
+      disconnect() {}
+    });
     vi.stubGlobal("matchMedia", vi.fn(() => ({
       matches: true,
       addEventListener: vi.fn(),

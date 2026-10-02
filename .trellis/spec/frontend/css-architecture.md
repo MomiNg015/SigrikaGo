@@ -270,3 +270,20 @@ Story modal grids reserve an `auto` final action track rather than a fractional 
 Story continue/finish controls keep width: 100% without a fixed maximum width, filling the same footer as the choices.
 
 Story and battle continue/continue-now controls share the 18px outline Play glyph with aria-hidden. Explicit continue choices use it too; ordinary replies retain MessageCircle.
+
+### Portrait board geometry
+Keep board-stage and board-wrap square through width plus aspect-ratio, with height:auto. Use explicit minmax(0,1fr) tracks on the board slot and stage: min(100%,size) inside auto intrinsic grid tracks can collapse the board. Test both ordinary 320-900px portrait widths and a constrained 280px parent. Team portraits use the approved staggered-paper B design: disable the ordinary arched backing and use three separate diagonal paper masks in fixed lineup order. Mobile team rows are 108px high with 88–108px wide, 96px high artwork; single portraits keep their original geometry. Keep images upright inside masks; only finished slots become grayscale, and hidden slots never resolve an image.
+
+Team portrait presentation lives in room/team-portraits.css, imported immediately after team-match.css. The split keeps each concrete file below 6000 bytes. Diagonal masks replace the rejected main-plus-thumbnails design without changing board geometry.
+
+Selected compact A mobile layout lives in battle-paper-player-mobile.css: avatar left, four compact rows right (identity, clock, three statistics, skill), separate cards with 4px gaps and no rotation. Identity colors follow stone color; only active clock becomes yellow; overclock is pink; skill uses character accent gradient. Keep TimeBar progress and warning semantics. Board width is viewport-led, not reduced by player strip height.
+
+Compact mobile cards now use two rows, with the avatar spanning both. Identity and timer share the upper grid area with explicit 60/40 widths excluding the 4px gap; statistics and skill share the lower area. Keep stat labels and values inline. Skill presentation lives in battle-paper-skill-mobile.css to keep each owner below 6000 bytes.
+
+Mobile identity stone-color overrides must exclude .has-nameplate names and their ancestors. Nameplate text-fill uses currentColor so the nameplate palette and text-shadow remain authoritative. Verify actual UserIdentity markup with decorated and plain names; plain text fixture names cannot validate this contract.
+
+BattleUserIdentity measures untransformed content and scales the whole mobile identity uniformly. Do not set independent width/height overrides on nameplate artwork; full names remain single-line without ellipsis.
+
+A 4px mobile timer track must reset legacy 2px borders to zero; otherwise border-box content height becomes zero despite correct inline progress width. Verify rendered fill height and width ratios across changing main/byo-yomi values, not merely display:block.
+
+Battle identities temporarily disable nameplates through UserIdentity showNameplate=false. battle-info-typography.css defines a digit-only WuWa face (U+0030-0039) followed by the existing LXGW title face, keeping Latin names in LXGW while using WuWa for all numeric glyphs.

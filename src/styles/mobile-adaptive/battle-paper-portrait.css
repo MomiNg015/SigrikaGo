@@ -1,6 +1,6 @@
 /* Breakout character artwork and its paper name label. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
-  & .portrait-wrap:not(.no-character):not(:has(.team-portrait-strip)) {
+  & .portrait-wrap:not(.no-character) {
     height: clamp(180px, 20vw, 250px) !important;
     min-height: 0 !important;
     width: 100% !important;
@@ -12,6 +12,8 @@
     isolation: isolate;
     clip-path: none !important;
     padding: 0 !important;
+
+    &:has(.team-portrait-display)::before { display: none; }
 
     &::before {
       content: "";

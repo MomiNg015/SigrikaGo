@@ -1,0 +1,53 @@
+/* Approved B: separate staggered paper slices, ordered left to right. */
+.team-portrait-display { position: absolute; inset: 0; isolation: isolate; filter: drop-shadow(2px 3px 0 color-mix(in srgb, var(--bright-ink) 20%, transparent)); }
+.team-portrait-strip { position: absolute; inset: 6px 0; }
+.team-portrait-slot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bright-blue) 14%, var(--bright-paper));
+  border-block: 1px solid var(--bright-border);
+}
+.team-portrait-slot:nth-child(1) {
+  --team-art-left: -18.333%;
+  --team-center: 16.667%;
+  clip-path: polygon(0 7%, 40% 0, 22% 94%, 0 100%);
+}
+.team-portrait-slot:nth-child(2) {
+  --team-art-left: 15%;
+  --team-center: 50%;
+  clip-path: polygon(44% 3%, 75% 0, 55% 100%, 25% 97%);
+}
+.team-portrait-slot:nth-child(3) {
+  --team-art-left: 48.333%;
+  --team-center: 83.333%;
+  background: color-mix(in srgb, var(--bright-pink) 18%, var(--bright-paper));
+  clip-path: polygon(79% 5%, 100% 0, 100% 96%, 59% 100%);
+}
+.team-portrait-slot.is-active { background: color-mix(in srgb, var(--bright-yellow) 40%, var(--bright-paper)); }
+.team-portrait-slot.is-finished .team-portrait-art { filter: grayscale(1); opacity: 0.55; }
+.team-portrait-art { position: absolute; left: var(--team-art-left); bottom: 0; width: 70%; height: 100%; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap .team-portrait-art > img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.team-portrait-mystery {
+  position: absolute;
+  left: var(--team-center);
+  top: 50%;
+  translate: -50% -50%;
+  color: var(--bright-ink);
+  font-size: clamp(18px, 3vw, 36px);
+  font-weight: 800;
+}

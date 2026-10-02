@@ -1,0 +1,82 @@
+/* Compact A mobile cards. */
+@media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+    display: grid !important;
+    grid-template-columns: clamp(56px, 16vw, 68px) minmax(0, 1fr) !important;
+    grid-template-rows: 48px 34px !important;
+    grid-template-areas: "portrait upper" "portrait lower" !important;
+    gap: 6px 6px !important;
+    height: auto !important;
+    min-height: 94px !important;
+    max-height: none !important;
+    padding: 2px 4px 4px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    translate: none !important;
+    &::before { display: none !important; }
+    & .player-clock-panel { display: contents; }
+    & .portrait-wrap:not(.no-character), & .portrait-wrap.no-character {
+      grid-area: portrait !important;
+      height: 88px !important;
+      width: 100% !important;
+      align-self: center;
+      margin: 0 !important;
+      z-index: 1;
+    }
+    & .portrait-wrap > img { height: 88px !important; }
+    & .battle-character-label { font-size: 10px; padding: 2px 5px; }
+    &:has(.black-portrait) { --identity-bg: #252321; --identity-ink: #fffaf0; }
+    &:has(.white-portrait) { --identity-bg: #fffaf0; --identity-ink: #302820; }
+    & .player-meta {
+      grid-area: upper !important; width: calc((100% - 4px) * 0.6); height: 48px !important; justify-self: start;
+      display: grid !important;
+      grid-template-columns: 12px minmax(0, 1fr) auto !important;
+      grid-template-rows: minmax(0, 1fr) !important;
+      align-items: center !important;
+      gap: 3px !important;
+      min-width: 0;
+      margin: 0 !important;
+      padding: 6px 7px !important;
+      background: var(--identity-bg) !important;
+      color: var(--identity-ink) !important;
+      border: 1px solid var(--bright-border) !important;
+      border-radius: 3px !important;
+      box-shadow: 1px 2px 0 color-mix(in srgb, var(--bright-border) 55%, var(--bright-paper)) !important;
+      rotate: 0deg;
+    }
+    & .player-meta :is(.name-button:not(:has(.has-nameplate)), .rank-tag, .user-identity:not(.has-nameplate) .user-identity-name) { color: var(--identity-ink) !important; -webkit-text-fill-color: var(--identity-ink) !important; text-shadow: none !important; }
+    & .player-meta .rating-tag.meta-placeholder { display: none !important; }
+    & .player-meta .rank-tag { background: transparent !important; border: 0 !important; }
+    & .player-meta .color-badge { display: block !important; grid-area: 1 / 1 !important; width: 12px !important; height: 12px !important; }
+    & .player-meta .name-button { grid-area: 1 / 2 !important; min-width: 0; font-size: 12px !important; overflow: visible; white-space: nowrap; }
+    & .player-meta .rank-tag { grid-area: 1 / 3 !important; font-size: 11px !important; }
+    & .digital-timer {
+      grid-area: upper !important; width: calc((100% - 4px) * 0.4); height: 48px !important; justify-self: end;
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      grid-template-rows: 1fr 4px !important;
+      gap: 2px 6px !important;
+      padding: 6px 9px !important;
+      background: var(--bright-paper) !important;
+      border: 1px solid var(--bright-border) !important;
+      border-radius: 5px !important;
+      box-shadow: 1px 2px 0 color-mix(in srgb, var(--bright-border) 55%, var(--bright-paper)) !important;
+      rotate: 0deg;
+      min-width: 0;
+    }
+    &.active-turn .digital-timer { background: var(--bright-yellow, #fff0a6) !important; box-shadow: 3px 3px 0 var(--bright-border) !important; }
+    & .timer-label { display: block !important; grid-area: 1 / 1 !important; font-size: 11px !important; align-self: center; }
+    & .timer-digits { grid-area: 1 / 2 !important; justify-content: flex-end !important; min-width: 0; }
+    & .timer-primary { font-size: 24px !important; font-family: "Battle WuWa Digits", var(--font-window-title), sans-serif !important; font-weight: 400 !important; font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+    & .timer-periods { font-size: 12px !important; }
+    & .timer-track { border: 0 !important; margin: 0 !important; padding: 0 !important; min-width: 0 !important; display: block !important; grid-area: 2 / 1 / 3 / 3 !important; width: 100% !important; height: 4px !important; background: color-mix(in srgb, var(--bright-border) 16%, transparent) !important; border-radius: 3px; overflow: hidden; }
+    & .timer-track > span { display: block !important; height: 100% !important; }
+    & .captures { grid-area: lower !important; width: calc((100% - 4px) * 0.6); justify-self: start; display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; overflow: visible !important; }
+    & .captures > * { display: flex !important; flex-direction: row; justify-content: space-between !important; align-items: center; min-width: 0 !important; min-height: 34px !important; padding: 5px 5px !important; font-size: 14px !important; gap: 2px !important; border: 1px solid var(--bright-border) !important; border-radius: 4px !important; background: var(--bright-paper) !important; box-shadow: 1px 2px 0 color-mix(in srgb, var(--bright-border) 55%, var(--bright-paper)) !important; }
+    & .captures strong { font-size: 10px !important; font-weight: 400; white-space: nowrap; }
+    & .captures > :nth-child(2) { background: color-mix(in srgb, var(--bright-blue) 12%, var(--bright-paper)) !important; }
+    & .captures > :nth-child(3) { background: color-mix(in srgb, #ef92b3 35%, var(--bright-paper)) !important; }
+  }
+}

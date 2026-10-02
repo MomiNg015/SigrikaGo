@@ -4,6 +4,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import TimeBar from "./TimeBar.jsx";
 
 describe("TimeBar", () => {
+  it("updates progress through main time and each byo-yomi period", () => {
+    expect(renderTimeBar({ main: 225, mainTotal: 300 })).toContain('width:75%');
+    expect(renderTimeBar({ main: 75, mainTotal: 300 })).toContain('width:25%');
+    expect(renderTimeBar({ main: 0, byoYomi: 30, periodRemaining: 15, periods: 3 })).toContain('width:50%');
+    expect(renderTimeBar({ main: 0, byoYomi: 30, periodRemaining: 3, periods: 1 })).toContain('width:10%');
+  });
   it("marks main time, warning byo-yomi, and final byo-yomi states", () => {
     expect(renderTimeBar({ main: 231, byoYomi: 30, periodRemaining: 30, periods: 3 }))
       .toContain("main-time");

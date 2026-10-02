@@ -1,0 +1,9 @@
+/* Compact skill card shares the second row with statistics. */
+@media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+    & .skill-chip-wrap { grid-area: lower !important; width: calc((100% - 4px) * 0.4); justify-self: end !important; margin: 0 !important; min-width: 0; }
+    & .skill-chip-wrap .skill-chip { display: flex !important; align-items: center; width: 100%; min-height: 34px !important; padding: 5px 7px !important; gap: 3px !important; background: linear-gradient(110deg, color-mix(in srgb, var(--skill-chip-accent, var(--player-accent)) 16%, var(--bright-paper)), color-mix(in srgb, var(--skill-chip-accent, var(--player-accent)) 42%, var(--bright-paper))) !important; border: 1px solid var(--bright-border) !important; border-radius: 5px !important; box-shadow: 1px 2px 0 color-mix(in srgb, var(--player-accent) 45%, var(--bright-border)) !important; justify-content: center !important; text-align: center; rotate: 0deg; }
+    & .player-skill-name { flex: 0 1 auto; min-width: 0; font-size: 11px !important; overflow: hidden; text-overflow: ellipsis; }
+    & .player-skill-count { flex: none; white-space: pre; font-size: 12px !important; }
+  }
+}

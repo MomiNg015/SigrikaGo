@@ -39,25 +39,6 @@
 .team-lineup-picker .team-character-option:active:not(:disabled) { transform: translateY(3px) scale(0.95); }
 .team-lineup-picker .team-character-option:focus-visible { outline: 2px solid var(--bright-ink); outline-offset: 2px; }
 .team-character-options .team-order-badge { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid #111; border-radius: 50%; background: var(--bright-cream, #fff6dd); color: #111; font-size: 16px; line-height: 1; }
-.player-info .portrait-wrap .team-portrait-strip { position: relative; width: 100%; height: var(--side-portrait, 240px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: hidden; }
-.player-info .portrait-wrap .team-portrait-slot { position: relative; min-width: 0; height: 100%; overflow: hidden; }
-.player-info .portrait-wrap .team-portrait-slot + .team-portrait-slot { border-left: 1px solid currentColor; }
-.player-info .portrait-wrap .team-portrait-slot img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center top; }
-.player-info .portrait-wrap .team-portrait-slot.is-inactive { filter: grayscale(1); }
-.team-portrait-mystery { display: grid; place-items: center; width: 100%; height: 100%; font-size: 2rem; font-weight: 800; }
-.battle-layout .team-portrait-strip { isolation: isolate; }
-.battle-layout .team-portrait-slot { transform: skewX(-7deg); }
-.battle-layout .black-portrait .team-portrait-slot + .team-portrait-slot { border-left-color: var(--bright-paper); }
-.battle-layout .team-portrait-slot:first-child { margin-left: -12px; padding-left: 12px; }
-.battle-layout .team-portrait-slot:last-child { margin-right: -12px; padding-right: 12px; }
-.battle-layout .team-portrait-art { position: absolute; inset: 0; transform: skewX(7deg); }
-.battle-layout .player-info .portrait-wrap .team-portrait-art img { inset: auto; top: 50%; left: 50%; width: auto; height: 100%; max-width: none !important; max-height: none; object-fit: contain; object-position: center; translate: -50% -50%; }
-.battle-layout .team-portrait-mystery { transform: skewX(7deg); }
-@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
-  .mobile-room-screen .player-info .portrait-wrap .team-portrait-strip { height: 46px; }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap .team-portrait-slot img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
-  .mobile-room-screen .team-portrait-mystery { font-size: 1.25rem; }
-}
 @media (max-width: 620px) {
   .team-lineup-picker { padding: 12px; gap: 16px; }
   .team-lineup-slots { gap: 6px; }

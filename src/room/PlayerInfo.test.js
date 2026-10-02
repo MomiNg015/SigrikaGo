@@ -16,6 +16,34 @@ const noop = () => {};
 const characters = {};
 
 describe("PlayerInfo labels", () => {
+  it("keeps equipped nameplate backgrounds out of the battle identity", () => {
+    const props = playerInfoProps();
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, {
+      ...props,
+      player: { ...props.player, user: { username: "moming", achievementEquipmentAssets: { nameplate: { id: "equipped", imageUrl: "/nameplate.png" } } } }
+    }));
+    expect(markup).toContain("moming");
+    expect(markup).not.toContain("has-nameplate");
+    expect(markup).not.toContain("user-identity-nameplate-background");
+  });
+  it("shows three ordered portrait slices without revealing hidden members", () => {
+    const lineup = [
+      { characterId: "sigrika", character: CHARACTERS.sigrika, status: "finished" },
+      { characterId: "aemeath", character: CHARACTERS.aemeath, status: "active" },
+      { characterId: null, character: null, status: "hidden" }
+    ];
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: { ...playerInfoProps().player, characterId: "aemeath", character: CHARACTERS.aemeath, teamLineup: lineup }
+    })));
+    expect(markup).not.toContain('class="team-portrait-main"');
+    expect(markup).toContain(`alt="${CHARACTERS.aemeath.name}"`);
+    expect(markup).toContain('class="team-portrait-slot is-finished"');
+    expect(markup).toContain('class="team-portrait-slot is-active"');
+    expect(markup).toContain('aria-label="第3位：未揭晓"');
+    expect(markup).toContain('class="team-portrait-mystery">?</span>');
+    expect((markup.match(/class="team-portrait-slot /g) ?? [])).toHaveLength(3);
+  });
+
   it.each(["spark", "standard", "gomoku"])("keeps timer semantics and mode counters inside the %s clock", (mode) => {
     const markup = renderToStaticMarkup(createElement(PlayerInfo, {
       player: { color: COLORS.black, characterId: "sigrika", user: { username: "玩家", rank: "7段", rating: 826 }, captures: 2, time: { unlimited: true } },
@@ -232,7 +260,7 @@ describe("PlayerInfo labels", () => {
     expect(markup).not.toContain("character-chain-badge");
   });
 
-  it("keeps mobile battle usernames complete and passive, including equipped nameplates", () => {
+  it("keeps mobile battle usernames complete and passive without equipped backgrounds", () => {
     const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
       player: {
         ...playerInfoProps().player,
@@ -255,7 +283,7 @@ describe("PlayerInfo labels", () => {
 
     expect(markup).toContain("name-button player-name");
     expect(markup).toContain("Moming88");
-    expect(markup).toContain("has-nameplate");
+    expect(markup).not.toContain("has-nameplate");
     expect(markup).not.toContain("<button class=\"name-button");
     expect(mobileCss).toContain(".mobile-room-screen .player-name .user-identity-name");
     expect(mobileCss).toContain("overflow-wrap: anywhere");
@@ -491,7 +519,8 @@ describe("PlayerInfo labels", () => {
 
     expect(markup).toContain("timer-track");
     expect(markup).toContain("timer-digits text-clock-value");
-    expect(markup).toContain("rating-tag text-rating-value");
+    expect(markup).toContain('class="meta-tag rank-tag">3段</span>');
+    expect(markup).not.toContain("rank-progress");
     expect(cssBlock(roomCss, ".digital-timer")).toContain("align-content: center");
     expect(cssBlock(roomCss, ".digital-timer")).not.toContain("place-content: center");
     expect(cssBlock(roomCss, ".timer-digits")).toContain("align-items: baseline");

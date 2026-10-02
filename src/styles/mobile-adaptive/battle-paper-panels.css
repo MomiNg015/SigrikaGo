@@ -9,21 +9,21 @@
   overflow: visible !important;
 
   & .player-meta {
-    position: relative;
-    z-index: 2;
-    margin: -8px 24px 0 0;
-    rotate: -2deg;
-    display: grid !important;
-    grid-template-columns: auto minmax(0, 1fr) auto auto !important;
-    grid-template-rows: auto !important;
-    align-items: center !important;
-    gap: 6px !important;
-    min-width: 0;
-    padding: 9px 10px !important;
-    background: linear-gradient(110deg, var(--bright-paper), color-mix(in srgb, var(--player-accent) 16%, var(--bright-paper))) !important;
-    border: 1px solid var(--bright-border) !important;
-    border-radius: 8px 14px 4px 4px !important;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--bright-ink) 20%, transparent) !important;
+  position: relative;
+  z-index: 2;
+  margin: -8px 24px 0 0;
+  rotate: -2deg;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+  grid-template-rows: auto !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 0;
+  padding: 9px 10px !important;
+  background: linear-gradient(110deg, var(--bright-paper), color-mix(in srgb, var(--player-accent) 16%, var(--bright-paper))) !important;
+  border: 1px solid var(--bright-border) !important;
+  border-radius: 8px 14px 4px 4px !important;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--bright-ink) 20%, transparent) !important;
   }
   & .player-meta .name-button { grid-area: 1 / 2 !important; min-width: 0; }
   & .player-meta .color-badge { grid-area: 1 / 1 !important; width: 14px !important; height: 14px !important; }
@@ -32,89 +32,91 @@
   & .player-meta .meta-tag { min-width: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; font-size: 11px !important; }
 
   & .player-clock-panel {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 52px;
-    align-items: center;
-    min-width: 0;
-    --clock-wash: var(--bright-sheet);
-    background: linear-gradient(125deg, color-mix(in srgb, var(--bright-paper) 65%, transparent), transparent 65%), repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--bright-ink) 3%, transparent) 3px 4px), var(--clock-wash);
-    border: 2px solid var(--bright-border);
-    border-radius: 14px;
-    translate: 3px 3px;
-    margin: -5px 0 0 14px;
-    padding: 18px 14px 22px;
-    gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  margin: -5px 0 0 14px;
+  gap: 12px;
   }
-  & .player-clock-panel:not(:has(.captures)) { grid-template-columns: minmax(0, 1fr); }
-
-  &.active-turn .player-clock-panel {
-    --clock-wash: #fff0a6;
-    box-shadow: 3px 3px 0 var(--bright-border);
-    translate: 0 0;
-  }
-
   & .digital-timer {
-    display: grid !important;
-    grid-area: auto !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto !important;
-    gap: 6px !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
+  display: grid !important;
+  grid-area: auto !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: auto auto 6px !important;
+  gap: 6px !important;
+  padding: 10px 14px !important;
+  rotate: -1.5deg;
+  background: var(--bright-sheet) !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 8px 12px 8px 10px !important;
+  translate: 0 5px;
+  box-shadow: 0 1px 0 var(--bright-border), inset 0 2px 3px color-mix(in srgb, var(--bright-border) 12%, transparent) !important;
+  }
+  &.active-turn .digital-timer {
+  background: #fff0a6 !important;
+  translate: 0 0;
+  box-shadow: 0 6px 0 var(--bright-border), inset 0 2px 0 var(--bright-paper) !important;
   }
 
   & .timer-label { display: block !important; grid-area: auto !important; text-align: left !important; }
-  & .timer-digits { grid-area: auto !important; justify-content: flex-start !important; }
-  & .timer-primary { font-family: Arial, sans-serif !important; font-size: clamp(36px, 4vw, 56px) !important; font-weight: 700 !important; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
-  & .timer-track { display: none !important; }
+  & .timer-digits { grid-area: auto !important; justify-content: flex-start !important; gap: 18px; }
+  & .timer-primary { font-family: "Battle WuWa Digits", var(--font-window-title), sans-serif !important; min-width: 0 !important; font-size: clamp(36px, 3.5vw, 46px) !important; font-weight: 400 !important; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  & .timer-periods { min-width: 0; font-size: 18px !important; font-weight: 400; }
+  & .timer-track { display: block !important; grid-area: auto !important; width: 100% !important; min-width: 0 !important; height: 6px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: color-mix(in srgb, var(--bright-border) 16%, transparent) !important; overflow: hidden; }
+  & .timer-track > span { display: block !important; height: 100% !important; border: 0 !important; }
 
   & .captures {
-    display: flex !important;
-    flex-direction: column;
-    grid-area: auto !important;
-    margin: 0 !important;
-    padding: 0 0 0 10px !important;
-    gap: 0 !important;
-    border-left: 1px dashed color-mix(in srgb, var(--bright-ink) 20%, transparent);
-    overflow: visible !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-area: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 6px !important;
+  border: 0;
+  overflow: visible !important;
   }
   & .captures > * {
-    display: flex !important;
-    justify-content: space-between !important;
-    gap: 4px !important;
-    white-space: nowrap;
-    font-size: 11px !important;
-    flex: 1;
-    min-width: 0 !important;
-    min-height: 28px !important;
-    padding: 3px 2px !important;
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px !important;
+  white-space: nowrap;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  flex: 1;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  padding: 6px 5px !important;
+  background: var(--bright-paper) !important;
+  border: 1px solid var(--bright-border) !important;
+  border-radius: 7px !important;
+  box-shadow: 1px 2px 0 var(--bright-border) !important;
+  rotate: -2deg;
   }
-  & .captures > * + * { border-left: 0 !important; }
-  & .skill-chip-wrap { min-width: 0; margin: -18px 12px 8px 30px; }
+  & .captures > :nth-child(2) { rotate: 1deg; }
+  & .captures strong { font-size: 14px !important; font-weight: 400; }
+  & .captures .cost-stat { background: color-mix(in srgb, #ef92b3 35%, var(--bright-paper)) !important; }
+  & .skill-chip-wrap { min-width: 0; margin: 0 12px 8px 30px; }
   & .skill-chip {
-    display: flex !important;
-    width: 100%;
-    min-height: 42px !important;
-    justify-content: space-between !important;
-    gap: 6px !important;
-    padding: 7px 10px !important;
-    border: 1px solid var(--bright-border) !important;
-    border-radius: 8px 8px 14px 8px !important;
-    background: linear-gradient(110deg, color-mix(in srgb, var(--skill-chip-accent) 25%, var(--bright-paper)), color-mix(in srgb, var(--skill-chip-accent) 60%, var(--bright-paper))) !important;
-    box-shadow: 2px 3px 0 var(--bright-border) !important;
-    rotate: 2deg;
+  display: flex !important;
+  width: 100%;
+  min-height: 42px !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  padding: 7px 10px !important;
+  border: 1px solid var(--bright-border) !important;
+  border-radius: 8px 8px 14px 8px !important;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--skill-chip-accent) 25%, var(--bright-paper)), color-mix(in srgb, var(--skill-chip-accent) 60%, var(--bright-paper))) !important;
+  box-shadow: 2px 3px 0 var(--bright-border) !important;
+  rotate: 2deg;
   }
   & .skill-chip > svg { flex: none; width: 18px !important; height: 18px !important; max-width: none !important; box-sizing: content-box !important; padding-right: 9px; border-right: 1px solid color-mix(in srgb, var(--bright-ink) 25%, transparent); }
   & .player-skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   & .player-skill-count { border-left: 1px dashed var(--bright-muted); padding-left: 8px; white-space: pre; }
+  &.self .digital-timer { rotate: 1.5deg; }
   &.self .player-meta { margin: -8px 0 0 24px; rotate: 2deg; }
   &.self .player-clock-panel { margin: -5px 14px 0 0; }
-  &.self .skill-chip-wrap { margin: -18px 30px 8px 12px; }
+  &.self .skill-chip-wrap { margin: 0 30px 8px 12px; }
   &.self .skill-chip { rotate: -2deg; }
 }

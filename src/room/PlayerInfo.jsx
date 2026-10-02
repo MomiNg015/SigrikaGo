@@ -8,7 +8,7 @@ import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
 } from "../shared/characterPortraitAssetCatalog.js";
-import UserIdentity from "../shared/UserIdentity.jsx";
+import BattleUserIdentity from "./BattleUserIdentity.jsx";
 import {
   characterPortraitImageProps,
   resolveCharacterPortrait
@@ -94,13 +94,15 @@ function PlayerInfo({
   const showPortrait = !sigrikaCandyDuel || isCorruptedBot || isCorruptedPlayer;
   const portraitContent = (
     <>
-      {player.teamLineup ? <div className="team-portrait-strip">
+      {player.teamLineup ? <div className="team-portrait-display">
+        <div className="team-portrait-strip" aria-label="出场顺序">
         {player.teamLineup.map((entry, index) => {
           const member = entry.character ? playerCharacterForDisplay(characters, { ...player, ...entry }) : null;
-          return <div key={index} className={`team-portrait-slot ${entry.status === "active" ? "is-active" : "is-inactive"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : ""}`}>
+          return <div key={index} className={`team-portrait-slot is-${entry.status ?? "hidden"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : entry.status === "finished" ? "，已退场" : ""}`}>
             {member ? <div className="team-portrait-art"><img {...playerCandyPortraitProps(member, { ...player, ...entry })} alt={member.name} /></div> : <span className="team-portrait-mystery">?</span>}
           </div>;
         })}
+        </div>
       </div> : hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
       {(isCorruptedPlayer || useTutorialPlayerPortrait) && (
         <img
@@ -147,12 +149,11 @@ function PlayerInfo({
       ))}
       <div className="player-meta">
         <div className="name-button player-name">
-          <UserIdentity user={player.user} compact />
+          <BattleUserIdentity user={player.user} />
         </div>
         {!sigrikaCandyDuel && (hasCharacter || isBot) && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
         {showNoCharacterRankPlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
-        {!sigrikaCandyDuel && player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
         {showNoCharacterRatingPlaceholder && <span className="meta-tag rating-tag meta-placeholder" aria-hidden="true" />}
       </div>
       <div className="player-clock-panel">
