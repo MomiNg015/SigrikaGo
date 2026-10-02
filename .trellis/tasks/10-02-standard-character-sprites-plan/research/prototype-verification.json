@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-02",
+  "entry": "docs/prototypes/character-sprites/index.html",
+  "scope": "Independent local prototype; production app, API, database and runtime assets unchanged",
+  "browser": "Codex in-app browser",
+  "viewports": [
+    { "width": 1440, "height": 960, "mode": "desktop" },
+    { "width": 1400, "height": 920, "mode": "desktop" },
+    { "width": 900, "height": 900, "mode": "desktop" },
+    { "width": 390, "height": 844, "mode": "phone" },
+    { "width": 360, "height": 800, "mode": "phone" }
+  ],
+  "assets": {
+    "copiedPngCount": 27,
+    "copiedBytes": 34061305,
+    "sha256MatchesSource": true,
+    "sigrikaExpressionCount": 9,
+    "deniaExpressionCount": 9,
+    "aemeathExpressionCount": 9,
+    "allExpressionImagesLoaded": true,
+    "secondaryCharacterMapping": { "denia": "denia", "amis": "aemeath" },
+    "rasterImagesEdited": false,
+    "productionDerivedAssetsCreated": false
+  },
+  "checks": {
+    "storyAdvanceAndBack": "passed",
+    "returnToStoryRestoresDialogueExpression": "passed",
+    "bustKneeAndFullFraming": "passed",
+    "longDialogueScroll": "passed",
+    "boardPlacementAndOccupiedPointDisabled": "passed",
+    "skillSeriousExpressionBannerAndDisable": "passed",
+    "threeCharacterTeamSelection": "passed",
+    "winLossDrawExpressionMapping": "passed",
+    "handbookNineMemberGridAndPhone88pxCards": "passed",
+    "handbookThreeCharacterNineExpressionSwitches": "passed",
+    "handbookFullArtEscapeAndFocusRestore": "passed",
+    "handbookDetailScrollAndReturnToGrid": "passed",
+    "studentCardOpensResume": "passed",
+    "studentAndResumeFixedSmilePortraits": "passed",
+    "resumeModesAndEmptyState": "passed",
+    "resumeKeyboardScrollReachesLastRecord": "passed",
+    "phoneViewportAutomaticallySelected": "passed",
+    "localCatalogUsesDefaultSnapshotDisplayFields": "passed",
+    "horizontalOverflow": false,
+    "phoneClockSkillOverlap": false,
+    "consoleErrors": [],
+    "scriptSyntaxChecks": "All prototype JS and MJS passed node --check",
+    "scopedEslint": "passed with lint.config.mjs",
+    "systemDesignGeneration": "npm run docs:system-design passed"
+  },
+  "reviewFixes": [
+    "Use DESIGN.md fonts, palette and rounded scale",
+    "Keep selected expression pink during hover",
+    "Use one-column workspace at medium widths to preserve board space",
+    "Keep skill-banner portrait inside its full-height crop",
+    "Fit narrow phone clock beside skill control",
+    "Restore current dialogue expression when returning from another scene",
+    "Reset handbook navigation to grid on scene entry",
+    "Clear skill timer and restore the prior expression after skill presentation",
+    "Use focusable native scrolling in handbook details and resume records",
+    "Support direct scene links and narrow physical browser viewports"
+  ],
+  "intentionalDesignExceptions": [
+    "Board wood and black/white stone colors describe the game objects rather than UI theme tokens"
+  ],
+  "screenshots": {
+    "directory": "C:/Users/Moming/.codex/visualizations/2026/10/02/01a0fbc7-ae53-71a3-90eb-82bdaae98b51/character-sprite-sample",
+    "files": ["story-desktop.jpg", "battle-phone.jpg", "team-phone.jpg", "result-phone.jpg", "handbook-desktop.jpg", "handbook-detail-desktop.jpg", "handbook-phone.jpg", "student-desktop.jpg", "resume-desktop.jpg", "resume-phone.jpg"]
+  }
+}

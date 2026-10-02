@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>立绘试演 · SigrikaGo</title>
+  <link rel="stylesheet" href="./sample.css">
+  <link rel="stylesheet" href="./story.css">
+  <link rel="stylesheet" href="./battle.css">
+  <link rel="stylesheet" href="./collection.css">
+  <script src="./catalog-data.js" defer></script>
+  <script src="./story.js" defer></script>
+  <script src="./battle.js" defer></script>
+  <script src="./collection.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+<!-- Existing Bright School paper palette and original expression PNGs.
+     Independent local scenes test framing; no API, account storage or game rules.
+     CSS crops retain a shared source canvas and stable anchors across expressions. -->
+<header class="sample-header">
+  <div><a class="project-link" href="../../character-sprite-integration-plan.md">SigrikaGo</a><h1>标准立绘 · 场景样板</h1></div>
+  <div class="viewport-switch" aria-label="预览尺寸"><button data-action="set-viewport" data-value="desktop" aria-pressed="true">桌面</button><button data-action="set-viewport" data-value="phone" aria-pressed="false">手机竖屏</button></div>
+</header>
+<main class="sample-workspace">
+  <section class="preview-area" aria-label="交互样板">
+    <nav class="scene-nav" aria-label="使用场景">
+      <button data-action="set-scene" data-value="handbook">部员手册</button>
+      <button data-action="set-scene" data-value="student">学生证</button>
+      <button data-action="set-scene" data-value="resume">履历</button>
+      <button data-action="set-scene" data-value="story" aria-current="page">剧情对话</button>
+      <button data-action="set-scene" data-value="battle">对局与技能</button>
+      <button data-action="set-scene" data-value="team">队际头像</button>
+      <button data-action="set-scene" data-value="result">对局结算</button>
+    </nav>
+    <div class="preview-paper"><div class="preview-viewport preview-desktop" id="preview-viewport"><div id="scene"></div></div></div>
+    <div class="preview-caption"><span id="scene-caption">推进对白，查看同一站位下的表情变化。</span><span id="size-caption">桌面构图</span></div>
+  </section>
+  <aside class="sample-controls" aria-label="立绘调整">
+    <div class="control-heading"><h2 id="control-character">西格莉卡</h2><span id="expression-label">微笑</span></div>
+    <fieldset id="character-control" hidden><legend>预览角色</legend><div class="expression-grid"><button data-action="set-profile-character" data-value="sigrika">西格莉卡</button><button data-action="set-profile-character" data-value="denia">达妮娅</button><button data-action="set-profile-character" data-value="aemeath">爱弥斯</button></div></fieldset>
+    <fieldset id="expression-control"><legend>切换表情</legend><div id="expressions" class="expression-grid"></div></fieldset>
+    <fieldset id="framing-control"><legend>剧情构图</legend><div class="framing-switch"><button data-action="set-framing" data-value="bust" aria-pressed="true">半身</button><button data-action="set-framing" data-value="knee" aria-pressed="false">膝上</button><button data-action="set-framing" data-value="full" aria-pressed="false">全身</button></div></fieldset>
+    <div class="crop-reference"><div id="reference-art"></div><p>同一套立绘，同一处站位。</p></div>
+    <p class="sample-note">所有场景均为本地演示。角色介绍与技能取自项目默认目录；账号、战绩和棋局使用示例数据。</p>
+  </aside>
+</main>
+<div class="sample-toast" id="toast" role="status" hidden></div>
+</body>
+</html>

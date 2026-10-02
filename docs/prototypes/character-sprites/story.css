@@ -1,0 +1,284 @@
+.scene-story {
+  --story-height: 600px;
+  --story-stage-position: absolute;
+  --story-stage-height: 100%;
+  --story-stage-flex: 0 0 auto;
+  --story-art-left: 1.5%;
+  --story-art-top: 18px;
+  --story-art-width: 56%;
+  --story-art-height: calc(100% - 18px);
+  --story-dialog-position: absolute;
+  --story-dialog-width: 51%;
+  --story-dialog-height: auto;
+  --story-dialog-margin: 0;
+  --story-dialog-right: 3.5%;
+  --story-dialog-bottom: 28px;
+  --story-dialog-padding: 24px;
+  --story-body-height: 134px;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: var(--story-height);
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.scene-story .story-stage {
+  position: var(--story-stage-position);
+  inset: 0;
+  flex: var(--story-stage-flex);
+  width: 100%;
+  height: var(--story-stage-height);
+  overflow: hidden;
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--paper) 4%, transparent) 25%, color-mix(in srgb, var(--paper) 22%, transparent)), url('../../../public/assets/home/multipurpose-classroom-bg.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.scene-story .story-scene-caption {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--paper) 93%, transparent);
+  box-shadow: 2px 3px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.scene-story .story-step {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  opacity: 0.68;
+}
+
+.scene-story .story-character {
+  position: absolute;
+  z-index: 2;
+  top: var(--story-art-top);
+  left: var(--story-art-left);
+  width: var(--story-art-width);
+  height: var(--story-art-height);
+  margin: 0;
+  filter: drop-shadow(4px 7px 3px color-mix(in srgb, var(--ink) 15%, transparent));
+}
+
+.scene-story .story-dialog {
+  position: var(--story-dialog-position);
+  z-index: 4;
+  right: var(--story-dialog-right);
+  bottom: var(--story-dialog-bottom);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: var(--story-dialog-width);
+  height: var(--story-dialog-height);
+  margin: var(--story-dialog-margin);
+  padding: var(--story-dialog-padding);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 4px 5px 0 color-mix(in srgb, var(--ink) 17%, transparent);
+}
+
+.scene-story .story-dialog-heading {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.scene-story .story-speaker {
+  margin: 0;
+  font-family: var(--font-title, 'Sigrika Window Title', 'Microsoft YaHei UI', sans-serif);
+  font-size: 23px;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.scene-story .story-length-toggle {
+  flex: 0 0 auto;
+  padding: 4px 0 4px 7px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ink) 44%, transparent);
+  text-underline-offset: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.scene-story .story-dialog-body {
+  flex: 1 1 auto;
+  min-height: 70px;
+  max-height: var(--story-body-height);
+  margin: 0 0 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 38%, var(--paper)) var(--paper);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.scene-story .story-dialog-body p {
+  margin: 0;
+}
+
+.scene-story .story-dialog-body p + p {
+  margin-top: 0.8em;
+}
+
+.scene-story.story-long-text .story-dialog-body {
+  height: var(--story-body-height);
+}
+
+.scene-story .story-dialog-actions {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 1fr 1.45fr;
+  gap: 10px;
+}
+
+.scene-story .story-button {
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 1px 2px 0 color-mix(in srgb, var(--ink) 13%, transparent);
+  cursor: pointer;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.scene-story .story-button-back {
+  background: var(--paper);
+}
+
+.scene-story .story-button-next {
+  background: var(--mint);
+}
+
+.scene-story .story-button:enabled:hover {
+  background: var(--pink);
+  box-shadow: 2px 3px 0 color-mix(in srgb, var(--ink) 17%, transparent);
+}
+
+.scene-story .story-button:disabled {
+  opacity: 0.38;
+  box-shadow: none;
+  cursor: default;
+}
+
+.scene-story button:focus-visible,
+.scene-story .story-dialog-body:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.preview-phone .scene-story {
+  --story-height: 730px;
+  --story-stage-position: relative;
+  --story-stage-height: 440px;
+  --story-stage-flex: 0 0 440px;
+  --story-art-left: 2%;
+  --story-art-top: 40px;
+  --story-art-width: 96%;
+  --story-art-height: calc(100% - 40px);
+  --story-dialog-position: relative;
+  --story-dialog-width: calc(100% - 24px);
+  --story-dialog-height: 278px;
+  --story-dialog-margin: 0 12px 12px;
+  --story-dialog-right: auto;
+  --story-dialog-bottom: auto;
+  --story-dialog-padding: 19px 18px;
+  --story-body-height: 134px;
+}
+
+.preview-phone .scene-story .story-scene-caption {
+  top: 15px;
+  left: 16px;
+  gap: 18px;
+  padding: 6px 12px;
+  font-size: 15px;
+}
+
+.preview-phone .scene-story .story-speaker {
+  font-size: 22px;
+}
+
+.preview-phone .scene-story .story-dialog-body {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.preview-phone .scene-story .story-dialog-heading {
+  margin-bottom: 13px;
+}
+
+@media (max-width: 700px) {
+  .scene-story {
+    --story-height: 730px;
+    --story-stage-position: relative;
+    --story-stage-height: 440px;
+    --story-stage-flex: 0 0 440px;
+    --story-art-left: 2%;
+    --story-art-top: 40px;
+    --story-art-width: 96%;
+    --story-art-height: calc(100% - 40px);
+    --story-dialog-position: relative;
+    --story-dialog-width: calc(100% - 24px);
+    --story-dialog-height: 278px;
+    --story-dialog-margin: 0 12px 12px;
+    --story-dialog-right: auto;
+    --story-dialog-bottom: auto;
+    --story-dialog-padding: 19px 18px;
+    --story-body-height: 134px;
+  }
+
+  .scene-story .story-scene-caption {
+    top: 15px;
+    left: 16px;
+    gap: 18px;
+    padding: 6px 12px;
+    font-size: 15px;
+  }
+
+  .scene-story .story-speaker {
+    font-size: 22px;
+  }
+
+  .scene-story .story-dialog-body {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .scene-story .story-dialog-heading {
+    margin-bottom: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-story .story-button {
+    transition: none;
+  }
+}

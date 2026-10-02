@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-02",
+  "assetRoot": "C:/Users/Moming/.codex/visualizations/2026/10/02/01a0fb2f-41c4-7373-aade-6f8b09c8f56d",
+  "scope": "Read DELIVERY, manifest, rig and visual-review records; inspect expression previews and default full-body images; independently check native PNG dimensions, mode, alpha equality and expression hashes.",
+  "packages": [
+    {
+      "directory": "sigrika-sprite-expressions",
+      "sourceId": "sigrika",
+      "canonicalCharacterId": "sigrika",
+      "pngCount": 9,
+      "expressions": ["surprised", "thinking", "closed_smile", "smile", "worried", "angry", "embarrassed", "serious"],
+      "size": [832, 1216],
+      "mode": "RGBA",
+      "allFilesHaveTransparentAndOpaquePixels": true,
+      "allAlphaEqualToOriginal": true,
+      "allEightExpressionHashesMatchManifest": true,
+      "faceEditingCropReference": [300, 105, 210, 210]
+    },
+    {
+      "directory": "denia-sprite-expressions",
+      "sourceId": "denia",
+      "canonicalCharacterId": "denia",
+      "pngCount": 9,
+      "expressions": ["smile", "closed_smile", "sleepy", "playful", "thinking", "surprised", "annoyed", "serious"],
+      "size": [832, 1216],
+      "mode": "RGBA",
+      "allFilesHaveTransparentAndOpaquePixels": true,
+      "allAlphaEqualToOriginal": true,
+      "allEightExpressionHashesMatchManifest": true,
+      "faceEditingCropReference": [330, 125, 200, 200]
+    },
+    {
+      "directory": "amis-sprite-expressions",
+      "sourceId": "amis",
+      "canonicalCharacterId": "aemeath",
+      "pngCount": 9,
+      "expressions": ["smile", "closed_smile", "wink", "surprised", "thinking", "wry", "annoyed", "serious"],
+      "size": [832, 1216],
+      "mode": "RGBA",
+      "allFilesHaveTransparentAndOpaquePixels": true,
+      "allAlphaEqualToOriginal": true,
+      "allEightExpressionHashesMatchManifest": true,
+      "faceEditingCropReference": [310, 110, 175, 175]
+    }
+  ],
+  "caveats": [
+    "Rig crops describe face editing inputs; they are not approved runtime avatar or bust crops.",
+    "Manifest review state remains needs_review/pending/internal_pending although separate visual-review records report assistant review completion.",
+    "Body/nose protection and PSD rendering checks are upstream QA claims, not independently repeated by this audit.",
+    "No Photoshop round-trip, asset conversion, runtime import or actual game-size UI validation was performed."
+  ]
+}

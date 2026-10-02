@@ -1,0 +1,223 @@
+.scene-battle, .scene-team {
+  --battle-muted: #6a554d;
+  --battle-line: color-mix(in srgb, var(--ink) 24%, var(--paper));
+  --battle-soft-line: color-mix(in srgb, var(--ink) 9%, var(--paper));
+  --battle-shadow: color-mix(in srgb, var(--ink) 14%, var(--paper));
+  --battle-yellow-wash: color-mix(in srgb, var(--yellow) 55%, var(--paper));
+  --battle-blue-wash: color-mix(in srgb, var(--blue) 25%, var(--paper));
+  --battle-pink-wash: color-mix(in srgb, var(--pink) 36%, var(--paper));
+}
+.scene-battle {
+  position: relative;
+  padding: 28px 30px 24px;
+  color: var(--ink, #3d2b25);
+  background: var(--paper, #fffaf0);
+}
+.scene-battle *, .scene-team * { box-sizing: border-box; }
+.scene-battle button, .scene-team button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.scene-battle button:focus-visible, .scene-team button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+.scene-battle .battle-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 26px; }
+.scene-battle .battle-room-label { font-family: 'Sigrika Window Title', 'Microsoft YaHei UI', sans-serif; font-size: 23px; font-weight: 400; letter-spacing: normal; }
+.scene-battle .battle-room-type { font-size: 11px; border: 1px solid var(--line, var(--battle-line)); border-radius: 999px; padding: 5px 10px; color: var(--battle-muted); }
+.scene-battle .battle-arena { display: grid; grid-template-columns: minmax(160px, 214px) minmax(280px, 480px) minmax(160px, 214px); grid-template-areas: 'own board rival'; align-items: center; justify-content: center; gap: clamp(12px, 2vw, 28px); }
+.scene-battle .battle-own { grid-area: own; }
+.scene-battle .battle-rival { grid-area: rival; }
+.scene-battle .battle-center { grid-area: board; min-width: 0; }
+.scene-battle .battle-player-card { position: relative; isolation: isolate; border: 1px solid var(--battle-line); border-radius: 8px 8px 16px 8px; padding: 156px 13px 12px; background: var(--paper); box-shadow: 3px 4px 0 var(--battle-shadow); }
+.scene-battle .battle-player-wash { position: absolute; inset: 0 0 auto; height: 139px; z-index: -1; overflow: hidden; border-radius: 8px 8px 0 0; background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb,var(--yellow) 55%,transparent), transparent 74%), linear-gradient(160deg, var(--battle-yellow-wash), #fffaf0); }
+.scene-battle .battle-rival .battle-player-wash { background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb,var(--blue) 40%,transparent), transparent 74%), linear-gradient(160deg, var(--battle-blue-wash), #fffaf0); }
+.scene-battle .battle-player-art { position: absolute; top: -37px; left: 50%; width: 180px; height: 182px; transform: translateX(-50%); pointer-events: none; }
+.scene-battle .battle-identity { display: flex; gap: 8px; align-items: flex-start; }
+.scene-battle .battle-identity strong { display: block; font-size: 16px; letter-spacing: .02em; line-height: 1.2; }
+.scene-battle .battle-user-name { display: block; margin-top: 5px; font-size: 9px; color: var(--battle-muted); white-space: nowrap; }
+.scene-battle .battle-color-stone, .scene-team .battle-color-stone { display: inline-block; width: 14px; height: 14px; flex: none; border-radius: 50%; box-shadow: 0 1px 2px #0002; border: 1px solid #4a423a; margin-top: 2px; }
+.scene-battle .battle-color-stone.is-black, .scene-team .battle-color-stone.is-black { background: radial-gradient(circle at 33% 25%, #6b6c67, #303432 65%); }
+.scene-battle .battle-color-stone.is-white { background: radial-gradient(circle at 33% 25%, #fff, #eeede7 65%); border-color: #bdb39d; }
+.scene-battle .battle-clock { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 7px; margin-top: 13px; background: var(--battle-soft-line); border-radius: 8px; padding: 8px; }
+.scene-battle .battle-clock.is-active { background: var(--yellow); }
+.scene-battle .battle-clock-label { font-size: 9px; color: var(--battle-muted); width: 100%; }
+.scene-battle .battle-clock strong { font-family: Arial, sans-serif; font-size: 27px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: .035em; }
+.scene-battle .battle-clock-extra { font-size: 9px; color: var(--battle-muted); }
+.scene-battle .battle-player-stats { display: flex; gap: 8px; justify-content: space-between; margin-top: 10px; font-size: 10px; color: var(--battle-muted); }
+.scene-battle .battle-player-stats b { margin-left: 2px; color: var(--ink, #3d2b25); font-size: 12px; font-weight: 500; }
+.scene-battle .battle-skill-button { width: 100%; border: 1px solid var(--battle-line); background: var(--battle-yellow-wash); border-radius: 8px; padding: 8px; margin-top: 12px; font-size: 12px; box-shadow: 0 2px 0 var(--battle-shadow); transition: background .15s, transform .15s; }
+.scene-battle .battle-skill-button:hover { background: var(--yellow); transform: translateY(-1px); }
+.scene-battle .battle-skill-button span { padding-right: 5px; color: var(--battle-muted); }
+.scene-battle .battle-skill-button.is-used { background: var(--battle-yellow-wash); }
+.scene-battle .battle-skill-label { display: block; width: 100%; margin-top: 12px; padding: 8px; font-size: 12px; text-align: center; border-radius: 8px; background: var(--battle-blue-wash); color: var(--battle-muted); }
+.scene-battle .battle-board-topline, .scene-battle .battle-board-bottomline { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--battle-muted); padding: 0 3px; }
+.scene-battle .battle-board-topline { margin-bottom: 7px; }
+.scene-battle .battle-board-bottomline { margin-top: 8px; }
+.scene-battle .battle-live-dot { display: inline-block; width: 5px; height: 5px; margin-right: 5px; background: var(--ink); border-radius: 50%; vertical-align: 1px; }
+.scene-battle .battle-board { position: relative; aspect-ratio: 1; width: 100%; background: repeating-linear-gradient(94deg, transparent 0 47px, #fff7dc50 48px 49px, transparent 50px 80px), linear-gradient(122deg, #f3ddab, #eed59e 63%, #e9ce97); border-radius: 8px 8px 8px 8px; border: 1px solid #c4a775; box-shadow: 0 4px 0 #d1b582, 0 8px 15px #9c805820, inset 0 0 0 6px #fae8c54d; overflow: hidden; }
+.scene-battle .battle-board svg { display: block; width: 100%; height: 100%; }
+.scene-battle .battle-grid-lines { stroke: #705b3d; stroke-width: .8; opacity: .75; }
+.scene-battle .battle-board-coordinates { font-family: Georgia, serif; font-size: 8px; fill: #977a50; }
+.scene-battle .battle-intersection { position: absolute; width: 7%; height: 7%; border: 0; padding: 0; transform: translate(-50%, -50%); border-radius: 50%; background: transparent; }
+.scene-battle .battle-intersection:not(:disabled):hover { background: radial-gradient(circle at 33% 25%, #6770749c, #212c349c 62%, transparent 66%); }
+.scene-battle .turn-white .battle-intersection:not(:disabled):hover { background: radial-gradient(circle at 33% 25%, #ffffffd9, #e7e0cdb3 62%, transparent 66%); }
+.scene-battle .battle-intersection:disabled { cursor: default; }
+.scene-battle .battle-intersection:focus-visible { outline-offset: -3px; }
+.scene-battle .battle-actions { display: flex; justify-content: center; gap: 9px; margin-top: 27px; }
+.scene-battle .battle-actions button { min-width: 84px; padding: 9px 12px; border: 1px solid var(--battle-line); border-radius: 8px; background: var(--mint, #bfe8dd); box-shadow: 0 2px 0 var(--battle-shadow); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+.scene-battle .battle-actions button:hover { background: var(--mint); }
+.scene-battle .battle-actions button span { font-size: 11px; }
+.scene-battle .battle-skill-banner { position: absolute; z-index: 3; top: 42%; left: 50%; width: min(470px, 88%); height: 123px; transform: translate(-50%, -50%) rotate(-1deg); border: 1px solid var(--battle-line); border-top: 1px solid var(--battle-line); border-bottom: 1px solid var(--battle-line); background: linear-gradient(100deg, var(--battle-yellow-wash), var(--paper) 63%, var(--battle-yellow-wash)); box-shadow: 0 12px 24px color-mix(in srgb,var(--ink) 20%,transparent); display: flex; align-items: center; overflow: hidden; pointer-events: none; animation: sprite-skill-enter .32s ease-out both; }
+.scene-battle .battle-skill-banner-art { width: 142px; height: 100%; flex: none; align-self: flex-end; }
+.scene-battle .battle-skill-banner-art .sprite-art { width: 100%; height: 100%; }
+.scene-battle .battle-skill-banner-copy { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; padding: 15px 9px 15px 0; }
+.scene-battle .battle-skill-banner-copy small { font-size: 10px; color: var(--battle-muted); }
+.scene-battle .battle-skill-banner-copy strong { font-family: 'Sigrika Window Title', 'Microsoft YaHei UI', sans-serif; font-size: 29px; letter-spacing: .12em; line-height: 1; }
+.scene-battle .battle-skill-banner-copy span { font-size: 11px; white-space: nowrap; color: var(--battle-muted); }
+.scene-battle .battle-skill-banner-star { position: absolute; right: 10px; top: 10px; font-size: 80px; color: color-mix(in srgb,var(--yellow) 65%,transparent); line-height: 1; }
+@keyframes sprite-skill-enter { from { opacity: 0; transform: translate(-48%, -50%) rotate(-1deg); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-1deg); } }
+
+.scene-team { padding: 30px 36px 24px; color: var(--ink, #3d2b25); background: linear-gradient(150deg, #fffaf0, var(--paper) 65%); overflow: hidden; }
+.scene-team .team-heading { position: relative; text-align: center; padding-bottom: 10px; }
+.scene-team .team-label { display: inline-block; border: 1px solid var(--battle-line); padding: 4px 11px; border-radius: 999px; font-size: 10px; letter-spacing: .12em; color: var(--battle-muted); }
+.scene-team .team-heading h2 { font-family: 'Sigrika Window Title', 'Microsoft YaHei UI', sans-serif; font-size: 30px; margin: 15px 0 7px; letter-spacing: .05em; }
+.scene-team .team-heading p { font-size: 12px; color: var(--battle-muted); margin: 0; }
+.scene-team .team-showcase { display: grid; grid-template-columns: 42% 58%; align-items: center; max-width: 920px; margin: 0 auto; }
+.scene-team .team-current-art { position: relative; height: 390px; padding: 25px 25px 0 10px; isolation: isolate; }
+.scene-team .team-current-bust { width: 100%; height: 100%; position: relative; mask-image: linear-gradient(to bottom, black 0 90%, transparent 100%); }
+.scene-team .team-art-circle { position: absolute; top: 54px; left: 15%; width: 78%; aspect-ratio: 1; border-radius: 50%; z-index: -1; background: var(--battle-yellow-wash); outline: 1px dashed var(--battle-line); outline-offset: 10px; }
+.scene-team .team-art-spark { position: absolute; color: var(--battle-muted); font-size: 28px; }
+.scene-team .team-art-spark.one { top: 32px; right: 23px; }
+.scene-team .team-art-spark.two { bottom: 78px; left: 12px; font-size: 36px; }
+.scene-team .team-roster-panel { padding: 28px 0 20px 10px; }
+.scene-team .team-roster-caption { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 11px; color: var(--battle-muted); }
+.scene-team .team-roster-caption span:last-child { font-size: 9px; color: var(--battle-muted); }
+.scene-team .team-portrait-strip { display: flex; height: 144px; padding: 3px 0 10px; }
+.scene-team .team-member { position: relative; display: block; flex: 1; min-width: 0; background: transparent; padding: 0; border: 0; margin-left: -5px; z-index: 1; isolation: isolate; }
+.scene-team .team-member:first-child { margin-left: 0; }
+.scene-team .team-member-crop { display: block; position: absolute; inset: 0; clip-path: polygon(13% 0, 100% 0, 87% 100%, 0 100%); overflow: hidden; background: var(--battle-blue-wash); border-bottom: 1px solid var(--battle-line); }
+.scene-team .team-member:nth-child(1) .team-member-crop { background: linear-gradient(140deg, var(--battle-yellow-wash), var(--battle-yellow-wash)); }
+.scene-team .team-member:nth-child(2) .team-member-crop { background: linear-gradient(140deg, var(--battle-blue-wash), var(--battle-blue-wash)); }
+.scene-team .team-member:nth-child(3) .team-member-crop { background: linear-gradient(140deg, var(--battle-blue-wash), var(--battle-blue-wash)); }
+.scene-team .team-avatar-art { width: 100%; height: 112%; position: absolute; bottom: 0; left: 0; transition: transform .2s; }
+.scene-team .team-member:hover .team-avatar-art { transform: translateY(-3px); }
+.scene-team .team-member.is-selected { z-index: 2; }
+.scene-team .team-member.is-selected .team-member-crop { background: var(--battle-pink-wash); border-bottom-color: var(--pink); box-shadow: inset 0 0 0 2px var(--pink); }
+.scene-team .team-member.is-selected .team-member-crop::after { position: absolute; content: ''; inset: 0; background: linear-gradient(0deg, color-mix(in srgb,var(--pink) 22%,transparent), transparent 42%); pointer-events: none; }
+.scene-team .team-member-order { position: absolute; top: 7px; left: 18%; font-family: inherit; font-size: 11px; color: var(--battle-muted); opacity: .8; }
+.scene-team .team-member-name { position: absolute; bottom: 6px; left: 0; width: 94%; text-align: center; font-weight: 600; font-size: 12px; padding: 4px 0; background: linear-gradient(90deg, transparent, color-mix(in srgb,var(--paper) 85%,transparent) 20% 80%, transparent); }
+.scene-team .team-member-active { position: absolute; left: 16%; bottom: -8px; border: 1px solid var(--pink); border-radius: 4px; padding: 2px 5px; background: var(--battle-pink-wash); color: var(--battle-muted); font-size: 8px; white-space: nowrap; }
+.scene-team .team-current-info { position: relative; padding: 20px 0 19px; }
+.scene-team .team-current-info small { color: var(--battle-muted); font-size: 10px; letter-spacing: .08em; }
+.scene-team .team-current-info h3 { display: inline-block; margin: 7px 12px 10px 0; font-size: 28px; font-family: 'Sigrika Window Title', 'Microsoft YaHei UI', sans-serif; letter-spacing: .03em; }
+.scene-team .team-character-tag { display: inline-block; font-size: 10px; border-radius: 4px; padding: 3px 6px; background: var(--battle-blue-wash); color: var(--battle-muted); vertical-align: 4px; }
+.scene-team .team-current-info p { font-size: 12px; line-height: 1.8; margin: 0; color: var(--battle-muted); }
+.scene-team .team-match-strip { border-top: 1px dashed var(--battle-line); padding-top: 14px; display: flex; align-items: center; justify-content: space-between; color: var(--battle-muted); font-size: 10px; }
+.scene-team .team-match-strip > span:first-child { display: flex; align-items: center; gap: 7px; }
+.scene-team .team-match-strip strong { font-family: Arial, sans-serif; font-size: 26px; font-weight: 400; color: var(--ink); }
+.scene-team .team-match-strip strong span { color: var(--battle-line); margin: 0 10px; }
+.scene-team .team-footer { border-top: 1px solid var(--battle-soft-line); padding-top: 16px; display: flex; justify-content: space-between; gap: 15px; font-size: 10px; color: var(--battle-muted); }
+
+.preview-phone .scene-battle { padding: 10px 10px 13px; }
+.preview-phone .scene-battle .battle-topbar { height: 30px; padding-bottom: 12px; }
+.preview-phone .scene-battle .battle-room-label { font-size: 15px; }
+.preview-phone .scene-battle .battle-room-type { font-size: 8px; border: 0; padding: 0; }
+.preview-phone .scene-battle .battle-arena { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'rival' 'board' 'own'; gap: 10px; }
+.preview-phone .scene-battle .battle-player-card { height: 94px; padding: 10px 10px 8px 101px; box-shadow: 2px 3px 0 var(--battle-shadow); border-radius: 8px; }
+.preview-phone .scene-battle .battle-player-wash { width: 97px; height: 100%; border-radius: 8px 0 0 8px; }
+.preview-phone .scene-battle .battle-player-art { width: 94px; height: 114px; left: 2px; top: auto; bottom: 0; transform: none; --art-width: 180%; }
+.preview-phone .scene-battle .battle-identity { gap: 5px; }
+.preview-phone .scene-battle .battle-identity strong { font-size: 13px; }
+.preview-phone .scene-battle .battle-color-stone { width: 11px; height: 11px; margin-top: 1px; }
+.preview-phone .scene-battle .battle-user-name { font-size: 8px; margin-top: 3px; }
+.preview-phone .scene-battle .battle-clock { margin-top: 6px; padding: 4px 7px; gap: 5px; border-radius: 4px; width: min(121px, calc(100% - 90px)); min-height: 25px; flex-wrap: nowrap; }
+.preview-phone .scene-battle .battle-clock-label { display: none; }
+.preview-phone .scene-battle .battle-clock strong { font-size: 18px; letter-spacing: .02em; }
+.preview-phone .scene-battle .battle-clock-extra { font-size: 8px; }
+.preview-phone .scene-battle .battle-player-stats { position: absolute; left: 101px; right: 10px; bottom: 7px; justify-content: flex-start; gap: 15px; margin: 0; font-size: 9px; }
+.preview-phone .scene-battle .battle-player-stats b { font-size: 10px; }
+.preview-phone .scene-battle .battle-skill-button, .preview-phone .scene-battle .battle-skill-label { width: 80px; position: absolute; right: 9px; top: 36px; margin: 0; padding: 6px 3px; font-size: 10px; }
+.preview-phone .scene-battle .battle-skill-button span { padding-right: 1px; }
+.preview-phone .scene-battle .battle-board-topline { margin-bottom: 5px; font-size: 9px; line-height: 12px; }
+.preview-phone .scene-battle .battle-board-bottomline { margin-top: 6px; font-size: 8px; line-height: 11px; }
+.preview-phone .scene-battle .battle-actions { margin-top: 11px; gap: 7px; }
+.preview-phone .scene-battle .battle-actions button { min-width: 0; flex: 1; padding: 8px 3px; font-size: 13px; gap: 3px; }
+.preview-phone .scene-battle .battle-actions button span { font-size: 9px; }
+.preview-phone .scene-battle .battle-skill-banner { top: 42%; height: 105px; }
+.preview-phone .scene-battle .battle-skill-banner-art { width: 111px; height: 100%; }
+.preview-phone .scene-battle .battle-skill-banner-copy { padding-right: 4px; gap: 6px; }
+.preview-phone .scene-battle .battle-skill-banner-copy strong { font-size: 25px; }
+.preview-phone .scene-battle .battle-skill-banner-copy span { font-size: 9px; }
+.preview-phone .scene-team { padding: 24px 19px 20px; }
+.preview-phone .scene-team .team-heading h2 { font-size: 25px; margin-top: 13px; }
+.preview-phone .scene-team .team-showcase { display: flex; flex-direction: column; }
+.preview-phone .scene-team .team-current-art { width: 100%; height: 285px; padding: 15px 32px 0; }
+.preview-phone .scene-team .team-art-circle { width: 67%; left: 16.5%; top: 30px; }
+.preview-phone .scene-team .team-art-spark.one { right: 20px; top: 23px; }
+.preview-phone .scene-team .team-art-spark.two { left: 17px; bottom: 40px; }
+.preview-phone .scene-team .team-roster-panel { width: 100%; padding: 6px 0 17px; }
+.preview-phone .scene-team .team-portrait-strip { height: 112px; }
+.preview-phone .scene-team .team-member-name { font-size: 10px; padding: 3px 0; }
+.preview-phone .scene-team .team-member-order { font-size: 9px; }
+.preview-phone .scene-team .team-current-info { padding: 16px 0 13px; }
+.preview-phone .scene-team .team-current-info h3 { font-size: 25px; margin-bottom: 8px; }
+.preview-phone .scene-team .team-current-info p { font-size: 11px; }
+.preview-phone .scene-team .team-match-strip { padding-top: 10px; }
+.preview-phone .scene-team .team-match-strip strong { font-size: 22px; }
+.preview-phone .scene-team .team-footer { font-size: 9px; line-height: 1.7; padding-top: 13px; }
+.preview-phone .scene-team .team-footer span:last-child { display: none; }
+
+@media (max-width: 700px) {
+  .scene-battle { padding: 10px 10px 13px; }
+  .scene-battle .battle-topbar { height: 30px; padding-bottom: 12px; }
+  .scene-battle .battle-room-label { font-size: 15px; }
+  .scene-battle .battle-room-type { font-size: 8px; border: 0; padding: 0; }
+  .scene-battle .battle-arena { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'rival' 'board' 'own'; gap: 10px; }
+  .scene-battle .battle-player-card { height: 94px; padding: 10px 10px 8px 101px; box-shadow: 2px 3px 0 var(--battle-shadow); border-radius: 8px; }
+  .scene-battle .battle-player-wash { width: 97px; height: 100%; border-radius: 8px 0 0 8px; }
+  .scene-battle .battle-player-art { width: 94px; height: 114px; left: 2px; top: auto; bottom: 0; transform: none; --art-width: 180%; }
+  .scene-battle .battle-identity { gap: 5px; }
+  .scene-battle .battle-identity strong { font-size: 13px; }
+  .scene-battle .battle-color-stone { width: 11px; height: 11px; margin-top: 1px; }
+  .scene-battle .battle-user-name { font-size: 8px; margin-top: 3px; }
+  .scene-battle .battle-clock { margin-top: 6px; padding: 4px 7px; gap: 5px; border-radius: 4px; width: min(121px, calc(100% - 90px)); min-height: 25px; flex-wrap: nowrap; }
+  .scene-battle .battle-clock-label { display: none; }
+  .scene-battle .battle-clock strong { font-size: 18px; letter-spacing: .02em; }
+  .scene-battle .battle-clock-extra { font-size: 8px; }
+  .scene-battle .battle-player-stats { position: absolute; left: 101px; right: 10px; bottom: 7px; justify-content: flex-start; gap: 15px; margin: 0; font-size: 9px; }
+  .scene-battle .battle-player-stats b { font-size: 10px; }
+  .scene-battle .battle-skill-button, .scene-battle .battle-skill-label { width: 80px; position: absolute; right: 9px; top: 36px; margin: 0; padding: 6px 3px; font-size: 10px; }
+  .scene-battle .battle-skill-button span { padding-right: 1px; }
+  .scene-battle .battle-board-topline { margin-bottom: 5px; font-size: 9px; line-height: 12px; }
+  .scene-battle .battle-board-bottomline { margin-top: 6px; font-size: 8px; line-height: 11px; }
+  .scene-battle .battle-actions { margin-top: 11px; gap: 7px; }
+  .scene-battle .battle-actions button { min-width: 0; flex: 1; padding: 8px 3px; font-size: 13px; gap: 3px; }
+  .scene-battle .battle-actions button span { font-size: 9px; }
+  .scene-battle .battle-skill-banner { top: 42%; height: 105px; }
+  .scene-battle .battle-skill-banner-art { width: 111px; height: 100%; }
+  .scene-battle .battle-skill-banner-copy { padding-right: 4px; gap: 6px; }
+  .scene-battle .battle-skill-banner-copy strong { font-size: 25px; }
+  .scene-battle .battle-skill-banner-copy span { font-size: 9px; }
+  .scene-team { padding: 24px 19px 20px; }
+  .scene-team .team-heading h2 { font-size: 25px; margin-top: 13px; }
+  .scene-team .team-showcase { display: flex; flex-direction: column; }
+  .scene-team .team-current-art { width: 100%; height: 285px; padding: 15px 32px 0; }
+  .scene-team .team-art-circle { width: 67%; left: 16.5%; top: 30px; }
+  .scene-team .team-art-spark.one { right: 20px; top: 23px; }
+  .scene-team .team-art-spark.two { left: 17px; bottom: 40px; }
+  .scene-team .team-roster-panel { width: 100%; padding: 6px 0 17px; }
+  .scene-team .team-portrait-strip { height: 112px; }
+  .scene-team .team-member-name { font-size: 10px; padding: 3px 0; }
+  .scene-team .team-member-order { font-size: 9px; }
+  .scene-team .team-current-info { padding: 16px 0 13px; }
+  .scene-team .team-current-info h3 { font-size: 25px; margin-bottom: 8px; }
+  .scene-team .team-current-info p { font-size: 11px; }
+  .scene-team .team-match-strip { padding-top: 10px; }
+  .scene-team .team-match-strip strong { font-size: 22px; }
+  .scene-team .team-footer { font-size: 9px; line-height: 1.7; padding-top: 13px; }
+  .scene-team .team-footer span:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .scene-battle .battle-skill-banner { animation: none; } .scene-team .team-avatar-art, .scene-battle .battle-skill-button { transition: none; } }
+
+.scene-battle .battle-demo-tools { display:flex; gap:7px; }
+.scene-battle .battle-demo-tools button { border:0; background:transparent; color:var(--battle-muted); padding:3px 0; font-size:10px; text-decoration:underline; text-decoration-color:var(--battle-line); text-underline-offset:3px; }
+.scene-battle .battle-skill-button:disabled, .scene-battle .battle-actions button:disabled { opacity:.6; cursor:default; box-shadow:none; }
+.scene-team .team-member[aria-pressed] { background: transparent; }
+.scene-team .team-heading h2, .scene-team .team-current-info h3, .scene-battle .battle-skill-banner-copy strong { font-weight: 400; }
+.scene-team .team-current-info small { display: block; }
+.scene-battle .battle-intersection:active:not(:disabled) { transform: translate(-50%, -50%); }
