@@ -3,6 +3,8 @@ import { SkipForward } from "lucide-react";
 import NpcDialogue from "../../tutorial/NpcDialogue.jsx";
 import { prefersReducedMotion } from "../../tutorial/TypewriterText.jsx";
 import { HOME_ONBOARDING_STEPS, HOME_ONBOARDING_WINDOWS } from "./homeOnboardingScript.js";
+import { resolveStoryPortraitPresentation } from "../../shared/characterStorySprites.js";
+import { preloadImageAssets } from "../../shared/preloadAssets.js";
 
 export function visibleGuideTarget(selector) {
   return [...document.querySelectorAll(selector)].find((element) => {
@@ -37,10 +39,16 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const dispatching = useRef(false);
   const targetRef = useRef(null);
   const step = HOME_ONBOARDING_STEPS[index];
+  const portrait = resolveStoryPortraitPresentation(step, { character, variant: "avatar" });
   const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
   const rect = geometry?.id === step.id ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
+
+  useEffect(() => {
+    const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character, variant: "avatar" }).src).filter(Boolean))];
+    void preloadImageAssets(urls, { concurrency: 4 });
+  }, [character]);
 
   const invoke = (element) => {
     if (!element) return;
@@ -206,7 +214,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       {step.choice ? <div className="home-guide-choice-panel">
         <button type="button" className="home-guide-choice" onClick={() => { if (!saving && !error) setIndex((value) => value + 1); }} disabled={saving || Boolean(error)}>{step.choice}</button>
       </div> : <div ref={panelRef} style={panelStyle} className="home-guide-panel">
-        <NpcDialogue bubble={{ id: step.id, text, portrait: character.portrait, palette: character.color, speakerName: "西格莉卡" }} revealAll={revealed} />
+          <NpcDialogue bubble={{ id: step.id, text, portrait: portrait.src, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.color, speakerName: "西格莉卡" }} revealAll={revealed} />
         {!ready && <span className="home-guide-status" role="status">正在准备介绍的窗口…</span>}
       </div>}
       {(error || saving) && <div className="home-guide-feedback">

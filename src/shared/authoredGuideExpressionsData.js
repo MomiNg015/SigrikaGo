@@ -1,0 +1,1425 @@
+// Authored against the unchanged onboarding snapshot; exact text guards prevent reuse after edits.
+export const AUTHORED_GUIDE_EXPRESSIONS = {
+  "onboarding": [
+    {
+      "nodeId": "node-1",
+      "characterId": "sigrika",
+      "sourceText": "哇，是新同学！你就是{username}吧？",
+      "expressionId": "surprised"
+    },
+    {
+      "nodeId": "node-2",
+      "characterId": "sigrika",
+      "sourceText": "嘿嘿，你腰上挂着的学生证都告诉我啦。这里是星炬学院围棋部——你是准备来加入我们的吗？",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "node-3",
+      "characterId": "sigrika",
+      "sourceText": "太好啦，欢迎加入围棋部！对了，{username}以前接触过围棋吗？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4",
+      "characterId": "sigrika",
+      "sourceText": "是新手啊！没事的，我可以手把手教你！",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-1",
+      "characterId": "sigrika",
+      "sourceText": "围棋呢，是由黑白双方在棋盘的交叉点上轮流落子，通常黑棋先行，白棋后行。棋子一旦落在棋盘上，原则上不能移动，只能通过后续行棋来扩大自己的势力或限制对方。棋子上下左右相邻的空点叫作“气”，同色棋子如果横向或纵向相连，就组成一块棋，并共同拥有这些气。只要一块棋还有气，它就能留在棋盘上；如果它的气被对方全部占住，就要被提掉，这叫“提子”。落子时要注意，不能把自己的棋下到完全没有气的位置，这种点通常叫“禁入点”。不过，如果这一手能同时提掉对方棋子，使自己的棋重新获得气，那就是可以下的。围棋中还有“劫”的规则：如果双方反复在同一处立即提来提去，棋局就会无限重复，所以被提的一方不能马上提回，必须先在别处下一手。围棋的目标不是单纯吃子，而是在保证自己棋子存活的基础上，尽量围取更多地域。棋盘上由己方棋子围住、对方无法有效进入的空点，通常称为“目”。到了双方都认为继续落子已经没有收益时，棋局进入终局，需要确认哪些棋是活棋，哪些棋是死棋。最后根据所采用的规则，按“数目”或“数子”的方式计算胜负，并把白棋的“贴目”加入结果中。总数较多的一方获胜......",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "node-4-2",
+      "characterId": "denia",
+      "sourceText": "西西，你这样介绍，人家听不懂的啦...",
+      "expressionId": "annoyed"
+    },
+    {
+      "nodeId": "node-4-3",
+      "characterId": "sigrika",
+      "sourceText": "诶，这样的吗？我是按照莫宁教授上课的口吻说的，还以为说的很详细了。嗯，那我想想...",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "node-4-4",
+      "characterId": "sigrika",
+      "sourceText": "打个比方呢，围棋就像两队黑白小鸟在棋盘上“抢地盘”。黑棋先走，白棋后走，大家轮流把棋子放在交叉点上，放下去就不能搬家啦。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-4-1",
+      "characterId": "sigrika",
+      "sourceText": "每颗棋子旁边上下左右的空点叫“气”，有气才能活；如果一片棋子的气全被对方堵住，就会被“吃掉”，乖乖拿出棋盘。下棋时不能让自己的棋子刚落下就没气，这个点就叫禁入点。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "node-4-4-2",
+      "characterId": "sigrika",
+      "sourceText": "等下到双方都觉得“嗯，没啥好占的了”，就可以停手数地盘，比看谁围住的空点更多。简单说，围得多、活得稳、吃得巧的一方就是赢家。围棋不只是打架，更像一场安静又聪明的圈地小冒险~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-4-3",
+      "characterId": "denia",
+      "sourceText": "西西，虽然我知道你喜欢鸟。但是打比方的话，我觉得用拉海洛方块更合适呢。",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "node-4-4-5",
+      "characterId": "sigrika",
+      "sourceText": "不要纠结这种地方嘛！",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "node-4-4-6",
+      "characterId": "sigrika",
+      "sourceText": "唔......那就不纸上谈兵啦！{username}，坐到这边来，我们还是从棋盘上走一遍吧。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-liberty-intro",
+      "characterId": "sigrika",
+      "sourceText": "我们先来说说气的概念吧~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-liberty-left-top",
+      "characterId": "sigrika",
+      "sourceText": "首先来看看棋盘左上角这颗黑子，上下左右有4个空置交叉点，所以是有4口气。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-liberty-right-top",
+      "characterId": "sigrika",
+      "sourceText": "再看看右上角的两颗黑子，他们上下或左右连在一起，所以是一个棋块，数数他们周围，是有6个空置交叉点，所以是有6口气。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-liberty-question-1",
+      "characterId": "sigrika",
+      "sourceText": "那么再来看看左下角这一团黑棋，一部分还挨着白棋，那这团黑棋是有多少气呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-liberty-wrong-1",
+      "characterId": "denia",
+      "sourceText": "棋子上下左右空置的交叉点才算做气哦~再想想看？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-liberty-question-2",
+      "characterId": "sigrika",
+      "sourceText": "对啦！那再稍微提高点难度，看看右下角的黑棋有多少口气？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-liberty-wrong-2",
+      "characterId": "denia",
+      "sourceText": "棋子挨到棋盘边缘再往外是没有气的啦~再想想？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-liberty-correct",
+      "characterId": "sigrika",
+      "sourceText": "看来你已经完全掌握气的概念了。那让我们接下来看看棋子没有气会发生什么吧！",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-capture-question",
+      "characterId": "sigrika",
+      "sourceText": "先看左上角，白棋只有一口气了。轮到你执黑棋下，怎样才能吃掉这颗白棋呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-capture-wrong",
+      "characterId": "denia",
+      "sourceText": "嗯哼？不吃颗白子尝尝味道吗？",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-capture-correct",
+      "characterId": "sigrika",
+      "sourceText": "就是这样！这样这颗白棋就没气了，所以得从棋盘上拿走。这个行为我们称之为“提子”，顾名思义，把没气的棋子提起来拿出棋盘，很形象吧~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-forbidden-explain",
+      "characterId": "sigrika",
+      "sourceText": "那么我们来看刚刚被提掉子的位置，对白棋而言，往这里落子的话还是会被提掉，所以我们称之这里为白棋的禁入点，规则上白棋不能在自己的禁入点上落子。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-forbidden-question",
+      "characterId": "sigrika",
+      "sourceText": "但凡事总有例外。我们来看看右上角，白棋搭起来了类似的棋形。那么黑棋可不可以落在坐标L9的位置呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-forbidden-wrong",
+      "characterId": "denia",
+      "sourceText": "看白棋上面那颗子，是不是也只有1口气？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-forbidden-correct",
+      "characterId": "sigrika",
+      "sourceText": "嗯嗯，那你落子试试看？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-forbidden-result",
+      "characterId": "sigrika",
+      "sourceText": "没错，如果落子在禁入点可以提子的话，那这里此时就不算作禁入点。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-ko-1",
+      "characterId": "sigrika",
+      "sourceText": "嘿嘿，你抓到重点了。但为了规避这种无限循环的情况，围棋规则上对此是有额外约束的。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-ko-2",
+      "characterId": "sigrika",
+      "sourceText": "比如就现在右上角的情形，黑棋刚提了白棋的子，那白棋必须在其它地方落一手后，才能再提回来。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-ko-3",
+      "characterId": "denia",
+      "sourceText": "这种情况我们称之为“打劫”哟。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-ko-4",
+      "characterId": "sigrika",
+      "sourceText": "不是这个打劫啦。嗯...关于这个词，我记得莫宁教授说过，“劫”这个词源自佛家的“劫数”这个概念，喻指难以摆脱的困境或循环，而“打”代表经历这个过程。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-ko-5",
+      "characterId": "sigrika",
+      "sourceText": "所以这个来回提子的循环过程就叫“打劫”啦。另外，前面说的“白棋必须在其它地方落一手后才能再提回来”的行为，我们称之为“找劫材”。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-ko-6",
+      "characterId": "denia",
+      "sourceText": "这就是所谓要付出一定的代价，才能打破这个无限的循环嘛。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-ko-7",
+      "characterId": "sigrika",
+      "sourceText": "总之打劫作为一项特殊的规则，要稍微记在脑海里哟。如果实战中碰到打劫的情形，对方提子你又马上提回去的话，是要判作违规的。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-ko-8",
+      "characterId": "denia",
+      "sourceText": "不过实际上还有会存在一些无法避免的循环情形，比如三劫循环、长生等等...",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-ko-9",
+      "characterId": "sigrika",
+      "sourceText": "娅娅，这个太超纲啦！而且这些情形出现概率堪比娜波摩现在从天上掉下来...咳咳，{username}如果感兴趣的话可以在自己去搜搜，这里就不展开了...",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-lower-left-choice",
+      "characterId": "sigrika",
+      "sourceText": "让我们看看左下角，你觉得目前这是怎么个情况？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-a1-question",
+      "characterId": "sigrika",
+      "sourceText": "没错，现在左下角黑棋只有一口气，很危险。白棋左下角1·1的位置看起来搭了个禁入点，但白棋两颗子各只有一口气，所以让你来下黑棋，该下哪呢？",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-a1-wrong-npc",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-a1-wrong-reply",
+      "characterId": "sigrika",
+      "sourceText": "那我就吃掉你啦~再重新试试？",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-eye-1",
+      "characterId": "sigrika",
+      "sourceText": "嗯嗯。现在我们来看看这块黑棋，看起来是不是只有3口气，好像很危险的样子。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-eye-2",
+      "characterId": "sigrika",
+      "sourceText": "但是经过刚刚提子，我们看到是不是有了两个白棋的禁入点？因为白棋不可能同时下两手棋占据禁入点，所以这块黑棋我们可以认为是没有后顾之忧了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-eye-3",
+      "characterId": "sigrika",
+      "sourceText": "这样的禁入点我们也称之为“眼”，而有两个“真眼”的棋我们就称之为活棋了。所谓活棋，也就是未来基本不会被提掉的棋。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-false-eye-1",
+      "characterId": "sigrika",
+      "sourceText": "我就猜到你会这么问啦。我们看看右下角的黑棋，是不是好像也搭了两个眼？",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-false-eye-2",
+      "characterId": "sigrika",
+      "sourceText": "但是有的眼就像豆腐渣工程，是禁不起未来时间考验的，我们称之为假眼。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-false-eye-question",
+      "characterId": "sigrika",
+      "sourceText": "想想我们前面的内容，你觉得右下角哪个是假眼呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-false-eye-wrong",
+      "characterId": "denia",
+      "sourceText": "想想前面说的可以落子在禁入点的情况，再看看哪个眼是肯能被白棋率先攻破的？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-false-eye-correct",
+      "characterId": "sigrika",
+      "sourceText": "bingo！",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-false-eye-demo",
+      "characterId": "sigrika",
+      "sourceText": "那让我们实际演示看看吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-false-eye-j3",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-false-eye-l3",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-false-eye-3",
+      "characterId": "sigrika",
+      "sourceText": "看，左上黑棋的眼顿时荡然无存了。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-false-eye-4",
+      "characterId": "sigrika",
+      "sourceText": "也就是说，如果搭建眼的棋子如果未来会被提子，那这个眼我们就称之为假眼。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-false-eye-5",
+      "characterId": "denia",
+      "sourceText": "这块只有一个真眼的黑棋最后也难逃毁灭的命运。",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-false-eye-6",
+      "characterId": "sigrika",
+      "sourceText": "所以记住活棋的基础是有两个“真眼”哦。瞎掉一只眼或没有眼的棋都不能称之为活棋，很形象吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-false-eye-7",
+      "characterId": "denia",
+      "sourceText": "嗯，除非你想不开自己把真眼填掉...",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-false-eye-8",
+      "characterId": "sigrika",
+      "sourceText": "由此我们再拓展看看~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-b11-question",
+      "characterId": "sigrika",
+      "sourceText": "先看左上角，一堆黑子被白棋包围了。目前看起来有一个真眼，那该怎么做出第二个真眼呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-b11-counter",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-b11-wrong",
+      "characterId": "denia",
+      "sourceText": "你好像做了只假眼呢，这下失去活棋的机会了。再想想？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-b11-correct",
+      "characterId": "sigrika",
+      "sourceText": "看来你应该已经懂真眼和假眼的区别了。没错，这样下黑棋成功做出两只真眼，确保是活棋了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-m13-question",
+      "characterId": "sigrika",
+      "sourceText": "再看看右上，根据你的感觉或计算，黑棋该走哪里才能活？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-m13-correct",
+      "characterId": "sigrika",
+      "sourceText": "正解！相反，如果让白棋下到这个位置，那黑棋无论如何也只有一只眼，活不了了。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-knife-1",
+      "characterId": "sigrika",
+      "sourceText": "再稍微拓展下吧。左下角白棋这个棋形我们称之为“刀把五”，看起来空间很大，白棋似乎高枕无忧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-knife-a4",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-knife-2",
+      "characterId": "sigrika",
+      "sourceText": "但若被黑棋这么一点，白棋就无力回天了，怎么也做不出两只眼。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-knife-3",
+      "characterId": "sigrika",
+      "sourceText": "至于为什么做不出两只眼，你有空可以自己拿白棋摆摆哦~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-life-1",
+      "characterId": "sigrika",
+      "sourceText": "以上这些局部，我们都称之为死活题。我们需要思考如何杀棋或活棋，可以很好地锻炼思维能力哦~像右上和左下的棋形属于实战常见死活，我们需要记一下，这样实战真遇到了就不需要花时间计算了。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-pig-question",
+      "characterId": "sigrika",
+      "sourceText": "再来看看右下，也算是一道死活题，该怎么杀黑棋呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-pig-1",
+      "characterId": "denia",
+      "sourceText": "西西，没想到你还会耍坏呢。",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-pig-2",
+      "characterId": "sigrika",
+      "sourceText": "没有没有，我只是摆个例子而已啦。对于目前刚入门的{username}来说解这道题确实有点超纲了。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-pig-3",
+      "characterId": "sigrika",
+      "sourceText": "这道题是黑先杀白，棋形名叫“大猪嘴”，很形象吧？也是一道经典的实战常见死活。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-pig-4",
+      "characterId": "sigrika",
+      "sourceText": "相信{username}未来下棋时总会碰到的。不过现在的话先暂且不展开了吧~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-territory-intro",
+      "characterId": "sigrika",
+      "sourceText": "前面说的都是死活方面的东西。但围棋终归是通过围空来判定胜负的游戏，吃子只是围空的手段。所以我们接下来聊聊数目和围空。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-territory-1",
+      "characterId": "sigrika",
+      "sourceText": "我们先来看左上角吧。看起来黑棋是不是围了一块3*3的小地盘？我们这里暂且认为白棋无法侵入这块地盘，那这里黑棋围住的每个交叉点都称为“目”，那显然黑棋这里围了9目的空。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-territory-2",
+      "characterId": "sigrika",
+      "sourceText": "那再看看右上角。这里有个白棋方块被黑棋围住了，而且很显然做不出两只眼。根据前面我们所学的死活知识，这块白棋应该算作死棋。那有死棋的地盘该怎么数目呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-territory-question-1",
+      "characterId": "sigrika",
+      "sourceText": "这里我们记住1颗死子等于2目。那么这里有多少目呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-territory-wrong-1",
+      "characterId": "denia",
+      "sourceText": "别忘了1颗死子等于2目哦，这里可是有4颗死子呢。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-territory-correct-1",
+      "characterId": "sigrika",
+      "sourceText": "答对啦！至于为什么说1颗死子等于2目嘛...你想一颗棋子算作1目，死子提走以后产生的交叉点也是1目，因此就算做2目啦。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-territory-3",
+      "characterId": "sigrika",
+      "sourceText": "举一反三下，如果你一口气提掉对方5个子，那就相当于你已经获得了因提子得到的5目，再加上提走后留下的5个交叉点，就相当于是你围的空，那合在一起就是10目啦。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-territory-4",
+      "characterId": "denia",
+      "sourceText": "不过提完子后的空交叉点有时不能保证一定会是你围的空。所以最后还是提子数+实空来数目最保险。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-territory-question-2",
+      "characterId": "sigrika",
+      "sourceText": "那我们看看左下角。你觉得这是什么情况？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-territory-wrong-2",
+      "characterId": "denia",
+      "sourceText": "嗯哼？白棋真的有两只真眼吗？",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-territory-correct-2",
+      "characterId": "sigrika",
+      "sourceText": "没错没错！那我们看看右下角，白棋和黑棋都围了一些空，哪一方围得更多呢？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-territory-wrong-3",
+      "characterId": "denia",
+      "sourceText": "稍微再数数看？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-territory-correct-3",
+      "characterId": "sigrika",
+      "sourceText": "答对啦！{username}理解得真快呢。那数目这方面基本是过关啦！",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-global-intro",
+      "characterId": "sigrika",
+      "sourceText": "前面都是介绍局部的例子，那让我们来看看全局吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-final-count-1",
+      "characterId": "sigrika",
+      "sourceText": "这是一盘终局情形。看起来右边黑棋围了很大一块空，但白棋也吃掉了黑棋左上方一大串棋子。双方没有任何提子。那你现在数数看，黑棋和白棋各围了多少空？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-final-count-2",
+      "characterId": "denia",
+      "sourceText": "不要太着急哦，这次可以慢慢数。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-final-count-wrong",
+      "characterId": "denia",
+      "sourceText": "左上角黑棋可是有13颗死子呢。再数数看？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-final-count-correct",
+      "characterId": "sigrika",
+      "sourceText": "就是这样。因为这是终局了嘛，所以我们计算双方目差，可以判断出黑方比白方多围了10目。我们称之为“黑盘面10目”。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-komi-1",
+      "characterId": "sigrika",
+      "sourceText": "不过你想想，围棋是黑方先行的游戏，先行的一方显然有优势。为了平衡，我们通常会规定黑方贴多少目或子给白方。像我们这种13路棋盘，我们规定黑贴5.5目，也就是贴2又3/4子。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-komi-2",
+      "characterId": "sigrika",
+      "sourceText": "因此，在最后如果是数目判定胜负的话，黑棋的目数要扣除贴目，然后再和白棋的目数比较，谁多就谁赢。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-komi-3",
+      "characterId": "sigrika",
+      "sourceText": "前面我们算的是黑盘面10目，那扣除贴目5.5目，那相当于黑优势4.5目。如果双方认定现在是终局，那我们就可以认定这盘棋是黑胜4.5目。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-counting-method",
+      "characterId": "sigrika",
+      "sourceText": "如果是数子的话，就是将一方的目和活着的棋子加起来后再作比较。但就结果而言和数目相比没太大区别，不会出现相同贴目下，数子和数目胜负不一样的情况。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-capture-note",
+      "characterId": "denia",
+      "sourceText": "所以说吃子再多也不代表最后能赢下来哦。吃子只是手段之一，最后还是要比谁围的空更多。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-go-name",
+      "characterId": "sigrika",
+      "sourceText": "哼哼，毕竟是叫“围棋”嘛。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-opening-1",
+      "characterId": "sigrika",
+      "sourceText": "讲到现在，基本的围棋规则你应该都了解了。嗯...为了你方便上手下棋，还是稍微教你一下开局小窍门吧。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-opening-2",
+      "characterId": "sigrika",
+      "sourceText": "啊，我都忘了跟你说边角和中腹的概念了，不过这个应该一说你就懂了。角就是指四个角，边指的就是四条边，中腹就是中间一大块区域。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-opening-question",
+      "characterId": "sigrika",
+      "sourceText": "那么考你个问题，用相同数量的棋子，去角、边、中腹各围一块空，哪个区域能围得更多呢？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-opening-wrong",
+      "characterId": "denia",
+      "sourceText": "发挥你的想象力，再好好想想哦。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-opening-correct",
+      "characterId": "sigrika",
+      "sourceText": "嗯嗯，我们用6颗棋子来举例例子吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-efficiency-1",
+      "characterId": "sigrika",
+      "sourceText": "看，同样是6颗棋子，角上围了9目空，边上围了4目空，中腹只围了2目空。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-efficiency-2",
+      "characterId": "sigrika",
+      "sourceText": "这个说明什么呢？说明对于围空而言，把棋子优先投入到占据角部是最有效率的。其次为边，最后是中腹。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-efficiency-3",
+      "characterId": "denia",
+      "sourceText": "不知道你有没有听过一句谚语“金角银边草肚皮”，说的就是这个啦。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-efficiency-4",
+      "characterId": "sigrika",
+      "sourceText": "所以你看，棋盘刚好有4个角，那开局常规下法，就是双方各占两个角。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-opening-lines",
+      "characterId": "sigrika",
+      "sourceText": "至于占在几路线上，3路和4路都可以。毕竟2路太低，5路太高了。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-opening-etiquette",
+      "characterId": "sigrika",
+      "sourceText": "啊啊，对了，假如你是下黑棋，那第一手最好要下在自己的右上角。这是一种下棋的礼仪，可千万不要忘了哦。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-story-143",
+      "characterId": "sigrika",
+      "sourceText": "呜哇，不知不觉讲了这么多。{username}，这下关于围棋基础知识你应该有所了解了吧。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-story-144",
+      "characterId": "sigrika",
+      "sourceText": "学会了基础知识后就可以尝试下棋了。之后所有进阶的内容无非就是为了“如何取胜”了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-story-145",
+      "characterId": "sigrika",
+      "sourceText": "比如定式、布局、中盘、官子、死活、打入、进攻、侵消...",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-story-146",
+      "characterId": "denia",
+      "sourceText": "西西，不要念经了...",
+      "expressionId": "annoyed"
+    },
+    {
+      "nodeId": "doc-story-147",
+      "characterId": "sigrika",
+      "sourceText": "咳咳，不好意思。总之如果还想学进阶的内容的话，可以去我们学院的图书馆，IRIS数据档案库里有充足的知识呢。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-story-148",
+      "characterId": "denia",
+      "sourceText": "（眨眼睛，眨眼睛）",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-story-149",
+      "characterId": "sigrika",
+      "sourceText": "嗯...嗯？娅娅，你想说些什么吗？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-story-150",
+      "characterId": "denia",
+      "sourceText": "西西，你是不是忘了些什么。",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-story-151",
+      "characterId": "sigrika",
+      "sourceText": "嗯，我忘了...啊！",
+      "expressionId": "surprised"
+    },
+    {
+      "nodeId": "doc-story-153",
+      "characterId": "sigrika",
+      "sourceText": "{username}！请你看看我跟娅娅的对局吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-skill-159",
+      "characterId": "sigrika",
+      "sourceText": "{username}，你觉得现在黑棋怎么样？",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-skill-161",
+      "characterId": "sigrika",
+      "sourceText": "嗯嗯，你的判断很正确。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-skill-162",
+      "characterId": "sigrika",
+      "sourceText": "但是！",
+      "expressionId": "original"
+    },
+    {
+      "nodeId": "doc-skill-f3",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-g4",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-167",
+      "characterId": "sigrika",
+      "sourceText": "哼哼，这就是我们星炬围棋的特殊之处。我们可以将自己的共鸣力融合进棋盘之中，发动出强力的技能。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-skill-168",
+      "characterId": "sigrika",
+      "sourceText": "我刚刚发动了“星辉符文”这个技能，可以抹除棋盘上一个交叉点。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-169",
+      "characterId": "sigrika",
+      "sourceText": "这么一来，刚刚那颗白子就少了一口气，我就可以落子提掉它了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-skill-172",
+      "characterId": "sigrika",
+      "sourceText": "不过这种技能通常一盘棋只能用一次，而是还是有代价的，也就是“超频”。我刚刚因为发动技能也同时获得了3子的超频。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-173",
+      "characterId": "sigrika",
+      "sourceText": "也就是说我要额外贴对方3个子，就相当于是贴6目棋，也是不小的代价呢。",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "doc-skill-174",
+      "characterId": "sigrika",
+      "sourceText": "好啦，娅娅，该你表演啦~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-skill-175",
+      "characterId": "denia",
+      "sourceText": "嗯哼？",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "doc-skill-f5",
+      "characterId": "denia",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-179",
+      "characterId": "denia",
+      "sourceText": "我的共鸣技能是让场上一枚黑或白棋反色。不过释放这个技能的回合我不能继续落子就是了。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-skill-180",
+      "characterId": "sigrika",
+      "sourceText": "呜呜...娅娅的技能还是太超模了。这棋没法下了，只能认输了...",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "doc-story-182",
+      "characterId": "denia",
+      "sourceText": "（哈欠）下棋真的好累...",
+      "expressionId": "sleepy"
+    },
+    {
+      "nodeId": "doc-story-183",
+      "characterId": "sigrika",
+      "sourceText": "仔细想想，刚刚如果我选择去吃上面的2颗白子的话，这棋应该就不会这么快结束...",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-story-184",
+      "characterId": "sigrika",
+      "sourceText": "不过这都是为了让{username}更直观地看到我们技能的效果...呜呜，输棋果然还是超苦娅西！",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "doc-story-185",
+      "characterId": "denia",
+      "sourceText": "（摸摸头）",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-story-186",
+      "characterId": "sigrika",
+      "sourceText": "咳咳。总之，这下子{username}应该能了解我们星炬围棋的特点了吧。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "doc-story-187",
+      "characterId": "sigrika",
+      "sourceText": "把棋局引导向适合自己技能发动的局面，从而实现出奇制胜。怎么样，有趣吧~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-story-188",
+      "characterId": "sigrika",
+      "sourceText": "另外，我们围棋部还有其它部员。每个部员都有自己独一无二的技能，{username}可以多去认识认识。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-story-189-sigrika",
+      "characterId": "sigrika",
+      "sourceText": "不过，大多数共鸣技能还是会遵循围棋的基本规则，不会太乱来啦……",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-story-189-denia",
+      "characterId": "denia",
+      "sourceText": "我记得之前来过一位在学院里很火的粉色系偶像歌手。她一发动技能，连棋盘都被摧毁了。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "doc-story-190",
+      "characterId": "sigrika",
+      "sourceText": "不许说她坏话啦！虽然她那个时候不小心把棋盘炸毁了，但后面她送了我们几十块棋盘！也算是给我们部提供物资支持啦~",
+      "expressionId": "angry"
+    },
+    {
+      "nodeId": "doc-story-191",
+      "characterId": "sigrika",
+      "sourceText": "咳咳。总之呢，{username}平时有空的话可以多来我们围棋部下下棋，毕竟熟能生巧嘛。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "doc-story-192",
+      "characterId": "sigrika",
+      "sourceText": "我们这里还有19路的标准围棋盘。我们围棋部约定好了，如果用19路棋盘下棋，就不允许使用技能。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "doc-story-193",
+      "characterId": "sigrika",
+      "sourceText": "要是围棋下累了，也可以来盘五子棋放松一下~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "doc-story-194",
+      "characterId": "sigrika",
+      "sourceText": "哦对了，忘记自我介绍了。我是星炬学院围棋部部长，西格莉卡！{username}，以后还请多多指教呢！",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-15",
+      "characterId": "sigrika",
+      "sourceText": "这么厉害的吗？哼哼，那要不现在跟我下一盘试试看？",
+      "expressionId": "surprised"
+    },
+    {
+      "nodeId": "story-16",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-17",
+      "characterId": "sigrika",
+      "sourceText": "打吃！",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-18",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-24",
+      "characterId": "sigrika",
+      "sourceText": "再打吃！",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-26",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-25",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-46",
+      "characterId": "sigrika",
+      "sourceText": "原来已经接触过一些啦，那要不要跟我下一盘试试？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-21",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-22",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "branch-25",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "branch-26",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-27",
+      "characterId": "sigrika",
+      "sourceText": "哼哼，普通的围棋或许是这样，但是——",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-28",
+      "characterId": "sigrika",
+      "sourceText": "看看这招！",
+      "expressionId": "original"
+    },
+    {
+      "nodeId": "story-29",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-30",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-31",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "branch-32",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "branch-33",
+      "characterId": "sigrika",
+      "sourceText": "这你就不懂啦。这是我的共鸣技能【星辉符文】，可以抹除棋盘上的一个交叉点，然后还可以继续落子。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-225",
+      "characterId": "sigrika",
+      "sourceText": "这样一来你原本只有两口气的棋，我一回合就可以消灭掉哦~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-34",
+      "characterId": "sigrika",
+      "sourceText": "这就是我们星炬围棋的特别之处：让共鸣能力融入棋盘，创造普通围棋里不会出现的战术。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-35",
+      "characterId": "sigrika",
+      "sourceText": "不过呢，这些技能通常只能一盘棋使用一次，而且有些技能会有超频的负面代价。比如我使用的这个技能，超频为3子，代表我到数子阶段要多贴你3个子，相当于6目棋呢。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-36",
+      "characterId": "sigrika",
+      "sourceText": "所以，考虑什么时候发动技能、值不值得付出代价，也是星炬围棋中很重要的一环呢。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "branch-37",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "branch-38",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-39",
+      "characterId": "sigrika",
+      "sourceText": "怎么样，这下应该明白我们围棋部的“特别之处”了吧？",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-40",
+      "characterId": "sigrika",
+      "sourceText": "咳咳。总之，我们围棋部还有好多部员，每个部员都有不同的共鸣能力技能。{username}同学以后可以多去认识认识~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-47",
+      "characterId": "sigrika",
+      "sourceText": "噢，对了——娅娅，快醒醒！该轮到你展示啦。",
+      "expressionId": "original"
+    },
+    {
+      "nodeId": "story-48",
+      "characterId": "denia",
+      "sourceText": "......嗯？怎么了，要我做什么吗？",
+      "expressionId": "sleepy"
+    },
+    {
+      "nodeId": "story-49",
+      "characterId": "sigrika",
+      "sourceText": "来陪我走几手，给{username}看看你的能力嘛~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-50",
+      "characterId": "denia",
+      "sourceText": "呜哇，好麻烦。好吧...",
+      "expressionId": "annoyed"
+    },
+    {
+      "nodeId": "story-51",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-52",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-54",
+      "characterId": "sigrika",
+      "sourceText": "嘿嘿，看来你已经学会了嘛！",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-55",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-56",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-57",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-58",
+      "characterId": "denia",
+      "sourceText": "嗯哼？",
+      "expressionId": "playful"
+    },
+    {
+      "nodeId": "story-59",
+      "characterId": "denia",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-60",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "story-61",
+      "characterId": "denia",
+      "sourceText": "是的，我的技能是让场上一枚棋子反色。不过使用这个技能的回合我不能继续落子就是了。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-62",
+      "characterId": "sigrika",
+      "sourceText": "呜呜，娅娅的技能还是太超模了。被吃了这么多，只能认输了...",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "story-63",
+      "characterId": "denia",
+      "sourceText": "（哈欠）下盘棋真的好累啊。",
+      "expressionId": "sleepy"
+    },
+    {
+      "nodeId": "story-64",
+      "characterId": "sigrika",
+      "sourceText": "呜...这盘棋只是给{username}同学演示一下啦。认真下的话，刚刚我应该用技能去吃上面的2个子的，这样就不会被一口气反吃了。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "story-53",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-41",
+      "characterId": "denia",
+      "sourceText": "比如我的共鸣技能是让棋盘上一颗棋子反色哦~虽然用了这技能以后不能再落子就是了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "story-42",
+      "characterId": "sigrika",
+      "sourceText": "娅娅的技能说实话实战能力挺强的...我好多大优的棋，被她使用技能逆转了好多次...真是好赖皮的技能！",
+      "expressionId": "angry"
+    },
+    {
+      "nodeId": "story-43",
+      "characterId": "sigrika",
+      "sourceText": "另外呢，我们围棋部也可以下正常的19路的标准围棋哦~如果是下这个的话，我们大家都约定好了，不允许使用技能。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "story-44",
+      "characterId": "sigrika",
+      "sourceText": "如果下围棋下累了，还可以下下五子棋放松一下~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "story-45",
+      "characterId": "sigrika",
+      "sourceText": "哦对了，忘记自我介绍了。我是星炬学院围棋部部长，西格莉卡！{username}同学，以后还请多多指教呢！",
+      "expressionId": "smile"
+    }
+  ],
+  "legacy": [
+    {
+      "nodeId": "node-1",
+      "characterId": "sigrika",
+      "sourceText": "哇，来了新的同学耶！",
+      "expressionId": "surprised"
+    },
+    {
+      "nodeId": "node-2",
+      "characterId": "sigrika",
+      "sourceText": "我们这里是星炬学院围棋部，请问同学是加入咱们围棋部吗？",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-3",
+      "characterId": "sigrika",
+      "sourceText": "那太好了！请问同学你会下围棋吗？水平怎么样？",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "node-4",
+      "characterId": "sigrika",
+      "sourceText": "是新手啊...没事的，我可以手把手教你！",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-1",
+      "characterId": "sigrika",
+      "sourceText": "围棋呢，是由黑白双方在棋盘的交叉点上轮流落子，通常黑棋先行，白棋后行。棋子一旦落在棋盘上，原则上不能移动，只能通过后续行棋来扩大自己的势力或限制对方。棋子上下左右相邻的空点叫作“气”，同色棋子如果横向或纵向相连，就组成一块棋，并共同拥有这些气。只要一块棋还有气，它就能留在棋盘上；如果它的气被对方全部占住，就要被提掉，这叫“提子”。落子时要注意，不能把自己的棋下到完全没有气的位置，这种点通常叫“禁入点”。不过，如果这一手能同时提掉对方棋子，使自己的棋重新获得气，那就是可以下的。围棋中还有“劫”的规则：如果双方反复在同一处立即提来提去，棋局就会无限重复，所以被提的一方不能马上提回，必须先在别处下一手。围棋的目标不是单纯吃子，而是在保证自己棋子存活的基础上，尽量围取更多地域。棋盘上由己方棋子围住、对方无法有效进入的空点，通常称为“目”。到了双方都认为继续落子已经没有收益时，棋局进入终局，需要确认哪些棋是活棋，哪些棋是死棋。最后根据所采用的规则，按“数目”或“数子”的方式计算胜负，并把白棋的“贴目”加入结果中。总数较多的一方获胜......",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "node-4-2",
+      "characterId": "denia",
+      "sourceText": "西西，你这样介绍，人家听不懂的啦...",
+      "expressionId": "annoyed"
+    },
+    {
+      "nodeId": "node-4-3",
+      "characterId": "sigrika",
+      "sourceText": "诶，这样的吗？我是按照莫宁教授上课的口吻说的，还以为说的很详细了。嗯，那我想想...",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "node-4-4",
+      "characterId": "sigrika",
+      "sourceText": "打个比方呢，围棋就像两队黑白小鸟在棋盘上“抢地盘”。黑棋先走，白棋后走，大家轮流把棋子放在交叉点上，放下去就不能搬家啦。每颗棋子旁边上下左右的空点叫“气”，有气才能活；如果一片棋子的气全被对方堵住，就会被“吃掉”，乖乖拿出棋盘。下棋时不能让自己的棋子刚落下就没气，这个点就叫禁入点。等双方都觉得“嗯，没啥好占的了”，就可以停手数地盘，比看谁围住的空点更多。简单说，围得多、活得稳、吃得巧的一方就是赢家。围棋不只是打架，更像一场安静又聪明的圈地小冒险~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-5",
+      "characterId": "sigrika",
+      "sourceText": "围棋基础规则还是简单的。难点就是如何去高效地抢地盘，这个学问就多了...",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "node-4-6",
+      "characterId": "denia",
+      "sourceText": "不要把围棋想得太难哦。当初西西手把手教我下围棋，我也只花了半天就学会了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "node-4-7",
+      "characterId": "sigrika",
+      "sourceText": "那不是我教的好的缘故啦...对了，如果有不懂的地方，我们部有很多棋书，可以随便看哦。",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "node-4-8",
+      "characterId": "sigrika",
+      "sourceText": "不过呢，想学一门东西的话还是得多实践才重要！所以平时也要多来下棋哦！",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "node-5",
+      "characterId": "sigrika",
+      "sourceText": "对了，还没自我介绍呢。我是星炬学院围棋部的部长西格莉卡。以后还请多多指教呢！",
+      "expressionId": "smile"
+    }
+  ],
+  "home": [
+    {
+      "nodeId": "hello",
+      "characterId": "sigrika",
+      "sourceText": "对了，之前光聊围棋了，还没向你介绍我们围棋部呢。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "handbook",
+      "characterId": "sigrika",
+      "sourceText": "这是你的部员手册，翻开来看看吧~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "handbook-intro",
+      "characterId": "sigrika",
+      "sourceText": "部员手册可以查看围棋部里现在有哪些部员，点击部员卡片可以查看相应部员的具体信息哦~",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "sigrika",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "skill",
+      "characterId": "sigrika",
+      "sourceText": "看，在这里你能看到我的共鸣技能以及其它的所有信息。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "know-members",
+      "characterId": "sigrika",
+      "sourceText": "有空的时候也记得看看其它部员的哦。毕竟知己知彼方能百战百胜嘛。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "match",
+      "characterId": "sigrika",
+      "sourceText": "再回到我们棋盘前面，点击这个试试吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "match-intro",
+      "characterId": "sigrika",
+      "sourceText": "你可以在这里选择对局模式，选择模式后会自动帮你匹配选择了同一模式的在线玩家。匹配成功后就可以进行对局了哦。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "practice",
+      "characterId": "sigrika",
+      "sourceText": "嘿嘿，我们围棋部里还配置了准时宝机器人当陪练。虽然水平不怎么样，但是当你想熟悉部员技能或者星炬对弈模式，都可以找它练练手~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "resume",
+      "characterId": "sigrika",
+      "sourceText": "再看看你的学生证吧~刚刚已经帮你登记进围棋部系统了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "resume-intro",
+      "characterId": "sigrika",
+      "sourceText": "这是你的围棋部履历，可以看到你在我们围棋部中的各种胜负、段位数据，还可以查看你的历史对局记录。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "player-choice",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "new-club",
+      "characterId": "sigrika",
+      "sourceText": "诶嘿嘿，其实我们围棋部才刚开张不久，还没来得及招新呢...",
+      "expressionId": "embarrassed"
+    },
+    {
+      "nodeId": "recruitment",
+      "characterId": "sigrika",
+      "sourceText": "不过我都想好办法了，点开这个看看吧。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "recruitment-intro",
+      "characterId": "sigrika",
+      "sourceText": "铛铛，这就是我们的招募系统啦。我们可以准备招新物品来招募新部员。",
+      "expressionId": "original"
+    },
+    {
+      "nodeId": "recruitment-items",
+      "characterId": "sigrika",
+      "sourceText": "目前来说，招募我们学院内的最好用招新海报，如果想找学院外的就只能通过电台广播来找啦。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "recruitment-result",
+      "characterId": "sigrika",
+      "sourceText": "使用了招募物品后，过一段时间就会有招募结果呢。可能一开始不太好招，但坚持下去相信总会吸引到新部员上门的！",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "recruitment-gift",
+      "characterId": "sigrika",
+      "sourceText": "我过一会会准备一些招募物品发到你的邮箱，到时候记得查收哦。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "shop",
+      "characterId": "sigrika",
+      "sourceText": "不过我准备的招募物品数量有限...我先带你去扎希拉姐姐的商店吧。",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "shop-intro",
+      "characterId": "sigrika",
+      "sourceText": "这里就是扎希拉姐姐的商店了。在这里除了招募物品外，还可以买到其它各种小玩意儿哦~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "shop-explore",
+      "characterId": "sigrika",
+      "sourceText": "不过我就不一一介绍了，你可以自己再摸索一下。",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "mailbox",
+      "characterId": "sigrika",
+      "sourceText": "你说邮箱在哪？嗯，这个应该在你的学生系统里的。我指给你看吧。",
+      "expressionId": "thinking"
+    },
+    {
+      "nodeId": "mailbox-intro",
+      "characterId": "sigrika",
+      "sourceText": "未来各种讯息、围棋部的奖励等等都会送到你的邮箱里哦~所以要记得定时查看一下。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "goodbye",
+      "characterId": "sigrika",
+      "sourceText": "嗯...我想应该介绍的差不多了。啊，差不多到上课的时间了，那我先走啦~拜拜~",
+      "expressionId": "smile"
+    }
+  ]
+};

@@ -88,4 +88,8 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {
     grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;
   }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.standard-story-sprite {
+    grid-template-rows: minmax(140px, 40fr) minmax(96px, 60fr) auto !important;
+  }
 }

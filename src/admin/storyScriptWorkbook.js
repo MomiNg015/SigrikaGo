@@ -1,3 +1,4 @@
+import { storySpriteSelectionError } from "../shared/characterStorySprites.js";
 import {
   TUTORIAL_NODE_TYPES,
   isStoryNodeType,
@@ -37,6 +38,8 @@ const NODE_COLUMNS = Object.freeze([
   ["name", "步骤名称"],
   ["speakerName", "说话人"],
   ["characterId", "立绘角色ID"],
+  ["appearanceId", "立绘造型ID"],
+  ["expressionId", "表情ID"],
   ["effect", "演出效果"],
   ["text", "对白/NPC文本"],
   ["prompt", "教学提示"],
@@ -82,6 +85,8 @@ const BOARD_COLUMNS = Object.freeze([
 ]);
 
 const OPTIONAL_NODE_HEADERS = new Set([
+  "appearanceId",
+  "expressionId",
   "targetHighlightEnabled",
   "wrongMovePointId",
   "wrongMoveNextNodeId",
@@ -362,6 +367,7 @@ function readNodeSheet(workbook, sheetName, errors) {
     const node = {};
     for (const key of NODE_KEYS) {
       if (key === "order") continue;
+      if (["appearanceId", "expressionId"].includes(key) && !headerMap.has(fieldHeader(NODE_COLUMNS, key))) continue;
       node[key] = valueFromRow(row, headerMap, NODE_COLUMNS, key);
     }
     node.type = node.type || TUTORIAL_NODE_TYPES.story;
@@ -460,6 +466,8 @@ function validateImportedScript({ title, draft, current, itemOptions, skillChara
   let hasEnding = false;
   for (const node of draft.nodes) {
     const row = node.__rowNumber;
+    const spriteError = storySpriteSelectionError(node);
+    if (spriteError) errors.push(importError(SHEETS.draftNodes, row, "表情ID", spriteError));
     if (isStoryNodeType(node.type) && !String(node.text ?? "").trim()) {
       errors.push(importError(SHEETS.draftNodes, row, "对白/NPC文本", "剧情对白节点缺少正文。"));
     }

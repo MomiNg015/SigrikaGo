@@ -155,6 +155,7 @@ export default function TutorialSessionModal({
       <StoryPlayerModal
         script={storyOnlyScript(script, node)}
         characters={characters}
+        user={user}
         labels={labels}
         onClose={onClose}
         onNavigate={goToNode}

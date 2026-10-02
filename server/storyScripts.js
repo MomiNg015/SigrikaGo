@@ -2,6 +2,8 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { normalizeSkillConfig } from "../src/shared/gameSkills.js";
 import { isPlayerColor } from "../src/shared/gameConstants.js";
 import { normalizeStoryNodeEffect } from "../src/shared/storyPresentation.js";
+import { applyAuthoredGuideExpressions } from "../src/shared/authoredGuideExpressions.js";
+import { normalizeStorySpriteSelection, storySpriteSelectionError } from "../src/shared/characterStorySprites.js";
 import {
   TUTORIAL_NODE_TYPES,
   isStoryNodeType,
@@ -146,6 +148,8 @@ export function validateStoryContent(input = {}, { publishing = false } = {}) {
 
   const nodeIds = new Set();
   for (const node of nodes) {
+    const spriteError = storySpriteSelectionError(node);
+    if (spriteError) throw routeError(400, `${node.id}：${spriteError}`);
     if (!node.id) throw routeError(400, ERRORS.nodeIdRequired);
     if (nodeIds.has(node.id)) throw routeError(400, ERRORS.duplicateNodeId);
     nodeIds.add(node.id);
@@ -469,12 +473,12 @@ export function toAdminStoryScriptPayload(record, fallback = {}) {
     draft: {
       startNodeId: record.draftStartNodeId ?? "",
       initialBoard: parseInitialBoardJson(record.draftInitialBoardJson),
-      nodes: parseNodesJson(record.draftNodesJson)
+      nodes: applyAuthoredGuideExpressions(parseNodesJson(record.draftNodesJson), record.key)
     },
     published: {
       startNodeId: record.publishedStartNodeId ?? "",
       initialBoard: parseInitialBoardJson(record.publishedInitialBoardJson),
-      nodes: parseNodesJson(record.publishedNodesJson)
+      nodes: applyAuthoredGuideExpressions(parseNodesJson(record.publishedNodesJson), record.key)
     },
     isPublished: Boolean(record.isPublished),
     firstPublishedAt: record.firstPublishedAt ?? null,
@@ -494,7 +498,7 @@ export function toPlayerStoryScriptPayload(record) {
     triggerParams: parseObjectJson(record.triggerParamsJson),
     startNodeId: record.publishedStartNodeId ?? "",
     initialBoard: parseInitialBoardJson(record.publishedInitialBoardJson),
-    nodes: parseNodesJson(record.publishedNodesJson),
+    nodes: applyAuthoredGuideExpressions(parseNodesJson(record.publishedNodesJson), record.key),
     publishedAt: record.publishedAt ?? record.firstPublishedAt ?? null
   };
   if (!script.startNodeId || !script.nodes.length) return null;
@@ -695,6 +699,7 @@ function normalizeNode(node = {}) {
     type,
     speakerName: normalizeText(node.speakerName),
     characterId: normalizeText(node.characterId),
+    ...normalizeStorySpriteSelection(node),
     skillCharacterId: normalizeText(node.skillCharacterId),
     skillId: normalizeText(node.skillId),
     effect,

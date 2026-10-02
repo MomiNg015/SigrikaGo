@@ -1,13 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { FastForward, MessageCircle, Play, X } from "lucide-react";
-import { storyPortraitCatalog } from "../shared/storyPortraits.js";
+import { resolveStoryCharacter, resolveStoryPortraitPresentation } from "../shared/characterStorySprites.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
-import {
-  resolveCharacterPortrait,
-  resolveCharacterPortraitPresentation
-} from "../shared/characterPortraits.js";
+import { isStoryNodeType } from "../shared/tutorialNodeTypes.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -55,21 +52,18 @@ export default function StoryPlayerModal({
   const text = currentNodeText(node);
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
-  const character = resolveCharacter(node?.characterId, characters);
-  const portraitPresentation = resolveCharacterPortraitPresentation({
-    id: node?.characterId,
-    portraitUrl: character.portraitUrl
-  }, { itemEffects: user?.itemEffects, user });
+  const character = resolveStoryCharacter(node?.characterId, characters);
+  const portraitPresentation = resolveStoryPortraitPresentation(node ?? {}, { character, user });
   const nodeElapsedMs = nodeTimer.nodeId === activeNodeId ? nodeTimer.elapsedMs : 0;
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
-  const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
-  const portraitKey = `${node?.characterId || ""}:${portraitPresentation.src}`;
+  const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}${portraitPresentation.standard ? " standard-story-sprite" : ""}`;
+  const portraitKey = `${node?.characterId || ""}:${portraitPresentation.appearanceId || portraitPresentation.src}`;
   const availablePortraitNodes = portraitNodes ?? script?.nodes ?? [];
   const portraitUrls = useMemo(
-    () => storyPortraitUrls(availablePortraitNodes, characters, user),
+    () => storyPortraitUrls(availablePortraitNodes.filter((entry) => !entry.type || isStoryNodeType(entry.type)), characters, user),
     [availablePortraitNodes, characters, user]
   );
 
@@ -215,6 +209,8 @@ export default function StoryPlayerModal({
           className="onboarding-story-portrait"
           data-story-node-id={activeNodeId}
           data-story-character-id={node.characterId || ""}
+          data-story-appearance={portraitPresentation.appearanceId || undefined}
+          data-story-expression={portraitPresentation.expressionId || undefined}
           aria-label={character.name || node.speakerName || ""}
         >
           {portraitPresentation.src && (
@@ -227,6 +223,9 @@ export default function StoryPlayerModal({
               loading="eager"
               decoding="sync"
               fetchPriority="high"
+              onError={(event) => {
+                if (portraitPresentation.fallbackSrc && event.currentTarget.getAttribute("src") !== portraitPresentation.fallbackSrc) event.currentTarget.src = portraitPresentation.fallbackSrc;
+              }}
             />
           )}
           {(node.speakerName || character.name) && (
@@ -335,37 +334,11 @@ function currentNodeText(node) {
   return String(node?.text ?? "");
 }
 
-function resolveCharacter(characterId, characters) {
-  const id = String(characterId ?? "").trim();
-  if (!id) return {};
-  const catalog = storyPortraitCatalog(characters);
-  const direct = catalog[id] ?? {};
-  const byName = Object.values(catalog).find((character) => {
-    const names = [
-      character?.name,
-      character?.displayName,
-      character?.id,
-      character?.slug
-    ].map((value) => String(value ?? "").trim()).filter(Boolean);
-    return names.includes(id);
-  }) ?? {};
-  const character = direct.name || direct.portraitUrl || direct.portrait ? direct : byName;
-  const portraitUrl = character.portraitUrl || character.portrait || character.imageUrl || "";
-  return {
-    ...character,
-    portraitUrl
-  };
-}
-
 export function storyPortraitUrls(nodes = [], characters = {}, user = null) {
   return [...new Set(
     (Array.isArray(nodes) ? nodes : [])
       .map((entry) => {
-        const character = resolveCharacter(entry?.characterId, characters);
-        return resolveCharacterPortrait({
-          id: entry?.characterId,
-          portraitUrl: character.portraitUrl
-        }, { itemEffects: user?.itemEffects, user });
+        return resolveStoryPortraitPresentation(entry ?? {}, { characters, user }).src;
       })
       .filter(Boolean)
   )];

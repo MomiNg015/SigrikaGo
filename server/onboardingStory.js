@@ -1,5 +1,6 @@
 import { routeError } from "./adminRouteErrors.js";
 import { normalizeStoryNodeEffect } from "../src/shared/storyPresentation.js";
+import { normalizeStorySpriteSelection } from "../src/shared/characterStorySprites.js";
 import {
   getAdminStoryScript,
   getPublishedStoryScriptForTrigger,
@@ -230,6 +231,7 @@ function normalizeNode(node = {}) {
     id: normalizeText(node.id),
     speakerName: normalizeText(node.speakerName),
     characterId: normalizeText(node.characterId),
+    ...normalizeStorySpriteSelection(node),
     effect,
     text: normalizeText(node.text),
     targetHighlightEnabled: normalizeDefaultTrueFlag(node.targetHighlightEnabled),

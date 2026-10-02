@@ -1,0 +1,418 @@
+{
+  "version": 1,
+  "fullSize": [
+    832,
+    1216
+  ],
+  "avatarSize": [
+    256,
+    256
+  ],
+  "files": [
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "smile",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "8754aa1fbd5dfda50c5476fef3521a5543380206f47edb83381cbcf75074aa38",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 688758,
+      "avatarBytes": 97160
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "closed_smile",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "90ec4b6504bda37e5e32f73d938973314ced6a93eee7c247fdcb56a4779597dc",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 690506,
+      "avatarBytes": 95384
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "thinking",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "a9964c8ec47904890ba22281431b76c7d16805daac4da5c56552022b98f06b29",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 688166,
+      "avatarBytes": 95984
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "serious",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "be00c829688120fb0d5ed1949f44c32d52da32068fbf38dfa791014976cc0b20",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 688478,
+      "avatarBytes": 96116
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "surprised",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "ba167baba4fd11579793a1e451d4da858baf1862a9631ccb47cf39e5099e3627",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 693902,
+      "avatarBytes": 96076
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "worried",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "c49d1e40bc60bec41cb43653ede28d3cfecedfa4fcdf1eeddd162965323fa0c4",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 690722,
+      "avatarBytes": 96312
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "embarrassed",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "3cd4439ec4d3bc46f5c0d0ab60456df345aded6d3797ddf0e5cd876dab9a2eb8",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 690044,
+      "avatarBytes": 96068
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "angry",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "6835d5a27599bec81ecebf20f9a1943aa2c9bf95fd97fc3ce9251de472d4f252",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 688486,
+      "avatarBytes": 97334
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "original",
+      "sourcePackage": "sigrika-sprite-expressions",
+      "sourceSha256": "3457caa9ab1666ae9b7c5e854613c34c3bf224ff8de750e6cbabf6acdace4340",
+      "crop": {
+        "left": 205,
+        "top": 0,
+        "width": 400,
+        "height": 400
+      },
+      "fullBytes": 690584,
+      "avatarBytes": 96188
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "smile",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "fae2fa8bab5230a7170fe37a26f2fa5cca3d487ea0f43a9c8cf17aae7c450541",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 738112,
+      "avatarBytes": 86466
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "closed_smile",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "b4560d59f6a458a1e541a3679fd7154a8dbe8b16b78365f183751d8e9a014ecf",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 735916,
+      "avatarBytes": 85752
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "playful",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "f401165c5dd0f52446e80122611446a299a5fd3c34de8af3a0b80fe50208172e",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 738210,
+      "avatarBytes": 86402
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "sleepy",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "670b337c4fad12e53e39352036d8b97e22ef6d2023844a3063d5a830ee28d7eb",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 734862,
+      "avatarBytes": 86294
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "thinking",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "4530b67b1be2e0dbc1f0bcddf5b4ac075ac53a4422413898c00078ef128e1976",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 735872,
+      "avatarBytes": 86374
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "surprised",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "7b0001ca75d941329ca32cd53f19f42807ec7fb35b9d6e2a197d3d65178f3df2",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 738356,
+      "avatarBytes": 86636
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "annoyed",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "a3fdf8d28c29d6e790c70ebb4174ec96a36ca1ffbd2baea77c508783d27556ff",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 738100,
+      "avatarBytes": 86498
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "serious",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "b9bd0ef436e7dbe0546c90ca058d400e967d7bfc2b340f221ad00382fa4ab5a0",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 736556,
+      "avatarBytes": 86616
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "original",
+      "sourcePackage": "denia-sprite-expressions",
+      "sourceSha256": "4b351de896cbb18ab7a6f398cb94d20d1a71b5b9a5d0cb46f8b9869669141d6e",
+      "crop": {
+        "left": 220,
+        "top": 0,
+        "width": 420,
+        "height": 420
+      },
+      "fullBytes": 734868,
+      "avatarBytes": 86494
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "smile",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "dec429fbe19f66874a36996246c397fa69cf356a1180a99b96a90c37f3315604",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 759320,
+      "avatarBytes": 82058
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "closed_smile",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "975e6cf52939d8eedcbfb769e218a9e2d49aa399c5ea48c2c003584f4a6dde10",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 757048,
+      "avatarBytes": 81364
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "wink",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "5164791637b046ab703873d726a3b4f6a2509408d28b48d2f1338805680e95c7",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 757798,
+      "avatarBytes": 81586
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "surprised",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "b560671f3d1a100e85362505adc7435e13208a9b0ca68fdc94b566002073df1f",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 761364,
+      "avatarBytes": 82044
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "thinking",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "73ccc4447a94d48167dd9d126c0d1c358204fa28a2e67efd6b0af58e7cfb9816",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 758646,
+      "avatarBytes": 81766
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "wry",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "f666a9e084677582421732ade5d1d832394c0d8b5fd04bb080bfee1a0fd16dc7",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 760822,
+      "avatarBytes": 81856
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "annoyed",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "9149b3b6ce319f4cbd2601bf2fc833c1d704202e549442942a15439455cedad5",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 758880,
+      "avatarBytes": 81872
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "serious",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "d20953d368c36f16d8ff77a430e013f91ceeae1b30a7694aff11ee528a97460b",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 759466,
+      "avatarBytes": 81948
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "original",
+      "sourcePackage": "amis-sprite-expressions",
+      "sourceSha256": "d93d0cb4492b7ed530cd36c00db2e0d73f9edbbdaddc6cadfe56c7a68cd40d47",
+      "crop": {
+        "left": 214,
+        "top": 0,
+        "width": 376,
+        "height": 376
+      },
+      "fullBytes": 757696,
+      "avatarBytes": 81906
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import { applyAuthoredGuideExpression } from "../../shared/authoredGuideExpressions.js";
+
 const say = (id, text, extra = {}) => ({ id, text, ...extra });
 const action = (id, text, target, window) => say(id, text, { target, window, action: true });
 
@@ -26,7 +28,7 @@ export const HOME_ONBOARDING_STEPS = [
   action("mailbox", "你说邮箱在哪？嗯，这个应该在你的学生系统里的。我指给你看吧。", "mailbox"),
   say("mailbox-intro", "未来各种讯息、围棋部的奖励等等都会送到你的邮箱里哦~所以要记得定时查看一下。", { window: "mailbox", surface: ".mailbox-modal" }),
   say("goodbye", "嗯...我想应该介绍的差不多了。啊，差不多到上课的时间了，那我先走啦~拜拜~")
-];
+].map((step) => applyAuthoredGuideExpression({ ...step, characterId: "sigrika" }, "home.onboarding"));
 
 export const HOME_ONBOARDING_WINDOWS = {
   house: "setShowHouse", matchModePicker: "setShowMatchModePicker", resume: "setShowResume",

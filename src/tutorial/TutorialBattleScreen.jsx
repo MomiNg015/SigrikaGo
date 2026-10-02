@@ -21,6 +21,7 @@ import { DesktopRoomLayout, MobileRoomLayout, useMobileRoomLayout } from "../roo
 import { roomGameInfoForPlayers } from "../room/roomState.js";
 import { COLORS, GAME_PHASES, cloneState, getPoint } from "../shared/game.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { resolveStoryCharacter, resolveStoryPortraitPresentation, storyAvatarUrls } from "../shared/characterStorySprites.js";
 import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { latestSkillPreview, resolveBackgroundMusic } from "../shared/musicLibrary.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
@@ -96,16 +97,18 @@ export default function TutorialBattleScreen({
 }) {
   const script = session?.script;
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
+  const startNode = nodesById.get(session?.startNodeId) ?? nodesById.get(script?.startNodeId) ?? {};
+  const [players, setPlayers] = useState(() => tutorialPlayersForSetup(startNode, user, characters));
+  const activeNpcCharacterId = playerByUserId(players, NPC_ID)?.characterId || "denia";
   const tutorialPortraitUrls = useMemo(() => [...new Set([
     SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url,
+    ...storyAvatarUrls(script?.nodes ?? [], { characters, user, fallbackCharacterIds: [activeNpcCharacterId, ...(script?.nodes ?? []).filter((node) => node.type === TUTORIAL_NODE_TYPES.boardSetup).map((node) => node.npcCharacterId || node.characterId || "denia")] }),
     ...(script?.nodes ?? [])
       .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
       .filter(Boolean)
       .map((characterId) => findCharacter(characters, characterId).portrait)
       .filter(Boolean)
-  ])], [characters, script?.nodes]);
-  const startNode = nodesById.get(session?.startNodeId) ?? nodesById.get(script?.startNodeId) ?? {};
-  const [players, setPlayers] = useState(() => tutorialPlayersForSetup(startNode, user, characters));
+  ])], [activeNpcCharacterId, characters, script?.nodes, user]);
   const [game, setGame] = useState(() => createTutorialGameState({
     initialBoard: script?.initialBoard,
     players
@@ -282,13 +285,18 @@ export default function TutorialBattleScreen({
       hideNpcBubble();
       return;
     }
-    const character = findCharacter(characters, node.characterId || playerByUserId(players, NPC_ID)?.characterId);
+    const characterId = node.characterId || playerByUserId(players, NPC_ID)?.characterId;
+    const character = resolveStoryCharacter(characterId, characters);
+    const portrait = resolveStoryPortraitPresentation({ ...node, characterId }, { character, user, variant: "avatar" });
     bubbleSequenceRef.current += 1;
     const nextBubble = {
       id: `${node.id}-${bubbleSequenceRef.current}`,
       nodeId: node.id,
       characterId: character.id,
-      portrait: character.portrait,
+      portrait: portrait.src,
+      fallbackPortrait: portrait.fallbackSrc,
+      appearanceId: portrait.appearanceId,
+      expressionId: portrait.expressionId,
       palette: character.palette || "#5b6ee1",
       speakerName: node.speakerName || node.npcName || character.name || "NPC",
       text,
@@ -302,7 +310,7 @@ export default function TutorialBattleScreen({
       text
     });
     return nextBubble;
-  }, [appendChat, characters, hideNpcBubble, players]);
+  }, [appendChat, characters, hideNpcBubble, players, user]);
 
   const scheduleNpcTextCompletion = useCallback((bubble, node, callback) => {
     if (!bubble) {

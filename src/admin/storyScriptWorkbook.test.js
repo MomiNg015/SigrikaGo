@@ -23,6 +23,8 @@ function sampleScript() {
           type: "story",
           speakerName: "西格莉卡",
           characterId: "sigrika",
+          appearanceId: "sigrika-standard-v1",
+          expressionId: "thinking",
           effect: "none",
           text: "要开始了。",
           nextNodeId: "setup"
@@ -98,6 +100,7 @@ describe("storyScriptWorkbook", () => {
     expect(result.title).toBe(script.title);
     expect(result.draft.startNodeId).toBe("start");
     expect(result.draft.nodes).toHaveLength(4);
+    expect(result.draft.nodes[0]).toMatchObject({ appearanceId: "sigrika-standard-v1", expressionId: "thinking", text: "要开始了。", nextNodeId: "setup" });
     expect(result.draft.initialBoard).toMatchObject({ lastMovePointId: "1,1" });
     expect(result.draft.nodes[1]).toMatchObject({
       boardSetupLoadingEnabled: false,
@@ -121,7 +124,7 @@ describe("storyScriptWorkbook", () => {
   it("imports legacy v1 sheets that do not contain the newly optional columns", async () => {
     const script = sampleScript();
     const workbook = await workbookFromBuffer(await writeStoryScriptWorkbook(script));
-    const optionalNodeHeaders = ["显示目标圈", "特殊错误坐标", "错误落子目标节点ID", "错误落子实际落盘", "局面切换显示加载页"];
+    const optionalNodeHeaders = ["显示目标圈", "特殊错误坐标", "错误落子目标节点ID", "错误落子实际落盘", "局面切换显示加载页", "立绘造型ID", "表情ID"];
     for (const sheetName of ["草稿-节点", "发布版-节点"]) {
       const sheet = workbook.getWorksheet(sheetName);
       const indexes = optionalNodeHeaders
@@ -138,6 +141,7 @@ describe("storyScriptWorkbook", () => {
 
     const result = await parseStoryScriptWorkbook(await bufferFromWorkbook(workbook), script);
     expect(result.ok).toBe(true);
+    expect(result.draft.nodes[0]).not.toHaveProperty("appearanceId");
     expect(result.draft.nodes[2]).toMatchObject({
       targetHighlightEnabled: true,
       wrongMovePointId: "",

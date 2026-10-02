@@ -23,6 +23,7 @@ import {
   X
 } from "lucide-react";
 import { adminApi } from "../api/client.js";
+import { storySpriteProfile, storyExpressionOptions } from "../shared/characterStorySprites.js";
 import Board from "../room/Board.jsx";
 import { COLORS, createGameState, getPoint, isPlayerColor } from "../shared/game.js";
 import { characterListFromCatalog, CHARACTERS } from "../shared/characters.js";
@@ -1446,11 +1447,12 @@ function StoryStepFields({ node, nodes, portraitOptions, onPatch, onPatchOption,
     <>
       <label>
         <span>立绘角色</span>
-        <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value })}>
+        <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value, appearanceId: "", expressionId: "" })}>
           <option value="">无</option>
           {portraitOptions.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
         </select>
       </label>
+      <StorySpriteFields node={node} onPatch={onPatch} />
       <label>
         <span>说话人</span>
         <input value={node.speakerName ?? ""} onChange={(event) => onPatch({ speakerName: event.target.value })} />
@@ -1547,11 +1549,12 @@ function BattleStepFields({
         <>
           <label>
             <span>NPC 立绘</span>
-            <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value })}>
+            <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value, appearanceId: "", expressionId: "" })}>
               <option value="">使用局面 NPC</option>
               {portraitOptions.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
             </select>
           </label>
+          <StorySpriteFields node={node} onPatch={onPatch} />
           <label>
             <span>NPC 显示名</span>
             <input value={node.speakerName ?? ""} onChange={(event) => onPatch({ speakerName: event.target.value })} />
@@ -1672,7 +1675,7 @@ function BattleStepFields({
         <>
           <label>
             <span>角色</span>
-            <select value={skillCharacterId} onChange={(event) => onPatch({ skillCharacterId: event.target.value, skillId: event.target.value, characterId: event.target.value })}>
+            <select value={skillCharacterId} onChange={(event) => onPatch({ skillCharacterId: event.target.value, skillId: event.target.value, characterId: event.target.value, appearanceId: "", expressionId: "" })}>
               <option value="">未选择</option>
               {skillCharacters.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}
             </select>
@@ -2250,6 +2253,28 @@ function emptyStoryScript(overrides = {}) {
     publishedAt: null,
     ...overrides
   };
+}
+
+export function StorySpriteFields({ node, onPatch }) {
+  const profile = storySpriteProfile(node.characterId);
+  if (!profile) return null;
+  return (
+    <>
+      <label>
+        <span>立绘造型</span>
+        <select value={node.appearanceId ?? ""} onChange={(event) => onPatch({ appearanceId: event.target.value, expressionId: event.target.value ? "smile" : "" })}>
+          <option value="">原有立绘</option>
+          <option value={profile.appearanceId}>标准立绘</option>
+        </select>
+      </label>
+      {node.appearanceId === profile.appearanceId && <label>
+        <span>角色表情</span>
+        <select value={node.expressionId || "smile"} onChange={(event) => onPatch({ expressionId: event.target.value })}>
+          {storyExpressionOptions(node.characterId).map((expression) => <option key={expression.value} value={expression.value}>{expression.label}</option>)}
+        </select>
+      </label>}
+    </>
+  );
 }
 
 function emptyScript() {

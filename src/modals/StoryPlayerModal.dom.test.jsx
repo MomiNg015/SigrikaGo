@@ -4,6 +4,25 @@ import { describe, expect, it, vi } from "vitest";
 import StoryPlayerModal from "./StoryPlayerModal.jsx";
 
 describe("StoryPlayerModal interactions", () => {
+  it("changes expressions without remounting the same body, then clears narration and falls back on image failure", () => {
+    const { container, unmount } = render(<StoryPlayerModal script={{ startNodeId: "first", nodes: [
+      { id: "first", characterId: "sigrika", appearanceId: "sigrika-standard-v1", expressionId: "surprised", text: "原来的第一句", nextNodeId: "second" },
+      { id: "second", characterId: "sigrika", appearanceId: "sigrika-standard-v1", expressionId: "thinking", text: "原来的第二句", nextNodeId: "narration" },
+      { id: "narration", text: "原来的旁白", nextNodeId: "" }
+    ] }} characters={{ sigrika: { name: "西格莉卡", portrait: "/legacy.webp" } }} portraitNodes={[]} typewriterDisabled />);
+    const image = container.querySelector(".onboarding-story-portrait img");
+    expect(image.src).toContain("surprised.webp");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(container.querySelector(".onboarding-story-portrait img")).toBe(image);
+    expect(image.src).toContain("thinking.webp");
+    expect(container.textContent).toContain("原来的第二句");
+    fireEvent.error(image);
+    expect(image.src).toContain("/legacy.webp");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(container.querySelector(".onboarding-story-portrait").childElementCount).toBe(0);
+    expect(container.querySelector(".standard-story-sprite")).toBeNull();
+    unmount();
+  });
   it("clears the entire portrait area when character dialogue advances to narration", () => {
     const { container, unmount } = render(
       <StoryPlayerModal

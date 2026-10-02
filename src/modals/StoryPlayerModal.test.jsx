@@ -125,7 +125,7 @@ describe("StoryPlayerModal", () => {
       onClose: () => {}
     }));
 
-    expect(source).toContain("const portraitKey = `${node?.characterId || \"\"}:${portraitPresentation.src}`");
+    expect(source).toContain("portraitPresentation.appearanceId || portraitPresentation.src");
     expect(source).not.toContain("const portraitKey = `${activeNodeId}:");
     expect(source).toContain("key={portraitKey}");
     expect(source).toContain("preloadImageAssets(portraitUrls, { concurrency: 4 })");

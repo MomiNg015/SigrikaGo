@@ -1711,7 +1711,8 @@ describe("root CSS entry contract", () => {
       "./onboarding-story/shell.css",
       "./onboarding-story/portrait-text.css",
       "./onboarding-story/actions-skip.css",
-      "./onboarding-story/mobile.css"
+      "./onboarding-story/mobile.css",
+      "./onboarding-story/standard-sprite.css"
     ]);
     expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
   });

@@ -1378,3 +1378,7 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 ### Team lineup geometry
 
 Keep the name row mounted and reserve the same two-line height in empty and occupied slots. Removing placeholder copy must not remove layout space. Browser regression checks compare dialog x/y/width/height at zero, one, two and three selections and after deselection on desktop and portrait phones.
+
+## Standard story sprite presentation
+
+`StoryPlayerModal`, teaching NPC bubbles and the fixed home tour share [Story Sprite And Expression Contract](../backend/story-sprite-contract.md). Only valid standard appearances opt into `.standard-story-sprite`; existing portraits retain their layout. Same appearance retains its image element while expression changes its source. Desktop uses an independent art column; portrait phones use a bounded bust stage above the text scroller, with choices outside that scroller. Preserve long-text effect/typewriter timing, narration clearing and existing guide target geometry. Bright School's final phone shell owner must use the matching standard-sprite grid override.

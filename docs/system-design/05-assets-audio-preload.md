@@ -235,3 +235,13 @@ The tutorial route Suspense fallback uses zero progress instead of the completed
 ### Window content loading
 
 Player windows use `WindowLoadingState` for pending content, sharing the empty-state paper drawing and LXGW typography. A gently moving pencil distinguishes loading from empty results; reduced-motion disables it. Compact inline feedback preserves existing content during profile mode changes and replay pagination. Request lifecycles, errors, and full-screen resource progress are unchanged.
+
+## 标准剧情立绘与表情
+
+正式剧情引导已登记西格莉卡、达妮娅、爱弥斯三套标准立绘，爱弥斯素材目录 `amis-sprite-expressions` 对应运行角色 `aemeath`。资源独立位于 `public/assets/characters/story-sprites/`：27 张 832×1216 无损透明 WebP 与 27 张固定裁切的 256×256 表情头像，共约 22.05 MB。原 PNG、身体、透明度与表情包保持不变；导入脚本逐像素核验完整图可见 RGB 和 Alpha，并在 manifest 中记录来源 SHA-256 和头像裁切。
+
+`characterStorySprites.js` 统一造型、表情白名单与用途解析。StoryScript 节点增加可选 `appearanceId/expressionId`；后台可选择原立绘／标准立绘及角色合法表情，Excel v1 增加两个可选列并兼容旧表。标准造型固定剧情服装，不继承账号时装构图；堕化西格莉卡与彩虹达妮娅仍优先，未知版本、未支持角色和图片错误回退原肖像体系。默认 900×900 肖像与全站启动预加载入口保持独立。
+
+现有数据库无需覆盖：`authoredGuideExpressionsData.js` 按脚本 key、节点 ID、角色和完整原文匹配作者配置，再在响应阶段加入展示字段，先于用户名插值。显式字段（包括空值）优先；修改台词后不误用原配置。225 节点的现有新手引导中，169 段角色对白已逐段配置表情，首页导览另有 22 段；台词、分支、延迟、棋盘动作均保持原内容。爱弥斯当前没有引导台词，素材可在后台选择。剧情窗口只预加载窗口使用的完整表情图，棋盘对话和首页导览仅预加载专用头像，均复用四并发缓存加载器。
+
+复现：`node scripts/import-story-sprites.mjs --source-root <素材根目录>`。合同与验证入口见 `.trellis/spec/backend/story-sprite-contract.md`；图库完整性、原文等值、后台/Excel 往返及真实组件竖屏检查均有对应测试。
