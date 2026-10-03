@@ -1,0 +1,9 @@
+# Ensemble puzzle handbook
+
+The user revised the chosen handbook direction into a continuous ensemble portrait puzzle. A single board is partitioned into ten irregular polygon pieces of roughly equal area, filling its exterior contour without overlaps or empty gaps. Owned characters show color portraits and character-theme borders. Unowned characters show only neutral gray silhouettes with question marks. Clicking each piece opens a separate character-detail dialog.
+
+Handbook artwork must retain Bright School's warm paper and ink language. Avoid ordinary card-grid geometry, dominant large hero pieces and tiny portrait shards. Face size remains legible and consistent across polygons. Mobile recomposes the board for portrait width rather than shrinking the desktop frame.
+
+No deployment button belongs in this new handbook concept. Moving character choice into mode selection is explicitly deferred; do not change production selection flows in this visual-revision task. Deliver a single revised visual mock grounded in current source screenshots, then a separate clickable local prototype using the supplied nine original PNG illustrations and the existing baconbits portrait. Preserve previous mock artifacts for comparison. Production implementation follows review of the revised visual target.
+
+The user supplied all nine standard illustrations and explicitly authorized cropping. Copy those originals unchanged and check source hashes. Reuse exact images in the interactive prototype rather than generated approximations of faces. Provide local ownership scenarios (8/10, all, none) outside the product window for reviewing both states. Details show actual offline default-catalog text, not invented statistics. Unknown details remain locked. Verify desktop, 390x844, and 360x800, polygon hit regions, image loading, modal return focus, and the absence of deployment controls. The sample does not write accounts, rewards or runtime character configuration.

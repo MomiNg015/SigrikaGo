@@ -1,0 +1,1205 @@
+{
+  "version": 1,
+  "method": "Area-balanced power diagram with 25 centroid-relaxation rounds; shared vertices canonicalized before rounding to four decimal percent coordinates; all validations run on those final rounded points.",
+  "desktop": {
+    "boardSizePx": {
+      "width": 1000,
+      "height": 600
+    },
+    "pieceCount": 10,
+    "totalAreaPercentSquared": 10000.0,
+    "expectedAreaPercentSquared": 10000,
+    "totalAreaPx": 600000.0,
+    "coverageErrorPercentSquared": 0.0,
+    "maxToMinAreaRatio": 1.00298453,
+    "allPointsInsideBoard": true,
+    "pairwiseIntersectionChecks": 45,
+    "nonzeroOverlaps": [],
+    "invalidUnmatchedEdges": [],
+    "sharedEdgeCount": 20,
+    "boundaryEdgeCount": 11,
+    "sharedEdges": [
+      {
+        "points": [
+          [
+            21.6659,
+            0.0
+          ],
+          [
+            23.6882,
+            32.111
+          ]
+        ],
+        "pieces": [
+          "piece-01",
+          "piece-02"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.9441,
+            54.241
+          ],
+          [
+            23.6882,
+            32.111
+          ]
+        ],
+        "pieces": [
+          "piece-01",
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            54.3632
+          ],
+          [
+            0.9441,
+            54.241
+          ]
+        ],
+        "pieces": [
+          "piece-01",
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.7635,
+            0.0
+          ],
+          [
+            50.8036,
+            26.6922
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-03"
+        ]
+      },
+      {
+        "points": [
+          [
+            34.3857,
+            42.5954
+          ],
+          [
+            50.8036,
+            26.6922
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-06"
+        ]
+      },
+      {
+        "points": [
+          [
+            23.6882,
+            32.111
+          ],
+          [
+            34.3857,
+            42.5954
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            77.2407,
+            32.6513
+          ],
+          [
+            79.9622,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-03",
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            62.9145,
+            42.3728
+          ],
+          [
+            77.2407,
+            32.6513
+          ]
+        ],
+        "pieces": [
+          "piece-03",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.8036,
+            26.6922
+          ],
+          [
+            62.9145,
+            42.3728
+          ]
+        ],
+        "pieces": [
+          "piece-03",
+          "piece-06"
+        ]
+      },
+      {
+        "points": [
+          [
+            92.3547,
+            52.2414
+          ],
+          [
+            100.0,
+            52.838
+          ]
+        ],
+        "pieces": [
+          "piece-04",
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            77.2407,
+            32.6513
+          ],
+          [
+            92.3547,
+            52.2414
+          ]
+        ],
+        "pieces": [
+          "piece-04",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            34.3857,
+            42.5954
+          ],
+          [
+            36.2326,
+            74.5036
+          ]
+        ],
+        "pieces": [
+          "piece-05",
+          "piece-06"
+        ]
+      },
+      {
+        "points": [
+          [
+            32.4337,
+            84.651
+          ],
+          [
+            36.2326,
+            74.5036
+          ]
+        ],
+        "pieces": [
+          "piece-05",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.9441,
+            54.241
+          ],
+          [
+            32.4337,
+            84.651
+          ]
+        ],
+        "pieces": [
+          "piece-05",
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            61.2028,
+            68.3812
+          ],
+          [
+            62.9145,
+            42.3728
+          ]
+        ],
+        "pieces": [
+          "piece-06",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            36.2326,
+            74.5036
+          ],
+          [
+            61.2028,
+            68.3812
+          ]
+        ],
+        "pieces": [
+          "piece-06",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            61.2028,
+            68.3812
+          ],
+          [
+            70.6583,
+            88.8312
+          ]
+        ],
+        "pieces": [
+          "piece-07",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            70.6583,
+            88.8312
+          ],
+          [
+            92.3547,
+            52.2414
+          ]
+        ],
+        "pieces": [
+          "piece-07",
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            31.9232,
+            100.0
+          ],
+          [
+            32.4337,
+            84.651
+          ]
+        ],
+        "pieces": [
+          "piece-08",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            70.6583,
+            88.8312
+          ],
+          [
+            71.3254,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-09",
+          "piece-10"
+        ]
+      }
+    ],
+    "boundaryEdges": [
+      {
+        "points": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            21.6659,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-01"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            54.3632
+          ]
+        ],
+        "pieces": [
+          "piece-01"
+        ]
+      },
+      {
+        "points": [
+          [
+            21.6659,
+            0.0
+          ],
+          [
+            50.7635,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-02"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.7635,
+            0.0
+          ],
+          [
+            79.9622,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-03"
+        ]
+      },
+      {
+        "points": [
+          [
+            79.9622,
+            0.0
+          ],
+          [
+            100.0,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            0.0
+          ],
+          [
+            100.0,
+            52.838
+          ]
+        ],
+        "pieces": [
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            100.0
+          ],
+          [
+            31.9232,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            54.3632
+          ],
+          [
+            0.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            31.9232,
+            100.0
+          ],
+          [
+            71.3254,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            52.838
+          ],
+          [
+            100.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            71.3254,
+            100.0
+          ],
+          [
+            100.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-10"
+        ]
+      }
+    ],
+    "minimumPortraitSafeSquareSidePx": 143.665763,
+    "pieces": [
+      {
+        "id": "piece-01",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 10.007968,
+        "maxInscribedSquareSidePx": 208.964329,
+        "portraitSafeSquareSidePx": 179.709323,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-02",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 10.002982,
+        "maxInscribedSquareSidePx": 197.76563,
+        "portraitSafeSquareSidePx": 170.078442,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-03",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 10.005902,
+        "maxInscribedSquareSidePx": 200.638239,
+        "portraitSafeSquareSidePx": 172.548886,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-04",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.987856,
+        "maxInscribedSquareSidePx": 202.237885,
+        "portraitSafeSquareSidePx": 173.924581,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-05",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.994128,
+        "maxInscribedSquareSidePx": 167.053213,
+        "portraitSafeSquareSidePx": 143.665763,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-06",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.998568,
+        "maxInscribedSquareSidePx": 190.216775,
+        "portraitSafeSquareSidePx": 163.586426,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-07",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.999166,
+        "maxInscribedSquareSidePx": 177.500459,
+        "portraitSafeSquareSidePx": 152.650395,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-08",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 10.013588,
+        "maxInscribedSquareSidePx": 177.294657,
+        "portraitSafeSquareSidePx": 152.473405,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-09",
+        "vertexCount": 6,
+        "convex": true,
+        "areaPercent": 10.00605,
+        "maxInscribedSquareSidePx": 167.571086,
+        "portraitSafeSquareSidePx": 144.111134,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-10",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.983791,
+        "maxInscribedSquareSidePx": 180.882645,
+        "portraitSafeSquareSidePx": 155.559075,
+        "portraitCornersInside": true
+      }
+    ],
+    "passed": true
+  },
+  "mobile": {
+    "boardSizePx": {
+      "width": 360,
+      "height": 550
+    },
+    "pieceCount": 10,
+    "totalAreaPercentSquared": 10000.0,
+    "expectedAreaPercentSquared": 10000,
+    "totalAreaPx": 198000.0,
+    "coverageErrorPercentSquared": 0.0,
+    "maxToMinAreaRatio": 1.00120827,
+    "allPointsInsideBoard": true,
+    "pairwiseIntersectionChecks": 45,
+    "nonzeroOverlaps": [],
+    "invalidUnmatchedEdges": [],
+    "sharedEdgeCount": 18,
+    "boundaryEdgeCount": 13,
+    "sharedEdges": [
+      {
+        "points": [
+          [
+            33.1855,
+            27.1808
+          ],
+          [
+            33.916,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-01",
+          "piece-02"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            32.5152
+          ],
+          [
+            33.1855,
+            27.1808
+          ]
+        ],
+        "pieces": [
+          "piece-01",
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            65.2953,
+            0.0
+          ],
+          [
+            66.5991,
+            27.1128
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-03"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.4374,
+            34.3925
+          ],
+          [
+            66.5991,
+            27.1128
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            33.1855,
+            27.1808
+          ],
+          [
+            50.4374,
+            34.3925
+          ]
+        ],
+        "pieces": [
+          "piece-02",
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            66.5991,
+            27.1128
+          ],
+          [
+            100.0,
+            31.7145
+          ]
+        ],
+        "pieces": [
+          "piece-03",
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.4374,
+            34.3925
+          ],
+          [
+            50.5415,
+            45.2494
+          ]
+        ],
+        "pieces": [
+          "piece-04",
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            32.9131,
+            53.1009
+          ],
+          [
+            50.5415,
+            45.2494
+          ]
+        ],
+        "pieces": [
+          "piece-04",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            47.7073
+          ],
+          [
+            32.9131,
+            53.1009
+          ]
+        ],
+        "pieces": [
+          "piece-04",
+          "piece-06"
+        ]
+      },
+      {
+        "points": [
+          [
+            67.7573,
+            52.9411
+          ],
+          [
+            100.0,
+            48.1725
+          ]
+        ],
+        "pieces": [
+          "piece-05",
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            50.5415,
+            45.2494
+          ],
+          [
+            67.7573,
+            52.9411
+          ]
+        ],
+        "pieces": [
+          "piece-05",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            32.9131,
+            53.1009
+          ],
+          [
+            35.0372,
+            76.947
+          ]
+        ],
+        "pieces": [
+          "piece-06",
+          "piece-07"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            82.69
+          ],
+          [
+            35.0372,
+            76.947
+          ]
+        ],
+        "pieces": [
+          "piece-06",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            64.8441,
+            77.0647
+          ],
+          [
+            67.7573,
+            52.9411
+          ]
+        ],
+        "pieces": [
+          "piece-07",
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            49.6887,
+            83.0048
+          ],
+          [
+            64.8441,
+            77.0647
+          ]
+        ],
+        "pieces": [
+          "piece-07",
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            35.0372,
+            76.947
+          ],
+          [
+            49.6887,
+            83.0048
+          ]
+        ],
+        "pieces": [
+          "piece-07",
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            64.8441,
+            77.0647
+          ],
+          [
+            100.0,
+            83.3429
+          ]
+        ],
+        "pieces": [
+          "piece-08",
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            49.553,
+            100.0
+          ],
+          [
+            49.6887,
+            83.0048
+          ]
+        ],
+        "pieces": [
+          "piece-09",
+          "piece-10"
+        ]
+      }
+    ],
+    "boundaryEdges": [
+      {
+        "points": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            33.916,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-01"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            32.5152
+          ]
+        ],
+        "pieces": [
+          "piece-01"
+        ]
+      },
+      {
+        "points": [
+          [
+            33.916,
+            0.0
+          ],
+          [
+            65.2953,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-02"
+        ]
+      },
+      {
+        "points": [
+          [
+            65.2953,
+            0.0
+          ],
+          [
+            100.0,
+            0.0
+          ]
+        ],
+        "pieces": [
+          "piece-03"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            0.0
+          ],
+          [
+            100.0,
+            31.7145
+          ]
+        ],
+        "pieces": [
+          "piece-03"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            32.5152
+          ],
+          [
+            0.0,
+            47.7073
+          ]
+        ],
+        "pieces": [
+          "piece-04"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            31.7145
+          ],
+          [
+            100.0,
+            48.1725
+          ]
+        ],
+        "pieces": [
+          "piece-05"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            47.7073
+          ],
+          [
+            0.0,
+            82.69
+          ]
+        ],
+        "pieces": [
+          "piece-06"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            48.1725
+          ],
+          [
+            100.0,
+            83.3429
+          ]
+        ],
+        "pieces": [
+          "piece-08"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            100.0
+          ],
+          [
+            49.553,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            0.0,
+            82.69
+          ],
+          [
+            0.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-09"
+        ]
+      },
+      {
+        "points": [
+          [
+            100.0,
+            83.3429
+          ],
+          [
+            100.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-10"
+        ]
+      },
+      {
+        "points": [
+          [
+            49.553,
+            100.0
+          ],
+          [
+            100.0,
+            100.0
+          ]
+        ],
+        "pieces": [
+          "piece-10"
+        ]
+      }
+    ],
+    "minimumPortraitSafeSquareSidePx": 89.827823,
+    "pieces": [
+      {
+        "id": "piece-01",
+        "vertexCount": 4,
+        "convex": true,
+        "areaPercent": 10.004486,
+        "maxInscribedSquareSidePx": 119.986876,
+        "portraitSafeSquareSidePx": 103.188713,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-02",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 10.005407,
+        "maxInscribedSquareSidePx": 114.733633,
+        "portraitSafeSquareSidePx": 98.670925,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-03",
+        "vertexCount": 4,
+        "convex": true,
+        "areaPercent": 10.001172,
+        "maxInscribedSquareSidePx": 121.124435,
+        "portraitSafeSquareSidePx": 104.167014,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-04",
+        "vertexCount": 6,
+        "convex": true,
+        "areaPercent": 10.0004,
+        "maxInscribedSquareSidePx": 104.450957,
+        "portraitSafeSquareSidePx": 89.827823,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-05",
+        "vertexCount": 6,
+        "convex": true,
+        "areaPercent": 9.999896,
+        "maxInscribedSquareSidePx": 106.317099,
+        "portraitSafeSquareSidePx": 91.432705,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-06",
+        "vertexCount": 4,
+        "convex": true,
+        "areaPercent": 9.995442,
+        "maxInscribedSquareSidePx": 119.279538,
+        "portraitSafeSquareSidePx": 102.580403,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-07",
+        "vertexCount": 6,
+        "convex": true,
+        "areaPercent": 10.001162,
+        "maxInscribedSquareSidePx": 110.740143,
+        "portraitSafeSquareSidePx": 95.236523,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-08",
+        "vertexCount": 4,
+        "convex": true,
+        "areaPercent": 10.001826,
+        "maxInscribedSquareSidePx": 117.471836,
+        "portraitSafeSquareSidePx": 101.025779,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-09",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.993332,
+        "maxInscribedSquareSidePx": 107.51167,
+        "portraitSafeSquareSidePx": 92.460036,
+        "portraitCornersInside": true
+      },
+      {
+        "id": "piece-10",
+        "vertexCount": 5,
+        "convex": true,
+        "areaPercent": 9.996877,
+        "maxInscribedSquareSidePx": 106.232623,
+        "portraitSafeSquareSidePx": 91.360056,
+        "portraitCornersInside": true
+      }
+    ],
+    "passed": true
+  },
+  "passed": true
+}

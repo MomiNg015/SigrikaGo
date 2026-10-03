@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-03",
+  "sourcePreserved": true,
+  "images": [
+    {
+      "id": "lynae",
+      "source": "codex-clipboard-55a7c5b3-e82c-48ec-ace0-61cc7a5d7be9.png",
+      "file": "assets/characters/lynae.png",
+      "bytes": 1012440,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "78a8086d641c237314ddf145ffb9b5d9e5a723591304739efb7b8b31fe72113d",
+      "sourceMatches": true
+    },
+    {
+      "id": "nabomo",
+      "source": "codex-clipboard-5dada675-9afe-42d5-8b9d-fe02a509ee69.png",
+      "file": "assets/characters/nabomo.png",
+      "bytes": 838558,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "83c2be20f14b834097815c8eb06050ba2060eeea7ff6a35a7913f016ce88ee04",
+      "sourceMatches": true
+    },
+    {
+      "id": "mornye",
+      "source": "codex-clipboard-6df56c12-dd16-4450-be99-116e8cb94403.png",
+      "file": "assets/characters/mornye.png",
+      "bytes": 1226102,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "acc640a6defa6fe8972aba00b7489a09e4e2019655ee607c9c8cf68b43cc0290",
+      "sourceMatches": true
+    },
+    {
+      "id": "qiuyuan",
+      "source": "codex-clipboard-209a460f-2b45-4afb-a9ae-b2414f0aa686.png",
+      "file": "assets/characters/qiuyuan.png",
+      "bytes": 1286592,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "7b4b29be4dc02384769bdfada495c8444eeeed4fd5b47237ea0ac882b53351fc",
+      "sourceMatches": true
+    },
+    {
+      "id": "sigrika",
+      "source": "codex-clipboard-8d02a7a6-52ff-4cc2-800a-3b9abd6a603d.png",
+      "file": "assets/characters/sigrika.png",
+      "bytes": 1178295,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "3457caa9ab1666ae9b7c5e854613c34c3bf224ff8de750e6cbabf6acdace4340",
+      "sourceMatches": true
+    },
+    {
+      "id": "aemeath",
+      "source": "codex-clipboard-9ee8d692-2e2d-4227-97ea-a6d6ef0bf8eb.png",
+      "file": "assets/characters/aemeath.png",
+      "bytes": 1314083,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "d93d0cb4492b7ed530cd36c00db2e0d73f9edbbdaddc6cadfe56c7a68cd40d47",
+      "sourceMatches": true
+    },
+    {
+      "id": "changli",
+      "source": "codex-clipboard-aeffa13e-cbc4-4d71-81f8-211d3e8989b8.png",
+      "file": "assets/characters/changli.png",
+      "bytes": 1275412,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "d67cb8ba70d93dc7ddee054b24d2a637e2301bcf253918187d1c408b17af7dbe",
+      "sourceMatches": true
+    },
+    {
+      "id": "chisa",
+      "source": "codex-clipboard-955a48c9-acba-467c-99da-3faaf536433e.png",
+      "file": "assets/characters/chisa.png",
+      "bytes": 997347,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "bc705b27cab74d242ec5d461ba1cb848645383acaccbbb4a8fe942d5f1059184",
+      "sourceMatches": true
+    },
+    {
+      "id": "denia",
+      "source": "codex-clipboard-eecabd44-c56a-4e97-83db-58d29372540f.png",
+      "file": "assets/characters/denia.png",
+      "bytes": 1406209,
+      "width": 832,
+      "height": 1216,
+      "hasAlpha": true,
+      "sha256": "4b351de896cbb18ab7a6f398cb94d20d1a71b5b9a5d0cb46f8b9869669141d6e",
+      "sourceMatches": true
+    }
+  ],
+  "baconbits": "public/assets/characters/portraits/baconbits.webp"
+}
