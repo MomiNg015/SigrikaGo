@@ -1184,3 +1184,36 @@ Committed internal release hardening and handoff on master; merged historical IR
 ### Next Steps
 
 - None - task complete
+
+
+## Session 157: Fixed guide avatars beside dynamic text
+
+**Date**: 2026-10-03
+**Task**: Fixed guide avatars beside dynamic text
+**Branch**: `master`
+
+### Summary
+
+Implemented fixed square expression avatars with separate dynamic typewriter paper in teaching and home guides; verified 16 browser cases, repaired generated design HTML, completed code/resource/build gates and synchronized handoff/specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `969f9f95` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

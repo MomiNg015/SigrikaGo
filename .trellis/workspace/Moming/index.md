@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 156
+- **Total Sessions**: 157
 - **Last Active**: 2026-10-03
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1186 | Active |
+| `journal-3.md` | ~1219 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 157 | 2026-10-03 | Fixed guide avatars beside dynamic text | `969f9f95` | `master` |
 | 156 | 2026-10-03 | master consolidation and standard sprite handoff | `e71e4a76`, `484f566a` | `master` |
 | 155 | 2026-10-03 | 换电脑开发交接说明 | - | `codex/battle-paper-panels` |
 | 154 | 2026-10-02 | Sigrika expression asset naming | `448bef7` | `codex/battle-paper-panels` |
