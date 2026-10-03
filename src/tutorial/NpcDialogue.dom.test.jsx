@@ -25,9 +25,11 @@ describe("NPC guide expressions", () => {
     const bubble = { id: "1", speakerName: "西格莉卡", text: "原台词", portrait: "/smile.webp", standardPortrait: true, fallbackPortrait: "/legacy.webp" };
     const { container, rerender } = render(<NpcDialogue bubble={bubble} revealAll />);
     const image = container.querySelector("img");
+    expect(container.querySelector(".standard-npc-slot")).not.toBeNull();
     fireEvent.error(image);
     expect(image.getAttribute("src")).toBe("/legacy.webp");
     expect(container.querySelector(".standard-npc-sprite")).toBeNull();
+    expect(container.querySelector(".standard-npc-slot")).toBeNull();
     rerender(<NpcDialogue bubble={{ ...bubble, id: "2", portrait: "/thinking.webp" }} revealAll />);
     expect(container.querySelector("img")).toBe(image);
     expect(image.getAttribute("src")).toBe("/thinking.webp");

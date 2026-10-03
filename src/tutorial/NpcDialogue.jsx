@@ -9,7 +9,7 @@ export function NpcDialoguePortrait({ bubble }) {
   const failed = failedSource === bubble.portrait;
   const standard = bubble.standardPortrait && !failed;
   return (
-    <span className="tutorial-npc-portrait-slot" aria-hidden="true">
+    <span className={`tutorial-npc-portrait-slot${standard ? " standard-npc-slot" : ""}`} aria-hidden="true">
       <span className={`tutorial-npc-portrait-frame${standard ? " standard-npc-sprite" : ""}`} data-story-appearance={bubble.appearanceId || undefined}>
         <img className={standard ? "story-character-sprite" : undefined} src={failed ? bubble.fallbackPortrait : bubble.portrait} alt="" aria-hidden="true" fetchPriority="high" onError={() => {
           if (bubble.fallbackPortrait && bubble.fallbackPortrait !== bubble.portrait) setFailedSource(bubble.portrait);
@@ -27,7 +27,7 @@ export default function NpcDialogue({ bubble, revealAll = false, portraitDetache
       data-story-expression={bubble.expressionId || undefined}
       style={bubble.palette ? { "--tutorial-npc-color": bubble.palette } : undefined}>
       {bubble.portrait && (portraitDetached
-        ? <span className="tutorial-npc-portrait-slot" aria-hidden="true" />
+        ? <span className="tutorial-npc-portrait-slot standard-npc-slot" aria-hidden="true" />
         : <NpcDialoguePortrait bubble={bubble} />)}
       <div>
         <strong>{bubble.speakerName}</strong>

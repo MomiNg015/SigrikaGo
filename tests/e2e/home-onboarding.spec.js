@@ -43,10 +43,15 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       const panel = await page.locator(".home-guide-panel").boundingBox();
       const portrait = page.locator(".home-guide-portrait-layer .tutorial-npc-portrait-frame");
       const portraitBox = await portrait.boundingBox();
-      expect(portraitBox.y).toBeLessThan(panel.y);
+      expect(Math.abs(portraitBox.y + portraitBox.height - panel.y - panel.height)).toBeLessThanOrEqual(1);
+      expect(portraitBox.x).toBeLessThan(panel.x);
       expect(portraitBox.y).toBeGreaterThanOrEqual(0);
+      const imageBox = await portrait.locator("img").boundingBox();
+      expect(portraitBox.height / imageBox.height).toBeLessThanOrEqual(0.33);
+      const textBox = await page.locator(".home-guide-panel p").boundingBox();
+      expect(textBox.x - portraitBox.x - portraitBox.width).toBeGreaterThanOrEqual(15);
       await expect(page.locator(".home-guide-panel img")).toHaveCount(0);
-      await expect(page.locator(".home-guide-panel .tutorial-npc-portrait-slot")).toHaveCSS("width", viewport.width > 900 ? "68px" : "58px");
+      await expect(page.locator(".home-guide-panel .tutorial-npc-portrait-slot")).toHaveCSS("width", viewport.width > 900 ? "140px" : "130px");
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);

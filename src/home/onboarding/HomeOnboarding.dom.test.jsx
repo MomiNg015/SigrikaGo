@@ -24,10 +24,16 @@ describe("home guide interaction boundary", () => {
     expect(artwork.style.top).toBe(panel.style.top);
     expect(artwork.style.left).toBe(panel.style.left);
     expect(artwork.style.width).toBe(panel.style.width);
+    expect(artwork.style.getPropertyValue("--npc-dialogue-height")).toBe(panel.style.getPropertyValue("--npc-dialogue-height"));
+    expect(parseFloat(artwork.style.getPropertyValue("--npc-dialogue-height"))).toBeGreaterThan(0);
     expect(panel.querySelector("img")).toBeNull();
     expect(panel.querySelector(".tutorial-npc-portrait-slot")).not.toBeNull();
     expect(artwork.querySelector("img").src).toContain("sigrika/smile.webp");
     expect(panel.style.top).toBe("66px");
+    fireEvent.error(artwork.querySelector("img"));
+    expect(artwork.querySelector("img").getAttribute("src")).toBe("/portrait.webp");
+    expect(artwork.querySelector(".standard-npc-slot")).toBeNull();
+    expect(panel.querySelector(".standard-npc-slot")).not.toBeNull();
   });
   it("blocks unrelated and direct underlying actions, only activating the instructed target once", () => {
     const open = vi.fn();

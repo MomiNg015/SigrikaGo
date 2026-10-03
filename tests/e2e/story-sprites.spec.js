@@ -53,7 +53,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   });
 }
 
-test("Denia story and teaching NPC use full expressions with the original NPC grid slot", async ({ page }) => {
+test("Denia story and teaching NPC use full expressions with separate art space", async ({ page }) => {
   await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
   await page.goto(url(denia.id), { waitUntil: "domcontentloaded" });
   await expect(page.locator(".onboarding-story-portrait img")).toHaveAttribute("src", /denia\/.*(?<!-avatar)\.webp$/);
@@ -62,7 +62,43 @@ test("Denia story and teaching NPC use full expressions with the original NPC gr
   const bubble = page.locator(".tutorial-battle-dialogue");
   await expect(bubble.locator("img")).toHaveAttribute("src", /denia\/.*(?<!-avatar)\.webp$/);
   await expect.poll(() => bubble.locator("img").evaluate((element) => element.complete && element.naturalWidth)).toBe(832);
-  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("width", "68px");
+  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("width", "140px");
   await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("height", "68px");
   await expect(bubble).toContainText(npc.speakerName || "达妮娅");
 });
+
+for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
+  test(`NPC chest crop anchors to the bubble bottom ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
+    for (const id of ["doc-liberty-intro", "doc-liberty-right-top"]) {
+      await page.goto(url(id) + "&battle=1", { waitUntil: "domcontentloaded" });
+      const bubble = page.locator(".tutorial-battle-dialogue");
+      const frame = bubble.locator(".standard-npc-sprite");
+      const image = frame.locator("img");
+      await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth)).toBe(832);
+      await expect.poll(() => bubble.evaluate((element) => getComputedStyle(element).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+      const a = await bubble.boundingBox();
+      const b = await frame.boundingBox();
+      const text = await bubble.locator("p").boundingBox();
+      const artwork = await image.boundingBox();
+      expect(Math.abs(a.y + a.height - b.y - b.height)).toBeLessThanOrEqual(1);
+      expect(b.x).toBeLessThan(a.x);
+      expect(b.y).toBeGreaterThanOrEqual(-3);
+      expect(text.x - b.x - b.width).toBeGreaterThanOrEqual(15);
+      expect(b.height / artwork.height).toBeLessThanOrEqual(0.33);
+      expect(artwork.height).toBe(viewport.width > 900 ? 350 : 320);
+      await expect(frame).toHaveCSS("overflow", "visible");
+      await expect(frame).toHaveCSS("clip-path", "inset(0px -100%)");
+      const geometry = await frame.evaluate((element) => {
+        const bubble = element.closest(".tutorial-battle-dialogue");
+        const board = document.querySelector(".board-stage");
+        const rectangles = () => [bubble, board].map((entry) => entry.getBoundingClientRect().toJSON());
+        const before = rectangles();
+        element.style.visibility = "hidden";
+        return { before, after: rectangles() };
+      });
+      expect(geometry.after).toEqual(geometry.before);
+    }
+  });
+}
