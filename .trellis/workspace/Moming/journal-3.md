@@ -1613,3 +1613,36 @@ Captured real handbook and character detail, reviewed existing actions and stand
 ### Next Steps
 
 - None - task complete
+
+
+## Session 170: Member handbook ensemble puzzle prototype
+
+**Date**: 2026-10-03
+**Task**: Member handbook ensemble puzzle prototype
+**Branch**: `master`
+
+### Summary
+
+Preserved nine supplied standard portrait PNGs with exact SHA256 copies; reused existing baconbits art. Added an independent clickable ten-piece ensemble board with near-equal desktop/mobile polygons, actual theme borders, flat silhouette ownership states and read-only detail dialogs. Verified 1440 desktop, 390 and 360 mobile, image loading, hit regions, ownership scenarios, return focus, console, lint/build and four system-design tests. Production handbook and mode selection remain pending.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `174d768c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
