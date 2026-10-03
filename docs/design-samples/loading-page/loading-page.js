@@ -4,6 +4,7 @@
   const character = document.querySelector('#character');
   const bulb = document.querySelector('#bulb');
   const fill = document.querySelector('#fill-polygon');
+  const percentage = document.querySelector('#bulb-percentage');
   const slider = document.querySelector('#progress');
   const output = document.querySelector('#progress-output');
   const tip = document.querySelector('#tip');
@@ -31,6 +32,7 @@
     const threshold = chamber.bottom-(chamber.bottom-chamber.top)*next/100;
     fill.setAttribute('points',`0,${threshold} 100,${threshold} 100,100 0,100`);
     bulb.setAttribute('aria-valuenow',String(Math.round(next)));
+    percentage.textContent = `${Math.round(next)}%`;
     output.value = `${Math.round(next)}%`;
     slider.value = String(Math.round(next));
     root.classList.toggle('is-complete',next===100);

@@ -1,0 +1,764 @@
+{
+  "records": [
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "stages": [
+        {
+          "value": 0,
+          "text": "0%",
+          "fontPx": 10.7375,
+          "clearancePx": 7.25
+        },
+        {
+          "value": 1,
+          "text": "1%",
+          "fontPx": 10.7375,
+          "clearancePx": 7.25
+        },
+        {
+          "value": 9,
+          "text": "9%",
+          "fontPx": 10.7375,
+          "clearancePx": 7.25
+        },
+        {
+          "value": 10,
+          "text": "10%",
+          "fontPx": 10.7375,
+          "clearancePx": 5.5
+        },
+        {
+          "value": 50,
+          "text": "50%",
+          "fontPx": 10.7375,
+          "clearancePx": 5.5
+        },
+        {
+          "value": 99,
+          "text": "99%",
+          "fontPx": 10.7375,
+          "clearancePx": 5.5
+        },
+        {
+          "value": 100,
+          "text": "100%",
+          "fontPx": 10.7375,
+          "clearancePx": 3.75
+        }
+      ],
+      "board": {
+        "source": "./loading-page/assets/life-death-problem.png",
+        "natural": [
+          276,
+          261
+        ],
+        "painted": [
+          114.58692528735632,
+          108.359375
+        ],
+        "frameClearancePx": [
+          13.5,
+          13
+        ]
+      },
+      "overflow": false,
+      "geometry": {
+        "viewport": [
+          390,
+          844
+        ],
+        "tipVariants": [
+          {
+            "length": 8,
+            "top": 642.859375,
+            "bottom": 673.609375,
+            "height": 30.75,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 44,
+            "top": 642.859375,
+            "bottom": 701.359375,
+            "height": 58.5,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 340,
+            "top": 642.859375,
+            "bottom": 1089.859375,
+            "height": 447,
+            "sceneUnchanged": true
+          }
+        ],
+        "frameStates": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "connectorOverlapPixels": [
+          0,
+          0,
+          0
+        ],
+        "fillStages": [
+          {
+            "value": 0,
+            "y": 77.07182312011719,
+            "rays": "hidden"
+          },
+          {
+            "value": 10,
+            "y": 70.22099304199219,
+            "rays": "hidden"
+          },
+          {
+            "value": 50,
+            "y": 42.81768035888672,
+            "rays": "hidden"
+          },
+          {
+            "value": 90,
+            "y": 15.4143648147583,
+            "rays": "hidden"
+          },
+          {
+            "value": 100,
+            "y": 8.563535690307617,
+            "rays": "visible"
+          }
+        ],
+        "localPuzzle": true,
+        "horizontalOverflow": false,
+        "sceneBounds": [
+          {
+            "selector": ".loading-art",
+            "x": 16,
+            "y": 92,
+            "width": 358,
+            "height": 528.859375
+          },
+          {
+            "selector": "#character",
+            "x": 8.84375,
+            "y": 345.84375,
+            "width": 372.3125,
+            "height": 254.734375
+          },
+          {
+            "selector": ".thought-cloud",
+            "x": -9.921625137329102,
+            "y": 68.2529296875,
+            "width": 320.34326171875,
+            "height": 262.072265625
+          },
+          {
+            "selector": "#bulb",
+            "x": 282.0879821777344,
+            "y": 321.10260009765625,
+            "width": 87.13653564453125,
+            "height": 89.3416748046875
+          },
+          {
+            "selector": ".thought-link-one",
+            "x": 80.4375,
+            "y": 308.828125,
+            "width": 30.421875,
+            "height": 30.421875
+          },
+          {
+            "selector": ".thought-link-two",
+            "x": 87.59375,
+            "y": 348.484375,
+            "width": 19.6875,
+            "height": 19.6875
+          },
+          {
+            "selector": ".thought-link-three",
+            "x": 105.5,
+            "y": 369.640625,
+            "width": 13.59375,
+            "height": 13.59375
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "stages": [
+        {
+          "value": 0,
+          "text": "0%",
+          "fontPx": 19.3219,
+          "clearancePx": 12
+        },
+        {
+          "value": 1,
+          "text": "1%",
+          "fontPx": 19.3219,
+          "clearancePx": 12
+        },
+        {
+          "value": 9,
+          "text": "9%",
+          "fontPx": 19.3219,
+          "clearancePx": 12
+        },
+        {
+          "value": 10,
+          "text": "10%",
+          "fontPx": 19.3219,
+          "clearancePx": 10
+        },
+        {
+          "value": 50,
+          "text": "50%",
+          "fontPx": 19.3219,
+          "clearancePx": 10
+        },
+        {
+          "value": 99,
+          "text": "99%",
+          "fontPx": 19.3219,
+          "clearancePx": 10
+        },
+        {
+          "value": 100,
+          "text": "100%",
+          "fontPx": 19.3219,
+          "clearancePx": 6.75
+        }
+      ],
+      "board": {
+        "source": "./loading-page/assets/life-death-problem.png",
+        "natural": [
+          276,
+          261
+        ],
+        "painted": [
+          128.8627954241873,
+          121.85938262939453
+        ],
+        "frameClearancePx": [
+          14.75,
+          14.25
+        ]
+      },
+      "overflow": false,
+      "geometry": {
+        "viewport": [
+          1440,
+          900
+        ],
+        "tipVariants": [
+          {
+            "length": 8,
+            "top": 761.34375,
+            "bottom": 794.46875,
+            "height": 33.125,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 44,
+            "top": 761.34375,
+            "bottom": 824.28125,
+            "height": 62.9375,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 340,
+            "top": 761.34375,
+            "bottom": 1032.96875,
+            "height": 271.625,
+            "sceneUnchanged": true
+          }
+        ],
+        "frameStates": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "connectorOverlapPixels": [
+          0,
+          0,
+          0
+        ],
+        "fillStages": [
+          {
+            "value": 0,
+            "y": 77.07182312011719,
+            "rays": "hidden"
+          },
+          {
+            "value": 10,
+            "y": 70.22099304199219,
+            "rays": "hidden"
+          },
+          {
+            "value": 50,
+            "y": 42.81768035888672,
+            "rays": "hidden"
+          },
+          {
+            "value": 90,
+            "y": 15.4143648147583,
+            "rays": "hidden"
+          },
+          {
+            "value": 100,
+            "y": 8.563535690307617,
+            "rays": "visible"
+          }
+        ],
+        "localPuzzle": true,
+        "horizontalOverflow": false,
+        "sceneBounds": [
+          {
+            "selector": ".loading-art",
+            "x": 309.90625,
+            "y": 24,
+            "width": 805.1875,
+            "height": 717.34375
+          },
+          {
+            "selector": "#character",
+            "x": 412.15625,
+            "y": 300.171875,
+            "width": 622.40625,
+            "height": 425.84375
+          },
+          {
+            "selector": ".thought-cloud",
+            "x": 455.8801574707031,
+            "y": 15.129942893981934,
+            "width": 360.2397155761719,
+            "height": 294.7088623046875
+          },
+          {
+            "selector": "#bulb",
+            "x": 859.2349853515625,
+            "y": 295.0450134277344,
+            "width": 157.420654296875,
+            "height": 160.59747314453125
+          },
+          {
+            "selector": ".thought-link-one",
+            "x": 515.21875,
+            "y": 303.75,
+            "width": 44.28125,
+            "height": 44.28125
+          },
+          {
+            "selector": ".thought-link-two",
+            "x": 527.296875,
+            "y": 361.140625,
+            "width": 28.171875,
+            "height": 28.171875
+          },
+          {
+            "selector": ".thought-link-three",
+            "x": 571.578125,
+            "y": 389.84375,
+            "width": 17.703125,
+            "height": 17.703125
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        360,
+        640
+      ],
+      "stages": [
+        {
+          "value": 0,
+          "text": "0%",
+          "fontPx": 9.2,
+          "clearancePx": 6
+        },
+        {
+          "value": 1,
+          "text": "1%",
+          "fontPx": 9.2,
+          "clearancePx": 6
+        },
+        {
+          "value": 9,
+          "text": "9%",
+          "fontPx": 9.2,
+          "clearancePx": 6
+        },
+        {
+          "value": 10,
+          "text": "10%",
+          "fontPx": 9.2,
+          "clearancePx": 4.5
+        },
+        {
+          "value": 50,
+          "text": "50%",
+          "fontPx": 9.2,
+          "clearancePx": 4.5
+        },
+        {
+          "value": 99,
+          "text": "99%",
+          "fontPx": 9.2,
+          "clearancePx": 4.5
+        },
+        {
+          "value": 100,
+          "text": "100%",
+          "fontPx": 9.2,
+          "clearancePx": 3
+        }
+      ],
+      "board": {
+        "source": "./loading-page/assets/life-death-problem.png",
+        "natural": [
+          276,
+          261
+        ],
+        "painted": [
+          97.5021551724138,
+          92.203125
+        ],
+        "frameClearancePx": [
+          10.5,
+          10.25
+        ]
+      },
+      "overflow": false,
+      "geometry": {
+        "viewport": [
+          360,
+          640
+        ],
+        "tipVariants": [
+          {
+            "length": 8,
+            "top": 490.03125,
+            "bottom": 520.78125,
+            "height": 30.75,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 44,
+            "top": 490.03125,
+            "bottom": 576.28125,
+            "height": 86.25,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 340,
+            "top": 490.03125,
+            "bottom": 964.78125,
+            "height": 474.75,
+            "sceneUnchanged": true
+          }
+        ],
+        "frameStates": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "connectorOverlapPixels": [
+          0,
+          0,
+          0
+        ],
+        "fillStages": [
+          {
+            "value": 0,
+            "y": 77.07182312011719,
+            "rays": "hidden"
+          },
+          {
+            "value": 10,
+            "y": 70.22099304199219,
+            "rays": "hidden"
+          },
+          {
+            "value": 50,
+            "y": 42.81768035888672,
+            "rays": "hidden"
+          },
+          {
+            "value": 90,
+            "y": 15.4143648147583,
+            "rays": "hidden"
+          },
+          {
+            "value": 100,
+            "y": 8.563535690307617,
+            "rays": "visible"
+          }
+        ],
+        "localPuzzle": true,
+        "horizontalOverflow": false,
+        "sceneBounds": [
+          {
+            "selector": ".loading-art",
+            "x": 27.671875,
+            "y": 24,
+            "width": 304.640625,
+            "height": 450.03125
+          },
+          {
+            "selector": "#character",
+            "x": 21.59375,
+            "y": 240,
+            "width": 316.8125,
+            "height": 216.765625
+          },
+          {
+            "selector": ".thought-cloud",
+            "x": 5.617158889770508,
+            "y": 3.7880077362060547,
+            "width": 272.59381103515625,
+            "height": 223.00210571289062
+          },
+          {
+            "selector": "#bulb",
+            "x": 253.99862670898438,
+            "y": 218.88990783691406,
+            "width": 74.65899658203125,
+            "height": 76.54829406738281
+          },
+          {
+            "selector": ".thought-link-one",
+            "x": 82.5,
+            "y": 208.5,
+            "width": 25.890625,
+            "height": 25.890625
+          },
+          {
+            "selector": ".thought-link-two",
+            "x": 88.59375,
+            "y": 242.25,
+            "width": 16.75,
+            "height": 16.75
+          },
+          {
+            "selector": ".thought-link-three",
+            "x": 103.828125,
+            "y": 260.265625,
+            "width": 11.5625,
+            "height": 11.5625
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        932,
+        430
+      ],
+      "stages": [
+        {
+          "value": 0,
+          "text": "0%",
+          "fontPx": 9.2,
+          "clearancePx": 5.75
+        },
+        {
+          "value": 1,
+          "text": "1%",
+          "fontPx": 9.2,
+          "clearancePx": 5.75
+        },
+        {
+          "value": 9,
+          "text": "9%",
+          "fontPx": 9.2,
+          "clearancePx": 5.75
+        },
+        {
+          "value": 10,
+          "text": "10%",
+          "fontPx": 9.2,
+          "clearancePx": 4.25
+        },
+        {
+          "value": 50,
+          "text": "50%",
+          "fontPx": 9.2,
+          "clearancePx": 4.25
+        },
+        {
+          "value": 99,
+          "text": "99%",
+          "fontPx": 9.2,
+          "clearancePx": 4.25
+        },
+        {
+          "value": 100,
+          "text": "100%",
+          "fontPx": 9.2,
+          "clearancePx": 2.5
+        }
+      ],
+      "board": {
+        "source": "./loading-page/assets/life-death-problem.png",
+        "natural": [
+          276,
+          261
+        ],
+        "painted": [
+          46.115660919540225,
+          43.609375
+        ],
+        "frameClearancePx": [
+          5.25,
+          5
+        ]
+      },
+      "overflow": false,
+      "geometry": {
+        "viewport": [
+          932,
+          430
+        ],
+        "tipVariants": [
+          {
+            "length": 8,
+            "top": 300.734375,
+            "bottom": 330.734375,
+            "height": 30,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 44,
+            "top": 300.734375,
+            "bottom": 384.734375,
+            "height": 84,
+            "sceneUnchanged": true
+          },
+          {
+            "length": 340,
+            "top": 300.734375,
+            "bottom": 870.734375,
+            "height": 570,
+            "sceneUnchanged": true
+          }
+        ],
+        "frameStates": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "connectorOverlapPixels": [
+          0,
+          0,
+          0
+        ],
+        "fillStages": [
+          {
+            "value": 0,
+            "y": 77.07182312011719,
+            "rays": "hidden"
+          },
+          {
+            "value": 10,
+            "y": 70.22099304199219,
+            "rays": "hidden"
+          },
+          {
+            "value": 50,
+            "y": 42.81768035888672,
+            "rays": "hidden"
+          },
+          {
+            "value": 90,
+            "y": 15.4143648147583,
+            "rays": "hidden"
+          },
+          {
+            "value": 100,
+            "y": 8.563535690307617,
+            "rays": "visible"
+          }
+        ],
+        "localPuzzle": true,
+        "horizontalOverflow": false,
+        "sceneBounds": [
+          {
+            "selector": ".loading-art",
+            "x": 314.40625,
+            "y": 24,
+            "width": 288.1875,
+            "height": 256.734375
+          },
+          {
+            "selector": "#character",
+            "x": 351,
+            "y": 122.828125,
+            "width": 222.765625,
+            "height": 152.40625
+          },
+          {
+            "selector": ".thought-cloud",
+            "x": 366.6472473144531,
+            "y": 20.82554817199707,
+            "width": 128.92425537109375,
+            "height": 105.47390747070312
+          },
+          {
+            "selector": "#bulb",
+            "x": 507.41485595703125,
+            "y": 119.11974334716797,
+            "width": 74.9515380859375,
+            "height": 76.4636459350586
+          },
+          {
+            "selector": ".thought-link-one",
+            "x": 387.890625,
+            "y": 124.125,
+            "width": 15.84375,
+            "height": 15.84375
+          },
+          {
+            "selector": ".thought-link-two",
+            "x": 392.203125,
+            "y": 144.65625,
+            "width": 10.078125,
+            "height": 10.078125
+          },
+          {
+            "selector": ".thought-link-three",
+            "x": 408.0625,
+            "y": 154.921875,
+            "width": 6.328125,
+            "height": 6.328125
+          }
+        ]
+      }
+    }
+  ]
+}
