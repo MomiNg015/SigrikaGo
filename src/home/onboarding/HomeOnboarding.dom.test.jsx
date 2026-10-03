@@ -16,7 +16,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 const character = { portrait: "/portrait.webp" };
 
 describe("home guide interaction boundary", () => {
-  it("keeps protruding artwork outside the measured scroll panel with the same position", () => {
+  it("keeps a fixed avatar outside the measured scroll panel at the same top position", () => {
     const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />);
     const panel = container.querySelector(".home-guide-panel");
     const artwork = container.querySelector(".home-guide-portrait-layer");
@@ -24,11 +24,10 @@ describe("home guide interaction boundary", () => {
     expect(artwork.style.top).toBe(panel.style.top);
     expect(artwork.style.left).toBe(panel.style.left);
     expect(artwork.style.width).toBe(panel.style.width);
-    expect(artwork.style.getPropertyValue("--npc-dialogue-height")).toBe(panel.style.getPropertyValue("--npc-dialogue-height"));
-    expect(parseFloat(artwork.style.getPropertyValue("--npc-dialogue-height"))).toBeGreaterThan(0);
+    expect(artwork.style.getPropertyValue("--npc-dialogue-height")).toBe("");
     expect(panel.querySelector("img")).toBeNull();
     expect(panel.querySelector(".tutorial-npc-portrait-slot")).not.toBeNull();
-    expect(artwork.querySelector("img").src).toContain("sigrika/smile.webp");
+    expect(artwork.querySelector("img").src).toContain("sigrika/smile-avatar.webp");
     expect(panel.style.top).toBe("66px");
     fireEvent.error(artwork.querySelector("img"));
     expect(artwork.querySelector("img").getAttribute("src")).toBe("/portrait.webp");

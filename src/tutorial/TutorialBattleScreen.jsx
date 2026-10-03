@@ -102,7 +102,7 @@ export default function TutorialBattleScreen({
   const activeNpcCharacterId = playerByUserId(players, NPC_ID)?.characterId || "denia";
   const tutorialPortraitUrls = useMemo(() => [...new Set([
     SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url,
-    ...storyGuidePortraitUrls(script?.nodes ?? [], { characters, user, fallbackCharacterIds: [activeNpcCharacterId, ...(script?.nodes ?? []).filter((node) => node.type === TUTORIAL_NODE_TYPES.boardSetup).map((node) => node.npcCharacterId || node.characterId || "denia")] }),
+    ...storyGuidePortraitUrls(script?.nodes ?? [], { characters, user, variant: "avatar", fallbackCharacterIds: [activeNpcCharacterId, ...(script?.nodes ?? []).filter((node) => node.type === TUTORIAL_NODE_TYPES.boardSetup).map((node) => node.npcCharacterId || node.characterId || "denia")] }),
     ...(script?.nodes ?? [])
       .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
       .filter(Boolean)
@@ -287,7 +287,7 @@ export default function TutorialBattleScreen({
     }
     const characterId = node.characterId || playerByUserId(players, NPC_ID)?.characterId;
     const character = resolveStoryCharacter(characterId, characters);
-    const portrait = resolveStoryPortraitPresentation({ ...node, characterId }, { character, user });
+    const portrait = resolveStoryPortraitPresentation({ ...node, characterId }, { character, user, variant: "avatar" });
     bubbleSequenceRef.current += 1;
     const nextBubble = {
       id: `${node.id}-${bubbleSequenceRef.current}`,

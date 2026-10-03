@@ -42,6 +42,8 @@
 - [已提交引导布局验证](../.trellis/tasks/10-02-standard-character-sprites-plan/research/guide-layout-implementation-validation.md)
 - [胸像修正验证](../.trellis/tasks/10-02-standard-character-sprites-plan/research/npc-chest-portrait-validation.md)
 
+2026-10-03 后续更新：按用户新参考，教学与首页引导已改为左侧固定方形表情头像、右侧独立纸面对白；角色名在第一行，正文逐字显示并自然增高。桌面头像88px、手机76px，使用既有256px派生图；头像不再贴气泡底边或读取对白高度。剧情舞台保持原构图。旧胸像验证属于历史记录，当前验收以 `.trellis/tasks/archive/2026-10/10-03-guide-framed-avatars/` 为准。
+
 ### 内测发布加固与全项目测试
 
 本次整理包含结算唯一回执、重复参赛防护、会话与断线反馈、管理员密码重置、棋钟精度、引擎贴目换算、数据库健康检查、发布恢复，以及玩家窗口简洁空状态等实现。全项目浏览器测试和隔离服务入口一并保留。

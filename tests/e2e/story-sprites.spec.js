@@ -53,22 +53,24 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   });
 }
 
-test("Denia story and teaching NPC use full expressions with separate art space", async ({ page }) => {
+test("Denia story uses full art and teaching NPC uses a fixed avatar", async ({ page }) => {
   await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
   await page.goto(url(denia.id), { waitUntil: "domcontentloaded" });
   await expect(page.locator(".onboarding-story-portrait img")).toHaveAttribute("src", /denia\/.*(?<!-avatar)\.webp$/);
   await expect(page.getByRole("button", { name: "剧情对话文本" })).toContainText(denia.text);
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
   await page.goto(url(npc.id) + "&battle=1", { waitUntil: "domcontentloaded" });
   const bubble = page.locator(".tutorial-battle-dialogue");
-  await expect(bubble.locator("img")).toHaveAttribute("src", /denia\/.*(?<!-avatar)\.webp$/);
-  await expect.poll(() => bubble.locator("img").evaluate((element) => element.complete && element.naturalWidth)).toBe(832);
-  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("width", "140px");
-  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("height", "68px");
+  await expect(bubble.locator("img")).toHaveAttribute("src", /denia\/.*-avatar\.webp$/);
+  await expect.poll(() => bubble.locator("img").evaluate((element) => element.complete && element.naturalWidth)).toBe(256);
+  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("width", "88px");
+  await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("height", "88px");
   await expect(bubble).toContainText(npc.speakerName || "达妮娅");
 });
 
 for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
-  test(`NPC chest crop anchors to the bubble bottom ${viewport.width}x${viewport.height}`, async ({ page }) => {
+  test(`NPC square avatar stays at the bubble top ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
     await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
     for (const id of ["doc-liberty-intro", "doc-liberty-right-top"]) {
@@ -76,20 +78,20 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
       const bubble = page.locator(".tutorial-battle-dialogue");
       const frame = bubble.locator(".standard-npc-sprite");
       const image = frame.locator("img");
-      await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth)).toBe(832);
+      await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth)).toBe(256);
       await expect.poll(() => bubble.evaluate((element) => getComputedStyle(element).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
       const a = await bubble.boundingBox();
       const b = await frame.boundingBox();
       const text = await bubble.locator("p").boundingBox();
       const artwork = await image.boundingBox();
-      expect(Math.abs(a.y + a.height - b.y - b.height)).toBeLessThanOrEqual(1);
-      expect(b.x).toBeLessThan(a.x);
-      expect(b.y).toBeGreaterThanOrEqual(-3);
-      expect(text.x - b.x - b.width).toBeGreaterThanOrEqual(15);
-      expect(b.height / artwork.height).toBeLessThanOrEqual(0.33);
-      expect(artwork.height).toBe(viewport.width > 900 ? 350 : 320);
-      await expect(frame).toHaveCSS("overflow", "visible");
-      await expect(frame).toHaveCSS("clip-path", "inset(0px -100%)");
+      expect(Math.abs(a.y - b.y)).toBeLessThanOrEqual(1);
+      expect(Math.abs(a.x - b.x)).toBeLessThanOrEqual(1);
+      expect(b.width).toBe(viewport.width > 900 ? 88 : 76);
+      expect(b.height).toBe(b.width);
+      expect(text.x - b.x - b.width).toBeGreaterThanOrEqual(10);
+      expect(artwork.height).toBeLessThan(b.height);
+      await expect(frame).toHaveCSS("overflow", "hidden");
+      await page.screenshot({ path: testInfo.outputPath(`${id}.png`) });
       const geometry = await frame.evaluate((element) => {
         const bubble = element.closest(".tutorial-battle-dialogue");
         const board = document.querySelector(".board-stage");
@@ -102,3 +104,33 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     }
   });
 }
+
+test.describe("animated NPC avatar stability", () => {
+  test.use({ reducedMotion: "no-preference" });
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
+    test(`typing grows text without moving the avatar ${viewport.width}`, async ({ page }, testInfo) => {
+      await page.setViewportSize(viewport);
+      await page.route("**/api/skill-traits", route => route.fulfill({ json: { traits: [] } }));
+      await page.clock.install();
+      await page.clock.pauseAt(new Date());
+      await page.goto(url("doc-life-1") + "&battle=1", { waitUntil: "domcontentloaded" });
+      const bubble = page.locator(".tutorial-battle-dialogue");
+      const frame = bubble.locator(".tutorial-npc-portrait-frame");
+      await expect.poll(() => frame.locator("img").evaluate(el => el.complete && el.naturalWidth), { timeout: 15000 }).toBe(256);
+      await page.evaluate(() => document.fonts.ready);
+      await page.clock.runFor(400);
+      await expect.poll(() => bubble.evaluate(el => getComputedStyle(el).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+      const startFrame = await frame.boundingBox();
+      const startText = await bubble.locator(".tutorial-npc-copy").boundingBox();
+      const firstLength = await bubble.locator("p").evaluate(el => el.textContent.length);
+      await page.clock.runFor(1600);
+      expect(await frame.boundingBox()).toEqual(startFrame);
+      expect(await bubble.locator("p").evaluate(el => el.textContent.length)).toBeGreaterThan(firstLength);
+      const endText = await bubble.locator(".tutorial-npc-copy").boundingBox();
+      expect(endText.height).toBeGreaterThan(startText.height);
+      expect(endText.y).toBe(startText.y);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath("typing.png") });
+    });
+  }
+});

@@ -36,7 +36,7 @@ Valid authored standard appearance fixes narrative clothing and does not inherit
 
 Full images are lossless transparent 832x1216 WebP at `/assets/characters/story-sprites/<id>/<expression>.webp`; avatars are separately cropped 256x256 transparent WebP with `-avatar` suffix. Same profile uses the same canvas and crop for every expression. The importer checks all source alpha and visible RGB pixels after full-image conversion. `manifest.json` records source hashes and crops.
 
-Story windows preload only story-window expressions, using the same resolver as display and four workers. Teaching bubbles and the home tour also display/preload full illustrations, including actual stage NPC fallbacks and special/costume resolution. Derived avatars remain available for future compact surfaces. Keep global startup/default portrait loading and the 900x900 catalog separate. Presentation geometry follows [Story Guide Layout](../frontend/story-guide-layout-contract.md).
+Story windows preload only story-window expressions, using the same resolver as display and four workers. Teaching bubbles and the home tour display/preload the fixed 256px expression avatars (`variant: "avatar"`), including actual stage NPC fallbacks and special/costume resolution. Keep global startup/default portrait loading and the 900x900 catalog separate. Presentation geometry follows [Story Guide Layout](../frontend/story-guide-layout-contract.md).
 
 Editor changes to any role selector clear both presentation fields, including skill-role selectors. Excel v1 adds optional `立绘造型ID` and `表情ID` columns. Missing columns preserve absent fields; present empty cells explicitly opt out. Import still changes a browser-local draft only, and published data remains read-only until existing publish actions.
 
@@ -80,4 +80,4 @@ Correct: author per-node presentation metadata against exact source text; apply 
 
 Wrong: render the entire transparent body with `object-fit: contain` in a 58px NPC slot, or enlarge a derived avatar as protruding artwork.
 
-Correct: keep the original grid reservation and crop the full illustration inside an independent fixed bust frame; expression changes keep its framing stable.
+Correct: teaching/home bubbles request the derived avatar variant, keep a fixed square portrait column beside the growing text frame, and preserve its geometry across typing, expressions and fallback. Story stages use full illustrations with independent crop geometry.

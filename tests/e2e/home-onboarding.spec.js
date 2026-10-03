@@ -43,15 +43,15 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       const panel = await page.locator(".home-guide-panel").boundingBox();
       const portrait = page.locator(".home-guide-portrait-layer .tutorial-npc-portrait-frame");
       const portraitBox = await portrait.boundingBox();
-      expect(Math.abs(portraitBox.y + portraitBox.height - panel.y - panel.height)).toBeLessThanOrEqual(1);
-      expect(portraitBox.x).toBeLessThan(panel.x);
-      expect(portraitBox.y).toBeGreaterThanOrEqual(0);
-      const imageBox = await portrait.locator("img").boundingBox();
-      expect(portraitBox.height / imageBox.height).toBeLessThanOrEqual(0.33);
+      expect(Math.abs(portraitBox.y - panel.y)).toBeLessThanOrEqual(1);
+      expect(Math.abs(portraitBox.x - panel.x)).toBeLessThanOrEqual(1);
+      expect(portraitBox.width).toBe(viewport.width > 900 ? 88 : 76);
+      expect(portraitBox.height).toBe(portraitBox.width);
+      await expect.poll(() => portrait.locator("img").evaluate(el => el.complete && el.naturalWidth)).toBe(256);
       const textBox = await page.locator(".home-guide-panel p").boundingBox();
-      expect(textBox.x - portraitBox.x - portraitBox.width).toBeGreaterThanOrEqual(15);
+      expect(textBox.x - portraitBox.x - portraitBox.width).toBeGreaterThanOrEqual(10);
       await expect(page.locator(".home-guide-panel img")).toHaveCount(0);
-      await expect(page.locator(".home-guide-panel .tutorial-npc-portrait-slot")).toHaveCSS("width", viewport.width > 900 ? "140px" : "130px");
+      await expect(page.locator(".home-guide-panel .tutorial-npc-portrait-slot")).toHaveCSS("width", viewport.width > 900 ? "88px" : "76px");
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);
@@ -90,3 +90,33 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     expect(errors).toEqual([]);
   });
 }
+
+test.describe("animated home guide avatar stability", () => {
+  test.use({ reducedMotion: "no-preference" });
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
+    test(`home typing keeps the avatar fixed ${viewport.width}`, async ({ page }, testInfo) => {
+      await page.setViewportSize(viewport);
+      await page.route("**/api/**", route => route.fulfill({ json: { items: [] } }));
+      await page.clock.install();
+      await page.clock.pauseAt(new Date());
+      await page.goto("/tests/e2e/fixtures/home-onboarding.html");
+      const avatar = page.locator(".home-guide-portrait-layer .tutorial-npc-portrait-frame");
+      await expect.poll(() => avatar.locator("img").evaluate(el => el.complete && el.naturalWidth), { timeout: 15000 }).toBe(256);
+      await page.evaluate(() => document.fonts.ready);
+      await page.clock.runFor(400);
+      await expect.poll(() => page.locator(".tutorial-battle-dialogue").evaluate(el => getComputedStyle(el).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+      const initialAvatar = await avatar.boundingBox();
+      const copy = page.locator(".tutorial-npc-copy");
+      const initialCopy = await copy.boundingBox();
+      const initialLength = await copy.locator("p").evaluate(el => el.textContent.length);
+      await page.clock.runFor(1600);
+      expect(await avatar.boundingBox()).toEqual(initialAvatar);
+      expect(await copy.locator("p").evaluate(el => el.textContent.length)).toBeGreaterThan(initialLength);
+      const finalCopy = await copy.boundingBox();
+      expect(finalCopy.height).toBeGreaterThanOrEqual(initialCopy.height);
+      if (viewport.width <= 900) expect(finalCopy.height).toBeGreaterThan(initialCopy.height);
+      expect(finalCopy.y).toBe(initialCopy.y);
+      await page.screenshot({ path: testInfo.outputPath("home-typing.png") });
+    });
+  }
+});

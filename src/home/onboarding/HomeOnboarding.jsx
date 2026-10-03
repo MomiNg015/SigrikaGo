@@ -33,21 +33,20 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const [revealed, setRevealed] = useState(false);
   const [geometry, setGeometry] = useState(null);
   const [panelHeight, setPanelHeight] = useState(200);
-  const [dialogueHeight, setDialogueHeight] = useState(200);
   const [retryOutcome, setRetryOutcome] = useState("completed");
   const rootRef = useRef(null);
   const panelRef = useRef(null);
   const dispatching = useRef(false);
   const targetRef = useRef(null);
   const step = HOME_ONBOARDING_STEPS[index];
-  const portrait = resolveStoryPortraitPresentation(step, { character });
+  const portrait = resolveStoryPortraitPresentation(step, { character, variant: "avatar" });
   const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
   const rect = geometry?.id === step.id ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
 
   useEffect(() => {
-    const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character }).src).filter(Boolean))];
+    const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character, variant: "avatar" }).src).filter(Boolean))];
     void preloadImageAssets(urls, { concurrency: 4 });
   }, [character]);
 
@@ -77,7 +76,6 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     const measure = () => {
       const height = step.choice ? 0 : panelRef.current?.getBoundingClientRect().height || 200;
       setPanelHeight(height);
-      setDialogueHeight(panelRef.current?.querySelector(".tutorial-battle-dialogue")?.getBoundingClientRect().height || height);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -197,7 +195,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     panelTop = below + panelHeight <= height - 14 ? below : Math.max(minimumTop, above);
     panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
   }
-  const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth, "--npc-dialogue-height": `${dialogueHeight}px` };
+  const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth };
   const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.color, speakerName: "西格莉卡" };
   const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
 

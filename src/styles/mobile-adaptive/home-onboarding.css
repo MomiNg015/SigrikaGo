@@ -74,12 +74,12 @@
   touch-action: pan-y;
 }
 
-.home-guide-panel .tutorial-battle-dialogue {
+.home-guide-panel .tutorial-battle-dialogue:has(.tutorial-npc-copy) {
   position: relative;
   inset: auto;
   width: 100%;
-  min-height: 0;
-  background: var(--bs-paper, white);
+  min-height: var(--npc-avatar-size);
+  background: transparent;
   margin: 0;
 }
 

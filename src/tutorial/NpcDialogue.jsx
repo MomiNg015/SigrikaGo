@@ -29,7 +29,7 @@ export default function NpcDialogue({ bubble, revealAll = false, portraitDetache
       {bubble.portrait && (portraitDetached
         ? <span className="tutorial-npc-portrait-slot standard-npc-slot" aria-hidden="true" />
         : <NpcDialoguePortrait bubble={bubble} />)}
-      <div>
+      <div className="tutorial-npc-copy">
         <strong>{bubble.speakerName}</strong>
         <p><TypewriterText key={bubble.id} revealAll={revealAll} text={bubble.text} /></p>
       </div>

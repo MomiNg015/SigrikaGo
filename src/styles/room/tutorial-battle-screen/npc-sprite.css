@@ -1,68 +1,82 @@
-/* Keep the original grid slot; standard art is anchored to the whole bubble. */
-.tutorial-npc-portrait-slot {
+/* Portrait and text are independent paper frames; only text grows while typing. */
+.tutorial-battle-dialogue:has(.tutorial-npc-copy) {
+  --npc-avatar-size: 88px;
+  grid-template-columns: var(--npc-avatar-size) minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: start;
+  min-height: var(--npc-avatar-size);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tutorial-npc-portrait-slot,
+.tutorial-npc-portrait-slot.standard-npc-slot {
   position: relative;
   display: block;
-  width: 68px;
-  height: 68px;
+  width: var(--npc-avatar-size, 88px);
+  height: var(--npc-avatar-size, 88px);
   pointer-events: none;
 }
 
-.tutorial-npc-portrait-frame { display: contents; }
-.tutorial-npc-portrait-slot.standard-npc-slot { position: static; width: 140px; }
-.tutorial-battle-dialogue:has(.standard-npc-slot) { column-gap: 20px; }
-
-.tutorial-npc-portrait-frame img { width: 68px; height: 68px; object-fit: contain; }
-
+.tutorial-npc-portrait-frame,
 .tutorial-npc-portrait-frame.standard-npc-sprite {
   position: absolute;
+  inset: 0;
   display: block;
-  --npc-sprite-crop: 112px;
-  --npc-sprite-image-height: 350px;
-  left: -22px;
-  bottom: 0;
-  width: 180px;
-  height: var(--npc-sprite-crop);
-  max-height: calc(100% + 12px);
-  overflow: visible;
-  clip-path: inset(0 -100% 0 -100%);
+  padding: 3px;
+  overflow: hidden;
+  border: 2px solid var(--bs-ink, CanvasText);
+  border-radius: 4px;
+  background: var(--bs-paper, Canvas);
+  box-shadow: 2px 2px 0 var(--bs-ink, CanvasText);
 }
 
+.tutorial-npc-portrait-frame img,
 .tutorial-npc-portrait-frame.standard-npc-sprite img {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: auto;
-  height: var(--npc-sprite-image-height);
+  display: block;
+  width: 100%;
+  height: 100%;
   max-width: none;
   max-height: none;
-  transform: translateX(-48.7%);
-  filter: drop-shadow(2px 2px 0 rgba(61, 43, 37, 0.12));
+  object-fit: contain;
+  transform: none;
 }
 
-.tutorial-npc-portrait-frame.standard-npc-sprite[data-story-appearance="denia-standard-v1"] img { transform: translateX(-51.7%); }
-.tutorial-npc-portrait-frame.standard-npc-sprite[data-story-appearance="aemeath-standard-v1"] img { transform: translateX(-48.3%); }
+.tutorial-npc-copy {
+  min-width: 0;
+  min-height: var(--npc-avatar-size, 88px);
+  padding: 10px 14px;
+  border: 2px solid var(--bs-ink, CanvasText);
+  border-radius: 4px;
+  background: var(--bs-paper, Canvas);
+  box-shadow: 2px 2px 0 var(--bs-ink, CanvasText);
+  overflow-wrap: anywhere;
+}
 
-/* A sibling of the scroll panel avoids changing its height or clipping the head. */
+.tutorial-battle-dialogue:not(:has(.tutorial-npc-portrait-slot)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Fixed to the panel top, outside the home text scroller. Never read its height. */
 .home-guide-portrait-layer {
+  --npc-avatar-size: 88px;
   position: absolute;
-  height: var(--npc-dialogue-height);
+  height: var(--npc-avatar-size);
   z-index: 4;
   pointer-events: none;
 }
 
 .home-guide-portrait-layer .tutorial-npc-portrait-slot {
   position: absolute;
-  left: 15px;
-  top: 15px;
+  top: 0;
+  left: 0;
 }
-.home-guide-portrait-layer .standard-npc-slot { position: static; }
-.home-guide-portrait-layer .tutorial-npc-portrait-frame.standard-npc-sprite { max-height: calc(100% + 12px); }
 
 @media (max-width: 900px) {
-  .tutorial-npc-portrait-slot { width: 58px; height: 58px; }
-  .tutorial-npc-portrait-slot.standard-npc-slot { width: 130px; }
-  .tutorial-battle-dialogue:has(.standard-npc-slot) { column-gap: 18px; }
-  .tutorial-npc-portrait-frame img { width: 58px; height: 58px; }
-  .tutorial-npc-portrait-frame.standard-npc-sprite { --npc-sprite-crop: 102px; --npc-sprite-image-height: 320px; width: 166px; max-height: calc(100% + 32px); }
-  .home-guide-portrait-layer .tutorial-npc-portrait-slot { left: 13px; top: 13px; }
+  .tutorial-battle-dialogue:has(.tutorial-npc-copy),
+  .home-guide-portrait-layer { --npc-avatar-size: 76px; }
+  .tutorial-battle-dialogue:has(.tutorial-npc-copy) { column-gap: 10px; }
+  .tutorial-npc-copy { padding: 8px 10px; }
 }
