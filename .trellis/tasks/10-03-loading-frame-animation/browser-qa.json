@@ -1,0 +1,74 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "frameStates": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "circleOverlap": [
+      0,
+      0,
+      0
+    ],
+    "positionalMovement": false,
+    "completionFreeze": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "frameStates": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "circleOverlap": [
+      0,
+      0,
+      0
+    ],
+    "positionalMovement": false,
+    "completionFreeze": true
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "frameStates": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "circleOverlap": [
+      0,
+      0,
+      0
+    ],
+    "positionalMovement": false,
+    "completionFreeze": true
+  },
+  {
+    "reducedMotion": true
+  }
+]

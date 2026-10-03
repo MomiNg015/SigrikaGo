@@ -15,37 +15,6 @@
   let progress = 0;
   let tipIndex = 1 % Math.max(1,tips.length);
   let puzzleUrl = '';
-  const cloudAnimations = new Map();
-  const cloudElements = [...document.querySelectorAll('.thought-cloud, .thought-link')];
-
-  function floatCloud(element,index) {
-    const large = index===0;
-    const point = (direction) => `${direction*(large ? 8+Math.random()*6 : 2+Math.random()*2)}px ${(Math.random()-.5)*(large ? 18 : 5)}px`;
-    const previous = cloudAnimations.get(element);
-    const motion = element.animate([
-      {translate:'0px 0px'}, {translate:point(1)},
-      {translate:point(-1)}, {translate:point(1)}, {translate:'0px 0px'}
-    ],{duration:4200+Math.random()*1800,easing:'ease-in-out',fill:'both'});
-    cloudAnimations.set(element,motion);
-    if (previous) previous.cancel();
-    motion.onfinish = () => {
-      if (progress<100) floatCloud(element,index);
-    };
-  }
-
-  function syncCloudMotion(next) {
-    if (reducedMotion) return;
-    if (next===100) {
-      for (const motion of cloudAnimations.values()) motion.pause();
-      return;
-    }
-    cloudElements.forEach((element,index) => {
-      const motion = cloudAnimations.get(element);
-      if (!motion || motion.playState==='finished') floatCloud(element,index);
-      else if (motion.playState==='paused') motion.play();
-    });
-  }
-
   function showTip() {
     const text = String(tips[tipIndex] || '').trim().replace(/^Tip\s*[:：]\s*/i,'');
     tip.textContent = text ? `Tip：${text}` : '';
@@ -62,10 +31,9 @@
     output.value = `${Math.round(next)}%`;
     slider.value = String(Math.round(next));
     root.classList.toggle('is-complete',next===100);
-    syncCloudMotion(next);
     const image = next===100 ? './loading-page/assets/character-complete.png'
       : reducedMotion ? './loading-page/assets/character-open.png'
-      : './loading-page/assets/loading-blink.webp';
+      : './loading-page/assets/loading-blink-fast.webp';
     if (character.getAttribute('src')!==image) character.src=image;
     character.alt = next===100 ? '恍然大悟的角色' : '托着脸思考的角色';
     if (next===100 && progress<100) {
@@ -116,7 +84,7 @@
     image.alt='围棋死活题';
     document.querySelector('#puzzle-slot').replaceChildren(image);
   });
-  window.addEventListener('pagehide',() => {stop();window.clearTimeout(completeTimer);for(const motion of cloudAnimations.values())motion.cancel();if(puzzleUrl)URL.revokeObjectURL(puzzleUrl);});
+  window.addEventListener('pagehide',() => {stop();window.clearTimeout(completeTimer);if(puzzleUrl)URL.revokeObjectURL(puzzleUrl);});
   showTip();
   const requested=new URLSearchParams(location.search).get('progress');
   if (requested!==null) setProgress(requested); else play();
