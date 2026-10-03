@@ -1382,3 +1382,36 @@ Replaced thought-cloud artwork; strengthened randomized drift; filled glass from
 ### Next Steps
 
 - None - task complete
+
+
+## Session 163: Loading cloud frame animation and faster blinking
+
+**Date**: 2026-10-03
+**Task**: Loading cloud frame animation and faster blinking
+**Branch**: `master`
+
+### Summary
+
+Replaced translation with two soft generated cloud drawings alternating at 4fps; added static circle connectors; separated glow marks from bulb; retimed lossless blink loop to 1600ms preserving frame payloads. Desktop and mobile browser checks, completion hold, reduced motion, circular connector separation and lint passed. Updated system design and preview captures.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `09280a04` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
