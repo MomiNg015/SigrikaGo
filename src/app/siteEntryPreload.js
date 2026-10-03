@@ -4,10 +4,12 @@ import { preloadImageAssets } from "../shared/preloadAssets.js";
 import { markAuthPortraitReady } from "./authPortraitPrewarm.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadPublicSiteSettings } from "./siteSettingsCatalog.js";
+import { LOGIN_LOADING_ART } from "./loginLoadingAssets.js";
 
 export const SITE_ENTRY_IMAGES = [
   "/assets/login-sigrika-mascot.webp",
-  "/assets/preload/orange-mascot.png"
+  "/assets/preload/orange-mascot.png",
+  ...Object.values(LOGIN_LOADING_ART)
 ];
 export const SITE_ENTRY_FONTS = [
   '400 16px "Sigrika Accent Latin"',
@@ -40,7 +42,7 @@ export async function preloadSiteEntry({
   const skipped = [];
   let imageProgress = 0;
   let fontsCompleted = 0;
-  const report = () => onProgress(0.1 + 0.9 * (imageProgress * images.length + fontsCompleted) / total);
+  const report = () => onProgress(Math.min(1, 0.1 + 0.9 * (imageProgress * images.length + fontsCompleted) / total));
   await Promise.all([
     preloadImages(images, {
       concurrency: 4,

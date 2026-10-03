@@ -87,8 +87,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  img:not(.preload-progress-mascot):not(.story-character-sprite),
-  svg,
+  img:not(.preload-progress-mascot):not(.story-character-sprite):not(.login-loading-character),
+  svg:not(.login-loading-fill),
   canvas,
   video
 ) {

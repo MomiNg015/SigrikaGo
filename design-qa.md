@@ -1,5 +1,19 @@
 # Selected loading illustration: design QA
 
+## Production integration — 2026-10-03
+
+Implementation: `src/app/LoginAssetPreloadScreen.jsx`, routed only for ordinary post-login preload through `AppRoutes`. Browser evidence loads this actual React component with the complete `src/styles.css` and real Bright School app-shell classes via a temporary Vite fixture; it does not simulate a signed-in account or make a real account login claim.
+
+User-approved overrides: preserve the production loading background, and use hanging Tip continuation lines instead of the previous balanced inline paragraph. Old/new computed main and app-shell background values are identical, including the original grid sizes and radial tints. No new scene grid or cream root override is introduced.
+
+Full comparison: `docs/design-samples/loading-page/review/production-comparison.png`. Focused comparison: `review/production-details.png`. Captures: `review/production-mobile.png` (390×844), `review/production-desktop.png` (1440×900), `review/production-complete.png` (390×844, 100%). Source on the left is the latest approved runnable sample; background and Tip wrapping differences are explicitly requested.
+
+Corrected two production-cascade issues before final capture: the theme's generic maximum-width rule compressed the mobile character, and its generic SVG height rule made the bulb fill square. Narrow semantic exclusions preserve the approved character width and match fill height to the bulb, without changing background owners or other illustrations.
+
+Verified 390×844, 360×640 and 1440×900: short and stress-long Tip text have identical scene, character, cloud and bulb bounds; Tip top stays fixed and overflow grows downward in its own stable-gutter scroll area. Every continuation line starts beyond the label's right edge. No horizontal document overflow. Real stages 0/1/50/99/100 keep text and ARIA synchronized; only 100 reveals rays and pauses the cloud. All images decode; the final artwork and supplied puzzle retain their approved sources and margins. Reduced-motion and Tip-freeze behavior pass DOM tests. Authenticated startup tests verify settings settle before 100%, no home transition at 1999ms, transition at 2000ms, and cancellation on unmount.
+
+Validation: 111 focused tests pass, lint passes, production build succeeds, and built CSS contracts pass. Other tutorial/battle loading contracts and the corrupted presentation are covered by regression tests. Result: passed; no actionable P0/P1/P2 finding remains for this requested scope.
+
 Source: `docs/design-samples/loading-page/review/concept-3.png`, third displayed direction selected by the user.
 
 Implementation: `docs/design-samples/loading-page.html` and the dedicated phone wrapper. Required primary viewport: 390×844, waiting at 65% progress. Desktop and compact phone layouts are adaptations of that mobile source.

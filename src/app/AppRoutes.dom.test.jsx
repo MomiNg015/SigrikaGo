@@ -2,6 +2,18 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AppRoutes from "./AppRoutes.jsx";
+
+it("uses thinking art for login preload and preserves the corrupted loader", () => {
+  const props = createBaseProps({ view: "preloading", assetProgress: 0.65 });
+  const { container, rerender } = render(<AppRoutes {...props} />);
+  expect(container.querySelector(".login-loading-screen")).not.toBeNull();
+  expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("65");
+  rerender(<AppRoutes {...props} user={{ ...props.user, sigrikaCandyArc: { corrupted: true } }} />);
+  expect(container.querySelector(".login-loading-screen")).toBeNull();
+  expect(container.querySelector(".asset-preload-panel")).not.toBeNull();
+  cleanup();
+  vi.clearAllMocks();
+});
 import HomeScreen from "../home/HomeScreen.jsx";
 
 vi.mock("../tutorial/TutorialBattleScreen.jsx", () => ({ default: () => { throw new Promise(() => {}); } }));

@@ -5,6 +5,7 @@ import { loginPreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } fro
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
+import { LOGIN_LOADING_COMPLETE_MS } from "./loginLoadingAssets.js";
 
 export function useStartupPreload({
   fallbackCharacters,
@@ -35,6 +36,7 @@ export function useStartupPreload({
     if (!token) return;
     let cancelled = false;
     let cancelRetry = () => {};
+    let cancelHold = () => {};
     api("/api/me", { token })
       .then(async (data) => {
         if (cancelled) return;
@@ -60,7 +62,6 @@ export function useStartupPreload({
         if (cancelled) return;
         setCharacters(nextCharacters);
         setMusicTracks(nextMusicTracks);
-        const startedAt = Date.now();
         const skippedAssets = [];
         await preloadLoginAssets(loginPreloadAssets({
           characters: nextCharacters,
@@ -75,12 +76,18 @@ export function useStartupPreload({
           concurrency: 6,
           onSkipped: (src) => skippedAssets.push(src),
           onProgress: (progress) => {
-            if (!cancelled) setAssetProgress(progress);
+            if (!cancelled) setAssetProgress(Math.min(progress, 0.99));
           }
         });
-        const elapsed = Date.now() - startedAt;
         await refreshSiteSettings();
-        if (elapsed < 900) await new Promise((resolve) => setTimeout(resolve, 900 - elapsed));
+        if (cancelled) return;
+        setAssetProgress(1);
+        if (shouldFinishPreloadAsHome({ view: viewRef.current, room: roomRef.current, matchSuccess: matchSuccessRef.current })) {
+          await new Promise((resolve) => {
+            const timer = setTimeout(resolve, LOGIN_LOADING_COMPLETE_MS);
+            cancelHold = () => { clearTimeout(timer); resolve(); };
+          });
+        }
         if (!cancelled && shouldFinishPreloadAsHome({
           view: viewRef.current,
           room: roomRef.current,
@@ -114,6 +121,7 @@ export function useStartupPreload({
       });
     return () => {
       cancelled = true;
+      cancelHold();
       cancelRetry();
     };
   }, [

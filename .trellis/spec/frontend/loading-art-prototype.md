@@ -1,7 +1,15 @@
 # Thinking loading-art prototype
 
 ## Scope
-The independent loading design sample lives at `docs/design-samples/loading-page.html`. It follows the existing design-sample convention and does not alter production preload, tutorial, battle or corruption behavior. Its tip snapshot is extracted from `DEFAULT_SITE_SETTINGS.preloadTips`; production integration must consume the live configured value.
+The independent approved sample lives at `docs/design-samples/loading-page.html`. `LoginAssetPreloadScreen` implements it in the ordinary post-login `preloading` route, consuming live `siteSettings.preloadTips` and real authenticated resource progress. Corrupted sessions keep their protected loading presentation; tutorial, battle and lazy-route loaders remain separate.
+
+## Production integration
+- Runtime artwork lives in `public/assets/preload/thinking/`, with a shared `loginLoadingAssets.js` manifest included in the bounded site-entry image gate. Production must not load images from documentation URLs. Preserve user puzzle pixels and source sprite payloads.
+- Keep the `asset-preload-screen` root hook and existing app-shell/theme background owners. The login-only CSS adds scene layout but no root background or sample grid pseudo-element.
+- Tip uses an auto label column and a shrinkable body column with left-aligned continuation lines. No text flows underneath the label. Tip is below the fixed scene and grows downward. The login screen owns stable-gutter vertical scrolling so long text cannot change scene width.
+- Authenticated progress stays at or below 99% until assets and site settings settle. Then publish 100% and hold the finished picture for 2000ms before the guarded home transition. Unmount/retry cancels the timer; room/match/view guards still win. Never use sample simulated progress or preview controls in production.
+- Reduced motion selects the approved static waiting sprite and first cloud frame. Completion pauses clouds and Tip rotation and selects the finished sprite. Numeric text cannot report 100% before actual completion.
+- Tests cover route selection/corruption preservation, progress/reset, reduced motion, frozen Tips, settings readiness, two-second hold and cancellation. Browser QA loads the actual component with the complete app stylesheet/theme and compares old/new computed backgrounds and short/long Tip bounds on desktop and phone.
 
 ## Visual and timing contracts
 - Zero percent: the bulb chamber is genuinely transparent and rays are hidden.

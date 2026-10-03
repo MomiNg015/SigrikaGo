@@ -9,17 +9,42 @@ vi.mock("../api/client.js", () => ({ api: vi.fn(), configureAuthRefresh: vi.fn()
 vi.mock("./characterCatalog.js", () => ({ loadPublicCharacterCatalog: async () => ({}) }));
 vi.mock("./musicTrackCatalog.js", () => ({ loadMusicTrackCatalog: async () => { throw Object.assign(new Error("503"), { status: 503 }); } }));
 vi.mock("../shared/preloadAssets.js", () => ({ loginPreloadAssets: () => [], preloadLoginAssets: async () => {}, retrySkippedPreloadAssets: () => () => {} }));
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+afterEach(() => { cleanup(); vi.clearAllMocks(); vi.useRealTimers(); });
 function args() {
   return { token: "valid", fallbackCharacters: {}, matchSuccessRef: { current: null }, roomRef: { current: null }, viewRef: { current: "preloading" },
     refreshSiteSettings: async () => {}, ...Object.fromEntries(["AssetProgress", "Characters", "LobbyStats", "MatchStart", "MatchSuccess", "MusicTracks", "Room", "ShowHouse", "ShowLeaderboard", "ShowShop", "ShowWarehouse", "ShowWatch", "Token", "User", "View", "StartupError"].map((name) => [`set${name}`, vi.fn()])) };
 }
 describe("startup network recovery", () => {
+  test("100% waits for settings, holds two seconds, and unmount cancels entry", async () => {
+    vi.useFakeTimers();
+    api.mockImplementation(async (url) => url === "/api/me" ? { user: { id: "u" } } : { items: [] });
+    let releaseSettings;
+    const options = args();
+    options.refreshSiteSettings = () => new Promise(resolve => { releaseSettings = resolve; });
+    const { unmount } = renderHook(() => useStartupPreload(options));
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    expect(options.setAssetProgress).not.toHaveBeenCalledWith(1);
+    await act(async () => { releaseSettings(); await vi.advanceTimersByTimeAsync(0); });
+    expect(options.setAssetProgress).toHaveBeenLastCalledWith(1);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1999); });
+    expect(options.setView).not.toHaveBeenCalledWith("home");
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    expect(options.setView).toHaveBeenCalledWith("home");
+    unmount();
+
+    const next = args();
+    const mounted = renderHook(() => useStartupPreload(next));
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    expect(next.setAssetProgress).toHaveBeenLastCalledWith(1);
+    mounted.unmount();
+    await act(async () => { await vi.advanceTimersByTimeAsync(2000); });
+    expect(next.setView).not.toHaveBeenCalledWith("home");
+  });
   test("a music 503 falls back while authenticated startup still enters home", async () => {
     api.mockImplementation(async (url) => url === "/api/me" ? { user: { id: "u" } } : { items: [] });
     const options = args();
     renderHook(() => useStartupPreload(options));
-    await waitFor(() => expect(options.setView).toHaveBeenCalledWith("home"), { timeout: 2000 });
+    await waitFor(() => expect(options.setView).toHaveBeenCalledWith("home"), { timeout: 3500 });
     expect(options.setToken).not.toHaveBeenCalled();
     expect(options.setMusicTracks).toHaveBeenCalled();
   });
@@ -31,7 +56,7 @@ describe("startup network recovery", () => {
     expect(options.setToken).not.toHaveBeenCalled();
     api.mockImplementation(async (url) => url === "/api/me" ? { user: { id: "u" } } : { items: [] });
     rerender({ key: 1 });
-    await waitFor(() => expect(options.setView).toHaveBeenCalledWith("home"), { timeout: 2000 });
+    await waitFor(() => expect(options.setView).toHaveBeenCalledWith("home"), { timeout: 3500 });
     api.mockRejectedValue(Object.assign(new Error("expired"), { status: 401 }));
     rerender({ key: 2 });
     await waitFor(() => expect(options.setToken).toHaveBeenCalledWith(""));

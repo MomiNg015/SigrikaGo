@@ -1,0 +1,50 @@
+/* Login-only scene; existing asset-preload-screen/theme owns its background. */
+.asset-preload-screen.login-loading-screen{display:flex;flex-direction:column;align-items:center;padding:24px 20px 76px;overflow-x:clip;height:100dvh;overflow-y:auto;scrollbar-gutter:stable;justify-content:flex-start}
+/* Anchor the scene independently of Tip height; additional copy grows below it. */
+.login-loading-composition{width:min(1000px,calc((100svh - 168px) * 1.1),100%);display:flex;flex-direction:column;align-items:center}
+.login-loading-art{width:100%;aspect-ratio:1100/980;position:relative;isolation:isolate;flex-shrink:0}
+
+.login-loading-art .login-loading-character{display:block;position:absolute;left:12.7%;top:38.5%;width:77.3%;max-width:none;height:auto;z-index:2;pointer-events:none}
+.login-loading-cloud{position:absolute;left:19%;top:0;width:43%;aspect-ratio:5/4;z-index:4;transform:rotate(-3deg)}
+.login-loading-outline{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;animation:login-cloud-frame-a 500ms steps(1,end) infinite}
+.login-loading-outline-alternate{animation-name:login-cloud-frame-b;opacity:0}
+@keyframes login-cloud-frame-a{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes login-cloud-frame-b{0%,100%{opacity:0}50%{opacity:1}}
+.login-loading-screen.is-complete .login-loading-outline{animation-play-state:paused}
+.login-loading-puzzle{position:absolute;left:27%;top:29%;width:44%;height:44%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);place-items:center;transform:rotate(3deg)}
+.login-loading-puzzle img{display:block;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;max-width:100%;max-height:100%}
+.login-loading-link{position:absolute;height:auto;aspect-ratio:1;z-index:1;pointer-events:none}
+.login-loading-link-one{left:25.5%;top:39%;width:5.5%}
+.login-loading-link-two{left:27%;top:47%;width:3.5%}
+.login-loading-link-three{left:32.5%;top:51%;width:2.2%}
+.login-loading-bulb{--bulb-rotation:41deg;position:absolute;left:72%;top:40%;width:max(12%,46px);aspect-ratio:3/4;z-index:5;transform:rotate(var(--bulb-rotation));isolation:isolate;container-type:inline-size}
+.login-loading-percentage{position:absolute;left:51.5%;top:36%;transform:translate(-50%,-50%) rotate(calc(-1 * var(--bulb-rotation)));z-index:4;font:700 20cqw/1 Arial,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap;color:#4a3736;pointer-events:none}
+.login-loading-bulb-outline{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:2}
+.login-loading-fill-mask{position:absolute;inset:0;mask:url('/assets/preload/thinking/bulb-selected-interior.png') center/100% 100% no-repeat;-webkit-mask:url('/assets/preload/thinking/bulb-selected-interior.png') center/100% 100% no-repeat}
+.login-loading-fill{position:absolute;inset:0;width:100%;height:100%}
+.login-loading-rays{position:absolute;width:38%;height:auto;opacity:0;visibility:hidden;pointer-events:none;z-index:3}
+.login-loading-rays{left:30%;top:-24%;transform:rotate(275deg)}
+.login-loading-screen.is-complete .login-loading-rays{opacity:1;visibility:visible}
+.login-loading-tip{margin:20px 0 0;width:min(660px,95%);display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:.4em;align-items:start;text-align:left;font:clamp(15px,1.15vw,17px)/1.8 "Microsoft YaHei UI","Microsoft YaHei",sans-serif;color:#4a3736}
+.login-loading-tip[hidden]{display:none}
+.login-loading-tip-label{position:relative;display:inline-block;white-space:nowrap;font:1.25em/1.6 "Sigrika Window Title","Microsoft YaHei",sans-serif;isolation:isolate}
+.login-loading-tip-label::before{content:'';position:absolute;left:-6px;right:-2px;bottom:0;height:12px;background:url('/assets/preload/thinking/tip-brush.png') center/100% 100% no-repeat;z-index:-1}
+.login-loading-tip-copy{min-width:0;overflow-wrap:anywhere;text-wrap:pretty}
+@media(max-width: 600px){
+ .asset-preload-screen.login-loading-screen{padding:clamp(24px,calc((100svh - 660px) / 2),92px) 16px 76px}
+ .login-loading-composition{width:100%;max-width:480px}
+ .login-loading-art{aspect-ratio:440/650}
+ .login-loading-art .login-loading-character{left:-2%;top:48%;width:104%}
+ .login-loading-cloud{left:-5.5%;top:-3%;width:86%}
+ .login-loading-link-one{left:18%;top:41%;width:8.5%}
+ .login-loading-link-two{left:20%;top:48.5%;width:5.5%}
+ .login-loading-link-three{left:25%;top:52.5%;width:3.8%}
+ .login-loading-bulb{--bulb-rotation:40deg;left:79%;top:45%;width:max(15%,46px)}
+ .login-loading-tip{width:96%;margin-top:22px;font-size:15px;line-height:1.85}
+}
+@media(max-width: 600px) and (max-height: 700px){
+ .asset-preload-screen.login-loading-screen{padding-top:24px}
+ .login-loading-composition{width:min(100%,calc((100svh - 190px) * .677))}
+ .login-loading-tip{width:min(340px,calc(100vw - 32px));min-width:min(340px,calc(100vw - 32px));margin-top:16px}
+}
+@media(prefers-reduced-motion: reduce){.login-loading-outline{animation:none}.login-loading-outline-alternate{display:none}}

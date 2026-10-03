@@ -481,6 +481,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(baseEntry)).toEqual([
       "./base/foundation.css",
       "./base/asset-preload.css",
+      "./base/login-asset-preload.css",
       "./base/surfaces-forms-actions.css",
       "./base/topbar-room-tags.css",
       "./base/home-legacy-grid.css",

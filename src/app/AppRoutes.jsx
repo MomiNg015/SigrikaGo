@@ -15,6 +15,7 @@ import {
 } from "../audio/playback.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
+import LoginAssetPreloadScreen from "./LoginAssetPreloadScreen.jsx";
 import { rememberDismissedResultRoom } from "./resumeSession.js";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
@@ -150,14 +151,14 @@ export default function AppRoutes({
     <>
       {view === "login" && <AuthScreen onAuth={onAuth} />}
       {view === "preloading" && (
-        <AssetPreloadScreen
+        user?.sigrikaCandyArc?.corrupted ? <AssetPreloadScreen
           characters={characters}
           loadingLinesText={siteSettings.characterLoadingLines}
           progress={assetProgress}
           progressHint="（首次加载需要1-3分钟，请耐心等待哦~）"
           user={user}
           tipsText={siteSettings.preloadTips}
-        />
+        /> : <LoginAssetPreloadScreen progress={assetProgress} tipsText={siteSettings.preloadTips} />
       )}
       {view === "match-preloading" && (
         <Suspense fallback={routeLoadingScreen}>
