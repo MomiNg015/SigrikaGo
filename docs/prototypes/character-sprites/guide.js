@@ -7,15 +7,15 @@
   const scenarios = [
     { id: 'node-1', label: '相遇与招呼', note: '沿用原样板的教室场景。人物站在场景里，对话纸张压在身前；头部、肩部保持清楚。' },
     { id: 'node-3', label: '三项剧情分支', note: '原来的三个回答完整保留。选项区与正文滚动区分开，长选项不会压住人物名字。' },
-    { id: 'node-4-1', label: '长规则对白', note: '长对白扩大纸面阅读区，人物仍保留在左侧。正文单独滚动，回答始终在底部。' },
+    { id: 'node-4-1', label: '长规则对白', note: '人物缩放、站位与裁切沿用相遇和分支。纸面高度固定，长文只在正文区滚动，按钮位置不变。' },
     { id: 'node-4-2', label: '达妮娅接话', note: '更换角色时沿用同一个人物站位；每段仍使用已经按原文配置的表情。' },
-    { id: 'doc-liberty-left-top', board: 'doc-setup-1', label: '棋盘讲解', note: '立绘是聊天纸张的外层元素：头肩超过上边缘，身体压住左边框。桌面占左侧空位，手机放在棋盘下方。' },
+    { id: 'doc-liberty-left-top', board: 'doc-setup-1', label: '棋盘讲解', note: '人物与对白作为浮层覆盖在对弈界面上，头肩越过框顶。框加高，底边不变；手机棋盘不再为对白腾出一段嵌入空间。' },
     { id: 'doc-liberty-question-1', board: 'doc-setup-1', label: '棋盘问答', note: '实际的 7 / 9 / 14 三个回答。答错可看到达妮娅反馈，再回到原问题。棋盘不接受普通落子。' },
     { id: 'doc-liberty-wrong-1', board: 'doc-setup-1', label: '答错与表情反馈', note: '达妮娅的提醒保留原文。在样板设置里可开启原节点自动推进，也可以暂停观察表情。' },
     { id: 'story-18', board: 'story-16', preceding: 'story-17', label: '指定位置落子', note: '对白退场后给棋盘让出空间。仅目标点能推进；错误点击保留当前教学状态。这里仅演示目标点击，不执行真实围棋规则。' },
     { id: 'doc-ko-user', board: 'doc-setup-2', label: '无立绘的选项', note: '现有引导没有纯旁白节点。这里展示实际 player-choice：不杜撰旁白，也不让上一名角色继续冒充说话人。' },
     { id: 'doc-skill-174', board: 'doc-skill-setup', label: '技能前后对白', note: '使用技能教学的原话与节点：先点技能，再选 F-5。技能横幅展示角色与技能名；棋盘反色是本地演示，实际特效和规则仍以正式系统为准。' },
-    { id: 'home:handbook', label: '首页入口指引', note: '入口指引继续使用小头像，把空间留给需要点击的入口；点击部员手册查看原有说明。' }
+    { id: 'home:handbook', label: '首页入口指引', note: '入口和对弈共用同一人物与对白浮层。高亮入口避开整个人物突出区；点击部员手册查看原有说明。' }
   ];
   const mobileSize = () => innerWidth <= 560 ? (innerHeight <= 700 ? 'small' : 'phone') : 'desktop';
   const state = { id: nodes.has(location.hash.slice(1)) ? location.hash.slice(1) : 'doc-liberty-question-1', size: mobileSize(), board: [], npc: 'sigrika', typing: true, auto: false, selected: null, scenario: null, skill: null, skillArmed: false };
@@ -103,6 +103,7 @@
     toast('这一段演示已结束，可在右侧重看其它情境。');
   }
   function options(node) {
+    if (node.action) return '<span class="guide-target-instruction">点击高亮的部员手册</span>';
     if (node.options?.length) return node.options.map((option, index) => `<button class="guide-answer" data-action="answer" data-index="${index}" disabled>${escape(option.label)}</button>`).join('');
     if (node.type === 'player-move') return '<button data-action="hint">显示目标</button>';
     if (node.type === 'player-skill') return '<button data-action="skill">发动技能</button>';
@@ -114,8 +115,7 @@
     const expression = node.expressionId || 'smile';
     if (id) state.npc = id;
     const text = node.text || node.prompt || '';
-    const long = text.length > 180;
-    return `<div class="guide-conversation ${stage ? 'on-stage' : 'at-board'}${id ? '' : ' without-art'}${long ? ' has-long-text' : ''}">
+    return `<div class="guide-conversation ${stage ? 'on-stage' : 'npc-overlay'}${id ? '' : ' without-art'}">
       ${id ? sprite(id, expression, 'guide-floating-sprite') : ''}
       <section class="guide-chat" aria-label="${pureChoice ? '选择回答' : '角色对白'}">
         <div class="guide-chat-copy"><h2 class="guide-speaker">${escape(pureChoice ? '你的回答' : node.speakerName || catalog[id]?.name || '旁白')}</h2>
@@ -123,6 +123,7 @@
         </div>
         <div class="guide-answers ${node.options?.some(option => option.label.length > 12) ? 'long-answers' : ''}" aria-label="对白操作">${options(node)}</div>
       </section>
+      ${stage ? '' : `<button class="guide-peek" data-action="peek" aria-expanded="true" aria-label="暂收引导，查看${state.id.startsWith('home:') ? '界面' : '棋盘'}">查看${state.id.startsWith('home:') ? '界面' : '棋盘'}</button>`}
     </div>`;
   }
   function players() {
@@ -144,7 +145,7 @@
   function homeScene(node) {
     return `<div class="guide-home-scene"><div class="guide-home-title">围棋部</div><div class="guide-home-entries"><button data-action="home-target" class="guide-home-target">部员手册</button><button disabled>开始对弈</button><button disabled>学生证</button></div>
       ${node.window === 'house' ? '<div class="guide-home-sheet"><h2>部员手册</h2><div class="guide-home-members">西格莉卡　达妮娅</div></div>' : ''}
-      <section class="guide-home-bubble">${sprite('sigrika', node.expressionId || 'smile', 'guide-home-avatar')}<div><h2>西格莉卡</h2><p>${escape(node.text)}</p></div>${node.action ? '' : '<button data-action="continue">继续 →</button>'}</section>
+      ${conversation({ ...node, type: 'npc-dialogue' })}
     </div>`;
   }
   function render() {
@@ -207,6 +208,12 @@
     if (action === 'scenario') selectScenario(value);
     else if (action === 'size') { state.manualSize = true; state.size = value; render(); }
     else if (action === 'replay') selectScenario(state.scenario.id);
+    else if (action === 'peek') {
+      const peeking = button.closest('.guide-conversation').classList.toggle('is-peeking');
+      button.setAttribute('aria-expanded', String(!peeking));
+      button.setAttribute('aria-label', peeking ? '返回对白' : `暂收引导，查看${state.id.startsWith('home:') ? '界面' : '棋盘'}`);
+      button.textContent = peeking ? '返回对白' : `查看${state.id.startsWith('home:') ? '界面' : '棋盘'}`;
+    }
     else if (action === 'answer') { const option = node.options[Number(button.dataset.index)]; later(() => advance(option?.nextNodeId), Number(option?.transitionDelaySeconds || 0) * 1000); }
     else if (action === 'continue') advance(node.nextNodeId);
     else if (action === 'reveal') { const text = document.querySelector('#guide-dialogue-text'); text.dataset.revealed = 'true'; text.textContent = text.dataset.fullText; }

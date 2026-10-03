@@ -22,7 +22,7 @@
 .guide-game-header { height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; position: relative; z-index: 5; border-bottom: 1px solid color-mix(in srgb, var(--ink) 22%, var(--paper)); background: var(--paper); }
 .guide-game-header > span { font: 20px 'Sigrika Window Title', sans-serif; }
 .guide-game-header > button { min-height: 38px; width: 40px; border: 0; background: transparent; font-size: 25px; padding: 0; }
-.guide-board-layout { height: calc(100% - 48px); position: relative; display: grid; grid-template-columns: 1fr minmax(0, 444px) 1fr; grid-template-rows: 56px minmax(0, 1fr) 170px 50px; align-items: center; padding: 0 22px 14px; }
+.guide-board-layout { height: calc(100% - 48px); position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 444px); grid-template-rows: 56px minmax(0, 1fr) 50px; align-items: center; padding: 0 22px 14px; }
 .guide-player-strip { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 14px; max-width: 630px; width: 100%; margin: auto; }
 .guide-player-strip > div { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .guide-player-strip strong { font-size: 15px; font-weight: 600; }
@@ -30,44 +30,45 @@
 .guide-stone { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--ink); flex: none; }
 .guide-stone.black { background: var(--ink); }
 .guide-stone.white { background: white; }
-.guide-board-zone { grid-column: 2; grid-row: 2; align-self: start; width: min(100%, calc(var(--guide-height) - 330px)); margin: auto; }
+.guide-board-zone { grid-column: 2; grid-row: 2; align-self: start; width: min(100%, calc(var(--guide-height) - 240px)); margin: 0 auto; }
 .guide-board-zone .battle-board { margin: 0; border-width: 2px; border-color: color-mix(in srgb, var(--ink) 55%, var(--paper)); box-shadow: 3px 4px 0 color-mix(in srgb, var(--ink) 18%, var(--paper)); }
 .guide-board-zone .battle-intersection:disabled { opacity: 1; }
 .guide-board-info { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; padding: 10px 2px 0; color: var(--battle-muted); }
-.guide-game-actions { grid-column: 1 / -1; grid-row: 4; display: flex; justify-content: center; gap: 8px; }
+.guide-game-actions { grid-column: 1 / -1; grid-row: -2 / -1; display: flex; justify-content: center; gap: 8px; }
 .guide-game-actions button { min-height: 38px; min-width: 72px; padding: 7px 12px; font-size: 12px; }
-.guide-conversation { position: relative; isolation: isolate; }
-.guide-conversation.at-board { grid-column: 1 / -1; grid-row: 3; align-self: end; margin: 0 26px; }
-.guide-chat { position: relative; min-height: 152px; border: 2px solid var(--ink); border-radius: 14px 8px 14px 4px; background: var(--paper); box-shadow: 4px 5px 0 color-mix(in srgb, var(--ink) 22%, var(--paper)); padding: 18px 22px 16px 246px; }
-.guide-chat-copy { position: relative; z-index: 3; }
+.guide-conversation { position: absolute; isolation: isolate; pointer-events: none; }
+.guide-conversation.npc-overlay { left: 48px; bottom: 64px; width: min(600px, 55%); height: 254px; z-index: 4; }
+.guide-chat { position: absolute; inset: 0; height: 100%; display: flex; flex-direction: column; border: 2px solid var(--ink); border-radius: 14px 8px 14px 4px; background: var(--paper); box-shadow: 4px 5px 0 color-mix(in srgb, var(--ink) 22%, var(--paper)); padding: 21px 22px 18px 246px; pointer-events: auto; }
+.guide-chat-copy { position: relative; z-index: 3; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .guide-chat::before { content: ''; position: absolute; inset: 6px; border: 1px solid color-mix(in srgb, var(--ink) 12%, var(--paper)); border-radius: 8px 4px 8px 4px; pointer-events: none; }
 .guide-speaker { font: 23px/1.2 'Sigrika Window Title', sans-serif; margin: 0 0 10px; position: relative; }
-.guide-text-scroll { max-height: 64px; min-height: 30px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; font-size: 16px; line-height: 1.75; position: relative; }
+.guide-text-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; font-size: 16px; line-height: 1.75; position: relative; }
 .guide-text-scroll p { margin: 0; white-space: pre-wrap; }
-.guide-answers { position: relative; z-index: 3; display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+.guide-answers { position: relative; z-index: 3; display: flex; flex: none; gap: 8px; margin-top: 12px; justify-content: flex-end; }
 .guide-answers button { min-height: 38px; min-width: 72px; background: var(--mint); border-radius: 8px; padding: 7px 14px; font-size: 13px; }
 .guide-answers .guide-answer { flex: 1; background: var(--pink); }
 .guide-answers.long-answers { flex-direction: column; }
 .guide-answers.long-answers button { width: 100%; text-align: left; line-height: 1.5; }
-.guide-floating-sprite { position: absolute; z-index: 2; left: -30px; bottom: 0; width: 280px; height: 298px; overflow: hidden; pointer-events: none; filter: drop-shadow(3px 3px 0 color-mix(in srgb, var(--ink) 15%, transparent)); }
-.guide-floating-sprite > img { display: block; width: 355px; max-width: none; height: auto; position: absolute; left: 50%; top: 0; transform: translateX(-49%); }
+.guide-floating-sprite { --sprite-crop: 330px; position: absolute; z-index: 2; left: -30px; bottom: 0; width: 280px; height: var(--sprite-crop); overflow: hidden; pointer-events: none; filter: drop-shadow(3px 3px 0 color-mix(in srgb, var(--ink) 15%, transparent)); }
+/* All expressions share an 832 x 1216 canvas. This fixed 58% window ends above the knees. */
+.guide-floating-sprite > img { display: block; max-width: none; width: auto; height: calc(var(--sprite-crop) * 1.72); position: absolute; left: 50%; top: 0; transform: translateX(-49%); }
 .guide-floating-sprite.character-denia > img { transform: translateX(-51%); }
-.guide-conversation.without-art .guide-chat { padding-left: 22px; min-height: 0; }
+.guide-conversation.without-art .guide-chat { padding-left: 22px; }
 .guide-conversation.without-art .guide-speaker { font-size: 19px; }
+.npc-overlay .guide-speaker { padding-right: 85px; min-height: 34px; display: flex; align-items: center; }
+.guide-peek { position: absolute; z-index: 4; top: 12px; right: 12px; pointer-events: auto; min-height: 34px; padding: 6px 8px; font-size: 12px; border-radius: 8px; background: var(--paper); }
+.guide-conversation.is-peeking .guide-chat, .guide-conversation.is-peeking .guide-floating-sprite { visibility: hidden; pointer-events: none; }
+.is-peeking .guide-peek { top: auto; bottom: 0; background: var(--mint); }
+.guide-target-instruction { display: flex; align-items: center; min-height: 38px; font-size: 13px; color: var(--battle-muted); }
 .guide-action-prompt { grid-column: 1 / -1; grid-row: 3; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 16px; padding: 18px; background: var(--mint); border-radius: 8px; margin: 0 100px 10px; }
 .guide-action-prompt button { flex: none; font-size: 13px; }
 .guide-frame .guide-target-point { outline: 3px solid var(--pink); outline-offset: -3px; background: color-mix(in srgb, var(--pink) 30%, transparent); opacity: 1; }
 .guide-stage-scene { height: calc(100% - 48px); position: relative; background: url('../../../public/assets/home/multipurpose-classroom-bg.webp') center / cover; }
-.guide-conversation.on-stage { position: absolute; inset: 0; }
-.on-stage .guide-chat { position: absolute; left: 7%; right: 5%; bottom: 28px; min-height: 210px; padding: 23px 25px 22px 46%; }
-.on-stage .guide-floating-sprite { left: 1%; bottom: 25px; height: calc(100% - 44px); width: 48%; max-width: 510px; z-index: 2; }
-.on-stage .guide-floating-sprite > img { width: auto; height: 790px; transform: translateX(-49%); }
+.guide-conversation.on-stage { inset: 0; }
+.on-stage .guide-chat { inset: auto 5% 28px 7%; height: 292px; padding: 23px 25px 22px 46%; }
+.on-stage .guide-floating-sprite { --sprite-crop: 550px; left: 1%; bottom: 25px; width: 48%; max-width: 510px; z-index: 2; overflow: visible; clip-path: inset(0 -15% 0 -15%); }
 .on-stage .guide-chat-copy, .on-stage .guide-answers { z-index: 3; }
-.on-stage .guide-text-scroll { max-height: 120px; min-height: 58px; font-size: 17px; }
-.on-stage.has-long-text .guide-chat { min-height: 360px; padding-top: 28px; }
-.on-stage.has-long-text .guide-text-scroll { max-height: 228px; }
-.on-stage.has-long-text .guide-floating-sprite { width: 43%; left: 0; height: calc(100% - 35px); }
-.on-stage.has-long-text .guide-floating-sprite > img { height: 750px; }
+.on-stage .guide-text-scroll { font-size: 17px; }
 .guide-skill-banner { position: absolute; z-index: 7; left: 50%; top: 35%; width: min(560px, 86%); height: 146px; transform: translate(-50%, -50%) rotate(-1deg); background: var(--paper); border-block: 3px solid var(--ink); box-shadow: 4px 5px 0 color-mix(in srgb, var(--ink) 22%, var(--paper)); display: flex; gap: 20px; align-items: center; }
 .guide-skill-art { width: 180px; height: 200px; position: relative; overflow: hidden; align-self: end; flex: none; }
 .guide-skill-art img { width: 240px; position: absolute; left: 50%; top: 0; transform: translateX(-50%); }
@@ -86,13 +87,8 @@
 .guide-home-entries { display: flex; justify-content: center; gap: 18px; margin-top: 70px; }
 .guide-home-entries button { background: var(--paper); min-height: 80px; min-width: 155px; font: 23px 'Sigrika Window Title', sans-serif; }
 .guide-home-entries .guide-home-target { outline: 3px solid var(--pink); outline-offset: 7px; }
-.guide-home-bubble { position: absolute; left: 7%; right: 7%; bottom: 35px; padding: 20px; border: 2px solid var(--ink); border-radius: 14px; background: var(--paper); display: flex; align-items: center; gap: 15px; }
-.guide-home-bubble h2 { font: 22px 'Sigrika Window Title', sans-serif; margin: 0 0 8px; }
-.guide-home-bubble p { font-size: 15px; line-height: 1.7; margin: 0; }
-.guide-home-avatar { width: 66px; height: 66px; border-radius: 50%; background: var(--mint); overflow: hidden; position: relative; flex: none; }
-.guide-home-avatar img { width: 154px; position: absolute; left: 50%; top: -2px; transform: translateX(-49%); }
-.guide-home-bubble > button { font-size: 13px; flex: none; }
-.guide-home-sheet { position: absolute; inset: 70px 18% 180px; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; padding: 22px; }
+.guide-home-scene .npc-overlay { bottom: 35px; }
+.guide-home-sheet { position: absolute; inset: 70px 18% 330px; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; padding: 22px; }
 .guide-home-sheet h2 { font: 25px 'Sigrika Window Title', sans-serif; }
 .guide-home-members { padding: 25px; background: var(--mint); border-radius: 8px; }
 
@@ -100,56 +96,51 @@
 .guide-frame.size-small { --guide-height: 640px; width: 360px; max-width: 100%; }
 .guide-frame:is(.size-phone, .size-small) .guide-game-header { height: 44px; padding-inline: 12px; }
 .guide-frame:is(.size-phone, .size-small) .guide-game-header > span { font-size: 18px; }
+.guide-frame:is(.size-phone, .size-small) .guide-game-header > button { min-height: 44px; width: 44px; }
 .guide-frame:is(.size-phone, .size-small) .guide-board-layout { height: calc(100% - 44px); display: flex; flex-direction: column; gap: 10px; padding: 0 10px 8px; }
-.guide-frame:is(.size-phone, .size-small) .guide-player-strip { flex: 0 0 43px; }
+.guide-frame:is(.size-phone, .size-small) .guide-player-strip { flex: 0 0 43px; margin: 0; }
 .guide-frame:is(.size-phone, .size-small) .guide-player-strip strong { font-size: 13px; }
 .guide-frame:is(.size-phone, .size-small) .guide-player-strip > div { gap: 5px; }
-.guide-frame:is(.size-phone, .size-small) .guide-board-zone { flex: none; width: min(100%, calc(var(--guide-height) - 452px)); align-self: center; margin: 0 auto; }
+.guide-frame:is(.size-phone, .size-small) .guide-board-zone { flex: none; width: min(100%, calc(var(--guide-height) - 265px)); align-self: center; margin: 0 auto; }
 .guide-frame:is(.size-phone, .size-small) .guide-board-info { padding-top: 7px; font-size: 9px; }
-.guide-frame:is(.size-phone, .size-small) .guide-conversation.at-board { width: 100%; margin: auto 0 3px; flex: none; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-chat { min-height: 186px; padding: 16px 13px 13px 134px; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-speaker { font-size: 21px; margin-bottom: 8px; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-text-scroll { height: 83px; max-height: 83px; font-size: 14px; line-height: 1.7; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-floating-sprite { width: 145px; height: 247px; left: -12px; bottom: 3px; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-floating-sprite > img { width: 248px; transform: translateX(-48%); }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-floating-sprite.character-denia > img { transform: translateX(-52%); }
+.guide-frame:is(.size-phone, .size-small) .guide-conversation.npc-overlay { left: 10px; right: 10px; bottom: 64px; width: auto; height: 230px; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-chat { padding: 18px 13px 15px 134px; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-speaker { font-size: 21px; margin-bottom: 8px; min-height: 44px; }
+.guide-frame:is(.size-phone, .size-small) .guide-peek { top: 8px; right: 8px; min-height: 44px; padding: 6px; }
+.guide-frame:is(.size-phone, .size-small) .is-peeking .guide-peek { top: auto; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-text-scroll { font-size: 14px; line-height: 1.7; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-floating-sprite { --sprite-crop: 310px; width: 145px; left: -12px; bottom: 0; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-floating-sprite > img { transform: translateX(-48%); }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-floating-sprite.character-denia > img { transform: translateX(-52%); }
 .guide-frame:is(.size-phone, .size-small) .guide-answers { gap: 5px; margin-top: 12px; }
-.guide-frame:is(.size-phone, .size-small) .guide-answers button { min-height: 42px; min-width: 0; padding: 6px 10px; font-size: 12px; }
-.guide-frame:is(.size-phone, .size-small) .at-board .guide-answers .guide-answer { padding-inline: 5px; }
-.guide-frame:is(.size-phone, .size-small) .without-art .guide-chat { padding: 18px; min-height: 0; }
-.guide-frame:is(.size-phone, .size-small) .guide-game-actions { flex: 0 0 42px; gap: 5px; width: 100%; }
+.guide-frame:is(.size-phone, .size-small) .guide-answers button { min-height: 44px; min-width: 0; padding: 6px 10px; font-size: 12px; }
+.guide-frame:is(.size-phone, .size-small) .npc-overlay .guide-answers .guide-answer { padding-inline: 5px; }
+.guide-frame:is(.size-phone, .size-small) .without-art .guide-chat { padding: 18px; }
+.guide-frame:is(.size-phone, .size-small) .guide-game-actions { flex: 0 0 42px; gap: 5px; width: 100%; margin-top: auto; }
 .guide-frame:is(.size-phone, .size-small) .guide-game-actions button { flex: 1; min-width: 0; min-height: 40px; padding: 6px 4px; }
-.guide-frame:is(.size-phone, .size-small) .guide-action-prompt { margin: auto 0 0; padding: 14px; font-size: 14px; line-height: 1.7; flex-direction: column; gap: 10px; width: 100%; }
+.guide-frame:is(.size-phone, .size-small) .guide-action-prompt { position: absolute; left: 10px; right: 10px; bottom: 58px; margin: 0; padding: 10px; font-size: 14px; line-height: 1.5; flex-direction: row; gap: 10px; }
+.guide-frame:is(.size-phone, .size-small) .guide-action-prompt > span { flex: 1; min-width: 0; max-height: 63px; overflow: auto; }
+.guide-frame:is(.size-phone, .size-small) .guide-action-prompt > button { min-height: 44px; max-width: 100px; }
 .guide-frame:is(.size-phone, .size-small) .guide-stage-scene { height: calc(100% - 44px); }
-.guide-frame:is(.size-phone, .size-small) .on-stage .guide-chat { left: 10px; right: 10px; bottom: 18px; min-height: 230px; padding: 20px 18px 16px; z-index: 4; }
-.guide-frame:is(.size-phone, .size-small) .on-stage .guide-floating-sprite { left: 2%; bottom: 160px; height: calc(100% - 180px); width: 96%; max-width: none; z-index: 3; }
-.guide-frame:is(.size-phone, .size-small) .on-stage .guide-floating-sprite > img { width: 410px; height: auto; }
-.guide-frame:is(.size-phone, .size-small) .on-stage .guide-text-scroll { font-size: 15px; max-height: 106px; min-height: 68px; }
-.guide-frame:is(.size-phone, .size-small) .on-stage .long-answers { gap: 6px; }
-.guide-frame:is(.size-phone, .size-small) .on-stage.has-long-text .guide-chat { min-height: 315px; }
-.guide-frame:is(.size-phone, .size-small) .on-stage.has-long-text .guide-text-scroll { max-height: 203px; height: 203px; }
-.guide-frame:is(.size-phone, .size-small) .on-stage.has-long-text .guide-floating-sprite { bottom: 285px; height: calc(100% - 310px); }
-.guide-frame:is(.size-phone, .size-small) .on-stage.has-long-text .guide-floating-sprite > img { width: 350px; }
+.guide-frame:is(.size-phone, .size-small) .on-stage .guide-chat { left: 10px; right: 10px; bottom: 18px; height: 326px; padding: 20px 18px 16px; z-index: 4; }
+.guide-frame:is(.size-phone, .size-small) .on-stage .guide-floating-sprite { --sprite-crop: calc(var(--guide-height) - 240px); left: 2%; bottom: 160px; width: 96%; max-width: none; z-index: 3; }
+.guide-frame:is(.size-phone, .size-small) .on-stage .guide-text-scroll { font-size: 15px; }
+.guide-frame:is(.size-phone, .size-small) .on-stage .guide-answers:has(.guide-answer) { flex-direction: column; gap: 6px; }
+.guide-frame:is(.size-phone, .size-small) .on-stage .guide-answer { text-align: left; }
 .guide-frame:is(.size-phone, .size-small) .guide-home-scene { height: calc(100% - 44px); padding: 22px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-title { font-size: 35px; margin-top: 30px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-entries { margin-top: 65px; flex-direction: column; gap: 17px; align-items: center; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-title { font-size: 35px; margin-top: 10px; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-entries { margin-top: 28px; flex-direction: column; gap: 17px; align-items: center; }
 .guide-frame:is(.size-phone, .size-small) .guide-home-entries button { min-height: 62px; width: 200px; font-size: 21px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-bubble { left: 10px; right: 10px; bottom: 16px; padding: 15px 12px; gap: 10px; flex-wrap: wrap; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-bubble > div { flex: 1; min-width: 0; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-bubble p { font-size: 13px; max-height: 138px; overflow: auto; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-bubble > button { margin-left: auto; min-height: 40px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-avatar { width: 54px; height: 54px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-avatar img { width: 126px; }
-.guide-frame:is(.size-phone, .size-small) .guide-home-sheet { inset: 100px 15px 195px; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-scene .npc-overlay { bottom: 16px; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-sheet { inset: 80px 15px 385px; padding: 12px; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-sheet h2 { font-size: 22px; margin: 0 0 10px; }
+.guide-frame:is(.size-phone, .size-small) .guide-home-members { padding: 14px; }
+.guide-frame:is(.size-phone, .size-small) .guide-target-instruction { min-height: 42px; font-size: 12px; }
 .guide-frame:is(.size-phone, .size-small) .guide-skill-banner { gap: 4px; height: 114px; }
 .guide-frame:is(.size-phone, .size-small) .guide-skill-art { width: 126px; height: 155px; }
 .guide-frame:is(.size-phone, .size-small) .guide-skill-art img { width: 185px; }
 .guide-frame:is(.size-phone, .size-small) .guide-skill-banner strong { font-size: 24px; }
 .guide-board-layout.action-layout { grid-template-rows: 56px minmax(0, 1fr) auto 50px; }
-.action-layout .guide-board-zone { width: min(100%, calc(var(--guide-height) - 240px)); }
-.guide-frame:is(.size-phone, .size-small) .action-layout .guide-board-zone { width: min(100%, calc(var(--guide-height) - 265px)); }
-.guide-frame.size-small .guide-board-zone { width: min(100%, calc(var(--guide-height) - 398px)); }
-.guide-frame.size-small .at-board .guide-floating-sprite { height: 219px; }
 @media (max-width: 900px) {
   .guide-workspace { grid-template-columns: 1fr; }
   .guide-controls { max-width: 760px; width: 100%; margin: auto; }
