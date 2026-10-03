@@ -1250,3 +1250,36 @@ Restored pale character gradients, tinted borders/halo and readable name accents
 ### Next Steps
 
 - None - task complete
+
+
+## Session 159: Restore long story motion and choice gutters
+
+**Date**: 2026-10-03
+**Task**: Restore long story motion and choice gutters
+**Branch**: `master`
+
+### Summary
+
+Restored upward paper growth for authored long story effects, with contained mobile portrait translation and stable desktop artwork. Added option shadow gutters and warm character accents. 136 focused tests, six browser cases, lint, build and CSS checks passed; docs and layout contract synchronized.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e7d5ac5e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
