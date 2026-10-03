@@ -1,0 +1,64 @@
+[
+  {
+    "viewport": "desktop",
+    "percent": 0,
+    "value": "0",
+    "points": "0,100 0,100 0,100",
+    "image": "./loading-page/assets/loading-blink.webp",
+    "rays": "hidden",
+    "overflow": false,
+    "tip": "Tip：因为使用数子规则，建议下完单官再申请数目哦~"
+  },
+  {
+    "viewport": "desktop",
+    "percent": 50,
+    "value": "50",
+    "points": "0,0 100,100 0,100",
+    "image": "./loading-page/assets/loading-blink.webp",
+    "rays": "hidden",
+    "overflow": false,
+    "tip": "Tip：因为使用数子规则，建议下完单官再申请数目哦~"
+  },
+  {
+    "viewport": "desktop",
+    "percent": 100,
+    "value": "100",
+    "points": "0,0 100,0 100,0 100,100 0,100",
+    "image": "./loading-page/assets/character-complete.png",
+    "rays": "visible",
+    "overflow": false,
+    "tip": "Tip：因为使用数子规则，建议下完单官再申请数目哦~"
+  },
+  {
+    "completionHold": "passed",
+    "manualReset": "passed",
+    "puzzleSlot": "passed"
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "horizontalOverflow": false,
+    "tipBottom": 667.25,
+    "viewportHeight": 844
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "horizontalOverflow": false,
+    "tipBottom": 511.65625,
+    "viewportHeight": 640
+  },
+  {
+    "viewport": {
+      "width": 932,
+      "height": 430
+    },
+    "horizontalOverflow": false,
+    "tipBottom": 351.21875,
+    "viewportHeight": 430
+  }
+]
