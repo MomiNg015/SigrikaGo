@@ -47,6 +47,7 @@ export default function StoryPlayerModal({
   const [nodeTimer, setNodeTimer] = useState(() => ({ nodeId: activeNodeId, elapsedMs: 0 }));
   const [skipConfirmOpen, setSkipConfirmOpen] = useState(false);
   const [pendingWait, setPendingWait] = useState(null);
+  const [failedPortraitSource, setFailedPortraitSource] = useState("");
   const pendingWaitRef = useRef(null);
   const node = nodesById.get(activeNodeId) ?? null;
   const text = currentNodeText(node);
@@ -54,6 +55,7 @@ export default function StoryPlayerModal({
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveStoryCharacter(node?.characterId, characters);
   const portraitPresentation = resolveStoryPortraitPresentation(node ?? {}, { character, user });
+  if (failedPortraitSource && failedPortraitSource !== portraitPresentation.src) setFailedPortraitSource("");
   const nodeElapsedMs = nodeTimer.nodeId === activeNodeId ? nodeTimer.elapsedMs : 0;
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
@@ -216,68 +218,73 @@ export default function StoryPlayerModal({
           {portraitPresentation.src && (
             <img
               key={portraitKey}
-              src={portraitPresentation.src}
+              className={portraitPresentation.standard ? "story-character-sprite" : undefined}
+              src={failedPortraitSource === portraitPresentation.src ? portraitPresentation.fallbackSrc : portraitPresentation.src}
+              data-story-fallback={failedPortraitSource === portraitPresentation.src || undefined}
               style={portraitPresentation.style}
               alt=""
               aria-hidden="true"
               loading="eager"
               decoding="sync"
               fetchPriority="high"
-              onError={(event) => {
-                if (portraitPresentation.fallbackSrc && event.currentTarget.getAttribute("src") !== portraitPresentation.fallbackSrc) event.currentTarget.src = portraitPresentation.fallbackSrc;
+              onError={() => {
+                if (portraitPresentation.fallbackSrc && portraitPresentation.fallbackSrc !== portraitPresentation.src) setFailedPortraitSource(portraitPresentation.src);
               }}
             />
           )}
-          {(node.speakerName || character.name) && (
+          {!portraitPresentation.standard && (node.speakerName || character.name) && (
             <div>
               <span>{node.speakerName || character.name}</span>
             </div>
           )}
         </div>
 
-        <div
-          className="onboarding-story-text-button"
-          role="button"
-          tabIndex={0}
-          aria-label={textLabels.textLabel}
-          onClick={handleTextClick}
-          onKeyDown={handleTextKeyDown}
-        >
-          <span>{displayText}</span>
-          {!typingComplete && <i aria-hidden="true" />}
-        </div>
+        <div className="onboarding-story-dialogue">
+          {portraitPresentation.standard && (node.speakerName || character.name) && <h2 className="onboarding-story-speaker text-window-title">{node.speakerName || character.name}</h2>}
+          <div
+            className="onboarding-story-text-button"
+            role="button"
+            tabIndex={0}
+            aria-label={textLabels.textLabel}
+            onClick={handleTextClick}
+            onKeyDown={handleTextKeyDown}
+          >
+            <span>{displayText}</span>
+            {!typingComplete && <i aria-hidden="true" />}
+          </div>
 
-        <footer className="onboarding-story-actions">
-          {pendingWait && (
-            <div className="onboarding-story-pending" role="status" aria-live="polite">
-              <span>继续中...</span>
-              {previewControlsEnabled && (
-                <button className="secondary-action" type="button" onClick={finishPendingWait}>
-                  <Play size={18} aria-hidden="true" />
-                  <span>立即继续</span>
-                </button>
-              )}
-            </div>
-          )}
-          {!pendingWait && visibleOptions.length > 0 && (
-            <div className="onboarding-story-options">
-              {visibleOptions.map((option) => (
-                <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => scheduleOptionTransition(option)}>
-                  {["继续", "立即继续"].includes(option.label?.trim())
-                    ? <Play size={18} aria-hidden="true" />
-                    : <MessageCircle size={20} aria-hidden="true" />}
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {typingComplete && !hasOptions && !pendingWait && (
-            <button className="primary-action onboarding-story-single-action" type="button" onClick={() => moveTo(nextStoryNodeId(node))}>
-              {node.nextNodeId && <Play size={18} aria-hidden="true" />}
-              <span>{node.nextNodeId ? textLabels.continue : textLabels.finish}</span>
-            </button>
-          )}
-        </footer>
+          <footer className="onboarding-story-actions">
+            {pendingWait && (
+              <div className="onboarding-story-pending" role="status" aria-live="polite">
+                <span>继续中...</span>
+                {previewControlsEnabled && (
+                  <button className="secondary-action" type="button" onClick={finishPendingWait}>
+                    <Play size={18} aria-hidden="true" />
+                    <span>立即继续</span>
+                  </button>
+                )}
+              </div>
+            )}
+            {!pendingWait && visibleOptions.length > 0 && (
+              <div className="onboarding-story-options">
+                {visibleOptions.map((option) => (
+                  <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => scheduleOptionTransition(option)}>
+                    {["继续", "立即继续"].includes(option.label?.trim())
+                      ? <Play size={18} aria-hidden="true" />
+                      : <MessageCircle size={20} aria-hidden="true" />}
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {typingComplete && !hasOptions && !pendingWait && (
+              <button className="primary-action onboarding-story-single-action" type="button" onClick={() => moveTo(nextStoryNodeId(node))}>
+                {node.nextNodeId && <Play size={18} aria-hidden="true" />}
+                <span>{node.nextNodeId ? textLabels.continue : textLabels.finish}</span>
+              </button>
+            )}
+          </footer>
+        </div>
 
         {renderSkipConfirm()}
       </section>

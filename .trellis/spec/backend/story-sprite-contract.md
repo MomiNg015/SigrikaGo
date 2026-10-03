@@ -12,6 +12,7 @@ Use this contract when changing story appearance fields, standard illustration a
 - `applyAuthoredGuideExpressions(nodes, scriptKey) -> nodes`
 - `resolveStoryPortraitPresentation(node, { characters?, character?, user?, variant? }) -> { src, fallbackSrc, standard, appearanceId, expressionId, style }`
 - `storyAvatarUrls(nodes, { characters?, user?, fallbackCharacterIds? }) -> string[]`
+- `storyGuidePortraitUrls(nodes, { characters?, user?, fallbackCharacterIds?, variant? }) -> string[]` defaults to full illustrations; the avatar helper delegates with `variant: "avatar"`.
 - `node scripts/import-story-sprites.mjs --source-root <delivery-root>` writes registered assets and the manifest; input PNGs are read-only.
 - Existing StoryScript draft/published JSON and API payloads carry the two optional strings. No Prisma column, migration, seed overwrite or database rewrite is required.
 
@@ -35,7 +36,7 @@ Valid authored standard appearance fixes narrative clothing and does not inherit
 
 Full images are lossless transparent 832x1216 WebP at `/assets/characters/story-sprites/<id>/<expression>.webp`; avatars are separately cropped 256x256 transparent WebP with `-avatar` suffix. Same profile uses the same canvas and crop for every expression. The importer checks all source alpha and visible RGB pixels after full-image conversion. `manifest.json` records source hashes and crops.
 
-Story windows preload only story-window expressions, using the same resolver as display and four workers. Teaching bubbles and the home tour use avatar URLs, including actual stage NPC fallbacks and special/costume resolution. Keep global startup/default portrait loading and the 900x900 catalog separate.
+Story windows preload only story-window expressions, using the same resolver as display and four workers. Teaching bubbles and the home tour also display/preload full illustrations, including actual stage NPC fallbacks and special/costume resolution. Derived avatars remain available for future compact surfaces. Keep global startup/default portrait loading and the 900x900 catalog separate. Presentation geometry follows [Story Guide Layout](../frontend/story-guide-layout-contract.md).
 
 Editor changes to any role selector clear both presentation fields, including skill-role selectors. Excel v1 adds optional `立绘造型ID` and `表情ID` columns. Missing columns preserve absent fields; present empty cells explicitly opt out. Import still changes a browser-local draft only, and published data remains read-only until existing publish actions.
 
@@ -58,7 +59,7 @@ Do not throw for sprite metadata during JSON parsing: the existing catch would o
 - Good: `node-1` receives surprised, `node-2` closed smile, explaining rules serious; every original option and timing remains intact.
 - Base: an unchanged old database gets authored fields in the response without a write. Administrator explicitly selects original art to opt out.
 - Bad: a new story reuses `node-1` but has unrelated text; it must not get onboarding's surprised face.
-- Base: NPC with blank `characterId` uses the current stage NPC; preload its same resolved avatar/costume URL.
+- Base: NPC with blank `characterId` uses the current stage NPC; preload its same resolved illustration/costume URL.
 - Bad: changing a skill role leaves the previous role's appearance ID; clear both fields in the same patch.
 
 ## 6. Tests Required
@@ -77,6 +78,6 @@ Wrong: infer every face from text keywords at runtime or replace the published p
 
 Correct: author per-node presentation metadata against exact source text; apply a guarded sidecar to unchanged records and preserve the graph.
 
-Wrong: render the full transparent body with `object-fit: contain` in a 58px NPC avatar.
+Wrong: render the entire transparent body with `object-fit: contain` in a 58px NPC slot, or enlarge a derived avatar as protruding artwork.
 
-Correct: use the fixed 256px face/upper-chest asset; expression changes keep its framing stable.
+Correct: keep the original grid reservation and crop the full illustration inside an independent fixed bust frame; expression changes keep its framing stable.

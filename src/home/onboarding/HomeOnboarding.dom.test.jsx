@@ -16,6 +16,19 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 const character = { portrait: "/portrait.webp" };
 
 describe("home guide interaction boundary", () => {
+  it("keeps protruding artwork outside the measured scroll panel with the same position", () => {
+    const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />);
+    const panel = container.querySelector(".home-guide-panel");
+    const artwork = container.querySelector(".home-guide-portrait-layer");
+    expect(artwork.parentElement).toBe(panel.parentElement);
+    expect(artwork.style.top).toBe(panel.style.top);
+    expect(artwork.style.left).toBe(panel.style.left);
+    expect(artwork.style.width).toBe(panel.style.width);
+    expect(panel.querySelector("img")).toBeNull();
+    expect(panel.querySelector(".tutorial-npc-portrait-slot")).not.toBeNull();
+    expect(artwork.querySelector("img").src).toContain("sigrika/smile.webp");
+    expect(panel.style.top).toBe("66px");
+  });
   it("blocks unrelated and direct underlying actions, only activating the instructed target once", () => {
     const open = vi.fn();
     const purchase = vi.fn();

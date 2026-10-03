@@ -20,7 +20,7 @@ function SpriteReview() {
   const [battle, setBattle] = useState(query.get("battle") === "1" ? { script, startNodeId: script.startNodeId } : null);
   const [complete, setComplete] = useState(false);
   return <div className="app-shell player-theme-enabled theme-bright-school">
-    <div className="home-screen"><h1>星炬学院围棋部</h1></div>
+    {!battle && <div className="home-screen"><h1>星炬学院围棋部</h1></div>}
     {complete ? <p>引导已结束</p> : battle
       ? <TutorialBattleScreen session={battle} characters={CHARACTERS} user={user} audioSettings={{ muted: true }} siteSettings={{}} previewControlsEnabled onClose={() => setComplete(true)} onComplete={() => setComplete(true)} onExitToStory={(next) => { script.startNodeId = next.script.startNodeId; setBattle(null); }} />
       : <TutorialSessionModal script={script} characters={CHARACTERS} user={user} onEnterBattle={setBattle} onClose={() => setComplete(true)} typewriterDisabled={query.get("instant") === "1"} previewControlsEnabled />}

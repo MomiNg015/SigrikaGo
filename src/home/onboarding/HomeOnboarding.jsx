@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SkipForward } from "lucide-react";
-import NpcDialogue from "../../tutorial/NpcDialogue.jsx";
+import NpcDialogue, { NpcDialoguePortrait } from "../../tutorial/NpcDialogue.jsx";
 import { prefersReducedMotion } from "../../tutorial/TypewriterText.jsx";
 import { HOME_ONBOARDING_STEPS, HOME_ONBOARDING_WINDOWS } from "./homeOnboardingScript.js";
 import { resolveStoryPortraitPresentation } from "../../shared/characterStorySprites.js";
@@ -39,14 +39,14 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const dispatching = useRef(false);
   const targetRef = useRef(null);
   const step = HOME_ONBOARDING_STEPS[index];
-  const portrait = resolveStoryPortraitPresentation(step, { character, variant: "avatar" });
+  const portrait = resolveStoryPortraitPresentation(step, { character });
   const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
   const rect = geometry?.id === step.id ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
 
   useEffect(() => {
-    const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character, variant: "avatar" }).src).filter(Boolean))];
+    const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character }).src).filter(Boolean))];
     void preloadImageAssets(urls, { concurrency: 4 });
   }, [character]);
 
@@ -194,6 +194,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
   }
   const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth };
+  const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.color, speakerName: "西格莉卡" };
   const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
 
   return (
@@ -214,8 +215,11 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       {step.choice ? <div className="home-guide-choice-panel">
         <button type="button" className="home-guide-choice" onClick={() => { if (!saving && !error) setIndex((value) => value + 1); }} disabled={saving || Boolean(error)}>{step.choice}</button>
       </div> : <div ref={panelRef} style={panelStyle} className="home-guide-panel">
-          <NpcDialogue bubble={{ id: step.id, text, portrait: portrait.src, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.color, speakerName: "西格莉卡" }} revealAll={revealed} />
+        <NpcDialogue bubble={npcBubble} revealAll={revealed} portraitDetached={portrait.standard} />
         {!ready && <span className="home-guide-status" role="status">正在准备介绍的窗口…</span>}
+      </div>}
+      {!step.choice && portrait.standard && <div className="home-guide-portrait-layer" style={panelStyle} aria-hidden="true">
+        <NpcDialoguePortrait bubble={npcBubble} />
       </div>}
       {(error || saving) && <div className="home-guide-feedback">
         {error ? <><span role="alert">{error}</span><button type="button" onClick={() => finish(retryOutcome)} disabled={saving}>重试保存并领取邮件</button></>

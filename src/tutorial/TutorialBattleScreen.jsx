@@ -21,7 +21,7 @@ import { DesktopRoomLayout, MobileRoomLayout, useMobileRoomLayout } from "../roo
 import { roomGameInfoForPlayers } from "../room/roomState.js";
 import { COLORS, GAME_PHASES, cloneState, getPoint } from "../shared/game.js";
 import { findCharacter } from "../shared/characterDisplay.js";
-import { resolveStoryCharacter, resolveStoryPortraitPresentation, storyAvatarUrls } from "../shared/characterStorySprites.js";
+import { resolveStoryCharacter, resolveStoryPortraitPresentation, storyGuidePortraitUrls } from "../shared/characterStorySprites.js";
 import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { latestSkillPreview, resolveBackgroundMusic } from "../shared/musicLibrary.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
@@ -102,7 +102,7 @@ export default function TutorialBattleScreen({
   const activeNpcCharacterId = playerByUserId(players, NPC_ID)?.characterId || "denia";
   const tutorialPortraitUrls = useMemo(() => [...new Set([
     SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url,
-    ...storyAvatarUrls(script?.nodes ?? [], { characters, user, fallbackCharacterIds: [activeNpcCharacterId, ...(script?.nodes ?? []).filter((node) => node.type === TUTORIAL_NODE_TYPES.boardSetup).map((node) => node.npcCharacterId || node.characterId || "denia")] }),
+    ...storyGuidePortraitUrls(script?.nodes ?? [], { characters, user, fallbackCharacterIds: [activeNpcCharacterId, ...(script?.nodes ?? []).filter((node) => node.type === TUTORIAL_NODE_TYPES.boardSetup).map((node) => node.npcCharacterId || node.characterId || "denia")] }),
     ...(script?.nodes ?? [])
       .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
       .filter(Boolean)
@@ -287,13 +287,14 @@ export default function TutorialBattleScreen({
     }
     const characterId = node.characterId || playerByUserId(players, NPC_ID)?.characterId;
     const character = resolveStoryCharacter(characterId, characters);
-    const portrait = resolveStoryPortraitPresentation({ ...node, characterId }, { character, user, variant: "avatar" });
+    const portrait = resolveStoryPortraitPresentation({ ...node, characterId }, { character, user });
     bubbleSequenceRef.current += 1;
     const nextBubble = {
       id: `${node.id}-${bubbleSequenceRef.current}`,
       nodeId: node.id,
       characterId: character.id,
       portrait: portrait.src,
+      standardPortrait: portrait.standard,
       fallbackPortrait: portrait.fallbackSrc,
       appearanceId: portrait.appearanceId,
       expressionId: portrait.expressionId,

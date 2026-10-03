@@ -4,6 +4,23 @@ import { describe, expect, it, vi } from "vitest";
 import StoryPlayerModal from "./StoryPlayerModal.jsx";
 
 describe("StoryPlayerModal interactions", () => {
+  it("retries a previously failed expression after another expression without remounting the body", () => {
+    const sprite = { characterId: "sigrika", appearanceId: "sigrika-standard-v1", text: "原台词" };
+    const { container } = render(<StoryPlayerModal script={{ startNodeId: "a", nodes: [
+      { ...sprite, id: "a", expressionId: "smile", nextNodeId: "b" },
+      { ...sprite, id: "b", expressionId: "thinking", nextNodeId: "c" },
+      { ...sprite, id: "c", expressionId: "smile" }
+    ] }} characters={{ sigrika: { name: "西格莉卡", portrait: "/legacy.webp" } }} portraitNodes={[]} typewriterDisabled />);
+    const image = container.querySelector(".onboarding-story-portrait img");
+    fireEvent.error(image);
+    expect(image.getAttribute("data-story-fallback")).toBe("true");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(image.src).toContain("thinking.webp");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(container.querySelector(".onboarding-story-portrait img")).toBe(image);
+    expect(image.src).toContain("smile.webp");
+    expect(image.hasAttribute("data-story-fallback")).toBe(false);
+  });
   it("changes expressions without remounting the same body, then clears narration and falls back on image failure", () => {
     const { container, unmount } = render(<StoryPlayerModal script={{ startNodeId: "first", nodes: [
       { id: "first", characterId: "sigrika", appearanceId: "sigrika-standard-v1", expressionId: "surprised", text: "原来的第一句", nextNodeId: "second" },

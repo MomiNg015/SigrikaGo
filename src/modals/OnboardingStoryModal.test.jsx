@@ -127,7 +127,7 @@ describe("OnboardingStoryModal", () => {
 
     expect(optionBlock).toContain("background: #e4f8dc");
     expect(optionActiveBlock).toContain("background: #ffd6e7");
-    expect(brightOptionBlock).toContain("background: #e4f8dc !important");
+    expect(brightOptionBlock).toContain("background: var(--story-option-background, #e4f8dc) !important");
     expect(brightOptionActiveBlock).toContain("background: #ffd6e7 !important");
   });
 });

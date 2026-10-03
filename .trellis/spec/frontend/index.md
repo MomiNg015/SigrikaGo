@@ -24,6 +24,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
 | [Costume System Contract](../backend/costume-system-contract.md) | Shared backend/frontend catalog, shop, wardrobe, portrait, and snapshot contract | Filled |
 | [Recruitment Cinematic](./recruitment-cinematic-contract.md) | Aemeath payload, timing, interruption recovery, sprite assets, and CSS ownership | Filled |
+| [Story Guide Layout](./story-guide-layout-contract.md) | Fixed story crop, layered paper, original NPC geometry and home measurement | Filled |
 | [Type Safety](./type-safety.md) | Type patterns, validation | To fill |
 
 ---

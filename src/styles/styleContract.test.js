@@ -1528,7 +1528,8 @@ describe("root CSS entry contract", () => {
       "./tutorial-battle-screen/actions-targets.css",
       "./tutorial-battle-screen/target-ring.css",
       "./tutorial-battle-screen/no-character-portraits.css",
-      "./tutorial-battle-screen/loading-motion.css"
+      "./tutorial-battle-screen/loading-motion.css",
+      "./tutorial-battle-screen/npc-sprite.css"
     ]);
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");

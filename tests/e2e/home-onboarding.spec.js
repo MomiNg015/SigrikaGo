@@ -41,6 +41,12 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         return Math.max(Math.abs(highlight.y - Math.max(6, actual.y - 5)), Math.abs(highlight.x - Math.max(6, actual.x - 5)));
       }, step.target), { message: `${step.id} tracks its actual target` }).toBeLessThan(2);
       const panel = await page.locator(".home-guide-panel").boundingBox();
+      const portrait = page.locator(".home-guide-portrait-layer .tutorial-npc-portrait-frame");
+      const portraitBox = await portrait.boundingBox();
+      expect(portraitBox.y).toBeLessThan(panel.y);
+      expect(portraitBox.y).toBeGreaterThanOrEqual(0);
+      await expect(page.locator(".home-guide-panel img")).toHaveCount(0);
+      await expect(page.locator(".home-guide-panel .tutorial-npc-portrait-slot")).toHaveCSS("width", viewport.width > 900 ? "68px" : "58px");
       expect(panel.x).toBeGreaterThanOrEqual(0);
       expect(panel.x + panel.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(panel.y + panel.height).toBeLessThanOrEqual(viewport.height + 1);
@@ -51,6 +57,10 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         return Math.min(Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y),
           Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
       }, { message: `${step.id} spotlight overlaps dialogue` }).toBeLessThanOrEqual(1);
+      if (target && step.target) expect(Math.min(
+        Math.min(target.y + target.height, portraitBox.y + portraitBox.height) - Math.max(target.y, portraitBox.y),
+        Math.min(target.x + target.width, portraitBox.x + portraitBox.width) - Math.max(target.x, portraitBox.x)
+      ), `${step.id} portrait clears the target`).toBeLessThanOrEqual(1);
       if (step.surface) {
         const windowRect = await page.locator(step.surface).first().boundingBox();
         await page.locator(".home-onboarding").evaluate(el => { el.style.visibility = "hidden"; });

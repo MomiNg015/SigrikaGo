@@ -232,7 +232,8 @@ describe("TutorialBattleScreen runtime integration", () => {
 
     expect(source).toContain("setNpcBubble(nextBubble)");
     expect(source).toContain("portrait: portrait.src");
-    expect(readFileSync(new URL("./NpcDialogue.jsx", import.meta.url), "utf8")).toContain("bubble.portrait && <img src={bubble.portrait}");
+    expect(source).toContain("standardPortrait: portrait.standard");
+    expect(source).toContain("storyGuidePortraitUrls(script?.nodes");
     expect(source).not.toContain("setNpcBubble((latest) => latest?.id === current.id ? nextBubble : latest)");
     expect(source).toContain("preloadImageAssets(tutorialPortraitUrls, { concurrency: 4 })");
   });

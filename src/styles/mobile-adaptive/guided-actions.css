@@ -5,7 +5,7 @@
 }
 
 /* Reply-paper controls: geometry stays stable while only enabled edges shimmer. */
-:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button {
+:is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions:not(.standard-story-sprite *), .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button {
   & {
     position: relative;
     display: flex !important;
@@ -104,19 +104,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"])::before {
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions:not(.standard-story-sprite *), .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"])::before {
     animation: none;
   }
-  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]),
-  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):hover,
-  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions, .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):active {
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions:not(.standard-story-sprite *), .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]),
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions:not(.standard-story-sprite *), .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):hover,
+  :is(.app-shell.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(.onboarding-story-actions:not(.standard-story-sprite *), .tutorial-action-bar, .tutorial-battle-actions, #mobile-room-panel-actions .tutorial-action-bar) button:not(:disabled):not([aria-disabled="true"]):active {
     transition: none !important;
     transform: none !important;
   }
 }
 
 /* Equal desktop tracks; full-width portrait replies with natural text height. */
-.app-shell :is(.onboarding-story-options, .tutorial-choice-actions, #mobile-room-panel-actions .tutorial-choice-actions) {
+.app-shell :is(.onboarding-story-options:not(.standard-story-sprite *), .tutorial-choice-actions, #mobile-room-panel-actions .tutorial-choice-actions) {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)) !important;
   grid-auto-rows: 1fr;

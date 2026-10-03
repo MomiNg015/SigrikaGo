@@ -136,15 +136,15 @@
   display: block !important;
   align-items: initial !important;
   justify-content: initial !important;
-  padding: clamp(22px, 3vw, 32px) !important;
-  background:
+  padding: var(--story-text-padding, clamp(22px, 3vw, 32px)) !important;
+  background: var(--story-text-background,
     linear-gradient(rgba(134, 227, 206, 0.16) 1px, transparent 1px),
-    linear-gradient(180deg, #fffdf7 0%, #fff8ed 100%) !important;
+    linear-gradient(180deg, #fffdf7 0%, #fff8ed 100%)) !important;
   background-size: 100% 38px, auto !important;
-  border: 3px solid #4a3736 !important;
-  border-radius: 8px !important;
+  border: var(--story-text-border, 3px solid #4a3736) !important;
+  border-radius: var(--story-text-radius, 8px) !important;
   color: #3d2b25 !important;
-  box-shadow: 4px 4px 0 rgba(74, 55, 54, 0.18) !important;
+  box-shadow: var(--story-text-shadow, 4px 4px 0 rgba(74, 55, 54, 0.18)) !important;
   transform: none !important;
   appearance: none !important;
   -webkit-appearance: none !important;

@@ -90,6 +90,9 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.standard-story-sprite {
-    grid-template-rows: minmax(140px, 40fr) minmax(96px, 60fr) auto !important;
+    display: block !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    overflow: clip !important;
   }
 }

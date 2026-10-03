@@ -50,8 +50,12 @@ export function storySpriteUrl(characterId, expressionId = "smile", variant = "i
 }
 
 export function storyAvatarUrls(nodes = [], { characters = {}, user = null, fallbackCharacterIds = [] } = {}) {
+  return storyGuidePortraitUrls(nodes, { characters, user, fallbackCharacterIds, variant: "avatar" });
+}
+
+export function storyGuidePortraitUrls(nodes = [], { characters = {}, user = null, fallbackCharacterIds = [], variant = "illustration" } = {}) {
   return [...new Set(nodes.flatMap((node) => (node.characterId ? [node.characterId] : fallbackCharacterIds)
-    .map((characterId) => resolveStoryPortraitPresentation({ ...node, characterId }, { characters, user, variant: "avatar" }).src)).filter(Boolean))];
+    .map((characterId) => resolveStoryPortraitPresentation({ ...node, characterId }, { characters, user, variant }).src)).filter(Boolean))];
 }
 
 export function resolveStoryCharacter(characterId, characters = {}) {

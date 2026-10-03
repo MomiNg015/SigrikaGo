@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { ADMIN_DEFAULT_CONFIG } from "../../server/adminDefaultSnapshot.js";
 import { toAdminStoryScriptPayload, toPlayerStoryScriptPayload, validateStoryContent, interpolateStoryScript } from "../../server/storyScripts.js";
 import { applyAuthoredGuideExpressions } from "./authoredGuideExpressions.js";
-import { CHARACTER_STORY_SPRITES, resolveStoryPortraitPresentation, storySpriteUrl, storyAvatarUrls } from "./characterStorySprites.js";
+import { CHARACTER_STORY_SPRITES, resolveStoryPortraitPresentation, storySpriteUrl, storyAvatarUrls, storyGuidePortraitUrls } from "./characterStorySprites.js";
 import { HOME_ONBOARDING_STEPS } from "../home/onboarding/homeOnboardingScript.js";
 import { storyPortraitUrls } from "../modals/StoryPlayerModal.jsx";
 
@@ -58,6 +58,8 @@ describe("authored guide sprite integration", () => {
     expect(resolveStoryPortraitPresentation(node, { user: costumeUser }).src).toBe(full.src);
     expect(storyAvatarUrls([{ id: "implicit-npc", characterId: "" }], { user: costumeUser, fallbackCharacterIds: ["denia"] })).toEqual(["/costume.webp"]);
     expect(storyAvatarUrls([node])).toEqual([storySpriteUrl("denia", "playful", "avatar")]);
+    expect(storyGuidePortraitUrls([node, node, { ...node, characterId: "" }], { fallbackCharacterIds: ["denia"] })).toEqual([full.src]);
+    expect(storyGuidePortraitUrls([{ id: "implicit-npc", characterId: "" }], { user: costumeUser, fallbackCharacterIds: ["denia"] })).toEqual(["/costume.webp"]);
     expect(storyPortraitUrls([node, node, { ...node, expressionId: "thinking" }, {}])).toEqual([storySpriteUrl("denia", "playful"), storySpriteUrl("denia", "thinking")]);
   });
 
