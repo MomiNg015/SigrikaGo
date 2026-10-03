@@ -1448,3 +1448,36 @@ Captured desktop/mobile waiting states and existing project reference samples; a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 165: Selected loading composition and downward Tip flow
+
+**Date**: 2026-10-03
+**Task**: Selected loading composition and downward Tip flow
+**Branch**: `master`
+
+### Summary
+
+Implemented user-selected concept 3 in desktop and phone samples. Preserved approved character pixels and 1600ms blink, generated coordinated cloud/circle/bulb assets, derived matching bulb mask, and exported a real teaching board. Verified exact illustration bounds across short/44-character/340-character tips at four viewports, exclusive cloud frames, no circle/sprite overlap, bulb-axis fill, 2-second completion and reset, local image selection and 390x844 wrapper. Full and focused source/render design QA passed; docs and contract updated. Reduced-motion contract retained and source-reviewed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `534f5e65` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
