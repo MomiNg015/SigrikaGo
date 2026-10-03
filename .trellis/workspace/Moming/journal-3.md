@@ -1150,3 +1150,37 @@ Renamed the first character package to Sigrika / 西格莉卡, including nine de
 ### Next Steps
 
 - None - task complete
+
+
+## Session 156: master consolidation and standard sprite handoff
+
+**Date**: 2026-10-03
+**Task**: master consolidation and standard sprite handoff
+**Branch**: `master`
+
+### Summary
+
+Committed internal release hardening and handoff on master; merged historical IRIS records while preserving the advanced production implementation. Full gate 403 files/2868 tests and post-merge 7 files/149 tests passed. Handoff records multi-expression standard sprites replacing Q-version art and scene-by-scene layout refinement. Local temporary artifacts excluded; no push or deployment.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e71e4a76` | (see git log) |
+| `484f566a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
