@@ -13,6 +13,8 @@ import { api } from "../api/client.js";
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
 vi.mock("../audio/playback.jsx", () => ({ playEffectSound: vi.fn() }));
 vi.mock("../audio/systemVoicePlayback.js", () => ({ playSystemVoice: vi.fn() }));
+import { playEffectSound } from "../audio/playback.jsx";
+import { VICTORY_SOUND } from "../shared/musicLibrary.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
@@ -21,7 +23,7 @@ const room = {
   matchSource: "practice", rated: false,
   practice: { challenge: CAPTURE_CHALLENGE_MODE, humanColor: "black", result: { captures: 23, rank: 2, breakthrough: true } },
   players: [{ color: "black", characterId: "sigrika", user }],
-  game: { phase: "finished", winner: { reason: "capture-challenge", text: captureChallengeResultText(23, 2) } }
+  game: { phase: "finished", moveNumber: 100, winner: { reason: "capture-challenge", text: captureChallengeResultText(23, 2) } }
 };
 
 describe("capture challenge player flow", () => {
@@ -54,13 +56,14 @@ describe("capture challenge player flow", () => {
     expect(screen.getByText("纪录角色")).toBeTruthy();
   });
 
-  it("shows the exact result and breakthrough without a draw voice or label", () => {
+  it("celebrates the authoritative completed challenge with both victory audio channels", () => {
     render(<ResultModal room={room} user={user} characters={CHARACTERS} onClose={vi.fn()} />);
     expect(screen.getByText("挑战完成")).toBeTruthy();
     expect(screen.getByText("你这次提了23个子，位列总排名中的第2位，可喜可贺！")).toBeTruthy();
     expect(screen.getByRole("status").textContent).toBe("突破个人最高排名！");
     expect(screen.queryByText("平局")).toBeNull();
-    expect(playSystemVoice).not.toHaveBeenCalled();
+    expect(playEffectSound).toHaveBeenCalledWith(VICTORY_SOUND, undefined);
+    expect(playSystemVoice).toHaveBeenCalledWith("result-victory", expect.objectContaining({ character: expect.objectContaining({ id: "sigrika" }) }));
   });
 
   it("omits breakthrough and clearly marks an early finish", () => {
@@ -69,6 +72,57 @@ describe("capture challenge player flow", () => {
     expect(screen.getByText("挑战未完成")).toBeTruthy();
     expect(screen.getByText("本次挑战未满100手，成绩不计入排行榜。")).toBeTruthy();
     expect(screen.queryByText("突破个人最高排名！")).toBeNull();
+    expect(playEffectSound).not.toHaveBeenCalled();
+    expect(playSystemVoice).not.toHaveBeenCalled();
+  });
+
+  it("celebrates zero captures without a breakthrough even when the ordinary winner is the opponent", () => {
+    const completedItemEffects = { lynaeContraryVoice: true };
+    const completed = {
+      ...room,
+      practice: { ...room.practice, result: { captures: 0, rank: 42, breakthrough: false } },
+      players: [{ ...room.players[0], completedItemEffects }],
+      game: { ...room.game, winner: { ...room.game.winner, winnerColor: "white", text: captureChallengeResultText(0, 42) } }
+    };
+    render(<ResultModal room={completed} user={user} characters={CHARACTERS} onClose={vi.fn()} />);
+    expect(screen.getByText(captureChallengeResultText(0, 42))).toBeTruthy();
+    expect(screen.queryByText("突破个人最高排名！")).toBeNull();
+    expect(playEffectSound).toHaveBeenCalledWith(VICTORY_SOUND, undefined);
+    expect(playSystemVoice).toHaveBeenCalledWith("result-victory", expect.objectContaining({
+      character: expect.objectContaining({ id: "sigrika", itemEffects: completedItemEffects })
+    }));
+  });
+
+  it("waits for settlement, preserves settings, and plays each channel once across updates", () => {
+    const audioSettings = { effectVolume: 0.5, voiceVolume: 0.3 };
+    const pending = { ...room, practice: { ...room.practice, result: null } };
+    const props = { user, characters: CHARACTERS, audioSettings, onClose: vi.fn() };
+    const { rerender } = render(<ResultModal {...props} room={pending} />);
+    expect(playEffectSound).not.toHaveBeenCalled();
+    expect(playSystemVoice).not.toHaveBeenCalled();
+    rerender(<ResultModal {...props} room={room} />);
+    rerender(<ResultModal {...props} room={{ ...room }} audioSettings={{ ...audioSettings }} />);
+    expect(playEffectSound).toHaveBeenCalledTimes(1);
+    expect(playEffectSound).toHaveBeenCalledWith(VICTORY_SOUND, audioSettings);
+    expect(playSystemVoice).toHaveBeenCalledTimes(1);
+    expect(playSystemVoice).toHaveBeenCalledWith("result-victory", expect.objectContaining({ audioSettings }));
+  });
+
+  it.each([
+    { ...room.game, moveNumber: 99 },
+    { ...room.game, phase: "playing" },
+    { ...room.game, winner: { reason: "resign", winnerColor: "black" } },
+    { ...room.game, winner: { ...room.game.winner, invalid: true } }
+  ])("keeps incomplete or invalid challenges silent even with stale result data", (game) => {
+    render(<ResultModal room={{ ...room, game }} user={user} characters={CHARACTERS} onClose={vi.fn()} />);
+    expect(playEffectSound).not.toHaveBeenCalled();
+    expect(playSystemVoice).not.toHaveBeenCalled();
+  });
+
+  it("keeps completed challenges silent for spectators", () => {
+    render(<ResultModal room={room} user={{ id: "spectator" }} characters={CHARACTERS} onClose={vi.fn()} />);
+    expect(playEffectSound).not.toHaveBeenCalled();
+    expect(playSystemVoice).not.toHaveBeenCalled();
   });
 
   it("shows challenge rules instead of the ordinary 22-capture victory rule", () => {

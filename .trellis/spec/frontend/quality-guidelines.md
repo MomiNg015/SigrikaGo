@@ -2248,3 +2248,11 @@ Correct portal styling:
 ```jsx
 <section className="chat-box chat-popover sigrika-duel-system-log" />
 ```
+
+### Capture Challenge Completion Audio Contract
+
+- `isCompletedCaptureChallenge(room)` requires a capture challenge, `game.phase="finished"`, exactly 100 moves, `winner.reason="capture-challenge"`, no invalid result, and an authoritative `practice.result`.
+- `resultVoiceEventForRoom` and `resolveResultSound` return victory for a participating user when that predicate is true, regardless of score, rank, breakthrough, or the ordinary winner color. Incomplete challenges and spectators receive neither result channel.
+- `ResultModal` must not suppress all challenge audio. Its existing per-channel refs prevent duplicate playback as room snapshots and settings update; waiting for settlement must not consume either ref.
+- Pass the existing character/item-effect projection and audio settings unchanged into playback. Do not change scoring, result text, or reward policy to simulate a win.
+- Required DOM regressions: both channels on completion; pending settlement transitioning to a saved result; once-only playback across rerenders; settings propagation; incomplete/invalid/stale-result and spectator silence.

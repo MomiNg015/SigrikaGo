@@ -1,3 +1,4 @@
+import { isCaptureChallenge, isCompletedCaptureChallenge } from "./captureChallenge.js";
 import { SYSTEM_VOICE_EVENTS, SYSTEM_VOICE_MODE_EVENTS, SYSTEM_VOICE_SKILL_EVENTS, resolveVoiceSource } from "./systemVoices.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
@@ -604,9 +605,10 @@ export function latestSkillPreview(room) {
 
 export function resolveResultSound(room, user) {
   const winnerColor = room?.game?.winner?.winnerColor ?? room?.game?.winner?.color;
-  if (!winnerColor) return null;
   const player = (room?.players ?? []).find((candidate) => candidate.user?.id === user?.id);
   if (!player) return null;
+  if (isCaptureChallenge(room)) return isCompletedCaptureChallenge(room) ? VICTORY_SOUND : null;
+  if (!winnerColor) return null;
   return player.color === winnerColor ? VICTORY_SOUND : DEFEAT_SOUND;
 }
 

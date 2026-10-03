@@ -56,7 +56,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const playedResultVoiceRef = useRef(false);
 
   useEffect(() => {
-    if (playedResultSoundRef.current || isChallenge) return;
+    if (playedResultSoundRef.current) return;
     const sound = resolveResultSound(room, user);
     if (!sound) return;
     playedResultSoundRef.current = true;
@@ -64,7 +64,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   }, [room, user, audioSettings, isChallenge]);
 
   useEffect(() => {
-    if (playedResultVoiceRef.current || isChallenge) return;
+    if (playedResultVoiceRef.current) return;
     const event = resultVoiceEventForRoom(room, user);
     if (!event) return;
     playedResultVoiceRef.current = true;

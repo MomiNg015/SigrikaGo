@@ -1,3 +1,4 @@
+import { isCaptureChallenge, isCompletedCaptureChallenge } from "../../shared/captureChallenge.js";
 import { COLORS } from "../../shared/game.js";
 import { resultRewardDelta } from "../../shared/resultRewards.js";
 import { SYSTEM_VOICE_EVENTS } from "../../shared/systemVoices.js";
@@ -51,6 +52,7 @@ export function resultVoiceEventForRoom(room, user) {
   if (room.game.winner?.invalid) return null;
   const currentPlayer = resultPlayerForRoom(room, user);
   if (!currentPlayer) return null;
+  if (isCaptureChallenge(room)) return isCompletedCaptureChallenge(room) ? SYSTEM_VOICE_EVENTS.resultVictory : null;
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   if (!winnerColor) return SYSTEM_VOICE_EVENTS.resultDraw;
   return currentPlayer.color === winnerColor ? SYSTEM_VOICE_EVENTS.resultVictory : SYSTEM_VOICE_EVENTS.resultDefeat;
