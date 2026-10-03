@@ -19,13 +19,15 @@
   const cloudElements = [...document.querySelectorAll('.thought-cloud, .thought-link')];
 
   function floatCloud(element,index) {
-    const range = index===0 ? 5 : 2;
-    const point = () => `${(Math.random()-.5)*range*2}px ${(Math.random()-.5)*range*1.4}px`;
+    const large = index===0;
+    const point = (direction) => `${direction*(large ? 8+Math.random()*6 : 2+Math.random()*2)}px ${(Math.random()-.5)*(large ? 18 : 5)}px`;
+    const previous = cloudAnimations.get(element);
     const motion = element.animate([
-      {translate:'0px 0px'}, {translate:point()},
-      {translate:point()}, {translate:'0px 0px'}
-    ],{duration:6000+Math.random()*3000,easing:'ease-in-out',fill:'both'});
+      {translate:'0px 0px'}, {translate:point(1)},
+      {translate:point(-1)}, {translate:point(1)}, {translate:'0px 0px'}
+    ],{duration:4200+Math.random()*1800,easing:'ease-in-out',fill:'both'});
     cloudAnimations.set(element,motion);
+    if (previous) previous.cancel();
     motion.onfinish = () => {
       if (progress<100) floatCloud(element,index);
     };
@@ -52,10 +54,10 @@
   function setProgress(value) {
     const number = Number(value);
     const next = Number.isFinite(number) ? Math.max(0,Math.min(100,number)) : 0;
-    const threshold = 100 - 2*next;
-    fill.setAttribute('points',threshold>=0
-      ? `0,${threshold} ${100-threshold},100 0,100`
-      : `0,0 ${-threshold},0 100,${100+threshold} 100,100 0,100`);
+    // Rise from the glass neck to its crown in the rotated bulb's own coordinates.
+    const chamber = window.SigrikaBulbChamber;
+    const threshold = chamber.bottom-(chamber.bottom-chamber.top)*next/100;
+    fill.setAttribute('points',`0,${threshold} 100,${threshold} 100,100 0,100`);
     bulb.setAttribute('aria-valuenow',String(Math.round(next)));
     output.value = `${Math.round(next)}%`;
     slider.value = String(Math.round(next));
@@ -86,7 +88,7 @@
     const started=performance.now();
     function step(now) {
       const elapsed=(now-started)/12000;
-      // Linear data progress keeps the diagonal fill direction obvious.
+      // Linear data progress makes the bulb-axis rise easy to inspect.
       setProgress(Math.min(100,elapsed*100));
       if (progress<100) animation=window.requestAnimationFrame(step);
     }

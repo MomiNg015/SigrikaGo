@@ -1,0 +1,119 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "stages": [
+      {
+        "percent": 0,
+        "fillY": 75
+      },
+      {
+        "percent": 10,
+        "fillY": 68.34254455566406
+      },
+      {
+        "percent": 50,
+        "fillY": 41.71270751953125
+      },
+      {
+        "percent": 90,
+        "fillY": 15.082873344421387
+      },
+      {
+        "percent": 100,
+        "fillY": 8.425414085388184
+      }
+    ],
+    "cloudHorizontalRange": [
+      -8.43891,
+      10.7866
+    ],
+    "cloudDuration": 5575.555214978751,
+    "connectorEnvelopeOverlap": [
+      0,
+      0,
+      0
+    ],
+    "rayWidthRatio": 0.37992154276680107
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "stages": [
+      {
+        "percent": 0,
+        "fillY": 75
+      },
+      {
+        "percent": 10,
+        "fillY": 68.34254455566406
+      },
+      {
+        "percent": 50,
+        "fillY": 41.71270751953125
+      },
+      {
+        "percent": 90,
+        "fillY": 15.082873344421387
+      },
+      {
+        "percent": 100,
+        "fillY": 8.425414085388184
+      }
+    ],
+    "cloudHorizontalRange": [
+      -11.8469,
+      9.39738
+    ],
+    "cloudDuration": 4468.673959075985,
+    "connectorEnvelopeOverlap": [
+      0,
+      0,
+      0
+    ],
+    "rayWidthRatio": 0.37995911203687627
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "stages": [
+      {
+        "percent": 0,
+        "fillY": 75
+      },
+      {
+        "percent": 10,
+        "fillY": 68.34254455566406
+      },
+      {
+        "percent": 50,
+        "fillY": 41.71270751953125
+      },
+      {
+        "percent": 90,
+        "fillY": 15.082873344421387
+      },
+      {
+        "percent": 100,
+        "fillY": 8.425414085388184
+      }
+    ],
+    "cloudHorizontalRange": [
+      -13.6003,
+      13.7157
+    ],
+    "cloudDuration": 4644.253685759456,
+    "connectorEnvelopeOverlap": [
+      0,
+      0,
+      0
+    ],
+    "rayWidthRatio": 0.3798706021251476
+  }
+]

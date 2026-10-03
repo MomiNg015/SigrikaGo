@@ -18,6 +18,10 @@ assert not chamber[-1,bulb.width//2]
 mask = np.full((bulb.height,bulb.width,4),255,dtype='uint8')
 mask[:,:,3] = np.where(chamber,255,0).astype('uint8')
 Image.fromarray(mask).save(here/'assets/bulb-interior.png')
+rows = np.nonzero(chamber)[0]
+geometry = {'top': int(rows.min())/bulb.height*100,
+            'bottom': (int(rows.max())+1)/bulb.height*100}
+(here/'bulb-geometry.js').write_text('window.SigrikaBulbChamber = '+json.dumps(geometry)+';\n',encoding='utf-8')
 source = (project/'src/shared/siteSettings.js').read_text(encoding='utf-8')
 match = re.search(r'preloadTips:\s*("(?:[^"\\]|\\.)*")',source)
 tips = json.loads(match.group(1)).splitlines()

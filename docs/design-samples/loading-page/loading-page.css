@@ -19,8 +19,8 @@ button,input,summary{font:inherit}
 .bulb-outline{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:2}
 .bulb-fill-mask{position:absolute;inset:0;mask:url('./assets/bulb-interior.png') center/100% 100% no-repeat;-webkit-mask:url('./assets/bulb-interior.png') center/100% 100% no-repeat}
 .bulb-fill{position:absolute;inset:0;width:100%;height:100%}
-.bulb-rays{position:absolute;width:25%;height:auto;opacity:0;visibility:hidden;pointer-events:none;z-index:3}
-.bulb-rays-top{left:36%;top:-23%;transform:rotate(275deg)}
+.bulb-rays{position:absolute;width:38%;height:auto;opacity:0;visibility:hidden;pointer-events:none;z-index:3}
+.bulb-rays-top{left:30%;top:-17%;transform:rotate(275deg)}
 .is-complete .bulb-rays{opacity:1;visibility:visible}
 .loading-tip{margin:18px 0 0;width:min(760px,95%);font-size:clamp(16px,1.35vw,20px);line-height:1.75;text-align:center;overflow-wrap:anywhere;min-height:2em;color:#5a4740}
 .preview-tools{position:fixed;z-index:20;bottom:16px;left:18px;max-width:calc(100vw - 36px);color:#6a554d;font-family:"Microsoft YaHei",sans-serif;font-size:13px}
