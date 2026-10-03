@@ -20,6 +20,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [State Management](./state-management.md) | Local state, global state, server state | Partially filled |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
 | [CSS Architecture](./css-architecture.md) | Stylesheet layer order, theme contracts, Tailwind route | Filled |
+| [Thinking Loading Art Prototype](./loading-art-prototype.md) | Transparent bulb masks, diagonal fill, static completion and sample boundaries | Filled |
 | [Button Colors](./button-colors.md) | Ordinary player action colors and protected visual boundaries | Filled |
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
 | [Costume System Contract](../backend/costume-system-contract.md) | Shared backend/frontend catalog, shop, wardrobe, portrait, and snapshot contract | Filled |
