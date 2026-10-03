@@ -1514,3 +1514,36 @@ Used built-in imagegen to edit the circular connector raster; selected 60px norm
 ### Next Steps
 
 - None - task complete
+
+
+## Session 167: User puzzle image and bulb percentage
+
+**Date**: 2026-10-03
+**Task**: User puzzle image and bulb percentage
+**Branch**: `master`
+
+### Summary
+
+Copied supplied 276x261 puzzle PNG byte-for-byte and displayed it intact inside a reduced padded cloud slot. Added upright counter-rotated 0-100% bulb text synchronized with accessible progress, with font scaling and a 46px minimum bulb width for compact readability. Verified all digit widths and both cloud-frame clearances against raster alpha/ink at four viewports, Tip-stable geometry, zero sprite overlap and no overflow. Passed lint and syntax checks. Refreshed mobile waiting/completion and desktop captures, combined visual QA, system design and loading-art contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f9ff805e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
