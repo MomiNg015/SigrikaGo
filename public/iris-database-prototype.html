@@ -590,10 +590,16 @@
         overflow: hidden;
         border-right: 3px solid #273f43;
         background:
-          repeating-linear-gradient(
-            0deg,
-            rgba(105, 226, 242, 0.06) 0 1px,
-            transparent 1px 5px
+          linear-gradient(
+            90deg,
+            transparent 49.8%,
+            rgba(105, 226, 242, 0.08) 50%,
+            transparent 50.2%
+          ),
+          linear-gradient(
+            transparent 49.8%,
+            rgba(105, 226, 242, 0.08) 50%,
+            transparent 50.2%
           ),
           #061b35;
       }
@@ -612,13 +618,26 @@
         opacity: 0.44;
       }
 
-      .iris-portrait {
+      .iris-portrait-slot {
         position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center 20%;
+        inset: 12% 9% 29%;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(121, 229, 244, 0.22);
+        border-radius: 12px;
+        color: rgba(197, 244, 250, 0.48);
+        font-size: clamp(9px, 0.82vw, 12px);
+        font-weight: 800;
+        line-height: 1.65;
+        letter-spacing: 0.08em;
+        text-align: center;
+      }
+
+      .iris-portrait-slot small {
+        display: block;
+        color: rgba(121, 229, 244, 0.36);
+        font-size: 0.72em;
+        letter-spacing: 0.14em;
       }
 
       .iris-id {
@@ -986,8 +1005,10 @@
         border-bottom: 3px solid #273f43;
       }
 
-      .viewport-shell.mobile .iris-portrait {
-        object-position: center 18%;
+      .viewport-shell.mobile .iris-portrait-slot {
+        inset: 11% 8% 31%;
+        border-radius: 9px;
+        font-size: 8px;
       }
 
       .viewport-shell.mobile .iris-id {
@@ -1165,7 +1186,7 @@
         </div>
         <p class="heading-note">
           Q 版半身从<strong>视口右侧中段</strong>探出，不占据主菜单编队；
-          点击后由正常比例 IRIS 进入资料窗口。下方两个画框分别模拟桌面与竖屏手机视口。
+          点击后打开预留人物立绘槽的资料窗口。下方两个画框分别模拟桌面与竖屏手机视口。
         </p>
       </header>
 
@@ -1240,11 +1261,7 @@
             aria-haspopup="dialog"
             aria-expanded="false"
           >
-            <img
-              class="iris-chibi"
-              src="/assets/iris-database/iris-edge-chibi-v1.png"
-              alt=""
-            />
+            <span class="iris-chibi" aria-hidden="true"></span>
             <span class="iris-entry-pulse" aria-hidden="true"></span>
             <span class="iris-entry-label"
               >IRIS 数据库<small>ARCHIVE ONLINE</small></span
@@ -1256,11 +1273,7 @@
             <section class="iris-window" role="dialog" aria-modal="true" aria-label="IRIS 数据库">
               <button class="iris-close" type="button" aria-label="关闭">×</button>
               <div class="iris-portrait-panel">
-                <img
-                  class="iris-portrait"
-                  src="/assets/iris-database/iris-modal-portrait-v1.png"
-                  alt="IRIS 正常比例概念立绘"
-                />
+                <div class="iris-portrait-slot" aria-label="IRIS 人物立绘预留区域"></div>
                 <div class="iris-id">
                   <strong>I.R.I.S.</strong>
                   Intelligent Retrieval &amp; Indexing System
@@ -1277,7 +1290,7 @@
                 <ul class="link-list">
                   <li>
                     <a class="go-link" href="https://www.weiqi.org.cn/" target="_blank" rel="noreferrer">
-                      <span class="go-link-index">01</span>
+                      <span class="go-link-index" aria-hidden="true">●</span>
                       <span class="go-link-copy">
                         <strong>中国围棋协会</strong>
                         <small>赛事资讯 · 行业动态 · weiqi.org.cn</small>
@@ -1287,7 +1300,7 @@
                   </li>
                   <li>
                     <a class="go-link" href="https://online-go.com/" target="_blank" rel="noreferrer">
-                      <span class="go-link-index">02</span>
+                      <span class="go-link-index" aria-hidden="true">○</span>
                       <span class="go-link-copy">
                         <strong>Online Go Server</strong>
                         <small>线上对弈 · 棋局复盘 · online-go.com</small>
@@ -1297,7 +1310,7 @@
                   </li>
                   <li>
                     <a class="go-link" href="https://senseis.xmp.net/" target="_blank" rel="noreferrer">
-                      <span class="go-link-index">03</span>
+                      <span class="go-link-index" aria-hidden="true">●</span>
                       <span class="go-link-copy">
                         <strong>Sensei’s Library</strong>
                         <small>围棋术语与知识 Wiki · senseis.xmp.net</small>
@@ -1382,11 +1395,7 @@
               aria-haspopup="dialog"
               aria-expanded="false"
             >
-              <img
-                class="iris-chibi"
-                src="/assets/iris-database/iris-edge-chibi-v1.png"
-                alt=""
-              />
+              <span class="iris-chibi" aria-hidden="true"></span>
               <span class="iris-entry-pulse" aria-hidden="true"></span>
               <span class="iris-entry-label"
                 >IRIS 数据库<small>ARCHIVE ONLINE</small></span
@@ -1398,11 +1407,7 @@
               <section class="iris-window" role="dialog" aria-modal="true" aria-label="IRIS 数据库">
                 <button class="iris-close" type="button" aria-label="关闭">×</button>
                 <div class="iris-portrait-panel">
-                  <img
-                    class="iris-portrait"
-                    src="/assets/iris-database/iris-modal-portrait-v1.png"
-                    alt="IRIS 正常比例概念立绘"
-                  />
+                  <div class="iris-portrait-slot" aria-label="IRIS 人物立绘预留区域"></div>
                   <div class="iris-id">
                     <strong>I.R.I.S.</strong>
                     Intelligent Retrieval &amp; Indexing System
@@ -1418,7 +1423,7 @@
                   <ul class="link-list">
                     <li>
                       <a class="go-link" href="https://www.weiqi.org.cn/" target="_blank" rel="noreferrer">
-                        <span class="go-link-index">01</span>
+                        <span class="go-link-index" aria-hidden="true">●</span>
                         <span class="go-link-copy">
                           <strong>中国围棋协会</strong>
                           <small>赛事资讯 · 行业动态</small>
@@ -1428,7 +1433,7 @@
                     </li>
                     <li>
                       <a class="go-link" href="https://online-go.com/" target="_blank" rel="noreferrer">
-                        <span class="go-link-index">02</span>
+                        <span class="go-link-index" aria-hidden="true">○</span>
                         <span class="go-link-copy">
                           <strong>Online Go Server</strong>
                           <small>线上对弈 · 棋局复盘</small>
@@ -1438,7 +1443,7 @@
                     </li>
                     <li>
                       <a class="go-link" href="https://senseis.xmp.net/" target="_blank" rel="noreferrer">
-                        <span class="go-link-index">03</span>
+                        <span class="go-link-index" aria-hidden="true">●</span>
                         <span class="go-link-copy">
                           <strong>Sensei’s Library</strong>
                           <small>围棋术语与知识 Wiki</small>
@@ -1462,8 +1467,8 @@
         </article>
         <article class="contract-item">
           <span class="contract-kicker">ASSET SPLIT</span>
-          <strong>入口 Q 版，弹窗正常比例</strong>
-          <p>两个用途各用一张资产，不强行把全身立绘缩成难辨认的小图标；移动端复用同一透明 Q 版图。</p>
+          <strong>入口使用 Q 版，弹窗立绘先留空</strong>
+          <p>当前只评审入口和窗口结构；弹窗保持最终立绘槽比例，待角色资源确认后直接替换，不再重排内容。</p>
         </article>
         <article class="contract-item">
           <span class="contract-kicker">BEHAVIOR</span>

@@ -1,0 +1,185 @@
+.iris-database-entry {
+  --iris-entry-z: 110;
+  appearance: none;
+  position: fixed;
+  top: 53%;
+  right: calc(env(safe-area-inset-right, 0px) - 14px);
+  z-index: var(--iris-entry-z);
+  display: block;
+  width: clamp(130px, 13.8vw, 200px);
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 0.78;
+  padding: 0;
+  overflow: visible;
+  color: #f8fdff;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+  filter: drop-shadow(-7px 8px 0 rgba(33, 45, 42, 0.32));
+  font: inherit;
+  transform: translateY(-50%);
+  transition:
+    filter 180ms ease,
+    transform 180ms ease;
+}
+
+.iris-database-entry::before {
+  content: "";
+  position: absolute;
+  right: -2px;
+  bottom: 6%;
+  z-index: -1;
+  width: 78%;
+  height: 33%;
+  border: 2px solid #294854;
+  border-radius: 18px 0 0 18px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0 1px,
+      transparent 1px 5px
+    ),
+    #16465d;
+  box-shadow:
+    -5px 6px 0 rgba(28, 44, 43, 0.48),
+    inset 5px 0 0 #5fd3ed;
+}
+
+.iris-database-entry:hover,
+.iris-database-entry:focus-visible {
+  color: #ffffff;
+  outline: none;
+  filter:
+    drop-shadow(-9px 11px 0 rgba(33, 45, 42, 0.35))
+    drop-shadow(0 0 12px rgba(104, 226, 244, 0.68));
+  transform: translate(-7px, -52%);
+}
+
+.iris-database-entry:focus-visible::before {
+  border-color: #9be9f5;
+}
+
+.iris-database-entry:active {
+  transform: translate(-3px, -49%);
+}
+
+.iris-entry-portrait-slot {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  pointer-events: none;
+}
+
+.iris-entry-copy {
+  position: absolute;
+  right: 6%;
+  bottom: 8.5%;
+  z-index: 2;
+  display: block;
+  width: 60%;
+  color: inherit;
+  font-weight: 950;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-shadow: 0 2px 0 #17313d;
+  white-space: nowrap;
+}
+
+.iris-entry-copy strong {
+  display: block;
+  color: inherit;
+  font-size: clamp(9px, 0.78vw, 12px);
+  font-weight: inherit;
+}
+
+.iris-entry-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #9be9f5;
+  font-size: clamp(6px, 0.53vw, 8px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.iris-entry-status {
+  position: absolute;
+  top: 39%;
+  right: 9%;
+  width: 13%;
+  aspect-ratio: 1;
+  border: 2px solid rgba(125, 238, 251, 0.92);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 5px rgba(95, 211, 237, 0.2);
+  pointer-events: none;
+  animation: iris-entry-status-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes iris-entry-status-pulse {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .iris-database-entry {
+    top: 50%;
+    right: calc(env(safe-area-inset-right, 0px) - 8px);
+    width: 116px;
+    filter: drop-shadow(-4px 5px 0 rgba(33, 45, 42, 0.28));
+  }
+
+  .iris-database-entry::before {
+    right: 0;
+    bottom: 7%;
+    width: 72%;
+    height: 31%;
+    border-radius: 12px 0 0 12px;
+    box-shadow:
+      -3px 4px 0 rgba(28, 44, 43, 0.44),
+      inset 4px 0 0 #5fd3ed;
+  }
+
+  .iris-entry-copy {
+    right: 6%;
+    bottom: 9%;
+    width: 58%;
+  }
+
+  .iris-entry-copy strong {
+    font-size: 7px;
+  }
+
+  .iris-entry-copy small {
+    font-size: 5px;
+  }
+}
+
+@media (max-height: 560px) and (min-width: 769px) {
+  .iris-database-entry {
+    top: 56%;
+    width: 132px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iris-database-entry {
+    transition-duration: 1ms;
+  }
+
+  .iris-entry-status {
+    animation: none;
+    opacity: 1;
+  }
+}

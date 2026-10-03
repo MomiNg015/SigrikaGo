@@ -1,28 +1,27 @@
-# IRIS Database Edge-Entry Static Prototype
+# IRIS Database Home Integration
 
 ## Goal
 
-Create a standalone static HTML design example that lets the user review how the proposed IRIS Database viewport-edge entry and database window would look on both desktop and portrait mobile home screens before any production implementation begins.
+Integrate the IRIS Database entry and window into the real React home screen on desktop and portrait mobile. Both the viewport-edge entry and the database window must keep their character-art regions empty until the user approves final artwork.
 
 ## What I already know
 
 - The entry belongs on the right edge of the home viewport and should remain viewport-relative on desktop and mobile.
 - The visual metaphor is an edge bookmark / file-index tab rather than a generic floating circle.
 - Activating the entry opens an IRIS Database window.
-- The database window places an Iris character illustration on the left and Go-related friendly links on the right on desktop.
+- The database window reserves an Iris character-art region on the left and places Go-related friendly links on the right on desktop.
 - The project already has a Bright School classroom visual language and existing home-screen assets.
-- The current repository contains no asset whose filename or character configuration clearly identifies it as Iris.
+- The standalone prototype already established the intended placement, layout, and interaction direction.
 
-## Assumptions (temporary)
+## Confirmed Decisions
 
-- The deliverable will be a standalone local HTML prototype under `public/`, not production React behavior.
-- One comparison page will show a desktop mockup and a portrait-mobile mockup together.
-- The HTML may use small local interactions to preview opening and closing the database window while remaining a static, backend-free prototype.
-- Existing project home backgrounds and visual tokens should be reused where practical.
-- The prototype will use a newly generated, clearly non-official I.R.I.S. concept illustration informed by public character references rather than copying an in-game screenshot.
-- The database window and viewport-edge entry use separate character assets:
-  - the window uses the approved normal-proportion full-body concept;
-  - the edge entry uses a dedicated chibi half-body portrait.
+- The feature is production React behavior, not only a standalone prototype.
+- The entry is fixed to the right side of the real home viewport on desktop and portrait mobile.
+- The entry retains the prototype's Q-version half-body silhouette as a transparent blank hit region; only the lower-right archive plaque remains visible, and it must not render the generated chibi asset.
+- The database window retains a stable blank character-art reservation; it must not render the generated normal-proportion asset.
+- Existing generated Iris assets remain unused candidates and are not requested by the runtime.
+- Friendly links are static frontend data for this iteration.
+- The database opens as an accessible modal window over the home screen.
 
 ## Open Questions
 
@@ -30,45 +29,43 @@ Create a standalone static HTML design example that lets the user review how the
 
 ## Requirements (evolving)
 
-- Provide both desktop and portrait-mobile examples.
-- Keep the IRIS entry fixed to the right viewport edge in both examples.
+- Integrate the entry into the real `HomeScreen`.
+- Keep the IRIS entry fixed to the right viewport edge on desktop and portrait mobile.
 - Avoid covering the top-right home controls and bottom mobile safe area.
-- Show the entry in context on a Bright School-style home screen.
-- Show the database window layout, including the illustration region and friendly-link region.
-- Research Wuthering Waves I.R.I.S. identity, appearance, and personality before generating the prototype illustration.
-- Generate one original portrait-oriented I.R.I.S. concept illustration suited to the left side of the database window.
-- Generate a second I.R.I.S. asset for the viewport-edge entry: chibi proportions, head-to-waist framing, readable at small sizes, and posed as if peeking in from beyond the right edge.
-- Reuse the same chibi half-body entry asset on desktop and mobile, changing only scale and visible crop.
-- Keep the generated illustration free of game UI, logos, captions, and watermarks.
-- Keep the prototype isolated from production home-screen code.
+- Keep the entry artwork reservation transparent so the approved edge-character composition survives without turning into a visible portrait card, broken image, generated artwork, or generic silhouette.
+- Use the shared `ModalDialog` behavior for dialog semantics, focus trapping, Escape handling, and focus restoration.
+- Use a desktop left-reserved-portrait/right-links window and a portrait-mobile top-reserved-portrait/bottom-links window.
+- Keep close and entry controls at least 44px.
+- Open external links in a new tab with safe `rel` attributes.
+- Preserve the existing Bright School home composition and avoid horizontal overflow.
+- Keep the standalone prototype as a design artifact; production behavior lives in React components and owned CSS.
 
 ## Acceptance Criteria (evolving)
 
-- [x] A standalone HTML file can be served locally without a build step.
-- [x] Desktop and mobile examples are visible and clearly labelled.
-- [x] Both examples show a right-edge IRIS Database entry.
-- [x] The desktop window uses a left-illustration/right-links composition.
-- [x] The mobile window adapts to a vertical composition without horizontal overflow.
-- [x] The generated I.R.I.S. illustration reflects the researched cyan bob, covered eye, power-button pupil, retro academy uniform, and holographic retrieval identity.
-- [x] The edge entry uses a distinct chibi half-body asset rather than shrinking the normal-proportion full-body illustration.
-- [x] The chibi entry remains recognizable and legible at both desktop and mobile sizes.
-- [x] Mobile controls meet a 44px minimum touch target.
-- [x] Screenshots are captured at representative desktop and mobile sizes.
-- [x] Browser console reports no errors.
+- [x] The real home screen renders one right-edge IRIS Database entry.
+- [x] The entry renders no character image and requests no Iris character asset.
+- [x] Activating the entry opens the production IRIS Database modal.
+- [x] The modal renders no character image and keeps a stable reserved art region.
+- [x] Desktop uses the left-reservation/right-links composition.
+- [x] Portrait mobile uses the top-reservation/bottom-links composition without horizontal overflow.
+- [x] Entry and close controls meet a 44px minimum touch target.
+- [x] Escape, backdrop click, and close button close the modal; focus returns to the entry.
+- [x] External friendly links are keyboard reachable and safely open in a new tab.
+- [x] Focused tests, lint, build, and browser QA pass.
 
 ## Definition of Done
 
-- Prototype HTML and only directly required local assets are added.
-- Desktop and mobile renderings are visually checked.
-- The project documentation entry is updated as required by repository instructions.
-- Production React behavior, API routes, data models, and link persistence remain unchanged.
+- Production React components, owned styles, and focused regression tests are added.
+- Desktop and portrait-mobile behavior are visually checked in the real app.
+- The project documentation entry is updated and `docs/system-design.html` is regenerated.
+- API routes, data models, admin editing, and link persistence remain unchanged.
 
 ## Out of Scope
 
-- Wiring the entry into `HomeScreen`.
 - Persisting friendly-link data.
 - Admin editing for friendly links.
-- Final production accessibility and regression tests.
+- Using either generated Iris character asset in runtime UI.
+- Removing the existing standalone prototype or candidate assets.
 - Claiming the generated illustration is official Wuthering Waves artwork.
 
 ## Technical Notes
@@ -78,12 +75,12 @@ Create a standalone static HTML design example that lets the user review how the
   - `public/hotspot-prototype.html`
   - `public/assets/home/`
   - `public/assets/prototypes/classroom-bg1.webp`
-- The static prototype should prefer `position: fixed` semantics for the viewport-edge entry.
+- Production entry uses viewport `position: fixed` with safe-area-aware offsets.
 - Mobile portrait is the primary mobile orientation.
 - Character research is recorded in `research/wuthering-waves-iris.md`.
-- Approved art direction: normal-proportion illustration inside the window; chibi half-body illustration on the viewport edge.
+- Current production direction: the edge entry preserves the prototype's transparent Q-version art region and lower-right blue archive plaque; the window keeps its art region blank.
 - Final prototype: `public/iris-database-prototype.html`.
-- Final generated assets:
+- Retained but unused candidate assets:
   - `public/assets/iris-database/iris-edge-chibi-v1.png`
   - `public/assets/iris-database/iris-modal-portrait-v1.png`
-- Browser QA covered desktop click/Escape/backdrop/close flows, focus wrapping, a 390×844 touch-open flow, 44px controls, modal bounds, broken images, console errors, and horizontal overflow.
+- The shared modal shell is `src/modals/modalComponents.jsx`.

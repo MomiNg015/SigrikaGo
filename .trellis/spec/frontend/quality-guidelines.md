@@ -1245,6 +1245,64 @@ Correct:
 }
 ```
 
+### Scenario: IRIS Database Home Entry
+
+#### 1. Scope / Trigger
+
+- Applies when changing the production IRIS Database entry, modal, links, or either reserved character-art region on the real home screen.
+
+#### 2. Signatures
+
+- `IrisDatabase()` owns local open state and renders one viewport-fixed entry plus one shared `ModalDialog` while open.
+- `IRIS_FRIENDLY_LINKS` is the static frontend link registry for this iteration; there is no API, persistence, or admin-editing contract.
+
+#### 3. Contracts
+
+- `HomeScreen` mounts exactly one `<IrisDatabase />`.
+- The edge entry keeps the prototype silhouette: a transparent Q-version half-body hit area with the blue archive plaque anchored at its lower-right. Leaving the character art blank must not turn this into a visible portrait card, dark aperture, fallback silhouette, or broken image.
+- Both `.iris-entry-portrait-slot` and `.iris-database-portrait-slot` remain image-free. Runtime code must not reference or request `iris-edge-chibi-v1.png` or `iris-modal-portrait-v1.png`.
+- The entry uses viewport `position: fixed`, a safe-area-aware right offset, and no horizontal page overflow on desktop or portrait mobile.
+- The modal reuses `ModalDialog`; desktop is left blank-art/right links, portrait mobile is top blank-art/bottom links with internal content scrolling.
+- External links use `target="_blank"` and `rel="noreferrer"`.
+- CSS ownership stays in `home-terminal/iris-database-entry.css`, `modals/iris-database.css`, and their Bright School same-name owners.
+
+#### 4. Validation & Error Matrix
+
+- Candidate art missing or intentionally unused -> render the blank reservations; do not show fallback copy or a broken image.
+- Link registry entry unavailable -> browser handles the external failure; the IRIS modal remains open and usable.
+- Narrow/short viewport -> keep the entry reachable and constrain the modal to the viewport with owned internal scrolling.
+
+#### 5. Good/Base/Bad Cases
+
+- Good: transparent entry reservation plus prototype plaque, no runtime art request, shared modal behavior, verified desktop and `390x844` portrait layouts.
+- Base: image-free modal and entry remain usable before approved artwork exists.
+- Bad: replacing the absent Q-version art with a framed mini profile panel, because it changes the approved edge-character metaphor.
+
+#### 6. Tests Required
+
+- Source contract: `HomeScreen` wiring, no `<img>`, and no candidate asset path.
+- DOM contract: open/close, backdrop, Escape, focus restoration, safe external links, and exactly two blank art slots.
+- CSS contract: fixed safe-area placement, transparent edge reservation, desktop/mobile modal geometry, reduced motion, and Bright School owner coverage.
+- Browser QA: desktop and portrait screenshots, no horizontal overflow, 44px close target, empty art regions, and page-asset inventory with zero candidate Iris art.
+
+#### 7. Wrong vs Correct
+
+```css
+/* Wrong: artwork absence became a generic framed profile card. */
+.iris-entry-portrait-slot {
+  background: #06182d;
+  border: 1px solid #89e8f4;
+}
+
+/* Correct: preserve the Q-version hit region while its art is intentionally blank. */
+.iris-entry-portrait-slot {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+}
+```
+
 ### Character Item Effect Badge Contracts
 
 When a character-specific item effect is active in `user.itemEffects`, the house manual character card should render the item's icon as a small badge on the corresponding character card across desktop and mobile.

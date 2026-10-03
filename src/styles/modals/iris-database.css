@@ -1,0 +1,313 @@
+.iris-database-backdrop {
+  place-items: center;
+  align-items: center;
+  padding:
+    max(18px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+  background: rgba(5, 16, 31, 0.68);
+}
+
+.iris-database-modal {
+  --modal-close-inset: 14px;
+  --modal-close-size: 44px;
+  position: relative;
+  width: min(960px, calc(100vw - 36px));
+  height: min(600px, calc(100dvh - 48px));
+  min-height: 460px;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+  overflow: hidden;
+  padding: 0;
+  background: #f8fbfc;
+  border: 2px solid #243b45;
+  border-radius: 14px;
+  box-shadow: 6px 6px 0 rgba(5, 16, 31, 0.76);
+}
+
+.iris-database-close {
+  position: absolute;
+  top: var(--modal-close-inset);
+  right: var(--modal-close-inset);
+  z-index: 20;
+  width: var(--modal-close-size);
+  min-width: var(--modal-close-size);
+  height: var(--modal-close-size);
+  min-height: var(--modal-close-size);
+}
+
+.iris-database-portrait-panel {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 34px 26px 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 49.7%,
+      rgba(111, 224, 239, 0.08) 50%,
+      transparent 50.3%
+    ),
+    linear-gradient(
+      transparent 49.7%,
+      rgba(111, 224, 239, 0.08) 50%,
+      transparent 50.3%
+    ),
+    #061b35;
+}
+
+.iris-database-portrait-slot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 18px 4px 22px;
+  border: 1px solid rgba(121, 229, 244, 0.25);
+  border-radius: 12px;
+}
+
+.iris-database-portrait-slot::before,
+.iris-database-portrait-slot::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+}
+
+.iris-database-portrait-slot::before {
+  top: 12px;
+  left: 12px;
+  border-top: 1px solid rgba(121, 229, 244, 0.5);
+  border-left: 1px solid rgba(121, 229, 244, 0.5);
+}
+
+.iris-database-portrait-slot::after {
+  right: 12px;
+  bottom: 12px;
+  border-right: 1px solid rgba(121, 229, 244, 0.5);
+  border-bottom: 1px solid rgba(121, 229, 244, 0.5);
+}
+
+.iris-database-identity {
+  display: grid;
+  gap: 5px;
+  color: #c8f5f8;
+}
+
+.iris-database-identity strong {
+  color: inherit;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.iris-database-identity span {
+  color: #79dbe7;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.iris-database-content {
+  min-height: 0;
+  padding: 64px clamp(28px, 4vw, 48px) 34px;
+  overflow-y: auto;
+}
+
+.iris-database-path {
+  display: block;
+  margin-bottom: 12px;
+  color: #397782;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.iris-database-header h2 {
+  margin: 0;
+  color: #1f3138;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.05;
+  text-align: left;
+}
+
+.iris-database-header p {
+  margin: 18px 0 0;
+  color: #4a5a61;
+  font-size: 15px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.iris-database-quote {
+  margin: 22px 0 12px;
+  padding: 12px 14px;
+  color: #244a54;
+  background: #e5f7fa;
+  border: 1px solid #93cfd8;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.iris-database-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #a8bbc1;
+}
+
+.iris-database-links li {
+  margin: 0;
+  border-bottom: 1px solid #a8bbc1;
+}
+
+.iris-database-links a {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 10px;
+  color: #263b43;
+  text-decoration: none;
+  transition: background-color 150ms ease-out;
+}
+
+.iris-database-links a:hover,
+.iris-database-links a:focus-visible {
+  color: #153e49;
+  background: #eaf9fb;
+}
+
+.iris-link-stone {
+  width: 19px;
+  height: 19px;
+  border: 2px solid #263b43;
+  border-radius: 50%;
+  background: #263b43;
+}
+
+.iris-database-links li:nth-child(even) .iris-link-stone {
+  background: #f8fbfc;
+}
+
+.iris-link-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.iris-link-copy strong {
+  color: inherit;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.iris-link-copy span {
+  color: #4f6269;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.iris-link-copy small {
+  color: #597a83;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.iris-database-links svg {
+  color: #397782;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .iris-database-backdrop {
+    align-items: center;
+    padding:
+      max(10px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left));
+  }
+
+  .iris-database-modal {
+    width: calc(100vw - 20px);
+    height: min(92dvh, 760px);
+    min-height: 0;
+    max-height: 92dvh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(180px, 38%) minmax(0, 1fr);
+    border-radius: 12px;
+  }
+
+  .iris-database-portrait-panel {
+    padding: 20px 18px 13px;
+  }
+
+  .iris-database-portrait-slot {
+    margin: 10px 46px 12px 0;
+    border-radius: 9px;
+  }
+
+  .iris-database-identity {
+    gap: 1px;
+  }
+
+  .iris-database-identity strong {
+    font-size: 24px;
+  }
+
+  .iris-database-identity span {
+    font-size: 8px;
+  }
+
+  .iris-database-content {
+    padding: 20px 16px 22px;
+  }
+
+  .iris-database-path {
+    margin-bottom: 7px;
+    font-size: 10px;
+  }
+
+  .iris-database-header h2 {
+    font-size: clamp(25px, 8vw, 34px);
+  }
+
+  .iris-database-header p {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .iris-database-quote {
+    margin: 12px 0 8px;
+    padding: 9px 10px;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .iris-database-links a {
+    min-height: 68px;
+    grid-template-columns: 20px minmax(0, 1fr) 20px;
+    gap: 10px;
+    padding: 9px 6px;
+  }
+
+  .iris-link-stone {
+    width: 16px;
+    height: 16px;
+  }
+
+  .iris-link-copy strong {
+    font-size: 14px;
+  }
+
+  .iris-link-copy span,
+  .iris-link-copy small {
+    font-size: 10px;
+  }
+}

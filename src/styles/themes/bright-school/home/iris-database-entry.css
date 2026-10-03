@@ -1,0 +1,63 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:active {
+  color: #f8fdff !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry {
+  filter: drop-shadow(-7px 8px 0 rgba(33, 45, 42, 0.32)) !important;
+  transform: translateY(-50%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:focus-visible {
+  filter:
+    drop-shadow(-9px 11px 0 rgba(33, 45, 42, 0.35))
+    drop-shadow(0 0 12px rgba(104, 226, 244, 0.68)) !important;
+  transform: translate(-7px, -52%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:active {
+  transform: translate(-3px, -49%) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-portrait-slot {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-copy {
+  color: #f8fdff !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-copy strong {
+  color: inherit !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-copy small {
+  color: #9be9f5 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-status {
+  background: transparent !important;
+  border-color: rgba(125, 238, 251, 0.92) !important;
+  box-shadow: 0 0 0 5px rgba(95, 211, 237, 0.2) !important;
+  transform: none !important;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry {
+    filter: drop-shadow(-4px 5px 0 rgba(33, 45, 42, 0.28)) !important;
+  }
+}
