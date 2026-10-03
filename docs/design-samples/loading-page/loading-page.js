@@ -7,6 +7,7 @@
   const slider = document.querySelector('#progress');
   const output = document.querySelector('#progress-output');
   const tip = document.querySelector('#tip');
+  const tipCopy = tip.querySelector('.tip-copy');
   const tips = window.SigrikaLoadingTips || [];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const holdMs = 2000;
@@ -17,7 +18,9 @@
   let puzzleUrl = '';
   function showTip() {
     const text = String(tips[tipIndex] || '').trim().replace(/^Tip\s*[:：]\s*/i,'');
-    tip.textContent = text ? `Tip：${text}` : '';
+    tipCopy.textContent = text;
+    tip.hidden = !text;
+    tip.setAttribute('aria-label',text ? `Tip：${text}` : '');
   }
 
   function setProgress(value) {

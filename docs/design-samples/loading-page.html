@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fffbf2">
   <title>SigrikaGo · 加载页样板</title>
+  <link rel="icon" href="../../public/assets/home/home-header-sigrika-still.webp" type="image/webp">
   <link rel="stylesheet" href="./loading-page/loading-page.css">
   <link rel="preload" as="image" href="./loading-page/assets/character-complete.png">
   <link rel="preload" as="image" href="./loading-page/assets/loading-blink-fast.webp">
-  <link rel="preload" as="image" href="./loading-page/assets/cloud-alternate.png">
+  <link rel="preload" as="image" href="./loading-page/assets/cloud-selected-alternate.png">
 </head>
 <body>
   <main class="thinking-loading" aria-label="资源加载">
     <div class="loading-composition">
       <section class="loading-art" aria-label="角色正在思考围棋死活题">
         <div class="thought-cloud">
-          <img class="thought-outline" src="./loading-page/assets/cloud.png" alt="" draggable="false">
-          <img class="thought-outline thought-outline-alternate" src="./loading-page/assets/cloud-alternate.png" alt="" draggable="false">
-          <div class="thought-content" id="puzzle-slot" aria-label="围棋死活题图片预留位置"></div>
+          <img class="thought-outline" src="./loading-page/assets/cloud-selected.png" alt="" draggable="false">
+          <img class="thought-outline thought-outline-alternate" src="./loading-page/assets/cloud-selected-alternate.png" alt="" draggable="false">
+          <div class="thought-content" id="puzzle-slot" aria-label="围棋题图"><img src="./loading-page/assets/problem-preview.png" alt="教学棋型示例"></div>
         </div>
-        <span class="thought-link thought-link-one" aria-hidden="true"></span>
-        <span class="thought-link thought-link-two" aria-hidden="true"></span>
-        <span class="thought-link thought-link-three" aria-hidden="true"></span>
+        <img class="thought-link thought-link-one" src="./loading-page/assets/round-thought-bubble.png" alt="" aria-hidden="true">
+        <img class="thought-link thought-link-two" src="./loading-page/assets/round-thought-bubble.png" alt="" aria-hidden="true">
+        <img class="thought-link thought-link-three" src="./loading-page/assets/round-thought-bubble.png" alt="" aria-hidden="true">
         <img class="loading-character" id="character" src="./loading-page/assets/loading-blink-fast.webp" alt="托着脸思考的角色" draggable="false">
         <div class="inspiration-bulb" id="bulb" role="progressbar" aria-label="资源加载" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="bulb-fill-mask" aria-hidden="true">
@@ -30,11 +31,11 @@
               <polygon id="fill-polygon" points="0,100 0,100 0,100" fill="url(#yellow-idea)"/>
             </svg>
           </div>
-          <img class="bulb-outline" src="./loading-page/assets/bulb.png" alt="" draggable="false" aria-hidden="true">
+          <img class="bulb-outline" src="./loading-page/assets/bulb-selected.png" alt="" draggable="false" aria-hidden="true">
           <img class="bulb-rays bulb-rays-top" src="./loading-page/assets/rays.png" alt="" aria-hidden="true">
         </div>
       </section>
-      <p class="loading-tip" id="tip" aria-live="polite"></p>
+      <div class="loading-tip" id="tip" aria-live="polite"><span class="tip-label" aria-hidden="true">Tip：</span><span class="tip-copy"></span></div>
     </div>
   </main>
   <details class="preview-tools">

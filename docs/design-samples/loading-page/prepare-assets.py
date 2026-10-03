@@ -7,7 +7,8 @@ from PIL import Image, ImageDraw, ImageFilter
 
 here = Path(__file__).resolve().parent
 project = here.parents[2]
-bulb = Image.open(here/'assets/bulb.png').convert('RGBA')
+bulb_name = 'bulb-selected' if (here/'assets/bulb-selected.png').exists() else 'bulb'
+bulb = Image.open(here/f'assets/{bulb_name}.png').convert('RGBA')
 alpha = np.array(bulb)[:,:,3]
 barrier = Image.fromarray(np.where(alpha>35,255,0).astype('uint8')).filter(ImageFilter.MaxFilter(5))
 ImageDraw.floodfill(barrier,(bulb.width//2,bulb.height//3),128)
@@ -17,7 +18,7 @@ assert not chamber[0,0]
 assert not chamber[-1,bulb.width//2]
 mask = np.full((bulb.height,bulb.width,4),255,dtype='uint8')
 mask[:,:,3] = np.where(chamber,255,0).astype('uint8')
-Image.fromarray(mask).save(here/'assets/bulb-interior.png')
+Image.fromarray(mask).save(here/f'assets/{bulb_name}-interior.png')
 rows = np.nonzero(chamber)[0]
 geometry = {'top': int(rows.min())/bulb.height*100,
             'bottom': (int(rows.max())+1)/bulb.height*100}
