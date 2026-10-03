@@ -64,6 +64,14 @@ describe("AnnouncementModal information center", () => {
     const row = await screen.findByRole("button", { name: /欢迎来到星炬学院/ });
     expect(row.closest("li")).toBeTruthy();
     expect(await screen.findByText("完整公告正文")).toBeTruthy();
+    expect(api).toHaveBeenCalledWith(
+      "/api/announcements?kind=announcement&offset=0&limit=20",
+      { token: "token", retryDevBackend: true }
+    );
+    expect(api).toHaveBeenCalledWith(
+      "/api/announcements/announcement-1",
+      { token: "token", retryDevBackend: true }
+    );
     await waitFor(() => expect(api).toHaveBeenCalledWith(
       "/api/announcements/announcement-1/read",
       { method: "POST", token: "token" }

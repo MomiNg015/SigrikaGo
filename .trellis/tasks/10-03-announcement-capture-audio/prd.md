@@ -13,5 +13,12 @@ Fix the first announcement opening reporting a JSON format error; play character
 - Capture completion triggers both requested audio channels; incomplete challenges do not.
 - Relevant tests, lint, build pass; system design is updated and rendered.
 
+## Verification Status
+- [x] Capture completion audio implemented and checked in prior commit `c547b922`.
+- [x] Controlled local proxy outage reproduces empty non-JSON first response; fixed JSON 503 and bounded announcement GET recovery verified with real HTTP fixtures.
+- [x] Announcement modal/summary with real client verifies first-open and reopen under stable service and list/detail/summary transient failure fixtures.
+- [x] Unexpected announcement format diagnostics retain path/status/Content-Type without token or response contents.
+- [ ] Original frequent announcement-only failure remains unobserved; user retest or captured first-response diagnostics needed to establish whether the proxy fix resolves that exact occurrence. Keep task in progress.
+
 ## Out of Scope
 UI redesign, rule/scoring/reward changes, deployment.

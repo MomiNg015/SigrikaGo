@@ -21,7 +21,7 @@ export function useAnnouncementSummary({ announcementOpen = false, token, user, 
       setAnnouncementSummary(EMPTY_SUMMARY);
       return EMPTY_SUMMARY;
     }
-    const summary = await api("/api/announcements/summary", { token });
+    const summary = await api("/api/announcements/summary", { token, retryDevBackend: true });
     setAnnouncementSummary(normalizeAnnouncementSummary(summary));
     return summary;
   }, [token, user?.id]);

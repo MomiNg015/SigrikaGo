@@ -22,6 +22,20 @@ function configureDevSocketProxy(proxy) {
   });
 }
 
+function configureDevApiProxy(proxy) {
+  proxy.on("error", (error, _request, response) => {
+    if (!isQuietDevProxySocketError(error) || !response || !("req" in response)
+      || response.headersSent || response.writableEnded) return;
+    response.writeHead(503, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Retry-After": "1"
+    }).end(JSON.stringify({
+      error: "本地后端服务正在启动或重启，请稍后重试。",
+      code: "dev_backend_unavailable"
+    }));
+  });
+}
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   optimizeDeps: {
@@ -56,7 +70,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:3001",
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        configure: configureDevApiProxy
+      },
       "/uploads": "http://localhost:3001",
       "/socket.io": {
         target: "http://localhost:3001",
@@ -67,4 +85,4 @@ export default defineConfig({
   }
 });
 
-export { configureDevSocketProxy, isQuietDevProxySocketError };
+export { configureDevApiProxy, configureDevSocketProxy, isQuietDevProxySocketError };

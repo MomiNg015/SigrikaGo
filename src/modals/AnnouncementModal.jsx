@@ -89,7 +89,7 @@ export default function AnnouncementModal({
       }
     }));
     try {
-      const data = await api(`/api/announcements?kind=${encodeURIComponent(kind)}&offset=${offset}&limit=${PAGE_SIZE}`, { token });
+      const data = await api(`/api/announcements?kind=${encodeURIComponent(kind)}&offset=${offset}&limit=${PAGE_SIZE}`, { token, retryDevBackend: true });
       const incomingItems = data.items ?? [];
       setLists((current) => {
         const previous = reset ? emptyListState() : current[kind] ?? emptyListState();
@@ -132,7 +132,7 @@ export default function AnnouncementModal({
     if (!item || !token) return;
     setDetail({ open: true, loading: true, item, entry: null, error: "", readError: "" });
     try {
-      const data = await api(`/api/announcements/${item.id}`, { token });
+      const data = await api(`/api/announcements/${item.id}`, { token, retryDevBackend: true });
       const entry = data.entry;
       setDetail((current) => ({ ...current, loading: false, entry, error: "" }));
       try {

@@ -1,5 +1,6 @@
 const API_BASE = "";
 const DEFAULT_REQUEST_TIMEOUT_MS = 8000;
+const DEV_BACKEND_RETRY_DELAYS_MS = [250, 500, 1000];
 let authRefreshHandler = null;
 
 export function configureAuthRefresh(handler) {
@@ -20,6 +21,7 @@ export async function api(path, options = {}) {
   }, options.requestTimeoutMs);
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
+    reportUnexpectedAnnouncementResponse(path, options, response.status, contentType);
     const text = await response.text();
     const isHtml = text.trimStart().startsWith("<!DOCTYPE") || text.trimStart().startsWith("<html");
     const error = new Error(isHtml
@@ -28,8 +30,21 @@ export async function api(path, options = {}) {
     error.status = response.status;
     throw error;
   }
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    reportUnexpectedAnnouncementResponse(path, options, response.status, contentType);
+    throw error;
+  }
   if (!response.ok) {
+    const devRetryAttempt = options.devRetryAttempt ?? 0;
+    if (options.retryDevBackend && (options.method ?? "GET").toUpperCase() === "GET"
+      && response.status === 503 && data.code === "dev_backend_unavailable"
+      && devRetryAttempt < DEV_BACKEND_RETRY_DELAYS_MS.length) {
+      await waitForDevBackend(DEV_BACKEND_RETRY_DELAYS_MS[devRetryAttempt], options.signal);
+      return api(path, { ...options, devRetryAttempt: devRetryAttempt + 1 });
+    }
     if (response.status === 401 && options.token && !options.skipAuthRefresh && authRefreshHandler) {
       const refreshed = await authRefreshHandler();
       if (refreshed?.token) {
@@ -48,6 +63,30 @@ export async function api(path, options = {}) {
     throw error;
   }
   return data;
+}
+
+function reportUnexpectedAnnouncementResponse(path, options, status, contentType) {
+  if (!import.meta.env?.DEV || !options.retryDevBackend) return;
+  console.warn("[api] unexpected announcement response", { path, status, contentType });
+}
+
+function waitForDevBackend(delayMs, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const abort = () => {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
+      reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", abort);
+      resolve();
+    }, delayMs);
+    signal?.addEventListener("abort", abort, { once: true });
+  });
 }
 
 export async function adminApi(path, token, options = {}) {

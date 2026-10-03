@@ -3,8 +3,123 @@ import { api, configureAuthRefresh, uploadPortrait } from "./client.js";
 
 describe("api client auth refresh", () => {
   afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
     configureAuthRefresh(null);
     vi.unstubAllGlobals();
+  });
+
+  it("bounds local backend recovery and preserves the final service error", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(jsonResponse({
+      error: "本地后端服务正在启动或重启，请稍后重试。", code: "dev_backend_unavailable"
+    }, 503)));
+    vi.stubGlobal("fetch", fetchMock);
+    const result = api("/api/announcements", { retryDevBackend: true }).catch((error) => error);
+    await vi.runAllTimersAsync();
+    expect(await result).toMatchObject({ status: 503, code: "dev_backend_unavailable" });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it.each([
+    ["POST", 503, "dev_backend_unavailable"],
+    ["GET", 503, "server_starting"],
+    ["GET", 401, "dev_backend_unavailable"]
+  ])("does not replay %s errors with status %s and code %s", async (method, status, code) => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ error: "失败", code }, status));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements/1/read", { method, retryDevBackend: true })).rejects.toMatchObject({ status, code });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels local backend recovery when the caller aborts", async () => {
+    const controller = new AbortController();
+    const fetchMock = vi.fn().mockImplementation(() => {
+      setTimeout(() => controller.abort(), 0);
+      return Promise.resolve(jsonResponse({ code: "dev_backend_unavailable" }, 503));
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements", { signal: controller.signal, retryDevBackend: true })).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not enable local backend retries for other API callers", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ code: "dev_backend_unavailable" }, 503));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/me")).rejects.toMatchObject({ status: 503, code: "dev_backend_unavailable" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("shares the bounded recovery budget across an access-token refresh", async () => {
+    vi.useFakeTimers();
+    const unavailable = () => jsonResponse({ code: "dev_backend_unavailable" }, 503);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(unavailable())
+      .mockResolvedValueOnce(jsonResponse({ error: "请先登录" }, 401))
+      .mockImplementation(() => Promise.resolve(unavailable()));
+    const refresh = vi.fn().mockResolvedValue({ token: "next-token" });
+    configureAuthRefresh(refresh);
+    vi.stubGlobal("fetch", fetchMock);
+    const result = api("/api/announcements", { token: "old-token", retryDevBackend: true }).catch((error) => error);
+    await vi.runAllTimersAsync();
+    expect(await result).toMatchObject({ status: 503, code: "dev_backend_unavailable" });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expect(fetchMock.mock.calls.slice(2).every(([, options]) => options.headers.Authorization === "Bearer next-token")).toBe(true);
+  });
+
+  it("preserves an abort that arrives before the recovery wait begins", async () => {
+    const controller = new AbortController();
+    const fetchMock = vi.fn().mockImplementation(() => {
+      const response = jsonResponse({ code: "dev_backend_unavailable" }, 503);
+      response.json = async () => {
+        controller.abort();
+        return { code: "dev_backend_unavailable" };
+      };
+      return Promise.resolve(response);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements", { signal: controller.signal, retryDevBackend: true })).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves malformed JSON bodies without retrying", async () => {
+    const response = jsonResponse({}, 503);
+    response.json = async () => { throw new SyntaxError("Invalid JSON"); };
+    const fetchMock = vi.fn().mockResolvedValue(response);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements", { retryDevBackend: true })).rejects.toThrow("Invalid JSON");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("retains malformed success errors without retrying them", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200, headers: { get: () => "text/plain" }, text: async () => "invalid"
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements", { retryDevBackend: true })).rejects.toThrow("接口返回格式不是 JSON。");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith("[api] unexpected announcement response", {
+      path: "/api/announcements", status: 200, contentType: "text/plain"
+    });
+  });
+
+  it("diagnoses malformed announcement JSON without logging authentication or response contents", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200, headers: { get: () => "application/json" },
+      json: async () => { throw new SyntaxError("broken JSON"); }
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api("/api/announcements/notice-1", {
+      token: "secret-token", retryDevBackend: true
+    })).rejects.toThrow("broken JSON");
+    expect(warn).toHaveBeenCalledWith("[api] unexpected announcement response", {
+      path: "/api/announcements/notice-1", status: 200, contentType: "application/json"
+    });
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("secret-token");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("retries an authenticated request once after refreshing the access token", async () => {
