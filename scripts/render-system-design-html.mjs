@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, rename, rm } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
 const sourcePath = new URL("../docs/system-design.md", import.meta.url);
@@ -19,7 +19,17 @@ export const SYSTEM_DESIGN_SOURCE_PATHS = sourcePartPaths;
 
 if (isDirectRun()) {
   const markdown = await readSystemDesignMarkdown();
-  await writeFile(outputPath, renderSystemDesignHtml(markdown), "utf8");
+  await writeSystemDesignHtml(outputPath, renderSystemDesignHtml(markdown));
+}
+
+export async function writeSystemDesignHtml(destination, html) {
+  const temporary = new URL(`${destination.href}.${process.pid}.${Date.now()}.tmp`);
+  try {
+    await writeFile(temporary, html, "utf8");
+    await rename(temporary, destination);
+  } finally {
+    await rm(temporary, { force: true });
+  }
 }
 
 export async function readSystemDesignMarkdown() {

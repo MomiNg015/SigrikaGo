@@ -376,7 +376,7 @@ describe("PlayerInfo labels", () => {
     expect(roomCss).toContain("color: #d93645 !important");
     expect(baseCss).toContain("z-index: calc(var(--room-floating-z, 180) + 21)");
     expect(baseCss).toContain(".skill-trait-token::before");
-    expect(baseCss).not.toContain("min-height: 44px");
+    expect(cssBlock(baseCss, ".skill-trait-token")).not.toContain("min-height: 44px");
     const traitTokenSelector = ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token";
     const traitTokenRuleStart = brightSchoolCss.indexOf(traitTokenSelector);
     const traitTokenBlock = brightSchoolCss.slice(

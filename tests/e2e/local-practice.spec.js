@@ -13,9 +13,10 @@ for (const options of [
   { difficulty: "advanced", playerColor: "white", challenge: "capture-challenge" }
 ]) {
   test(`browser engine plays and resumes ${options.challenge ?? options.difficulty}`, async ({ page, request }) => {
+    if (options.challenge) test.setTimeout(300_000);
     const response = await request.post("/api/auth/register", { data: { username: `lp${Date.now().toString(36).slice(-6)}`, password: "pwpass12" } });
     expect(response.ok(), await response.text()).toBe(true);
-    const { token } = await response.json();
+    const { token, user } = await response.json();
     const browserErrors = [];
     const downloads = [];
     page.on("pageerror", (error) => { browserErrors.push(error.message); });
@@ -34,6 +35,24 @@ for (const options of [
     await expect.poll(() => page.evaluate(() => window.practiceTest?.room?.code)).toBe(code);
     expect(await page.evaluate(() => window.practiceTest.move())).toMatchObject({ ok: true });
     await expect.poll(() => page.evaluate(() => window.practiceTest.room?.game.moveNumber)).toBe(5);
+    if (options.challenge) {
+      while (await page.evaluate(() => window.practiceTest.room.game.phase !== "finished")) {
+        const before = await page.evaluate(() => window.practiceTest.room.game.moveNumber);
+        expect(await page.evaluate(() => window.practiceTest.move())).toMatchObject({ ok: true });
+        await expect.poll(() => page.evaluate(() => window.practiceTest.room.game.moveNumber))
+          .toBe(Math.min(before + 2, 100));
+      }
+      await expect.poll(() => page.evaluate(() => window.practiceTest.room.practice.result?.rank)).toBeGreaterThan(0);
+      expect(await page.evaluate(() => window.practiceTest.room.game.moveNumber)).toBe(100);
+      const headers = { Authorization: `Bearer ${token}` };
+      const leaderboard = await request.get("/api/leaderboard?mode=capture-challenge", { headers });
+      expect(leaderboard.ok(), await leaderboard.text()).toBe(true);
+      expect((await leaderboard.json()).players.some((player) => player.id === user.id)).toBe(true);
+      const me = await request.get("/api/me", { headers });
+      expect((await me.json()).user.coins).toBe(user.coins);
+      const replays = await request.get("/api/replays", { headers });
+      expect((await replays.json()).records).toEqual([]);
+    }
     expect(await page.evaluate(() => window.practiceTest.errors)).toEqual([]);
     expect(browserErrors).toEqual([]);
     await expect(page.locator("vite-error-overlay")).toHaveCount(0);

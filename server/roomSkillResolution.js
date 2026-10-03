@@ -181,6 +181,7 @@ export function createRoomSkillLifecycle({
     resolvedGame.pendingSkill = null;
     latest.pendingSkillResolution = null;
     latest.game = resolvedGame;
+    latest.lastTick = Date.now();
     const player = latest.players.find((candidate) => candidate.color === resolution.playerColor);
     if (player) resetByoYomi(player);
     appendNotices(latest, resolution.notices ?? []);

@@ -3,7 +3,7 @@ export default function RecentResultMarkers({ results = [], className = "", labe
   return (
     <span className={`recent-result-markers ${className}`.trim()} aria-label="最近胜负">
       {label && <span className="recent-result-label">{label}</span>}
-      {normalized.length === 0 && <span className="recent-result-empty">暂无</span>}
+      {normalized.length === 0 && <span className="recent-result-empty">暂无最近十盘</span>}
       {normalized.map((result, index) => (
         <span className={`recent-result-marker recent-result-marker-${result}`} key={`${result}-${index}`}>
           {result === "win" ? "胜" : "负"}

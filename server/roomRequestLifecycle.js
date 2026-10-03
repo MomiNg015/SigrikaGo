@@ -11,6 +11,7 @@ import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 
 export function createRoomRequestLifecycle({
   rooms,
+  syncGameClock = () => {},
   validateRoomCode,
   validateActionPoint,
   appendSystem,
@@ -27,6 +28,8 @@ export function createRoomRequestLifecycle({
     const { room, player } = context;
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
     if (room.game.extraTurn) return { ok: false, error: "连下状态中不能申请数子" };
+    syncGameClock(room, io);
+    if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "对局已经结束" };
     return applyCountingRequest({
       room,
       player,
@@ -53,6 +56,8 @@ export function createRoomRequestLifecycle({
     if (room.matchSource === SIGRIKA_CANDY_DUEL.matchSource) return { ok: false, error: "本局不提供和棋申请" };
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
     if (room.game.extraTurn) return { ok: false, error: "连下状态中不能申请和棋" };
+    syncGameClock(room, io);
+    if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "对局已经结束" };
     return applyDrawRequest({
       room,
       player,

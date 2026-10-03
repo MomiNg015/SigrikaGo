@@ -1,3 +1,4 @@
+import { createDatabaseHealth } from "./databaseHealth.js";
 import { monitorEventLoopDelay, performance } from "node:perf_hooks";
 
 export const DEFAULT_MAX_ONLINE_USERS = 500;
@@ -17,6 +18,7 @@ export function runtimeCapacityLimits(env = process.env) {
 
 export function createRuntimeServiceState({
   env = process.env,
+  databaseProbe = null,
   now = Date.now,
   onlineCount = () => 0,
   activeRoomCount = () => 0,
@@ -26,6 +28,7 @@ export function createRuntimeServiceState({
   performanceMetrics = createRuntimePerformanceMetrics()
 } = {}) {
   const limits = runtimeCapacityLimits(env);
+  const databaseHealth = databaseProbe ? createDatabaseHealth({ probe: databaseProbe, now }) : null;
   let draining = false;
   let drainReason = "";
   let drainStartedAt = null;
@@ -42,6 +45,7 @@ export function createRuntimeServiceState({
     if (draining) {
       return rejection("server_draining", "服务器正在维护，暂时不能开始新的操作");
     }
+    if (!readiness().ok) return rejection("storage_unavailable", "服务器正在恢复数据服务，请稍后重试");
     if (kind === "spectator") {
       const roomAdmission = roomSpectatorAdmission(context.room, context.userId, limits);
       if (!roomAdmission.ok) return roomAdmission;
@@ -60,6 +64,16 @@ export function createRuntimeServiceState({
         : "当前在线人数较多，请稍后再匹配");
     }
     return { ok: true };
+  }
+
+  function readiness() {
+    if (draining) return { ok: false, status: "draining", reason: drainReason, startedAt: drainStartedAt };
+    const database = databaseHealth?.snapshot() ?? { ok: true };
+    if (!database.ok) return { ok: false, status: "storage-unavailable" };
+    try {
+      if (persistenceStats().unhealthyPersistenceOperations > 0) return { ok: false, status: "persistence-unavailable" };
+    } catch { return { ok: false, status: "persistence-unavailable" }; }
+    return { ok: true, status: "ready" };
   }
 
   function snapshot() {
@@ -82,13 +96,10 @@ export function createRuntimeServiceState({
   return {
     admission,
     beginDrain,
-    close: () => performanceMetrics.close?.(),
+    startHealthMonitoring: () => databaseHealth?.start(),
+    close: () => { databaseHealth?.close(); performanceMetrics.close?.(); },
     isDraining: () => draining,
-    readiness: () => ({
-      ok: !draining,
-      status: draining ? "draining" : "ready",
-      ...(draining ? { reason: drainReason, startedAt: drainStartedAt } : {})
-    }),
+    readiness,
     snapshot
   };
 }

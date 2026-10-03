@@ -1053,3 +1053,100 @@ Scoped light text override for costume-shop empty label, preserving other paper 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 153: Aemeath expression sprite delivery
+
+**Date**: 2026-10-02
+**Task**: Aemeath expression sprite delivery
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+Completed eight personality-based expressions with native transparent PNGs, layered PSD, saved prompts and independent pixel/render QA; delivered preview and ZIP. Archived only this task, preserved unrelated project work.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `de734af` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 154: Sigrika expression asset naming
+
+**Date**: 2026-10-02
+**Task**: Sigrika expression asset naming
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+Renamed the first character package to Sigrika / 西格莉卡, including nine delivery PNGs, PSD, previews and ZIP. Synchronized metadata and regeneration scripts. All 90 binary files are byte-identical; all 104 archive entries match the package.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `448bef7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 155: 换电脑开发交接说明
+
+**Date**: 2026-10-03
+**Task**: 换电脑开发交接说明
+**Branch**: `codex/battle-paper-panels`
+
+### Summary
+
+新增 docs/development-handoff.md，记录 Git 接续、本地数据迁移、Trellis 身份及近期已提交/未提交工作边界；系统设计导航和 HTML 同步。文档生成、4 项 HTML 检查及18个本地链接验证通过。未修改业务代码、未复跑业务全量测试、未提交或推送。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

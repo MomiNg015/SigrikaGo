@@ -1,0 +1,33 @@
+import { expect, test } from "@playwright/test";
+import { registerPlayer } from "./helpers.js";
+
+test("keeps the session through a startup 503 and retries with a failed music catalog", async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  const auth = await registerPlayer(page.context(), "nw");
+  const headers = { Authorization: `Bearer ${auth.token}` };
+  expect((await page.request.post("/api/onboarding-story/completed", { headers })).ok()).toBe(true);
+  expect((await page.request.post("/api/home-onboarding/start", { headers })).ok()).toBe(true);
+  expect((await page.request.post("/api/home-onboarding/finish", { headers, data: { outcome: "skipped" } })).ok()).toBe(true);
+  const failMe = (route) => route.fulfill({ status: 503, contentType: "text/html", body: "temporarily unavailable" });
+  await page.route("**/api/me", failMe);
+  await page.route("**/api/music-tracks", (route) => route.fulfill({ status: 503, body: "unavailable" }));
+  await page.goto("/");
+  const notice = page.locator(".connection-notice");
+  await expect(notice).toContainText("暂时无法加载账号", { timeout: 45_000 });
+  await expect(page.locator(".auth-screen")).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath("startup-retry.png") });
+  await page.unroute("**/api/me", failMe);
+  await notice.getByRole("button", { name: "重试", exact: true }).click();
+  await expect(page.getByRole("button", { name: "打开履历" })).toBeVisible({ timeout: 45_000 });
+  await expect(notice).toHaveCount(0);
+  await page.context().setOffline(true);
+  await expect(notice).toContainText("连接已断开", { timeout: 15_000 });
+  await page.screenshot({ path: testInfo.outputPath("connection-lost.png") });
+  const box = await notice.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+  await page.context().setOffline(false);
+  await expect(notice).toHaveCount(0, { timeout: 20_000 });
+  await expect(page.getByRole("button", { name: "打开履历" })).toBeVisible();
+});

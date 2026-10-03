@@ -1,3 +1,4 @@
+import { notePersistenceFailure, notePersistenceSuccess } from "./persistenceHealth.js";
 import { GAME_PHASES } from "../src/shared/game.js";
 
 export const ROOM_CLOSE_DELAY_MS = 5 * 60 * 1000;
@@ -65,12 +66,18 @@ export function createRoomCloseLifecycle({
     room.recordSavePromise = Promise.resolve(saveGameRecord(room))
       .catch((error) => {
         room.recordSaveError = error;
+        notePersistenceFailure(`result:${room.code}`);
         metrics?.increment?.("roomResultSaveErrors");
         onSaveError(error);
       })
       .finally(() => {
         room.recordSavePromise = null;
-        if (room.recordSaved) onRecordSaved(room, io);
+        if (room.recordSaved && rooms.get(room.code) === room) {
+          room.recordSaveError = null;
+          notePersistenceSuccess(`result:${room.code}`);
+          persistRoom(room, { force: true });
+          onRecordSaved(room, io);
+        }
       });
   }
 

@@ -9,8 +9,8 @@ import InformationCenterLayout, { useNarrowInformationCenter } from "./Informati
 import { ModalActionButton } from "./modalComponents.jsx";
 
 const KINDS = Object.freeze([
-  { id: "announcement", label: "\u516c\u544a", mobileEmptyText: "\u6682\u65e0\u516c\u544a" },
-  { id: "changelog", label: "\u66f4\u65b0\u65e5\u5fd7", tabLabel: "\u65e5\u5fd7", mobileEmptyText: "\u6682\u65e0\u66f4\u65b0\u65e5\u5fd7" }
+  { id: "announcement", label: "\u516c\u544a", emptyText: "\u6682\u65e0\u516c\u544a" },
+  { id: "changelog", label: "\u66f4\u65b0\u65e5\u5fd7", tabLabel: "\u65e5\u5fd7", emptyText: "\u6682\u65e0\u66f4\u65b0\u65e5\u5fd7" }
 ]);
 const PAGE_SIZE = 20;
 
@@ -25,8 +25,7 @@ const TEXT = Object.freeze({
   unread: "\u672a\u8bfb",
   detailLoading: "\u6b63\u5728\u8bfb\u53d6\u8be6\u60c5...",
   lastEdited: "\u6700\u540e\u7f16\u8f91",
-  back: "\u8fd4\u56de\u516c\u544a\u5217\u8868",
-  empty: "\u8fd9\u91cc\u7a7a\u7a7a\u5982\u4e5f~"
+  back: "\u8fd4\u56de\u516c\u544a\u5217\u8868"
 });
 
 function emptyListState() {
@@ -248,7 +247,7 @@ export default function AnnouncementModal({
             )}
             {activeList.loading && <WindowLoadingState compact>{TEXT.loading}</WindowLoadingState>}
             {!activeList.loading && activeList.loaded && activeList.items.length === 0 && (
-              <WindowEmptyState compact className="announcement-empty">{isNarrow ? activeMeta.mobileEmptyText : TEXT.empty}</WindowEmptyState>
+              <WindowEmptyState compact className="announcement-empty">{activeMeta.emptyText}</WindowEmptyState>
             )}
             {activeList.items.length > 0 && (
               <ul className="announcement-list">
@@ -326,7 +325,7 @@ export default function AnnouncementModal({
           {detail.readError && <p className="form-error announcement-read-error">{detail.readError}</p>}
         </article>
       ) : (
-        <WindowEmptyState className="information-center-empty-reader">{TEXT.empty}</WindowEmptyState>
+        <WindowEmptyState className="information-center-empty-reader">{activeMeta.emptyText}</WindowEmptyState>
       )}
     />
   );

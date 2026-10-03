@@ -66,7 +66,7 @@ export default function FriendsList({
           </Fragment>
         );
       })}
-      {rows.length === 0 && <WindowEmptyState>暂无名单成员。</WindowEmptyState>}
+      {rows.length === 0 && <WindowEmptyState>{activeTab === "friends" ? "暂无好友" : "暂无黑名单"}</WindowEmptyState>}
     </div>
   );
 }

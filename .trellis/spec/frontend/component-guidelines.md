@@ -108,7 +108,7 @@ Current Phase 4 domain wrappers:
 - Shared structure lives in `modals/information-center.css`; feature CSS owns content visuals, and `mobile-adaptive/information-center.css` owns final post-theme safe-area and pane-transition rules.
 
 #### 4. Validation & Error Matrix
-- Empty list -> render `这里空空如也~` in the available list/reader surface and keep mobile on the list pane.
+- Empty player cards/lists -> render only `暂无` plus the corresponding card/content name (for example `暂无角色战绩`, `暂无公告`, `暂无更新日志`, `暂无邮件`). Use the same wording on desktop and portrait mobile; do not add guidance, descriptions, or punctuation. Keep mobile information centers on the list pane.
 - Explicit selection -> desktop reader updates; mobile master becomes inert and detail is visible.
 - Back from mobile detail -> selection clears or feature-defined detail closes, list becomes active, original row regains focus.
 - Empty/loading/error data -> keep the shell mounted and announce status through a dedicated live region.
@@ -1378,7 +1378,6 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 ### Team lineup geometry
 
 Keep the name row mounted and reserve the same two-line height in empty and occupied slots. Removing placeholder copy must not remove layout space. Browser regression checks compare dialog x/y/width/height at zero, one, two and three selections and after deselection on desktop and portrait phones.
-
 ## Standard story sprite presentation
 
 `StoryPlayerModal`, teaching NPC bubbles and the fixed home tour share [Story Sprite And Expression Contract](../backend/story-sprite-contract.md). Only valid standard appearances opt into `.standard-story-sprite`; existing portraits retain their layout. Same appearance retains its image element while expression changes its source. Desktop uses an independent art column; portrait phones use a bounded bust stage above the text scroller, with choices outside that scroller. Preserve long-text effect/typewriter timing, narration clearing and existing guide target geometry. Bright School's final phone shell owner must use the matching standard-sprite grid override.

@@ -314,10 +314,10 @@ describe("room state persistence", () => {
       throttleMs: 5000
     });
 
-    expect(roomPersistenceStats()).toEqual({ pendingRooms: 1 });
+    expect(roomPersistenceStats()).toMatchObject({ pendingRooms: 1 });
     write.resolve();
     await flushRoomPersistence();
-    expect(roomPersistenceStats()).toEqual({ pendingRooms: 0 });
+    expect(roomPersistenceStats()).toMatchObject({ pendingRooms: 0 });
   });
 });
 

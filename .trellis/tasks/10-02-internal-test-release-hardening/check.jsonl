@@ -1,0 +1,11 @@
+{"file": ".trellis/spec/backend/internal-test-release-contract.md", "reason": "Eight release contracts and their executable regression gates"}
+{"file": ".trellis/spec/backend/authentication-contract.md", "reason": "Shared password validation and database session authority"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "SQLite migration and compatibility boundaries"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Room close, recovery and deployment safety"}
+{"file": ".trellis/spec/backend/local-practice-engine-contract.md", "reason": "Native/WASM engine position and authority"}
+{"file": ".trellis/spec/backend/team-match-contract.md", "reason": "All-mode occupancy and finished team record persistence"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Retain state and handle authoritative socket updates"}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Existing feedback owner and non-growth CSS gates"}
+{"file": "docs/system-design/03-backend-realtime-api.md", "reason": "Current reviewed cross-layer design facts"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Concise player empty-state copy without guidance on desktop and portrait mobile"}
+{"file": ".trellis/spec/backend/full-system-test-contract.md", "reason": "Real flow coverage, sequential browser suites and strict disposable service isolation"}

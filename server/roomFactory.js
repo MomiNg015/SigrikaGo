@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import {
   COLORS,
   GAME_PHASES,
@@ -72,6 +73,7 @@ export function createRoom(first, second, {
     timerId: null,
     timeoutIds: [],
     lastTick: now(),
+    settlementId: randomUUID(),
     recordSaved: false
   });
 }
@@ -167,6 +169,7 @@ export function createPracticeRoom(player, {
     timerId: null,
     timeoutIds: [],
     lastTick: now(),
+    settlementId: randomUUID(),
     recordSaved: false
   };
 }

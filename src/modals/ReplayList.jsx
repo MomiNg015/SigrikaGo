@@ -12,7 +12,7 @@ import {
 import { SIGRIKA_CANDY_DUEL } from "../shared/sigrikaCandyArc.js";
 
 export function ReplayList({ records = [], characters, onOpenReplay, compact = false, currentUser = null }) {
-  if (records.length === 0) return <WindowEmptyState compact={compact}>暂无已结束的对局记录。</WindowEmptyState>;
+  if (records.length === 0) return <WindowEmptyState compact={compact}>暂无对局回放</WindowEmptyState>;
 
   return (
     <div className={`replay-table ${compact ? "compact" : ""}`}>

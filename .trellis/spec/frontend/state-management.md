@@ -803,3 +803,6 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 - Storing `resultModalOpen` as independent state instead of deriving it from `useRoomSessionState()`.
 - Adding independent match booleans instead of deriving them from `useMatchSessionState()`.
 - Replaying direct-duel banner state or doorbell audio for the same `requestId` instead of suppressing duplicate `duel:incoming` payloads through `incomingDuelRef`.
+
+
+Startup network and match ACK behavior follows [Internal Test Release Contract](../backend/internal-test-release-contract.md). Transient auth/preload failures retain session state; only confirmed 401/403 resets authentication.

@@ -53,9 +53,13 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<p>换电脑接续开发请先阅读<a href="./development-handoff.md">开发交接说明</a>，统一通过 <code>master</code> 获取代码，并单独处理本地环境配置、SQLite 数据库和上传资源。下一阶段按场景用多表情标准立绘逐步替换 Q 版立绘，同步重排人物展示与界面布局；既有实现、建议顺序、验收边界和启动步骤均在该说明中记录。</p>
 <p>剧情引导新增<a href="./prototypes/character-sprites/guide.html">完善构图样板</a>：按现有台词、选项与作者表情配置覆盖 11 种情境。正式剧情窗口现已采用样板的教室舞台、固定大腿以上人物裁切与底部加高纸面，正文独立滚动，表情和选项变化不移动人物；教学对弈和入口引导更新原气泡左侧胸口以上立绘，人物底边贴齐整个气泡底边，仅裁切底部，完整保留头饰与两侧轮廓；左侧留白扩大，人物与正文保持间距，短气泡头部适度出框，保留原气泡宽度、定位、浮层和交互，正文自然换行。离线样板的棋盘排版与暂收按钮仍属于设计演示，运行边界见<a href="./prototypes/character-sprites/README.md">样板说明</a>。</p>
 <p>标准立绘交互样板见<a href="./prototypes/character-sprites/index.html">场景样板</a>：沿用 Bright School 纸面视觉，在剧情、对局技能、队际头像和结算之外，新增部员手册、首页学生证和履历。手册列表采用浅底手绘横版学生证，左胸像、右姓名及透明底旗子出战图标，不重复显示学院文字；桌面两至三列、手机竖屏两列，底图按角色色相变化并保留少量学院科技线条；详情为桌面竖向全身、手机膝上展示，三角色均可浏览九种表情并打开完整立绘；学生证与履历保持默认微笑、紧凑头像和独立战绩滚动。样板复制三套 27 张原透明 PNG，以 CSS 校准用途构图，爱弥斯仍映射为 <code>aemeath</code>；介绍和技能文案从正式默认快照提取为离线数据。落子、出战、账号、战绩与胜负均为本地演示，正式组件、资源入口和 API 尚未接入。运行方式与验证范围见<a href="./prototypes/character-sprites/README.md">样板说明</a>。</p>
 <p>标准立绘已接入正式剧情引导：现有 225 节点与所有台词、选项、跳转、计时和棋盘动作保持不变，169 段角色对白及首页导览的 22 段对白按内容配置表情。剧情窗口、教学气泡与首页导览均使用完整表情源；标准人物左侧留白扩大至桌面140px／手机130px，仅裁胸口以下，底边贴齐气泡，头饰与两侧轮廓完整；正文列间距20px／18px，旧肖像仍保留68px／58px槽位。后台和 Excel 可编辑两项展示字段，旧数据库通过完整原文匹配的作者配置接入，无需覆盖发布内容。三套素材共 27 张完整图及 27 张头像，爱弥斯沿用 <code>aemeath</code> 标识；特殊造型优先并保留原肖像回退。资源和优先级见<a href="./system-design/05-assets-audio-preload.md#标准剧情立绘与表情">资产分篇</a>，竖屏构图见<a href="./system-design/06-ui-theme-mobile.md#标准剧情立绘布局">界面分篇</a>，其余场景仍按<a href="./character-sprite-integration-plan.md">分阶段方案</a>等待后续实装。</p>
+<p>全项目浏览器验证使用 <code>npm run test:e2e:all</code>，串行运行完整应用及四套专用页面；HTTP、Socket、SQLite、上传与 Vite 缓存均与开发服务隔离；静态 fixture 禁用开发代理，启动前探测后端端口占用、后台健康后才接纳测试，确认子进程退出后清库，活跃 PID 阻止误删，Vite 测试进程不因自动化 stdin 关闭而退出。新增真实后台巡检、经济并发、权限、各模式结算回放、桌面与手机窗口、Excel 回环和百手吃子挑战覆盖。封禁成功后立即断开该账号全部在线 Socket，事务失败不踢出。测试边界和复跑入口见<a href="./system-design/08-workflow-and-history.md#全项目测试入口与隔离">全量测试工作流</a>，本机最终 2,857 项代码测试、74 项浏览器用例、187 个音声文件检查通过，迁移/备份/容量 smoke/WASM 对照及智子云搜索通过；具体边界、异常和一次旧稳定性入口的开发数据库风险见<a href="./testing-2026-10-02.md">2026-10-02 测试记录</a>。</p>
+<p>玩家窗口和卡片的空状态统一使用“暂无＋对应内容名称”，例如“暂无角色战绩”“暂无公告”“暂无邮件”；桌面与手机竖屏一致，不附加解释或引导文本。日常 <code>npm test</code> 默认单 worker，避免全量测试自动占满本机资源。</p>
+<p>2026-10-02 内测发布加固完成：有效对局以持久化唯一回执结算，提交后才广播奖励和已保存状态；恢复过期未保存终局会先重试。所有匹配和建房入口阻止同账号重复参赛；启动临时故障保留会话并可重试，实时断线和匹配 ACK 失败有明确反馈。管理员重置密码复用共享规则、事务内撤销全部会话并断开在线连接。棋钟保留每人的亚秒余量、恢复暂停重置计时基线，GNU Go/KataGo 共用贴目单位转换。readiness 检测有界数据库探针及持续持久化失败；生产检查明确要求 <code>NODE_ENV=production</code>。更新脚本保留完整旧发布和停服后的迁移前数据库，迁移开始后失败保持停服，配套显式恢复脚本。系统设计 HTML 使用完整临时文件替换，连续生成可重复执行。详见<a href="./system-design/03-backend-realtime-api.md#内测发布加固2026-10-02">后端运行合同</a>和<a href="./deployment.md#更新流程">部署手册</a>。</p>
 <p>所有模式的无效对局（<code>game.winner.invalid</code>）均不生成回放记录，检查先于队际赛、陪练和特殊剧情分支。本人、他人及后台回放列表过滤历史无效快照，按 ID 读取无效回放返回 404；玩家列表按有效记录补足分页，友谊对局不因未计分而被过滤。</p>
 <p>移动端时钟卡随回合切换呈现抬起／压下状态，队际赛头像斜切纸片取消上下边框碎线。匹配等待事件附带 <code>serverNow</code>，客户端用服务器已等待时长换算本地起点，避免设备时钟偏差造成初始计时跳到十几秒；排队放宽仍由服务端控制。</p>
 <p>对局开场语音按房间、事件与玩家在当前页面会话内去重（最多保留 128 条），窗口尺寸限制导致界面卸载重建不会重播；恢复快照同步登记已发生的开场事件。准时宝普通陪练与吃子挑战赛统一忽略娜波摩颜色伪装、按真实棋色计算，其他暗手可见性与玩家展示保持原规则。</p>
@@ -82,7 +86,7 @@
 <p>对弈技能次数耗尽时，技能信息按钮整体灰度显示，覆盖背景、边框、图标和文字；桌面与手机竖屏一致，恢复次数后恢复原配色。</p>
 <p>对局回放窗口不设模式选项卡，沿用点击回放按钮时的模式；星炬回放查询同时包含星炬与队际赛，按时间统一分页。队际赛记录以左上角旗子角标区分，列表为外伸角标预留滚动边界空间。</p>
 <p>队际赛背景音乐从技能发生时的阶段阵容解析角色，换轮不再用新角色重解释旧技能；换轮前的曲目持续播放，直到新的技能或终局按既有规则切换，重连亦可从棋谱历史恢复。</p>
-<p>队际赛已接入星炬子入口：三名已拥有且可用的不同角色按序接力，独立 FIFO 匹配，13 路规则与整局用时沿用星炬。全局第 40／80 手达到阈值后，等待当前连下和技能结算完成再同步换人；每轮五秒对决演出暂停棋钟并播放己方当前角色出战语音，换轮维持原 BGM。桌面立绘采用纵向居中、左右裁切的大图和斜线分隔；选人按卡片点击顺序排列，选中保留卡片边框、呈浅绿色按下态与右上角实心圆序号，空位不显示“选择部员”文字，但固定预留名称区高度，选择和取消角色不改变窗口尺寸或位置。己方候场灰色、对手候场问号，观战双方候场均保密，终局公开完整阵容；首版仅保存棋谱，不计段位、金币与既有战绩。详见<a href="./system-design/03-backend-realtime-api.md#队际赛协议与阶段生命周期">队际赛协议与阶段生命周期</a>。</p>
+<p>队际赛已接入星炬子入口：三名已拥有且可用的不同角色按序接力，独立 FIFO 匹配，13 路规则与整局用时沿用星炬。全局第 40／80 手达到阈值后，等待当前连下和技能结算完成再同步换人；每轮五秒对决演出暂停棋钟并播放己方当前角色出战语音，换轮维持原 BGM。桌面立绘采用纵向居中、左右裁切的大图和斜线分隔；选人按卡片点击顺序排列，选中保留卡片边框、呈浅绿色按下态与右上角实心圆序号，空位不显示“选择部员”文字，但固定预留名称区高度，选择和取消角色不改变窗口尺寸或位置。己方候场彩色、已退场角色灰显、对手候场问号，观战双方候场均保密，终局公开完整阵容；首版仅保存棋谱，不计段位、金币与既有战绩。详见<a href="./system-design/03-backend-realtime-api.md#队际赛协议与阶段生命周期">队际赛协议与阶段生命周期</a>。</p>
 <p>星炬的三张模式子卡片不显示英文背景水印，父级三类对弈卡片仍保留原水印。吃子挑战赛仅保留在星炬子模式层；准时宝陪练难度窗口只提供入门、中级和高级。</p>
 <p>匹配模式窗口采用两层选择：点击星炬卡片后，父卡与准时宝陪练按钮一起上移，标准和五子棋卡片向左退出，下拉显示常规匹配、吃子挑战赛和队际赛。常规匹配沿用星炬队列，吃子挑战赛复用高级准时宝挑战入口；陪练在切换和展开期间始终可用。返回恢复第一层，重新打开重置选择；规则提示、原卡片颜色和内部样式保持，黑化剧情入口优先于普通选择。动效由独立外层容器负责，隐藏层不接收焦点，减少动态效果偏好下立即切换。</p>
 <p>吃子挑战赛入场时预热准时宝立绘，并在首场对决演出允许图片继续加载至截止时间前的安全窗口；赛事子卡片桌面悬停显示规则，移动端以右上角说明按钮打开浮窗，长说明在浮窗宽度内自然换行。队际赛选人窗口使用校园便签图片标题，窗口自身作为标题的定位基准，标题不随内容滚动，并在三个 Round 下显示 0-40、41-80、81 手至终局的阶段区间。</p>
@@ -823,13 +827,13 @@
 <li>技能演出与音频恢复边界：<code>BoardSkillEffects</code> 继续把 Pixi 作为 presentation-only 覆盖层，严格 CSP 环境下先加载 <code>pixi.js/unsafe-eval</code> 再加载 <code>pixi.js</code>；真实 <code>.board-effects-canvas</code> 是技能演出验收条件，不再渲染 DOM/CSS 替代动画。Pixi app 初始化和阻塞型 Pixi sprite 资源加载都会在技能横幅窗口内提前开始，只有两者都完成后才挂载透明 canvas 并进入可见播放，避免贴图未进 Pixi 缓存时由 <code>Sprite.from()</code> 读到空纹理或白帧；仅供结算后 DOM marker 使用的资源（如 Voyage Star crater WebP）仍属于非阻塞预热资源，不能延迟程序化 Pixi cast。协议接管和陨石擦除等临时 Pixi 残留层需要在演出结束前淡出，收尾清理必须先把 <code>.board-effects-canvas</code> 从 overlay host 摘除，再销毁 Pixi/WebGL app，避免 WebGL context teardown 在仍参与合成时露出底帧。Pixi 初始化、WebGL、贴图、renderer 或 ticker 异常只会标记 <code>data-effect-failed</code> / <code>data-effect-error</code>、清理 sound timers 和 canvas，并保持对局页面不白屏，准生产测试仍判该技能失败。本地 Vite dev server 不预优化 Pixi 入口，但会预优化 Pixi 的嵌套 CommonJS/conditional-export 子依赖以保留 ESM 互操作，避免开发期浏览器继续请求已经失效的 optimized renderer 文件，或直接加载 raw CJS 子依赖导致技能 canvas 没有挂载。BGM 加载会校验 HTTP <code>response.ok</code>、记录 decode/fetch 失败源，WebAudio 调度失败时使用 <code>Audio</code> fallback，并在 <code>room:update</code> 音频基线、socket 重连、<code>pageshow</code>、可见性恢复和首次交互后恢复当前曲目；组件级 <code>BackgroundMusic</code> 卸载时会立即停止 WebAudio/HTML fallback、清空当前曲目并废弃未完成调度，避免局部界面退出后残留 BGM。</li>
 </ul>
 <ul>
-<li>生产静态边界：<code>deploy/nginx/sigrikago.conf</code> 固定正式 HTTPS 站点与证书入口，<code>deploy/nginx/sigrikago-routes.conf</code> 把 <code>/socket.io/</code>、<code>/api/</code>、<code>/health/*</code>、<code>/uploads/</code>、Vite hash 资源、普通 <code>/assets/**</code> 和 SPA shell 分开；静态文件与上传不再经过 Node。HTML/CSS/JavaScript/JSON/XML/SVG 由 Nginx gzip，Vite hash 产物使用一年 immutable；文件名稳定、部署时可能替换内容的普通图片/音频使用 <code>no-cache</code> 条件请求，避免浏览器继续显示旧按钮图或旧演出资源；<code>index.html</code> 同样使用 no-cache。SPA HTML 的 CSP 与 Helmet 同样保持 <code>script-src 'self'</code>，只通过 <code>worker-src 'self' blob:</code> 放行 Pixi 动态图片解码 Worker；<code>server/staticAssets.js</code> 在无 Nginx 的 Node 回退托管中维持同一缓存合同。<code>deploy/update-production.sh</code> 是 root 管理的单机更新编排：先通过 <code>set -a</code> 导出项目 <code>.env</code>，使检查、Prisma 和子进程与 systemd <code>EnvironmentFile</code> 使用同一配置；随后拒绝 tracked/staged 脏树和非远端祖先历史，先用私有权限做 SQLite 一致性备份，再恢复 Nginx 可读的构建权限、仅快进拉取，并以 <code>npm ci --include=dev</code> 确保生产环境仍安装 Vite 等构建期依赖，再在 <code>.tmp/production-update-*</code> 构建新前端并完成生产配置/Nginx 语法检查；然后停服执行迁移与完整非用户后台快照同步、切换完整 <code>dist</code>，最后 reload Nginx、启动单实例并在 60 秒内等待 readiness。停服后失败会尝试恢复上一份前端产物并重新启动服务，但不会强制重写 Git 历史或自动回滚数据库。</li>
+<li>生产静态边界：<code>deploy/nginx/sigrikago.conf</code> 固定正式 HTTPS 站点与证书入口，<code>deploy/nginx/sigrikago-routes.conf</code> 把 <code>/socket.io/</code>、<code>/api/</code>、<code>/health/*</code>、<code>/uploads/</code>、Vite hash 资源、普通 <code>/assets/**</code> 和 SPA shell 分开；静态文件与上传不再经过 Node。HTML/CSS/JavaScript/JSON/XML/SVG 由 Nginx gzip，Vite hash 产物使用一年 immutable；文件名稳定、部署时可能替换内容的普通图片/音频使用 <code>no-cache</code> 条件请求，避免浏览器继续显示旧按钮图或旧演出资源；<code>index.html</code> 同样使用 no-cache。SPA HTML 的 CSP 与 Helmet 同样保持 <code>script-src 'self'</code>，只通过 <code>worker-src 'self' blob:</code> 放行 Pixi 动态图片解码 Worker；<code>server/staticAssets.js</code> 在无 Nginx 的 Node 回退托管中维持同一缓存合同。<code>deploy/update-production.sh</code> 是 root 管理的单机更新编排：先通过 <code>set -a</code> 导出项目 <code>.env</code>，使检查、Prisma 和子进程与 systemd <code>EnvironmentFile</code> 使用同一配置；随后拒绝 tracked/staged 脏树和非远端祖先历史，先用私有权限做 SQLite 一致性备份，再恢复 Nginx 可读的构建权限、仅快进拉取，并以 <code>npm ci --include=dev</code> 确保生产环境仍安装 Vite 等构建期依赖，再在 <code>.tmp/production-update-*</code> 构建新前端并完成生产配置/Nginx 语法检查；然后停服执行迁移与完整非用户后台快照同步、切换完整 <code>dist</code>，最后 reload Nginx、启动单实例并在 60 秒内等待 readiness。停服后保留迁移前数据库和完整旧发布；迁移开始后失败保持停服，由显式恢复脚本还原数据库、前端、源码及依赖，并验证 readiness。</li>
 </ul>
 <ul>
 <li>2核2G 部署门禁：<code>deploy/systemd/sigrikago.service</code> 使用直接 Node ExecStart、25 秒优雅停止、文件描述符上限和 1400M/1600M 内存压力/硬边界；<code>npm run verify:capacity -- --profile smoke|target</code> 通过隔离数据库和独立进程覆盖冷静态入口、空闲 Socket、并发房间、观战、action ack、20% 重连及 SIGTERM 恢复，并把客户端延迟与服务端 CPU/RSS/event-loop/持久化指标写入 <code>artifacts/capacity/</code>。</li>
 </ul>
 <ul>
-<li>本地准生产稳定性验证入口是 <code>npm run verify:stability</code>：脚本先执行 Vite production build，再通过 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，以 <code>LOCAL_PROD_STATIC=1</code> 让同一个 Express/Socket.IO 服务托管 <code>dist/</code> 并保留非 production 的本地测试能力；默认端口是 <code>4173</code>，可用 <code>STABILITY_PORT</code> 或 <code>PORT</code> 覆盖。稳定性服务器使用 <code>NODE_ENV=stability</code>，仅在该环境把 <code>/api/auth</code> 限流上限提高到足够覆盖桌面和移动两组注册/刷新流量，生产环境仍保持严格 auth 限流。稳定性用例覆盖生产包缓存边界、运行时资源失败不白屏、桌面/移动浏览器的对局刷新恢复、星炬与爱弥斯 <code>hidden-hand</code> / <code>voyage-star</code> 真实 Pixi canvas、finished 房间退出后刷新不重弹结果、以及对手重连不触发本机“操作频繁”toast；它减少云服务器反复部署验证，但最终上线仍需确认 Nginx/CDN 没有覆盖 Node 返回的缓存头。</li>
+<li>本地准生产稳定性验证入口是 <code>npm run verify:stability</code>：脚本先执行 Vite production build，再通过 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，以 <code>LOCAL_PROD_STATIC=1</code> 让同一个 Express/Socket.IO 服务托管 <code>dist/</code> 并保留非 production 的本地测试能力；默认端口是 <code>4173</code>，仅可用 <code>STABILITY_PORT</code> 覆盖，不继承开发 <code>PORT</code>。稳定性服务器使用 <code>NODE_ENV=stability</code>，仅在该环境把 <code>/api/auth</code> 限流上限提高到足够覆盖桌面和移动两组注册/刷新流量，生产环境仍保持严格 auth 限流。稳定性用例覆盖生产包缓存边界、运行时资源失败不白屏、桌面/移动浏览器的对局刷新恢复、星炬与爱弥斯 <code>hidden-hand</code> / <code>voyage-star</code> 真实 Pixi canvas、finished 房间退出后刷新不重弹结果、以及对手重连不触发本机“操作频繁”toast；它减少云服务器反复部署验证，但最终上线仍需确认 Nginx/CDN 没有覆盖 Node 返回的缓存头。</li>
 </ul>
 <ul>
 <li>GitHub Actions 的 <code>CI</code> workflow 是远端质量门：pull request 和 <code>master</code> push 会执行 <code>npm ci</code>、<code>npm test</code>、<code>npm run build</code>、示例生产配置检查和 <code>npm run docs:system-design</code>，与本地交付门保持一致。</li>
@@ -967,6 +971,7 @@
 <p>桌面棋钟收紧主数字与读秒次数间距，取消主数字4.2ch最小宽度，读秒次数仅显示数字，与秒数保持18px间距。当前回合为黄色抬起卡片（6px实体底座），非当前回合下沉5px并保留1px底座与内阴影；状态切换不改变布局占位，统计卡仍保持标签和数值同行。</p>
 <p>桌面棋钟采用左右镜像的1.5度纸片倾斜，统计卡轻微交错倾斜并使用同色硬阴影，延续身份卡和技能卡的错落风格。移动布局不变。</p>
 <p>移动端对弈信息区时钟、读秒次数、提子／除子／超频数值、技能次数和段位使用400常规字重，保留WuWa数字字体，避免合成粗体。</p>
+<p>稳定性浏览器入口强制新建本次测试数据库、独立上传及 origin，禁用远端智子；不接受开发 DATABASE_URL，端口占用在数据库初始化前检查。真实进程重启回归直接启动 server/index.js 并复用自己创建的隔离库。</p>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2323,7 +2328,7 @@
 <li>对局结束后写入 <code>GameRecord</code>。</li>
 </ul>
 <ul>
-<li>棋谱保存房间快照 <code>snapshot</code>；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 <code>GameRecord.snapshot</code>，避免断线后恢复结果时展示结算前的旧用户状态。</li>
+<li>棋谱保存房间快照 <code>snapshot</code>；胜负局先在克隆玩家状态计算积分、金币和战绩并生成 <code>GameRecord.snapshot</code> 与唯一结算回执，事务提交后才合并到实际房间并广播，避免数据库失败时提前显示奖励；旧快照恢复复用已提交回执。</li>
 </ul>
 <ul>
 <li>用户可看自己的全部棋谱摘要；履历会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。</li>
@@ -3237,8 +3242,11 @@
 <ul>
 <li>对弈信息区 <code>PlayerInfo</code> 只显示段位名称；排行榜仍显示完整星数/积分，并读取服务端 <code>ranking</code> 保持并列名次与固定“我的排名”一致。开场和房间号通过 <code>roomMatchClassification</code> 读取冻结的 <code>rated</code> 标志，分别显示浅红升降级、浅绿友谊标签；普通匹配满15秒追加扩大段位范围提示。</li>
 </ul>
+<h2>启动与匹配失败恢复（2026-10-02）</h2>
+<p><code>useAuthSession</code> / <code>useStartupPreload</code> 向 App 报告可重试的 <code>startupError</code>，临时失败保留认证和房间状态；<code>ConnectionNotice</code> 显示启动重试或 Socket 重连状态，使用主题变量及现有反馈样式。<code>startMatchTransition</code> 使用连接检查、ACK、8 秒超时与 <code>match:found</code> 权威成功信号，<code>cancelMatchStart</code> 清理等待监听和计时器；不在无连接时显示虚假的排队状态。共享密码规则和引擎贴目转换分别位于 <code>src/shared/passwordValidation.js</code> 与 <code>engineKomi.js</code>。</p>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
+<p>封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。</p>
 <p>opening 阶段房间快照增加 <code>openingServerNow</code>（发送时服务端毫秒时间），与原 <code>openingEndsAt</code> 共同表示剩余时长。<code>normalizeRoomSnapshot</code> 在接收时生成仅客户端使用的 <code>__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)</code>；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。</p>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
 <h2>当前结论</h2>
@@ -3306,7 +3314,7 @@
 <li><code>assertProductionDeployment</code> 在生产环境启动时执行部署配置体检：<code>JWT_SECRET</code> 至少 32 位且不能使用默认值，<code>PUBLIC_ORIGIN</code> / <code>SITE_ORIGIN</code> / <code>ALLOWED_ORIGINS</code> 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。</li>
 </ul>
 <ul>
-<li><code>npm run check:production</code> 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 <code>dotenv/config</code> 加载当前工作目录的 <code>.env</code>，再由进程环境覆盖同名值，并默认按生产规则检查，因此一键更新脚本不会漏掉 systemd <code>EnvironmentFile</code> 中的真实配置，调用方忘记设置 <code>NODE_ENV=production</code> 时也不会按开发环境误通过。</li>
+<li><code>npm run check:production</code> 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 <code>dotenv/config</code> 加载当前工作目录的 <code>.env</code>，再由进程环境覆盖同名值，明确要求 <code>NODE_ENV=production</code>；未设置或使用 development/stability 都拒绝。聚合质量入口只为示例配置显式设置生产环境，正式部署仍检查真实 <code>.env</code>。</li>
 </ul>
 <ul>
 <li><code>npm run check</code> 是当前交付前的聚合质量入口，会顺序运行 ESLint、单元测试、资源/后台快照检查、Vite build、构建 CSS 合同检查、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。</li>
@@ -3315,13 +3323,13 @@
 <li><code>npm run production:schema-compat</code> 只调用 <code>ensureServerSchema()</code>：正式更新在停服并完成 <code>prisma migrate deploy</code> 后、任何 <code>admin:sync-defaults</code> 读取之前执行它，幂等补齐早期 SQLite 部署中已被迁移历史遗漏的兼容表、列和索引。它不会 seed 后台数据，也不会写 <code>_prisma_migrations</code>；未来模型变化仍必须提交新的 Prisma migration。</li>
 </ul>
 <ul>
-<li>2026-07-20 依赖加固后，<code>npm audit --omit=dev</code> 已无 high/critical；Multer、Express/<code>qs</code>、Socket.IO/<code>ws</code> 与 Vite/Vitest/Babel 工具链使用当前主版本内的修复版本。保留的 ExcelJS/<code>uuid</code> moderate 传递告警仅位于管理员按需加载的剧情工作簿功能，项目不直接调用 <code>uuid</code>；上游 ExcelJS 尚无修复版，禁止用审计建议的降级或未经验证的跨主版本 override 替代回归验证。</li>
+<li>2026-10-02 运行依赖加固后，<code>npm audit --omit=dev</code> 为 0：Multer、Socket.IO parser、XML/qs/ip-address 等更新到兼容修复版本；ExcelJS 仅在自身范围 override <code>uuid=11.1.1</code>，剧情工作簿回归验证其 API 兼容。全量审计还保留 Vitest mocker 和 Sharp 的开发工具告警，需要另行验证主版本升级；不进入生产 API 运行路径。</li>
 </ul>
 <ul>
 <li><code>.github/workflows/ci.yml</code> 是仓库级远端质量门：pull request 和 <code>master</code> push 会在 Ubuntu 上执行 <code>npm ci</code>、<code>npm test</code>、<code>npm run build</code>、示例生产配置检查和 <code>npm run docs:system-design</code>。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。</li>
 </ul>
 <ul>
-<li><code>npm run verify:stability</code> 是本地准生产稳定性入口。它先构建 <code>dist/</code>，再用 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，该启动脚本强制 <code>NODE_ENV=stability</code>、<code>LOCAL_PROD_STATIC=1</code>、<code>ENABLE_TEST_ACTIONS=true</code> 和默认端口 <code>4173</code>（可由 <code>STABILITY_PORT</code> 或 <code>PORT</code> 覆盖），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。</li>
+<li><code>npm run verify:stability</code> 是本地准生产稳定性入口。它先构建 <code>dist/</code>，再用 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，该启动脚本强制 <code>NODE_ENV=stability</code>、<code>LOCAL_PROD_STATIC=1</code>、<code>ENABLE_TEST_ACTIONS=true</code> 和默认端口 <code>4173</code>（仅可由 <code>STABILITY_PORT</code> 覆盖，不继承开发 <code>PORT</code>），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。</li>
 </ul>
 <ul>
 <li>Vite production build uses explicit manual chunks in <code>vite.config.js</code>: React runtime code goes to <code>react-vendor</code>, Socket.IO client runtime goes to <code>realtime-vendor</code>, and the skill-animation Pixi runtime goes to the lazy <code>pixi-vendor</code> chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by <code>scripts/viteBuildConfig.test.js</code>.</li>
@@ -3764,7 +3772,7 @@
 <li><code>room.recordPolicy = &quot;replay-only&quot;</code>，结算保存 <code>mode/matchSource = &quot;team&quot;</code> 的完整终局快照，无用户奖励、积分、段位及角色战绩写入；个人统计和成就记录扫描排除队际赛。棋谱回放按 <code>team-round</code> 重建对应角色技能，避免用终局角色重放整局。</li>
 </ul>
 <ul>
-<li>选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘从左到右三等分，当前彩色，己方非当前灰色，对手候场问号；终局结算列出完整阵容与顺序。</li>
+<li>选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘使用从左到右错落的三张斜切纸片，当前与己方候场彩色，已退场人选灰显，对手未公开候场显示问号；终局结算列出完整阵容与顺序。</li>
 </ul>
 <ul>
 <li>入队校验期间收到取消请求时，该次异步入队作废；候场阵容重新校验失败则发出 <code>match:left</code>，客户端退出匹配遮罩。观战列表的用户角色信息同样只投影当前出场角色。</li>
@@ -3801,6 +3809,17 @@
 <p><code>match:waiting</code> 返回 <code>{ startedAt, serverNow, mode }</code>。两项时间均来自服务端，客户端接收时以 <code>receivedAt - max(0, serverNow - startedAt)</code> 生成本地开始时间，避免设备时钟偏差污染秒数及 15 秒放宽提示。自动重试保留原排队起点，新一轮匹配使用新起点；旧服务端缺少 <code>serverNow</code> 时兼容原时间字段。服务器队列和放宽定时器仍是权威。</p>
 <h3>无效对局与回放可见性</h3>
 <p><code>saveGameRecord</code> 在所有模式分支之前检查 <code>game.winner.invalid</code>，无效结束仅标记结算已处理并清空结果奖励，不写入回放或成长记录。历史记录由 <code>replayValidity.isInvalidReplay</code> 解析保存快照中的同一标记，兼容旧的“对局无效”结果文本；不按手数或 <code>rated=false</code> 推断无效。个人与他人共用回放分页每批最多读取 51 条，读取快照仅用于有效性判断；跳过无效项后继续以原 createdAt/id 游标扫描，最多返回 50 条有效摘要和有效末项游标，响应不包含快照。管理员列表同样过滤，个人／管理员详情直接访问无效记录均返回 404。保留历史原始数据，不执行数据库删除或迁移。</p>
+<h2>内测发布加固（2026-10-02）</h2>
+<h3>结算与账号占用</h3>
+<p>新房创建时生成 <code>settlementId</code> 并随 <code>PersistedRoom</code> 保存，旧房按房间号、创建时间和玩家 ID 派生稳定值。有效普通、友谊、队际和特殊剧情记录使用 <code>GameRecord.settlementId</code> 唯一约束，在同一事务内写棋谱、奖励、战绩、成长流水及道具效果，并保存 <code>settlementState</code> 回执。奖励计算只修改克隆状态，提交成功后才合并到实际房间、设 <code>recordSaved=true</code>、强制持久化并广播。事务失败保留未保存状态并重试；提交后快照尚未落盘的恢复、重复房对象和唯一冲突都回放回执，不再发奖。无效局、普通陪练仍沿用排除规则，吃子挑战赛继续使用其独立回执。</p>
+<p>关闭和启动恢复不删除已过期但尚未保存的有效终局，必须先重试结算。所有建房入口的最终同步检查覆盖 preload、opening、playing 和 finished-but-unsaved；匹配刷新账号、黑名单或队际选人之后，再检查申请者和候选人。冲突返回 <code>active_room_exists</code>，避免两个模式同时将同一账号拉入不同房间。</p>
+<h3>会话、网络和棋钟</h3>
+<p>注册、后台重置和登录共用 <code>src/shared/passwordValidation.js</code>。新密码至少 8、最多 64 个 Unicode 字符且不超过 72 UTF-8 字节，禁止控制字符；登录兼容旧 6 字符密码。重置事务同时更新密码、撤销全部 <code>LoginSession</code> 并写审计，提交后发送 <code>account:logged-out</code> 并断开该用户所有在线连接。</p>
+<p>登录刷新或 <code>/api/me</code> 临时失败（含 HTML 503）保留会话、房间和界面状态，提供顶部重试提示；确认 401/403 才清空会话。音乐目录的非认证失败回退共享内置曲目。Socket 断线提示适配桌面及手机竖屏；匹配断线时不排入 Socket 缓冲，ACK 失败、8 秒无 ACK 或请求期间断线都会退出等待，<code>match:found</code> 可作为权威成功，取消操作清理计时器和监听器。</p>
+<p>棋钟按真实 elapsed milliseconds 和玩家自己的 <code>clockRemainderMs</code> 累积，不再强制每回调至少扣一秒；落子/换手前同步，数子/和棋暂停与技能等恢复边界重置 <code>lastTick</code>，暂停时间不计费；读秒落子获得完整新周期时清除旧周期的亚秒余量。两种引擎统一通过 <code>internalKomiToGtpKomi</code> 转换，例如内部 <code>2.75</code> 子输出 <code>KM[5.5]</code> / <code>komi 5.5</code>。</p>
+<h3>健康与发布恢复</h3>
+<p><code>databaseHealth.js</code> 每 5 秒进行一次最多 2 秒等待的 <code>SELECT 1</code>，健康缓存 15 秒过期；挂起查询不会导致重叠探针。readiness 在数据库不可用、持续房间/结算写失败（至少 3 次且跨越 30 秒）或 draining 时返回 503；失败期间拒绝新接入，成功写入/探针后恢复。</p>
+<p>正式更新在 <code>.releases/</code> 构建完整候选，并保存运行中的旧代码、依赖及前端。停服完成 drain 后再创建一份校验过的迁移前数据库备份。迁移、兼容补齐、后台快照同步完成后才切换 dist 和 systemd <code>90-release.conf</code>；readiness 成功后才将操作用 checkout 快进到验证过的 commit。迁移开始后的任何失败保持服务停止，避免旧代码读取未知新 schema；输出候选目录内的 <code>restore-production.sh</code> 命令。恢复先校验选定备份，保存故障库，再配套恢复完整旧版本和停服备份并检查 ready。目标云的 systemd/Nginx、磁盘权限和容量仍须实际验收。</p>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -4015,6 +4034,9 @@
 </ul>
 <ul>
 <li><code>snapshot</code>: JSON 字符串，保存 <code>roomView</code> 快照。</li>
+</ul>
+<ul>
+<li><code>settlementId</code>: 可空唯一的结算标识，新房为 UUID、旧房为稳定摘要；<code>settlementState</code> 保存提交后的用户变更与结果奖励供重复恢复回放。迁移 <code>20261002040000_game_settlement_receipt</code> 不回填旧记录，兼容空值。</li>
 </ul>
 <ul>
 <li><code>createdAt</code>: 创建时间。</li>
@@ -4425,6 +4447,8 @@
 <h3>吃子挑战赛成绩</h3>
 <p><code>CaptureChallengeBest</code> 以 <code>userId</code> 为主键，保存个人最高 <code>captures</code>、对应 <code>characterId</code>、<code>costumeSnapshot</code> 与历史最佳 <code>bestRank</code>。仅严格超过最高提子数时替换成绩和角色；名次纪录独立维护。<code>captures</code> 索引供排名统计与排序。</p>
 <p><code>CaptureChallengeResult</code> 以服务器生成并写入房间快照的挑战 UUID 为主键，保存 <code>userId</code>、本局 <code>captures</code>、结算时 <code>rank</code>、<code>breakthrough</code> 与创建时间。事务内先查回执，再计算名次、更新最高纪录、创建回执；重试复用已保存结果。两表均随用户级联删除，不进入 GameRecord、普通战绩或成长统计。新增迁移 <code>20260923000000_capture_challenge</code>；<code>ensureCaptureChallengeSchema</code> 同步支持旧 SQLite 库的启动兼容路径。</p>
+<h2>有效对局结算回执</h2>
+<p><code>GameRecord.settlementId</code> 为可空唯一字段，新房使用 UUID，旧房通过稳定摘要获得回执标识；<code>settlementState</code> 为 JSON，保存本次提交后的用户变更、道具效果和结果奖励。迁移 <code>20261002040000_game_settlement_receipt</code> 为旧记录保留空值，不推断历史回执。记录与奖励等更新同事务，恢复重复请求复用回执而不重发奖励；<code>PersistedRoom</code> 同步保存 settlementId 与提交后的 recordSaved。</p>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
 <p>本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。</p>
@@ -4625,7 +4649,7 @@
 <li>Player-facing theme expansion now has a registry contract in <code>src/app/visualTheme.js</code>: <code>VISUAL_THEME_IDS</code>, <code>VISUAL_THEME_CLASS_PREFIX</code>, <code>visualThemeScopeSelector()</code>, and <code>visualThemeCssImportPath()</code> derive the theme id list, app-shell scope, and CSS entry path from one source of truth. <code>src/styles/themeContract.test.js</code> verifies every registered theme is imported from <code>src/styles/themes.css</code>, has a scoped CSS tree, and keeps <code>_new-theme-template.css</code> aligned with the same contract, so future theme work fails fast when the JS settings list and CSS entry map drift.</li>
 </ul>
 <ul>
-<li>Browser smoke regression coverage now starts in Playwright. <code>playwright.config.js</code> serves the Vite app and runs <code>tests/e2e/ui-regressions.spec.js</code> through the local Chrome channel, while <code>.gitignore</code> excludes <code>playwright-report/</code> and <code>test-results/</code>. The current E2E suite verifies app boot plus the critical CSS contract strings for replay outcome rows, result badges, spent skill chips, skill targeting glow, and scoring marker repairs. <code>playwright.stability.config.js</code> is the production-like browser layer: it serves the built <code>dist/</code> through the Node server on port <code>4173</code> by default, with <code>STABILITY_PORT</code> or <code>PORT</code> available for local port conflicts; it runs desktop and mobile Chromium projects, verifies hashed/static runtime cache headers, checks that broken audio/effect assets do not blank the app, and creates a real Socket.IO room to smoke-test page reload recovery.</li>
+<li>Browser smoke regression coverage now starts in Playwright. <code>playwright.config.js</code> serves the Vite app and runs <code>tests/e2e/ui-regressions.spec.js</code> through the local Chrome channel, while <code>.gitignore</code> excludes <code>playwright-report/</code> and <code>test-results/</code>. The current E2E suite verifies app boot plus the critical CSS contract strings for replay outcome rows, result badges, spent skill chips, skill targeting glow, and scoring marker repairs. <code>playwright.stability.config.js</code> is the production-like browser layer: it serves the built <code>dist/</code> through the Node server on port <code>4173</code> by default, with only <code>STABILITY_PORT</code> available for local port conflicts and a freshly isolated database on every run; it runs desktop and mobile Chromium projects, verifies hashed/static runtime cache headers, checks that broken audio/effect assets do not blank the app, and creates a real Socket.IO room to smoke-test page reload recovery.</li>
 </ul>
 <ul>
 <li>Documentation text that may contain Chinese should be updated through <code>apply_patch</code> or <code>npm run docs:utf8 -- ...</code> instead of PowerShell <code>Set-Content</code> / <code>Out-File</code>. <code>scripts/write-utf8-doc.mjs</code> reads and writes UTF-8 through Node, verifies the write round trip, and fails if Unicode replacement characters are introduced; <code>docs/systemDesignHtml.test.js</code> also guards the generated Markdown/HTML pair against replacement-character encoding damage.</li>
@@ -5045,6 +5069,7 @@
 <p>复现：<code>node scripts/import-story-sprites.mjs --source-root &lt;素材根目录&gt;</code>。合同与验证入口见 <code>.trellis/spec/backend/story-sprite-contract.md</code>；图库完整性、原文等值、后台/Excel 往返及真实组件竖屏检查均有对应测试。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<p>玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。</p>
 <p>竖屏对弈新增棋钟深度后，最终 <code>mobile-room-shadow-gutters.css</code> 必须覆盖 <code>mobile-player-slot</code> 的旧 <code>overflow: hidden !important</code>，普通房间改为 <code>overflow: visible</code>；动作区锚定的视口在全部竖屏移动断点统一采用 <code>0 5px 6px 0</code> 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 <code>RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo</code> 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。</p>
 <p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 <code>mobile-adaptive/battle-paper-panels.css</code> 与 <code>battle-paper-panels-mobile.css</code> 拆分身份、棋钟和技能面板。<code>PlayerInfo</code> 的 <code>player-clock-panel</code> 包含原计时器和统计，其他主题使用 <code>display: contents</code> 保留原布局；黑化剧情不启用新外观。棋钟常态使用 <code>--bright-sheet</code> 米色，<code>.active-turn</code> 使用既有黄色 <code>#fff0a6</code>、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；<code>battle-paper-panels.css</code> 仅作用于非 mobile-room-screen，手机的 <code>player-clock-panel</code> 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。</p>
 <p>常规玩家 <code>ActionBar</code> 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 <code>disabled</code> 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。<code>room-people-table</code> 的滚动区域内保留上／右／下／左 <code>2px 6px 6px 2px</code> 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。</p>
@@ -5867,9 +5892,10 @@
 <p>Phase 3 已把上述观察线做成 <code>npm run verify:capacity</code>：smoke profile 使用 20 Socket/5 房和 event-loop p95 150ms 本地诊断线验证工具链，target profile 使用 500 Socket/100 房、每房 2 名观战、7.5 秒动作间隔、20% 重连、event-loop p95 50ms 目标机验收线并执行一次 SIGTERM 恢复。脚本使用独立临时数据库和 <code>NODE_ENV=capacity</code>，通过仅限 verification 环境的认证夹具把首个容量账号提升为指标读取管理员，报告冷登录/静态入口、ack/reconnect/resume 分位数，以及真实管理员运行指标快照；<code>artifacts/capacity/</code> 仅保存本机报告且不提交。该入口禁止连接正式生产数据库，本机 smoke 通过也不是容量承诺。</p>
 <p>阶段 3 的完整本地发布候选入口为 <code>npm run verify:release-candidate</code>，按 Prisma Client、迁移基线、生产配置、构建、双项目稳定性、SQLite 备份恢复演练和容量 smoke 的顺序失败即停。稳定性环境通过 run/context namespace 隔离认证与 API 限流桶，Aemeath 等非默认角色由仅限 stability/capacity 且显式启用测试 action 的认证夹具准备；生产环境不挂钩用户名、不读取 namespace 绕过限流，也不能使用夹具路由。<code>npm ci</code> 的 postinstall 与生产 prestart 都生成 Prisma Client，确保干净安装可直接进入验证。</p>
 <p>SQLite 运维入口 <code>npm run backup:sqlite -- --source &lt;db&gt; --output &lt;backup&gt;</code> 拒绝源/目标相同、拒绝覆盖现有输出并默认拒绝仓库 <code>prisma/dev.db</code>，随后使用 <code>VACUUM INTO</code> 和 <code>integrity_check</code> 生成一致性备份。<code>npm run verify:backup-restore</code> 只在 <code>.tmp/backup-restore/</code> 创建迁移后的源库、备份与恢复副本，借助哨兵数据验证恢复点不会被源库后续写入污染；正式恢复仍要求停服、保存故障现场、校验完整性并记录备份时间点后的数据损失。</p>
-<p>静态流量的生产边界由 <code>deploy/nginx/sigrikago.conf</code> 与共享的 <code>deploy/nginx/sigrikago-routes.conf</code> 固化：Nginx 直接发送并 gzip <code>dist</code> 文本产物，直接发送 <code>/assets/</code> 和 <code>/uploads/</code>，Node 只处理实时 Socket、API 与健康检查。Vite hash CSS/JS 使用一年 immutable；普通稳定文件名图片/音频使用 <code>no-cache</code> 条件请求，避免同 URL 替换后继续命中旧视觉资源；SPA HTML 同样 no-cache，并保留严格的同源脚本 CSP，只在 <code>worker-src</code> 放行 Pixi 动态图片解码需要的 Blob Worker。<code>deploy/update-production.sh</code> 先以 <code>set -a</code> 导出项目 <code>.env</code>，使生产检查、Prisma 和其他子进程继承 systemd 使用的同一配置；随后在停服前以私有权限完成数据库备份，再恢复 Nginx 可读的构建权限并完成仅快进拉取、<code>npm ci --include=dev</code> 锁定依赖安装、暂存目录构建、生产配置检查和 <code>nginx -t</code>。显式包含 devDependencies 是因为 Vite 属于构建期依赖，而生产 <code>NODE_ENV</code> 默认会省略它；该顺序不会在旧站仍服务时清空现有 <code>dist</code> 或激活不可读产物。实际停机窗口限制在迁移、完整非用户后台快照同步、完整产物切换、reload、启动与 readiness 等待，失败不会强推或重置仓库。登录资源清单采用带宽优先但仍按账号可达性裁剪的策略：商店/库存/招募/拥有角色与装饰图片、默认或已拥有音乐、拥有角色的技能/系统音声以 6 路有界并发在登录加载页完成；未购买音乐、棋谱数据、房间对手与 Pixi 技能资源不进入冷登录突发。单资源 8 秒超时与登录后低并发重试继续限制坏文件和弱网风险，战斗加载仍校验并阻塞当前房间实际需要的资源。</p>
+<p>静态流量的生产边界由 <code>deploy/nginx/sigrikago.conf</code> 与共享的 <code>deploy/nginx/sigrikago-routes.conf</code> 固化：Nginx 直接发送并 gzip <code>dist</code> 文本产物，直接发送 <code>/assets/</code> 和 <code>/uploads/</code>，Node 只处理实时 Socket、API 与健康检查。Vite hash CSS/JS 使用一年 immutable；普通稳定文件名图片/音频使用 <code>no-cache</code> 条件请求，避免同 URL 替换后继续命中旧视觉资源；SPA HTML 同样 no-cache，并保留严格的同源脚本 CSP，只在 <code>worker-src</code> 放行 Pixi 动态图片解码需要的 Blob Worker。<code>deploy/update-production.sh</code> 先以 <code>set -a</code> 导出项目 <code>.env</code>，使生产检查、Prisma 和其他子进程继承 systemd 使用的同一配置；随后在停服前以私有权限完成数据库备份，再恢复 Nginx 可读的构建权限并完成精确候选 commit 的隔离发布、<code>npm ci --include=dev</code> 锁定依赖安装和 <code>.releases/</code> 构建、生产配置检查和 <code>nginx -t</code>。显式包含 devDependencies 是因为 Vite 属于构建期依赖，而生产 <code>NODE_ENV</code> 默认会省略它；该顺序不会在旧站仍服务时清空现有 <code>dist</code> 或激活不可读产物。实际停机窗口包含 drain 后备份、迁移、完整非用户后台快照同步、完整产物切换、reload、启动与 readiness 等待；迁移开始后失败保持服务停止，完整旧发布及迁移前数据库通过显式脚本配套恢复。readiness 使用有界数据库探针和持续持久化失败门禁。登录资源清单采用带宽优先但仍按账号可达性裁剪的策略：商店/库存/招募/拥有角色与装饰图片、默认或已拥有音乐、拥有角色的技能/系统音声以 6 路有界并发在登录加载页完成；未购买音乐、棋谱数据、房间对手与 Pixi 技能资源不进入冷登录突发。单资源 8 秒超时与登录后低并发重试继续限制坏文件和弱网风险，战斗加载仍校验并阻塞当前房间实际需要的资源。</p>
 <p>---</p>
 <h1>工作流、文档规则与历史记录</h1>
+<p><code>npm test</code> 默认使用 <code>--maxWorkers=1</code>，<code>npm run check</code> 顺序执行验证环节。需要提高并发时必须结合用户当前本机使用情况显式调整，避免测试、构建、浏览器和容量验证同时争抢资源。</p>
 <p>本文记录 Trellis 工作流、系统设计文档维护方式、编码安全和较难归类的历史更新。修改 Trellis 规则、文档生成方式、AI 协作约定或历史追踪方式时优先更新本分篇。</p>
 <h2>当前文档维护规则</h2>
 <ul>
@@ -5931,5 +5957,16 @@
 <ul>
 <li>The initialized Trellis context uses developer <code>Moming</code>, single-repo mode, and <code>backend</code> / <code>frontend</code> spec layers. A bootstrap guidelines task exists under <code>.trellis/tasks/00-bootstrap-guidelines/</code>.</li>
 </ul>
+<h2>系统设计 HTML 生成的安全替换</h2>
+<p>生成器先将完整 HTML 写入同目录临时文件，再以 rename 替换目标并清理临时文件，避免 Windows 预览/文件句柄影响原位覆盖，以及中途失败留下截断页面。重复生成回归测试覆盖已有文件替换。</p>
+<h2>全项目测试入口与隔离</h2>
+<p><code>npm run test:e2e:all</code> 先构建主应用，再顺序执行完整应用、站点入口、主界面引导、队际赛界面和浏览器陪练五套配置，所有套件为单 worker。支持指定一个或多个套件名称（<code>application</code>、<code>site-entry</code>、<code>home-onboarding</code>、<code>team-match</code>、<code>local-practice</code>）；已构建当前代码时可加 <code>--skip-build</code>。各阶段单独保留 <code>.tmp/e2e-all/&lt;时间&gt;/&lt;套件&gt;/</code> 产物，一个阶段失败仍测试其余阶段，最终汇总失败并返回非零。</p>
+<p>完整应用默认前端 5317、服务端 3317，API、上传、Socket 代理全部指向本次服务，端口冲突明确失败。数据库按端口和运行 UUID 创建在 <code>.tmp/playwright/</code>，测试辅助函数检查身份后才允许种入测试资产。上传同样进入本次运行目录。专用页面的构建输出置于 <code>.tmp/playwright-builds/</code>，避免改写仓库已经跟踪的历史 <code>.codex-run</code> 产物。Vite 缓存位于独立 <code>node_modules/.vite-e2e-&lt;端口&gt;</code>，预构建只扫描当前入口，避免扫描临时工作树或共享开发缓存。自动测试按单用例设置 <code>x-stability-scope</code>，其隔离仅在既有 stability 环境启用，不放宽生产限流。</p>
+<p>陪练分别验证开发与构建页面，入门不下载引擎，中级/高级使用真实浏览器 Worker 与 WASM；吃子挑战实际完成 100 手并验证排行榜、零普通回放与零金币奖励。两项目串行，ready 经 API 健康检查确认数据库初始化完成。fixture 显式禁用智子云并隔离上传；启动失败、后端提前退出和正常信号统一先关服务再清数据库。Windows 的进程树强杀另由总入口按精确 runId 清理本次数据库。</p>
+<p>真实应用测试覆盖匿名/玩家/管理员权限、21 页后台加载及设置写入、商店额度竞争、扭蛋余额竞争、招募加速与领奖、邮件越权与重复领取、公告已读、社交约战/黑名单/点赞/举报、强制登录/密码重置/封禁、普通/五子棋/队际赛匹配结算与回放、数子双方确认与和棋拒绝/同意、观战权限、ACK 重试幂等、重连、两端窗口及注册引导。剧情 Excel 实际下载八张工作表、原样导入与改标题导入、显式保存草稿并核对发布版不变。上传检查权限、内容类型、伪文件和 3 MiB 边界；构建静态资源检查 MIME 与字节范围。</p>
+<p>专用引导/队际赛页面仍包含组件 fixture 与 API mock，报告中须与真实 HTTP/Socket 流程区分。<code>npm run check</code>、稳定性、迁移、备份恢复、WASM parity 和容量 smoke 是独立门禁；全项目浏览器验证不替代这些门禁，也不代表目标云的 Nginx/systemd/HTTPS、容量 target 或所有技能组合均完成真人验收。</p>
+<p>测试 fixture 的静态预览显式禁用开发代理；陪练 API、上传、Socket 均指向独立后端。创建数据库和启动后台前先探测 API 端口，已有监听时拒绝启动；完整应用等待 /api/health 后开始验证。自管子进程最多等待 18 秒优雅退出，再强杀并等待 5 秒确认，确认失败保留数据库；清理入口同时核查本次 API PID，拒绝删除仍在使用的库。</p>
+<p>测试 Vite 子进程单独设置 CI=true，禁用 Vite 默认 stdin EOF 退出路径；不改变 Playwright 的重试配置和生产服务环境。真实子进程回归关闭 stdin 后仍要求首页可访问。</p>
+<p>稳定性入口默认 4173，仅接受 STABILITY_PORT；忽略继承的开发 PORT、DATABASE_URL、origin 和上传目录。每轮强制新测试库，启动前探测端口，等待 health/ready 后才开始浏览器流程；真实重启回归单独复用已创建的测试库。</p>
 </body>
 </html>

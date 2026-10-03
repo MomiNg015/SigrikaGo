@@ -35,14 +35,18 @@ export function createOnlineSessionManager({
   }
 
   async function forceLogoutUser(userId) {
-    const socketIds = [...(onlineSockets.get(userId) ?? [])];
     await sessions.clearUser(userId);
+    disconnectUser(userId);
+  }
+
+  function disconnectUser(userId, message = "账号已在其他地方登录") {
+    const socketIds = [...(onlineSockets.get(userId) ?? [])];
     clearPendingLogin(userId);
     clearDisconnectedSessionTimer(userId);
     for (const socketId of socketIds) {
       const socket = io.sockets.sockets.get(socketId);
       if (!socket) continue;
-      socket.emit("account:logged-out", { message: "账号已在其他地方登录" });
+      socket.emit("account:logged-out", { message });
       socket.disconnect(true);
     }
   }
@@ -106,6 +110,7 @@ export function createOnlineSessionManager({
   return {
     createLoginResponse,
     forceLogoutUser,
+    disconnectUser,
     registerOnlineSocket,
     unregisterOnlineSocket,
     statusForUser,

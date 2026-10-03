@@ -35,6 +35,7 @@ export function applyCountingResponse({ room, player, userId, accepted, appendSy
   if (!accepted) {
     restoreSuspendedHiddenHands(room.game);
     room.game.phase = GAME_PHASES.playing;
+    room.lastTick = Date.now();
     room.game.scoring = null;
     room.countingDeadline = null;
     appendSystem(room, "数子申请被拒绝，对局继续。");
@@ -67,6 +68,7 @@ export function applyDrawResponse({ room, player, userId, accepted, appendSystem
 
   if (!accepted) {
     room.game.phase = GAME_PHASES.playing;
+    room.lastTick = Date.now();
     room.game.drawRequest = null;
     room.drawDeadline = null;
     appendSystem(room, `${player.user.username}不同意和棋，对局继续。`);
@@ -95,6 +97,7 @@ export function applyScoringAction({ room, player, userId, action, appendSystem,
   if (action.type === "reset-dead") result = resetDeadMarks(room.game);
   if (!result.ok) return result;
   room.game = result.state;
+  room.lastTick = Date.now();
 
   if (action.type === "reset-dead") appendSystem(room, `${player.user.username}重新确认死子。`);
 
@@ -134,6 +137,7 @@ export function applyScoringAction({ room, player, userId, action, appendSystem,
   if (action.type === "reject-result") {
     restoreSuspendedHiddenHands(room.game);
     room.game.phase = GAME_PHASES.playing;
+    room.lastTick = Date.now();
     room.game.scoring = null;
     appendSystem(room, `${player.user.username}不同意结果，对局继续。`);
   }

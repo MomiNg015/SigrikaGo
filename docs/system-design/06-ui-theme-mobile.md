@@ -1,5 +1,7 @@
 # UI 主题、移动端与交互体验
 
+玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。
+
 竖屏对弈新增棋钟深度后，最终 `mobile-room-shadow-gutters.css` 必须覆盖 `mobile-player-slot` 的旧 `overflow: hidden !important`，普通房间改为 `overflow: visible`；动作区锚定的视口在全部竖屏移动断点统一采用 `0 5px 6px 0` 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 `RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo` 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。
 
 `RoomHeader` 的 `.room-code-label` 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 `matchSource=practice` 显示“人机”，其余读取棋种 `shortTitle`。保留房间代码和特殊剧情 `ERROR`；`.move-count` 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 `mobile-adaptive/battle-paper-panels.css` 与 `battle-paper-panels-mobile.css` 拆分身份、棋钟和技能面板。`PlayerInfo` 的 `player-clock-panel` 包含原计时器和统计，其他主题使用 `display: contents` 保留原布局；黑化剧情不启用新外观。棋钟常态使用 `--bright-sheet` 米色，`.active-turn` 使用既有黄色 `#fff0a6`、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；`battle-paper-panels.css` 仅作用于非 mobile-room-screen，手机的 `player-clock-panel` 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。
@@ -261,7 +263,6 @@
 桌面棋钟采用左右镜像的1.5度纸片倾斜，统计卡轻微交错倾斜并使用同色硬阴影，延续身份卡和技能卡的错落风格。移动布局不变。
 
 移动端对弈信息区时钟、读秒次数、提子／除子／超频数值、技能次数和段位使用400常规字重，保留WuWa数字字体，避免合成粗体。
-
 ## 标准剧情立绘布局
 
 有效标准造型的剧情窗口使用独立 `standard-sprite.css` owner，采用 guide 样板的教室舞台与底部对白纸面。人物固定裁到大腿上部，缩放、位置和裁切不随节点、打字长度或选项显隐变化；桌面人物覆盖纸面左侧，手机纸面覆盖人物下部。纸面底边固定，正文独立滚动，操作区保持可见；同造型表情切换不重挂图片。舞台使用 `overflow: clip`，防止选项焦点因图片延伸而自动滚动整个舞台；原长文效果只保留打字加速。旧肖像、旁白、跳过确认与文字／选项节奏沿用原合同。

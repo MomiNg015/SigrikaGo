@@ -198,3 +198,18 @@ describe("room creation lifecycle", () => {
     expect(io.messages).toHaveLength(1);
   });
 });
+
+test.each(["playing", "preloading", "opening", "finished"])("all room creation paths block %s or unsettled membership", (phase) => {
+  const player = queuedPlayer("busy", "socket-busy");
+  const rooms = new Map([["old", { game: { phase }, recordSaved: false, players: [player] }]]);
+  const { lifecycle } = createLifecycle({ rooms });
+  const io = fakeIo();
+  expect(() => lifecycle.joinMatchmaking(player, io)).toThrow("已有进行中的对局");
+  expect(() => lifecycle.createDirectRoom(player, queuedPlayer("other", "other"), io)).toThrow();
+  expect(() => lifecycle.createPracticeRoom(player, io)).toThrow();
+  expect(() => lifecycle.createSigrikaCandyDuelRoom(player, io)).toThrow();
+  if (phase === "finished") {
+    rooms.get("old").recordSaved = true;
+    expect(() => lifecycle.joinMatchmaking(player, io)).not.toThrow();
+  }
+});

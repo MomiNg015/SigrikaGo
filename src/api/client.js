@@ -22,9 +22,11 @@ export async function api(path, options = {}) {
   if (!contentType.includes("application/json")) {
     const text = await response.text();
     const isHtml = text.trimStart().startsWith("<!DOCTYPE") || text.trimStart().startsWith("<html");
-    throw new Error(isHtml
+    const error = new Error(isHtml
       ? "\u63a5\u53e3\u8fd4\u56de\u4e86\u524d\u7aef\u9875\u9762\u800c\u4e0d\u662f JSON\uff0c\u8bf7\u5237\u65b0\u9875\u9762\u5e76\u786e\u8ba4\u540e\u7aef\u670d\u52a1\u5df2\u542f\u52a8\u3002"
       : "\u63a5\u53e3\u8fd4\u56de\u683c\u5f0f\u4e0d\u662f JSON\u3002");
+    error.status = response.status;
+    throw error;
   }
   const data = await response.json();
   if (!response.ok) {

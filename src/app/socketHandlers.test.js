@@ -671,6 +671,17 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("maintenance", "warning");
   });
 
+  it("clears acknowledged queued matchmaking on disconnect while preserving the room", () => {
+    const deps = handlerDeps();
+    const listeners = new Map();
+    const socket = { on: (event, handler) => listeners.set(event, handler), emit: vi.fn() };
+    installSocketHandlers(socket, createSocketHandlers(deps));
+    listeners.get("disconnect")();
+    expect(deps.setMatchStart).toHaveBeenCalledWith(null);
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setToken).not.toHaveBeenCalled();
+  });
+
   it("notifies audio recovery when the socket reconnects", () => {
     const listeners = new Map();
     const socket = {

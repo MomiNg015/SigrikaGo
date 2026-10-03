@@ -3,6 +3,7 @@ import { api, configureAuthRefresh } from "../api/client.js";
 
 export function useAuthSession({
   fallbackCharacters,
+  setStartupError,
   setCharacters,
   setLobbyStats,
   setMatchStart,
@@ -44,27 +45,33 @@ export function useAuthSession({
         skipAuthRefresh: true
       })
         .then((data) => {
+          setStartupError?.(null);
           setToken(data.token);
           updateUser(data.user);
           return data;
         })
         .catch((error) => {
           if (!silent) showToast(error.message);
-          resetToLogin();
-          return null;
+          if (error.status === 401 || error.status === 403) {
+            setStartupError?.(null);
+            resetToLogin();
+            return null;
+          }
+          setStartupError?.({ source: "auth", message: "暂时无法恢复登录，请检查网络后重试" });
+          throw error;
         })
         .finally(() => {
           refreshPromiseRef.current = null;
         });
     }
     return refreshPromiseRef.current;
-  }, [resetToLogin, setToken, showToast, updateUser]);
+  }, [resetToLogin, setToken, showToast, updateUser, setStartupError]);
 
   useEffect(() => {
     let cancelled = false;
     refreshAuthSession({ silent: true })
       .catch(() => {
-        if (!cancelled) setView("login");
+        if (!cancelled) setView("preloading");
       });
     return () => {
       cancelled = true;

@@ -217,3 +217,30 @@ describe("socket match events", () => {
     expect(deps.metrics.increment).toHaveBeenCalledWith("admissionRejectedMatches");
   });
 });
+
+it.each(["spark", "standard", "gomoku", "team"])("rejects an already active user in %s", async (mode) => {
+  const socket = createSocket();
+  const deps = createDeps({ normalizeGameModeId: () => mode, isUserInActiveRoom: () => true });
+  registerMatchSocketEvents(socket, deps);
+  const ack = vi.fn();
+  await socket.trigger("match:join", { mode }, ack);
+  expect(ack).toHaveBeenCalledWith(expect.objectContaining({ ok: false, code: "active_room_exists" }));
+  expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+});
+it("rechecks the requester and candidate after asynchronous blacklist checks", async () => {
+  const socket = createSocket();
+  let busy = "";
+  const deps = createDeps({ listWaitingPlayers: () => [{ user: { id: "other" }, mode: "standard" }],
+    isUserInActiveRoom: (id) => id === busy,
+    hasBlacklistBetween: async () => { busy = socket.user.id; return false; } });
+  registerMatchSocketEvents(socket, deps);
+  const ack = vi.fn();
+  await socket.trigger("match:join", {}, ack);
+  expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+  expect(ack).toHaveBeenCalledWith(expect.objectContaining({ code: "active_room_exists" }));
+  busy = "";
+  deps.hasBlacklistBetween = async () => { busy = "other"; return false; };
+  const second = createSocket(); registerMatchSocketEvents(second, deps);
+  await second.trigger("match:join", {}, vi.fn());
+  expect(deps.joinMatchmaking.mock.calls[0][2].canPair({ user: { id: "other" } })).toBe(false);
+});

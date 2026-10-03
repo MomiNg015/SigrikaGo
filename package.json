@@ -9,13 +9,14 @@
     "dev:client": "vite --host 0.0.0.0",
     "dev:server": "node --watch-path=server --watch-path=src/shared server/index.js",
     "build": "vite build",
-    "check": "npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e \"process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')\" && npm run docs:system-design",
+    "check": "npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e \"process.env.NODE_ENV='production';process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')\" && npm run docs:system-design",
     "lint": "eslint .",
     "prestart": "prisma generate",
     "postinstall": "prisma generate",
     "start": "node server/index.js",
-    "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"**/.codex-run/**\" --exclude \"tests/e2e/**\" --exclude \"tests/stability/**\"",
+    "test": "vitest run --maxWorkers=1 --exclude \"**/.tmp/**\" --exclude \"**/.worktrees/**\" --exclude \"**/.codex-run/**\" --exclude \"tests/e2e/**\" --exclude \"tests/stability/**\"",
     "test:e2e": "node scripts/run-playwright-suite.mjs e2e",
+    "test:e2e:all": "node scripts/run-full-e2e.mjs",
     "test:stability": "node scripts/run-playwright-suite.mjs stability",
     "verify:battle-fixes": "node scripts/verify-battle-fixes.mjs",
     "verify:zhizi": "node scripts/verify-zhizi-katago.mjs",
@@ -60,7 +61,7 @@
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",
-    "multer": "^2.2.0",
+    "multer": "^2.4.0",
     "pixi.js": "^8.19.0",
     "prisma": "6.8.2",
     "react": "^19.1.0",
@@ -87,5 +88,10 @@
     "tailwindcss": "^4.3.1",
     "vite": "^6.4.3",
     "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "exceljs": {
+      "uuid": "11.1.1"
+    }
   }
 }

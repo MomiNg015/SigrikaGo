@@ -6,6 +6,10 @@
 
 ## Overview
 
+Release hardening follows [Internal Test Release Contract](./internal-test-release-contract.md).
+
+Browser validation and disposable service isolation follow [Full-system Test Contract](./full-system-test-contract.md).
+
 Home-tour trigger and reward changes follow [Home onboarding contract](./home-onboarding-contract.md).
 
 Opening countdown changes must follow [Opening Presentation Clock](./opening-clock-contract.md), including device-clock offset handling and the server phase boundary.
@@ -50,7 +54,6 @@ The goal is to help AI assistants and new team members understand how YOUR proje
 ---
 
 **Language**: All documentation should be written in **English**.
-
 ## Story sprite presentation
 
 Story appearance metadata, exact-text authored defaults and asset/editor/workbook behavior follow [Story Sprite And Expression Contract](./story-sprite-contract.md).

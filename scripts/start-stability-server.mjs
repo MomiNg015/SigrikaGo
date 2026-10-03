@@ -1,16 +1,21 @@
-const DEFAULT_STABILITY_PORT = "4173";
-
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { preparePlaywrightTestDatabase } from "./playwrightTestDatabase.mjs";
+import { assertTestPortAvailable } from "./stop-test-processes.mjs";
 
-process.env.NODE_ENV = "stability";
-process.env.LOCAL_PROD_STATIC = "1";
-process.env.PORT = process.env.STABILITY_PORT ?? process.env.PORT ?? DEFAULT_STABILITY_PORT;
-process.env.JWT_SECRET ??= "stability-local-secret-0123456789";
-process.env.PUBLIC_ORIGIN ??= `http://127.0.0.1:${process.env.PORT}`;
-process.env.ENABLE_TEST_ACTIONS = "true";
-
-if (!process.env.DATABASE_URL) {
-  await preparePlaywrightTestDatabase({ label: "stability", port: process.env.PORT });
+export function stabilityServerEnvironment(env = process.env) {
+  const port = env.STABILITY_PORT ?? "4173";
+  const run = String(env.PLAYWRIGHT_RUN_ID ?? process.pid).replaceAll(/[^a-zA-Z0-9_-]/g, "-");
+  return { ...env, NODE_ENV: "stability", LOCAL_PROD_STATIC: "1", PORT: port,
+    DATABASE_URL: "", JWT_SECRET: "stability-local-secret-0123456789",
+    PUBLIC_ORIGIN: `http://127.0.0.1:${port}`, ENABLE_TEST_ACTIONS: "true", ZHIZI_ENABLED: "false",
+    UPLOAD_DIR: path.resolve(".tmp/playwright", `stability-uploads-${port}-${run}`) };
 }
 
-await import("../server/index.js");
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  Object.assign(process.env, stabilityServerEnvironment());
+  await assertTestPortAvailable(process.env.PORT);
+  const { cleanup } = await preparePlaywrightTestDatabase({ label: "stability", port: process.env.PORT, manageSignals: false });
+  process.once("exit", cleanup);
+  await import("../server/index.js");
+}

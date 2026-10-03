@@ -1,3 +1,4 @@
+import { internalKomiToGtpKomi } from "../src/shared/engineKomi.js";
 import { COLORS } from "../src/shared/game.js";
 import { gtpVertexToPointId, pointIdToGtpVertex } from "./practiceBotEngine.js";
 
@@ -43,10 +44,7 @@ export function decodeZhiziSocketPayload(payload) {
   return String(value ?? "");
 }
 
-export function internalKomiToGtpKomi(value) {
-  const komi = Number(value);
-  return Number.isFinite(komi) ? komi * 2 : 5.5;
-}
+export { internalKomiToGtpKomi } from "../src/shared/engineKomi.js";
 
 export function buildKataGoPositionCommands(gameView) {
   const size = boundedInteger(gameView?.size, 13, 2, 25);

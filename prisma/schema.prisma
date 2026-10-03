@@ -458,6 +458,8 @@ model UserReport {
 }
 
 model GameRecord {
+  settlementId String? @unique
+  settlementState String @default("")
   id          String   @id @default(cuid())
   roomCode    String
   blackUserId String

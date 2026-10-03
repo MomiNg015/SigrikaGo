@@ -44,6 +44,20 @@ describe("online session manager", () => {
     expect(socket.disconnected).toBe(true);
   });
 
+  it("notifies and disconnects every socket after an atomic password reset", () => {
+    const sessions = fakeSessions();
+    const sockets = [fakeSocket("one", "user-1", "old-1"), fakeSocket("two", "user-1", "old-2"), fakeSocket("other", "user-2", "valid")];
+    const manager = createManager({ sessions, sockets });
+    sockets.forEach((socket) => manager.registerOnlineSocket(socket));
+    manager.disconnectUser("user-1", "密码已由管理员重置，请重新登录");
+    for (const socket of sockets.slice(0, 2)) {
+      expect(socket.events).toContainEqual({ event: "account:logged-out", payload: { message: "密码已由管理员重置，请重新登录" } });
+      expect(socket.disconnected).toBe(true);
+    }
+    expect(sockets[2].disconnected).toBe(false);
+    expect(sessions.clearUser).not.toHaveBeenCalled();
+  });
+
   it("keeps the session when the last socket disconnects", () => {
     const sessions = fakeSessions();
     const onSocketDisconnected = vi.fn();

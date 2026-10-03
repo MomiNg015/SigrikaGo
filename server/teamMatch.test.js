@@ -94,7 +94,7 @@ describe("team match contract", () => {
     state.game.phase = "finished";
     state.game.moveNumber = 20;
     state.game.winner = { winnerColor: "black", reason: "resign", text: "黑胜" };
-    const prisma = { gameRecord: { create: vi.fn().mockResolvedValue({}) }, user: { update: vi.fn() } };
+    const prisma = { gameRecord: { findUnique: vi.fn().mockResolvedValue(null), create: vi.fn().mockResolvedValue({}) }, user: { update: vi.fn() } };
     await saveGameRecord({ prisma, room: state });
     expect(prisma.gameRecord.create).toHaveBeenCalledOnce();
     expect(prisma.user.update).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe("team match contract", () => {
     const state = room();
     state.game.phase = "finished";
     state.game.winner = { winnerColor: "black", reason: "resign", text: "黑胜", invalid: true };
-    const prisma = { gameRecord: { create: vi.fn() }, user: { update: vi.fn() } };
+    const prisma = { gameRecord: { findUnique: vi.fn().mockResolvedValue(null), create: vi.fn() }, user: { update: vi.fn() } };
     await saveGameRecord({ prisma, room: state });
     expect(state.recordSaved).toBe(true);
     expect(prisma.gameRecord.create).not.toHaveBeenCalled();

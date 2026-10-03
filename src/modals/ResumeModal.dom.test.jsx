@@ -57,7 +57,7 @@ describe("ResumeModal authoritative record stats", () => {
       />
     );
 
-    await waitFor(() => expect(screen.getAllByText("12局").length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByLabelText("总对局 12局").length).toBeGreaterThan(0));
     expect(screen.getByRole("cell", { name: "12" })).toBeTruthy();
     expect(screen.getByRole("cell", { name: "7" })).toBeTruthy();
     expect(screen.getByRole("cell", { name: "3" })).toBeTruthy();
@@ -70,7 +70,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.queryByText("积分", { exact: true })).toBeNull();
     expect(screen.getByLabelText("4段 3/6星")).toBeTruthy();
     expect(screen.getByRole("tooltip", {
-      name: "赢一盘加一星，输一盘减一星；满星或零星后的下一盘决定升降段，变段后获得一半星数。九段胜加200分、负减250分，零分再输降段。和棋不变。"
+      name: "每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
     })).toBeTruthy();
     expect(document.querySelector(".profile-resume-hero .profile-identity-actions")).toBeTruthy();
     expect(screen.getByRole("button", { name: "成就" }).textContent).toBe("");
@@ -78,7 +78,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
     expect(screen.getByRole("button", { name: "对局回放" }).textContent).toBe("");
-    expect(document.querySelector(".profile-summary-item.has-action .profile-replay-button")).toBeTruthy();
+    expect(document.querySelector(".profile-record-header .profile-replay-button")).toBeTruthy();
     expect(screen.queryByText("点赞", { exact: false })).toBeNull();
     expect(screen.queryByText("加好友")).toBeNull();
     expect(screen.queryByText("举报")).toBeNull();

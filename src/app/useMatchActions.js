@@ -10,6 +10,10 @@ import { practiceEngineClient } from "../practice/practiceEngineClient.js";
 import { LOCAL_PRACTICE_VERSION } from "../shared/localPractice.js";
 
 const pendingPracticeStarts = new WeakMap();
+const pendingMatchStarts = new WeakMap();
+export function cancelMatchStart(socket) {
+  pendingMatchStarts.get(socket)?.();
+}
 export function cancelPracticeStart(socket) {
   if (socket) pendingPracticeStarts.delete(socket);
 }
@@ -63,6 +67,7 @@ export function useMatchActions({
 
   const cancelMatch = useCallback(() => {
     cancelPracticeStart(socket);
+    cancelMatchStart(socket);
     socket?.emit("match:leave");
     setMatchStart(null);
   }, [setMatchStart, socket]);
@@ -219,20 +224,44 @@ export function startMatchTransition({
   setMatchSuccess,
   socket
 }) {
+  if (!socket || socket.connected === false) {
+    showToast("连接尚未就绪，请稍后重试", "warning");
+    return;
+  }
   try {
     void preloadPlayableReady({ includePixi: true, mode, reason: "match-start" });
-  } catch {
-    // Prewarm is opportunistic; matchmaking must continue even if it fails.
-  }
+  } catch { /* Prewarming is optional. */ }
   setMatchSuccess(null);
   setMatchStart({ startedAt: now(), mode });
-  if (mode === "team") {
-    socket?.emit("match:join", { mode, lineup }, (ack = {}) => {
-      if (ack.ok) return;
-      setMatchStart(null);
-      showToast(ack.error || "暂时无法开始队际赛", "error");
-    });
-  } else socket?.emit("match:join", { mode });
+  cancelMatchStart(socket);
+  let settled = false;
+  const connectionId = socket.id;
+  const finish = (error, ack = {}) => {
+    if (settled) return;
+    settled = true;
+    pendingMatchStarts.delete(socket);
+    clearTimeout(timeout);
+    socket.off?.("disconnect", disconnected);
+    socket.off?.("match:found", found);
+    if (!error && ack.ok) return;
+    if (socket.connected !== false && socket.id === connectionId) socket.emit("match:leave");
+    setMatchStart(null);
+    showToast(ack.error || "匹配连接中断或请求超时，请重试", "error");
+  };
+  const disconnected = () => finish(new Error("disconnected"));
+  const found = () => finish(null, { ok: true });
+  const timeout = setTimeout(() => finish(new Error("timeout")), 8000);
+  timeout.unref?.();
+  pendingMatchStarts.set(socket, () => {
+    settled = true;
+    clearTimeout(timeout);
+    socket.off?.("disconnect", disconnected);
+    socket.off?.("match:found", found);
+    pendingMatchStarts.delete(socket);
+  });
+  socket.on?.("disconnect", disconnected);
+  socket.on?.("match:found", found);
+  socket.emit("match:join", { mode, ...(lineup ? { lineup } : {}) }, (ack) => finish(null, ack));
 }
 
 export function matchSuccessCountdownCompletedTransition(matchSuccess, latestTransition = matchSuccess) {

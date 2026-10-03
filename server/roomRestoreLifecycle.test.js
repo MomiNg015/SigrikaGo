@@ -13,7 +13,7 @@ describe("room restore lifecycle", () => {
     expect(scheduleRoomClose).toHaveBeenCalledWith(room.code, "io");
     expect(closeRoom).not.toHaveBeenCalled();
   });
-  test("closes expired finished rooms during restore", () => {
+  test("closes expired committed finished rooms during restore", () => {
     const closeRoom = vi.fn();
     const scheduleRoomClose = vi.fn();
     const lifecycle = createLifecycle({
@@ -23,6 +23,7 @@ describe("room restore lifecycle", () => {
     });
     const room = testRoom({
       game: { phase: GAME_PHASES.finished },
+      recordSaved: true,
       closesAt: 4000
     });
 
@@ -39,6 +40,7 @@ describe("room restore lifecycle", () => {
     });
     const room = testRoom({
       game: { phase: GAME_PHASES.finished },
+      recordSaved: true,
       closesAt: 4000
     });
 
@@ -203,3 +205,12 @@ function testRoom(overrides = {}) {
     ...overrides
   };
 }
+
+test.each(["spark", "standard", "gomoku", "team", "special"])("expired unsaved %s results are retried before closing", (mode) => {
+  const closeRoom = vi.fn(); const scheduleRoomClose = vi.fn();
+  const lifecycle = createLifecycle({ closeRoom, scheduleRoomClose, now: () => 5000 });
+  const room = testRoom({ mode, recordSaved: false, game: { phase: GAME_PHASES.finished }, closesAt: 4000 });
+  expect(lifecycle.resumeRoomTimers(room, "io")).toBe(true);
+  expect(scheduleRoomClose).toHaveBeenCalledWith(room.code, "io");
+  expect(closeRoom).not.toHaveBeenCalled();
+});

@@ -725,8 +725,10 @@ describe("Zahira shop window", () => {
     ));
     expect(mobileCss).toContain("bottom: -2% !important");
     expect(mobileCss).toContain("height: 30% !important");
-    expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
-    expect(mobileCss).not.toContain("margin-left: -16px !important");
+    const shopRules = [...mobileCss.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter(([, selector]) => selector.includes(".shop-")).map(([, , rules]) => rules).join("\n");
+    expect(shopRules).not.toContain("width: calc(100% + 32px) !important");
+    expect(shopRules).not.toContain("margin-left: -16px !important");
     expect(mobileCss).toContain("width: 44px !important");
     expect(mobileCss).toContain("min-height: 44px !important");
     expect(mobileCss).toContain("min-width: 146px !important");

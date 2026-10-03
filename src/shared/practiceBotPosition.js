@@ -1,10 +1,9 @@
 import { COLORS, parsePointId, playMove } from "./game.js";
+import { internalKomiToGtpKomi } from "./engineKomi.js";
 const GTP_COLUMNS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 export function serializePracticePositionToSgf(gameView, botColor) {
   const size = boundedInteger(gameView?.size, 13, 2, 25);
-  const komi = Number.isFinite(Number(gameView?.komi))
-    ? Number(gameView.komi)
-    : 2.75;
+  const komi = internalKomiToGtpKomi(gameView?.komi);
   const black = [];
   const white = [];
   for (const point of gameView?.points ?? []) {

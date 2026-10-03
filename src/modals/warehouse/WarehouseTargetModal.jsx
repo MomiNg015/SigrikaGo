@@ -53,7 +53,7 @@ export default function WarehouseTargetModal({
                 );
               })}
               {ownedCharacters.length === 0 && (
-                <p className="quiet-text"><UserRound size={18} />暂无可选择角色</p>
+                <p className="quiet-text"><UserRound size={18} />暂无角色</p>
               )}
             </div>
           </>

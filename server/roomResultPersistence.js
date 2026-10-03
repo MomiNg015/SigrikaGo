@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
 import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 import { saveCaptureChallengeResult } from "./captureChallenge.js";
@@ -32,17 +33,91 @@ const pendingResults = new WeakMap();
 
 export function saveGameRecord({ prisma, room }) {
   if (pendingResults.has(room)) return pendingResults.get(room);
-  const players = room.players.map((player) => ({ player, user: player.user }));
-  const saved = room.recordSaved;
-  const rewards = room.game.resultRewards;
-  const operation = saveGameRecordOnce({ prisma, room }).catch((error) => {
-    for (const entry of players) entry.player.user = entry.user;
-    room.recordSaved = saved;
-    room.game.resultRewards = rewards;
-    throw error;
-  }).finally(() => pendingResults.delete(room));
+  if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return Promise.resolve();
+  if (room.game.winner?.invalid) {
+    room.recordSaved = true;
+    room.game.resultRewards = null;
+    return Promise.resolve();
+  }
+  room.settlementId ??= legacySettlementId(room);
+  const operation = settleRoom({ prisma, room }).finally(() => pendingResults.delete(room));
   pendingResults.set(room, operation);
   return operation;
+}
+
+function legacySettlementId(room) {
+  return createHash("sha256").update(JSON.stringify([
+    room.code, room.createdAt, room.players.map((player) => player.user.id)
+  ])).digest("hex");
+}
+
+async function settleRoom({ prisma, room }) {
+  const suppressRecord = isCaptureChallenge(room) || room.game.winner?.invalid || room.recordPolicy === PRACTICE_RECORD_POLICY || room.matchSource === PRACTICE_MATCH_SOURCE;
+  const previous = suppressRecord ? null : await prisma.gameRecord.findUnique({ where: { settlementId: room.settlementId } });
+  if (previous) return publishReceipt(room, previous.settlementState);
+  // Reward calculations must never be visible or persisted before the transaction commits.
+  const staged = { ...room, players: structuredClone(room.players), game: structuredClone(room.game),
+    sigrikaCandyDuel: room.sigrikaCandyDuel ? structuredClone(room.sigrikaCandyDuel) : null,
+    practice: room.practice ? structuredClone(room.practice) : null };
+  staged.candyEffectUpdates = room.candyEffectUpdates?.map((entry) => ({
+    ...entry, player: staged.players.find((player) => player.user.id === entry.player.user.id)
+  }));
+  // Prisma Client is itself a Proxy: inherited assignments can mutate the real client.
+  const gameRecord = prisma.gameRecord;
+  const settlementRecord = {
+    create: ({ data }) => gameRecord.create({ data: {
+      ...data, settlementId: room.settlementId, settlementState: receiptState(staged, room)
+    } })
+  };
+  const settlementPrisma = new Proxy({}, {
+    get(_target, key) {
+      if (key === "gameRecord") return settlementRecord;
+      const value = prisma[key];
+      return typeof value === "function" ? value.bind(prisma) : value;
+    }
+  });
+  try {
+    await saveGameRecordOnce({ prisma: settlementPrisma, room: staged });
+  } catch (error) {
+    if (error.code !== "P2002") throw error;
+    const committed = await prisma.gameRecord.findUnique({ where: { settlementId: room.settlementId } });
+    if (!committed) throw error;
+    return publishReceipt(room, committed.settlementState);
+  }
+  if (!staged.recordSaved) return;
+  publishReceipt(room, receiptState(staged, room));
+  if (staged.rated === false && !staged.sigrikaCandyDuel && !staged.practice) {
+    staged.players.forEach(notePrivateReward);
+  }
+}
+
+function receiptState(staged, original) {
+  return JSON.stringify({
+    players: staged.players.map((player, index) => ({
+      id: player.user.id,
+      userChanges: Object.fromEntries(Object.entries(player.user).filter(([key, value]) => (
+        JSON.stringify(value) !== JSON.stringify(original.players[index].user[key])
+      ))),
+      completedItemEffects: player.completedItemEffects ?? null
+    })),
+    resultRewards: staged.game.resultRewards ?? null,
+    sigrikaCandyDuel: staged.sigrikaCandyDuel,
+    practice: staged.practice
+  });
+}
+
+function publishReceipt(room, state) {
+  const receipt = JSON.parse(state);
+  for (const entry of receipt.players) {
+    const player = room.players.find((candidate) => candidate.user.id === entry.id);
+    if (!player) continue;
+    player.user = { ...player.user, ...entry.userChanges };
+    player.completedItemEffects = entry.completedItemEffects;
+  }
+  room.game.resultRewards = receipt.resultRewards;
+  if (receipt.sigrikaCandyDuel) room.sigrikaCandyDuel = receipt.sigrikaCandyDuel;
+  if (receipt.practice) room.practice = receipt.practice;
+  room.recordSaved = true;
 }
 
 async function saveGameRecordOnce({ prisma, room }) {
@@ -241,6 +316,17 @@ async function saveSigrikaCandyDuelRecord({ prisma, room }) {
     userId: human.user.id,
     roomCode: room.code
   };
+  human.user = {
+    ...human.user,
+    sigrikaCandyArc: {
+      ...(human.user.sigrikaCandyArc ?? {}),
+      phase: "result-pending",
+      outcome,
+      roomCode: room.code,
+      corrupted: true,
+      active: true
+    }
+  };
   room.recordSaved = true;
   try {
     await prisma.$transaction([
@@ -289,17 +375,6 @@ async function saveSigrikaCandyDuelRecord({ prisma, room }) {
     room.recordSaved = false;
     throw error;
   }
-  human.user = {
-    ...human.user,
-    sigrikaCandyArc: {
-      ...(human.user.sigrikaCandyArc ?? {}),
-      phase: "result-pending",
-      outcome,
-      roomCode: room.code,
-      corrupted: true,
-      active: true
-    }
-  };
   room.game.resultRewards = null;
 }
 
@@ -327,7 +402,6 @@ function applyUnratedReward({ player, outcome, rules }) {
     coins: Number(player.user.coins ?? 0) + reward.coins,
     privateRewardLimitReached: reward.rewardLimitReached
   };
-  notePrivateReward(player);
 }
 
 export function applyDrawResultToRoomUser(player, mode) {

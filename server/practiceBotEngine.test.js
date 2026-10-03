@@ -82,7 +82,7 @@ describe("GNU Go practice engine adapter", () => {
     );
 
     expect(sgf).toContain("SZ[13]");
-    expect(sgf).toContain("KM[2.75]");
+    expect(sgf).toContain("KM[5.5]");
     expect(sgf).toContain("PL[B]");
     expect(sgf).toContain("AB[aa]");
     expect(sgf).toContain("AW[mm]");

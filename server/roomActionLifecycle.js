@@ -7,6 +7,7 @@ import {
 
 export function createRoomActionLifecycle({
   rooms,
+  syncGameClock = () => {},
   validateRoomCode,
   validateActionPoint,
   appendSystem,
@@ -38,6 +39,7 @@ export function createRoomActionLifecycle({
       return handleTestAction({ action, player, room });
     }
 
+    syncGameClock(room, io);
     const phaseError = validateRoomActionPhase(action, room.game.phase);
     if (phaseError) return { ok: false, error: phaseError };
 

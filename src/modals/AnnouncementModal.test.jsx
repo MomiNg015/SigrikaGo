@@ -89,16 +89,23 @@ describe("AnnouncementModal information center", () => {
     );
   });
 
-  it("uses the shared friendly empty state when a kind has no entries", async () => {
+  it("names the empty content without extra hints when switching kinds", async () => {
     api.mockImplementation((path) => {
-      if (path === "/api/announcements?kind=announcement&offset=0&limit=20") {
+      if (path === "/api/announcements?kind=announcement&offset=0&limit=20"
+        || path === "/api/announcements?kind=changelog&offset=0&limit=20") {
         return Promise.resolve({ items: [], nextOffset: 0, hasMore: false });
       }
       throw new Error(`Unexpected api call: ${path}`);
     });
     render(<AnnouncementModal token="token" onClose={() => {}} />);
 
-    expect((await screen.findAllByText("这里空空如也~")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("暂无公告")).length).toBeGreaterThan(0);
+    await userEvent.setup().click(screen.getByRole("tab", { name: "日志" }));
+    expect((await screen.findAllByText("暂无更新日志")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("暂无公告")).toBeNull();
+    for (const empty of document.querySelectorAll(".window-empty-state")) {
+      expect(empty.textContent).toBe("暂无更新日志");
+    }
   });
 
   it("keeps mobile list-first and does not auto-open the newest announcement", async () => {

@@ -29,7 +29,7 @@ function roomPlayer(color, overrides = {}) {
 
 function fakePrisma() {
   return {
-    gameRecord: { create: vi.fn() },
+    gameRecord: { findUnique: vi.fn().mockResolvedValue(null), create: vi.fn() },
     userModeStats: { upsert: vi.fn() },
     user: { update: vi.fn() },
     userCharacter: { upsert: vi.fn() },

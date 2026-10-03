@@ -582,7 +582,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("profile-like-button");
     expect(html).not.toContain("profile-friend-button");
     expect(html).not.toContain("profile-report-button");
-    expect(html.indexOf("achievement-entry-action")).toBeLessThan(html.indexOf("resume-wallet"));
+    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("achievement-entry-action"));
+    expect(html).toContain("profile-identity-actions");
     expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("resume-close-button"));
     expect(html).not.toContain("text-rating-value");
     expect(html).toContain("profile-summary-grid");
@@ -991,17 +992,16 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileActionsCss).toContain("min-width: 0 !important");
     expect(profileActionsCss).toContain("gap: 4px !important");
     expect(profileActionsCss).not.toContain(".profile-mode-tabs button:is(.active, [aria-selected=\"true\"])");
-    expect(profileActionsCss).toContain("background: var(--bright-cream) !important");
+    expect(profileActionsCss).toContain("tagged action paint is shared with ordinary controls");
     expect(profileActionsCss).toContain("button:not(.achievement-entry-action):not(.profile-personalization-button):not(.profile-replay-button):not(.close-button):not(.resume-close-button)");
     expect(profileActionsCss).toContain(".achievement-entry-action,\n  .resume-wallet");
     expect(profileActionsCss).toContain("filter: none !important");
-    expect(profileActionsCss).toContain("transform: translateY(-2px) !important");
-    expect(profileActionsCss).toContain("transform: translateY(1px) !important");
-    expect(profileActionsCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(profileActionsCss).toContain(":is(.profile-report-button, .profile-blacklist-button)");
-    expect(profileActionsCss).toContain("var(--bright-sheet) 76%, var(--theme-danger)");
+    expect(profileActionsCss).toContain("--campus-control-hover-shadow: none");
+    expect(profileActionsCss).toContain("--campus-control-active-shadow: none");
+    expect(profileActionsCss).toContain("border-radius: 50% !important");
+    expect(profileActionsCss).toContain("--campus-control-fill: #e4f6f0");
     expect(finalThemeCss).toContain(".resume-replay-action");
-    expect(finalThemeCss).toContain("background: #e4f6f0 !important");
+    expect(finalThemeCss).toContain("--campus-control-fill: #e4f6f0;");
     expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
       .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
     expect(finalThemeCss).toContain(".house-modal .character-list");

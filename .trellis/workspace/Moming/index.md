@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 152
-- **Last Active**: 2026-09-29
+- **Total Sessions**: 155
+- **Last Active**: 2026-10-03
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1055 | Active |
+| `journal-3.md` | ~1152 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,9 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 155 | 2026-10-03 | 换电脑开发交接说明 | - | `codex/battle-paper-panels` |
+| 154 | 2026-10-02 | Sigrika expression asset naming | `448bef7` | `codex/battle-paper-panels` |
+| 153 | 2026-10-02 | Aemeath expression sprite delivery | `de734af` | `codex/battle-paper-panels` |
 | 152 | 2026-09-29 | 移动引导滚动与高亮偏移修复 | `211a07cd` | `codex/battle-paper-panels` |
 | 151 | 2026-09-29 | 引导纯浮层与准时宝避让 | `3629f935` | `codex/battle-paper-panels` |
 | 150 | 2026-09-29 | 开发模式主界面引导重播 | `aab5500e` | `codex/battle-paper-panels` |

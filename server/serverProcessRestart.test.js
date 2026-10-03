@@ -90,10 +90,14 @@ describe("server process restart recovery", () => {
 });
 
 function startServer({ port, databaseUrl }) {
-  const child = spawn(process.execPath, [path.resolve("scripts/start-stability-server.mjs")], {
+  const child = spawn(process.execPath, [path.resolve("server/index.js")], {
     cwd: process.cwd(),
     env: {
       ...process.env,
+      NODE_ENV: "stability",
+      ENABLE_TEST_ACTIONS: "true",
+      ZHIZI_ENABLED: "false",
+      UPLOAD_DIR: path.resolve(".tmp/playwright", `restart-uploads-${port}`),
       PORT: String(port),
       DATABASE_URL: databaseUrl,
       LOCAL_PROD_STATIC: "0",

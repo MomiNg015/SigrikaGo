@@ -2,10 +2,9 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 import { zhiziKataGoConfigErrors } from "./zhiziKataGoConfig.js";
 
-export const PASSWORD_MIN_LENGTH = 6;
-export const NEW_PASSWORD_MIN_LENGTH = 8;
-export const PASSWORD_MAX_LENGTH = 64;
-export const PASSWORD_MAX_BYTES = 72;
+import { validateLoginPassword } from "../src/shared/passwordValidation.js";
+export { PASSWORD_MIN_LENGTH, NEW_PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_MAX_BYTES,
+  validateLoginPassword, validateNewPassword } from "../src/shared/passwordValidation.js";
 export const USERNAME_MIN_LENGTH = 2;
 export const USERNAME_MAX_WIDTH = 8;
 export const USERNAME_MAX_LENGTH = USERNAME_MAX_WIDTH;
@@ -48,29 +47,6 @@ export function truncateUsernameToMaxWidthFromEnd(input, maxWidth = USERNAME_MAX
 
 export function validatePassword(input) {
   return validateLoginPassword(input);
-}
-
-export function validateLoginPassword(input) {
-  return validatePasswordWithMinimum(input, PASSWORD_MIN_LENGTH, "密码长度不正确");
-}
-
-export function validateNewPassword(input) {
-  return validatePasswordWithMinimum(input, NEW_PASSWORD_MIN_LENGTH, `新密码需为 ${NEW_PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} 位`);
-}
-
-function validatePasswordWithMinimum(input, minimumLength, lengthError) {
-  const value = String(input ?? "");
-  const length = [...value].length;
-  if (length < minimumLength || length > PASSWORD_MAX_LENGTH) {
-    return { ok: false, error: lengthError };
-  }
-  if (Buffer.byteLength(value, "utf8") > PASSWORD_MAX_BYTES) {
-    return { ok: false, error: "密码太长，请缩短后重试" };
-  }
-  if (CONTROL_CHARS.test(value)) {
-    return { ok: false, error: "密码包含不支持的字符" };
-  }
-  return { ok: true, value };
 }
 
 export function validateRoomCode(input) {

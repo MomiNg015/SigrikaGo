@@ -1,3 +1,4 @@
+import { validateLoginPassword, validateNewPassword, PASSWORD_MIN_LENGTH as LOGIN_PASSWORD_MIN_LENGTH, NEW_PASSWORD_MIN_LENGTH as REGISTER_PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from "../shared/passwordValidation.js";
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { version as packageVersion } from "../../package.json";
@@ -294,13 +295,8 @@ export const AUTH_REGISTER_LABEL_NOTES = {
 
 const USERNAME_MIN_WIDTH = 2;
 const USERNAME_MAX_WIDTH = 8;
-const LOGIN_PASSWORD_MIN_LENGTH = 6;
-const REGISTER_PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 64;
-const PASSWORD_MAX_BYTES = 72;
 const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
 const USERNAME_PATTERN = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]+$/u;
-const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/;
 const USERNAME_PATTERN_ERROR = "用户名仅支持中文、日文、韩文、半角英文、数字和下划线";
 const CONFIRM_PASSWORD_ERROR = "两次输入的密码不一致";
 
@@ -363,14 +359,9 @@ export function validateAuthField(field, value, context = {}) {
   }
   if (field === "password") {
     const passwordValue = String(value ?? "");
-    const minimum = context.mode === "register" ? REGISTER_PASSWORD_MIN_LENGTH : LOGIN_PASSWORD_MIN_LENGTH;
     if (!passwordValue) return "请输入密码";
-    if ([...passwordValue].length < minimum || [...passwordValue].length > PASSWORD_MAX_LENGTH) {
-      return context.mode === "register" ? "新密码需为 8-64 位" : "密码长度不正确";
-    }
-    if (new TextEncoder().encode(passwordValue).length > PASSWORD_MAX_BYTES) return "密码太长，请缩短后重试";
-    if (CONTROL_CHARS.test(passwordValue)) return "密码包含不支持的字符";
-    return "";
+    const result = (context.mode === "register" ? validateNewPassword : validateLoginPassword)(passwordValue);
+    return result.ok ? "" : result.error;
   }
   if (field === "confirmPassword") {
     if (!String(value ?? "")) return "请再次输入密码";

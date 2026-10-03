@@ -128,6 +128,7 @@ const upload = multer({
 let onlineSessions;
 let duelRequests;
 const runtimeServiceState = createRuntimeServiceState({
+  databaseProbe: () => prisma.$queryRawUnsafe("SELECT 1"),
   onlineCount: () => onlineSessions?.onlineCount?.() ?? 0,
   activeRoomCount: () => listActiveRooms().length,
   spectatorCount: () => listActiveRooms().reduce(
@@ -346,4 +347,5 @@ installServerLifecycle(server, {
   beforeShutdown: [closePracticeRoomAutomation, flushRoomPersistence, () => runtimeServiceState.close()],
   dependencies: [prisma]
 });
+await runtimeServiceState.startHealthMonitoring();
 startHttpServer(server, { port: PORT });

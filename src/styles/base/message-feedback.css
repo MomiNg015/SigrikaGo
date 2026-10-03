@@ -72,3 +72,25 @@
     }
   }
 }
+
+.connection-notice {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 10px 14px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background: var(--theme-bg, Canvas);
+  color: var(--theme-text, CanvasText);
+  box-shadow: 2px 3px 0 currentColor;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.connection-notice button { flex-shrink: 0; min-width: 44px; min-height: 44px; }

@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const stabilityPort = process.env.STABILITY_PORT ?? process.env.PORT ?? "4173";
+const stabilityPort = process.env.STABILITY_PORT ?? "4173";
 const stabilityBaseURL = `http://127.0.0.1:${stabilityPort}`;
 
 export default defineConfig({
@@ -20,7 +20,7 @@ export default defineConfig({
   },
   webServer: {
     command: "node scripts/start-stability-server.mjs",
-    url: stabilityBaseURL,
+    url: `${stabilityBaseURL}/health/ready`,
     reuseExistingServer: false,
     timeout: 120_000
   },

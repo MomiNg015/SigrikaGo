@@ -6,12 +6,12 @@ import { cleanupPlaywrightTestDatabase } from "./playwrightTestDatabase.mjs";
 const suites = {
   e2e: {
     label: "e2e",
-    port: process.env.E2E_CLIENT_PORT ?? "5173",
+    port: process.env.E2E_CLIENT_PORT ?? "5317",
     configArgs: []
   },
   stability: {
     label: "stability",
-    port: process.env.STABILITY_PORT ?? process.env.PORT ?? "4173",
+    port: process.env.STABILITY_PORT ?? "4173",
     configArgs: ["-c", "playwright.stability.config.js"]
   }
 };

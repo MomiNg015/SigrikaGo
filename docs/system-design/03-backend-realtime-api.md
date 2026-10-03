@@ -1,5 +1,7 @@
 # 后端、HTTP API 与实时房间
 
+封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。
+
 opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒时间），与原 `openingEndsAt` 共同表示剩余时长。`normalizeRoomSnapshot` 在接收时生成仅客户端使用的 `__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)`；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。
 
 本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。
@@ -35,12 +37,12 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 
 - Runtime security helpers live in `server/security.js`.
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
-- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 `dotenv/config` 加载当前工作目录的 `.env`，再由进程环境覆盖同名值，并默认按生产规则检查，因此一键更新脚本不会漏掉 systemd `EnvironmentFile` 中的真实配置，调用方忘记设置 `NODE_ENV=production` 时也不会按开发环境误通过。
+- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；它和服务端入口一样先通过 `dotenv/config` 加载当前工作目录的 `.env`，再由进程环境覆盖同名值，明确要求 `NODE_ENV=production`；未设置或使用 development/stability 都拒绝。聚合质量入口只为示例配置显式设置生产环境，正式部署仍检查真实 `.env`。
 - `npm run check` 是当前交付前的聚合质量入口，会顺序运行 ESLint、单元测试、资源/后台快照检查、Vite build、构建 CSS 合同检查、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
 - `npm run production:schema-compat` 只调用 `ensureServerSchema()`：正式更新在停服并完成 `prisma migrate deploy` 后、任何 `admin:sync-defaults` 读取之前执行它，幂等补齐早期 SQLite 部署中已被迁移历史遗漏的兼容表、列和索引。它不会 seed 后台数据，也不会写 `_prisma_migrations`；未来模型变化仍必须提交新的 Prisma migration。
-- 2026-07-20 依赖加固后，`npm audit --omit=dev` 已无 high/critical；Multer、Express/`qs`、Socket.IO/`ws` 与 Vite/Vitest/Babel 工具链使用当前主版本内的修复版本。保留的 ExcelJS/`uuid` moderate 传递告警仅位于管理员按需加载的剧情工作簿功能，项目不直接调用 `uuid`；上游 ExcelJS 尚无修复版，禁止用审计建议的降级或未经验证的跨主版本 override 替代回归验证。
+- 2026-10-02 运行依赖加固后，`npm audit --omit=dev` 为 0：Multer、Socket.IO parser、XML/qs/ip-address 等更新到兼容修复版本；ExcelJS 仅在自身范围 override `uuid=11.1.1`，剧情工作簿回归验证其 API 兼容。全量审计还保留 Vitest mocker 和 Sharp 的开发工具告警，需要另行验证主版本升级；不进入生产 API 运行路径。
 - `.github/workflows/ci.yml` 是仓库级远端质量门：pull request 和 `master` push 会在 Ubuntu 上执行 `npm ci`、`npm test`、`npm run build`、示例生产配置检查和 `npm run docs:system-design`。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。
-- `npm run verify:stability` 是本地准生产稳定性入口。它先构建 `dist/`，再用 `playwright.stability.config.js` 启动 `scripts/start-stability-server.mjs`，该启动脚本强制 `NODE_ENV=stability`、`LOCAL_PROD_STATIC=1`、`ENABLE_TEST_ACTIONS=true` 和默认端口 `4173`（可由 `STABILITY_PORT` 或 `PORT` 覆盖），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。
+- `npm run verify:stability` 是本地准生产稳定性入口。它先构建 `dist/`，再用 `playwright.stability.config.js` 启动 `scripts/start-stability-server.mjs`，该启动脚本强制 `NODE_ENV=stability`、`LOCAL_PROD_STATIC=1`、`ENABLE_TEST_ACTIONS=true` 和默认端口 `4173`（仅可由 `STABILITY_PORT` 覆盖，不继承开发 `PORT`），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。
 - Vite production build uses explicit manual chunks in `vite.config.js`: React runtime code goes to `react-vendor`, Socket.IO client runtime goes to `realtime-vendor`, and the skill-animation Pixi runtime goes to the lazy `pixi-vendor` chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by `scripts/viteBuildConfig.test.js`.
 - Username input is normalized server-side and must be 2-8 half-width display units, limited to Chinese, Japanese, Korean, half-width English letters, numbers, and `_`.
 - Login accepts existing 6-64-character passwords for compatibility. New registration requires 8-64 Unicode code points and at most 72 UTF-8 bytes so bcrypt cannot silently truncate input; registration returns the exact validation issue, while login keeps one generic username/password error for invalid credentials or invalid credential shapes.
@@ -262,7 +264,7 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 - 新角色从自身完整技能次数与未触发被动状态开始；清空旧派生技能；`teamRoundStartHistoryIndex` 限定禁先只扫描本轮主动技能。已有棋盘效果、累计超频、棋子、提子、轮次执棋方及双方剩余棋钟不重置。退场被动停止产生新效果，已有棋盘标记按原生命周期保留。
 - Round 1 与猜先合并；每轮通过既有 `OpeningDuelPresentation` 展示双方当前角色与 Round 名。重连仅恢复剩余演出时间。参赛者本地播放当前己方角色的 `sortie` 出战语音，每轮去重，不叠加普通 `gameStart` 语音，不为观战或棋谱播放出战语音。
 - `room.recordPolicy = "replay-only"`，结算保存 `mode/matchSource = "team"` 的完整终局快照，无用户奖励、积分、段位及角色战绩写入；个人统计和成就记录扫描排除队际赛。棋谱回放按 `team-round` 重建对应角色技能，避免用终局角色重放整局。
-- 选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘从左到右三等分，当前彩色，己方非当前灰色，对手候场问号；终局结算列出完整阵容与顺序。
+- 选人按照点击顺序入队，再次点击已选卡片取消，重新选择排到末位；浏览器按账号 ID 保存上次选择，重新进入过滤失效角色。匹配中由匹配遮罩阻止修改，取消后返回原阵容。立绘使用从左到右错落的三张斜切纸片，当前与己方候场彩色，已退场人选灰显，对手未公开候场显示问号；终局结算列出完整阵容与顺序。
 - 入队校验期间收到取消请求时，该次异步入队作废；候场阵容重新校验失败则发出 `match:left`，客户端退出匹配遮罩。观战列表的用户角色信息同样只投影当前出场角色。
 - 提前结束及双方离开五分钟的队际赛仍保存棋谱；保存失败时先重试再删除房间。重连演出沿用剩余期限，当前轮出战语音不补播，下轮正常播放。
 - `npx playwright test --config tests/e2e/team-match.config.js` 构建实际组件及样式的独立测试入口，无需测试账号或数据库，检查桌面、390px、360px 竖屏的选人排序、三格立绘、灰度、保密占位及溢出。
@@ -289,3 +291,26 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 ### 无效对局与回放可见性
 
 `saveGameRecord` 在所有模式分支之前检查 `game.winner.invalid`，无效结束仅标记结算已处理并清空结果奖励，不写入回放或成长记录。历史记录由 `replayValidity.isInvalidReplay` 解析保存快照中的同一标记，兼容旧的“对局无效”结果文本；不按手数或 `rated=false` 推断无效。个人与他人共用回放分页每批最多读取 51 条，读取快照仅用于有效性判断；跳过无效项后继续以原 createdAt/id 游标扫描，最多返回 50 条有效摘要和有效末项游标，响应不包含快照。管理员列表同样过滤，个人／管理员详情直接访问无效记录均返回 404。保留历史原始数据，不执行数据库删除或迁移。
+
+
+## 内测发布加固（2026-10-02）
+
+### 结算与账号占用
+
+新房创建时生成 `settlementId` 并随 `PersistedRoom` 保存，旧房按房间号、创建时间和玩家 ID 派生稳定值。有效普通、友谊、队际和特殊剧情记录使用 `GameRecord.settlementId` 唯一约束，在同一事务内写棋谱、奖励、战绩、成长流水及道具效果，并保存 `settlementState` 回执。奖励计算只修改克隆状态，提交成功后才合并到实际房间、设 `recordSaved=true`、强制持久化并广播。事务失败保留未保存状态并重试；提交后快照尚未落盘的恢复、重复房对象和唯一冲突都回放回执，不再发奖。无效局、普通陪练仍沿用排除规则，吃子挑战赛继续使用其独立回执。
+
+关闭和启动恢复不删除已过期但尚未保存的有效终局，必须先重试结算。所有建房入口的最终同步检查覆盖 preload、opening、playing 和 finished-but-unsaved；匹配刷新账号、黑名单或队际选人之后，再检查申请者和候选人。冲突返回 `active_room_exists`，避免两个模式同时将同一账号拉入不同房间。
+
+### 会话、网络和棋钟
+
+注册、后台重置和登录共用 `src/shared/passwordValidation.js`。新密码至少 8、最多 64 个 Unicode 字符且不超过 72 UTF-8 字节，禁止控制字符；登录兼容旧 6 字符密码。重置事务同时更新密码、撤销全部 `LoginSession` 并写审计，提交后发送 `account:logged-out` 并断开该用户所有在线连接。
+
+登录刷新或 `/api/me` 临时失败（含 HTML 503）保留会话、房间和界面状态，提供顶部重试提示；确认 401/403 才清空会话。音乐目录的非认证失败回退共享内置曲目。Socket 断线提示适配桌面及手机竖屏；匹配断线时不排入 Socket 缓冲，ACK 失败、8 秒无 ACK 或请求期间断线都会退出等待，`match:found` 可作为权威成功，取消操作清理计时器和监听器。
+
+棋钟按真实 elapsed milliseconds 和玩家自己的 `clockRemainderMs` 累积，不再强制每回调至少扣一秒；落子/换手前同步，数子/和棋暂停与技能等恢复边界重置 `lastTick`，暂停时间不计费；读秒落子获得完整新周期时清除旧周期的亚秒余量。两种引擎统一通过 `internalKomiToGtpKomi` 转换，例如内部 `2.75` 子输出 `KM[5.5]` / `komi 5.5`。
+
+### 健康与发布恢复
+
+`databaseHealth.js` 每 5 秒进行一次最多 2 秒等待的 `SELECT 1`，健康缓存 15 秒过期；挂起查询不会导致重叠探针。readiness 在数据库不可用、持续房间/结算写失败（至少 3 次且跨越 30 秒）或 draining 时返回 503；失败期间拒绝新接入，成功写入/探针后恢复。
+
+正式更新在 `.releases/` 构建完整候选，并保存运行中的旧代码、依赖及前端。停服完成 drain 后再创建一份校验过的迁移前数据库备份。迁移、兼容补齐、后台快照同步完成后才切换 dist 和 systemd `90-release.conf`；readiness 成功后才将操作用 checkout 快进到验证过的 commit。迁移开始后的任何失败保持服务停止，避免旧代码读取未知新 schema；输出候选目录内的 `restore-production.sh` 命令。恢复先校验选定备份，保存故障库，再配套恢复完整旧版本和停服备份并检查 ready。目标云的 systemd/Nginx、磁盘权限和容量仍须实际验收。

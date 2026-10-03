@@ -122,6 +122,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `resultText`: 结果文本。
 - `moveCount`: 手数。
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
+- `settlementId`: 可空唯一的结算标识，新房为 UUID、旧房为稳定摘要；`settlementState` 保存提交后的用户变更与结果奖励供重复恢复回放。迁移 `20261002040000_game_settlement_receipt` 不回填旧记录，兼容空值。
 - `createdAt`: 创建时间。
 - `mode`: 对局模式快照，当前支持 `spark`、`standard`、`gomoku`；排行榜、履历、公开资料和回放按该字段过滤。
 - `rated`: whether the game affects rating, rank, public profile stats, leaderboard stats, and recent-results windows. Matchmaking games are rated; direct/private duel games are friendly and unrated.
@@ -350,3 +351,8 @@ Character-target inventory item use loads structured `userCharacters` and valida
 `CaptureChallengeBest` 以 `userId` 为主键，保存个人最高 `captures`、对应 `characterId`、`costumeSnapshot` 与历史最佳 `bestRank`。仅严格超过最高提子数时替换成绩和角色；名次纪录独立维护。`captures` 索引供排名统计与排序。
 
 `CaptureChallengeResult` 以服务器生成并写入房间快照的挑战 UUID 为主键，保存 `userId`、本局 `captures`、结算时 `rank`、`breakthrough` 与创建时间。事务内先查回执，再计算名次、更新最高纪录、创建回执；重试复用已保存结果。两表均随用户级联删除，不进入 GameRecord、普通战绩或成长统计。新增迁移 `20260923000000_capture_challenge`；`ensureCaptureChallengeSchema` 同步支持旧 SQLite 库的启动兼容路径。
+
+
+## 有效对局结算回执
+
+`GameRecord.settlementId` 为可空唯一字段，新房使用 UUID，旧房通过稳定摘要获得回执标识；`settlementState` 为 JSON，保存本次提交后的用户变更、道具效果和结果奖励。迁移 `20261002040000_game_settlement_receipt` 为旧记录保留空值，不推断历史回执。记录与奖励等更新同事务，恢复重复请求复用回执而不重发奖励；`PersistedRoom` 同步保存 settlementId 与提交后的 recordSaved。

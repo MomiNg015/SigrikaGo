@@ -47,6 +47,12 @@ export function registerMatchSocketEvents(socket, {
       }
       const mode = normalizeGameModeId(modeInput);
       await refreshSocketUser(socket);
+      if (isUserInActiveRoom(socket.user.id)) {
+        leaveMatchmaking(socket.user.id);
+        socket.emit("match:left");
+        ack({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
+        return;
+      }
       let teamLineup;
       if (mode === "team") {
         if (socket.user.sigrikaCandyArc?.corrupted || isUserInActiveRoom(socket.user.id)) {
@@ -62,6 +68,10 @@ export function registerMatchSocketEvents(socket, {
       }
       const blockedCandidateIds = new Set();
       for (const candidate of listWaitingPlayers()) {
+        if (isUserInActiveRoom(candidate.user.id)) {
+          leaveMatchmaking(candidate.user.id);
+          continue;
+        }
         if (mode === "team" && candidate.mode === "team") {
           const waitingSocket = io.sockets?.sockets?.get(candidate.socketId);
           if (!waitingSocket) {
@@ -100,10 +110,16 @@ export function registerMatchSocketEvents(socket, {
         ack({ ok: true, cancelled: true });
         return;
       }
+      if (isUserInActiveRoom(socket.user.id)) {
+        leaveMatchmaking(socket.user.id);
+        socket.emit("match:left");
+        ack({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
+        return;
+      }
       const room = joinMatchmaking(
         { user: socket.user, socketId: socket.id, mode, ...(teamLineup ? { teamLineup } : {}) },
         io,
-        { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) }
+        { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) && !isUserInActiveRoom(candidate.user.id) }
       );
       if (!room) {
         const queued = listWaitingPlayers().find((entry) => entry.user.id === socket.user.id);
@@ -122,8 +138,9 @@ export function registerMatchSocketEvents(socket, {
         socket.emit("match:left");
         broadcastLobbyStats();
       }
-      socket.emit("error:toast", SOCKET_AUTH_EXPIRED_MESSAGE);
-      ack({ ok: false, error: SOCKET_AUTH_EXPIRED_MESSAGE });
+      const message = error.code === "active_room_exists" ? error.message : SOCKET_AUTH_EXPIRED_MESSAGE;
+      socket.emit("error:toast", message);
+      ack({ ok: false, error: message, ...(error.code ? { code: error.code } : {}) });
     }
   }
   socket.on("match:join", (payload, ack) => join(payload, ack));

@@ -10,7 +10,7 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:5291", ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 }, channel: "chrome" },
   webServer: {
     cwd: fileURLToPath(new URL("../../", import.meta.url)),
-    command: "npx vite preview --host 127.0.0.1 --port 5291 --strictPort",
+    command: "node scripts/start-e2e-preview.mjs",
     url: "http://127.0.0.1:5291",
     reuseExistingServer: false
   }

@@ -68,8 +68,8 @@ export function registerPracticeSocketEvents(socket, {
       );
       acknowledge?.({ ok: true, roomCode: room.code });
       broadcastLobbyStats();
-    } catch {
-      acknowledge?.({ ok: false, error: "登录状态已失效，请重新登录", code: "auth_expired" });
+    } catch (error) {
+      acknowledge?.({ ok: false, error: error.code === "active_room_exists" ? error.message : "登录状态已失效，请重新登录", code: error.code === "active_room_exists" ? error.code : "auth_expired" });
     }
   });
 }

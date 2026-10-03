@@ -1,5 +1,6 @@
 import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { RATED_RANK_DISTANCE, rankDistance } from "../src/shared/matchClassification.js";
+import { GAME_PHASES } from "../src/shared/game.js";
 import { modeStatsForUser } from "./roomFactory.js";
 import { createPracticeRoom as buildPracticeRoom, createRoom, createSigrikaCandyDuelRoom as buildSigrikaCandyDuelRoom } from "./roomFactory.js";
 
@@ -15,8 +16,20 @@ export function createRoomCreationLifecycle({
   prewarmSigrikaEngine = () => {},
   registerRoom = () => {}
 }) {
+  function isBusy(userId) {
+    return [...rooms.values()].some((room) => (
+      (room.game.phase !== GAME_PHASES.finished || !room.recordSaved)
+      && room.players.some((player) => player.user.id === userId)
+    ));
+  }
+  function assertAvailable(...players) {
+    if (players.some((player) => isBusy(player.user.id))) {
+      throw Object.assign(new Error("你已有进行中的对局或尚未完成的结算"), { code: "active_room_exists" });
+    }
+  }
   function joinMatchmaking(player, io, { canPair = () => true } = {}) {
-    const match = matchmakingQueue.join(player, { canPair });
+    assertAvailable(player);
+    const match = matchmakingQueue.join(player, { canPair: (candidate, queued) => !isBusy(candidate.user.id) && canPair(candidate, queued) });
     if (!match.matched) return null;
 
     const first = match.opponent;
@@ -36,6 +49,7 @@ export function createRoomCreationLifecycle({
   }
 
   function createDirectRoom(first, second, io, modeInput = "spark") {
+    assertAvailable(first, second);
     const mode = normalizeGameModeId(modeInput);
     matchmakingQueue.removeUser(first.user.id);
     matchmakingQueue.removeUser(second.user.id);
@@ -52,6 +66,7 @@ export function createRoomCreationLifecycle({
   }
 
   function createPracticeRoom(player, io, options = {}) {
+    assertAvailable(player);
     matchmakingQueue.removeUser(player.user.id);
     const room = buildPracticeRoom(player, {
       ...options,
@@ -65,6 +80,7 @@ export function createRoomCreationLifecycle({
   }
 
   function createSigrikaCandyDuelRoom(player, io) {
+    assertAvailable(player);
     matchmakingQueue.removeUser(player.user.id);
     const room = buildSigrikaCandyDuelRoom(player, { isCodeTaken: isRoomCodeTaken });
     appendSystem(room, "匹配数据损坏。已锁定特殊对局。", { kind: "special-match" });

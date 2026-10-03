@@ -54,6 +54,7 @@ import { useStartupPreload } from "./useStartupPreload.js";
 import { useSyncedRefs } from "./useSyncedRefs.js";
 import { useToastQueue } from "./useToastQueue.js";
 import { exitSigrikaCandySpectatorResult } from "./sigrikaCandyResultNavigation.js";
+import ConnectionNotice from "./ConnectionNotice.jsx";
 import DesktopViewportGate from "./DesktopViewportGate.jsx";
 
 const SOCKET_BASE = deploymentSocketBase();
@@ -98,6 +99,8 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
   const [roomBackRequestId, setRoomBackRequestId] = useState(0);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
+  const [startupError, setStartupError] = useState(null);
+  const [startupRetry, setStartupRetry] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
   const {
     runTransition: runSigrikaCorruptionTransition,
@@ -314,7 +317,8 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     view
   });
 
-  useAuthSession({
+  const refreshAuthSession = useAuthSession({
+    setStartupError,
     fallbackCharacters: CHARACTERS,
     setCharacters,
     setLobbyStats,
@@ -330,6 +334,8 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
   });
 
   useStartupPreload({
+    retryKey: startupRetry,
+    setStartupError,
     fallbackCharacters: CHARACTERS,
     matchSuccessRef,
     refreshSiteSettings,
@@ -665,6 +671,13 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
             }}
           />
         )}
+        <ConnectionNotice
+          socket={token && user ? socket : null}
+          startupError={startupError}
+          onRetry={() => startupError?.source === "auth"
+            ? refreshAuthSession({ silent: true }).catch(() => {})
+            : setStartupRetry((attempt) => attempt + 1)}
+        />
         <AppRoutes {...routeProps} />
         <AppOverlays {...appOverlayProps} />
         {homeOnboarding.active && <HomeOnboarding key={user.id} character={characters.sigrika ?? CHARACTERS.sigrika}

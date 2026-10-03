@@ -261,8 +261,8 @@ describe("UserProfileCard dossier interactions", () => {
     expect(document.querySelector(".user-identity-nameplate-background").getAttribute("style")).toContain("nameplate-long.png");
     expect(screen.getByLabelText("总对局 0局")).toBeTruthy();
     expect(screen.getByText("0.0%")).toBeTruthy();
-    expect(within(screen.getByLabelText("最近胜负")).getByText("暂无")).toBeTruthy();
-    expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无");
+    expect(within(screen.getByLabelText("最近胜负")).getByText("暂无最近十盘")).toBeTruthy();
+    expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无角色战绩");
     expect(screen.queryByRole("table")).toBeNull();
   });
 

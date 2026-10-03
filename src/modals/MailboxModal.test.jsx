@@ -114,7 +114,7 @@ describe("MailboxModal information center", () => {
     await user.click(screen.getByRole("button", { name: "领取附件" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "删除邮件" }).disabled).toBe(false));
     await user.click(screen.getByRole("button", { name: "删除邮件" }));
-    await waitFor(() => expect(screen.getAllByText("这里空空如也~").length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByText("暂无邮件").length).toBeGreaterThan(0));
   });
 
   it("keeps the list text-only and dims only messages that are fully handled", () => {

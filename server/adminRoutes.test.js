@@ -1,5 +1,6 @@
 import express from "express";
-import { describe, expect, it } from "vitest";
+import { apiErrorHandler } from "./httpErrors.js";
+import { describe, expect, it, vi } from "vitest";
 import {
   assertSafeJwtSecret,
 } from "./auth.js";
@@ -99,6 +100,7 @@ describe("admin route helpers", () => {
   it("resets passwords inside a transaction without leaking secrets to audit logs", async () => {
     const auditWrites = [];
     const tx = {
+      loginSession: { updateMany: async () => ({ count: 1 }) },
       user: {
         findUnique: async () => userFixture(),
         update: async ({ data }) => ({ ...userFixture(), passwordHash: data.passwordHash })
@@ -242,6 +244,33 @@ describe("admin route helpers", () => {
 });
 
 describe("admin user routes", () => {
+  it("disconnects live sockets only after the ban transaction commits", async () => {
+    const { prisma } = transactionPrisma();
+    const disconnectUser = vi.fn();
+    const response = await requestAdminRoute(prisma, "/users/user-1/ban", {
+      method: "POST", body: { reason: "abuse" }, onlineSessions: { disconnectUser }
+    });
+    expect(response.status).toBe(200);
+    expect(response.body.user.status).toBe("banned");
+    expect(disconnectUser).toHaveBeenCalledExactlyOnceWith("user-1", "账号已封禁：abuse");
+  });
+
+  it("keeps live sockets when a ban transaction fails or input is rejected", async () => {
+    const disconnectUser = vi.fn();
+    const prisma = { $transaction: vi.fn().mockRejectedValue(new Error("database unavailable")) };
+    const failed = await requestAdminRoute(prisma, "/users/user-1/ban", {
+      method: "POST", body: { reason: "abuse" }, onlineSessions: { disconnectUser }
+    });
+    expect(failed.status).toBe(500);
+    expect(failed.body.error).toBe("database unavailable");
+    const invalid = await requestAdminRoute(prisma, "/users/user-1/ban", {
+      method: "POST", body: { reason: "x" }, onlineSessions: { disconnectUser }
+    });
+    expect(invalid.status).toBe(400);
+    expect(disconnectUser).not.toHaveBeenCalled();
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+  });
+
   it("returns 400 when PATCH /users/:id has legal fields but no updateable values", async () => {
     const { prisma } = transactionPrisma();
 
@@ -1478,14 +1507,15 @@ function uploadMiddlewareThatFails(error) {
   };
 }
 
-async function requestAdminRoute(prisma, path, { method, body, uploadMiddleware }) {
+async function requestAdminRoute(prisma, path, { method, body, uploadMiddleware, onlineSessions }) {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
     req.user = { id: "admin-1" };
     next();
   });
-  app.use(createAdminRouter({ prisma, uploadMiddleware }));
+  app.use(createAdminRouter({ prisma, uploadMiddleware, onlineSessions }));
+  app.use(apiErrorHandler);
   const server = app.listen(0);
   try {
     await new Promise((resolve) => server.once("listening", resolve));
@@ -1508,3 +1538,9 @@ async function requestAdminRoute(prisma, path, { method, body, uploadMiddleware 
     });
   }
 }
+
+it.each(["1234567", "a".repeat(65), "中".repeat(25), "abcdefg\n"])("rejects invalid admin reset passwords without opening a transaction: %s", async (password) => {
+  const prisma = { $transaction: vi.fn() };
+  await expect(resetUserPassword({ prisma, adminUser: { id: "admin" }, userId: "user", password })).rejects.toMatchObject({ status: 400 });
+  expect(prisma.$transaction).not.toHaveBeenCalled();
+});

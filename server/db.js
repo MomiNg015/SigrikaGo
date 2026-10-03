@@ -117,6 +117,9 @@ export async function ensureGameModeSchema(client = prisma) {
   }
 
   const gameRecordColumns = await client.$queryRawUnsafe(`PRAGMA table_info("GameRecord")`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "settlementId", `ALTER TABLE "GameRecord" ADD COLUMN "settlementId" TEXT`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "settlementState", `ALTER TABLE "GameRecord" ADD COLUMN "settlementState" TEXT NOT NULL DEFAULT ''`);
+  await client.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "GameRecord_settlementId_key" ON "GameRecord"("settlementId")`);
   const hasGameRecordMode = gameRecordColumns.some((column) => column.name === "mode");
   if (!hasGameRecordMode) {
     await client.$executeRawUnsafe(`ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT 'spark'`);

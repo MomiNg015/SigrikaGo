@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../../../src/styles.css";
 import { CHARACTERS } from "../../../src/shared/characters.js";
@@ -18,7 +18,7 @@ function BookmarkFixture() {
   return <div className="modal-backdrop"><section role="dialog" className="small-modal window-sticker-host window-bookmark-host">
     <WindowTitleSticker titleKey="settings" />
     <WindowBookmarkTabs aria-label="窗口标签">
-      {Array.from({ length: count }, (_, index) => <button key={index} type="button" aria-selected={selected === index} onClick={() => setSelected(index)}>选项标签{index + 1}</button>)}
+      {Array.from({ length: count }, (_, index) => <button key={index} type="button" role="tab" aria-selected={selected === index} onClick={() => setSelected(index)}>选项标签{index + 1}</button>)}
     </WindowBookmarkTabs>
     <p>当前标签 {selected + 1}</p>
     <button type="button" onClick={() => setCount(count === 6 ? 3 : 6)}>切换标签数量</button>
@@ -28,16 +28,24 @@ function BookmarkFixture() {
 const user = { id: "team-one", username: "队际赛测试", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath", "nabomo"] };
 const noop = () => {};
 const root = createRoot(document.getElementById("root"));
+const params = new URLSearchParams(location.search);
+const round = Math.max(1, Math.min(3, Number(params.get("round")) || 1));
+const finished = params.get("finished") === "1";
+const currentId = user.ownedCharacters[round - 1];
 const players = ["black", "white"].map((color, index) => ({
   color, user: index ? { ...user, id: "team-two", username: "对手" } : user,
-  characterId: "sigrika", character: CHARACTERS.sigrika, connected: true, captures: 0,
+  characterId: currentId, character: CHARACTERS[currentId], connected: true, captures: 0,
   time: { main: 300, mainTotal: 300, byoYomi: 30, periodRemaining: 30, periods: 3 },
-  teamLineup: user.ownedCharacters.map((id, slot) => index && slot > 0
+  teamLineup: user.ownedCharacters.map((id, slot) => index && !finished && slot >= round
     ? { characterId: null, character: null, status: "hidden" }
-    : { characterId: id, character: CHARACTERS[id], status: slot === 0 ? "active" : "waiting" })
+    : { characterId: id, character: CHARACTERS[id], status: slot === round - 1 ? "active" : slot < round - 1 ? "finished" : "waiting" })
 }));
 const game = createGameState(players, { mode: "team" });
-const room = { code: "12345", mode: "team", rated: false, team: { round: 1 }, role: "player", players, game, chat: [], spectators: [] };
+if (finished) {
+  game.phase = "finished";
+  game.winner = { winnerColor: "black", reason: "resign", invalid: false, text: "黑中盘胜" };
+}
+const room = { code: "12345", mode: "team", rated: false, team: { round }, role: "player", players, game, chat: [], spectators: [] };
 const surface = new URLSearchParams(location.search).get("surface");
 const records = Array.from({ length: 12 }, (_, index) => ({ id: String(index), mode: "team", rated: false, createdAt: "2026-09-23T12:00:00Z", blackName: "己方", whiteName: "对手", blackCharacter: "sigrika", whiteCharacter: "aemeath", resultText: "黑胜", moveCount: 100 }));
 const captureRoom = {

@@ -1,3 +1,4 @@
+import { validateNewPassword } from "../src/shared/passwordValidation.js";
 import { normalizeRankProgress } from "../src/shared/rankProgression.js";
 import bcrypt from "bcryptjs";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
@@ -175,14 +176,17 @@ export async function unbanUser({ prisma, adminUser, userId }) {
 }
 
 export async function resetUserPassword({ prisma, adminUser, userId, password }) {
+  const validation = validateNewPassword(password);
+  if (!validation.ok) throw routeError(400, validation.error);
+  const passwordHash = await bcrypt.hash(validation.value, 10);
   await prisma.$transaction(async (tx) => {
     const before = await tx.user.findUnique({ where: { id: userId } });
     if (!before) throw routeError(404, "User not found");
-    const passwordHash = await bcrypt.hash(password, 10);
     await tx.user.update({
       where: { id: userId },
       data: { passwordHash }
     });
+    await tx.loginSession.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
     await writeAudit(tx, adminUser, "user.reset-password", userId, { id: before.id }, { passwordReset: true });
   });
   return { ok: true };

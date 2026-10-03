@@ -24,7 +24,7 @@ Applies to competitive progression, public projections, leaderboards, admin edit
 
 ## Validation & Error Matrix
 - Clamp stars to capacity and points to nonnegative Prisma Int range; malformed rank falls back to 3段.
-- Database failure: transaction rolls back; restore in-memory users and recordSaved; propagate error for retry.
+- Database failure: transaction rolls back; original users, visible rewards and recordSaved remain untouched because calculations use cloned state; propagate error for retry. A unique durable settlement receipt prevents repeated recovery awards. See [Internal Test Release Contract](./internal-test-release-contract.md).
 - Migration failure: no receipt or partial reset may commit; startup fails rather than serving mixed progression.
 - Repeated successful startup migration: no reset.
 

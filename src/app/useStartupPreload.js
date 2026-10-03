@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { api } from "../api/client.js";
 import { loginPreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "../shared/preloadAssets.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
@@ -7,6 +8,8 @@ import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionSt
 
 export function useStartupPreload({
   fallbackCharacters,
+  retryKey = 0,
+  setStartupError = () => {},
   matchSuccessRef,
   refreshSiteSettings,
   roomRef,
@@ -35,6 +38,7 @@ export function useStartupPreload({
     api("/api/me", { token })
       .then(async (data) => {
         if (cancelled) return;
+        setStartupError(null);
         setUser(data.user);
         if (shouldShowStartupPreload({
           room: roomRef.current,
@@ -45,7 +49,10 @@ export function useStartupPreload({
         setAssetProgress(0);
         const [nextCharacters, nextMusicTracks, shopData, inventoryData, recruitmentData] = await Promise.all([
           loadPublicCharacterCatalog({ token }),
-          loadMusicTrackCatalog({ token }),
+          loadMusicTrackCatalog({ token }).catch((error) => {
+            if (error.status === 401 || error.status === 403) throw error;
+            return MUSIC_TRACKS;
+          }),
           api("/api/shop", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
           api("/api/items/inventory", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
           api("/api/recruitment", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] }))
@@ -83,8 +90,14 @@ export function useStartupPreload({
           cancelRetry = retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 });
         }
       })
-      .catch(() => {
+      .catch((error) => {
         if (cancelled) return;
+        if (error.status !== 401 && error.status !== 403) {
+          setStartupError({ source: "preload", message: "暂时无法加载账号，请检查网络后重试" });
+          if (shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })) setView("preloading");
+          return;
+        }
+        setStartupError(null);
         setToken("");
         setUser(null);
         setRoom(null);
@@ -104,6 +117,8 @@ export function useStartupPreload({
       cancelRetry();
     };
   }, [
+    retryKey,
+    setStartupError,
     fallbackCharacters,
     matchSuccessRef,
     refreshSiteSettings,

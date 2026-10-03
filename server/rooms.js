@@ -1,4 +1,5 @@
 import { prisma } from "./db.js";
+import { notePersistenceSuccess } from "./persistenceHealth.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
 import { deletePersistedRoom as deletePersistedRoomState, listPersistedRooms } from "./roomPersistence.js";
@@ -106,13 +107,15 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   emitRoomClosed,
   deletePersistedRoom: async (roomCode) => {
     await flushRoomPersistence(roomCode);
-    return deletePersistedRoomState(prisma, roomCode);
+    const result = await deletePersistedRoomState(prisma, roomCode);
+    notePersistenceSuccess(`room:${roomCode}`);
+    return result;
   },
   persistRoom,
   appendSystem,
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
   onRecordSaved: (room, io) => {
-    if (isCaptureChallenge(room)) broadcastRoom(io, room);
+    broadcastRoom(io, room);
   },
   unregisterRoom: roomMembershipIndex.unregisterRoom,
   prepareCloseState: (room) => {
@@ -120,7 +123,7 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
       room.candyEffectUpdates ??= [];
       return room.candyEffectUpdates;
     }
-    return prepareCandyEffectUpdates(room);
+    return room.candyEffectUpdates;
   },
   metrics: runtimeStabilityMetrics
 });
@@ -151,7 +154,9 @@ const roomPreparationLifecycle = createRoomPreparationLifecycle({
   clearRoomTimers,
   deletePersistedRoom: async (roomCode) => {
     await flushRoomPersistence(roomCode);
-    return deletePersistedRoomState(prisma, roomCode);
+    const result = await deletePersistedRoomState(prisma, roomCode);
+    notePersistenceSuccess(`room:${roomCode}`);
+    return result;
   },
   unregisterRoom: roomMembershipIndex.unregisterRoom,
   scheduleRoomTimeout,
@@ -198,7 +203,7 @@ const roomClockLifecycle = createRoomClockLifecycle({
   appendSystem,
   scheduleRoomClose
 });
-const { startGameClock } = roomClockLifecycle;
+const { startGameClock, syncGameClock } = roomClockLifecycle;
 const roomRestoreLifecycle = createRoomRestoreLifecycle({
   closeRoom,
   scheduleRoomClose,
@@ -233,6 +238,7 @@ export const {
 } = roomConnectionLifecycle;
 const roomRequestLifecycle = createRoomRequestLifecycle({
   rooms,
+  syncGameClock: (...args) => roomClockLifecycle.syncGameClock(...args),
   validateRoomCode,
   validateActionPoint,
   appendSystem,
@@ -272,6 +278,7 @@ export const {
 export { markRoomPreloadReady };
 const roomActionLifecycle = createRoomActionLifecycle({
   rooms,
+  syncGameClock,
   validateRoomCode,
   validateActionPoint,
   appendSystem,

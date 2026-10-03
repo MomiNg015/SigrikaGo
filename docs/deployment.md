@@ -2,7 +2,7 @@
 
 本文档面向单台云服务器部署。当前项目的实时房间、匹配队列和 Socket 在线状态仍以单 Node.js 进程内存为核心，因此生产环境应先使用单实例运行，不要使用 PM2 cluster、多进程负载均衡或多台机器横向扩容。
 
-公开准时宝入门陪练使用 Node.js 进程内的本地启发式策略；中级与高级使用服务器本机的 GNU Go 3.8，这三档都不访问外部围棋服务，也不需要 GPU。西格莉卡黑化专属决战可由服务端额外连接智子云 KataGo `vip-share`，远端不可用时仍回退本机引擎。Ubuntu 24.04 可直接安装 GNU Go 官方仓库包：
+公开准时宝陪练在玩家浏览器运行：入门使用本地启发式策略，中级与高级使用随站点静态资源发布的 GNU Go 3.8 WASM，不访问外部围棋服务，也不需要服务器 GPU。西格莉卡黑化专属决战及历史服务端陪练房间仍可使用服务器本机 GNU Go；专属决战另可连接智子云 KataGo `vip-share`，远端不可用时回退本机引擎。Ubuntu 24.04 可直接安装 GNU Go 官方仓库包：
 
 ```bash
 sudo apt update
@@ -10,7 +10,7 @@ sudo apt install -y gnugo
 /usr/games/gnugo --version
 ```
 
-生产更新脚本会在备份、拉取和停服之前检查 `/usr/games/gnugo` 是否存在且能输出版本；检查失败时必须先修复系统依赖，否则中级与高级陪练不可用。GNU Go 档位运行失败时不会静默回退到入门启发式策略。
+生产更新脚本会在备份、拉取和停服之前检查 `/usr/games/gnugo` 是否存在且能输出版本；检查失败时必须先修复系统依赖，否则依赖本机引擎的历史房间和专属决战回退路径不可用。公开中级与高级陪练依赖浏览器 Worker、WASM 资源与正确的静态资源响应，加载失败不会静默回退到入门策略。
 
 ## 部署前检查
 
@@ -347,22 +347,35 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ### 回滚
 
-1. 停止新用户进入并 `systemctl stop`，保留当前数据库与日志快照。
-2. 若数据库迁移与上一版向后兼容，切回上一版 commit，重新 `npm ci && npm run build && npm run check:production` 后启动并检查 ready。
-3. 若迁移不向后兼容，不得擅自执行 down migration；评估停服修复或恢复发布前数据库。选择恢复备份时必须接受并记录发布后的数据损失。
-4. 回滚后重复普通账号冒烟，并继续观察至少 30 分钟。
+1. 停止新用户进入，保留日志和故障库；从 `recovery-时间.txt` 获取完整旧发布及停服后迁移前备份。
+2. 使用错误输出的候选脚本路径执行匹配的恢复，而不是只换 `dist` 或运行旧根目录代码：
+
+```bash
+sudo /opt/sigrikago/.releases/production-update-时间/release/deploy/restore-production.sh \
+  /opt/sigrikago \
+  /opt/sigrikago/.releases/production-update-时间/previous-release \
+  /var/backups/sigrikago/pre-migration-时间.db
+```
+
+3. 恢复脚本先验证选定备份，停服后保存当前数据库现场，再恢复数据库、完整旧发布和前端，设置发布 drop-in 并检查 ready；ready 失败保持停服；其他恢复错误（包括启动命令失败）也会显式停止服务并保留原始失败码。数据库恢复会丢弃备份之后的数据，必须记录影响范围。若决定保留新库并前向修复，则另行验证新代码/schema 配套后再启动。
+4. 恢复后重复普通账号冒烟，并继续观察至少 30 分钟。
 
 ## 更新流程
 
-仓库提供 `deploy/update-production.sh` 作为正式服务器的一键更新入口。它要求以 root 在 `master` 分支运行，但只拒绝已跟踪或已暂存的改动；服务器上现有的未跟踪根目录 `update.sh` 不会被删除，也不会与新脚本冲突。脚本会先用 `set -a` 加载并导出项目 `.env`，保证生产检查、Prisma 和其他子命令拿到与 systemd 相同的配置，然后依次执行：远端历史检查、SQLite 一致性备份、仅快进拉取、通过 `npm ci --include=dev` 安装锁定依赖（即使 `NODE_ENV=production` 也保留 Vite 等构建工具）、暂存目录构建、生产配置检查与构建 CSS 合同检查、Nginx 备份和语法验证、停服、Prisma migration、历史 SQLite schema 兼容补齐、完整非用户后台快照预览与应用、切换已完成的前端产物、Nginx reload、服务启动和 60 秒 readiness 等待。数据库备份保持私有权限，构建产物恢复为 Nginx 可读权限；构建不会提前清空正在服务的 `dist`。Nginx 或构建检查失败时不会进入停服阶段，停服后的步骤失败时会尝试恢复上一份前端产物、重新启动服务并保留数据库备份。
+仓库提供 `deploy/update-production.sh` 作为正式服务器更新入口。它要求 root、干净的 `master`、明确的 `NODE_ENV=production`，以及与声明路径完全一致的绝对 `DATABASE_URL`；保留未跟踪文件。配置、GNU Go、远端历史和备份检查完成后，读取 systemd 当前 `WorkingDirectory` 保存完整旧发布（代码、依赖、dist），从远端精确 commit 在 `.releases/production-update-时间/release` 安装和构建，旧进程与根目录 dist 此时继续服务。
 
-第一次使用时，服务器上的旧版本还没有该脚本，先手动拉取一次，然后运行：
+Nginx 配置校验通过后才停服 drain，并立即创建 `pre-migration-时间.db` 校验备份，防止构建期间新增内测数据在恢复时丢失。随后 migration → schema compatibility → 后台快照预览/应用 → 前端切换 → systemd `90-release.conf` 指向完整候选 → Nginx reload/start → 有界 ready 等待；成功后才快进根 checkout 到已经验证的 commit。`.env`、绝对数据库和上传目录独立于发布目录，运行目录可用 `systemctl show sigrikago --property=WorkingDirectory --value` 查询。
+
+构建或预检查失败保留旧站。停服后、迁移开始前失败可重新启动原服务；一旦开始迁移，错误 trap 恢复旧前端/发布指向但保持服务停止，并输出显式恢复命令。完整旧发布、候选和备份均保留，不自动 down migration、不混用旧代码与未知数据库状态。不要直接删除 `.releases/`，当前运行版、上一版恢复点和对应备份确认不再需要后再清理。
+
+第一次使用时，如果旧 checkout 尚无脚本，先 fetch 并提取新版脚本到临时位置，再以现有 checkout 为项目目录运行。不要预先覆盖仍运行的旧代码，否则保存到的旧发布与实际进程可能不匹配。
 
 ```bash
 cd /opt/sigrikago
 git switch master
-git pull --ff-only origin master
-sudo ./deploy/update-production.sh
+git fetch origin master
+git show origin/master:deploy/update-production.sh > /tmp/sigrikago-update-production.sh
+sudo env SIGRIKAGO_PROJECT_DIR=/opt/sigrikago bash /tmp/sigrikago-update-production.sh
 ```
 
 以后更新只需：
@@ -397,35 +410,8 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 第一条同步命令只显示各类数据的 create/update/unchanged/cloud-only 数量，第二条才会应用。正式部署以已提交快照为准，因此会覆盖云端同名后台配置；运行前的 SQLite 备份是回退边界。应用成功后不需要重复运行。
 
-### 手工更新（脚本不可用时）
+### 脚本不可用时
 
-```bash
-cd /opt/sigrikago
-git pull --ff-only
-npm ci
-npm run build
-npm run check:built-css
-npm run check:production
+先从远端提取并检查脚本，按上述首次使用步骤执行。手工操作同样必须保留完整旧发布、在 drain 后创建迁移前备份、使用隔离候选，并避免迁移开始后的自动重启；不再推荐在运行 checkout 里直接 `git pull && npm ci`。
 
-sudo cp /etc/nginx/sites-available/sigrikago \
-  "/etc/nginx/sites-available/sigrikago.bak-$(date +%F-%H%M%S)"
-sudo cp deploy/nginx/sigrikago-routes.conf /etc/nginx/snippets/sigrikago-routes.conf
-sudo cp deploy/nginx/sigrikago.conf /etc/nginx/sites-available/sigrikago
-sudo nginx -t
-
-sudo systemctl stop sigrikago
-npx prisma migrate deploy
-npm run production:schema-compat
-npm run admin:sync-defaults
-npm run admin:sync-defaults -- --apply
-
-sudo systemctl reload nginx
-sudo systemctl start sigrikago
-sudo systemctl status sigrikago
-curl --fail http://127.0.0.1:3001/health/ready
-curl --compressed -I https://sigrikago.com/assets/$(find dist/assets -maxdepth 1 -name '*.css' -printf '%f\n' | head -n 1)
-```
-
-更新前建议先备份数据库和上传目录。最后一条命令应看到 `Content-Encoding: gzip`；若 `nginx -t` 失败，不要 reload 或重启应用，先恢复 Nginx 备份。
-
-已经完成 `0_init` 接管的数据库，后续更新只需按正常流程执行新增迁移；不要重复执行基线接管步骤。
+已经完成 `0_init` 接管的数据库，后续只执行新增迁移，不重复接管。`/health/live` 只反映进程存活；`/health/ready` 还检查数据库可用性、健康缓存新鲜度和持续房间/结果写失败。数据库健康探针每 5 秒一次、2 秒等待上限、15 秒缓存有效；至少三次并跨越 30 秒的连续持久化失败使 ready 返回 503，并拒绝新接入。

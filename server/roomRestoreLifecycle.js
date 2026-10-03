@@ -1,5 +1,4 @@
 import { GAME_PHASES } from "../src/shared/game.js";
-import { isCaptureChallenge } from "../src/shared/captureChallenge.js";
 import { finishCaptureChallenge } from "./captureChallenge.js";
 
 export function createRoomRestoreLifecycle({
@@ -31,7 +30,7 @@ export function createRoomRestoreLifecycle({
   }
 
   function resumeFinishedRoom(room, io) {
-    if (room.closesAt && room.closesAt <= now() && !(isCaptureChallenge(room) && !room.recordSaved)) {
+    if (room.closesAt && room.closesAt <= now() && room.recordSaved) {
       closeRoom(room.code, io, { reason: "finished-room-close" });
       return false;
     }

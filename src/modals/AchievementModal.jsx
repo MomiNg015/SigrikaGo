@@ -142,7 +142,7 @@ export default function AchievementModal({ token, onClose, onNotice }) {
             <span>成就奖励</span>
           </div>
           {loading && <WindowLoadingState>读取成就中...</WindowLoadingState>}
-          {!loading && filtered.length === 0 && <WindowEmptyState className="achievement-empty">这里暂时没有成就。</WindowEmptyState>}
+          {!loading && filtered.length === 0 && <WindowEmptyState className="achievement-empty">暂无成就</WindowEmptyState>}
           {!loading && filtered.map((achievement) => (
             <article
               key={achievement.id}

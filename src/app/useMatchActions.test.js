@@ -45,7 +45,8 @@ describe("match success action helpers", () => {
     });
     expect(setMatchSuccess).toHaveBeenCalledWith(null);
     expect(setMatchStart).toHaveBeenCalledWith({ startedAt: 12345, mode: "spark" });
-    expect(socket.emit).toHaveBeenCalledWith("match:join", { mode: "spark" });
+    expect(socket.emit).toHaveBeenCalledWith("match:join", { mode: "spark" }, expect.any(Function));
+    socket.emit.mock.calls[0][2]({ ok: true });
   });
 
   it("uses the latest pending match room when the countdown completes", () => {

@@ -1891,7 +1891,7 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 - Capacity profile with fewer than two sockets per requested room -> fail before starting load.
 - Runtime metrics unavailable or persistence/result error observed in any sample -> threshold report fails.
 - Production `NODE_ENV` with debug actions -> continue to reject through the production security contract.
-- `STABILITY_PORT` set while a generic `PORT` is inherited -> `STABILITY_PORT` wins so Playwright base URL and child listener stay aligned.
+- Stability uses `STABILITY_PORT` or 4173 only; inherited development `PORT` and `DATABASE_URL` are ignored. Always prepare a disposable DB and reject occupied ports before server initialization.
 
 #### 5. Good/Base/Bad Cases
 - Good: Nginx serves a 5 MB OGG with Range support while Node continues processing action acks without static-file syscalls.
@@ -2286,12 +2286,12 @@ workerSrc: ["'self'", "blob:"]
 
 #### 3. Contracts
 - Refuse to update from a non-root process, a non-Git directory, a missing `.env`, a missing live `dist/`, a branch other than `master`, or a worktree with tracked/staged changes. After locating `.env`, use `set -a`, source the trusted root-owned project file, and restore `set +a` so every deployment subprocess inherits the same configuration as systemd `EnvironmentFile`. Untracked files are preserved so a legacy root-level `update.sh` does not block the maintained script.
-- Fetch first and require the current local commit to be an ancestor of `origin/<branch>`; update source only through `git pull --ff-only` and never reset or discard local history.
+- Fetch first and require the current local commit to be an ancestor of `origin/<branch>`; build the fetched exact commit in an isolated `.releases/` directory and update the operator checkout only through `git merge --ff-only <verified-commit>` after readiness and never reset or discard local history.
 - Create and verify a SQLite backup through `npm run backup:sqlite` before pulling or migrating. Use private `umask 077` for the backup, then restore `umask 022` before dependency installation and build so Nginx can traverse and read the activated static bundle. The database and upload data remain outside the Git worktree.
 - Run `npm ci --include=dev`, build to a unique `.tmp/production-update-*/dist` directory, and pass `npm run check:production` before stopping the service. `--include=dev` is mandatory because sourcing the production `.env` sets `NODE_ENV=production`, while Vite and its plugins are devDependencies required to compile the bundle. The production checker must import `dotenv/config` so the command reads the same current-working-directory `.env` that systemd supplies through `EnvironmentFile`; explicit process environment values retain dotenv's normal precedence. Never clear or partially overwrite the live `dist/` during compilation.
 - Back up the active Nginx files, install the repository templates, and pass `nginx -t` before reloading. If validation fails, restore the prior Nginx files and keep the running service untouched.
 - Only after build and proxy validation: stop the service, run `prisma migrate deploy`, preview and apply `admin:sync-defaults`, atomically replace `dist/`, reload Nginx, start the service, and require readiness within the bounded retry window. The sync updates/creates committed non-user admin rows but preserves cloud-only and user/history/runtime rows.
-- Failure after service stop must attempt to restore the previous frontend bundle and restart the service. It must not roll back Git or SQLite automatically; retain the verified database backup for explicit recovery.
+- Failure before migration may restart the untouched old service. Once migration begins, restore the old frontend and complete-release drop-in but keep the service stopped; retain the drained pre-migration DB backup and print the explicit `restore-production.sh` command. See [Internal Test Release Contract](./internal-test-release-contract.md).
 
 #### 4. Validation & Error Matrix
 - Local branch contains commits not in the remote branch, or histories diverge -> abort before backup/pull and require manual review.
@@ -2300,11 +2300,11 @@ workerSrc: ["'self'", "blob:"]
 - Dependency install, staged build, production check, or `nginx -t` fails -> abort while the existing service and live frontend remain active.
 - Production `NODE_ENV` causes npm to omit devDependencies and `vite` is unavailable -> the maintained script's explicit `npm ci --include=dev` installs the locked build toolchain before compilation.
 - `.env` contains valid `JWT_SECRET` and production origin but the invoking shell did not export them -> `npm run check:production` loads them from `.env` and continues.
-- Migration, onboarding sync, bundle activation, Nginx reload, service start, or readiness fails -> run the best-effort frontend/service recovery trap, keep the database backup, and exit non-zero.
+- Migration, onboarding sync, bundle activation, Nginx reload, service start, or readiness fails -> run the recovery trap, keep the service stopped if migration began, retain the complete previous release and drained database backup, and exit non-zero.
 - Readiness does not return success within 60 seconds -> fail the deployment even if systemd reports the process as started.
 
 #### 5. Good/Base/Bad Cases
-- Good: remote `master` is ahead, the database is backed up, the new bundle builds in `.tmp`, all preflight checks pass, downtime covers only migrate/sync/swap/start, and readiness succeeds.
+- Good: remote `master` is ahead, the database is backed up, the new complete release builds in `.releases`, all preflight checks pass, downtime covers only migrate/sync/swap/start, and readiness succeeds.
 - Base: remote and local commits are identical; the same command still verifies and rebuilds safely without rewriting history.
 - Bad: `git reset --hard origin/master`, because it destroys local commits and hides deployment drift.
 - Bad: `npm run build` directly into the live `dist/`, because Vite clears the directory before the replacement bundle is complete.

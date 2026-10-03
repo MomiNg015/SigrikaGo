@@ -410,7 +410,7 @@ function socialProfilePrisma({ users = [], records = [] }) {
           const targetIds = participantConditions.map((condition) => condition.blackUserId ?? condition.whiteUserId);
           const matchesUser = targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
           const matchesRated = typeof where.rated === "boolean" ? item.rated !== false === where.rated : true;
-          const matchesMode = where.mode ? (item.mode ?? "spark") === where.mode : true;
+          const matchesMode = where.mode ? (typeof where.mode === "object" ? where.mode.in.includes(item.mode ?? "spark") : (item.mode ?? "spark") === where.mode) : true;
           return matchesUser && matchesRated && matchesMode;
         });
         const createdAtOrder = Array.isArray(orderBy) ? orderBy[0]?.createdAt : orderBy?.createdAt;

@@ -29,7 +29,9 @@ describe("room clock timing", () => {
   it("resets period remaining after a valid move in byo-yomi", () => {
     const player = playerWithTime({ main: 0, periodRemaining: 9, periods: 2 });
 
+    player.clockRemainderMs = 900;
     resetByoYomi(player);
+    expect(player.clockRemainderMs).toBe(0);
 
     expect(player.time.periodRemaining).toBe(30);
   });

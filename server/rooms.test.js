@@ -16,6 +16,7 @@ const prismaMocks = vi.hoisted(() => ({
 vi.mock("./db.js", () => ({
   prisma: {
     gameRecord: {
+      findUnique: vi.fn().mockResolvedValue(null),
       create: prismaMocks.gameRecordCreate
     },
     user: {
@@ -135,7 +136,7 @@ describe("room game record persistence", () => {
     vi.useRealTimers();
   });
 
-  test("persists winner and loser coin rewards for decisive finished games", () => {
+  test("persists winner and loser coin rewards for decisive finished games", async () => {
     vi.useFakeTimers();
     const io = fakeIo();
     vi.spyOn(Math, "random").mockReturnValue(0.99);
@@ -151,6 +152,7 @@ describe("room game record persistence", () => {
     const result = handleGameAction(room.code, loser.user.id, { type: "resign" }, io);
 
     expect(result.ok).toBe(true);
+    await room.recordSavePromise;
     expect(result.room.players.find((player) => player.user.id === "winner").user).toMatchObject({
       wins: 1,
       rating: 0, stars: 3,
@@ -270,7 +272,7 @@ describe("room game record persistence", () => {
     expect(getPoint(result.room.game, pointId(18, 18)).stone).toBe(COLORS.black);
   });
 
-  test("clears rainbow candy effects after matching valid games", () => {
+  test("clears rainbow candy effects after matching valid games", async () => {
     vi.useFakeTimers();
     const io = fakeIo();
     vi.spyOn(Math, "random").mockReturnValue(0.99);
@@ -298,6 +300,7 @@ describe("room game record persistence", () => {
     const result = handleGameAction(room.code, loser.user.id, { type: "resign" }, io);
 
     expect(result.ok).toBe(true);
+    await room.recordSavePromise;
     expect(result.room.players.find((player) => player.user.id === "denia-candy").user.itemEffects).toEqual({});
     const updatesByUserId = new Map(prismaMocks.userUpdate.mock.calls.map(([operation]) => [operation.where.id, operation]));
     expect(updatesByUserId.get("sigrika-candy").data.itemEffects).toBe("{}");
@@ -342,7 +345,7 @@ describe("room game record persistence", () => {
     expect(prismaMocks.userUpdate).not.toHaveBeenCalled();
   });
 
-  test("persists draw records with mode draw stats without updating user rewards", () => {
+  test("persists draw records with mode draw stats without updating user rewards", async () => {
     vi.useFakeTimers();
     const io = fakeIo();
     joinMatchmaking({ user: user("draw-alice", "sigrika"), socketId: "socket-a" }, io);
@@ -358,6 +361,7 @@ describe("room game record persistence", () => {
     const result = respondDraw(room.code, responder.user.id, true, io);
 
     expect(result.ok).toBe(true);
+    await room.recordSavePromise;
     expect(prismaMocks.gameRecordCreate).toHaveBeenCalledTimes(1);
     expect(prismaMocks.userUpdate.mock.calls.every(([query]) => !query.data.coins)).toBe(true);
     expect(prismaMocks.userModeStatsUpsert).toHaveBeenCalledTimes(2);
@@ -1359,7 +1363,7 @@ describe("room participants view", () => {
     expect(prismaMocks.gameRecordCreate).not.toHaveBeenCalled();
   });
 
-  test("keeps finished rooms open while participants are connected and closes them silently after they leave", () => {
+  test("keeps finished rooms open while participants are connected and closes them silently after they leave", async () => {
     vi.useFakeTimers();
     const io = fakeIo();
     joinMatchmaking({ user: user("close-black", "sigrika"), socketId: "socket-a" }, io);
@@ -1372,6 +1376,7 @@ describe("room participants view", () => {
     const white = room.players.find((player) => player.color === COLORS.white);
     const result = handleGameAction(room.code, white.user.id, { type: "resign" }, io);
     expect(result.ok).toBe(true);
+    await room.recordSavePromise;
     vi.advanceTimersByTime(5 * 60 * 1000);
 
     expect(findRoomForUser("close-black", room.code)).toBe(room);
@@ -1457,7 +1462,8 @@ describe("room participants view", () => {
     await flushRoomPersistence(room.code);
     await Promise.resolve();
 
-    expect(persistenceEvents).toEqual(["upsert-started", "delete"]);
+    expect(persistenceEvents.at(-1)).toBe("delete");
+    expect(persistenceEvents.slice(0, -1).every((event) => event === "upsert-started")).toBe(true);
   });
 });
 

@@ -26,15 +26,15 @@ describe("profile character record empty state", () => {
     expect(empty.classList.contains("window-empty-state")).toBe(false);
     expect(empty.querySelector(".window-empty-state")).toBeTruthy();
     expect(empty.querySelector(".profile-character-table-head")).toBeNull();
-    expect(empty.textContent).toBe("暂无");
+    expect(empty.textContent).toBe("暂无角色战绩");
     expect(empty.querySelector(".recent-result-empty")).toBeTruthy();
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.queryByLabelText("角色战绩列表")).toBeNull();
     rerender(<ProfileResumeView {...props} mode="standard" characterStats={[{ characterId: "sigrika", total: 2, wins: 1, losses: 1, draws: 0 }]} />);
     expect(screen.getByRole("table")).toBeTruthy();
-    expect(within(screen.getByLabelText("角色战绩")).queryByText("暂无")).toBeNull();
+    expect(within(screen.getByLabelText("角色战绩")).queryByText("暂无角色战绩")).toBeNull();
     rerender(<ProfileResumeView {...props} />);
     expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无");
+    expect(screen.getByLabelText("角色战绩").textContent).toBe("暂无角色战绩");
   });
 });

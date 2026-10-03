@@ -80,14 +80,14 @@ describe("production config check script", () => {
     expect(String(error?.stderr)).toContain("JWT_SECRET must be at least 32 characters in production");
   });
 
-  it("checks production rules even when NODE_ENV is omitted", () => {
+  it.each(["", "development", "stability"])("rejects production checks with NODE_ENV=%s", (nodeEnv) => {
     let error;
     try {
       execFileSync(process.execPath, [scriptPath], {
         cwd: process.cwd(),
         env: {
           ...process.env,
-          NODE_ENV: "",
+          NODE_ENV: nodeEnv,
           JWT_SECRET: "dev-secret",
           PUBLIC_ORIGIN: ""
         },
@@ -99,7 +99,7 @@ describe("production config check script", () => {
     }
 
     expect(error?.status).toBe(1);
-    expect(String(error?.stderr)).toContain("JWT_SECRET must be at least 32 characters in production");
+    expect(String(error?.stderr)).toContain("NODE_ENV=production");
   });
 
   it("rejects enabled test actions in production checks", () => {

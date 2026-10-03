@@ -74,7 +74,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
             />
           ))}
         </div>}
-        {!loading && !error && rooms.length === 0 && <WindowEmptyState className="watch-empty">当前没有可观战房间</WindowEmptyState>}
+        {!loading && !error && rooms.length === 0 && <WindowEmptyState className="watch-empty">暂无对局</WindowEmptyState>}
         {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {error && <p className="watch-error">{error}</p>}
       </ModalDialog>

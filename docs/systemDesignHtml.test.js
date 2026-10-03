@@ -1,6 +1,7 @@
 import { mkdir, readFile, rm } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
+  writeSystemDesignHtml,
   readSystemDesignMarkdown,
   renderSystemDesignHtml,
   SYSTEM_DESIGN_SOURCE_PATHS
@@ -15,6 +16,17 @@ describe("system design html", () => {
     const html = normalizeNewlines(await readFile("docs/system-design.html", "utf8"));
 
     expect(html).toBe(normalizeNewlines(renderSystemDesignHtml(markdown)));
+  });
+
+  it("replaces an existing generated page without truncating it in place", async () => {
+    const directory = new URL("../.tmp-doc-render-test/", import.meta.url);
+    const destination = new URL("page.html", directory);
+    await mkdir(directory, { recursive: true });
+    try {
+      await writeSystemDesignHtml(destination, "旧页面");
+      await writeSystemDesignHtml(destination, "新页面");
+      expect(await readFile(destination, "utf8")).toBe("新页面");
+    } finally { await rm(directory, { recursive: true, force: true }); }
   });
 
   it("keeps generated docs free of encoding damage", async () => {

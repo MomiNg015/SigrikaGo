@@ -19,5 +19,6 @@ export function tickPlayerClock(player, elapsed) {
 export function resetByoYomi(player) {
   if (player.time.main <= 0 && player.time.periods > 0) {
     player.time.periodRemaining = player.time.byoYomi;
+    player.clockRemainderMs = 0;
   }
 }

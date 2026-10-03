@@ -258,9 +258,9 @@ describe("RoomScreen helpers", () => {
     }));
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
 
-    expect(specialMarkup).toContain("星炬ERROR");
+    expect(specialMarkup).toContain("星炬 ERROR");
     expect(specialMarkup).not.toContain("PRIVATE // DATA CORRUPTED");
-    expect(ordinaryMarkup).toContain("星炬AB123");
+    expect(ordinaryMarkup).toContain("星炬 AB123");
     expect(source).toContain('className={isSigrikaCandyDuel ? "sigrika-candy-duel-room" : ""}');
   });
 
@@ -942,7 +942,7 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain("text-align: center");
 
     expect(brightRoomCss).toContain(".desktop-room-screen .room-header");
-    expect(brightRoomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto !important");
+    expect(brightRoomCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
     expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !important");
     expect(brightRoomCss).toContain("background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important");
     expect(brightRoomCss).toContain("min-height: 36px !important");

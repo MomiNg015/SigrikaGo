@@ -49,7 +49,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
         <ModeTabs mode={mode} onModeChange={setMode} />
         {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {error && <p className="form-error admin-action-error">{error}</p>}
-        {!loading && !error && players.length === 0 && <WindowEmptyState>暂无上榜用户。</WindowEmptyState>}
+        {!loading && !error && players.length === 0 && <WindowEmptyState>暂无排行</WindowEmptyState>}
         {!loading && !error && players.length > 0 && (
           <div className={`leaderboard-table${isCapture ? " capture-leaderboard" : " ranked-leaderboard"}`}>
             <div className="leaderboard-heading">

@@ -1,3 +1,4 @@
+import { validateNewPassword } from "../shared/passwordValidation.js";
 import RankProgress from "../shared/RankProgress.jsx";
 import { rankStarLimit } from "../shared/rankProgression.js";
 import { useEffect, useState } from "react";
@@ -136,8 +137,9 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
   }
 
   async function resetPassword() {
-    if (newPassword.length < 4) {
-      onNotice?.("新密码至少需要 4 个字符", "danger");
+    const validation = validateNewPassword(newPassword);
+    if (!validation.ok) {
+      onNotice?.(validation.error, "danger");
       return;
     }
     if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;

@@ -68,6 +68,7 @@ describe("socket event registration", () => {
     expect(socket.on.mock.calls.map(([event]) => event)).toEqual([
       "match:join",
       "match:leave",
+      "disconnect",
       "room:join",
       "room:leave",
       "room:resume",

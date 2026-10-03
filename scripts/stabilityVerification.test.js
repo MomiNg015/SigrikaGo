@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
+import { stabilityServerEnvironment } from "./start-stability-server.mjs";
 
 describe("local stability verification command", () => {
   it("exposes scripts for the full local production-like stability gate", async () => {
@@ -13,11 +14,13 @@ describe("local stability verification command", () => {
   it("starts the built app with local production static assets but without production guards", async () => {
     const source = await readFile("scripts/start-stability-server.mjs", "utf8");
 
-    expect(source).toContain('process.env.NODE_ENV = "stability"');
-    expect(source).toContain('process.env.LOCAL_PROD_STATIC = "1"');
-    expect(source).toContain("process.env.STABILITY_PORT");
-    expect(source).toContain("process.env.STABILITY_PORT ?? process.env.PORT");
-    expect(source).toContain('process.env.ENABLE_TEST_ACTIONS = "true"');
+    const env = stabilityServerEnvironment({ PORT: "3001", DATABASE_URL: "file:dev.db", PUBLIC_ORIGIN: "http://localhost:5173", UPLOAD_DIR: "uploads", ZHIZI_ENABLED: "true" });
+    expect(env).toMatchObject({ NODE_ENV: "stability", LOCAL_PROD_STATIC: "1", PORT: "4173", DATABASE_URL: "", ENABLE_TEST_ACTIONS: "true", ZHIZI_ENABLED: "false", PUBLIC_ORIGIN: "http://127.0.0.1:4173" });
+    expect(env.UPLOAD_DIR).toContain("stability-uploads-4173-");
+    expect(stabilityServerEnvironment({ PORT: "3001", STABILITY_PORT: "4189" }).PORT).toBe("4189");
+    expect(source).toContain('await assertTestPortAvailable(process.env.PORT)');
+    expect(source).toContain('await preparePlaywrightTestDatabase');
+    expect(source).not.toContain('if (!process.env.DATABASE_URL)');
     expect(source).toContain('await import("../server/index.js")');
   });
 
@@ -37,7 +40,8 @@ describe("local stability verification command", () => {
     const source = await readFile("playwright.stability.config.js", "utf8");
 
     expect(source).toContain('testDir: "./tests/stability"');
-    expect(source).toContain('process.env.STABILITY_PORT ?? process.env.PORT ?? "4173"');
+    expect(source).toContain('process.env.STABILITY_PORT ?? "4173"');
+    expect(source).not.toContain('process.env.STABILITY_PORT ?? process.env.PORT');
     expect(source).toContain("baseURL: stabilityBaseURL");
     expect(source).toContain('command: "node scripts/start-stability-server.mjs"');
     expect(source).toContain("viewport: { width: 1440, height: 768 }");

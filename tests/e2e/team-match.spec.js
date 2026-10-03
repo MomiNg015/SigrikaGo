@@ -133,32 +133,61 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath("team-lineup.png"), fullPage: true });
-    await mountTeamSurface(page, "room");
-    await expect(page.locator(".team-portrait-strip")).toHaveCount(2);
-    await expect(page.locator(".team-portrait-mystery")).toHaveCount(2);
-    await expect(page.getByText("Round 1", { exact: true })).toBeVisible();
-    const metrics = await page.locator(".team-portrait-strip").evaluateAll((strips) => strips.map((strip) => ({
-      width: strip.getBoundingClientRect().width,
-      height: strip.getBoundingClientRect().height,
-      cells: getComputedStyle(strip).gridTemplateColumns.split(" ").map(Number.parseFloat),
-      gray: [...strip.querySelectorAll(".is-inactive")].every((cell) => getComputedStyle(cell).filter.includes("grayscale(1)"))
-    })));
-    for (const metric of metrics) {
-      expect(metric.width).toBeGreaterThan(30);
-      expect(metric.height).toBeGreaterThanOrEqual(44);
-      expect(Math.max(...metric.cells) - Math.min(...metric.cells)).toBeLessThan(2);
-      expect(metric.gray).toBe(true);
-    }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ path: testInfo.outputPath("team-room.png"), fullPage: true });
-    if (viewport.width > 760) {
-      const framing = await page.locator('.team-portrait-art img').first().evaluate((img) => {
-        const frame = img.closest('.team-portrait-slot').getBoundingClientRect();
-        const rect = img.getBoundingClientRect();
-        return { imageWidth: rect.width, frameWidth: frame.width, centerDelta: Math.abs(rect.top + rect.height / 2 - frame.top - frame.height / 2) };
-      });
-      expect(framing.imageWidth).toBeGreaterThan(framing.frameWidth * 1.3);
-      expect(framing.centerDelta).toBeLessThan(2);
+    for (const scenario of [
+      { suffix: "", round: 1, statuses: { active: 2, finished: 0, waiting: 2, hidden: 2 }, images: 4 },
+      { suffix: "&round=2", round: 2, statuses: { active: 2, finished: 2, waiting: 1, hidden: 1 }, images: 5 },
+      { suffix: "&round=2&finished=1", round: 2, statuses: { active: 2, finished: 2, waiting: 2, hidden: 0 }, images: 6 }
+    ]) {
+      await mountTeamSurface(page, `room${scenario.suffix}`);
+      await expect(page.locator(".team-portrait-strip")).toHaveCount(2);
+      await expect(page.locator(".team-portrait-slot")).toHaveCount(6);
+      await expect(page.getByText(`Round ${scenario.round}`, { exact: true })).toBeVisible();
+      for (const [status, count] of Object.entries(scenario.statuses)) {
+        await expect(page.locator(`.team-portrait-slot.is-${status}`)).toHaveCount(count);
+      }
+      await expect(page.locator(".team-portrait-mystery")).toHaveCount(scenario.statuses.hidden);
+      await expect(page.locator(".team-portrait-art img")).toHaveCount(scenario.images);
+      for (const image of await page.locator(".team-portrait-art img").all()) {
+        await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+        await expect(image).toHaveCSS("object-fit", "cover");
+      }
+      for (const art of await page.locator(".team-portrait-slot:is(.is-active,.is-waiting) .team-portrait-art").all())
+        await expect(art).toHaveCSS("filter", "none");
+      for (const art of await page.locator(".team-portrait-slot.is-finished .team-portrait-art").all()) {
+        await expect(art).toHaveCSS("filter", "grayscale(1)");
+        await expect(art).toHaveCSS("opacity", "0.55");
+      }
+      const metrics = await page.locator(".team-portrait-strip").evaluateAll(strips => strips.map(strip => {
+        const box = strip.getBoundingClientRect();
+        return {
+          width: box.width, height: box.height,
+          clips: [...strip.querySelectorAll(".team-portrait-slot")].map(slot => getComputedStyle(slot).clipPath),
+          centers: [...strip.querySelectorAll(".team-portrait-art")].map(art => {
+            const bounds = art.getBoundingClientRect(); return bounds.x + bounds.width / 2;
+          }),
+          images: [...strip.querySelectorAll(".team-portrait-art img")].map(img => {
+            const image = img.getBoundingClientRect();
+            const art = img.parentElement.getBoundingClientRect();
+            return { widthDelta: Math.abs(image.width - art.width), heightDelta: Math.abs(image.height - art.height),
+              centerDelta: Math.abs(image.y + image.height / 2 - box.y - box.height / 2) };
+          })
+        };
+      }));
+      for (const metric of metrics) {
+        expect(metric.width).toBeGreaterThan(30);
+        expect(metric.height).toBeGreaterThanOrEqual(44);
+        expect(metric.clips).toHaveLength(3);
+        expect(metric.clips.every(clip => clip.startsWith("polygon("))).toBe(true);
+        expect(new Set(metric.clips).size).toBe(3);
+        for (let index = 1; index < metric.centers.length; index++) expect(metric.centers[index]).toBeGreaterThan(metric.centers[index - 1]);
+        for (const image of metric.images) {
+          expect(image.widthDelta).toBeLessThan(1);
+          expect(image.heightDelta).toBeLessThan(1);
+          expect(image.centerDelta).toBeLessThan(2);
+        }
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath(`team-room-${scenario.round}-${scenario.statuses.hidden}.png`), fullPage: true });
     }
   });
 }

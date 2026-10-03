@@ -1,3 +1,4 @@
+import { notePersistenceFailure, notePersistenceSuccess, persistenceHealthStats } from "./persistenceHealth.js";
 import { GAME_PHASES } from "../src/shared/game.js";
 import { normalizeRoomActionReceipts } from "./roomActionReceipts.js";
 import { upsertPersistedRoom } from "./roomPersistence.js";
@@ -20,7 +21,11 @@ export function persistRoomState({
   room.lastPersistedAt = currentTime;
   const snapshot = JSON.stringify(roomPersistenceSnapshot(room));
   const status = room.game.phase === GAME_PHASES.finished ? "finished" : "active";
-  return enqueueRoomPersistence(room.code, () => upsert(prisma, { code: room.code, status, snapshot }), onError);
+  const key = `room:${room.code}`;
+  return enqueueRoomPersistence(room.code, async () => {
+    await upsert(prisma, { code: room.code, status, snapshot });
+    notePersistenceSuccess(key);
+  }, (error) => { notePersistenceFailure(key); onError(error); });
 }
 
 export async function flushRoomPersistence(roomCode = "") {
@@ -36,7 +41,7 @@ export async function flushRoomPersistence(roomCode = "") {
 }
 
 export function roomPersistenceStats() {
-  return { pendingRooms: pendingRoomPersistence.size };
+  return { pendingRooms: pendingRoomPersistence.size, ...persistenceHealthStats() };
 }
 
 function enqueueRoomPersistence(roomCode, persist, onError) {
@@ -64,6 +69,7 @@ export function roomPersistenceSnapshot(room) {
   return {
     snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
     code: room.code,
+    settlementId: room.settlementId ?? null,
     revision: Number(room.revision ?? 0),
     clockSeq: Number(room.clockSeq ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",

@@ -9,7 +9,7 @@ import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
-const EMPTY_TEXT = "这里空空如也~";
+const EMPTY_TEXT = "暂无邮件";
 
 export default function MailboxModal({
   token,
@@ -31,7 +31,7 @@ export default function MailboxModal({
     () => messages.find((message) => message.id === selectedId) ?? null,
     [messages, selectedId]
   );
-  const listEmptyText = loaded ? (isNarrow ? "暂无邮件" : EMPTY_TEXT) : "正在读取邮件...";
+  const listEmptyText = loaded ? EMPTY_TEXT : "正在读取邮件...";
 
   async function refresh() {
     if (!token) return;

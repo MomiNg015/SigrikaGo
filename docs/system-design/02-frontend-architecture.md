@@ -309,3 +309,8 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Leaderboard, watch-list, personalization、公告信息中心、邮箱信息中心和个性化选择器已迁移到该边界。公告/邮箱在其上复用 `InformationCenterLayout`，并保持各自业务和视觉域所有权。
 
 - 对弈信息区 `PlayerInfo` 只显示段位名称；排行榜仍显示完整星数/积分，并读取服务端 `ranking` 保持并列名次与固定“我的排名”一致。开场和房间号通过 `roomMatchClassification` 读取冻结的 `rated` 标志，分别显示浅红升降级、浅绿友谊标签；普通匹配满15秒追加扩大段位范围提示。
+
+
+## 启动与匹配失败恢复（2026-10-02）
+
+`useAuthSession` / `useStartupPreload` 向 App 报告可重试的 `startupError`，临时失败保留认证和房间状态；`ConnectionNotice` 显示启动重试或 Socket 重连状态，使用主题变量及现有反馈样式。`startMatchTransition` 使用连接检查、ACK、8 秒超时与 `match:found` 权威成功信号，`cancelMatchStart` 清理等待监听和计时器；不在无连接时显示虚假的排队状态。共享密码规则和引擎贴目转换分别位于 `src/shared/passwordValidation.js` 与 `engineKomi.js`。

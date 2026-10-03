@@ -80,7 +80,7 @@ export default function CostumeStorePanel({
             );
           })}
         </div>
-        {batch.length === 0 && <WindowEmptyState className="costume-shop-empty">今天的衣架已经空了。</WindowEmptyState>}
+        {batch.length === 0 && <WindowEmptyState className="costume-shop-empty">暂无服装</WindowEmptyState>}
       </section>
       <button className="shop-switch-button costume-to-zahira" type="button" onClick={onSwitchShop}>
         <span>扎希拉商店</span>

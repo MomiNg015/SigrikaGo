@@ -99,3 +99,9 @@ Correct:
   {mode === "register" && <small>8-64 位</small>}
 </label>
 ```
+
+## Administrative ban live-connection boundary
+
+- POST `/api/admin/users/:id/ban` commits `banUser` and its audit before calling `onlineSessions.disconnectUser(userId, message)`. Never disconnect on transaction failure, invalid input, or last-admin rejection.
+- Disconnect all sockets through the existing session manager; do not broaden all game events into asynchronous authentication reads. HTTP and new connections continue to reject database status `banned`.
+- Cover committed and failed bans at the real router boundary; E2E verifies an existing socket is disconnected, banned HTTP/login are denied, and unban allows login.

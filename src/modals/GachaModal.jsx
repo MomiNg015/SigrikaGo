@@ -48,7 +48,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
 
         <div className="gacha-main">
           {loading && <WindowLoadingState>加载扭蛋池...</WindowLoadingState>}
-          {!loading && !activePool && <p className="quiet-text">当前没有开放中的扭蛋池</p>}
+          {!loading && !activePool && <p className="quiet-text">暂无扭蛋池</p>}
           {activePool && (
             <>
               <div className="gacha-featured-stage">
@@ -164,7 +164,7 @@ function GachaHistoryPanel({ records, onClose }) {
               <small>{new Date(record.createdAt).toLocaleString()}</small>
             </article>
           ))}
-          {records.length === 0 && <p className="quiet-text">暂无记录</p>}
+          {records.length === 0 && <p className="quiet-text">暂无抽奖记录</p>}
         </div>
       </section>
     </div>

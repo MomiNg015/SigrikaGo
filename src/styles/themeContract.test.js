@@ -234,16 +234,16 @@ describe("player theme CSS contract", () => {
       "utf8"
     );
 
-    expect(commerceSocialCss).toContain("--bright-commerce-card-surface: var(--bright-sheet-clean)");
-    expect(commerceSocialCss).toContain("--bright-commerce-card-outline: #4a3736");
+    expect(commerceSocialCss.replaceAll("\r\n", "\n")).toContain("--bright-commerce-card-surface: var(--bright-sheet-clean)");
+    expect(commerceSocialCss.replaceAll("\r\n", "\n")).toContain("--bright-commerce-card-outline: #4a3736");
     expect(refinementFoundationCss).toContain("--bright-sheet: #fffaf0");
-    expect(commerceSocialCss).toContain(
+    expect(commerceSocialCss.replaceAll("\r\n", "\n")).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school .friends-row {\n  --bright-commerce-card-surface: var(--bright-sheet);\n}"
     );
-    expect(commerceSocialCss).toContain(
+    expect(commerceSocialCss.replaceAll("\r\n", "\n")).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school .character-record-row {\n  --bright-commerce-card-surface: color-mix(in srgb, var(--character-theme-color, #ff9b4d) 18%, var(--bright-sheet-clean));\n}"
     );
-    expect(commerceSocialCss).toContain(
+    expect(commerceSocialCss.replaceAll("\r\n", "\n")).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school .character-record-row b {\n  color: #3b6048;\n}"
     );
     expect(commerceSocialCss).not.toContain(".profile-character-row");

@@ -80,6 +80,7 @@ export function createSocketHandlers({
   }
 
   return {
+    socketDisconnect: () => setMatchStart(null),
     socketReconnect: () => {
       shouldAudioBaselineNextLiveSnapshot = true;
       cancelOpeningPresentation();
@@ -305,6 +306,7 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
 
   socket.on("match:waiting", handlers.matchWaiting);
   socket.on("match:left", handlers.matchLeft);
+  socket.on("disconnect", () => handlers.socketDisconnect?.());
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
   socket.on("room:update", (roomView) => {

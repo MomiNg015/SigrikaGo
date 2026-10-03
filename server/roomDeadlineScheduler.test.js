@@ -110,6 +110,7 @@ describe("roomDeadlineScheduler", () => {
     vi.advanceTimersByTime(100);
 
     expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(room.lastTick).toBe(1100);
     expect(room.game.scoring).toBeNull();
     expect(room.countingDeadline).toBeNull();
     expect(calls.messages).toEqual(["数子申请超时，视为不同意数子。"]);
@@ -133,6 +134,7 @@ describe("roomDeadlineScheduler", () => {
     vi.advanceTimersByTime(100);
 
     expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(room.lastTick).toBe(1100);
     expect(room.game.drawRequest).toBeNull();
     expect(room.drawDeadline).toBeNull();
     expect(calls.messages).toEqual(["和棋申请超时，对局继续。"]);
@@ -155,6 +157,7 @@ describe("roomDeadlineScheduler", () => {
     vi.advanceTimersByTime(100);
 
     expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(room.lastTick).toBe(1100);
     expect(room.game.scoring).toBeNull();
     expect(calls.messages).toEqual(["数子结果确认超时，对局继续。"]);
     expect(calls.broadcast).toEqual([{ io: "io", roomCode: room.code }]);
