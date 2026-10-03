@@ -1217,3 +1217,36 @@ Implemented fixed square expression avatars with separate dynamic typewriter pap
 ### Next Steps
 
 - None - task complete
+
+
+## Session 158: Character theme colors for guide frames
+
+**Date**: 2026-10-03
+**Task**: Character theme colors for guide frames
+**Branch**: `master`
+
+### Summary
+
+Restored pale character gradients, tinted borders/halo and readable name accents; fixed home palette propagation into detached avatars; 127 focused checks, seven browser checks and production build passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `17c8eac3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
