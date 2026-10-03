@@ -8,9 +8,14 @@
   --story-text-border: 0;
   --story-text-radius: 0;
   --story-text-shadow: none;
-  --story-option-background: #ff9ebb;
-  --story-option-hover: #ffd6e7;
-  --story-option-color: #3d2b25;
+  --story-paper: #fffbf2;
+  --story-ink: #3d2b25;
+  --story-option-background: color-mix(in srgb, var(--story-character-color) 12%, var(--story-paper));
+  --story-option-hover: color-mix(in srgb, var(--story-character-color) 24%, var(--story-paper));
+  --story-option-active: color-mix(in srgb, var(--story-character-color) 32%, var(--story-paper));
+  --story-option-border: color-mix(in srgb, var(--story-character-color) 25%, var(--story-ink));
+  --story-option-shadow: color-mix(in srgb, var(--story-character-color) 25%, transparent);
+  --story-option-color: var(--story-ink);
   width: min(1132px, calc(100vw - 32px));
   height: var(--story-stage-height);
   display: block;
@@ -70,9 +75,9 @@
   display: flex;
   flex-direction: column;
   padding: 23px 25px 22px 46%;
-  border: 2px solid #3d2b25;
+  border: 2px solid var(--story-ink);
   border-radius: 8px;
-  background: #fffbf2;
+  background: var(--story-paper);
   box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.22);
 }
 
@@ -81,7 +86,7 @@
   z-index: 3;
   flex: none;
   margin: 0 0 12px;
-  color: #3d2b25;
+  color: var(--story-ink);
   font-size: 23px;
   line-height: 1.25;
 }
@@ -120,8 +125,20 @@
   gap: 8px;
   align-items: stretch;
   max-height: 132px;
-  padding: 0;
+  padding: 5px 8px 9px 5px;
 }
+
+.onboarding-story-modal.standard-story-sprite.long-text-compress-portrait {
+  --story-dialogue-base-height: 292px;
+  --story-dialogue-height: clamp(var(--story-dialogue-base-height), var(--story-dialogue-content-height, 0px), calc(var(--story-stage-height) - 90px));
+}
+
+.onboarding-story-modal.standard-story-sprite.long-text-compress-portrait .onboarding-story-dialogue {
+  height: var(--story-dialogue-height);
+  transition: height 120ms linear;
+}
+
+.onboarding-story-modal.standard-story-sprite.long-text-compress-portrait .onboarding-story-text-button span { display: block; }
 
 .onboarding-story-modal.standard-story-sprite .onboarding-story-options .primary-action {
   flex: 1;
@@ -160,7 +177,18 @@
 
   .onboarding-story-modal.standard-story-sprite .onboarding-story-options {
     flex-direction: column;
-    max-height: 160px;
+    max-height: 178px;
     gap: 6px;
   }
+
+  .onboarding-story-modal.standard-story-sprite.long-text-compress-portrait { --story-dialogue-base-height: 326px; }
+
+  .onboarding-story-modal.standard-story-sprite.long-text-compress-portrait .onboarding-story-portrait {
+    transform: translateY(calc(-1 * max(0px, var(--story-dialogue-height) - var(--story-dialogue-base-height))));
+    transition: transform 120ms linear;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-story-modal.standard-story-sprite.long-text-compress-portrait :is(.onboarding-story-dialogue, .onboarding-story-portrait) { transition: none; }
 }

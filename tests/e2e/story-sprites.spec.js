@@ -16,6 +16,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     const image = portrait.locator("img");
     await expect(image).toHaveAttribute("src", /sigrika\/surprised\.webp$/);
     await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth)).toBe(832);
+    await page.evaluate(() => document.fonts.ready);
     const originalCrop = await portrait.boundingBox();
     const originalImage = await image.boundingBox();
     await expect(page.getByRole("button", { name: "剧情对话文本" })).toContainText(source[0].text.replaceAll("{username}", "新同学"));
@@ -36,18 +37,28 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await page.goto(url("node-4-1"), { waitUntil: "domcontentloaded" });
     const text = page.getByRole("button", { name: "剧情对话文本" });
     await expect(text).toContainText("最后根据所采用的规则");
-    expect(await portrait.boundingBox()).toEqual(originalCrop);
-    expect(await image.boundingBox()).toEqual(originalImage);
+    await page.evaluate(() => document.fonts.ready);
+    await expect.poll(async () => (await page.locator(".onboarding-story-dialogue").boundingBox()).height).toBeCloseTo((await page.locator(".onboarding-story-modal").boundingBox()).height - 90, 0);
+    const longCrop = await portrait.boundingBox();
+    expect(longCrop.height).toBeCloseTo(originalCrop.height, 3);
+    expect(longCrop.y).toBeLessThanOrEqual(originalCrop.y);
+    if (viewport.width > 760) expect(longCrop).toEqual(originalCrop);
     await expect.poll(() => text.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
     await text.press("End");
     await expect.poll(() => text.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
     expect(await page.locator(".onboarding-story-modal").evaluate((element) => element.scrollTop)).toBe(0);
-    expect(await portrait.boundingBox()).toEqual(originalCrop);
+    expect(await portrait.boundingBox()).toEqual(longCrop);
     await expect(page.getByRole("button", { name: "...", exact: true })).toBeVisible();
     await page.goto(url("node-3"), { waitUntil: "domcontentloaded" });
     await expect(page.locator(".onboarding-story-options button")).toHaveCount(3);
     expect(await portrait.boundingBox()).toEqual(originalCrop);
     expect(await image.boundingBox()).toEqual(originalImage);
+    const gutters = await page.locator(".onboarding-story-options").evaluate(el => {
+      const style = getComputedStyle(el);
+      return [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft].map(parseFloat);
+    });
+    expect(gutters).toEqual([5, 8, 9, 5]);
+    await expect(page.locator(".onboarding-story-options button").first()).not.toHaveCSS("background-color", "rgb(255, 158, 187)");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(errors).toEqual([]);
   });
@@ -135,6 +146,45 @@ test.describe("animated NPC avatar stability", () => {
       expect(endText.y).toBe(startText.y);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.screenshot({ path: testInfo.outputPath("typing.png") });
+    });
+  }
+});
+
+
+test.describe("long story dialogue motion", () => {
+  test.use({ reducedMotion: "no-preference" });
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
+    test(`long typing pushes dialogue upward ${viewport.width}`, async ({ page }, testInfo) => {
+      await page.setViewportSize(viewport);
+      await page.goto(url("node-4-1").replace("instant=1", "instant=0"));
+      const stage = page.locator(".onboarding-story-modal");
+      const dialogue = page.locator(".onboarding-story-dialogue");
+      const portrait = page.locator(".onboarding-story-portrait");
+      await page.evaluate(() => document.fonts.ready);
+      const start = await dialogue.boundingBox();
+      const startPortrait = await portrait.boundingBox();
+      await expect.poll(async () => (await dialogue.boundingBox()).height, { timeout: 20000 }).toBeGreaterThan(start.height + 25);
+      await page.waitForTimeout(180);
+      const end = await dialogue.boundingBox();
+      expect(end.y).toBeLessThan(start.y);
+      expect(Math.abs(end.y + end.height - start.y - start.height)).toBeLessThan(1);
+      if (viewport.width <= 760) {
+        const endPortrait = await portrait.boundingBox();
+        expect(endPortrait.y).toBeLessThan(startPortrait.y);
+        expect(endPortrait.height).toBeCloseTo(startPortrait.height, 3);
+      } else expect(await portrait.boundingBox()).toEqual(startPortrait);
+      await expect(stage).toHaveCSS("overflow", "clip");
+      await page.getByRole("button", { name: "剧情对话文本" }).click();
+      await page.waitForTimeout(250);
+      const final = await dialogue.boundingBox();
+      const windowBox = await stage.boundingBox();
+      expect(final.y).toBeGreaterThanOrEqual(windowBox.y + 50);
+      await expect(page.getByRole("button", { name: "...", exact: true })).toBeVisible();
+      await page.screenshot({ path: testInfo.outputPath("long-dialogue.png") });
+      await page.goto(url("node-3"));
+      await expect(page.locator(".onboarding-story-options button")).toHaveCount(3);
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: testInfo.outputPath("choices.png") });
     });
   }
 });

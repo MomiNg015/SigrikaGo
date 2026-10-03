@@ -23,8 +23,8 @@
   background: var(--story-option-background, #e4f8dc) !important;
   background-image: none !important;
   color: var(--story-option-color, #14532d) !important;
-  border-color: rgba(74, 55, 54, 0.92) !important;
-  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  border-color: var(--story-option-border, rgba(74, 55, 54, 0.92)) !important;
+  box-shadow: 3px 3px 0 var(--story-option-shadow, var(--bright-border)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:hover,
@@ -36,9 +36,9 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:active:not(:disabled) {
-  background: #ffd6e7 !important;
+  background: var(--story-option-active, #ffd6e7) !important;
   background-image: none !important;
-  color: #7a1d3d !important;
+  color: var(--story-option-color, #7a1d3d) !important;
   border-color: var(--bright-border) !important;
   transform: translateY(1px) !important;
 }

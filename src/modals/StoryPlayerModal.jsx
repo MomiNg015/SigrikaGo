@@ -49,6 +49,7 @@ export default function StoryPlayerModal({
   const [pendingWait, setPendingWait] = useState(null);
   const [failedPortraitSource, setFailedPortraitSource] = useState("");
   const pendingWaitRef = useRef(null);
+  const modalRef = useRef(null);
   const node = nodesById.get(activeNodeId) ?? null;
   const text = currentNodeText(node);
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
@@ -68,6 +69,37 @@ export default function StoryPlayerModal({
     () => storyPortraitUrls(availablePortraitNodes.filter((entry) => !entry.type || isStoryNodeType(entry.type)), characters, user),
     [availablePortraitNodes, characters, user]
   );
+
+  useStoryLayoutEffect(() => {
+    if (!compressPortrait || !portraitPresentation.standard) return undefined;
+    const modal = modalRef.current;
+    const dialogue = modal?.querySelector(".onboarding-story-dialogue");
+    if (!dialogue) return undefined;
+    const content = dialogue.querySelector(".onboarding-story-text-button span");
+    const speaker = dialogue.querySelector(".onboarding-story-speaker");
+    const actions = dialogue.querySelector(".onboarding-story-actions");
+    const measure = () => {
+      const style = getComputedStyle(dialogue);
+      const outerHeight = (element) => {
+        if (!element) return 0;
+        const computed = getComputedStyle(element);
+        return element.getBoundingClientRect().height + parseFloat(computed.marginTop) + parseFloat(computed.marginBottom);
+      };
+      const height = outerHeight(content) + outerHeight(speaker) + outerHeight(actions)
+        + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
+        + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth) + 4;
+      modal.style.setProperty("--story-dialogue-content-height", `${Math.ceil(height)}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    [content, speaker, actions].filter(Boolean).forEach(element => observer?.observe(element));
+    window.addEventListener("resize", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      modal.style.removeProperty("--story-dialogue-content-height");
+    };
+  }, [activeNodeId, compressPortrait, portraitPresentation.standard]);
 
   useStoryLayoutEffect(() => {
     setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
@@ -202,7 +234,7 @@ export default function StoryPlayerModal({
 
   return (
     <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
-      <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
+      <section ref={modalRef} className={modalClassName} style={{ "--story-character-color": character.palette || "var(--bs-pink, Highlight)" }} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
         {dismissible && <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
           <FastForward size={22} />
         </button>}

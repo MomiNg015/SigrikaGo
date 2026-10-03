@@ -7,8 +7,8 @@ Applies to valid standard appearances in `StoryPlayerModal`, `NpcDialogue` and `
 ## Standard story stage
 
 - `standard-sprite.css` owns the classroom stage, portrait crop and bottom dialogue paper. Legacy `.onboarding-story-dialogue` uses `display: contents` so the original grid remains intact.
-- Portrait and paper have independent absolute geometry. The fixed crop/image-height ratio is `1 / 1.72`, showing at most the upper thighs. Only viewport size changes this geometry; long-text effects, text length, options and expressions must not resize it.
-- Desktop paper is 292px high with a 28px bottom anchor. Portrait mobile paper is 326px high with an 18px bottom anchor; body scrolls independently and options remain below it. More options scroll within their own bounded area.
+- Portrait and paper have independent absolute geometry. The fixed crop/image-height ratio is `1 / 1.72`, showing at most the upper thighs. Only viewport size changes the crop size; expressions and text never rescale it. Authored long-text effects may translate it on mobile as specified below.
+- Desktop paper is 292px high with a 28px bottom anchor. Portrait mobile paper is 326px high with an 18px bottom anchor; these are minimum heights for authored long-text effects; body scrolls independently and options remain below it. More options scroll within their own bounded area.
 - Keep one image DOM instance for the same character/appearance. A failed expression uses the legacy source and exits full-image cropping; a source change clears that failure so revisiting an expression retries it.
 - Use `overflow: clip` on the stage, including the final Bright School mobile owner. `overflow: hidden` permits focus to scroll the stage when a full image extends beyond its crop, moving the entire composition.
 - `.story-character-sprite` excludes full artwork from the global Bright School `max-width: 100%` clamp. Standard story actions exclude the old guided gold-button owner. Preserve those owners for other surfaces.
@@ -30,3 +30,8 @@ Applies to valid standard appearances in `StoryPlayerModal`, `NpcDialogue` and `
 - Complete home tours: target visibility/clearance, real windows unchanged, background input interception, reachable actions and completion. Test full art in story stages independently.
 
 Bad: bottom-aligning the avatar frame to the changing dialogue height. Good: fixed square frame at the top beside a naturally growing text panel.
+
+
+## Authored long-story exception (2026-10-03)
+
+For `long-text-compress-portrait` standard story nodes, measure visible text/name/actions and grow bottom-anchored paper upward, capped at stage height minus 90px; excess text scrolls internally. Desktop portrait remains fixed; mobile (760px) translates upward by paper growth at unchanged scale, with stage clipping allowing the face to disappear but never drawing outside the window. Reduced motion disables transitions. Ordinary story and NPC avatar framing remain stable. Choices reserve 5/8/9/5px gutters and warm paper mixed with character palette in all interaction states.
