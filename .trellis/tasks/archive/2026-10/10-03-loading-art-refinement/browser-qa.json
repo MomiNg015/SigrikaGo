@@ -1,0 +1,60 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "bulbPercent": 13.465649180852768,
+    "bulbAngle": 41,
+    "cloudPercent": 54.664973228738646,
+    "rayCount": 1,
+    "rayAngle": -85,
+    "connectorOverlapPixels": [
+      0,
+      0,
+      0
+    ],
+    "randomDrift": true,
+    "completionFreeze": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "bulbPercent": 16.99967213114754,
+    "bulbAngle": 40,
+    "cloudPercent": 95.99972677595628,
+    "rayCount": 1,
+    "rayAngle": -85,
+    "connectorOverlapPixels": [
+      0,
+      0,
+      0
+    ],
+    "randomDrift": true,
+    "completionFreeze": true
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "bulbPercent": 16.999498243853488,
+    "bulbAngle": 40,
+    "cloudPercent": 95.99614651279478,
+    "rayCount": 1,
+    "rayAngle": -85,
+    "connectorOverlapPixels": [
+      0,
+      0,
+      0
+    ],
+    "randomDrift": true,
+    "completionFreeze": true
+  },
+  {
+    "mobilePreviewWidth": 390,
+    "reducedMotion": true
+  }
+]
