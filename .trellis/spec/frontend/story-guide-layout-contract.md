@@ -21,6 +21,7 @@ Applies to valid standard appearances in `StoryPlayerModal`, `NpcDialogue` and `
 - Body text retains the existing TypewriterText implementation and timing. Paper height grows with visible text; do not reserve hidden full-text height or fix all dialogue heights. Minimum paper height matches the portrait.
 - Home uses a detached avatar sibling with the same panel top/left/width and fixed square height. Its slot placeholder reserves the same width inside the scroll panel. Do not measure dialogue height or use `--npc-dialogue-height`; only panel height participates in existing target avoidance. Portrait decoration does not intercept input or scroll with long text.
 - Preserve original guide progression, click-to-reveal, choices, target proxies, skip and game geometry.
+- Avatar and copy share pale character-color paper gradients, colored borders and a restrained halo via `--tutorial-npc-color`. `NpcDialoguePortrait` sets the palette on its slot, including detached home decoration. Home reads `character.palette` first, then legacy `character.color`. Keep dark text and mix the name tint with ink for readability; never color-filter the artwork.
 
 ## Required checks
 

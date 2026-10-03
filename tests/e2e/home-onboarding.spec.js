@@ -102,6 +102,10 @@ test.describe("animated home guide avatar stability", () => {
       await page.goto("/tests/e2e/fixtures/home-onboarding.html");
       const avatar = page.locator(".home-guide-portrait-layer .tutorial-npc-portrait-frame");
       await expect.poll(() => avatar.locator("img").evaluate(el => el.complete && el.naturalWidth), { timeout: 15000 }).toBe(256);
+      await expect(avatar).toHaveCSS("--tutorial-npc-color", "#ff9b4d");
+      expect(await avatar.evaluate(el => getComputedStyle(el).borderTopColor)).toBe(
+        await page.locator(".tutorial-npc-copy").evaluate(el => getComputedStyle(el).borderTopColor)
+      );
       await page.evaluate(() => document.fonts.ready);
       await page.clock.runFor(400);
       await expect.poll(() => page.locator(".tutorial-battle-dialogue").evaluate(el => getComputedStyle(el).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);

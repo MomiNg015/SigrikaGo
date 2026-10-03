@@ -13,7 +13,7 @@ beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ left: 30, top: 50, right: 180, bottom: 150, width: 150, height: 100 });
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
-const character = { portrait: "/portrait.webp" };
+const character = { portrait: "/portrait.webp", palette: "#ff9b4d" };
 
 describe("home guide interaction boundary", () => {
   it("keeps a fixed avatar outside the measured scroll panel at the same top position", () => {
@@ -28,6 +28,8 @@ describe("home guide interaction boundary", () => {
     expect(panel.querySelector("img")).toBeNull();
     expect(panel.querySelector(".tutorial-npc-portrait-slot")).not.toBeNull();
     expect(artwork.querySelector("img").src).toContain("sigrika/smile-avatar.webp");
+    expect(artwork.querySelector(".tutorial-npc-portrait-slot").style.getPropertyValue("--tutorial-npc-color")).toBe(character.palette);
+    expect(panel.querySelector(".tutorial-battle-dialogue").style.getPropertyValue("--tutorial-npc-color")).toBe(character.palette);
     expect(panel.style.top).toBe("66px");
     fireEvent.error(artwork.querySelector("img"));
     expect(artwork.querySelector("img").getAttribute("src")).toBe("/portrait.webp");

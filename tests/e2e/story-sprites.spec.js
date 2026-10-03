@@ -117,6 +117,10 @@ test.describe("animated NPC avatar stability", () => {
       const bubble = page.locator(".tutorial-battle-dialogue");
       const frame = bubble.locator(".tutorial-npc-portrait-frame");
       await expect.poll(() => frame.locator("img").evaluate(el => el.complete && el.naturalWidth), { timeout: 15000 }).toBe(256);
+      expect(await frame.evaluate(el => getComputedStyle(el).borderTopColor)).toBe(
+        await bubble.locator(".tutorial-npc-copy").evaluate(el => getComputedStyle(el).borderTopColor)
+      );
+      await expect(bubble.locator(".tutorial-npc-copy")).not.toHaveCSS("background-image", "none");
       await page.evaluate(() => document.fonts.ready);
       await page.clock.runFor(400);
       await expect.poll(() => bubble.evaluate(el => getComputedStyle(el).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);

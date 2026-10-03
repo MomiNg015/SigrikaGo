@@ -196,7 +196,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
   }
   const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth };
-  const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.color, speakerName: "西格莉卡" };
+  const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.palette || character.color, speakerName: "西格莉卡" };
   const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
 
   return (

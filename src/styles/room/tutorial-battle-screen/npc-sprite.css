@@ -27,10 +27,16 @@
   display: block;
   padding: 3px;
   overflow: hidden;
-  border: 2px solid var(--bs-ink, CanvasText);
+}
+
+.tutorial-npc-portrait-frame,
+.tutorial-npc-copy {
+  --npc-frame-color: var(--tutorial-npc-color, var(--bs-pink, Highlight));
+  border: 2px solid color-mix(in srgb, var(--npc-frame-color) 65%, var(--bs-ink, CanvasText));
   border-radius: 4px;
-  background: var(--bs-paper, Canvas);
-  box-shadow: 2px 2px 0 var(--bs-ink, CanvasText);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--npc-frame-color) 22%, var(--bs-paper, Canvas)), var(--bs-paper, Canvas) 65%);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--npc-frame-color) 40%, var(--bs-ink, CanvasText)),
+    0 0 0 2px color-mix(in srgb, var(--npc-frame-color) 18%, transparent);
 }
 
 .tutorial-npc-portrait-frame img,
@@ -48,11 +54,11 @@
   min-width: 0;
   min-height: var(--npc-avatar-size, 88px);
   padding: 10px 14px;
-  border: 2px solid var(--bs-ink, CanvasText);
-  border-radius: 4px;
-  background: var(--bs-paper, Canvas);
-  box-shadow: 2px 2px 0 var(--bs-ink, CanvasText);
   overflow-wrap: anywhere;
+}
+
+.tutorial-npc-copy > strong {
+  color: color-mix(in srgb, var(--npc-frame-color) 32%, var(--bs-ink, CanvasText));
 }
 
 .tutorial-battle-dialogue:not(:has(.tutorial-npc-portrait-slot)) {
