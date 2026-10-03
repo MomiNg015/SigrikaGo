@@ -1,0 +1,261 @@
+{
+  "asset": "docs/design-samples/loading-page/assets/round-thought-bubble-bold.png",
+  "dimensions": [
+    512,
+    512
+  ],
+  "oldStrokePx": 23,
+  "newStrokePx": 60,
+  "centerAlpha": 0,
+  "cornerAlpha": 0,
+  "records": [
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "tipVariants": [
+        {
+          "length": 8,
+          "top": 642.859375,
+          "bottom": 673.609375,
+          "height": 30.75,
+          "sceneUnchanged": true
+        },
+        {
+          "length": 44,
+          "top": 642.859375,
+          "bottom": 701.359375,
+          "height": 58.5,
+          "sceneUnchanged": true
+        },
+        {
+          "length": 340,
+          "top": 642.859375,
+          "bottom": 1089.859375,
+          "height": 447,
+          "sceneUnchanged": true
+        }
+      ],
+      "frameStates": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "connectorOverlapPixels": [
+        0,
+        0,
+        0
+      ],
+      "fillStages": [
+        {
+          "value": 0,
+          "y": 77.07182312011719,
+          "rays": "hidden"
+        },
+        {
+          "value": 10,
+          "y": 70.22099304199219,
+          "rays": "hidden"
+        },
+        {
+          "value": 50,
+          "y": 42.81768035888672,
+          "rays": "hidden"
+        },
+        {
+          "value": 90,
+          "y": 15.4143648147583,
+          "rays": "hidden"
+        },
+        {
+          "value": 100,
+          "y": 8.563535690307617,
+          "rays": "visible"
+        }
+      ],
+      "localPuzzle": true,
+      "horizontalOverflow": false,
+      "sceneBounds": [
+        {
+          "selector": ".loading-art",
+          "x": 16,
+          "y": 92,
+          "width": 358,
+          "height": 528.859375
+        },
+        {
+          "selector": "#character",
+          "x": 8.84375,
+          "y": 345.84375,
+          "width": 372.3125,
+          "height": 254.734375
+        },
+        {
+          "selector": ".thought-cloud",
+          "x": -9.921625137329102,
+          "y": 68.2529296875,
+          "width": 320.34326171875,
+          "height": 262.072265625
+        },
+        {
+          "selector": "#bulb",
+          "x": 282.0879821777344,
+          "y": 321.10260009765625,
+          "width": 87.13653564453125,
+          "height": 89.3416748046875
+        },
+        {
+          "selector": ".thought-link-one",
+          "x": 80.4375,
+          "y": 308.828125,
+          "width": 30.421875,
+          "height": 30.421875
+        },
+        {
+          "selector": ".thought-link-two",
+          "x": 87.59375,
+          "y": 348.484375,
+          "width": 19.6875,
+          "height": 19.6875
+        },
+        {
+          "selector": ".thought-link-three",
+          "x": 105.5,
+          "y": 369.640625,
+          "width": 13.59375,
+          "height": 13.59375
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "tipVariants": [
+        {
+          "length": 8,
+          "top": 761.34375,
+          "bottom": 794.46875,
+          "height": 33.125,
+          "sceneUnchanged": true
+        },
+        {
+          "length": 44,
+          "top": 761.34375,
+          "bottom": 824.28125,
+          "height": 62.9375,
+          "sceneUnchanged": true
+        },
+        {
+          "length": 340,
+          "top": 761.34375,
+          "bottom": 1032.96875,
+          "height": 271.625,
+          "sceneUnchanged": true
+        }
+      ],
+      "frameStates": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "connectorOverlapPixels": [
+        0,
+        0,
+        0
+      ],
+      "fillStages": [
+        {
+          "value": 0,
+          "y": 77.07182312011719,
+          "rays": "hidden"
+        },
+        {
+          "value": 10,
+          "y": 70.22099304199219,
+          "rays": "hidden"
+        },
+        {
+          "value": 50,
+          "y": 42.81768035888672,
+          "rays": "hidden"
+        },
+        {
+          "value": 90,
+          "y": 15.4143648147583,
+          "rays": "hidden"
+        },
+        {
+          "value": 100,
+          "y": 8.563535690307617,
+          "rays": "visible"
+        }
+      ],
+      "localPuzzle": true,
+      "horizontalOverflow": false,
+      "sceneBounds": [
+        {
+          "selector": ".loading-art",
+          "x": 309.90625,
+          "y": 24,
+          "width": 805.1875,
+          "height": 717.34375
+        },
+        {
+          "selector": "#character",
+          "x": 412.15625,
+          "y": 300.171875,
+          "width": 622.40625,
+          "height": 425.84375
+        },
+        {
+          "selector": ".thought-cloud",
+          "x": 455.8801574707031,
+          "y": 15.129942893981934,
+          "width": 360.2397155761719,
+          "height": 294.7088623046875
+        },
+        {
+          "selector": "#bulb",
+          "x": 859.2349853515625,
+          "y": 295.0450134277344,
+          "width": 157.420654296875,
+          "height": 160.59747314453125
+        },
+        {
+          "selector": ".thought-link-one",
+          "x": 515.21875,
+          "y": 303.75,
+          "width": 44.28125,
+          "height": 44.28125
+        },
+        {
+          "selector": ".thought-link-two",
+          "x": 527.296875,
+          "y": 361.140625,
+          "width": 28.171875,
+          "height": 28.171875
+        },
+        {
+          "selector": ".thought-link-three",
+          "x": 571.578125,
+          "y": 389.84375,
+          "width": 17.703125,
+          "height": 17.703125
+        }
+      ]
+    }
+  ]
+}

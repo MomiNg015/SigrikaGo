@@ -38,4 +38,10 @@ Additional browser-rendered evidence: `docs/design-samples/loading-page/preview-
 - [x] Tip only grows down; progress, completion hold/reset and local puzzle selection verified.
 - [x] System design and loading-art contracts updated.
 
+## Connector weight revision
+
+The user requested thicker connecting circles after the selected-composition handoff. This overrides the mock's thin connector contours. The current raster is `round-thought-bubble-bold.png`: 512×512 RGBA, warm-brown ink, transparent center/exterior, approximately 60px center-axis stroke versus the old 23px. It displays at approximately 3.6/2.3/1.6px on the three phone connectors. No CSS layout or animation code changed.
+
+The latest mobile and desktop captures and the combined full/focused source comparisons above have been refreshed. The prior mobile capture is retained as `review/bubbles-before-mobile.png` for comparison history. Full and focused inputs were opened again: all three rings remain hollow and legible, with a stronger first circle and readable smallest circle. Increased visual weight is the requested adaptation; no new P0/P1/P2 issue remains. Current desktop/phone browser checks again confirm zero circle/sprite overlap, stable scene bounds across Tip lengths and no horizontal overflow. Console errors/warnings: zero. Older complete/compact screenshots document the prior stroke version's unchanged behavior rather than claiming the current line weight.
+
 final result: passed

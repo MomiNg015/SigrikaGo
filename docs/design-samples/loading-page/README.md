@@ -14,6 +14,8 @@ The bulb glass chamber starts transparent. A yellow gradient is clipped by an al
 
 ## Tip layout
 
+The user subsequently requested clearer connector lines. All three connectors now consume `round-thought-bubble-bold.png`, with about 60px source stroke instead of the prior 23px, while retaining their existing CSS positions and sizes. The original lighter circle remains available. On a 390px phone the visible strokes are approximately 3.6/2.3/1.6px. Desktop and phone captures, full/focused comparison evidence and the latest QA report reflect this change; older completion/compact captures remain evidence of the unchanged loading behavior before this line-weight adjustment.
+
 The scene has a viewport-based width/aspect ratio and a fixed top anchor, independent of Tip height. Tip follows in normal document flow. Longer text grows downward without recentering, shrinking or moving any illustration element; compact screens can scroll vertically. Stable scrollbar space prevents text overflow from changing available scene width. The hand-written Tip label uses a blush brush asset; body copy uses the project's UI font with natural, untruncated wrapping.
 
 ## Preview controls
@@ -26,7 +28,7 @@ The scene has a viewport-based width/aspect ratio and a fixed top anchor, indepe
 
 ## Assets and prompts
 
-The character sprite uses the approved 1216×832 frames with original alpha. `loading-blink-fast.webp` retains every compressed frame payload, changing only the initial waiting duration from 2400 to 1200ms; remaining durations are 65/110/85/140ms. The loop is 1600ms (previously 2800ms), about 1.75 times as frequent. The original `loading-blink.webp` remains available. Selected cloud, round bubble, Tip brush and `bulb-selected.png` assets were generated with the built-in imagegen tool; prior assets and rays are retained. Cloud source contours are 10–11px, circle contours about 24px and bulb contours about 30px, scaled to consistent visible weights. The selected bulb has its own `bulb-selected-interior.png` alpha mask. `prepare-assets.py` uses the selected bulb when present and otherwise the original; normalized fill geometry always derives from that input. Exact new prompts and alpha checks are in `review/assets-prompts.md` and `review/supporting-prompts.md`. The paper grid reuses `public/assets/home/home-paper-grid.svg`.
+The character sprite uses the approved 1216×832 frames with original alpha. `loading-blink-fast.webp` retains every compressed frame payload, changing only the initial waiting duration from 2400 to 1200ms; remaining durations are 65/110/85/140ms. The loop is 1600ms (previously 2800ms), about 1.75 times as frequent. The original `loading-blink.webp` remains available. Selected cloud, round bubble, Tip brush and `bulb-selected.png` assets were generated with the built-in imagegen tool; prior assets and rays are retained. Cloud source contours are 10–11px, current circle contours about 60px and bulb contours about 30px; the connector weight follows the user's subsequent readability request. The selected bulb has its own `bulb-selected-interior.png` alpha mask. `prepare-assets.py` uses the selected bulb when present and otherwise the original; normalized fill geometry always derives from that input. Exact new prompts and alpha checks are in `review/assets-prompts.md` and `review/supporting-prompts.md`. The paper grid reuses `public/assets/home/home-paper-grid.svg`.
 
 Earlier asset prompts (retained for history):
 
