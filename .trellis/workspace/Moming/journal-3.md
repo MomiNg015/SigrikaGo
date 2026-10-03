@@ -1316,3 +1316,36 @@ Generated transparent cloud/bulb/glow assets and built an independent loading sa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 161: Loading art and mobile preview refinement
+
+**Date**: 2026-10-03
+**Task**: Loading art and mobile preview refinement
+**Branch**: `master`
+
+### Summary
+
+Reduced and rotated bulb, kept flipped head-only comic rays, enlarged/shifted cloud and routed connectors outside the sprite. Added randomized cloud drift paused at completion and a dedicated phone preview. Browser geometry, alpha-overlap, motion/freeze, responsive and interaction QA plus lint passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `83cf6ffe` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
