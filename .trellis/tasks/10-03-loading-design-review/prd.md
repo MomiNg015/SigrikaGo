@@ -1,0 +1,3 @@
+# Loading design review
+
+Assess the current loading screen against SigrikaGo's existing Bright School visual language. Capture current desktop waiting, phone waiting and completion states, and compare with existing home and story-guide reference surfaces. Explain the main aesthetic causes and provide three visually grounded concept directions before changing the working sample. Preserve the approved character, thought cloud, round connectors, bulb progress, tip below the desk and completed still hold. Save screenshots, findings and generated concepts; synchronize system design. This task is an assessment and visual exploration, not production integration.

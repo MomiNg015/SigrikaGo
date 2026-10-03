@@ -1,5 +1,7 @@
 # Thinking loading-screen prototype
 
+A screenshot-based aesthetic assessment and three generated composition directions are available in [`review/assessment.md`](./review/assessment.md). The visual exploration keeps the chosen character/thought/bulb metaphor and grounds it in the existing Bright School paper-and-ink theme. The runnable sample is unchanged by that assessment; generated concept boards are illustrative and must not replace approved sprite pixels or validated problem images.
+
 Open `docs/design-samples/loading-page.html` through a static server rooted at the repository. The current local preview is `http://127.0.0.1:5179/docs/design-samples/loading-page.html`.
 
 The dedicated phone preview is `docs/design-samples/loading-page-mobile.html`, locally `http://127.0.0.1:5179/docs/design-samples/loading-page-mobile.html`. On desktop it embeds the same sample at a real 390×844 viewport; on a phone it fills the available screen. Updated desktop and phone captures are `preview-desktop.png` and `preview-mobile.png` in this directory.
