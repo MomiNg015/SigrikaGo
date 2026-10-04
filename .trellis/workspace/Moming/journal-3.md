@@ -1712,3 +1712,36 @@ Replaced tangram with catalog-ordered diagonal portrait strips, desktop full-bod
 ### Next Steps
 
 - None - task complete
+
+
+## Session 173: Handbook fixed portrait framing and alternating names
+
+**Date**: 2026-10-04
+**Task**: Handbook fixed portrait framing and alternating names
+**Branch**: `master`
+
+### Summary
+
+Implemented calibrated desktop heads with fixed dimensions and horizontal-only preview movement, alternating mobile portraits with large opposite transparent names, and anonymous missing-data Baconbits. Verified font CJK fallback, fixed mixed pointer/keyboard preview, updated production screenshots/docs/specs and CSS import/motion inventory. Browser12/12 plus final structural7/7, final focused107/107, lint/build/assets/builtCSS/config pass. Full check retains5 unrelated environment failures: four proxy fixtures cannot bind5173 and one isolated service fetch timeout.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8aea367c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

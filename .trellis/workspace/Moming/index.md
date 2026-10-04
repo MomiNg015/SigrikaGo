@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 172
+- **Total Sessions**: 173
 - **Last Active**: 2026-10-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1714 | Active |
+| `journal-3.md` | ~1747 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 173 | 2026-10-04 | Handbook fixed portrait framing and alternating names | `8aea367c` | `master` |
 | 172 | 2026-10-04 | 部员手册横竖斜切拼接与展开立绘 | `e0869013` | `master` |
 | 171 | 2026-10-04 | Production ensemble puzzle handbook | `dbdf0e89` | `master` |
 | 170 | 2026-10-03 | Member handbook ensemble puzzle prototype | `174d768c` | `master` |
