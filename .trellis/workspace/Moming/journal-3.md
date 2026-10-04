@@ -1646,3 +1646,36 @@ Preserved nine supplied standard portrait PNGs with exact SHA256 copies; reused 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 171: Production ensemble puzzle handbook
+
+**Date**: 2026-10-04
+**Task**: Production ensemble puzzle handbook
+**Branch**: `master`
+
+### Summary
+
+Implemented fixed desktop/mobile polygon portrait puzzle with theme gradients, tiny gaps, existing lift/rotation hover and gray unowned silhouettes. Preserved costume, candy and corruption priority, anonymous Baconbits details and existing skill/voice/music/wardrobe content. Portaled full-body detail crosses paper edges with viewport containment and mobile copy scrolling. User explicitly deferred character selection. Delivered nine lossless transparent runtime sprites, production screenshots, executable frontend contract and system design sync. Final focused Vitest 180/180, handbook browser 4/4, home tour browser 6/6; lint, build, built CSS, portrait and admin snapshot checks passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dbdf0e89` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
