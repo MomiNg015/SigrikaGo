@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { resolveHandbookPortrait } from "../../src/shared/handbookPortraits.js";
+
+const standardIds = ["sigrika", "denia", "aemeath", "lynae", "qiuyuan", "mornye", "changli", "chisa", "nabomo"];
+const landmarks = standardIds.map((id) => ({ id, ...resolveHandbookPortrait({ id }) }));
 
 async function openFromStrip(page, tile, mobile) {
   await tile.scrollIntoViewIfNeeded();
@@ -50,8 +54,12 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
       await page.goto("/tests/e2e/fixtures/handbook-puzzle.html?owned=partial");
-      await expect(page.locator(".handbook-puzzle-question")).toHaveCount(6);
+      await expect(page.locator(".handbook-puzzle-question")).toHaveCount(5);
       const unknown = page.getByRole("button", { name: "未知角色详情", exact: true });
+      await expect(unknown.locator("img, .handbook-puzzle-silhouette, .handbook-puzzle-question")).toHaveCount(0);
+      await expect(unknown).toHaveText(/暂无情报/);
+      await expect(unknown).not.toHaveText(/猪小仙/);
+      expect(await unknown.getAttribute("title")).toBe("暂无情报");
       await openFromStrip(page, unknown, mobile);
       const dialog = page.getByRole("dialog", { name: "未知角色详情" });
       await expect(dialog).toHaveText(/暂无情报/);
@@ -64,14 +72,43 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
     test("preview expands the correct axis with reachable neighbors and stable matte fills", async ({ page }) => {
       await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
       const tile = page.getByRole("button", { name: "西格莉卡角色详情", exact: true });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(300);
       const axis = mobile ? "height" : "width";
       const resting = await tile.evaluate((element, axis) => element.getBoundingClientRect()[axis], axis);
+      const art = tile.locator(".handbook-puzzle-portrait");
+      const artBefore = await art.boundingBox();
+      const name = tile.locator(".handbook-strip-name");
+      if (!mobile) {
+        expect(await name.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return style.opacity === "0" || style.visibility === "hidden" || style.display === "none";
+        })).toBeTruthy();
+      }
       const fill = await tile.evaluate((element) => getComputedStyle(element).backgroundImage);
       if (mobile) await tile.tap();
       else await tile.hover();
       await expect.poll(() => tile.evaluate((element, axis) => element.getBoundingClientRect()[axis], axis)).toBeGreaterThan(resting * 2);
       expect(await tile.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe(fill);
       expect(await tile.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
+      await expect.poll(() => name.evaluate((element) => Number(getComputedStyle(element).opacity))).toBe(1);
+      const nameStyle = await name.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { background: style.backgroundColor, image: style.backgroundImage, size: parseFloat(style.fontSize) };
+      });
+      expect(nameStyle.background).toBe("rgba(0, 0, 0, 0)");
+      expect(nameStyle.image).toBe("none");
+      expect(nameStyle.size).toBeGreaterThanOrEqual(22);
+      if (!mobile) {
+        const artAfter = await art.boundingBox();
+        expect(artAfter.width).toBeCloseTo(artBefore.width, 1);
+        expect(artAfter.height).toBeCloseTo(artBefore.height, 1);
+        expect(artAfter.y).toBeCloseTo(artBefore.y, 1);
+        const label = await name.boundingBox();
+        const expandedTile = await tile.boundingBox();
+        expect(label.x + label.width).toBeGreaterThan(expandedTile.x + expandedTile.width * 0.7);
+        expect(label.y).toBeGreaterThan(expandedTile.y + expandedTile.height * 0.7);
+      }
       const neighbor = page.locator(".handbook-puzzle-tile").nth(1);
       expect(await neighbor.evaluate((element, axis) => element.getBoundingClientRect()[axis], axis)).toBeGreaterThan(44);
       await page.emulateMedia({ reducedMotion: "reduce" });
@@ -102,4 +139,70 @@ test.describe("mobile strip rotation", () => {
     await page.getByRole("button", { name: "关闭角色详情", exact: true }).click();
     await expect(tile).toBeFocused();
   });
+});
+
+test.describe("fixed handbook portrait composition", () => {
+  test("desktop rendered head widths and eye lines agree before and after preview", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1024 });
+    await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(300);
+    const measure = () => page.evaluate((points) => points.map(({ id, focal, headWidth, width }) => {
+      const image = document.querySelector(`[data-character-id="${id}"] .handbook-puzzle-portrait`);
+      const rect = image.getBoundingClientRect();
+      const scale = rect.width / width;
+      return { id, head: headWidth * scale, eye: rect.y + focal[1] * scale, imageHeight: rect.height };
+    }), landmarks);
+    const before = await measure();
+    expect(Math.max(...before.map(({ head }) => head)) - Math.min(...before.map(({ head }) => head))).toBeLessThan(0.1);
+    expect(Math.max(...before.map(({ eye }) => eye)) - Math.min(...before.map(({ eye }) => eye))).toBeLessThan(0.1);
+    await page.getByRole("button", { name: "莫宁角色详情", exact: true }).hover();
+    await page.waitForTimeout(350);
+    const after = await measure();
+    after.forEach((value, index) => {
+      expect(value.head).toBeCloseTo(before[index].head, 1);
+      expect(value.eye).toBeCloseTo(before[index].eye, 1);
+      expect(value.imageHeight).toBeCloseTo(before[index].imageHeight, 1);
+    });
+  });
+
+  for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 640 }]) {
+    test(`mobile alternates art with readable opposite names at ${viewport.width}px`, async ({ browser }) => {
+      const context = await browser.newContext({ viewport, isMobile: true, hasTouch: true });
+      try {
+        const page = await context.newPage();
+        await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForTimeout(300);
+        const verify = () => page.evaluate((points) => points.map(({ id, focal, width }) => {
+          const piece = document.querySelector(`[data-character-id="${id}"]`);
+          const tile = piece.querySelector(".handbook-puzzle-tile").getBoundingClientRect();
+          const art = piece.querySelector("img").getBoundingClientRect();
+          const name = piece.querySelector(".handbook-strip-name");
+          const nameRect = name.getBoundingClientRect();
+          const style = getComputedStyle(name);
+          return { side: piece.dataset.portraitSide,
+            faceX: (art.x + focal[0] * art.width / width - tile.x) / tile.width,
+            nameX: (nameRect.x + nameRect.width / 2 - tile.x) / tile.width,
+            font: style.fontFamily, size: parseFloat(style.fontSize), background: style.backgroundColor };
+        }), landmarks);
+        (await verify()).forEach(({ side, faceX, nameX, font, size, background }) => {
+          expect(faceX).toBeCloseTo(side === "left" ? 0.28 : 0.72, 1);
+          expect(side === "left" ? nameX > 0.5 : nameX < 0.5).toBeTruthy();
+          expect(font).toContain("Sigrika Window Title");
+          expect(size).toBeGreaterThanOrEqual(22);
+          expect(background).toBe("rgba(0, 0, 0, 0)");
+        });
+        const denia = page.getByRole("button", { name: "达妮娅角色详情", exact: true });
+        await denia.tap();
+        await page.waitForTimeout(350);
+        const expanded = (await verify())[1];
+        expect(expanded.faceX).toBeCloseTo(0.72, 1);
+        expect(expanded.nameX).toBeLessThan(0.5);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+      } finally {
+        await context.close();
+      }
+    });
+  }
 });

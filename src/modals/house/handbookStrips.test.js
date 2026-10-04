@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
+import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
+import { CHARACTERS } from "../../shared/characters.js";
 
 describe("handbook strip pagination", () => {
   it("preserves the supplied catalog order and object identity across pages", () => {
@@ -25,12 +27,40 @@ describe("handbook strip portrait framing", () => {
     expect(style.width / style.height).toBeCloseTo(832 / 1216, 8);
   });
 
-  it("fits the expanded desktop fullbody and keeps mobile framing independent of scroll height", () => {
-    const expanded = handbookStripArtStyle(portrait, { width: 940, height: 400 }, { mobile: false, expanded: true, count: 10 });
-    expect(expanded.top).toBeCloseTo(8, 8);
-    expect(expanded.height + expanded.top).toBeLessThanOrEqual(400);
+  it("keeps desktop dimensions and eye line fixed through expansion, moving horizontally only", () => {
+    const state = { mobile: false, count: 10 };
+    const resting = handbookStripArtStyle(portrait, { width: 940, height: 400 }, { ...state, expanded: false });
+    const expanded = handbookStripArtStyle(portrait, { width: 940, height: 400 }, { ...state, expanded: true });
+    expect({ width: resting.width, height: resting.height, top: resting.top })
+      .toEqual({ width: expanded.width, height: expanded.height, top: expanded.top });
+    expect(expanded.left).not.toBe(resting.left);
     expect(handbookStripArtStyle(portrait, { width: 280, height: 840 }, { mobile: true, expanded: true, count: 10 }))
       .toEqual(handbookStripArtStyle(portrait, { width: 280, height: 1054 }, { mobile: true, expanded: true, count: 10 }));
+  });
+
+  it("normalizes measured standard head widths and pupils to the same desktop landmarks", () => {
+    const state = { mobile: false, expanded: false, count: 10 };
+    const size = { width: 940, height: 400 };
+    const portraits = Object.values(CHARACTERS).map((character) => resolveHandbookPortrait(character)).filter(({ isStandard }) => isStandard);
+    expect(portraits).toHaveLength(9);
+    for (const portrait of portraits) {
+      const style = handbookStripArtStyle(portrait, size, state);
+      const scale = style.height / portrait.height;
+      expect(portrait.headWidth * scale).toBeCloseTo(940 / 10 * .88, 8);
+      expect(style.top + portrait.focal[1] * scale).toBeCloseTo(400 * .25, 8);
+    }
+  });
+
+  it("alternates mobile face anchors by catalog index without mirroring artwork", () => {
+    for (const expanded of [false, true]) {
+      const left = handbookStripArtStyle(portrait, { width: 280, height: 840 }, { mobile: true, expanded, count: 10, index: 0 });
+      const right = handbookStripArtStyle(portrait, { width: 280, height: 840 }, { mobile: true, expanded, count: 10, index: 1 });
+      expect(left.left).toMatch(/^calc\(28%/);
+      expect(right.left).toMatch(/^calc\(72%/);
+      expect(left.width).toBe(right.width);
+      expect(left.height).toBe(right.height);
+      expect(left.transform).toBeUndefined();
+    }
   });
 
   it("retains equipped costume framing", () => {

@@ -4,7 +4,7 @@ import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
-import { handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
+import { HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 
 export default function HouseCharacterGrid(props) {
   const boardRef = useRef(null);
@@ -42,22 +42,27 @@ export default function HouseCharacterGrid(props) {
       aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined}>
       <div className="handbook-puzzle-board" ref={boardRef}
         onPointerLeave={() => {
-          if (!mobile && !boardRef.current?.querySelector(".handbook-puzzle-tile:focus-visible")) setExpanded(null);
+          if (!mobile) {
+            const focusedTile = boardRef.current?.querySelector(".handbook-puzzle-tile:focus-visible");
+            setExpanded(focusedTile?.dataset.characterKey ?? null);
+          }
         }}>
-        {roster.map((character) => {
+        {roster.map((character, index) => {
           const id = canonicalCharacterId(character.id);
           const isOwned = owned.has(id);
           const hideIntel = id === "baconbits" && !isOwned;
           const isExpanded = expanded === character.id;
-          const portrait = resolveHandbookPortrait(character, { itemEffects, user });
-          const artStyle = handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length });
-          const effects = activeCharacterItemEffects(id, itemEffects);
+          const portrait = hideIntel ? null : resolveHandbookPortrait(character, { itemEffects, user });
+          const catalogIndex = currentPage * HANDBOOK_STRIP_PAGE_SIZE + index;
+          const artStyle = portrait && handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length, index: catalogIndex });
+          const effects = hideIntel ? [] : activeCharacterItemEffects(id, itemEffects);
           const openDetail = () => hideIntel ? onOpenUnknownDetail?.() : onOpenCharacterDetail(character);
           return <div key={character.id}
-            className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${isExpanded ? " is-expanded" : ""}`}
-            style={characterThemeStyle(character)} data-character-id={id}
+            className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}`}
+            style={characterThemeStyle(character)} data-character-id={id} data-portrait-side={catalogIndex % 2 ? "right" : "left"}
             onPointerEnter={(event) => { if (event.pointerType === "mouse") setExpanded(character.id); }}>
             <button type="button" className="handbook-puzzle-tile"
+              data-character-key={character.id}
               aria-label={hideIntel ? "未知角色详情" : `${character.name}角色详情${isOwned ? "" : "（未拥有）"}`}
               aria-expanded={isExpanded} title={hideIntel ? "暂无情报" : character.name} data-ui-sound="none"
               data-home-guide={id === "sigrika" ? "sigrika-card" : undefined}
@@ -69,7 +74,10 @@ export default function HouseCharacterGrid(props) {
                 if (mobile && event.detail > 0) setExpanded(character.id);
                 else openDetail();
               }}>
-              {isOwned ? <span className="handbook-puzzle-art">
+              {hideIntel ? <>
+                <span className="handbook-missing-data" aria-hidden="true"><i /><i /><i /></span>
+                <span className="handbook-missing-label">暂无情报</span>
+              </> : isOwned ? <span className="handbook-puzzle-art">
                 <img className="handbook-puzzle-portrait" style={artStyle} src={portrait.src}
                   alt="" decoding="async" draggable="false" />
               </span> : <>
@@ -77,7 +85,7 @@ export default function HouseCharacterGrid(props) {
                   maskImage: `url("${portrait.src}")`, WebkitMaskImage: `url("${portrait.src}")` }} />
                 <span className="handbook-puzzle-question">?</span>
               </>}
-              <span className="handbook-strip-name">{hideIntel ? "暂无情报" : character.name}</span>
+              {!hideIntel && <span className="handbook-strip-name">{character.name}</span>}
             </button>
             {mobile && isExpanded && <button type="button" className="handbook-strip-detail-action"
               onClick={(event) => {

@@ -94,9 +94,20 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
       characters: [CHARACTERS.baconbits], owned: new Set(), itemEffects: {} });
     await userEvent.setup().click(screen.getByRole("button", { name: "未知角色详情" }));
     expect(container.textContent).not.toContain("猪小仙");
+    const piece = container.querySelector(".is-missing-data");
+    expect(piece.querySelector("img, .handbook-puzzle-silhouette, .handbook-puzzle-question, .handbook-strip-name")).toBeNull();
+    expect(piece.querySelector("[style*=mask]")).toBeNull();
+    expect(piece.querySelector(".handbook-missing-label").textContent).toBe("暂无情报");
     await userEvent.setup().click(screen.getByRole("button", { name: "查看未知角色详情" }));
     expect(onOpenUnknownDetail).toHaveBeenCalledOnce();
     expect(onOpenCharacterDetail).not.toHaveBeenCalled();
+  });
+
+  it("keeps mobile portrait sides tied to catalog positions even across locked characters", () => {
+    mockViewport(true);
+    const { container } = renderGrid({ characters: [CHARACTERS.sigrika, CHARACTERS.denia, CHARACTERS.aemeath, CHARACTERS.baconbits], itemEffects: {} });
+    expect([...container.querySelectorAll(".handbook-puzzle-piece")].map((piece) => piece.dataset.portraitSide)).toEqual(["left", "right", "left", "right"]);
+    expect(container.querySelectorAll(".handbook-strip-name")).toHaveLength(3);
   });
 
   it("clears expansion on orientation changes and pagination", async () => {
@@ -126,6 +137,23 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     expect(tile.getAttribute("aria-expanded")).toBe("true");
     act(() => tile.blur());
     expect(tile.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("restores the focused keyboard strip after a different mouse preview leaves the board", () => {
+    mockViewport(false);
+    const { container } = renderGrid({ characters: [CHARACTERS.sigrika, CHARACTERS.denia], itemEffects: {} });
+    const first = screen.getByRole("button", { name: "西格莉卡角色详情" });
+    const second = screen.getByRole("button", { name: "达妮娅角色详情（未拥有）" });
+    act(() => first.focus());
+    const board = container.querySelector(".handbook-puzzle-board");
+    vi.spyOn(board, "querySelector").mockReturnValue(first);
+    const enter = new Event("pointerover", { bubbles: true });
+    Object.defineProperty(enter, "pointerType", { value: "mouse" });
+    fireEvent(second, enter);
+    expect(second.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.pointerLeave(board);
+    expect(first.getAttribute("aria-expanded")).toBe("true");
+    expect(second.getAttribute("aria-expanded")).toBe("false");
   });
 });
 

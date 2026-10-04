@@ -3,15 +3,17 @@ import { CHARACTER_PORTRAIT_ASSETS } from './characterPortraitAssetCatalog.js';
 import { characterPortraitImageProps } from './characterPortraits.js';
 
 const STANDARD_HANDBOOK_PORTRAITS = {
-  sigrika: { focal: [415, 192], cropWidth: 430 },
-  denia: { focal: [420, 217], cropWidth: 450 },
-  aemeath: { focal: [395, 181], cropWidth: 440 },
-  lynae: { focal: [391, 181], cropWidth: 440 },
-  mornye: { focal: [422, 230], cropWidth: 470 },
-  chisa: { focal: [435, 163], cropWidth: 440 },
-  changli: { focal: [426, 167], cropWidth: 450 },
-  qiuyuan: { focal: [383, 163], cropWidth: 450 },
-  nabomo: { focal: [404, 228], cropWidth: 460 },
+  // Visually measured pupils and main head volume; long hair, ribbons and
+  // halos are excluded from headWidth so neighboring faces share a scale.
+  sigrika: { focal: [405, 181], headWidth: 270, cropWidth: 430 },
+  denia: { focal: [422, 202], headWidth: 266, cropWidth: 450 },
+  aemeath: { focal: [391, 182], headWidth: 228, cropWidth: 440 },
+  lynae: { focal: [377, 163], headWidth: 234, cropWidth: 440 },
+  mornye: { focal: [422, 219], headWidth: 260, cropWidth: 470 },
+  chisa: { focal: [433, 153], headWidth: 234, cropWidth: 440 },
+  changli: { focal: [417, 146], headWidth: 242, cropWidth: 450 },
+  qiuyuan: { focal: [389, 160], headWidth: 232, cropWidth: 450 },
+  nabomo: { focal: [402, 216], headWidth: 282, cropWidth: 460 },
 };
 
 // A handbook-specific default view. Costume, candy, corruption and custom URLs

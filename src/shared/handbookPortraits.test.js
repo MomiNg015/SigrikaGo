@@ -46,6 +46,8 @@ describe("resolveHandbookPortrait default sources", () => {
       expect(result.focal[1]).toBeLessThan(result.height);
       expect(result.cropWidth).toBeGreaterThan(0);
       expect(result.cropWidth).toBeLessThanOrEqual(result.width);
+      expect(result.headWidth).toBeGreaterThan(0);
+      expect(result.headWidth).toBeLessThan(result.width);
     }
   });
 

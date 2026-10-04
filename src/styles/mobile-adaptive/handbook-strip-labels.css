@@ -1,0 +1,64 @@
+/* Lahai-Roi supplies Latin glyphs; LXGW Marker Gothic supplies Chinese names. */
+.handbook-strip-name {
+  position: absolute;
+  right: 38px;
+  bottom: 18px;
+  opacity: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-strip-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label {
+  background: transparent !important;
+  font-family: var(--font-display-accent), var(--font-window-title), sans-serif !important;
+  font-size: clamp(24px, 2.1vw, 30px);
+  font-weight: 400 !important;
+}
+.handbook-puzzle-piece.is-expanded .handbook-strip-name { opacity: 1; }
+.handbook-missing-data {
+  position: absolute;
+  inset: 18% 14%;
+  pointer-events: none;
+}
+.handbook-missing-data i {
+  position: absolute;
+  width: 66%;
+  height: 22%;
+  border: 1px solid #a6a4a0;
+  border-right: 0;
+  background: #dedcd65c;
+}
+.handbook-missing-data i:nth-child(1) { top: 3%; left: 0; }
+.handbook-missing-data i:nth-child(2) { top: 39%; right: 0; width: 42%; border-left: 0; border-right: 1px solid #a6a4a0; }
+.handbook-missing-data i:nth-child(3) { bottom: 3%; left: 5%; width: 48%; height: 12%; }
+.handbook-missing-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+.handbook-puzzle-piece.is-expanded .handbook-missing-label { writing-mode: horizontal-tb; }
+@media (max-width: 768px) {
+  .handbook-strip-name {
+    top: 50%;
+    bottom: auto;
+    right: 6px;
+    width: 48%;
+    translate: 0 -50%;
+    opacity: 1;
+    text-align: center;
+  }
+  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-name { left: 6px; right: auto; }
+  .handbook-puzzle-piece.is-expanded .handbook-strip-name { top: 30%; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-strip-name,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label { font-size: clamp(23px, 7vw, 30px); }
+  .handbook-missing-label { writing-mode: horizontal-tb; }
+  .handbook-missing-data { inset: 20px 22px; }
+  .handbook-strip-detail-action { right: 14px; }
+  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-detail-action { left: 14px; right: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .handbook-strip-name { transition: none; } }
