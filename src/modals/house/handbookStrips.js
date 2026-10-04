@@ -1,0 +1,28 @@
+export const HANDBOOK_STRIP_PAGE_SIZE = 10;
+
+// The catalog has already applied backend sortOrder. Pagination must not
+// replace that order with a portrait- or ownership-dependent order.
+export function handbookStripPage(characters, page) {
+  const pages = Math.max(1, Math.ceil(characters.length / HANDBOOK_STRIP_PAGE_SIZE));
+  const currentPage = Math.max(0, Math.min(page, pages - 1));
+  return { pages, currentPage, roster: characters.slice(currentPage * HANDBOOK_STRIP_PAGE_SIZE,
+    (currentPage + 1) * HANDBOOK_STRIP_PAGE_SIZE) };
+}
+
+export function handbookStripArtStyle(portrait, { width, height }, { mobile, expanded, count }) {
+  const compactMascot = mobile && !expanded && portrait.visibleTop === 175;
+  const artHeight = mobile
+    ? compactMascot ? 120 : portrait.isStandard ? (expanded ? 510 : 470) : Math.min(expanded ? 294 : 270, width - 16)
+    : expanded ? Math.min(height - 16, width * .35 * portrait.height / portrait.width)
+      : portrait.isStandard ? Math.min(height * 1.65, width / Math.max(1, count) * 6.2)
+        : Math.min(280, height * .7, width / Math.max(1, count) * 3);
+  const scale = artHeight / portrait.height;
+  const top = mobile && (expanded || compactMascot) ? 8 - (portrait.visibleTop ?? 0) * scale
+    : (mobile ? 48 : expanded ? portrait.focal[1] * scale + 8 : height * .25) - portrait.focal[1] * scale;
+  return {
+    width: portrait.width * scale, height: artHeight,
+    left: `calc(50% - ${portrait.focal[0] * scale}px)`,
+    top,
+    ...portrait.style
+  };
+}

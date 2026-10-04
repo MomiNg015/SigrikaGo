@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `py -3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend entry and required checks"}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Final CSS ownership and mobile cascade"}
+{"file": ".trellis/spec/frontend/handbook-puzzle-contract.md", "reason": "Existing portrait priority ownership and detail semantics; layout superseded by PRD"}
+{"file": ".trellis/tasks/10-04-handbook-portrait-strips/research/strip-layout.md", "reason": "Original order and portrait accordion geometry"}

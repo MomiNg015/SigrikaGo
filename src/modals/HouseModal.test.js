@@ -307,9 +307,9 @@ describe("deriveCharacterRecordStats", () => {
       onApplyDecoration: () => {}
     }));
 
-    expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(10);
+    expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(3);
     expect(html.match(/<button[^>]*class="handbook-puzzle-tile"/g)).toHaveLength(3);
-    expect(html.match(/class="handbook-puzzle-piece is-empty"/g)).toHaveLength(7);
+    expect(html).not.toContain("is-empty");
     expect(html).toContain("aria-label=\"仇远角色详情（未拥有）\"");
     expect(html).toContain("aria-label=\"未知角色详情\"");
     expect(html).not.toContain("src=\"/assets/hidden.webp\"");
@@ -333,7 +333,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("sortie-button");
   });
 
-  it("keeps equipped costume framing and animated candy portraits in the puzzle", () => {
+  it("keeps equipped costume framing and animated candy portraits in the strips", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         ownedCharacters: ["sigrika", "denia"], selectedCharacter: "sigrika",

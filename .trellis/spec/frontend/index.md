@@ -20,7 +20,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [State Management](./state-management.md) | Local state, global state, server state | Partially filled |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
 | [CSS Architecture](./css-architecture.md) | Stylesheet layer order, theme contracts, Tailwind route | Filled |
-| [Handbook Ensemble Puzzle](./handbook-puzzle-contract.md) | Fixed polygon crops, ownership, portrait precedence and full-body detail carrier | Filled |
+| [Handbook Portrait Strips](./handbook-puzzle-contract.md) | Ordered diagonal slices, hover/touch expansion, ownership, portrait precedence and full-body details | Filled |
 | [Thinking Loading Art Prototype](./loading-art-prototype.md) | Transparent bulb masks, axis fill, frame animation, static completion and sample boundaries | Filled |
 | [Button Colors](./button-colors.md) | Ordinary player action colors and protected visual boundaries | Filled |
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |

@@ -8,7 +8,7 @@ import { CHARACTERS } from "../../shared/characters.js";
 vi.mock("../../audio/playback.jsx", () => ({ playUiDetailOpenSound: vi.fn(), stopVoicePlayback: vi.fn() }));
 vi.mock("../../audio/systemVoicePlayback.js", () => ({ playSystemVoice: vi.fn() }));
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 function setup(overrides = {}, characters = [CHARACTERS.sigrika, CHARACTERS.baconbits]) {
   const onApplyDecoration = vi.fn().mockResolvedValue(undefined);
@@ -38,7 +38,7 @@ describe("member handbook pages", () => {
     expect(screen.getByRole("tabpanel", { name: "装饰" })).toBeTruthy();
   });
 
-  it("opens anonymous hidden-character details from the puzzle without exposing identity", async () => {
+  it("opens anonymous hidden-character details from the strip without exposing identity", async () => {
     const user = userEvent.setup();
     setup();
     expect(screen.queryByText("星炬学院")).toBeNull();
@@ -51,7 +51,7 @@ describe("member handbook pages", () => {
     expect(screen.queryByText("猪小仙")).toBeNull();
     expect(document.querySelector(".sortie-button")).toBeNull();
     await user.click(hiddenCharacter);
-    expect(screen.getByText("暂无情报")).toBeTruthy();
+    expect(within(screen.getByRole("dialog", { name: "未知角色详情" })).getByText("暂无情报")).toBeTruthy();
     expect(screen.getByText("获得该角色后可查看完整情报。")).toBeTruthy();
     expect(screen.queryByText("猪小仙")).toBeNull();
     expect(screen.queryByText("猪小仙爆炸")).toBeNull();
@@ -61,14 +61,14 @@ describe("member handbook pages", () => {
     expect(document.activeElement).toBe(hiddenCharacter);
   });
 
-  it("keeps all ten pieces in the chosen portrait order and opens the existing character details", async () => {
+  it("keeps all ten slices in catalog order and opens the existing character details", async () => {
     const user = userEvent.setup();
     const { onSelectCharacter } = setup({}, Object.values(CHARACTERS));
     const pieces = [...document.querySelectorAll(".handbook-puzzle-piece > button.handbook-puzzle-tile")];
     expect(pieces.map(piece => piece.getAttribute("aria-label"))).toEqual([
-      "琳奈角色详情（未拥有）", "爱弥斯角色详情（未拥有）", "莫宁角色详情（未拥有）",
-      "娜波摩角色详情（未拥有）", "长离角色详情（未拥有）", "西格莉卡角色详情",
-      "未知角色详情", "仇远角色详情（未拥有）", "千咲角色详情（未拥有）", "达妮娅角色详情（未拥有）"
+      "西格莉卡角色详情", "达妮娅角色详情（未拥有）", "爱弥斯角色详情（未拥有）",
+      "未知角色详情", "琳奈角色详情（未拥有）", "仇远角色详情（未拥有）",
+      "莫宁角色详情（未拥有）", "长离角色详情（未拥有）", "千咲角色详情（未拥有）", "娜波摩角色详情（未拥有）"
     ]);
     const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
     expect(sigrika.querySelector("img").getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
@@ -78,6 +78,22 @@ describe("member handbook pages", () => {
     expect(within(detail).getByText("超频：3")).toBeTruthy();
     expect(within(detail).getByRole("button", { name: "查看西格莉卡的服装" })).toBeTruthy();
     expect(onSelectCharacter).not.toHaveBeenCalled();
+  });
+
+  it("keeps mobile guide activation direct and restores focus from touch details", async () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    setup();
+    const user = userEvent.setup();
+    const tile = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
+    await user.click(tile);
+    expect(screen.queryByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "查看西格莉卡详情" }));
+    expect(screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeTruthy();
+    await user.keyboard("{Escape}");
+    expect(document.activeElement).toBe(tile);
+    // HomeOnboarding uses HTMLElement.click(), whose detail is zero.
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeTruthy();
   });
 
   it("places default stones first and resets an equipped decoration through the existing action", async () => {

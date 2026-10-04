@@ -4,20 +4,21 @@ import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
-import { handbookPuzzleLayout, insetHandbookPiece, orderHandbookCharacters } from "./handbookPuzzle.js";
+import { handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 
 export default function HouseCharacterGrid(props) {
   const boardRef = useRef(null);
   const [mobile, setMobile] = useState(false);
-  const [size, setSize] = useState({ width: 1000, height: 600 });
+  const [size, setSize] = useState({ width: 1000, height: 430 });
   const [page, setPage] = useState(0);
+  const [expanded, setExpanded] = useState(null);
   const { panelId, labelledBy, characters, owned, itemEffects, user, sigrikaCorrupted,
     onOpenCharacterDetail, onOpenUnknownDetail, candyEffectCancellationEnabled,
     cancellingCandyEffect, onCancelCandyEffect } = props;
   useEffect(() => {
     const media = window.matchMedia?.("(max-width: 768px)");
     if (!media) return undefined;
-    const update = () => setMobile(media.matches);
+    const update = () => { setMobile(media.matches); setExpanded(null); };
     update();
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
@@ -34,59 +35,58 @@ export default function HouseCharacterGrid(props) {
     return () => observer.disconnect();
   }, [sigrikaCorrupted]);
   if (sigrikaCorrupted) return <LegacyHouseCharacterGrid {...props} />;
-  const ordered = orderHandbookCharacters(characters);
-  const pages = Math.max(1, Math.ceil(ordered.length / 10));
-  const currentPage = Math.min(page, pages - 1);
-  const roster = ordered.slice(currentPage * 10, currentPage * 10 + 10);
-  const pieces = handbookPuzzleLayout(mobile);
+  const { pages, currentPage, roster } = handbookStripPage(characters, page);
+  const changePage = (next) => { setPage(next); setExpanded(null); };
   return (
     <div className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
       aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined}>
-      <div className="handbook-puzzle-board" ref={boardRef}>
-        {pieces.map((piece, index) => {
-          const character = roster[index];
-          const { bbox, portraitRegion } = piece;
-          const points = insetHandbookPiece(piece, size, mobile ? 1 : 1.5);
-          const clipPath = `polygon(${points.map(([x, y]) => `${(x - bbox.x) / bbox.width * 100}% ${(y - bbox.y) / bbox.height * 100}%`).join(",")})`;
-          const placement = { left: `${bbox.x}%`, top: `${bbox.y}%`, width: `${bbox.width}%`, height: `${bbox.height}%` };
-          if (!character) return <div key={`empty-${index}`} className="handbook-puzzle-piece is-empty" style={placement} aria-hidden="true">
-            <span className="handbook-puzzle-tile" style={{ "--handbook-piece-clip": clipPath }} />
-          </div>;
+      <div className="handbook-puzzle-board" ref={boardRef}
+        onPointerLeave={() => {
+          if (!mobile && !boardRef.current?.querySelector(".handbook-puzzle-tile:focus-visible")) setExpanded(null);
+        }}>
+        {roster.map((character) => {
           const id = canonicalCharacterId(character.id);
           const isOwned = owned.has(id);
           const hideIntel = id === "baconbits" && !isOwned;
+          const isExpanded = expanded === character.id;
           const portrait = resolveHandbookPortrait(character, { itemEffects, user });
-          const scale = size.width * (mobile ? .465 : .285) / portrait.cropWidth;
-          const anchorX = portraitRegion.center[0] * size.width / 100;
-          const anchorY = Math.max(portraitRegion.center[1] * size.height / 100,
-            bbox.y * size.height / 100 + (portrait.focal[1] - portrait.visibleTop) * scale + 4);
-          const artStyle = {
-            width: portrait.width * scale, height: portrait.height * scale,
-            left: anchorX - bbox.x * size.width / 100 - portrait.focal[0] * scale,
-            top: anchorY - bbox.y * size.height / 100 - portrait.focal[1] * scale,
-            ...portrait.style
-          };
+          const artStyle = handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length });
           const effects = activeCharacterItemEffects(id, itemEffects);
-          return <div key={character.id} className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}`}
-            style={{ ...placement, ...characterThemeStyle(character) }}>
-            <button type="button" className="handbook-puzzle-tile" style={{ "--handbook-piece-clip": clipPath }}
+          const openDetail = () => hideIntel ? onOpenUnknownDetail?.() : onOpenCharacterDetail(character);
+          return <div key={character.id}
+            className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${isExpanded ? " is-expanded" : ""}`}
+            style={characterThemeStyle(character)} data-character-id={id}
+            onPointerEnter={(event) => { if (event.pointerType === "mouse") setExpanded(character.id); }}>
+            <button type="button" className="handbook-puzzle-tile"
               aria-label={hideIntel ? "未知角色详情" : `${character.name}角色详情${isOwned ? "" : "（未拥有）"}`}
-              title={hideIntel ? "暂无情报" : character.name} data-ui-sound="none"
+              aria-expanded={isExpanded} title={hideIntel ? "暂无情报" : character.name} data-ui-sound="none"
               data-home-guide={id === "sigrika" ? "sigrika-card" : undefined}
-              onClick={() => hideIntel ? onOpenUnknownDetail?.() : onOpenCharacterDetail(character)}>
+              onFocus={() => setExpanded(character.id)}
+              onBlur={(event) => { if (!mobile && !event.currentTarget.parentElement.contains(event.relatedTarget)) setExpanded(null); }}
+              onClick={(event) => {
+                // Guide clicks and keyboard activation open details immediately;
+                // an ordinary narrow-view tap reveals the explicit detail action.
+                if (mobile && event.detail > 0) setExpanded(character.id);
+                else openDetail();
+              }}>
               {isOwned ? <span className="handbook-puzzle-art">
                 <img className="handbook-puzzle-portrait" style={artStyle} src={portrait.src}
                   alt="" decoding="async" draggable="false" />
               </span> : <>
                 <span className="handbook-puzzle-silhouette" style={{ ...artStyle,
                   maskImage: `url("${portrait.src}")`, WebkitMaskImage: `url("${portrait.src}")` }} />
-                <span className="handbook-puzzle-question" style={{
-                  left: anchorX - bbox.x * size.width / 100,
-                  top: anchorY - bbox.y * size.height / 100 }}>?</span>
+                <span className="handbook-puzzle-question">?</span>
               </>}
+              <span className="handbook-strip-name">{hideIntel ? "暂无情报" : character.name}</span>
             </button>
+            {mobile && isExpanded && <button type="button" className="handbook-strip-detail-action"
+              onClick={(event) => {
+                // Keep dialog focus restoration attached to the stable primary
+                // trigger even if an orientation change removes this action.
+                event.currentTarget.parentElement.querySelector(".handbook-puzzle-tile").focus();
+                openDetail();
+              }} aria-label={hideIntel ? "查看未知角色详情" : `查看${character.name}详情`}>查看详情 <span aria-hidden="true">↗</span></button>}
             {effects.length > 0 && <div className={`character-item-effect-badges handbook-puzzle-effects${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
-              style={{ left: `${(portraitRegion.center[0] - bbox.x) / bbox.width * 100}%`, top: `${(portraitRegion.center[1] - bbox.y) / bbox.height * 100}%` }}
               aria-label={`${character.name}道具效果`}>
               {effects.map((effect) => candyEffectCancellationEnabled ? <button key={effect.effectKey}
                 type="button" className="character-item-effect-cancel" aria-label={`取消${character.name}的${effect.label}`}
@@ -98,10 +98,11 @@ export default function HouseCharacterGrid(props) {
           </div>;
         })}
       </div>
-      {pages > 1 && <nav className="handbook-puzzle-pages" aria-label="角色画板分页">
-        <button type="button" disabled={!currentPage} onClick={() => setPage(currentPage - 1)}>上一页</button>
+      {!roster.length && <p className="quiet-text">暂无角色</p>}
+      {pages > 1 && <nav className="handbook-puzzle-pages" aria-label="角色立绘分页">
+        <button type="button" disabled={!currentPage} onClick={() => changePage(currentPage - 1)}>上一页</button>
         <span>{currentPage + 1} / {pages}</span>
-        <button type="button" disabled={currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}>下一页</button>
+        <button type="button" disabled={currentPage === pages - 1} onClick={() => changePage(currentPage + 1)}>下一页</button>
       </nav>}
     </div>
   );

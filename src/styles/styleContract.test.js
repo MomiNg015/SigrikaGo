@@ -46,6 +46,7 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
   "themes"
 ]);
 const TEST_STYLE_FILES = new Set([
+  "handbookStrips.test.js",
   "cssLayerInventory.test.js",
   "hudComponents.test.js",
   "styleContract.test.js",

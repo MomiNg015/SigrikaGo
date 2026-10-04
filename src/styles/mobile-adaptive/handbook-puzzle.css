@@ -1,21 +1,42 @@
-.handbook-puzzle-panel {
-  padding: 14px 9px 18px;
-  outline-offset: -3px;
+/* Final ordinary handbook owner; corrupted cards use their isolated legacy grid. */
+.handbook-puzzle-panel { padding: 14px 9px 18px; outline-offset: -3px; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-modal > .handbook-puzzle-panel {
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding: 8px 0 16px;
 }
 .handbook-puzzle-board {
+  --handbook-strip-slant: 28px;
   position: relative;
+  display: flex;
   width: 100%;
-  aspect-ratio: 5 / 3;
+  height: clamp(330px, 45dvh, 460px);
+  gap: 3px;
   isolation: isolate;
+  overflow: hidden;
 }
 .handbook-puzzle-piece {
-  position: absolute;
+  --handbook-piece-clip: polygon(var(--handbook-strip-slant) 0, 100% 0, calc(100% - var(--handbook-strip-slant)) 100%, 0 100%);
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  margin-left: calc(-1 * var(--handbook-strip-slant));
   pointer-events: none;
-  transition: transform 220ms cubic-bezier(.25, 1, .5, 1), filter 220ms ease;
-  transform-origin: center;
+  clip-path: var(--handbook-piece-clip);
+  transition: flex-grow 260ms cubic-bezier(.25, 1, .5, 1);
 }
+.handbook-puzzle-piece:first-child {
+  margin-left: 0;
+  --handbook-piece-clip: polygon(0 0, 100% 0, calc(100% - var(--handbook-strip-slant)) 100%, 0 100%);
+}
+.handbook-puzzle-piece:last-child { --handbook-piece-clip: polygon(var(--handbook-strip-slant) 0, 100% 0, 100% 100%, 0 100%); }
+.handbook-puzzle-piece:only-child { --handbook-piece-clip: inset(0); }
+.handbook-puzzle-piece.is-expanded { flex-grow: 4; }
 .handbook-puzzle-tile,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile:is(button, :hover, :focus-visible, :active) {
   position: absolute;
   inset: 0;
   display: block;
@@ -26,34 +47,31 @@
   border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+  transform: none !important;
   clip-path: var(--handbook-piece-clip) !important;
   overflow: hidden;
   pointer-events: auto;
   cursor: pointer;
-  background: radial-gradient(ellipse at 42% 28%, #ffffffab, #ffffff00 65%),
-    linear-gradient(145deg, color-mix(in srgb, var(--character-theme-color, #d9d6d0) 50%, #fff9ed),
-      color-mix(in srgb, var(--character-theme-color, #d9d6d0) 83%, #484451)) !important;
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--character-theme-color, #d9d6d0) 18%, #fff9ed),
+    color-mix(in srgb, var(--character-theme-color, #d9d6d0) 34%, #eee7d9)) !important;
 }
 .handbook-puzzle-piece.is-unowned .handbook-puzzle-tile,
-.handbook-puzzle-piece.is-empty .handbook-puzzle-tile,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-piece:is(.is-unowned, .is-empty) .handbook-puzzle-tile {
-  background: radial-gradient(ellipse at 38% 20%, #f1f0ed, #c5c4c1 80%) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-piece.is-unowned .handbook-puzzle-tile:is(button, :hover, :focus-visible, :active) {
+  background: linear-gradient(165deg, #e8e6e1, #d4d2cd) !important;
 }
-.handbook-puzzle-piece.is-empty .handbook-puzzle-tile { pointer-events: none; }
-.handbook-puzzle-portrait,
-.handbook-puzzle-silhouette {
+.handbook-puzzle-portrait, .handbook-puzzle-silhouette {
   position: absolute;
   max-width: none;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  transition: width 260ms ease, height 260ms ease, left 260ms ease, top 260ms ease;
 }
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-portrait {
-  max-width: none !important;
-}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-portrait { max-width: none !important; }
 .handbook-puzzle-silhouette {
   display: block;
-  background: linear-gradient(165deg, #686871, #44444e);
+  background: #73737b;
   mask-size: contain;
   mask-position: center;
   mask-repeat: no-repeat;
@@ -64,45 +82,51 @@
 .handbook-puzzle-question,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-question {
   position: absolute;
-  transform: translate(-50%, -45%) !important;
+  left: 50%;
+  top: 26%;
+  transform: translate(-50%, -50%) !important;
   color: #fff !important;
-  font: 800 clamp(28px, 4vw, 48px) / 1 sans-serif;
-  text-shadow: 0 2px 8px #24242f6b;
+  font: 800 36px / 1 sans-serif;
   pointer-events: none;
 }
-.handbook-puzzle-piece:focus-within {
-  z-index: 3;
-  filter: drop-shadow(0 0 3px #303038);
-}
-.handbook-puzzle-tile:focus-visible { outline: 3px solid #ffffff; outline-offset: -7px; }
-.handbook-puzzle-piece .handbook-puzzle-effects {
+.handbook-strip-name {
   position: absolute;
-  right: auto;
-  bottom: auto;
-  z-index: 2;
-  transform: translate(-50%, 38px);
-  pointer-events: auto;
+  left: 50%;
+  bottom: 18px;
+  translate: -50% 0;
+  padding: 6px 4px;
+  writing-mode: vertical-rl;
+  background: #fff9edde;
+  font-size: 14px;
+  line-height: 1.25;
+  white-space: nowrap;
+  pointer-events: none;
 }
-.handbook-puzzle-pages {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 18px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .handbook-puzzle-piece:has(.handbook-puzzle-tile:hover) {
-    z-index: 4;
-    transform: translateY(-5px) rotate(-1deg) scale(1.02);
-    filter: drop-shadow(8px 10px 0 #2c243b29) drop-shadow(0 0 8px #f8d3e166);
-  }
-}
+.handbook-puzzle-piece.is-expanded .handbook-strip-name { writing-mode: horizontal-tb; padding: 5px 10px; }
+.handbook-puzzle-tile:focus-visible { outline: 3px solid #544a3d; outline-offset: -6px; }
+.handbook-puzzle-piece .handbook-puzzle-effects { position: absolute; top: 45%; left: 50%; right: auto; bottom: auto; translate: -50% 0; z-index: 2; pointer-events: auto; }
+.handbook-puzzle-pages { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 18px; }
 @media (max-width: 768px) {
   .handbook-puzzle-panel { padding: 7px 0 12px; }
-  .handbook-puzzle-board { aspect-ratio: 36 / 55; }
-  .handbook-puzzle-question { font-size: 32px; }
+  .handbook-puzzle-board { --handbook-strip-slant: 14px; flex-direction: column; height: auto; overflow: visible; gap: 2px; }
+  .handbook-puzzle-piece {
+    --handbook-piece-clip: polygon(0 var(--handbook-strip-slant), 100% 0, 100% calc(100% - var(--handbook-strip-slant)), 0 100%);
+    flex: none;
+    height: 96px;
+    margin-left: 0;
+    margin-top: calc(-1 * var(--handbook-strip-slant));
+    transition: height 260ms cubic-bezier(.25, 1, .5, 1);
+  }
+  .handbook-puzzle-piece:first-child { margin-top: 0; --handbook-piece-clip: polygon(0 0, 100% 0, 100% calc(100% - var(--handbook-strip-slant)), 0 100%); }
+  .handbook-puzzle-piece:last-child { --handbook-piece-clip: polygon(0 var(--handbook-strip-slant), 100% 0, 100% 100%, 0 100%); }
+  .handbook-puzzle-piece:only-child { --handbook-piece-clip: inset(0); }
+  .handbook-puzzle-piece.is-expanded { height: 310px; flex-grow: 0; }
+  .handbook-strip-name { writing-mode: horizontal-tb; left: auto; right: 12px; bottom: 17px; translate: none; padding: 3px 7px; font-size: 13px; }
+  .handbook-puzzle-piece.is-expanded .handbook-strip-name { left: 16px; right: auto; bottom: 25px; }
+  .handbook-puzzle-question { top: 48px; font-size: 32px; }
+  .handbook-puzzle-piece .handbook-puzzle-effects { left: 20px; top: 38px; translate: none; }
+  .handbook-strip-detail-action { position: absolute; right: 14px; bottom: 18px; z-index: 3; min-height: 44px; pointer-events: auto; font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .handbook-puzzle-piece { transition: none; }
-  .handbook-puzzle-piece:has(.handbook-puzzle-tile:hover) { transform: none; }
+  .handbook-puzzle-piece, .handbook-puzzle-portrait, .handbook-puzzle-silhouette { transition: none; }
 }
