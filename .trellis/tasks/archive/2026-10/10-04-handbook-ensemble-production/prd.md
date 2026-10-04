@@ -1,0 +1,9 @@
+# Production ensemble puzzle member handbook
+
+Implement the approved ten-piece portrait puzzle inside the real member handbook. Preserve existing title, bookmark tabs, decoration workflows and account/effect behavior. Remove colored borders: use tiny paper gaps between polygons and character-theme backgrounds with restrained gradient depth. Owned pieces use the supplied standard portraits; unowned pieces show flat gray silhouettes with question marks. Desktop hover follows the existing sticker transform (translateY(-5px), rotate(-1deg), scale(1.02), 220ms). Mobile uses a separate portrait partition and reliable touch targets.
+
+Only change the character-detail portrait presentation: use the full original body, allow it to extend above/below the paper window on desktop while staying inside the viewport, and adapt mobile without covering the existing title, CV, voice, wardrobe, skills, music or acquisition controls. Preserve costume framing, custom portraits, Denia animated candy art and corruption priority. Keep the corrupted handbook's locked legacy structure. Unowned Baconbits remains anonymous and may open an anonymous locked panel without revealing metadata or playing its voice.
+
+The user explicitly clarified: do not implement character selection now; remove normal-handbook deployment flags and do not add a footer selector or mode-selection flow in this pass. The selected-character account state remains untouched until selection is redesigned separately.
+
+Use optimized transparent full-body WebP derivatives of the nine supplied PNGs while preserving original files; existing Baconbits art stays. No backend/schema/account write changes. Update system-design docs and frontend contracts, verify meaningful ownership/priority/geometry interactions, real browser desktop and 390/360 mobile, homepage guide targets, lint, focused tests, CSS inventory/build contracts and build.
