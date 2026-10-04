@@ -8,7 +8,7 @@ const labels = readFileSync(new URL("./mobile-adaptive/handbook-strip-labels.css
 describe("ordinary handbook portrait strip CSS", () => {
   it("owns horizontal expansion and vertical touch expansion with paper seams", () => {
     expect(css).toMatch(/\.handbook-puzzle-board\s*\{[^}]*display: flex;/s);
-    expect(css).toMatch(/\.handbook-puzzle-piece\.is-expanded\s*\{ flex-grow: 4;/);
+    expect(css).toMatch(/\.handbook-puzzle-piece\.is-expanded\s*\{ flex-grow: 5;/);
     expect(css).toMatch(/@media \(max-width: 768px\)[\s\S]*flex-direction: column;/);
     expect(css).toMatch(/\.handbook-puzzle-piece\.is-expanded\s*\{ height: 310px;/);
     expect(css).toContain("gap: 3px;");
@@ -27,6 +27,7 @@ describe("ordinary handbook portrait strip CSS", () => {
     expect(css).toContain("transition: left 260ms ease;");
     expect(css).not.toMatch(/transition: (?:width|height).*260ms ease/);
     expect(labels).not.toMatch(/scanline|radial-gradient|repeating-linear-gradient/);
+    expect(css).not.toContain("handbook-strip-detail-action");
   });
 
   it("beats global interactive button fills without losing the actual clip path", () => {

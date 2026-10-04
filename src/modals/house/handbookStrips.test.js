@@ -38,7 +38,7 @@ describe("handbook strip portrait framing", () => {
       .toEqual(handbookStripArtStyle(portrait, { width: 280, height: 1054 }, { mobile: true, expanded: true, count: 10 }));
   });
 
-  it("normalizes measured standard head widths and pupils to the same desktop landmarks", () => {
+  it("restores large desktop busts and applies intentional Qiuyuan/Nabomo head adjustments", () => {
     const state = { mobile: false, expanded: false, count: 10 };
     const size = { width: 940, height: 400 };
     const portraits = Object.values(CHARACTERS).map((character) => resolveHandbookPortrait(character)).filter(({ isStandard }) => isStandard);
@@ -46,9 +46,11 @@ describe("handbook strip portrait framing", () => {
     for (const portrait of portraits) {
       const style = handbookStripArtStyle(portrait, size, state);
       const scale = style.height / portrait.height;
-      expect(portrait.headWidth * scale).toBeCloseTo(940 / 10 * .88, 8);
+      expect(portrait.headWidth * scale).toBeCloseTo(940 / 10 * 1.35 * (portrait.desktopScale ?? 1), 8);
       expect(style.top + portrait.focal[1] * scale).toBeCloseTo(400 * .25, 8);
     }
+    expect(resolveHandbookPortrait(CHARACTERS.qiuyuan).desktopScale).toBe(1.1);
+    expect(resolveHandbookPortrait(CHARACTERS.nabomo).desktopScale).toBe(.91);
   });
 
   it("alternates mobile face anchors by catalog index without mirroring artwork", () => {

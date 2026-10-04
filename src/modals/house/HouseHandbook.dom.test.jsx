@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import HouseModal from "../HouseModal.jsx";
@@ -86,14 +86,27 @@ describe("member handbook pages", () => {
     const user = userEvent.setup();
     const tile = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
     await user.click(tile);
-    expect(screen.queryByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeNull();
-    await user.click(screen.getByRole("button", { name: "查看西格莉卡详情" }));
     expect(screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "查看西格莉卡详情" })).toBeNull();
     await user.keyboard("{Escape}");
     expect(document.activeElement).toBe(tile);
+    expect(tile.getAttribute("aria-expanded")).toBe("false");
     // HomeOnboarding uses HTMLElement.click(), whose detail is zero.
     await user.keyboard("{Enter}");
     expect(screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeTruthy();
+  });
+
+  it("does not latch a mobile preview when a synthetic guide activation returns focus", async () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    setup();
+    const tile = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
+    act(() => tile.click());
+    expect(screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true })).toBeTruthy();
+    await userEvent.setup().keyboard("{Escape}");
+    expect(document.activeElement).toBe(tile);
+    expect(tile.getAttribute("aria-expanded")).toBe("false");
+    await userEvent.setup().keyboard("{ArrowRight}");
+    expect(tile.getAttribute("aria-expanded")).toBe("true");
   });
 
   it("places default stones first and resets an equipped decoration through the existing action", async () => {

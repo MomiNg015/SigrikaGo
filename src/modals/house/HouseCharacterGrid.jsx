@@ -8,6 +8,13 @@ import { HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } fr
 
 export default function HouseCharacterGrid(props) {
   const boardRef = useRef(null);
+  const inputMode = useRef("keyboard");
+  const hoveredKey = useRef(null);
+  const focusedKey = useRef(null);
+  const suppressRestorePreview = useRef(null);
+  const ignoreHoverUntilMove = useRef(false);
+  const touchContact = useRef(false);
+  const releaseTimer = useRef(null);
   const [mobile, setMobile] = useState(false);
   const [size, setSize] = useState({ width: 1000, height: 430 });
   const [page, setPage] = useState(0);
@@ -18,10 +25,15 @@ export default function HouseCharacterGrid(props) {
   useEffect(() => {
     const media = window.matchMedia?.("(max-width: 768px)");
     if (!media) return undefined;
-    const update = () => { setMobile(media.matches); setExpanded(null); };
+    const update = () => { setMobile(media.matches); hoveredKey.current = null; focusedKey.current = null; setExpanded(null); };
     update();
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    const keyboardInput = () => { inputMode.current = "keyboard"; };
+    window.addEventListener("keydown", keyboardInput, true);
+    return () => { window.removeEventListener("keydown", keyboardInput, true); window.clearTimeout(releaseTimer.current); };
   }, []);
   useEffect(() => {
     const board = boardRef.current;
@@ -36,17 +48,25 @@ export default function HouseCharacterGrid(props) {
   }, [sigrikaCorrupted]);
   if (sigrikaCorrupted) return <LegacyHouseCharacterGrid {...props} />;
   const { pages, currentPage, roster } = handbookStripPage(characters, page);
-  const changePage = (next) => { setPage(next); setExpanded(null); };
+  const changePage = (next) => { setPage(next); hoveredKey.current = null; focusedKey.current = null; setExpanded(null); };
+  const clearPointerPreview = () => {
+    window.clearTimeout(releaseTimer.current);
+    releaseTimer.current = null;
+    touchContact.current = false;
+    hoveredKey.current = null;
+    setExpanded(focusedKey.current);
+  };
+  const leavePointerPreview = () => {
+    // Non-hovering pointers also emit leave between pointerup and click.
+    // The pending release cleanup already handles that post-click boundary.
+    if (touchContact.current) return;
+    clearPointerPreview();
+  };
   return (
     <div className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
-      aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined}>
+      aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined} onScroll={clearPointerPreview}>
       <div className="handbook-puzzle-board" ref={boardRef}
-        onPointerLeave={() => {
-          if (!mobile) {
-            const focusedTile = boardRef.current?.querySelector(".handbook-puzzle-tile:focus-visible");
-            setExpanded(focusedTile?.dataset.characterKey ?? null);
-          }
-        }}>
+        onPointerLeave={leavePointerPreview}>
         {roster.map((character, index) => {
           const id = canonicalCharacterId(character.id);
           const isOwned = owned.has(id);
@@ -60,19 +80,78 @@ export default function HouseCharacterGrid(props) {
           return <div key={character.id}
             className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}`}
             style={characterThemeStyle(character)} data-character-id={id} data-portrait-side={catalogIndex % 2 ? "right" : "left"}
-            onPointerEnter={(event) => { if (event.pointerType === "mouse") setExpanded(character.id); }}>
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse" && !ignoreHoverUntilMove.current
+                && !event.nativeEvent.sourceCapabilities?.firesTouchEvents) {
+                hoveredKey.current = character.id;
+                setExpanded(character.id);
+              }
+            }}
+            onPointerMove={(event) => {
+              if (event.pointerType !== "mouse" || touchContact.current
+                || event.nativeEvent.sourceCapabilities?.firesTouchEvents) return;
+              // Removing a dialog can synthesize mouse enter/move at the last
+              // touch position. Re-arm only after genuine pointer movement.
+              if (ignoreHoverUntilMove.current && !event.movementX && !event.movementY) return;
+              ignoreHoverUntilMove.current = false;
+              hoveredKey.current = character.id;
+              setExpanded(character.id);
+            }}
+            onPointerLeave={() => { if (hoveredKey.current === character.id) leavePointerPreview(); }}>
             <button type="button" className="handbook-puzzle-tile"
               data-character-key={character.id}
               aria-label={hideIntel ? "未知角色详情" : `${character.name}角色详情${isOwned ? "" : "（未拥有）"}`}
               aria-expanded={isExpanded} title={hideIntel ? "暂无情报" : character.name} data-ui-sound="none"
               data-home-guide={id === "sigrika" ? "sigrika-card" : undefined}
-              onFocus={() => setExpanded(character.id)}
-              onBlur={(event) => { if (!mobile && !event.currentTarget.parentElement.contains(event.relatedTarget)) setExpanded(null); }}
+              onPointerDown={(event) => {
+                inputMode.current = "pointer";
+                focusedKey.current = null;
+                // Touch feedback must not change the row geometry under the
+                // contact; the native click still opens this exact strip.
+                if (event.pointerType !== "mouse") {
+                  window.clearTimeout(releaseTimer.current);
+                  ignoreHoverUntilMove.current = true;
+                  touchContact.current = true;
+                }
+              }}
+              onPointerUp={(event) => {
+                // Native click follows pointerup. Preserve an already-expanded
+                // hit target until that click; a non-activating release resets
+                // on the next task rather than leaving a touch preview latched.
+                if (event.pointerType !== "mouse") releaseTimer.current = window.setTimeout(clearPointerPreview, 0);
+              }}
+              onPointerCancel={clearPointerPreview}
+              onFocus={() => {
+                if (suppressRestorePreview.current === character.id) { suppressRestorePreview.current = null; return; }
+                if (inputMode.current === "keyboard") { focusedKey.current = character.id; setExpanded(character.id); }
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape") {
+                  inputMode.current = "keyboard";
+                  suppressRestorePreview.current = null;
+                  focusedKey.current = character.id;
+                  setExpanded(character.id);
+                }
+              }}
+              onBlur={() => {
+                if (focusedKey.current === character.id) focusedKey.current = null;
+                if (!touchContact.current) setExpanded(hoveredKey.current);
+              }}
               onClick={(event) => {
-                // Guide clicks and keyboard activation open details immediately;
-                // an ordinary narrow-view tap reveals the explicit detail action.
-                if (mobile && event.detail > 0) setExpanded(character.id);
-                else openDetail();
+                const pointerActivation = event.detail > 0 || inputMode.current === "pointer";
+                if (pointerActivation) inputMode.current = "pointer";
+                event.currentTarget.focus({ preventScroll: true });
+                // Restoration may follow Escape or a synthetic guide click.
+                // Keep it collapsed until a new hover or keyboard interaction.
+                suppressRestorePreview.current = character.id;
+                ignoreHoverUntilMove.current = true;
+                window.clearTimeout(releaseTimer.current);
+                releaseTimer.current = null;
+                touchContact.current = false;
+                hoveredKey.current = null;
+                focusedKey.current = null;
+                setExpanded(null);
+                openDetail();
               }}>
               {hideIntel ? <>
                 <span className="handbook-missing-data" aria-hidden="true"><i /><i /><i /></span>
@@ -87,13 +166,6 @@ export default function HouseCharacterGrid(props) {
               </>}
               {!hideIntel && <span className="handbook-strip-name">{character.name}</span>}
             </button>
-            {mobile && isExpanded && <button type="button" className="handbook-strip-detail-action"
-              onClick={(event) => {
-                // Keep dialog focus restoration attached to the stable primary
-                // trigger even if an orientation change removes this action.
-                event.currentTarget.parentElement.querySelector(".handbook-puzzle-tile").focus();
-                openDetail();
-              }} aria-label={hideIntel ? "查看未知角色详情" : `查看${character.name}详情`}>查看详情 <span aria-hidden="true">↗</span></button>}
             {effects.length > 0 && <div className={`character-item-effect-badges handbook-puzzle-effects${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
               aria-label={`${character.name}道具效果`}>
               {effects.map((effect) => candyEffectCancellationEnabled ? <button key={effect.effectKey}

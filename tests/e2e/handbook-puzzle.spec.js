@@ -6,14 +6,9 @@ const landmarks = standardIds.map((id) => ({ id, ...resolveHandbookPortrait({ id
 
 async function openFromStrip(page, tile, mobile) {
   await tile.scrollIntoViewIfNeeded();
-  if (mobile) {
-    await tile.tap();
-    await expect(tile).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator(".character-detail-fullbody")).toHaveCount(0);
-    const action = tile.locator("..").locator(".handbook-strip-detail-action");
-    await action.scrollIntoViewIfNeeded();
-    await action.tap();
-  } else await tile.click();
+  if (mobile) await tile.tap();
+  else await tile.click();
+  await expect(page.locator(".handbook-strip-detail-action")).toHaveCount(0);
 }
 
 for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 768 },
@@ -21,7 +16,7 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
   test.describe(`handbook strips ${viewport.width}x${viewport.height}`, () => {
     const mobile = viewport.width < 769;
     test.use({ viewport, isMobile: mobile, hasTouch: mobile });
-    test("ordered clipped slices and touch detail actions preserve all real details and anonymity", async ({ page }) => {
+    test("ordered clipped slices open matching details directly and preserve anonymity", async ({ page }) => {
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
@@ -45,6 +40,7 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
         await expect(page.locator(".character-detail-figure img")).toBeVisible();
         await page.getByRole("button", { name: "关闭角色详情", exact: true }).click();
         await expect(tile).toBeFocused();
+        if (mobile) await expect(tile).toHaveAttribute("aria-expanded", "false");
       }
       const panel = page.locator(".handbook-puzzle-panel");
       if (mobile) {
@@ -66,6 +62,7 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
       await expect(dialog.getByText("猪小仙")).toHaveCount(0);
       await page.keyboard.press("Escape");
       await expect(unknown).toBeFocused();
+      if (mobile) await expect(unknown).toHaveAttribute("aria-expanded", "false");
       expect(errors).toEqual([]);
     });
 
@@ -86,8 +83,7 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
         })).toBeTruthy();
       }
       const fill = await tile.evaluate((element) => getComputedStyle(element).backgroundImage);
-      if (mobile) await tile.tap();
-      else await tile.hover();
+      await tile.hover();
       await expect.poll(() => tile.evaluate((element, axis) => element.getBoundingClientRect()[axis], axis)).toBeGreaterThan(resting * 2);
       expect(await tile.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe(fill);
       expect(await tile.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
@@ -118,10 +114,15 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
           parseFloat(duration) * (duration.trim().endsWith("ms") ? 1 : 1000)));
       expect(Math.max(...reducedDurations)).toBeLessThanOrEqual(1);
       await neighbor.scrollIntoViewIfNeeded();
-      if (mobile) await neighbor.tap();
+      if (mobile) await neighbor.hover();
       else await neighbor.focus();
       await expect(neighbor).toHaveAttribute("aria-expanded", "true");
       await expect.poll(() => neighbor.evaluate((element, axis) => element.getBoundingClientRect()[axis], axis)).toBeGreaterThan(resting * 2);
+      if (mobile) {
+        await page.mouse.move(10, 10);
+        await expect(neighbor).toHaveAttribute("aria-expanded", "false");
+        await expect.poll(() => neighbor.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThan(100);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
     });
   });
@@ -129,7 +130,44 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
 
 test.describe("mobile strip rotation", () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  test("detail focus returns to a stable trigger after the mobile action disappears", async ({ page }) => {
+  test("last narrow row returns to resting height after hover ends", async ({ page }) => {
+    await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
+    await page.evaluate(() => document.fonts.ready);
+    const tile = page.getByRole("button", { name: "娜波摩角色详情", exact: true });
+    await tile.scrollIntoViewIfNeeded();
+    await tile.hover();
+    await expect(tile).toHaveAttribute("aria-expanded", "true");
+    await expect.poll(() => tile.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(280);
+    await page.mouse.move(10, 10);
+    await expect(tile).toHaveAttribute("aria-expanded", "false");
+    await expect.poll(() => tile.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThan(100);
+  });
+
+  test("touch press and cancellation preserve the hit area, and a single tap opens details", async ({ page }) => {
+    await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
+    await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
+    const tile = page.getByRole("button", { name: "西格莉卡角色详情", exact: true });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(300);
+    const before = await tile.boundingBox();
+    const session = await page.context().newCDPSession(page);
+    try {
+      await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: before.x + before.width / 2, y: before.y + before.height / 2 }] });
+      await expect(tile).toHaveAttribute("aria-expanded", "false");
+      expect((await tile.boundingBox()).height).toBeCloseTo(before.height, 1);
+      await session.send("Input.dispatchTouchEvent", { type: "touchCancel", touchPoints: [] });
+      await expect(tile).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator(".character-detail-fullbody")).toHaveCount(0);
+      await tile.tap();
+      await expect(page.locator(".character-detail-fullbody")).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(tile).toBeFocused();
+      await expect(tile).toHaveAttribute("aria-expanded", "false");
+      expect((await tile.boundingBox()).height).toBeCloseTo(before.height, 1);
+    } finally { await session.detach(); }
+  });
+
+  test("direct detail activation restores the same trigger across orientation changes", async ({ page }) => {
     await page.route("**/api/skill-traits", (route) => route.fulfill({ json: { traits: [] } }));
     await page.goto("/tests/e2e/fixtures/handbook-puzzle.html?candy");
     const tile = page.getByRole("button", { name: "达妮娅角色详情", exact: true });
@@ -154,7 +192,11 @@ test.describe("fixed handbook portrait composition", () => {
       return { id, head: headWidth * scale, eye: rect.y + focal[1] * scale, imageHeight: rect.height };
     }), landmarks);
     const before = await measure();
-    expect(Math.max(...before.map(({ head }) => head)) - Math.min(...before.map(({ head }) => head))).toBeLessThan(0.1);
+    const common = before.filter(({ id }) => id !== "qiuyuan" && id !== "nabomo");
+    expect(Math.max(...common.map(({ head }) => head)) - Math.min(...common.map(({ head }) => head))).toBeLessThan(0.1);
+    expect(common[0].head).toBeGreaterThan(130);
+    expect(before.find(({ id }) => id === "qiuyuan").head).toBeGreaterThan(common[0].head);
+    expect(before.find(({ id }) => id === "nabomo").head).toBeLessThan(common[0].head);
     expect(Math.max(...before.map(({ eye }) => eye)) - Math.min(...before.map(({ eye }) => eye))).toBeLessThan(0.1);
     await page.getByRole("button", { name: "莫宁角色详情", exact: true }).hover();
     await page.waitForTimeout(350);
@@ -194,11 +236,25 @@ test.describe("fixed handbook portrait composition", () => {
           expect(background).toBe("rgba(0, 0, 0, 0)");
         });
         const denia = page.getByRole("button", { name: "达妮娅角色详情", exact: true });
-        await denia.tap();
+        await denia.hover();
         await page.waitForTimeout(350);
         const expanded = (await verify())[1];
         expect(expanded.faceX).toBeCloseTo(0.72, 1);
         expect(expanded.nameX).toBeLessThan(0.5);
+        // A hybrid device can switch from hover to touch. Tap the lower half
+        // of the expanded target, where premature collapse would lose the hit.
+        await denia.tap({ position: { x: viewport.width * 0.35, y: 240 } });
+        await expect(page.locator(".character-detail-fullbody")).toBeVisible();
+        await expect(page.locator(".character-detail-fullbody")).toContainText("达妮娅");
+        await page.keyboard.press("Escape");
+        await expect(denia).toBeFocused();
+        await expect(denia).toHaveAttribute("aria-expanded", "false");
+        await expect.poll(() => denia.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThan(100);
+        await page.mouse.move(10, 10);
+        await denia.hover();
+        await expect(denia).toHaveAttribute("aria-expanded", "true");
+        await page.mouse.move(10, 10);
+        await expect(denia).toHaveAttribute("aria-expanded", "false");
         expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
       } finally {
         await context.close();

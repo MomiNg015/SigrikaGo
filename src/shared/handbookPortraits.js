@@ -12,8 +12,8 @@ const STANDARD_HANDBOOK_PORTRAITS = {
   mornye: { focal: [422, 219], headWidth: 260, cropWidth: 470 },
   chisa: { focal: [433, 153], headWidth: 234, cropWidth: 440 },
   changli: { focal: [417, 146], headWidth: 242, cropWidth: 450 },
-  qiuyuan: { focal: [389, 160], headWidth: 232, cropWidth: 450 },
-  nabomo: { focal: [402, 216], headWidth: 282, cropWidth: 460 },
+  qiuyuan: { focal: [389, 160], headWidth: 232, desktopScale: 1.1, cropWidth: 450 },
+  nabomo: { focal: [402, 216], headWidth: 282, desktopScale: .91, cropWidth: 460 },
 };
 
 // A handbook-specific default view. Costume, candy, corruption and custom URLs

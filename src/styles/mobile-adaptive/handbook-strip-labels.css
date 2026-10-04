@@ -58,7 +58,5 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label { font-size: clamp(23px, 7vw, 30px); }
   .handbook-missing-label { writing-mode: horizontal-tb; }
   .handbook-missing-data { inset: 20px 22px; }
-  .handbook-strip-detail-action { right: 14px; }
-  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-detail-action { left: 14px; right: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .handbook-strip-name { transition: none; } }
