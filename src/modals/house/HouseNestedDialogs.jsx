@@ -7,7 +7,7 @@ import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { PaginatedReplayList } from "../ReplayList.jsx";
 import { ModalDialog } from "../modalComponents.jsx";
-import { characterCandyPortraitProps } from "./houseStats.js";
+import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import SkillDescription from "../../shared/SkillDescription.jsx";
 import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { formatSkillOverclock } from "../../shared/skillTraits.js";
@@ -40,25 +40,29 @@ export function CharacterDetailDialog({
     "--detail-label-border": "2px solid #6b7280",
     "--detail-label-radius": "0"
   };
-  const portrait = characterCandyPortraitProps(character, itemEffects, user);
+  const portrait = resolveHandbookPortrait(character, { itemEffects, user, kind: "full" });
   const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
     characterId: character.id,
     trackId,
     ...(effectType ? { effectType } : {})
   });
-  return (
-    <div className="nested-modal-backdrop" onClick={onClose}>
-      <section
-        className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`}
+  const dialog = (
+    <div className="nested-modal-backdrop character-detail-figure-backdrop" onClick={onClose}>
+      <ModalDialog
+        ariaLabel={`${character.name}角色详情`}
+        onClose={onClose}
+        className={`nested-modal character-detail character-details-modal character-detail-fullbody ${detailOwned ? "" : "unowned"}`}
         style={characterThemeStyle(character)}
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="close-button" onClick={onClose}><X size={18} /></button>
+        <button className="close-button" type="button" aria-label="关闭角色详情" onClick={onClose}><X size={18} /></button>
         <div className="character-detail-art">
           <button className="character-costume-open-button" type="button" aria-label={`查看${character.name}的服装`} onClick={onOpenCostumes}>
             <Shirt aria-hidden="true" />
           </button>
-          <img src={portrait.src} style={portrait.style} alt={character.name} />
+          <div className={`character-detail-figure${portrait.isStandard ? " is-standard-figure" : ""}`}>
+            <img src={portrait.src} style={portrait.style} alt={character.name} />
+          </div>
         </div>
         <div className="character-detail-copy">
           <div className="character-detail-heading">
@@ -112,9 +116,11 @@ export function CharacterDetailDialog({
             {character.description || "暂无角色描述"}
           </p>
         </div>
-      </section>
+      </ModalDialog>
     </div>
   );
+  if (typeof document === "undefined") return dialog;
+  return createPortal(dialog, document.querySelector(".app-shell") ?? document.body);
 }
 export function characterMusicSlots({ character, derivedSkills = [], musicTracks, user }) {
   if (!character?.id) return [];

@@ -1,197 +1,108 @@
-import { Flag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
-import { CorruptionFragmentImage, CorruptionNoise, createCorruptionCadence } from "../../ui/CorruptionMarks.jsx";
-import {
-  activeCharacterItemEffects,
-  characterCandyPortraitProps,
-  characterSortieDisabledReason,
-  selectSortieCharacter
-} from "./houseStats.js";
+import { characterThemeStyle } from "../../shared/characterDisplay.js";
+import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
+import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
+import { activeCharacterItemEffects } from "./houseStats.js";
+import { handbookPuzzleLayout, insetHandbookPiece, orderHandbookCharacters } from "./handbookPuzzle.js";
 
-export default function HouseCharacterGrid({
-  panelId,
-  labelledBy,
-  audioSettings,
-  characters,
-  itemEffects,
-  owned,
-  selectedCharacter,
-  user,
-  candyEffectCancellationEnabled = false,
-  cancellingCandyEffect = "",
-  sigrikaCorrupted = false,
-  onCancelCandyEffect,
-  onOpenCharacterDetail,
-  onSelectCharacter
-}) {
-  const emptySlots = Array.from({ length: Math.max(0, 10 - characters.length) }, (_, index) => index);
-
+export default function HouseCharacterGrid(props) {
+  const boardRef = useRef(null);
+  const [mobile, setMobile] = useState(false);
+  const [size, setSize] = useState({ width: 1000, height: 600 });
+  const [page, setPage] = useState(0);
+  const { panelId, labelledBy, characters, owned, itemEffects, user, sigrikaCorrupted,
+    onOpenCharacterDetail, onOpenUnknownDetail, candyEffectCancellationEnabled,
+    cancellingCandyEffect, onCancelCandyEffect } = props;
+  useEffect(() => {
+    const media = window.matchMedia?.("(max-width: 768px)");
+    if (!media) return undefined;
+    const update = () => setMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    const board = boardRef.current;
+    if (!board || typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.width && entry.contentRect.height) {
+        setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+      }
+    });
+    observer.observe(board);
+    return () => observer.disconnect();
+  }, [sigrikaCorrupted]);
+  if (sigrikaCorrupted) return <LegacyHouseCharacterGrid {...props} />;
+  const ordered = orderHandbookCharacters(characters);
+  const pages = Math.max(1, Math.ceil(ordered.length / 10));
+  const currentPage = Math.min(page, pages - 1);
+  const roster = ordered.slice(currentPage * 10, currentPage * 10 + 10);
+  const pieces = handbookPuzzleLayout(mobile);
   return (
-    <div className="character-list character-grid-container" id={panelId}
-      role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
-      tabIndex={panelId ? 0 : undefined}>
-      {characters.map((character) => {
-        const characterId = canonicalCharacterId(character.id);
-        const hideIntel = characterId === "baconbits" && !owned.has(characterId);
-        const disabledReason = characterSortieDisabledReason(characterId, itemEffects);
-        const itemEffectBadges = activeCharacterItemEffects(characterId, itemEffects);
-        const sortieDisabled = hideIntel || !owned.has(characterId) || Boolean(disabledReason);
-        if (hideIntel) {
-          return (
-            <div
-              className="character-card portrait-card unowned hidden-intel-card"
-              key={character.id}
-              role="img"
-              aria-label="暂无情报"
-            >
-              <span className="hidden-intel-visual" aria-hidden="true">
-                <span className="hidden-intel-brackets" />
-                <span className="locked-portrait lock-text-title">?</span>
-                <span className="hidden-intel-fragment hidden-intel-fragment-a" />
-                <span className="hidden-intel-fragment hidden-intel-fragment-b" />
-                <span className="hidden-intel-fragment hidden-intel-fragment-c" />
-                <span className="hidden-intel-no-signal">NO SIGNAL</span>
-              </span>
-              <strong className="hidden-intel-label" aria-hidden="true">暂无情报</strong>
-            </div>
-          );
-        }
-        const corruptionFocused = sigrikaCorrupted && characterId === "sigrika";
-        const displayName = corruptionFocused ? "西格莉卡？" : character.name;
-        const portraitProps = characterCandyPortraitProps(character, itemEffects, user);
-        const portraitSrc = portraitProps.src ?? character.portrait;
-        const corruptionCadence = sigrikaCorrupted && !corruptionFocused
-          ? createCorruptionCadence(`house-card-${characterId}`)
-          : null;
-        return (
-          <div
-            data-home-guide={characterId === "sigrika" ? "sigrika-card" : undefined}
-            className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"} ${sigrikaCorrupted ? "is-corruption-locked" : ""} ${sigrikaCorrupted && characterId !== "sigrika" ? "is-corruption-obscured" : ""} ${corruptionFocused ? "is-corruption-focus" : ""}`}
-            key={character.id}
-            onClick={() => {
-              if (!sigrikaCorrupted) onOpenCharacterDetail(character);
-            }}
-            role={sigrikaCorrupted ? "img" : "button"}
-            aria-label={sigrikaCorrupted ? (corruptionFocused ? "西格莉卡？" : `${character.name}的数据已损坏`) : undefined}
-            tabIndex={sigrikaCorrupted ? -1 : 0}
-            data-ui-sound="none"
-            style={corruptionCadence ? {
-              "--corruption-card-delay": corruptionCadence.cardDelay,
-              "--corruption-card-direction": corruptionCadence.cardDirection,
-              "--corruption-card-duration": corruptionCadence.cardDuration,
-              "--corruption-flash-first-end": corruptionCadence.flashFirstEnd,
-              "--corruption-flash-first-start": corruptionCadence.flashFirstStart,
-              "--corruption-flash-second-end": corruptionCadence.flashSecondEnd,
-              "--corruption-flash-second-start": corruptionCadence.flashSecondStart,
-              "--corruption-flash-third-end": corruptionCadence.flashThirdEnd,
-              "--corruption-flash-third-start": corruptionCadence.flashThirdStart,
-              "--corruption-flash-y-first": corruptionCadence.flashYFirst,
-              "--corruption-flash-y-second": corruptionCadence.flashYSecond,
-              "--corruption-flash-y-third": corruptionCadence.flashYThird,
-              "--corruption-noise-delay": corruptionCadence.noiseDelay,
-              "--corruption-noise-direction": corruptionCadence.noiseDirection,
-              "--corruption-noise-duration": corruptionCadence.noiseDuration,
-              "--corruption-slice-back": corruptionCadence.sliceBack,
-              "--corruption-slice-band": corruptionCadence.sliceBand,
-              "--corruption-slice-bottom": corruptionCadence.sliceBottom,
-              "--corruption-slice-forward": corruptionCadence.sliceForward,
-              "--corruption-slice-top": corruptionCadence.sliceTop,
-              "--corruption-slice-y": corruptionCadence.sliceY
-            } : undefined}
-            onKeyDown={(event) => {
-              if (!sigrikaCorrupted && (event.key === "Enter" || event.key === " ")) onOpenCharacterDetail(character);
-            }}
-          >
-            {!sigrikaCorrupted && (
-              <button
-                className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
-                title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
-                data-ui-sound="confirm"
-                disabled={sortieDisabled}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  selectSortieCharacter({
-                    character,
-                    disabled: sortieDisabled,
-                    itemEffects,
-                    audioSettings,
-                    onSelectCharacter
-                  });
-                }}
-              >
-                <Flag size={18} />
-              </button>
-            )}
-            {itemEffectBadges.length > 0 && (
-              <div
-                className={`character-item-effect-badges${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
-                aria-label={`${character.name}道具效果`}
-              >
-                {itemEffectBadges.map((effect) => candyEffectCancellationEnabled ? (
-                  <button
-                    key={`${characterId}-${effect.effectKey}`}
-                    type="button"
-                    className="character-item-effect-cancel"
-                    aria-label={`取消${character.name}的${effect.label}`}
-                    title="点击取消效果（仅开发环境）"
-                    disabled={cancellingCandyEffect === characterId}
-                    onPointerDown={(event) => event.stopPropagation()}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") event.stopPropagation();
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onCancelCandyEffect?.(characterId);
-                    }}
-                  >
-                    <img className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} loading="lazy" decoding="async" />
-                  </button>
-                ) : (
-                  <img
-                    key={`${characterId}-${effect.effectKey}`}
-                    className="character-item-effect-icon"
-                    src={effect.icon}
-                    alt={effect.label}
-                    title={effect.label}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-              </div>
-            )}
-            <img
-              {...portraitProps}
-              alt={displayName}
-              className={sigrikaCorrupted && !corruptionFocused ? "character-corruption-source" : undefined}
-              src={portraitSrc}
-            />
-            {sigrikaCorrupted && !corruptionFocused && (
-              <>
-                <CorruptionNoise
-                  className="character-card-corruption-noise"
-                  count={47}
-                  seed={`house-card-${characterId}`}
-                />
-                <CorruptionFragmentImage
-                  className="character-data-fragments"
-                  seed={`house-${characterId}`}
-                  src={portraitSrc}
-                />
-              </>
-            )}
-            <CharacterChainBadge user={user} characterId={characterId} />
-            <strong>{displayName}</strong>
-          </div>
-        );
-      })}
-      {emptySlots.map((slot) => (
-        <div className="character-card portrait-card locked lock-character-card" key={`empty-${slot}`}>
-          <span className="locked-portrait lock-text-title text-display-accent">LOCK</span>
-          <strong className="text-display-accent">LOADING... (x_x)</strong>
-          <small className="text-display-accent">LOCK / LOADING... (x_x)</small>
-        </div>
-      ))}
+    <div className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
+      aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined}>
+      <div className="handbook-puzzle-board" ref={boardRef}>
+        {pieces.map((piece, index) => {
+          const character = roster[index];
+          const { bbox, portraitRegion } = piece;
+          const points = insetHandbookPiece(piece, size, mobile ? 1 : 1.5);
+          const clipPath = `polygon(${points.map(([x, y]) => `${(x - bbox.x) / bbox.width * 100}% ${(y - bbox.y) / bbox.height * 100}%`).join(",")})`;
+          const placement = { left: `${bbox.x}%`, top: `${bbox.y}%`, width: `${bbox.width}%`, height: `${bbox.height}%` };
+          if (!character) return <div key={`empty-${index}`} className="handbook-puzzle-piece is-empty" style={placement} aria-hidden="true">
+            <span className="handbook-puzzle-tile" style={{ "--handbook-piece-clip": clipPath }} />
+          </div>;
+          const id = canonicalCharacterId(character.id);
+          const isOwned = owned.has(id);
+          const hideIntel = id === "baconbits" && !isOwned;
+          const portrait = resolveHandbookPortrait(character, { itemEffects, user });
+          const scale = size.width * (mobile ? .465 : .285) / portrait.cropWidth;
+          const anchorX = portraitRegion.center[0] * size.width / 100;
+          const anchorY = Math.max(portraitRegion.center[1] * size.height / 100,
+            bbox.y * size.height / 100 + (portrait.focal[1] - portrait.visibleTop) * scale + 4);
+          const artStyle = {
+            width: portrait.width * scale, height: portrait.height * scale,
+            left: anchorX - bbox.x * size.width / 100 - portrait.focal[0] * scale,
+            top: anchorY - bbox.y * size.height / 100 - portrait.focal[1] * scale,
+            ...portrait.style
+          };
+          const effects = activeCharacterItemEffects(id, itemEffects);
+          return <div key={character.id} className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}`}
+            style={{ ...placement, ...characterThemeStyle(character) }}>
+            <button type="button" className="handbook-puzzle-tile" style={{ "--handbook-piece-clip": clipPath }}
+              aria-label={hideIntel ? "未知角色详情" : `${character.name}角色详情${isOwned ? "" : "（未拥有）"}`}
+              title={hideIntel ? "暂无情报" : character.name} data-ui-sound="none"
+              data-home-guide={id === "sigrika" ? "sigrika-card" : undefined}
+              onClick={() => hideIntel ? onOpenUnknownDetail?.() : onOpenCharacterDetail(character)}>
+              {isOwned ? <span className="handbook-puzzle-art">
+                <img className="handbook-puzzle-portrait" style={artStyle} src={portrait.src}
+                  alt="" decoding="async" draggable="false" />
+              </span> : <>
+                <span className="handbook-puzzle-silhouette" style={{ ...artStyle,
+                  maskImage: `url("${portrait.src}")`, WebkitMaskImage: `url("${portrait.src}")` }} />
+                <span className="handbook-puzzle-question" style={{
+                  left: anchorX - bbox.x * size.width / 100,
+                  top: anchorY - bbox.y * size.height / 100 }}>?</span>
+              </>}
+            </button>
+            {effects.length > 0 && <div className={`character-item-effect-badges handbook-puzzle-effects${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
+              style={{ left: `${(portraitRegion.center[0] - bbox.x) / bbox.width * 100}%`, top: `${(portraitRegion.center[1] - bbox.y) / bbox.height * 100}%` }}
+              aria-label={`${character.name}道具效果`}>
+              {effects.map((effect) => candyEffectCancellationEnabled ? <button key={effect.effectKey}
+                type="button" className="character-item-effect-cancel" aria-label={`取消${character.name}的${effect.label}`}
+                title="点击取消效果（仅开发环境）" disabled={cancellingCandyEffect === id}
+                onClick={() => onCancelCandyEffect?.(id)}>
+                <img className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} />
+              </button> : <img key={effect.effectKey} className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} />)}
+            </div>}
+          </div>;
+        })}
+      </div>
+      {pages > 1 && <nav className="handbook-puzzle-pages" aria-label="角色画板分页">
+        <button type="button" disabled={!currentPage} onClick={() => setPage(currentPage - 1)}>上一页</button>
+        <span>{currentPage + 1} / {pages}</span>
+        <button type="button" disabled={currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}>下一页</button>
+      </nav>}
     </div>
   );
 }

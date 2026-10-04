@@ -10,12 +10,12 @@ vi.mock("../../audio/systemVoicePlayback.js", () => ({ playSystemVoice: vi.fn() 
 
 afterEach(cleanup);
 
-function setup(overrides = {}) {
+function setup(overrides = {}, characters = [CHARACTERS.sigrika, CHARACTERS.baconbits]) {
   const onApplyDecoration = vi.fn().mockResolvedValue(undefined);
   const onSelectCharacter = vi.fn();
   render(<div className="app-shell player-theme-enabled theme-bright-school"><HouseModal
     user={{ selectedCharacter: "sigrika", ownedCharacters: ["sigrika"], ownedDecorations: ["paw-stone"], ...overrides }}
-    characterListView={[CHARACTERS.sigrika, CHARACTERS.baconbits]} audioSettings={{ muted: true }}
+    characterListView={characters} audioSettings={{ muted: true }}
     onApplyDecoration={onApplyDecoration} onSelectCharacter={onSelectCharacter} onClose={() => {}}
   /></div>);
   return { onApplyDecoration, onSelectCharacter };
@@ -38,15 +38,46 @@ describe("member handbook pages", () => {
     expect(screen.getByRole("tabpanel", { name: "装饰" })).toBeTruthy();
   });
 
-  it("restores the original card surface and protects hidden identity", () => {
+  it("opens anonymous hidden-character details from the puzzle without exposing identity", async () => {
+    const user = userEvent.setup();
     setup();
     expect(screen.queryByText("星炬学院")).toBeNull();
     expect(screen.queryByText("学生证")).toBeNull();
     expect(document.querySelector(".handbook-open-art")).toBeNull();
     expect(document.querySelector(".handbook-character-card")).toBeNull();
-    expect(document.querySelector(".character-grid-container").parentElement.classList.contains("house-modal")).toBe(true);
-    expect(screen.getByRole("img", { name: "暂无情报" })).toBeTruthy();
+    expect(document.querySelector(".handbook-puzzle-panel").parentElement.classList.contains("house-modal")).toBe(true);
+    expect(document.querySelectorAll(".handbook-puzzle-board > .handbook-puzzle-piece > button.handbook-puzzle-tile")).toHaveLength(2);
+    const hiddenCharacter = screen.getByRole("button", { name: "未知角色详情", exact: true });
     expect(screen.queryByText("猪小仙")).toBeNull();
+    expect(document.querySelector(".sortie-button")).toBeNull();
+    await user.click(hiddenCharacter);
+    expect(screen.getByText("暂无情报")).toBeTruthy();
+    expect(screen.getByText("获得该角色后可查看完整情报。")).toBeTruthy();
+    expect(screen.queryByText("猪小仙")).toBeNull();
+    expect(screen.queryByText("猪小仙爆炸")).toBeNull();
+    expect(screen.queryByRole("button", { name: "查看猪小仙的服装" })).toBeNull();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText("获得该角色后可查看完整情报。")).toBeNull();
+    expect(document.activeElement).toBe(hiddenCharacter);
+  });
+
+  it("keeps all ten pieces in the chosen portrait order and opens the existing character details", async () => {
+    const user = userEvent.setup();
+    const { onSelectCharacter } = setup({}, Object.values(CHARACTERS));
+    const pieces = [...document.querySelectorAll(".handbook-puzzle-piece > button.handbook-puzzle-tile")];
+    expect(pieces.map(piece => piece.getAttribute("aria-label"))).toEqual([
+      "琳奈角色详情（未拥有）", "爱弥斯角色详情（未拥有）", "莫宁角色详情（未拥有）",
+      "娜波摩角色详情（未拥有）", "长离角色详情（未拥有）", "西格莉卡角色详情",
+      "未知角色详情", "仇远角色详情（未拥有）", "千咲角色详情（未拥有）", "达妮娅角色详情（未拥有）"
+    ]);
+    const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
+    expect(sigrika.querySelector("img").getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
+    await user.click(sigrika);
+    const detail = screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true });
+    expect(within(detail).getByText("星辉符文")).toBeTruthy();
+    expect(within(detail).getByText("超频：3")).toBeTruthy();
+    expect(within(detail).getByRole("button", { name: "查看西格莉卡的服装" })).toBeTruthy();
+    expect(onSelectCharacter).not.toHaveBeenCalled();
   });
 
   it("places default stones first and resets an equipped decoration through the existing action", async () => {

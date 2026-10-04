@@ -44,7 +44,7 @@ describe("InteractionFeedback", () => {
     expect(houseModalSource).toContain("playUiDetailOpenSound(audioSettings)");
     expect(homeImageEntriesSource).toContain("data-ui-sound=\"none\"");
     expect(houseGridSource).toContain("data-ui-sound=\"none\"");
-    expect(houseGridSource).toContain("data-ui-sound=\"confirm\"");
+    expect(houseGridSource).not.toContain("sortie-button");
     expect(homeDockSource).toContain("data-ui-sound=\"none\"");
     expect(playerPlaqueSource).toContain("data-ui-sound=\"none\"");
     expect(irisDatabaseSource).toContain("data-ui-sound=\"none\"");

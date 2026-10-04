@@ -11,9 +11,11 @@ import HouseCharacterGrid from "./house/HouseCharacterGrid.jsx";
 import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
 import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 import CharacterCostumeDialog from "./house/CharacterCostumeDialog.jsx";
+import { ModalDialog } from "./modalComponents.jsx";
 
 export default function HouseModal({ token, user, characterListView, audioSettings, musicTracks, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration, onUserChange, onNotice }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
+  const [showUnknownDetail, setShowUnknownDetail] = useState(false);
   const [handbookTab, setHandbookTab] = useState("characters");
   const handbookId = useId();
   const [showCostumes, setShowCostumes] = useState(false);
@@ -153,6 +155,7 @@ export default function HouseModal({ token, user, characterListView, audioSettin
       sigrikaCorrupted={sigrikaCorrupted}
       onCancelCandyEffect={cancelCandyEffect}
       onOpenCharacterDetail={openCharacterDetail}
+      onOpenUnknownDetail={() => setShowUnknownDetail(true)}
       onSelectCharacter={onSelectCharacter}
     />
   );
@@ -209,6 +212,16 @@ export default function HouseModal({ token, user, characterListView, audioSettin
             onEquip={equipCostume}
             onClose={() => setShowCostumes(false)}
           />
+        )}
+        {showUnknownDetail && (
+          <div className="nested-modal-backdrop" onClick={() => setShowUnknownDetail(false)}>
+            <ModalDialog className="nested-modal" ariaLabel="未知角色详情" onClose={() => setShowUnknownDetail(false)}
+              onClick={(event) => event.stopPropagation()}>
+              <button type="button" className="close-button" aria-label="关闭未知角色详情" onClick={() => setShowUnknownDetail(false)}><X size={18} /></button>
+              <h3>暂无情报</h3>
+              <p>获得该角色后可查看完整情报。</p>
+            </ModalDialog>
+          </div>
         )}
       </section>
     </div>

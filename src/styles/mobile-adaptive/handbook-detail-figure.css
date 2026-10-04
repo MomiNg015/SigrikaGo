@@ -1,0 +1,135 @@
+/* The portrait can leave the paper window; only the copy owns scrolling. */
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 160;
+  display: grid;
+  place-items: center !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0;
+  min-height: 0;
+  padding: calc(60px + env(safe-area-inset-top)) 24px calc(64px + env(safe-area-inset-bottom)) !important;
+  border-radius: 0;
+  overflow: hidden !important;
+
+  & .character-details-modal.character-detail-fullbody {
+    position: relative !important;
+    inset: auto !important;
+    width: min(1040px, 100%) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: min(460px, calc(100dvh - 144px)) !important;
+    max-height: calc(100dvh - 144px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    display: grid !important;
+    grid-template-columns: minmax(260px, 0.38fr) minmax(0, 0.62fr) !important;
+    align-items: center !important;
+    gap: 18px;
+    margin: 0 !important;
+    padding: 20px !important;
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  & .character-detail-art {
+    position: relative;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+
+  & .character-detail-figure {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: min(720px, calc(100dvh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  & .character-detail-figure img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    filter: drop-shadow(3px 6px 0 color-mix(in srgb, var(--theme-text) 15%, transparent)) !important;
+  }
+
+  & .unowned .character-detail-figure img {
+    filter: grayscale(1) opacity(0.62) !important;
+  }
+
+  & .character-detail-copy {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+    min-height: 0;
+    max-height: calc(100dvh - 190px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  & .character-costume-open-button {
+    top: 4px;
+    right: 0;
+  }
+
+  & .character-detail-fullbody > .close-button svg {
+    color: var(--theme-text) !important;
+    stroke: currentColor !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .character-detail-figure-backdrop,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+    padding: calc(46px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left)) !important;
+
+    & .character-details-modal.character-detail-fullbody {
+      min-height: 0 !important;
+      max-height: calc(100dvh - 74px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      grid-template-rows: min(260px, 32dvh) minmax(0, 1fr);
+      align-items: start !important;
+      gap: 34px;
+      padding: 12px !important;
+    }
+
+    & .character-detail-art {
+      width: 100%;
+      height: min(260px, 32dvh);
+    }
+
+    & .character-detail-figure {
+      width: min(280px, 90%);
+      height: min(330px, 42dvh);
+    }
+
+    & .character-detail-copy {
+      max-height: calc(100dvh - min(260px, 32dvh) - 136px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      padding: 10px;
+      align-content: start;
+    }
+
+    & .character-costume-open-button {
+      top: 8px;
+      left: 4px;
+      right: auto;
+    }
+  }
+}

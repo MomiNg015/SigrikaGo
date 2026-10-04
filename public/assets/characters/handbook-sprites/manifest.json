@@ -1,0 +1,603 @@
+{
+  "schemaVersion": 1,
+  "generator": "scripts/export-handbook-sprites.mjs",
+  "dimensions": {
+    "width": 832,
+    "height": 1216
+  },
+  "sharedUsage": "One full-body image per character, reused by handbook puzzle crops and character details.",
+  "transparencyPolicy": "Preserve the source alpha channel exactly. Fully transparent RGB is ignored only during comparison; no color-keying or background removal is applied.",
+  "encoderVersions": {
+    "sharp": "0.34.5",
+    "vips": "8.17.3",
+    "webp": "1.6.0"
+  },
+  "summary": {
+    "spriteCount": 9,
+    "sourceBytes": 10535038,
+    "outputBytes": 5364650,
+    "savedBytes": 5170388,
+    "savedPercent": 49.078,
+    "losslessCount": 9,
+    "alphaIdenticalForAll": true,
+    "visibleRgbIdenticalForAll": true
+  },
+  "sprites": [
+    {
+      "id": "sigrika",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/sigrika.png",
+        "sha256": "3457caa9ab1666ae9b7c5e854613c34c3bf224ff8de750e6cbabf6acdace4340",
+        "bytes": 1178295,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 569026,
+          "opaquePixels": 403025,
+          "partialAlphaPixels": 39661,
+          "visiblePixels": 442686,
+          "opaqueBlackPixels": 10,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/sigrika.webp",
+        "sha256": "cb6af72cc4bef9d39149977c14b5e0c4f9f49363c889a26050519e15132189b3",
+        "bytes": 678700,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 569026,
+          "opaquePixels": 403025,
+          "partialAlphaPixels": 39661,
+          "visiblePixels": 442686,
+          "opaqueBlackPixels": 10,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1328058,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "denia",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/denia.png",
+        "sha256": "4b351de896cbb18ab7a6f398cb94d20d1a71b5b9a5d0cb46f8b9869669141d6e",
+        "bytes": 1406209,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 488932,
+          "opaquePixels": 491238,
+          "partialAlphaPixels": 31542,
+          "visiblePixels": 522780,
+          "opaqueBlackPixels": 176,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/denia.webp",
+        "sha256": "d360838095218c961ad780fa655308e678ad56235606523e16cce23501348577",
+        "bytes": 719500,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 488932,
+          "opaquePixels": 491238,
+          "partialAlphaPixels": 31542,
+          "visiblePixels": 522780,
+          "opaqueBlackPixels": 176,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1568340,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "aemeath",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/aemeath.png",
+        "sha256": "d93d0cb4492b7ed530cd36c00db2e0d73f9edbbdaddc6cadfe56c7a68cd40d47",
+        "bytes": 1314083,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 562903,
+          "opaquePixels": 390331,
+          "partialAlphaPixels": 58478,
+          "visiblePixels": 448809,
+          "opaqueBlackPixels": 23,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 795,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/aemeath.webp",
+        "sha256": "eb472245210e089a2d0b125aad00cd1d0505935d1e17d8b766cbc8abbc13af57",
+        "bytes": 741114,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 562903,
+          "opaquePixels": 390331,
+          "partialAlphaPixels": 58478,
+          "visiblePixels": 448809,
+          "opaqueBlackPixels": 23,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 795,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1346427,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "lynae",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/lynae.png",
+        "sha256": "78a8086d641c237314ddf145ffb9b5d9e5a723591304739efb7b8b31fe72113d",
+        "bytes": 1012440,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 658969,
+          "opaquePixels": 325598,
+          "partialAlphaPixels": 27145,
+          "visiblePixels": 352743,
+          "opaqueBlackPixels": 118,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/lynae.webp",
+        "sha256": "0fb86897f74610b5671836f2942bf0179cc424d2e582f8457723467a3677b8ca",
+        "bytes": 513968,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 658969,
+          "opaquePixels": 325598,
+          "partialAlphaPixels": 27145,
+          "visiblePixels": 352743,
+          "opaqueBlackPixels": 118,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1058229,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "mornye",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/mornye.png",
+        "sha256": "acc640a6defa6fe8972aba00b7489a09e4e2019655ee607c9c8cf68b43cc0290",
+        "bytes": 1226102,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 635389,
+          "opaquePixels": 331925,
+          "partialAlphaPixels": 44398,
+          "visiblePixels": 376323,
+          "opaqueBlackPixels": 30,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 735,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/mornye.webp",
+        "sha256": "d1604eacc1eb01eaec7b76b7a5ec9bafb4f3ff35aff0115ee385366cc321abbc",
+        "bytes": 549118,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 635389,
+          "opaquePixels": 331925,
+          "partialAlphaPixels": 44398,
+          "visiblePixels": 376323,
+          "opaqueBlackPixels": 30,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 735,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1128969,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "chisa",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/chisa.png",
+        "sha256": "bc705b27cab74d242ec5d461ba1cb848645383acaccbbb4a8fe942d5f1059184",
+        "bytes": 997347,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 631189,
+          "opaquePixels": 354445,
+          "partialAlphaPixels": 26078,
+          "visiblePixels": 380523,
+          "opaqueBlackPixels": 106,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 767,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/chisa.webp",
+        "sha256": "fbac853a8acf44f697df527ae4e1ecce92823d4cc671b78c3aad5754b6e27a82",
+        "bytes": 467380,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 631189,
+          "opaquePixels": 354445,
+          "partialAlphaPixels": 26078,
+          "visiblePixels": 380523,
+          "opaqueBlackPixels": 106,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 767,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1141569,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "changli",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/changli.png",
+        "sha256": "d67cb8ba70d93dc7ddee054b24d2a637e2301bcf253918187d1c408b17af7dbe",
+        "bytes": 1275412,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 564163,
+          "opaquePixels": 414668,
+          "partialAlphaPixels": 32881,
+          "visiblePixels": 447549,
+          "opaqueBlackPixels": 18,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 807,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/changli.webp",
+        "sha256": "9e8a3a84468ee76f177bd21bf206c70e3375c9f7346b1149211f320306ca5537",
+        "bytes": 629776,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 564163,
+          "opaquePixels": 414668,
+          "partialAlphaPixels": 32881,
+          "visiblePixels": 447549,
+          "opaqueBlackPixels": 18,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 807,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1342647,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "qiuyuan",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/qiuyuan.png",
+        "sha256": "7b4b29be4dc02384769bdfada495c8444eeeed4fd5b47237ea0ac882b53351fc",
+        "bytes": 1286592,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 571206,
+          "opaquePixels": 401757,
+          "partialAlphaPixels": 38749,
+          "visiblePixels": 440506,
+          "opaqueBlackPixels": 341,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/qiuyuan.webp",
+        "sha256": "ddf89dab7344c2c3882a75a40785713b4baeb3dd8e8346191843540cbed9f600",
+        "bytes": 621632,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 571206,
+          "opaquePixels": 401757,
+          "partialAlphaPixels": 38749,
+          "visiblePixels": 440506,
+          "opaqueBlackPixels": 341,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 832,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1321518,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "nabomo",
+      "source": {
+        "path": "docs/design-samples/handbook-puzzle/assets/characters/nabomo.png",
+        "sha256": "83c2be20f14b834097815c8eb06050ba2060eeea7ff6a35a7913f016ce88ee04",
+        "bytes": 838558,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 678889,
+          "opaquePixels": 310493,
+          "partialAlphaPixels": 22330,
+          "visiblePixels": 332823,
+          "opaqueBlackPixels": 11,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 717,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-sprites/nabomo.webp",
+        "sha256": "2959655c36d3efa7140b3d3cf95856101a2be8c895581dc4f56157d14914cee4",
+        "bytes": 443462,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 678889,
+          "opaquePixels": 310493,
+          "partialAlphaPixels": 22330,
+          "visiblePixels": 332823,
+          "opaqueBlackPixels": 11,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 717,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 998469,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    }
+  ]
+}

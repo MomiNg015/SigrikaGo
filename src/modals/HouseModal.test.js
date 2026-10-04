@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
+import { CHARACTERS } from "../shared/characters.js";
 import HouseModal from "./HouseModal.jsx";
 import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
 import ResumeModal from "./ResumeModal.jsx";
@@ -281,7 +282,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("character-chain-badge");
   });
 
-  it("renders unobtained and hidden-intel roster cards without the old unavailable copy", () => {
+  it("renders unobtained puzzle entries and keeps the hidden identity anonymous", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -306,99 +307,52 @@ describe("deriveCharacterRecordStats", () => {
       onApplyDecoration: () => {}
     }));
 
-    expect(html.match(/class="character-card portrait-card[^"]*unowned[^"]*"/g)).toHaveLength(2);
-    expect(html).toContain("hidden-intel-card");
-    expect(html).toContain("hidden-intel-visual");
-    expect(html).toContain("hidden-intel-brackets");
-    expect(html.match(/hidden-intel-fragment/g)).toHaveLength(6);
-    expect(html).toContain("hidden-intel-no-signal");
-    expect(html).toContain("NO SIGNAL");
-    expect(html).toContain("hidden-intel-label");
-    expect(html).toContain("aria-label=\"暂无情报\"");
+    expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(10);
+    expect(html.match(/<button[^>]*class="handbook-puzzle-tile"/g)).toHaveLength(3);
+    expect(html.match(/class="handbook-puzzle-piece is-empty"/g)).toHaveLength(7);
+    expect(html).toContain("aria-label=\"仇远角色详情（未拥有）\"");
+    expect(html).toContain("aria-label=\"未知角色详情\"");
+    expect(html).not.toContain("src=\"/assets/hidden.webp\"");
+    expect(html).not.toContain("sortie-button");
     expect(html).not.toContain("暂不可获取");
     expect(html).not.toContain("隐藏角色");
   });
 
-  it("keeps Bright School unobtained roster cards centered, monochrome, grid-free, and CRT-faulted", () => {
-    const handbookCss = readFileSync(
-      new URL("../styles/themes/bright-school/modals/handbook-unobtained.css", import.meta.url),
-      "utf8"
-    );
-    const hiddenIntelCss = readFileSync(
-      new URL("../styles/themes/bright-school/modals/handbook-hidden-intel.css", import.meta.url),
-      "utf8"
-    );
-    const signalMotionCss = readFileSync(
-      new URL("../styles/themes/bright-school/modals/handbook-signal-motion.css", import.meta.url),
-      "utf8"
-    );
-    const mobileCss = readFileSync(
-      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
-      "utf8"
-    );
+  it("uses standard portraits for nine owned members and the existing Baconbits artwork", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: { ownedCharacters: Object.keys(CHARACTERS), selectedCharacter: "sigrika" },
+      characterListView: Object.values(CHARACTERS),
+      audioSettings: {}, onClose: () => {}, onApplyDecoration: () => {}
+    }));
 
-    expect(handbookCss).toContain(".character-card.portrait-card.unowned {");
-    expect(handbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
-    expect(handbookCss).toContain("padding-inline: clamp(10px, 1vw, 12px) !important");
-    expect(handbookCss).toContain("filter: grayscale(1) !important");
-    expect(handbookCss).toContain(".character-card.portrait-card.unowned::before");
-    expect(handbookCss).toContain("content: none !important");
-    expect(handbookCss).toContain("display: none !important");
-    expect(handbookCss).toContain(
-      "--handbook-signal-surface: color-mix(in srgb, var(--bright-ink) 10%, var(--bright-sheet-clean))"
-    );
-    expect(handbookCss).toContain(
-      "--handbook-signal-surface-edge: color-mix(in srgb, var(--bright-ink) 27%, var(--bright-sheet-clean))"
-    );
-    expect(handbookCss).toContain("brightness(0.9)");
-    expect(handbookCss).not.toContain("100% 4px");
-    expect(hiddenIntelCss).not.toContain("100% 4px");
-    expect(signalMotionCss).not.toContain("@keyframes bright-handbook-crt-static");
-    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-sync-loss");
-    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-image-fault");
-    expect(signalMotionCss).toContain("@keyframes bright-handbook-crt-glyph-fault");
-    expect(hiddenIntelCss).toContain(".hidden-intel-no-signal");
-    expect(`${handbookCss}\n${hiddenIntelCss}\n${signalMotionCss}`).not.toMatch(/--bright-(?:blue|pink)/);
-    expect(signalMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(handbookCss).not.toContain("repeating-linear-gradient");
-    expect(mobileCss).toContain(
-      ".house-modal .character-card.portrait-card.hidden-intel-card > .hidden-intel-label"
-    );
-    expect(mobileCss).not.toContain("--handbook-scan-distance");
-    expect(mobileCss).toContain("width: 60px !important");
-    expect(mobileCss).toContain("height: 52px !important");
+    expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(10);
+    for (const id of Object.keys(CHARACTERS).filter(id => id !== "baconbits")) {
+      expect(html).toContain(`src="/assets/characters/handbook-sprites/${id}.webp"`);
+    }
+    expect(html).toContain(`src="${CHARACTERS.baconbits.portrait}"`);
+    expect(html).not.toContain("sortie-button");
   });
 
-  it("keeps Bright School portrait handbook art centered with a compact bottom-right sortie action", () => {
-    const portraitEntryCss = readFileSync(
-      new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url),
-      "utf8"
-    );
-    const characterCardCss = readFileSync(
-      new URL("../styles/mobile-adaptive/bright-school-portrait/house-character-cards.css", import.meta.url),
-      "utf8"
-    );
-    const themeMobileCss = readFileSync(
-      new URL("../styles/themes/bright-school/mobile/house-profile/character-grid-cards.css", import.meta.url),
-      "utf8"
-    );
+  it("keeps equipped costume framing and animated candy portraits in the puzzle", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        ownedCharacters: ["sigrika", "denia"], selectedCharacter: "sigrika",
+        itemEffects: { deniaRainbowGlow: true },
+        equippedCostumes: {
+          sigrika: { id: "test-costume", portraitUrl: "/assets/custom-costume.webp", portraitScalePercent: 115,
+            portraitOffsetXPercent: 8, portraitOffsetYPercent: -7 }
+        }
+      },
+      characterListView: [CHARACTERS.sigrika, CHARACTERS.denia],
+      audioSettings: {}, onClose: () => {}, onApplyDecoration: () => {}
+    }));
 
-    expect(portraitEntryCss).toContain('@import "./bright-school-portrait/house-character-cards.css";');
-    expect(characterCardCss).toContain(".character-card.portrait-card > img");
-    expect(characterCardCss).not.toContain(".character-card.portrait-card img {");
-    expect(characterCardCss).toContain("width: 72px !important");
-    expect(characterCardCss).toContain("height: 72px !important");
-    expect(characterCardCss).toContain("justify-self: center !important");
-    expect(characterCardCss).toContain("object-position: center !important");
-    expect(characterCardCss).toContain("position: absolute !important");
-    expect(characterCardCss).toContain("right: 4px !important");
-    expect(characterCardCss).toContain("bottom: 4px !important");
-    expect(characterCardCss).toContain("width: 30px !important");
-    expect(characterCardCss).toContain("height: 30px !important");
-    expect(characterCardCss).toContain("box-shadow: 1px 1px 0");
-    expect(themeMobileCss).toContain(".house-modal .character-item-effect-icon");
-    expect(themeMobileCss).toContain("width: 24px !important");
-    expect(themeMobileCss).toContain("height: 24px !important");
+    expect(html).toContain('src="/assets/custom-costume.webp"');
+    expect(html).toContain("scale:1.15");
+    expect(html).toContain("translate:8% -7%");
+    expect(html).toContain(`src="${DENIA_CANDY_PORTRAIT}"`);
+    expect(html).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(html).not.toContain("/assets/characters/handbook-sprites/denia.webp");
   });
 
   it("plays the selected character sortie voice before selecting the character", () => {
@@ -496,18 +450,18 @@ describe("deriveCharacterRecordStats", () => {
       onOpenReplay: () => {}
     }));
 
-    expect(html).toContain("is-deployed");
+    expect(html).toContain("handbook-puzzle-panel");
+    expect(html).toContain("handbook-puzzle-board");
+    expect(html).toContain("handbook-puzzle-tile");
+    expect(html).not.toContain("is-deployed");
     expect(html).not.toContain("deploy-tag");
-    expect(html).toContain("lock-character-card");
-    expect(html).toContain("lock-text-title text-display-accent");
-    expect(html).toContain("<strong class=\"text-display-accent\">LOADING... (x_x)</strong>");
-    expect(html).toContain("character-grid-container");
+    expect(html).not.toContain("sortie-button");
+    expect(html).not.toContain("lock-character-card");
     expect(html).not.toContain("top-stats-bar");
     expect(html).not.toContain("对局回放");
     expect(html).not.toContain("战绩");
     expect(html).not.toContain("金币");
-    expect(html).toContain("LOADING... (x_x)");
-    expect(html).toContain("LOCK / LOADING... (x_x)");
+    expect(html).not.toContain("LOADING... (x_x)");
   });
 
   it("turns the corrupted house manual into a Sigrika-only readable archive", () => {
@@ -621,7 +575,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(resumeSource).toContain("<ProfileResumeView");
   });
 
-  it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
+  it("reveals owned Baconbits as an ordinary puzzle detail entry", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -649,7 +603,9 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("猪小仙");
     expect(html).not.toContain("unowned");
-    expect(html).toContain("title=\"设为出战\"");
+    expect(html).toContain("aria-label=\"猪小仙角色详情\"");
+    expect(html).not.toContain("未知角色详情");
+    expect(html).not.toContain("sortie-button");
     expect(html).not.toContain("disabled=\"\"");
   });
 
