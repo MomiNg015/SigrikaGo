@@ -1679,3 +1679,36 @@ Implemented fixed desktop/mobile polygon portrait puzzle with theme gradients, t
 ### Next Steps
 
 - None - task complete
+
+
+## Session 172: 部员手册横竖斜切拼接与展开立绘
+
+**Date**: 2026-10-04
+**Task**: 部员手册横竖斜切拼接与展开立绘
+**Branch**: `master`
+
+### Summary
+
+Replaced tangram with catalog-ordered diagonal portrait strips, desktop full-body width expansion and mobile bust height expansion. Preserved touch details, real onboarding, ownership, costume/candy and corruption semantics. Verified focused tests, 9 handbook and 6 home-guide browser cases, lint, build, CSS contracts and system docs; saved current screenshots.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e0869013` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
