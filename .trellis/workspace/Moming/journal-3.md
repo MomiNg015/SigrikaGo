@@ -1745,3 +1745,36 @@ Implemented calibrated desktop heads with fixed dimensions and horizontal-only p
 ### Next Steps
 
 - None - task complete
+
+
+## Session 174: Handbook direct details and larger portraits
+
+**Date**: 2026-10-04
+**Task**: Handbook direct details and larger portraits
+**Branch**: `master`
+
+### Summary
+
+Removed secondary detail button and open matching details on every strip activation. Restored larger desktop busts with Qiuyuan +10% and Nabomo -9%. Kept native touch hit geometry stable and prevented ghost hover after modal focus restoration. Relevant unit suites 180/180, handbook browser 14/14 and home onboarding 6/6 passed; lint, build and built CSS passed. Updated screenshots, system design and contract. Previous unrelated full-check environment failures remain outside scope.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `767fe7e7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
