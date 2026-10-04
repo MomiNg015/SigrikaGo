@@ -33,7 +33,8 @@ describe("handbook strip portrait framing", () => {
     const expanded = handbookStripArtStyle(portrait, { width: 940, height: 400 }, { ...state, expanded: true });
     expect({ width: resting.width, height: resting.height, top: resting.top })
       .toEqual({ width: expanded.width, height: expanded.height, top: expanded.top });
-    expect(expanded.left).not.toBe(resting.left);
+    // The same width-dependent expression follows the flex animation directly.
+    expect(expanded.left).toBe(resting.left);
     expect(handbookStripArtStyle(portrait, { width: 280, height: 840 }, { mobile: true, expanded: true, count: 10 }))
       .toEqual(handbookStripArtStyle(portrait, { width: 280, height: 1054 }, { mobile: true, expanded: true, count: 10 }));
   });

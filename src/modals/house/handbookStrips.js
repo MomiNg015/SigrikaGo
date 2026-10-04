@@ -1,4 +1,5 @@
 export const HANDBOOK_STRIP_PAGE_SIZE = 10;
+export const HANDBOOK_STRIP_LAYOUT = { slant: 28, gap: 3, expandedGrow: 6 };
 
 // The catalog has already applied backend sortOrder. Pagination must not
 // replace that order with a portrait- or ownership-dependent order.
@@ -17,11 +18,20 @@ export function handbookStripArtStyle(portrait, { width, height }, { mobile, exp
       ? Math.min(width / Math.max(1, count) * 1.35, height * .38) / (portrait.headWidth ?? 260) * portrait.height * (portrait.desktopScale ?? 1)
       : Math.min(280, height * .7, width / Math.max(1, count) * 3);
   const scale = artHeight / portrait.height;
+  // Interpolate fixed face endpoints from the actual slice width. Flex alone
+  // drives the motion, avoiding a second percentage/left animation fighting it.
+  const columns = Math.max(1, count);
+  const trackWidth = width + (columns - 1) * (HANDBOOK_STRIP_LAYOUT.slant - HANDBOOK_STRIP_LAYOUT.gap);
+  const restingWidth = trackWidth / columns;
+  const expandedWidth = trackWidth * HANDBOOK_STRIP_LAYOUT.expandedGrow / (columns + HANDBOOK_STRIP_LAYOUT.expandedGrow - 1);
+  const anchorSlope = columns === 1 ? .5 : (expandedWidth * .30 - restingWidth * .5) / (expandedWidth - restingWidth);
+  const anchorOffset = restingWidth * (.5 - anchorSlope);
   const top = mobile && (expanded || compactMascot) ? 8 - (portrait.visibleTop ?? 0) * scale
     : (mobile ? 48 : height * .25) - portrait.focal[1] * scale;
   return {
     width: portrait.width * scale, height: artHeight,
-    left: `calc(${mobile ? index % 2 ? 72 : 28 : expanded ? 20 : 50}% - ${portrait.focal[0] * scale}px)`,
+    left: mobile ? `calc(${index % 2 ? 72 : 28}% - ${portrait.focal[0] * scale}px)`
+      : `calc(${anchorSlope * 100}% + ${anchorOffset - portrait.focal[0] * scale}px)`,
     top,
     ...portrait.style
   };

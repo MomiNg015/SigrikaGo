@@ -57,8 +57,17 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     const { container, onSelectCharacter, onOpenCharacterDetail } = renderGrid({ characters, itemEffects: {} });
     expect([...container.querySelectorAll(".handbook-puzzle-piece")].map((piece) => piece.dataset.characterId))
       .toEqual(["denia", "sigrika", "aemeath"]);
-    await userEvent.setup().click(screen.getByRole("button", { name: "达妮娅角色详情（未拥有）" }));
-    expect(onOpenCharacterDetail).toHaveBeenCalledWith(CHARACTERS.denia);
+    const locked = container.querySelector('[data-character-id="denia"] button');
+    expect(locked.disabled).toBe(true);
+    expect(locked.getAttribute("title")).toBeNull();
+    pointer(locked, "pointerover");
+    pointer(locked, "pointermove", "mouse", null, { movementX: 20 });
+    act(() => { locked.focus(); locked.click(); });
+    fireEvent.keyDown(locked, { key: "Enter" });
+    await userEvent.setup().click(locked);
+    expect(locked.getAttribute("aria-expanded")).toBe("false");
+    expect(container.textContent).not.toContain("达妮娅");
+    expect(onOpenCharacterDetail).not.toHaveBeenCalled();
     expect(onSelectCharacter).not.toHaveBeenCalled();
   });
 
@@ -93,17 +102,21 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     expect(onOpenCharacterDetail).toHaveBeenCalledWith(CHARACTERS.sigrika);
   });
 
-  it("opens anonymous Baconbits details directly while keeping every portrait source out of markup", async () => {
+  it("keeps unavailable Baconbits static while keeping every portrait source out of markup", async () => {
     mockViewport(true);
     const { container, onOpenUnknownDetail, onOpenCharacterDetail } = renderGrid({
       characters: [CHARACTERS.baconbits], owned: new Set(), itemEffects: {} });
-    await userEvent.setup().click(screen.getByRole("button", { name: "未知角色详情" }));
+    const tile = screen.getByRole("button", { name: "暂无情报" });
+    pointer(tile, "pointerover");
+    await userEvent.setup().click(tile);
+    expect(tile.disabled).toBe(true);
+    expect(tile.getAttribute("aria-expanded")).toBe("false");
     expect(container.textContent).not.toContain("猪小仙");
     const piece = container.querySelector(".is-missing-data");
     expect(piece.querySelector("img, .handbook-puzzle-silhouette, .handbook-puzzle-question, .handbook-strip-name")).toBeNull();
     expect(piece.querySelector("[style*=mask]")).toBeNull();
     expect(piece.querySelector(".handbook-missing-label").textContent).toBe("暂无情报");
-    expect(onOpenUnknownDetail).toHaveBeenCalledOnce();
+    expect(onOpenUnknownDetail).not.toHaveBeenCalled();
     expect(onOpenCharacterDetail).not.toHaveBeenCalled();
   });
 
@@ -111,15 +124,15 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     mockViewport(true);
     const { container } = renderGrid({ characters: [CHARACTERS.sigrika, CHARACTERS.denia, CHARACTERS.aemeath, CHARACTERS.baconbits], itemEffects: {} });
     expect([...container.querySelectorAll(".handbook-puzzle-piece")].map((piece) => piece.dataset.portraitSide)).toEqual(["left", "right", "left", "right"]);
-    expect(container.querySelectorAll(".handbook-strip-name")).toHaveLength(3);
+    expect(container.querySelectorAll(".handbook-strip-name")).toHaveLength(1);
   });
 
   it("clears expansion on orientation changes and pagination", async () => {
     const resize = mockViewport(true);
     const characters = Array.from({ length: 11 }, (_, index) => ({ ...CHARACTERS.sigrika, id: `member-${index}`, name: `部员${index}` }));
-    renderGrid({ characters, itemEffects: {} });
+    renderGrid({ characters, owned: new Set(characters.map(({ id }) => id)), itemEffects: {} });
     const user = userEvent.setup();
-    const tile = screen.getByRole("button", { name: "部员0角色详情（未拥有）" });
+    const tile = screen.getByRole("button", { name: "部员0角色详情" });
     pointer(tile, "pointerover");
     expect(tile.getAttribute("aria-expanded")).toBe("true");
     resize(false);
@@ -127,8 +140,8 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     resize(true);
     pointer(tile, "pointerover");
     await user.click(screen.getByRole("button", { name: "下一页" }));
-    expect(screen.queryByRole("button", { name: "部员0角色详情（未拥有）" })).toBeNull();
-    expect(screen.getByRole("button", { name: "部员10角色详情（未拥有）" }).getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("button", { name: "部员0角色详情" })).toBeNull();
+    expect(screen.getByRole("button", { name: "部员10角色详情" }).getAttribute("aria-expanded")).toBe("false");
   });
 
   it("keeps a focused keyboard preview on pointer leave and collapses on blur", () => {
@@ -144,9 +157,9 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
 
   it("restores the focused keyboard strip after a different mouse preview leaves the board", () => {
     mockViewport(false);
-    const { container } = renderGrid({ characters: [CHARACTERS.sigrika, CHARACTERS.denia], itemEffects: {} });
+    const { container } = renderGrid({ characters: [CHARACTERS.sigrika, CHARACTERS.denia], owned: new Set(["sigrika", "denia"]), itemEffects: {} });
     const first = screen.getByRole("button", { name: "西格莉卡角色详情" });
-    const second = screen.getByRole("button", { name: "达妮娅角色详情（未拥有）" });
+    const second = screen.getByRole("button", { name: "达妮娅角色详情" });
     act(() => first.focus());
     const board = container.querySelector(".handbook-puzzle-board");
     pointer(second, "pointerover");

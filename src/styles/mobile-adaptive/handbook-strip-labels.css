@@ -1,7 +1,7 @@
 /* Lahai-Roi supplies Latin glyphs; LXGW Marker Gothic supplies Chinese names. */
 .handbook-strip-name {
   position: absolute;
-  right: 38px;
+  right: 30px;
   bottom: 18px;
   opacity: 0;
   line-height: 1.15;

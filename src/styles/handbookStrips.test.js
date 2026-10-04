@@ -8,10 +8,10 @@ const labels = readFileSync(new URL("./mobile-adaptive/handbook-strip-labels.css
 describe("ordinary handbook portrait strip CSS", () => {
   it("owns horizontal expansion and vertical touch expansion with paper seams", () => {
     expect(css).toMatch(/\.handbook-puzzle-board\s*\{[^}]*display: flex;/s);
-    expect(css).toMatch(/\.handbook-puzzle-piece\.is-expanded\s*\{ flex-grow: 5;/);
+    expect(css).toContain("flex-grow: var(--handbook-expanded-grow, 6);");
     expect(css).toMatch(/@media \(max-width: 768px\)[\s\S]*flex-direction: column;/);
     expect(css).toMatch(/\.handbook-puzzle-piece\.is-expanded\s*\{ height: 310px;/);
-    expect(css).toContain("gap: 3px;");
+    expect(css).toContain("gap: var(--handbook-desktop-gap, 3px);");
     expect(css).toContain("gap: 2px;");
     expect(css).not.toMatch(/rotate\(|drop-shadow\(|radial-gradient\(/);
   });
@@ -20,11 +20,11 @@ describe("ordinary handbook portrait strip CSS", () => {
     expect(entry.trim().split(/\r?\n/)).toEqual(['@import "./handbook-strip-labels.css";', '@import "./handbook-strip-frame.css";']);
     expect(labels).toContain("background: transparent !important;");
     expect(labels).toContain("font-family: var(--font-display-accent), var(--font-window-title), sans-serif !important;");
-    expect(labels).toMatch(/\.handbook-strip-name\s*\{[^}]*right: 38px;[^}]*bottom: 18px;[^}]*opacity: 0;/s);
+    expect(labels).toMatch(/\.handbook-strip-name\s*\{[^}]*right: 30px;[^}]*bottom: 18px;[^}]*opacity: 0;/s);
     expect(labels).toContain(".handbook-puzzle-piece.is-expanded .handbook-strip-name { opacity: 1; }");
     expect(labels).toContain('[data-portrait-side="right"] .handbook-strip-name { left: 6px; right: auto; }');
     expect(labels).toContain("font-size: clamp(23px, 7vw, 30px);");
-    expect(css).toContain("transition: left 260ms ease;");
+    expect(css).toContain("transition: left 260ms cubic-bezier(.25, 1, .5, 1);");
     expect(css).not.toMatch(/transition: (?:width|height).*260ms ease/);
     expect(labels).not.toMatch(/scanline|radial-gradient|repeating-linear-gradient/);
     expect(css).not.toContain("handbook-strip-detail-action");

@@ -38,7 +38,7 @@ describe("member handbook pages", () => {
     expect(screen.getByRole("tabpanel", { name: "装饰" })).toBeTruthy();
   });
 
-  it("opens anonymous hidden-character details from the strip without exposing identity", async () => {
+  it("keeps hidden-character strips disabled without exposing identity or opening details", async () => {
     const user = userEvent.setup();
     setup();
     expect(screen.queryByText("星炬学院")).toBeNull();
@@ -47,18 +47,17 @@ describe("member handbook pages", () => {
     expect(document.querySelector(".handbook-character-card")).toBeNull();
     expect(document.querySelector(".handbook-puzzle-panel").parentElement.classList.contains("house-modal")).toBe(true);
     expect(document.querySelectorAll(".handbook-puzzle-board > .handbook-puzzle-piece > button.handbook-puzzle-tile")).toHaveLength(2);
-    const hiddenCharacter = screen.getByRole("button", { name: "未知角色详情", exact: true });
+    const hiddenCharacter = screen.getByRole("button", { name: "暂无情报", exact: true });
     expect(screen.queryByText("猪小仙")).toBeNull();
     expect(document.querySelector(".sortie-button")).toBeNull();
     await user.click(hiddenCharacter);
-    expect(within(screen.getByRole("dialog", { name: "未知角色详情" })).getByText("暂无情报")).toBeTruthy();
-    expect(screen.getByText("获得该角色后可查看完整情报。")).toBeTruthy();
+    expect(hiddenCharacter.disabled).toBe(true);
+    expect(screen.queryByRole("dialog", { name: "未知角色详情" })).toBeNull();
     expect(screen.queryByText("猪小仙")).toBeNull();
     expect(screen.queryByText("猪小仙爆炸")).toBeNull();
     expect(screen.queryByRole("button", { name: "查看猪小仙的服装" })).toBeNull();
-    await user.keyboard("{Escape}");
     expect(screen.queryByText("获得该角色后可查看完整情报。")).toBeNull();
-    expect(document.activeElement).toBe(hiddenCharacter);
+    expect(document.activeElement).not.toBe(hiddenCharacter);
   });
 
   it("keeps all ten slices in catalog order and opens the existing character details", async () => {
@@ -66,9 +65,9 @@ describe("member handbook pages", () => {
     const { onSelectCharacter } = setup({}, Object.values(CHARACTERS));
     const pieces = [...document.querySelectorAll(".handbook-puzzle-piece > button.handbook-puzzle-tile")];
     expect(pieces.map(piece => piece.getAttribute("aria-label"))).toEqual([
-      "西格莉卡角色详情", "达妮娅角色详情（未拥有）", "爱弥斯角色详情（未拥有）",
-      "未知角色详情", "琳奈角色详情（未拥有）", "仇远角色详情（未拥有）",
-      "莫宁角色详情（未拥有）", "长离角色详情（未拥有）", "千咲角色详情（未拥有）", "娜波摩角色详情（未拥有）"
+      "西格莉卡角色详情", "未拥有角色", "未拥有角色",
+      "暂无情报", "未拥有角色", "未拥有角色",
+      "未拥有角色", "未拥有角色", "未拥有角色", "未拥有角色"
     ]);
     const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
     expect(sigrika.querySelector("img").getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");

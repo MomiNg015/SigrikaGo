@@ -51,18 +51,35 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
       await page.goto("/tests/e2e/fixtures/handbook-puzzle.html?owned=partial");
       await expect(page.locator(".handbook-puzzle-question")).toHaveCount(5);
-      const unknown = page.getByRole("button", { name: "未知角色详情", exact: true });
+      const unknown = page.getByRole("button", { name: "暂无情报", exact: true });
       await expect(unknown.locator("img, .handbook-puzzle-silhouette, .handbook-puzzle-question")).toHaveCount(0);
       await expect(unknown).toHaveText(/暂无情报/);
       await expect(unknown).not.toHaveText(/猪小仙/);
-      expect(await unknown.getAttribute("title")).toBe("暂无情报");
-      await openFromStrip(page, unknown, mobile);
-      const dialog = page.getByRole("dialog", { name: "未知角色详情" });
-      await expect(dialog).toHaveText(/暂无情报/);
-      await expect(dialog.getByText("猪小仙")).toHaveCount(0);
-      await page.keyboard.press("Escape");
-      await expect(unknown).toBeFocused();
-      if (mobile) await expect(unknown).toHaveAttribute("aria-expanded", "false");
+      expect(await unknown.getAttribute("title")).toBeNull();
+      const locked = page.locator(".is-unowned .handbook-puzzle-tile");
+      await expect(locked).toHaveCount(6);
+      await expect(page.locator(".is-unowned .handbook-strip-name")).toHaveCount(0);
+      for (const tile of await locked.all()) {
+        await tile.scrollIntoViewIfNeeded();
+        await expect(tile).toBeDisabled();
+        const before = await tile.boundingBox();
+        await tile.hover();
+        await expect(tile).toHaveAttribute("aria-expanded", "false");
+        const box = await tile.boundingBox();
+        if (mobile) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+        else await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        await expect(page.locator(".character-detail-fullbody")).toHaveCount(0);
+        await tile.evaluate((element) => { element.click(); element.focus(); });
+        await expect(tile).not.toBeFocused();
+        await expect(tile).toHaveAttribute("aria-expanded", "false");
+        expect((await tile.boundingBox())[mobile ? "height" : "width"]).toBeCloseTo(before[mobile ? "height" : "width"], 1);
+        if (mobile && await tile.locator(".handbook-puzzle-question").count()) {
+          const side = await tile.locator("..").getAttribute("data-portrait-side");
+          const question = await tile.locator(".handbook-puzzle-question").boundingBox();
+          const x = (question.x + question.width / 2 - box.x) / box.width;
+          expect(x).toBeCloseTo(side === "left" ? .74 : .26, 1);
+        }
+      }
       expect(errors).toEqual([]);
     });
 
@@ -180,6 +197,46 @@ test.describe("mobile strip rotation", () => {
 });
 
 test.describe("fixed handbook portrait composition", () => {
+  test("desktop portraits move in one direction with the actual strip width", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1024 });
+    await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(350);
+    for (const id of ["sigrika", "qiuyuan", "nabomo"]) {
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(350);
+      const tile = page.locator(`[data-character-id="${id}"] .handbook-puzzle-tile`);
+      await tile.evaluate((element) => {
+        window.handbookMotion = new Promise((resolve) => {
+          const samples = [];
+          const start = performance.now();
+          const sample = () => {
+            const art = element.querySelector("img").getBoundingClientRect();
+            samples.push({ x: art.x, width: art.width, y: art.y });
+            if (performance.now() - start < 450) requestAnimationFrame(sample);
+            else resolve(samples);
+          };
+          requestAnimationFrame(sample);
+        });
+      });
+      await tile.hover();
+      const samples = await page.evaluate(() => window.handbookMotion);
+      const delta = samples.at(-1).x - samples[0].x;
+      expect(Math.abs(delta)).toBeGreaterThan(10);
+      const direction = Math.sign(delta);
+      for (let index = 1; index < samples.length; index++) {
+        expect((samples[index].x - samples[index - 1].x) * direction).toBeGreaterThan(-.6);
+        expect(samples[index].width).toBeCloseTo(samples[0].width, 1);
+        expect(samples[index].y).toBeCloseTo(samples[0].y, 1);
+      }
+      const landmark = landmarks.find((point) => point.id === id);
+      const box = await tile.boundingBox();
+      const art = await tile.locator("img").boundingBox();
+      const face = art.x + landmark.focal[0] * art.width / landmark.width;
+      expect((face - box.x) / box.width).toBeCloseTo(.30, 2);
+    }
+  });
+
   test("desktop rendered head widths and eye lines agree before and after preview", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1024 });
     await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");

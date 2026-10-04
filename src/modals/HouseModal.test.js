@@ -310,8 +310,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(3);
     expect(html.match(/<button[^>]*class="handbook-puzzle-tile"/g)).toHaveLength(3);
     expect(html).not.toContain("is-empty");
-    expect(html).toContain("aria-label=\"仇远角色详情（未拥有）\"");
-    expect(html).toContain("aria-label=\"未知角色详情\"");
+    expect(html).toContain("aria-label=\"未拥有角色\"");
+    expect(html).toContain("aria-label=\"暂无情报\"");
+    expect(html.match(/class="handbook-puzzle-tile" disabled=""/g)).toHaveLength(2);
+    expect(html).not.toContain("仇远");
     expect(html).not.toContain("src=\"/assets/hidden.webp\"");
     expect(html).not.toContain("sortie-button");
     expect(html).not.toContain("暂不可获取");
