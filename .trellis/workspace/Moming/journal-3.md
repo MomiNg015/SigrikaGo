@@ -1877,3 +1877,36 @@ Replaced garment watermarks with exact official native faction artwork and user-
 ### Next Steps
 
 - None - task complete
+
+
+## Session 178: Handbook large faction emblem placement
+
+**Date**: 2026-10-04
+**Task**: Handbook large faction emblem placement
+**Branch**: `master`
+
+### Summary
+
+Enlarged desktop expanded emblem into upper-right cropped region and mobile emblems behind opposite-side names with compact vertical crop. Paper CSS only+158 normalized bytes, no foreground/name/input changes.163 DOM/CSS checks,5 targeted browser cases,lint,build,builtCSS passed; actual four-viewport and partialownership captures no overflow/errors. Independent review clean; spec,measured inventory,design Markdown/HTML and preview gallery synchronized.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c2c2bb9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
