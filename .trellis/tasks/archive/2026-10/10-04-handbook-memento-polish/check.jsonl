@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"CSS owner and production cascade checks"}
+{"file":".trellis/spec/frontend/handbook-puzzle-contract.md","reason":"Portrait motion, touch, locked state and ownership invariants"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Quality gates and unchanged protected surfaces"}
