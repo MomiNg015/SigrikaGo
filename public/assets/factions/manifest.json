@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "downloadedAt": "2026-10-04",
+  "officialPage": "https://wutheringwaves.kurogames.com/en/main/",
+  "officialAssetIndex": "https://wutheringwaves.kurogames.com/static4.0/assets/index-3a7e0d27.js",
+  "attribution": "Wuthering Waves official website artwork, KURO GAMES. Public availability does not grant an open license.",
+  "processing": "Original downloaded bytes preserved. No resampling, tracing, generation or pixel edits. CSS masks retain source proportions and compensate original low alpha.",
+  "mapping": "User-directed handbook presentation mapping; no inferred faction for Baconbits or unknown characters. Owned strips only.",
+  "assets": [
+    {
+      "id": "roya",
+      "name": "罗伊族",
+      "file": "roya.webp",
+      "sourceUrl": "https://wutheringwaves.kurogames.com/static4.0/assets/logo-lyr-big-03ab933c.webp",
+      "width": 422,
+      "height": 344,
+      "bytes": 26642,
+      "hasAlpha": true,
+      "alphaMax": 106,
+      "displayAlphaCompensation": 2.4056603773584904,
+      "sha256": "03ab933c924da62c918903527a22bc68276a5d0c503fde9e8b858e792a0aa921",
+      "characters": [
+        "sigrika"
+      ]
+    },
+    {
+      "id": "startorch",
+      "name": "星炬学院",
+      "file": "startorch.webp",
+      "sourceUrl": "https://wutheringwaves.kurogames.com/static4.0/assets/logo-xjxy-big-ddbed192.webp",
+      "width": 422,
+      "height": 344,
+      "bytes": 15032,
+      "hasAlpha": true,
+      "alphaMax": 106,
+      "displayAlphaCompensation": 2.4056603773584904,
+      "sha256": "ddbed192889361bf65a7c77882dd6f2ff273c71ed465e9a51418c8d45c71d60d",
+      "characters": [
+        "denia",
+        "aemeath",
+        "lynae",
+        "mornye",
+        "chisa",
+        "nabomo"
+      ]
+    },
+    {
+      "id": "huanglong",
+      "name": "瑝珑",
+      "file": "huanglong.png",
+      "sourceUrl": "https://wutheringwaves.kurogames.com/static4.0/assets/logo-hl-big-b7dfb835.png",
+      "width": 422,
+      "height": 344,
+      "bytes": 18906,
+      "hasAlpha": true,
+      "alphaMax": 51,
+      "displayAlphaCompensation": 5,
+      "sha256": "b7dfb83599b4cbe256fd5bcb12c35bb904aa3a841e57d1edaef97376b8389d11",
+      "characters": [
+        "changli",
+        "qiuyuan"
+      ]
+    }
+  ]
+}

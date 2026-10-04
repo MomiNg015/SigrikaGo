@@ -127,7 +127,7 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     expect(container.querySelectorAll(".handbook-strip-name")).toHaveLength(1);
   });
 
-  it("keeps garment watermarks decorative and excludes them from unavailable slots", async () => {
+  it("keeps faction emblems decorative and excludes them from unavailable slots", async () => {
     mockViewport(true);
     const { container, onOpenCharacterDetail } = renderGrid({
       characters: [CHARACTERS.sigrika, CHARACTERS.denia, CHARACTERS.nabomo, CHARACTERS.aemeath, CHARACTERS.baconbits],
@@ -136,15 +136,36 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情" });
     const paper = sigrika.querySelector(".handbook-strip-paper");
     expect(paper.getAttribute("aria-hidden")).toBe("true");
-    expect(paper.querySelector(".handbook-strip-ornament").style.maskImage).toContain("/handbook-ornaments/sigrika.png");
+    const emblem = paper.querySelector(".handbook-strip-emblem");
+    expect(emblem.getAttribute("aria-hidden")).toBe("true");
+    expect(emblem.style.maskImage).toContain("/assets/factions/roya.webp");
     expect(sigrika.querySelectorAll("img")).toHaveLength(1);
     expect(screen.getByRole("button", { name: "爱弥斯角色详情" }).querySelector(".handbook-strip-paper")).not.toBeNull();
     for (const piece of container.querySelectorAll(".is-unowned")) {
-      expect(piece.querySelector(".handbook-strip-paper, .handbook-strip-ornament")).toBeNull();
-      expect(piece.innerHTML).not.toContain("handbook-ornaments/");
+      expect(piece.querySelector(".handbook-strip-paper, .handbook-strip-emblem")).toBeNull();
+      expect(piece.innerHTML).not.toContain("/assets/factions/");
     }
     await userEvent.setup().click(sigrika);
     expect(onOpenCharacterDetail).toHaveBeenCalledWith(CHARACTERS.sigrika);
+  });
+
+  it("uses the user-directed faction mapping without inferring one for the mascot or additions", () => {
+    mockViewport(false);
+    const newcomer = { ...CHARACTERS.sigrika, id: "newcomer", name: "新部员" };
+    const characters = [...Object.values(CHARACTERS), newcomer];
+    const { container } = renderGrid({ characters, owned: new Set(characters.map(({ id }) => id)), itemEffects: {} });
+    const expected = { sigrika: "roya.webp", denia: "startorch.webp", aemeath: "startorch.webp", lynae: "startorch.webp",
+      mornye: "startorch.webp", chisa: "startorch.webp", nabomo: "startorch.webp", changli: "huanglong.png", qiuyuan: "huanglong.png" };
+    for (const [id, file] of Object.entries(expected)) {
+      const tile = container.querySelector(`[data-character-id="${id}"] .handbook-puzzle-tile`);
+      const emblem = tile.querySelector(".handbook-strip-emblem");
+      expect(emblem.style.maskImage).toContain(`/assets/factions/${file}`);
+      expect(Number(emblem.style.getPropertyValue("--handbook-emblem-strength"))).toBeGreaterThan(1);
+      expect(tile.querySelectorAll("img")).toHaveLength(1);
+    }
+    expect(container.querySelector('[data-character-id="baconbits"] .handbook-strip-emblem')).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+    expect(container.querySelector('[data-character-id="newcomer"] .handbook-strip-emblem')).toBeNull();
   });
 
   it("clears expansion on orientation changes and pagination", async () => {

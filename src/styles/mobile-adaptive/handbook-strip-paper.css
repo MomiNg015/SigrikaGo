@@ -19,12 +19,12 @@
   opacity: .32;
   pointer-events: none;
 }
-.handbook-strip-ornament {
+.handbook-strip-emblem {
   position: absolute;
   right: 30px;
-  top: 57%;
-  width: 180px;
-  height: 100px;
+  top: 49%;
+  width: 140px;
+  height: 140px;
   background: #756b5d;
   mask-position: center;
   mask-size: contain;
@@ -32,16 +32,16 @@
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
-  opacity: .09;
+  opacity: calc(.09 * var(--handbook-emblem-strength, 1));
   transition: opacity 200ms ease;
   pointer-events: none;
 }
-.handbook-puzzle-piece.is-expanded .handbook-strip-ornament { opacity: .16; }
+.handbook-puzzle-piece.is-expanded .handbook-strip-emblem { opacity: calc(.16 * var(--handbook-emblem-strength, 1)); }
 @media (max-width: 768px) {
   .handbook-puzzle-piece.is-owned { --handbook-paper-angle: 90deg; }
   .handbook-puzzle-piece.is-owned[data-portrait-side="right"] { --handbook-paper-angle: 270deg; }
-  .handbook-strip-ornament { right: 8%; top: 65%; width: 100px; height: 60px; opacity: .12; }
-  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-ornament { left: 8%; right: auto; }
-  .handbook-puzzle-piece.is-expanded .handbook-strip-ornament { top: 52%; opacity: .18; }
+  .handbook-strip-emblem { right: 4%; top: auto; bottom: 3px; width: 38px; height: 38px; opacity: calc(.14 * var(--handbook-emblem-strength, 1)); }
+  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-emblem { left: 4%; right: auto; }
+  .handbook-puzzle-piece.is-expanded .handbook-strip-emblem { top: 40%; bottom: auto; width: 94px; height: 94px; opacity: calc(.18 * var(--handbook-emblem-strength, 1)); }
 }
-@media (prefers-reduced-motion: reduce) { .handbook-strip-ornament { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .handbook-strip-emblem { transition: none; } }

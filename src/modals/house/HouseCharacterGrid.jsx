@@ -6,10 +6,21 @@ import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
 import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 
-const HANDBOOK_ORNAMENTS = {
-  sigrika: "/assets/characters/handbook-ornaments/sigrika.png",
-  denia: "/assets/characters/handbook-ornaments/denia.png",
-  nabomo: "/assets/characters/handbook-ornaments/nabomo.png"
+const HANDBOOK_FACTIONS = {
+  sigrika: "roya",
+  denia: "startorch",
+  aemeath: "startorch",
+  lynae: "startorch",
+  mornye: "startorch",
+  chisa: "startorch",
+  nabomo: "startorch",
+  changli: "huanglong",
+  qiuyuan: "huanglong"
+};
+const FACTION_EMBLEMS = {
+  roya: { src: "/assets/factions/roya.webp", strength: 255 / 106 },
+  startorch: { src: "/assets/factions/startorch.webp", strength: 255 / 106 },
+  huanglong: { src: "/assets/factions/huanglong.png", strength: 5 }
 };
 
 export default function HouseCharacterGrid(props) {
@@ -85,6 +96,7 @@ export default function HouseCharacterGrid(props) {
           const catalogIndex = currentPage * HANDBOOK_STRIP_PAGE_SIZE + index;
           const artStyle = portrait && handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length, index: catalogIndex });
           const effects = isOwned ? activeCharacterItemEffects(id, itemEffects) : [];
+          const emblem = isOwned ? FACTION_EMBLEMS[HANDBOOK_FACTIONS[id]] : undefined;
           return <div key={character.id}
             className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}`}
             style={characterThemeStyle(character)} data-character-id={id} data-portrait-side={catalogIndex % 2 ? "right" : "left"}
@@ -170,9 +182,9 @@ export default function HouseCharacterGrid(props) {
                 onOpenCharacterDetail(character);
               }}>
               {isOwned && <span className="handbook-strip-paper" aria-hidden="true">
-                {HANDBOOK_ORNAMENTS[id] && <span className="handbook-strip-ornament"
-                  style={{ maskImage: `url("${HANDBOOK_ORNAMENTS[id]}")`,
-                    WebkitMaskImage: `url("${HANDBOOK_ORNAMENTS[id]}")` }} />}
+                {emblem && <span className="handbook-strip-emblem" aria-hidden="true"
+                  style={{ "--handbook-emblem-strength": emblem.strength,
+                    maskImage: `url("${emblem.src}")`, WebkitMaskImage: `url("${emblem.src}")` }} />}
               </span>}
               {hideIntel ? <>
                 <span className="handbook-missing-data" aria-hidden="true"><i /><i /><i /></span>
