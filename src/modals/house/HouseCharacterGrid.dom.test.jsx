@@ -127,6 +127,26 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
     expect(container.querySelectorAll(".handbook-strip-name")).toHaveLength(1);
   });
 
+  it("keeps garment watermarks decorative and excludes them from unavailable slots", async () => {
+    mockViewport(true);
+    const { container, onOpenCharacterDetail } = renderGrid({
+      characters: [CHARACTERS.sigrika, CHARACTERS.denia, CHARACTERS.nabomo, CHARACTERS.aemeath, CHARACTERS.baconbits],
+      owned: new Set(["sigrika", "aemeath"]), itemEffects: {}
+    });
+    const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情" });
+    const paper = sigrika.querySelector(".handbook-strip-paper");
+    expect(paper.getAttribute("aria-hidden")).toBe("true");
+    expect(paper.querySelector(".handbook-strip-ornament").style.maskImage).toContain("/handbook-ornaments/sigrika.png");
+    expect(sigrika.querySelectorAll("img")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "爱弥斯角色详情" }).querySelector(".handbook-strip-paper")).not.toBeNull();
+    for (const piece of container.querySelectorAll(".is-unowned")) {
+      expect(piece.querySelector(".handbook-strip-paper, .handbook-strip-ornament")).toBeNull();
+      expect(piece.innerHTML).not.toContain("handbook-ornaments/");
+    }
+    await userEvent.setup().click(sigrika);
+    expect(onOpenCharacterDetail).toHaveBeenCalledWith(CHARACTERS.sigrika);
+  });
+
   it("clears expansion on orientation changes and pagination", async () => {
     const resize = mockViewport(true);
     const characters = Array.from({ length: 11 }, (_, index) => ({ ...CHARACTERS.sigrika, id: `member-${index}`, name: `部员${index}` }));

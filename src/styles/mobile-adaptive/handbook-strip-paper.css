@@ -1,0 +1,47 @@
+/* Owned memento-page paint; portrait geometry and locked slots stay independent. */
+.handbook-puzzle-piece.is-owned {
+  --handbook-paper-angle: 110deg;
+  --handbook-strip-background: linear-gradient(var(--handbook-paper-angle),
+    color-mix(in srgb, var(--character-theme-color, #d9d6d0) 32%, #fffdf8) 0%,
+    color-mix(in srgb, var(--character-theme-color, #d9d6d0) 12%, #fffdf8) 40%,
+    #fffdf8 78%);
+}
+.handbook-strip-paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.handbook-strip-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/assets/mailbox/mail-body-paper-natural.webp") center / 560px 560px;
+  opacity: .32;
+  pointer-events: none;
+}
+.handbook-strip-ornament {
+  position: absolute;
+  right: 30px;
+  top: 57%;
+  width: 180px;
+  height: 100px;
+  background: #756b5d;
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  opacity: .09;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.handbook-puzzle-piece.is-expanded .handbook-strip-ornament { opacity: .16; }
+@media (max-width: 768px) {
+  .handbook-puzzle-piece.is-owned { --handbook-paper-angle: 90deg; }
+  .handbook-puzzle-piece.is-owned[data-portrait-side="right"] { --handbook-paper-angle: 270deg; }
+  .handbook-strip-ornament { right: 8%; top: 65%; width: 100px; height: 60px; opacity: .12; }
+  .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-ornament { left: 8%; right: auto; }
+  .handbook-puzzle-piece.is-expanded .handbook-strip-ornament { top: 52%; opacity: .18; }
+}
+@media (prefers-reduced-motion: reduce) { .handbook-strip-ornament { transition: none; } }

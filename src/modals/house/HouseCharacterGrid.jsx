@@ -6,6 +6,12 @@ import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
 import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 
+const HANDBOOK_ORNAMENTS = {
+  sigrika: "/assets/characters/handbook-ornaments/sigrika.png",
+  denia: "/assets/characters/handbook-ornaments/denia.png",
+  nabomo: "/assets/characters/handbook-ornaments/nabomo.png"
+};
+
 export default function HouseCharacterGrid(props) {
   const boardRef = useRef(null);
   const inputMode = useRef("keyboard");
@@ -163,6 +169,11 @@ export default function HouseCharacterGrid(props) {
                 setExpanded(null);
                 onOpenCharacterDetail(character);
               }}>
+              {isOwned && <span className="handbook-strip-paper" aria-hidden="true">
+                {HANDBOOK_ORNAMENTS[id] && <span className="handbook-strip-ornament"
+                  style={{ maskImage: `url("${HANDBOOK_ORNAMENTS[id]}")`,
+                    WebkitMaskImage: `url("${HANDBOOK_ORNAMENTS[id]}")` }} />}
+              </span>}
               {hideIntel ? <>
                 <span className="handbook-missing-data" aria-hidden="true"><i /><i /><i /></span>
                 <span className="handbook-missing-label">暂无情报</span>

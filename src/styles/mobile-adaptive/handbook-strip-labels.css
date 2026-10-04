@@ -17,6 +17,14 @@
   font-weight: 400 !important;
 }
 .handbook-puzzle-piece.is-expanded .handbook-strip-name { opacity: 1; }
+.handbook-strip-name::after {
+  content: "";
+  display: block;
+  width: 28px;
+  margin: 7px 0 0 auto;
+  border-bottom: 1px solid currentColor;
+  opacity: .35;
+}
 .handbook-missing-data {
   position: absolute;
   inset: 18% 14%;
@@ -53,6 +61,7 @@
     text-align: center;
   }
   .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-name { left: 6px; right: auto; }
+  .handbook-strip-name::after { width: 24px; margin: 5px auto 0; }
   .handbook-puzzle-piece.is-expanded .handbook-strip-name { top: 30%; }
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-strip-name,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label { font-size: clamp(23px, 7vw, 30px); }
