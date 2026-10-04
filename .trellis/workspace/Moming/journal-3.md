@@ -1778,3 +1778,36 @@ Removed secondary detail button and open matching details on every strip activat
 ### Next Steps
 
 - None - task complete
+
+
+## Session 175: Static locked handbook strips and smooth desktop portraits
+
+**Date**: 2026-10-04
+**Task**: Static locked handbook strips and smooth desktop portraits
+**Branch**: `master`
+
+### Summary
+
+Unowned and missing-data slots are anonymous disabled elements with no hover or activation response. Mobile questions occupy the opposite label area. Desktop positions follow actual flex width through one unchanged expression, with a right-shifted 30% face anchor and wider preview for clear labels. Relevant 180 checks passed across targeted runs, handbook browser 15/15 and home guide 6/6 passed; lint/build/built CSS passed. Updated three screenshots, system design and executable contract. Full repo gate and other browsers not rerun.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b9b38116` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
