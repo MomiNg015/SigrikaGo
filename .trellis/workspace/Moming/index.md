@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 176
+- **Total Sessions**: 177
 - **Last Active**: 2026-10-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1846 | Active |
+| `journal-3.md` | ~1879 | Active |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 177 | 2026-10-04 | Official handbook faction emblems | `80e69295` | `master` |
 | 176 | 2026-10-04 | 部员纪念册纸面与服饰纹样精修 | `0af1becf` | `master` |
 | 175 | 2026-10-04 | Static locked handbook strips and smooth desktop portraits | `b9b38116` | `master` |
 | 174 | 2026-10-04 | Handbook direct details and larger portraits | `767fe7e7` | `master` |

@@ -1844,3 +1844,36 @@ Unowned and missing-data slots are anonymous disabled elements with no hover or 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 177: Official handbook faction emblems
+
+**Date**: 2026-10-04
+**Task**: Official handbook faction emblems
+**Branch**: `master`
+
+### Summary
+
+Replaced garment watermarks with exact official native faction artwork and user-directed nine-member mapping. Preserved originals and source provenance, adjusted square desktop/mobile masks and alpha compensation, removed old ornaments/script, and retained locked anonymity and existing geometry/input behavior. Scoped implementation122 and CSS146 checks, lint,15 browser cases, build and builtCSS passed; current four-viewport screenshots, design Markdown/HTML, frontend contract and measured inventory synchronized.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `80e69295` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
