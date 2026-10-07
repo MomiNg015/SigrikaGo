@@ -51,3 +51,82 @@
     --board-size: clamp(430px, calc(100dvh - 205px), 560px);
   }
 }
+
+/* Keep the playable duel inside supported compact landscape windows. */
+@media (max-width: 900px) and (orientation: landscape) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .mobile-room-screen.sigrika-candy-duel-room:has(.mobile-room-viewport[data-action-anchored]) {
+    & .mobile-player-slot {
+      height: 100%;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    & .player-info {
+      height: 100% !important;
+      min-height: 0;
+      max-height: none !important;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "meta" "portrait" "time";
+      grid-template-rows: max-content minmax(0, 1fr) max-content;
+      gap: 6px;
+    }
+
+    & .player-meta {
+      grid-area: meta;
+      min-width: 0;
+    }
+
+    & .portrait-wrap:not(.no-character) {
+      grid-area: portrait;
+      width: 100%;
+      max-width: 132px;
+      justify-self: center;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    & .mobile-board-viewport {
+      height: 100%;
+      align-self: stretch;
+    }
+
+    & .board-stage {
+      width: auto;
+      height: 100%;
+      min-height: 0;
+      max-height: 100%;
+      aspect-ratio: 1;
+      padding: 0 !important;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    & .board-wrap {
+      width: 100% !important;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 1;
+      grid-template-columns: 16px minmax(0, 1fr) 16px;
+      grid-template-rows: 16px minmax(0, 1fr) 16px;
+    }
+
+    & .mobile-room-dock {
+      max-height: none;
+      transform: none;
+    }
+
+    & .mobile-tab-panel {
+      max-height: none;
+      overflow: auto !important;
+    }
+
+    & .mobile-tab-panel .action-bar {
+      width: 100%;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+      &.replay-bar { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    }
+  }
+}

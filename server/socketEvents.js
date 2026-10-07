@@ -62,6 +62,7 @@ export function registerSocketEvents(socket, deps) {
 
   registerPracticeSocketEvents(socket, {
     io: deps.io,
+    prisma: deps.prisma,
     refreshSocketUser: deps.refreshSocketUser,
     createPracticeRoom: deps.createPracticeRoom,
     isUserInActiveRoom: deps.isUserInActiveRoom,

@@ -806,3 +806,21 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 
 
 Startup network and match ACK behavior follows [Internal Test Release Contract](../backend/internal-test-release-contract.md). Transient auth/preload failures retain session state; only confirmed 401/403 resets authentication.
+
+
+### Match card character cache
+
+- `useMatchCharacterSelection` owns account-local entry selections under `sigrika-match-characters:<userId>`; standard, gomoku, regular, capture and team are independent arrays.
+- Empty storage must not default to `user.selectedCharacter`. Filter unowned, disabled, item-blocked and duplicate identities before rendering or submitting.
+- Home card actions validate one character or three distinct team members before closing the picker. Missing selections use the exact notice `尚未选择角色，无法匹配`.
+- Single selections close immediately; team changes persist as selected and the reused lineup picker confirms selection without queuing. Only the card starts matchmaking.
+- `match:join.characterId` and `practice:start.characterId` select the room identity without changing the persisted account default. Server validation is mandatory; match range retries preserve the identity.
+- The server retains canonical explicit `characterId` in the queue and revalidates it during range retries and before pairing same-mode single-character candidates: invalid retry selections leave the old queue with `match:left`, `error:toast` and refreshed statistics; ownership/catalog changes, disconnection or account-refresh failure remove only the captured queue entry, so stale async results cannot remove a canceled or newly queued entry.
+- Regression coverage: `MatchCharacterSelection.dom.test.jsx`, `matchCharacterSelection.test.js` and socket admission tests.
+
+### Window focus BGM
+
+- `BackgroundMusic.windowFocused` combines app overlay state with owner-counted `ModalDialog` focus requests in `src/audio/backgroundFocus.js`; nested cleanup must release only its own request.
+- All decoded BGM tracks share `gain -> lowpass -> focus gain -> destination`. Focus uses 900 Hz, Q 0.5 and gain 0.72; transitions take 500 ms. Voice, SFX, track offsets, pause and explicit ducking remain independent.
+- The HTML fallback attenuates volume by 0.72 during focus; low-pass filtering requires Web Audio. Opening/closing windows must never reschedule music or change persisted audio settings.
+- Regression coverage: owner nesting/idempotent release, shared graph reuse, initial focused track and smooth clear/focused targets.

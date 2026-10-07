@@ -1,4 +1,4 @@
-/* Final portrait composition for the shared profile dossier. */
+/* Mobile profile composition. */
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.resume-modal, .user-profile-modal) {
     height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
@@ -126,15 +126,6 @@
     height: 100% !important;
   }
 
-  .profile-resume-view .profile-hero-portrait > .profile-portrait-mask > img {
-    width: 80% !important;
-    height: 80% !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    scale: 1 !important;
-    translate: 0 0 !important;
-  }
-
   .profile-resume-view .profile-identity-block {
     justify-self: center !important;
     display: grid !important;
@@ -152,7 +143,7 @@
     --user-nameplate-scale: 1.288 !important;
     justify-items: center !important;
     max-width: 100% !important;
-    padding: 4px 12px !important;
+    padding: 4px 0 !important;
   }
 
   .profile-resume-view .profile-identity-block :is(.user-identity-main, .user-identity-name-tag) {

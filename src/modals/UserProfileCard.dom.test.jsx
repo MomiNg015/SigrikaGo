@@ -66,6 +66,30 @@ describe("UserProfileCard dossier interactions", () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  it.each([
+    { themed: false, action: "举报", name: "举报用户" },
+    { themed: true, action: "举报", name: "举报用户" },
+    { themed: false, action: "加入黑名单", name: "加入黑名单" },
+    { themed: true, action: "加入黑名单", name: "加入黑名单" }
+  ])("portals $action outside the entering profile (theme shell: $themed)", ({ themed, action, name }) => {
+    const onClose = vi.fn();
+    const { container } = renderProfile({}, { onClose });
+    if (themed) container.className = "app-shell player-theme-enabled theme-bright-school";
+    const profile = container.querySelector(".user-profile-modal");
+    const trigger = screen.getByRole("button", { name: action, exact: true });
+    trigger.focus();
+    fireEvent.click(trigger);
+    const nested = screen.getByRole("dialog", { name });
+    expect(profile.contains(nested)).toBe(false);
+    expect(nested.parentElement.parentElement).toBe(themed ? container : document.body);
+    expect(nested.closest(".app-shell")).toBe(themed ? container : null);
+    fireEvent.keyDown(nested, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name })).toBeNull();
+    expect(profile.isConnected).toBe(true);
+    expect(document.activeElement).toBe(trigger);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it("keeps social actions in the identity area and locks the mode tab order", async () => {
     const onAddBlacklist = vi.fn().mockResolvedValue(undefined);
     renderProfile({}, { onAddBlacklist });
@@ -138,14 +162,21 @@ describe("UserProfileCard dossier interactions", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "已点赞 6" }).disabled).toBe(true));
   });
 
-  it("keeps report submission disabled and labelled while it is pending", async () => {
+  it("keeps the report form submit-only after its textarea and disables empty or pending submission", async () => {
     const request = deferred();
     api.mockReturnValueOnce(request.promise);
     renderProfile();
 
     fireEvent.click(screen.getByRole("button", { name: "举报" }));
-    fireEvent.change(screen.getByLabelText("举报内容"), { target: { value: "不当内容" } });
-    fireEvent.click(screen.getByRole("button", { name: "提交举报" }));
+    const dialog = screen.getByRole("dialog", { name: "举报用户" });
+    const textarea = within(dialog).getByLabelText("举报内容");
+    const submit = within(dialog).getByRole("button", { name: "提交举报" });
+    expect(submit.disabled).toBe(true);
+    expect([...textarea.closest("form").querySelectorAll("button")]).toEqual([submit]);
+    expect(textarea.compareDocumentPosition(submit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(dialog).queryByRole("button", { name: "取消" })).toBeNull();
+    fireEvent.change(textarea, { target: { value: "不当内容" } });
+    fireEvent.click(submit);
     expect(screen.getByRole("button", { name: "提交中…" }).disabled).toBe(true);
     expect(api).toHaveBeenCalledTimes(1);
 

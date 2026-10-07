@@ -1,6 +1,6 @@
 /* Item-effect character target dialog and result state. */
 .nested-backdrop {
-  z-index: 12;
+  z-index: 180;
 }
 
 .character-target-modal {

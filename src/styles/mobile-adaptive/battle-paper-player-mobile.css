@@ -1,4 +1,4 @@
-/* Compact A mobile cards. */
+/* Phone cards */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
     display: grid !important;
@@ -26,7 +26,7 @@
       z-index: 1;
     }
     & .portrait-wrap > img { height: 88px !important; }
-    & .battle-character-label { font-size: 10px; padding: 2px 5px; }
+    & .battle-character-label { font-size: 10px; padding: 2px 5px; left: 2px; white-space: nowrap; }
     &:has(.black-portrait) { --identity-bg: #252321; --identity-ink: #fffaf0; }
     &:has(.white-portrait) { --identity-bg: #fffaf0; --identity-ink: #302820; }
     & .player-meta {

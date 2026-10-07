@@ -10,8 +10,9 @@ import { audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
 import { currentDuckedBackgroundVolume, subscribeBackgroundDuck } from "./backgroundDucking.js";
 import { subscribeBackgroundMusicPause } from "./backgroundMusicPause.js";
+import { backgroundFocusDestination, BGM_FOCUS, setBackgroundFocus, subscribeBackgroundFocus } from "./backgroundFocus.js";
 
-export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
+export function BackgroundMusic({ track, audioSettings, resumeSignal = 0, windowFocused = false }) {
   const playerRef = useRef({
     context: null,
     active: [],
@@ -29,6 +30,12 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
   });
   const volume = audioVolume(audioSettings, "bgm");
   const trackKey = createPlaybackKey(track);
+
+  useEffect(() => subscribeBackgroundFocus((dialogFocused) => {
+    const state = playerRef.current;
+    setBackgroundFocus(state, windowFocused || dialogFocused);
+    if (state.htmlFallback) setBackgroundVolume(state, BGM_FOCUS.seconds * 1000);
+  }), [windowFocused]);
 
   useEffect(() => {
     setBackgroundBaseVolume(playerRef.current, volume);
@@ -149,7 +156,7 @@ async function scheduleBackgroundTrack({ state, context, track, generation }) {
   const schedule = createPlaybackSchedule({ playback: track.playback, buffers, startAt, offset: state.offset });
   const gain = context.createGain();
   applyGainRamp(gain.gain, createVolumeRamp({ from: 0, to: currentBackgroundVolume(state), startAt }));
-  gain.connect(context.destination);
+  gain.connect(backgroundFocusDestination(state, context));
   stopBackgroundHtmlFallback(state);
   fadeOutBackgroundPlayers(state);
 
@@ -206,15 +213,15 @@ function startBackgroundHtmlFallback(state, track) {
   const src = htmlFallbackSource(track.playback);
   if (!src) return;
   if (state.htmlFallback?.src === src) {
-    state.htmlFallback.audio.volume = currentBackgroundVolume(state);
+    state.htmlFallback.audio.volume = currentBackgroundVolume(state, true);
     return;
   }
   stopBackgroundHtmlFallback(state);
   const audio = new Audio(src);
   audio.loop = true;
   audio.preload = "auto";
-  audio.volume = currentBackgroundVolume(state);
   state.htmlFallback = { audio, src };
+  audio.volume = currentBackgroundVolume(state, true);
   audio.play().catch(() => {});
 }
 
@@ -328,7 +335,7 @@ function setBackgroundBaseVolume(state, volume) {
 function setBackgroundVolume(state, durationMs = 120) {
   const context = state.context;
   const volume = currentBackgroundVolume(state);
-  if (state.htmlFallback?.audio) rampHtmlFallbackVolume(state, volume, durationMs);
+  if (state.htmlFallback?.audio) rampHtmlFallbackVolume(state, currentBackgroundVolume(state, true), durationMs);
   if (!context) return;
   const now = context.currentTime;
   const durationSeconds = Math.max(0, Number(durationMs) || 0) / 1000;
@@ -366,8 +373,9 @@ function clearHtmlVolumeRamp(state) {
   state.htmlVolumeRampId = null;
 }
 
-function currentBackgroundVolume(state) {
-  return currentDuckedBackgroundVolume(state.baseVolume);
+function currentBackgroundVolume(state, htmlFallback = false) {
+  const fallbackRatio = htmlFallback && state.windowFocused ? BGM_FOCUS.ratio : 1;
+  return currentDuckedBackgroundVolume(state.baseVolume) * fallbackRatio;
 }
 
 function fadeOutBackgroundPlayers(state) {

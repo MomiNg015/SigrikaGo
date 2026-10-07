@@ -4,6 +4,17 @@ import { readFileSync } from "node:fs";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("profile mobile layout contracts", () => {
+  it("keeps rank and record as two columns above a full-width recent strip", () => {
+    const overviewCss = readFileSync(new URL("../styles/modals/profile-overview.css", import.meta.url), "utf8");
+    const headerCss = readFileSync(new URL("../styles/mobile-adaptive/window-sticker-resume-header.css", import.meta.url), "utf8");
+    const summaryGrid = overviewCss.match(/\.profile-summary-grid\s*\{([^}]+)\}/)?.[1] ?? "";
+    const overviewGrid = overviewCss.match(/\.profile-overview-grid\s*\{([^}]+)\}/)?.[1] ?? "";
+    expect(overviewGrid).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(summaryGrid).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);");
+    expect(headerCss).not.toContain("grid-template-columns: repeat(4, minmax(0, 1fr))");
+    expect(overviewCss.match(/\.profile-record-metric dd\s*\{([^}]+)\}/)?.[1]).toContain("white-space: nowrap;");
+  });
+
   it("lets empty record frames grow in ordinary and bookmark profile bodies", () => {
     const emptyCss = readCssWithImports(new URL("../styles/mobile-adaptive/window-sticker-resume-header.css", import.meta.url));
     const bookmarkCss = readCssWithImports(new URL("../styles/mobile-adaptive/window-bookmark-mobile.css", import.meta.url));
@@ -126,9 +137,7 @@ describe("profile mobile layout contracts", () => {
     expect(finalProfileCss).toContain(".profile-resume-view .profile-hero-portrait > .profile-portrait-mask");
     expect(finalProfileCss).toContain("width: 108px !important");
     expect(finalProfileCss).toContain("height: 96px !important");
-    expect(finalProfileCss).toContain("width: 80% !important");
-    expect(finalProfileCss).toContain("height: 80% !important");
-    expect(finalProfileCss).toContain("object-fit: contain !important");
+    expect(finalProfileCss).not.toContain(".profile-hero-portrait > .profile-portrait-mask > img");
     expect(finalProfileCss).toContain("font-size: 1.75rem !important");
     expect(finalProfileCss).toContain("--user-nameplate-scale: 1.288 !important");
     expect(finalProfileCss).toContain("width: var(--user-nameplate-width) !important");
@@ -170,7 +179,7 @@ describe("profile mobile layout contracts", () => {
     expect(characterRecordCardsCss).toContain("position: absolute !important");
     expect(characterRecordCardsCss).toContain("border-spacing: 0 7px !important");
     expect(characterRecordCardsCss).toContain("7%, var(--profile-dossier-card-surface, var(--bright-sheet))");
-    expect(characterRecordCardsCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important");
+    expect(characterRecordCardsCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.18) !important");
     expect(finalMobileCss).toContain(".profile-character-table .profile-character-identity");
     expect(finalMobileCss).toContain(".profile-character-table tbody td::before {\n    content: none !important");
     expect(finalMobileCss).toContain(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask");

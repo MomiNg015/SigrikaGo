@@ -4,12 +4,12 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); localStorage.clear(); vi.unstubAllGlobals(); });
 
 function setup(desktop, onStartMatch = () => {}) {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: desktop, addEventListener() {}, removeEventListener() {} })));
-  render(<HomeScreen user={{ username: "test", selectedCharacter: "sigrika", role: "player" }} characters={CHARACTERS} matchModePickerOpen onStartMatch={onStartMatch} />);
-  return screen.getByRole("button", { name: /星炬对弈.*匹配中/ });
+  render(<HomeScreen user={{ username: "test", ownedCharacters: ["sigrika"], selectedCharacter: "sigrika", role: "player" }} characters={CHARACTERS} matchModePickerOpen onStartMatch={onStartMatch} />);
+  return screen.getAllByRole("button", { name: "星炬对弈" }).at(-1);
 }
 
 describe("mode rules hover", () => {
@@ -50,7 +50,9 @@ describe("mode rules hover", () => {
     expect(screen.queryByRole("tooltip")).toBeNull();
     fireEvent.click(modeButton);
     expect(onStartMatch).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: /常规匹配.*匹配中/ }));
-    expect(onStartMatch).toHaveBeenCalledWith("spark");
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配选择角色" }));
+    fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
+    expect(onStartMatch).toHaveBeenCalledWith("spark", undefined, "sigrika");
   });
 });

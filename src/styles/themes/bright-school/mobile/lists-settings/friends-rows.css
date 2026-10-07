@@ -5,6 +5,7 @@
     padding: 4px;
     gap: 4px;
     flex-wrap: nowrap;
+    min-height: 56px;
 
     & button {
       min-width: 0;
@@ -89,5 +90,28 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-actions-cell {
     grid-area: action !important;
     justify-self: end !important;
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row {
+    min-height: 94px;
+    grid-template-areas:
+      "avatar info action"
+      "status status action" !important;
+    grid-template-columns: 32px minmax(0, 1fr) 44px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .online-status {
+    width: max-content;
+    justify-self: start;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .user-identity:not(.has-nameplate) .user-identity-name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }

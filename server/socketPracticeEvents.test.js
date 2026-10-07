@@ -177,3 +177,20 @@ describe("practice socket events", () => {
     expect(acknowledge).toHaveBeenCalledWith({ ok: true, roomCode: "24680" });
   });
 });
+
+it("uses the requested challenge identity and rejects unowned characters", async () => {
+  const socket = createSocket();
+  socket.user = { ...socket.user, selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath"] };
+  const createPracticeRoom = vi.fn(() => ({ code: "24680" }));
+  registerPracticeSocketEvents(socket, { io: {}, refreshSocketUser: vi.fn(), createPracticeRoom,
+    isUserInActiveRoom: () => false, leaveMatchmaking: vi.fn(), characterSelectionData: async () => ({}) });
+  const ack = vi.fn();
+  const options = { difficulty: "advanced", playerColor: "random", challenge: "capture-challenge", engineVersion: "gnugo-3.8-v1" };
+  await socket.trigger("practice:start", { ...options, characterId: "aemeath" }, ack);
+  expect(createPracticeRoom.mock.calls[0][0].user.selectedCharacter).toBe("aemeath");
+  expect(socket.user.selectedCharacter).toBe("sigrika");
+  createPracticeRoom.mockClear();
+  await socket.trigger("practice:start", { ...options, characterId: "nabomo" }, ack);
+  expect(ack).toHaveBeenLastCalledWith(expect.objectContaining({ code: "invalid_match_character" }));
+  expect(createPracticeRoom).not.toHaveBeenCalled();
+});

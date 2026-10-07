@@ -3,7 +3,7 @@
   --profile-dossier-card-surface: var(--bright-sheet);
   --profile-dossier-card-border: var(--bright-border);
   --profile-dossier-shadow-large: 4px 5px 0 rgba(61, 43, 37, 0.78);
-  --profile-dossier-shadow-medium: 3px 4px 0 rgba(61, 43, 37, 0.68);
+  --profile-dossier-shadow-medium: 2px 3px 0 rgba(61, 43, 37, 0.54);
   --profile-dossier-shadow-small: 1px 2px 0 rgba(61, 43, 37, 0.54);
 }
 
@@ -32,8 +32,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-overview-grid {
-  gap: 12px !important;
-  padding: 4px 0 12px !important;
+  gap: 10px !important;
+  padding: 4px 0 10px !important;
   border: 0 !important;
 }
 
@@ -44,6 +44,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item {
   position: relative !important;
+  align-content: start !important;
   overflow: visible !important;
   border: 2px solid var(--profile-dossier-card-border) !important;
   border-radius: 14px !important;
@@ -56,14 +57,15 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item .profile-summary-label {
-  color: color-mix(in srgb, var(--bright-ink) 72%, var(--bright-pink)) !important;
+  color: var(--bright-ink) !important;
+  font-weight: 700 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-recent-section {
-  border: 2px solid var(--profile-dossier-card-border) !important;
-  border-radius: 14px !important;
+  border: 1px solid var(--profile-dossier-line) !important;
+  border-radius: 10px !important;
   background: var(--profile-dossier-card-surface) !important;
-  box-shadow: var(--profile-dossier-shadow-medium) !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-section {

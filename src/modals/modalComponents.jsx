@@ -1,5 +1,6 @@
-import { createElement, useEffect, useRef } from "react";
+import { createElement, useEffect, useLayoutEffect, useRef } from "react";
 import Button from "../ui/primitives/Button.jsx";
+import { requestBackgroundFocus } from "../audio/backgroundFocus.js";
 
 const MODAL_ACTION_VARIANT_CLASSES = {
   primary: "primary-action",
@@ -20,6 +21,9 @@ export function ModalActionButton({ variant = "primary", className, type = "butt
 export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, className, children, onClose, ...props }) {
   const dialogRef = useRef(null);
   const restoreFocusRef = useRef(null);
+  const lastFocusedControlRef = useRef(null);
+
+  useEffect(() => requestBackgroundFocus(), []);
 
   useEffect(() => {
     restoreFocusRef.current = document.activeElement;
@@ -30,6 +34,20 @@ export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, classNa
       if (restoreFocusRef.current?.isConnected) restoreFocusRef.current.focus();
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const previous = lastFocusedControlRef.current;
+    const active = document.activeElement;
+    if (previous && (active === document.body || active === previous)
+      && (previous.disabled || !previous.isConnected)) {
+      dialogRef.current?.focus();
+    }
+  });
+
+  function handleFocusCapture(event) {
+    props.onFocusCapture?.(event);
+    if (dialogRef.current?.contains(event.target)) lastFocusedControlRef.current = event.target;
+  }
 
   function handleKeyDown(event) {
     props.onKeyDown?.(event);
@@ -50,7 +68,10 @@ export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, classNa
     }
     const first = focusable[0];
     const last = focusable.at(-1);
-    if (event.shiftKey && document.activeElement === first) {
+    if (document.activeElement === dialogRef.current) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
       last.focus();
     } else if (!event.shiftKey && document.activeElement === last) {
@@ -68,6 +89,7 @@ export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, classNa
     "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy,
     tabIndex: -1,
+    onFocusCapture: handleFocusCapture,
     onKeyDown: handleKeyDown
   }, children);
 }

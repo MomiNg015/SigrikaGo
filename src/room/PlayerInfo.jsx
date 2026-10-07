@@ -4,6 +4,7 @@ import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
+import CharacterBustPortrait from "../shared/CharacterBustPortrait.jsx";
 import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
@@ -97,13 +98,14 @@ function PlayerInfo({
       {player.teamLineup ? <div className="team-portrait-display">
         <div className="team-portrait-strip" aria-label="出场顺序">
         {player.teamLineup.map((entry, index) => {
-          const member = entry.character ? playerCharacterForDisplay(characters, { ...player, ...entry }) : null;
+          const memberPlayer = { ...player, ...entry };
+          const member = entry.status !== "hidden" && entry.character ? playerCharacterForDisplay(characters, memberPlayer) : null;
           return <div key={index} className={`team-portrait-slot is-${entry.status ?? "hidden"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : entry.status === "finished" ? "，已退场" : ""}`}>
-            {member ? <div className="team-portrait-art"><img {...playerCandyPortraitProps(member, { ...player, ...entry })} alt={member.name} /></div> : <span className="team-portrait-mystery">?</span>}
+            {member ? <div className="team-portrait-art"><CharacterBustPortrait character={member} user={memberPlayer.user} costumeSnapshot={memberPlayer.costumeSnapshot} variant="team" alt={member.name} /></div> : <span className="team-portrait-mystery">?</span>}
           </div>;
         })}
         </div>
-      </div> : hasCharacter && !sigrikaCandyDuel && <img {...playerCandyPortraitProps(character, player)} alt={character.name} />}
+      </div> : hasCharacter && !sigrikaCandyDuel && <CharacterBustPortrait character={character} user={player.user} costumeSnapshot={player.costumeSnapshot} variant="battle" alt={character.name} />}
       {(isCorruptedPlayer || useTutorialPlayerPortrait) && (
         <img
           className={useTutorialPlayerPortrait ? "tutorial-player-portrait" : "sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"}
@@ -302,6 +304,7 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
   return previousPlayer?.color === nextPlayer?.color
     && previousPlayer?.characterId === nextPlayer?.characterId
     && previousPlayer?.character === nextPlayer?.character
+    && previousPlayer?.costumeSnapshot === nextPlayer?.costumeSnapshot
     && previousPlayer?.teamLineup === nextPlayer?.teamLineup
     && previousPlayer?.isTutorialPlayer === nextPlayer?.isTutorialPlayer
     && previousPlayer?.isBot === nextPlayer?.isBot

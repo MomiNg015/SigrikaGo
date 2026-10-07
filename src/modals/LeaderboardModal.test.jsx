@@ -5,6 +5,17 @@ import LeaderboardModal, { isLeaderboardCurrentUser, leaderboardRankClass } from
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
+  it("reserves ranked mobile identity width independently of large record counters", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive/bright-school-overrides/leaderboard-cards/modal-list-shell.css", import.meta.url), "utf8");
+    const block = cssBlock(css, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal .ranked-leaderboard .leaderboard-row");
+    expect(block).toContain('"rank avatar player"');
+    expect(block).toContain('"rank record record"');
+    expect(block).toContain("min-height: 109px !important");
+    expect(block).toContain("grid-template-columns: 24px 46px minmax(0, 1fr)");
+    const captureBlock = cssBlock(css, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal .capture-leaderboard .leaderboard-row");
+    expect(captureBlock).toContain('"rank score score"');
+    expect(captureBlock).toContain("min-height: 93px !important");
+  });
   it("renders a labelled leaderboard sticker header", () => {
     const markup = renderToStaticMarkup(
       <LeaderboardModal token="token" user={{ id: "u1" }} characters={{}} onClose={() => {}} />

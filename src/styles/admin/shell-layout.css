@@ -95,3 +95,38 @@
   background: #fff1f4;
   border: 1px solid #f0b6c1;
 }
+
+@media (max-width: 900px) {
+  .admin-screen {
+    height: 100dvh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .admin-sidebar {
+    min-width: 0;
+    max-height: none;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .admin-sidebar strong,
+  .admin-sidebar button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .admin-sidebar strong {
+    margin: 0 8px 0 0;
+  }
+
+  .admin-main {
+    max-height: none;
+  }
+
+  .admin-main header {
+    flex-wrap: wrap;
+  }
+}

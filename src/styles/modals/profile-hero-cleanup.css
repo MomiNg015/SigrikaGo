@@ -46,9 +46,9 @@
   grid-template-columns: 172px minmax(0, 1fr) max-content;
   grid-template-areas: "portrait identity actions";
   align-items: center;
-  gap: 28px;
+  gap: 20px;
   min-height: 172px;
-  padding: 18px 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--profile-dossier-line);
   background: transparent;
 }
@@ -145,4 +145,23 @@
   border: 0;
   box-shadow: none;
   filter: none;
+}
+
+@media (max-width: 768px) {
+  .profile-resume-view .profile-identity-block .user-identity:not(.has-nameplate) {
+    font-size: 1.5rem !important;
+    padding-block: 0 !important;
+    @media (max-width: 360px) and (orientation: portrait) {
+      font-size: 1.375rem !important;
+    }
+    & .user-identity-name-tag { padding-inline: 0 !important; }
+    & .user-identity-name {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      letter-spacing: -0.01em !important;
+    }
+  }
 }

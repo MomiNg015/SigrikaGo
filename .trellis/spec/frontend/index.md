@@ -21,6 +21,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
 | [CSS Architecture](./css-architecture.md) | Stylesheet layer order, theme contracts, Tailwind route | Filled |
 | [Handbook Portrait Strips](./handbook-puzzle-contract.md) | Ordered diagonal slices, hover/touch expansion, ownership, portrait precedence and full-body details | Filled |
+| [Identity Bust Portraits](./identity-bust-contract.md) | Shared student-ID/profile/battle crops, effective appearance, failure fallback, hidden teams and preloads | Filled |
 | [Thinking Loading Art Prototype](./loading-art-prototype.md) | Transparent bulb masks, axis fill, frame animation, static completion and sample boundaries | Filled |
 | [Button Colors](./button-colors.md) | Ordinary player action colors and protected visual boundaries | Filled |
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
@@ -36,6 +37,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 - Read [CSS Architecture](./css-architecture.md) before changing `src/styles/**`, theme CSS, HUD compatibility CSS, or CSS contract tests.
 - Read [Recruitment Cinematic](./recruitment-cinematic-contract.md) before changing Aemeath memorial-ticket timing, assets, recovery state, or presentation CSS.
 - Read [Quality Guidelines](./quality-guidelines.md) for feature-specific visual and mobile contracts that apply to the touched surface.
+- Read [Identity Bust Portraits](./identity-bust-contract.md) before changing identity art, battle portraits, portrait resolution or critical portrait preloads.
 - Read [Authentication Form And Session Contract](../backend/authentication-contract.md) before changing `AuthScreen`, auth API requests, or login/registration copy and validation.
 - Read [Structured Skill Descriptions](../backend/skill-description-contract.md) before changing skill-copy parsing, trait popovers, overclock labels, or the admin trait editor.
 - For UI changes, update desktop and mobile contracts together unless the task explicitly scopes one viewport only.

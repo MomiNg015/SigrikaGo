@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CharacterMusicPreview, MarqueeText } from "./CharacterMusicPreview.jsx";
 
 const baseTrack = track("base", "普通技能曲");
@@ -55,6 +55,21 @@ describe("CharacterMusicPreview interaction", () => {
     expect(await screen.findByRole("button", { name: "保存失败 · 点击重试" })).toBeTruthy();
     expect(screen.getByRole("option", { name: /远航星默认曲，已选择/ }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("region", { name: "角色技能曲目单" })).toBeTruthy();
+  });
+
+  it("preserves the selected override and open sheet through fresh same-character slot payloads", async () => {
+    const onTrackChange = vi.fn().mockResolvedValue({});
+    const { rerender } = renderPlayer(onTrackChange);
+    fireEvent.click(screen.getByRole("button", { name: /打开曲目单/ }));
+    fireEvent.click(await screen.findByRole("tab", { name: "派生技·远航星" }));
+    fireEvent.click(screen.getByRole("option", { name: derivedAltTrack.name }));
+    await waitFor(() => expect(onTrackChange).toHaveBeenCalledTimes(1));
+    rerender(playerMarkup(onTrackChange));
+    expect(screen.getByRole("region", { name: "角色技能曲目单" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "派生技·远航星" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("button", { name: new RegExp(`当前曲目 ${derivedAltTrack.name}`) })).toBeTruthy();
+    expect(screen.getByRole("option", { name: `${derivedAltTrack.name}，已选择` }).getAttribute("aria-selected")).toBe("true");
+    expect(onTrackChange).toHaveBeenCalledTimes(1);
   });
 
   it("switches the fixed playback control through loading, pause, and play states", async () => {
@@ -147,10 +162,75 @@ describe("CharacterMusicPreview interaction", () => {
       else delete HTMLElement.prototype.animate;
     }
   });
+
+  it.each([false, true])("responds to dynamic reduced motion from initial reduce=%s and cleans up on inactivity/unmount", async (initiallyReduced) => {
+    let reduced = initiallyReduced;
+    const listeners = new Set();
+    const preference = {
+      get matches() { return reduced; },
+      addEventListener: vi.fn((type, listener) => { if (type === "change") listeners.add(listener); }),
+      removeEventListener: vi.fn((type, listener) => { if (type === "change") listeners.delete(listener); })
+    };
+    vi.stubGlobal("matchMedia", vi.fn(() => preference));
+    const setReduced = (next) => act(() => {
+      reduced = next;
+      listeners.forEach((listener) => listener({ matches: next }));
+    });
+    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(80);
+    const scrollWidth = vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(160);
+    const originalAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
+    const animations = [];
+    const animate = vi.fn(() => {
+      const animation = { cancel: vi.fn() };
+      animations.push(animation);
+      return animation;
+    });
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    let unmount;
+    try {
+      const view = render(<MarqueeText text="一首特别长的试听曲目" active />);
+      unmount = view.unmount;
+      await waitFor(() => expect(listeners.size).toBe(1));
+      expect(animate).toHaveBeenCalledTimes(initiallyReduced ? 0 : 1);
+      if (initiallyReduced) setReduced(false);
+      expect(animate).toHaveBeenCalledTimes(1);
+      setReduced(true);
+      expect(animations[0].cancel).toHaveBeenCalledTimes(1);
+      expect(animate).toHaveBeenCalledTimes(1);
+      setReduced(false);
+      expect(animate).toHaveBeenCalledTimes(2);
+      expect(animate.mock.calls[1][0].at(-1).transform).toBe("translateX(-80px)");
+      view.rerender(<MarqueeText text="一首特别长的试听曲目" active={false} />);
+      expect(animations[1].cancel).toHaveBeenCalledTimes(1);
+      expect(listeners.size).toBe(0);
+      setReduced(true);
+      setReduced(false);
+      expect(animate).toHaveBeenCalledTimes(2);
+      view.rerender(<MarqueeText text="一首特别长的试听曲目" active />);
+      expect(animate).toHaveBeenCalledTimes(3);
+      expect(listeners.size).toBe(1);
+      unmount();
+      expect(animations[2].cancel).toHaveBeenCalledTimes(1);
+      expect(listeners.size).toBe(0);
+      setReduced(true);
+      setReduced(false);
+      expect(animate).toHaveBeenCalledTimes(3);
+    } finally {
+      unmount?.();
+      clientWidth.mockRestore();
+      scrollWidth.mockRestore();
+      if (originalAnimate) Object.defineProperty(HTMLElement.prototype, "animate", originalAnimate);
+      else delete HTMLElement.prototype.animate;
+    }
+  });
 });
 
 function renderPlayer(onTrackChange) {
-  return render(
+  return render(playerMarkup(onTrackChange));
+}
+
+function playerMarkup(onTrackChange) {
+  return (
     <div className="app-shell player-theme-enabled theme-bright-school">
       <div className="nested-modal-backdrop">
         <CharacterMusicPreview

@@ -1,3 +1,5 @@
+import { createCharacterSelectionData } from "./playerRoutes.js";
+import { resolveMatchCharacter } from "./matchCharacterSelection.js";
 import { isPracticePlayerColor, requestedPracticeDifficulty } from "../src/shared/practiceMode.js";
 import { CAPTURE_CHALLENGE_MODE } from "../src/shared/captureChallenge.js";
 import { LOCAL_PRACTICE_VERSION, LOCAL_PRACTICE_BACKEND } from "../src/shared/localPractice.js";
@@ -6,6 +8,8 @@ const INVALID_OPTIONS = "练习设置无效";
 
 export function registerPracticeSocketEvents(socket, {
   io,
+  prisma,
+  characterSelectionData = createCharacterSelectionData({ prisma }),
   refreshSocketUser,
   createPracticeRoom,
   isUserInActiveRoom,
@@ -42,6 +46,12 @@ export function registerPracticeSocketEvents(socket, {
         acknowledge?.({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
         return;
       }
+      let matchUser = socket.user;
+      if (payload.characterId != null) {
+        const result = resolveMatchCharacter(socket.user, payload.characterId, await characterSelectionData());
+        if (!result.ok) { acknowledge?.(result); return; }
+        matchUser = result.user;
+      }
       const local = payload.engineVersion === LOCAL_PRACTICE_VERSION;
       if (localPracticeEngine && !local) {
         acknowledge?.({ ok: false, code: "local_practice_version", error: "请刷新页面，加载本机陪练引擎后重试" });
@@ -60,7 +70,7 @@ export function registerPracticeSocketEvents(socket, {
       }
       leaveMatchmaking(socket.user.id);
       const room = createPracticeRoom(
-        { user: socket.user, socketId: socket.id, mode: "spark" },
+        { user: matchUser, socketId: socket.id, mode: "spark" },
         io,
         { difficulty: difficulty.id, playerColor: payload.playerColor,
           ...(local ? { engineBackend: LOCAL_PRACTICE_BACKEND } : {}),

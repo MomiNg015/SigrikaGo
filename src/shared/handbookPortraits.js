@@ -18,15 +18,17 @@ const STANDARD_HANDBOOK_PORTRAITS = {
 
 // A handbook-specific default view. Costume, candy, corruption and custom URLs
 // continue to resolve through the shared runtime portrait owner.
-export function resolveHandbookPortrait(character = {}, { itemEffects = {}, user = null } = {}) {
+export function resolveHandbookPortrait(character = {}, {
+  itemEffects = {}, user = null, equippedCostumes = null, costumeSnapshot = null,
+} = {}) {
   const id = canonicalCharacterId(character.id ?? character.slug);
-  const resolved = characterPortraitImageProps(character, { itemEffects, user });
+  const resolved = characterPortraitImageProps(character, { itemEffects, user, equippedCostumes, costumeSnapshot });
   const builtin = CHARACTER_PORTRAIT_ASSETS[id];
   const standard = STANDARD_HANDBOOK_PORTRAITS[id];
-  const costume = user?.equippedCostumes?.[id];
+  const costume = costumeSnapshot ?? equippedCostumes?.[id] ?? user?.equippedCostumes?.[id];
   const isBuiltin = builtin && (!resolved.src || resolved.src === builtin.url || resolved.src === builtin.legacyUrl);
   if (standard && isBuiltin && !costume?.portraitUrl && !costume?.candyEffectPortraitUrl) {
-    return { src: `/assets/characters/handbook-sprites/${id}.webp`,
+    return { src: `/assets/characters/handbook-sprites/${id}.webp`, fallbackSrc: resolved.src || builtin.url,
       isStandard: true, width: 832, height: 1216, visibleTop: 0, ...standard };
   }
   return { ...resolved, isStandard: false, width: 900, height: 900,

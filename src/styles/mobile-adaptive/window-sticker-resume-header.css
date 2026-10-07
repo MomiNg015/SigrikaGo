@@ -100,12 +100,12 @@
 
 @media (min-width: 769px) {
   .profile-resume-view .profile-summary-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item.has-action {
-    padding: 20px 12px !important;
+    padding: 12px 18px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-view .profile-summary-item > strong {

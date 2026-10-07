@@ -25,8 +25,8 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal .profile-resume-view {
   --resume-icon-size: 36px;
-  @media (max-width: 360px) and (orientation: portrait) {
-    --resume-icon-size: 32px;
+  @media (max-width: 768px) {
+    --resume-icon-size: 44px;
   }
 }
 
@@ -52,6 +52,16 @@
 
   @media (max-width: 360px) and (orientation: portrait) {
     & .profile-identity-actions { bottom: 2px; }
+  }
+
+  @media (max-width: 768px) {
+    & .profile-resume-hero {
+      grid-template-areas: "portrait identity" "portrait actions" !important;
+      & .profile-identity-actions {
+        position: static;
+        grid-area: actions;
+      }
+    }
   }
 
   & .achievement-entry-action {

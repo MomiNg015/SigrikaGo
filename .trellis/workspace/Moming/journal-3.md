@@ -1910,3 +1910,48 @@ Enlarged desktop expanded emblem into upper-right cropped region and mobile embl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 179: 全界面、履历胸像与交互动效打磨
+
+**Date**: 2026-10-05
+**Task**: 全界面、履历胸像与交互动效打磨
+**Branch**: `master`
+
+### Summary
+
+完成三处胸像、履历层级、动效与输入边界；419文件3051测试、64全项目浏览器用例及生产页面通过，保留未提交改动。
+
+### Main Changes
+
+本轮按用户授权持续审查及打磨至 2026-10-05 12:00 Asia/Shanghai。实现保留在工作区，既有角色选择及背景音乐任务未覆盖；未自动提交、发布或归档。
+
+- 履历／详细资料统一校园纸面层级、段位与战绩摘要、最近十局、长姓名及手机原生滚动。
+- 学生证、履历／详情和对局信息复用胸像组件；九名标准角色、服装、回放快照、特殊外观、失败回退及隐藏队员素材边界均有验证。
+- 动效限制为短时合成属性反馈，保留减少动态与触屏；修复嵌套窗口遮罩、焦点、请求等待和重复提交。
+- 密集好友／观战／排行、长邮件、反馈、仓库等待流程及支持的较矮手机视口完成专项核验；普通及专项横屏保留全部 169 个落点和 44px 底部按钮。
+- 后台 21 页修复自身响应式样式、切页滚动、提示／复选框和设置读取覆盖编辑的竞态。Excel 往返测试按现有空列契约校正预期，发布版仍严格比较。
+- 最终质量门：419 文件／3051 测试、lint、头像、后台快照、生产配置、构建及构建后 CSS 通过。全项目 64 条浏览器用例、界面专项 17 条、对局跨层 442 项通过；生产／开发实际页面均有四条流程和 74 张截图。
+- 生产履历 48 组空闲主机预热原生输入样本通过。普通 1× 无至少 50ms 长任务；减少动态密集数据更新及 4× 模拟暴露创建／样式成本。没有新动效逐帧布局证据，不把桌面模拟写成真机帧率保证。
+
+系统设计 Markdown／HTML与前端可执行契约已同步。完整交接及原始证据入口：`.trellis/tasks/10-05-interface-portrait-motion-polish/research/final-review.md`。临时测试进程清理，截图和日志保留在忽略的 `.tmp/interface-polish/`。任务交由用户审阅，代码保持未提交状态。
+
+
+### Git Commits
+
+(No commits; implementation retained in the working tree for review.)
+
+### Testing
+
+- [OK] npm run check: 419 files / 3051 tests, lint, build and built CSS contracts.
+- [OK] 64 full-project browser cases, 17 interface cases and 442 battle verification tests.
+- [OK] Latest production page review: 4/4 flows, 74 captures; production Resume: 48 samples.
+- [OK] Generated documentation: 4 tests; final scoped lint and whitespace check.
+
+### Status
+
+[OK] **Implementation complete; task in review**
+
+### Next Steps
+
+- 已实现内容与证据保留供用户审阅；当前任务未归档，代码未提交。

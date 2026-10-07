@@ -24,14 +24,14 @@ describe("team selection", () => {
     expect(onStart).toHaveBeenCalledWith("team", ["sigrika", "nabomo", "aemeath"]);
     view.unmount();
     render(<TeamLineupPicker {...props} />);
-    expect(within(screen.getByRole("region", { name: "第2位" })).getByAltText(CHARACTERS.nabomo.name).getAttribute("src")).toBeTruthy();
+    expect(within(screen.getByRole("region", { name: "第2位" })).getByRole("img", { name: CHARACTERS.nabomo.name }).querySelector("image").getAttribute("href")).toBeTruthy();
     expect(screen.getByRole("button", { name: "开始匹配" }).disabled).toBe(false);
   });
   it("rejects entering with only two available members", () => {
     const onNotice = vi.fn();
     render(<HomeScreen user={{ ...user, ownedCharacters: user.ownedCharacters.slice(0, 2) }} characters={CHARACTERS} matchModePickerOpen onNotice={onNotice} />);
-    fireEvent.click(screen.getByRole("button", { name: /星炬对弈.*匹配中/ }));
-    fireEvent.click(screen.getByRole("button", { name: "队际赛" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "队际赛选择角色1" }));
     expect(onNotice).toHaveBeenCalledWith("需要至少拥有3名部员才能参加");
     expect(screen.queryByRole("dialog", { name: "队际赛阵容" })).toBeNull();
   });

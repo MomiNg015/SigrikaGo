@@ -45,14 +45,25 @@ test("all 21 admin pages load real data and a settings save survives reload and 
     await api(request, admin, "GET", endpoint);
     await expect(page.locator(".admin-main .admin-error")).toHaveCount(0);
   }
+  const settingsLoaded = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/admin/site-settings"
+    && response.request().method() === "GET");
   await sidebar.getByRole("button", { name: "系统设置", exact: true }).click();
+  const settingsResponse = await settingsLoaded;
+  expect(settingsResponse.status()).toBe(200);
+  await settingsResponse.json();
   const original = (await api(request, admin, "GET", "/api/admin/site-settings")).settings;
   const title = "全量验收学园";
   const saved = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/admin/site-settings"
     && response.request().method() === "PATCH");
-  await page.getByLabel(/大厅标题/).fill(title);
+  const titleInput = page.getByLabel(/大厅标题/);
+  await expect(titleInput).toBeEnabled();
+  await expect(titleInput).toHaveValue(original.homeTitle);
+  await titleInput.fill(title);
+  await expect(titleInput).toHaveValue(title);
   await page.locator(".admin-settings-form").getByRole("button", { name: "保存", exact: true }).click();
-  expect((await saved).status()).toBe(200);
+  const saveResponse = await saved;
+  expect(saveResponse.request().postDataJSON().homeTitle).toBe(title);
+  expect(saveResponse.status()).toBe(200);
   expect((await api(request, admin, "GET", "/api/admin/site-settings")).settings.homeTitle).toBe(title);
   await page.getByRole("button", { name: "返回大厅", exact: true }).click();
   await page.reload({ waitUntil: "domcontentloaded" });

@@ -42,6 +42,40 @@ describe("PlayerInfo labels", () => {
     expect(markup).toContain('aria-label="第3位：未揭晓"');
     expect(markup).toContain('class="team-portrait-mystery">?</span>');
     expect((markup.match(/class="team-portrait-slot /g) ?? [])).toHaveLength(3);
+    expect(markup).toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(markup).toContain("/assets/characters/handbook-sprites/aemeath.webp");
+  });
+
+  it("does not load a hidden team member even if historical metadata includes a character", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: { ...playerInfoProps().player, teamLineup: [
+        { characterId: "sigrika", character: CHARACTERS.sigrika, status: "active" },
+        { characterId: "aemeath", character: CHARACTERS.aemeath, status: "hidden" },
+      ] },
+    })));
+    expect(markup).toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(markup).not.toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(markup).not.toContain(CHARACTERS.aemeath.name);
+  });
+
+  it("preserves participant and lineup snapshots instead of current account equipment", () => {
+    const base = playerInfoProps();
+    const player = { ...base.player, characterId: "sigrika", character: CHARACTERS.sigrika,
+      user: { ...base.player.user, equippedCostumes: { sigrika: { portraitUrl: "/current.webp" } } },
+      costumeSnapshot: { portraitUrl: "/started.webp", portraitScalePercent: 120 },
+    };
+    const ordinary = renderToStaticMarkup(createElement(PlayerInfo, { ...base, player }));
+    expect(ordinary).toContain('src="/started.webp"');
+    expect(ordinary).toContain('style="scale:1.2;translate:0% 0%"');
+    expect(ordinary).not.toContain("/current.webp");
+    const team = renderToStaticMarkup(createElement(PlayerInfo, { ...base, player: { ...player, teamLineup: [
+      { characterId: "sigrika", character: CHARACTERS.sigrika, status: "finished", costumeSnapshot: { portraitUrl: "/first.webp" } },
+      { characterId: "aemeath", character: CHARACTERS.aemeath, status: "active", costumeSnapshot: null },
+    ] } }));
+    expect(team).toContain('src="/first.webp"');
+    expect(team).toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(team).not.toContain("/started.webp");
+    expect(arePlayerInfoPropsEqual({ ...base, player }, { ...base, player: { ...player, costumeSnapshot: { portraitUrl: "/updated.webp" } } })).toBe(false);
   });
 
   it.each(["spark", "standard", "gomoku"])("keeps timer semantics and mode counters inside the %s clock", (mode) => {

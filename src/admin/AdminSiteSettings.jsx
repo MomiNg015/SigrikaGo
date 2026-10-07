@@ -2,25 +2,42 @@ import { useEffect, useRef, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { normalizeRatingRules } from "../shared/ratingRules.js";
+import WindowLoadingState from "../modals/WindowLoadingState.jsx";
 import { AdminActionButton, AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
 
 export default function AdminSiteSettings({ token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(() => settingsDraftFromApi(DEFAULT_SITE_SETTINGS));
   const [saving, setSaving] = useState(false);
+  const [loadState, setLoadState] = useState({ token: null, status: "loading", error: "" });
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const onNoticeRef = useRef(onNotice);
+  const ready = loadState.token === token && loadState.status === "ready";
+  const loading = loadState.token !== token || loadState.status === "loading";
 
   useEffect(() => {
     onNoticeRef.current = onNotice;
   }, [onNotice]);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoadState({ token, status: "loading", error: "" });
     adminApi("/site-settings", token)
-      .then((data) => setDraft(settingsDraftFromApi(data.settings)))
-      .catch((error) => onNoticeRef.current?.(error.message, "danger"));
-  }, [token]);
+      .then((data) => {
+        if (cancelled) return;
+        setDraft(settingsDraftFromApi(data.settings));
+        setLoadState({ token, status: "ready", error: "" });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setLoadState({ token, status: "error", error: error.message });
+        onNoticeRef.current?.(error.message, "danger");
+      });
+    return () => { cancelled = true; };
+  }, [token, loadAttempt]);
 
   async function saveSettings(event) {
     event.preventDefault();
+    if (!ready || saving) return;
     setSaving(true);
     try {
       const data = await adminApi("/site-settings", token, {
@@ -43,6 +60,12 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="大厅文案" meta="修改大厅标题、项目版本号、关于文本和页脚信息" />
+      {loading ? <WindowLoadingState compact>正在加载系统设置…</WindowLoadingState> : !ready ? (
+        <div>
+          <p className="admin-error" role="alert">系统设置加载失败：{loadState.error}</p>
+          <AdminActionButton type="button" variant="secondary" onClick={() => setLoadAttempt((attempt) => attempt + 1)}>重试</AdminActionButton>
+        </div>
+      ) : (
       <form className="admin-form admin-settings-form" onSubmit={saveSettings}>
         <label>
           <AdminFieldLabel text="大厅标题" tip="显示在大厅顶部的主标题。" />
@@ -115,6 +138,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
           <AdminActionButton variant="primary" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</AdminActionButton>
         </div>
       </form>
+      )}
     </section>
   );
 }

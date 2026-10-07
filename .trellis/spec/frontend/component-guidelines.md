@@ -6,6 +6,10 @@
 
 ## Overview
 
+### Admin page scroll ownership
+
+`AdminShell` keeps the main section mounted across page changes. A layout effect keyed only by the selected `tab` resets its vertical scroll before a newly selected page paints. Same-page data refreshes and edits retain scroll position and descendant state. Do not key/remount the whole shell or move page-reset behavior into every editor. Verify real desktop/mobile navigation after scrolling a previous long page, and keep horizontal navigation and table scroll independent.
+
 ### Site entry resource gate
 
 `index.html` owns a tiny image-free progress shell and critical inline CSS so the first paint does not depend on React, custom fonts or the application stylesheet. `main.jsx` waits for `startSiteEntry` before mounting `App`; do not clear storage or change session routing here. Keep the progress below 100 until both the application module and public resources settle. A failed application import exposes reload; asset failures/timeouts are tolerated.
@@ -65,6 +69,10 @@ Questions to answer:
 (To be filled by the team)
 
 ## UI Primitive Layer
+
+`ModalDialog` owns initial focus, Tab wrapping, local Escape and opener restoration. Pending children can disable or remove their focused control during a React commit. Keep track only of this dialog's actual DOM descendants, and recover to its focusable root only when that last control is disabled/disconnected and focus still points to it or has fallen to body. Never steal a live input or portaled child dialog's focus. Tab/Shift+Tab from the root moves to the first/last available control. Preserve the existing background-audio focus lifecycle. Native busy flags must be present in the first loading render where a previously enabled first control would otherwise lose focus.
+
+Inventory use and destructive social confirmations need synchronous in-flight protection as well as native disabled UI. A state flag alone cannot reject two callbacks before the next render. Keep cancel/close usable, catch request rejection, retain a retryable target and restore controls after settlement; do not dispatch duplicate writes or silently ignore an apparently enabled action. Warehouse item-use controls share the hook's single active request because each response replaces the same inventory view. A nested portal must sit above its parent backdrop on an established local layer; full viewport geometry and keyboard focus alone do not prove pointer reachability.
 
 Tailwind migration primitives live under `src/ui/primitives/`. They are the handoff layer between feature components and prefixed `tw:` utilities.
 
@@ -584,16 +592,16 @@ Correct:
 - Report mutation: `POST /api/users/${profileUser.id}/report` with `{ content }`.
 
 #### 3. Contracts
-- The shared identity hero owns context-specific primary actions. `context="self"` exposes only the text-labelled “个性化” action; `context="social"` exposes text-labelled “点赞 {count}”、“加好友/已是好友”、“举报”. Self resume markup must not render like, friend, or report actions.
-- “成就” remains a self-resume header action before the coin wallet and close button. Both self and social replay actions use `recentAction` beside the “最近十盘” heading. Blacklist remains the only social `secondaryActions` footer action, has no redundant relationship label, and must not be promoted into the identity hero.
+- The shared identity hero owns context-specific actions. Self exposes accessible icon buttons for “成就” and “个性化”; social exposes like count, friend, blacklist and report in that order. Self must not render social mutations. Social friend/blacklist/report remain icon-only with accessible labels.
+- Both replay actions use `recentAction` in the record-card header. The self coin wallet and close button remain in the window header. Blacklist belongs to the social identity actions immediately before report, with its separate confirmation dialog.
 - Self resume and social profile replay actions both instantiate `HouseReplayDialog`. That shared dialog portals its `.standalone-replay-backdrop` to the themed `.app-shell` (falling back to `document.body`), so it is not a descendant of `.resume-modal` or `.user-profile-modal`; closing it restores focus without closing the underlying dossier. Do not restore the retired `.profile-replay-dialog` implementation.
 - Social profiles viewed as self disable like, friend, and report. Profiles already liked today disable like; existing friends render “已是好友” and disable the friend action. Blacklist relation must not disable like or report unless the profile is also self/already-liked.
 - Mode tabs render in the explicit order 星炬、标准、五子棋. While a new mode is loading, the selected tab and visible record data remain aligned to the last successful mode, tabs expose `aria-disabled`, and duplicate requests are ignored. Only a successful response changes the displayed mode; a failed request exposes an inline retry.
 - Successful report submission closes the dialog, clears the textarea, and emits `onNotice("举报已提交", "success")` when provided.
 - Report failures stay inside the nested report dialog and preserve the draft. Blacklist requires a separate nested confirmation dialog; a failure stays inside that dialog.
 - Mobile and desktop hero content is left-aligned. Portrait and identity share the first row on portrait screens, and context actions occupy a full-width second row.
-- Profile hero and character-record portrait paint is centered at 70% of its mask and resets scene-specific costume scale/translation inside this dossier.
-- The dossier's structural hero, tabs, record panel, overview, recent-results region, character region, and footer remain transparent so the owning window paper grid is continuous. On desktop, `.profile-record-panel` uses explicit `status`, `overview`, `characters`, and `actions` grid areas; the named areas must not depend on whether the optional status node is mounted. The character table owns vertical scrolling while the blacklist footer stays visible.
+- Profile hero art uses the shared [Identity Bust Portrait Contract](./identity-bust-contract.md), preserving effective costume framing on the inner compositor. Compact record portraits retain 80% contained direct images; chain badges stay outside the mask.
+- Structural rails remain transparent over the window paper; identity, rank/record and character cards retain hierarchical campus outlines/shadows. Desktop rank/record share a 1:1.5 summary row, with a slim full-width recent-results strip. `.profile-record-panel` keeps explicit `status`, `overview`, `characters`, `actions` areas independent of optional status markup. The character table owns vertical scrolling.
 - `.profile-modal-header` reserves a real close-control grid column. The heading and close button use the same 44px alignment track on desktop and portrait layouts; generic absolute close-button rules must not move the social profile close control.
 
 #### 4. Validation & Error Matrix
@@ -614,7 +622,7 @@ Correct:
 #### 6. Tests Required
 - DOM tests assert the three-tab text/DOM order, self/social action separation, visible labels/counts, native disabled states, retry behavior, and stale-response protection.
 - Component tests assert like/report API paths, report draft preservation, and blacklist confirmation.
-- CSS contract tests assert the desktop constrained dossier, transparent structural surfaces, named desktop record areas, portrait 2×2 summary, one profile-body scroll owner, one-line character records, standalone shared replay portal, and no legacy profile replay selectors.
+- CSS/browser contracts assert the constrained dossier, transparent structural rails, named record areas, desktop paired summaries/mobile stacked summaries, single-line metrics/empty recent chip, legal plain usernames, one record scroll owner, semantic one-line character rows, shared replay portal and no legacy replay selectors.
 
 #### 7. Wrong vs Correct
 
@@ -1381,3 +1389,9 @@ Keep the name row mounted and reserve the same two-line height in empty and occu
 ## Standard story sprite presentation
 
 `StoryPlayerModal`, teaching NPC bubbles and the fixed home tour share [Story Sprite And Expression Contract](../backend/story-sprite-contract.md). Only valid standard appearances opt into `.standard-story-sprite`; existing portraits retain their layout. Same appearance retains its image element while expression changes its source. Desktop uses an independent art column; portrait phones use a bounded bust stage above the text scroller, with choices outside that scroller. Preserve long-text effect/typewriter timing, narration clearing and existing guide target geometry. Bright School's final phone shell owner must use the matching standard-sprite grid override.
+
+## Asynchronous admin draft readiness
+
+`AdminSiteSettings` exposes its editable draft only after the current token's initial GET succeeds. Defaults must not be editable while pending or failed: a late response can otherwise replace a user's changes before save. Show the existing loading state, retain a visible load error and retry action, and ignore responses after token replacement or unmount. Callback-only rerenders must not restart the initial fetch. Preserve the loaded server draft and existing save payload normalization.
+
+`AdminSiteSettings.dom.test.jsx` defers reads to verify unavailable edits before readiness, safe failure/retry, unchanged current edits after an older token resolves, and no stale notice after unmount. Real E2E also waits for the browser GET and loaded input, checks the PATCH title, and verifies persisted settings plus the refreshed home header; an independent request-context GET alone does not establish that the browser editor has finished loading.

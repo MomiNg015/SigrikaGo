@@ -16,7 +16,7 @@ import { ModalDialog } from "./modalComponents.jsx";
 export default function WatchModal({ token, characters, onJoinRoom, onNotice, onClose }) {
   const [mode, setMode] = useState("spark");
   const [rooms, setRooms] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(token));
   const [error, setError] = useState("");
 
   const loadRooms = useCallback(async () => {

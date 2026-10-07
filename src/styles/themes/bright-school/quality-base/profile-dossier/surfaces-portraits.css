@@ -35,7 +35,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero .profile-portrait-mask {
-  background: color-mix(in srgb, var(--bright-sheet-clean) 94%, var(--bright-blue)) !important;
+  background: color-mix(in srgb, var(--bright-blue) 14%, var(--bright-sheet-clean)) !important;
   border: 2px solid var(--bright-border) !important;
   border-radius: 14px !important;
   clip-path: none !important;

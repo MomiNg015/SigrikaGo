@@ -69,6 +69,8 @@ export function CharacterMusicPreview({
     setPlaybackError("");
     setSheetOpen(false);
     invalidatePlayback({ releasePause: true });
+    // Identity changes reset playback; later effects reconcile track/slot updates without interrupting it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
 
   useEffect(() => {
@@ -491,20 +493,28 @@ export function MarqueeText({ text, active, className = "" }) {
     const viewport = viewportRef.current;
     const content = contentRef.current;
     if (!active || !overflowing || !viewport || !content || typeof content.animate !== "function") return undefined;
-    const reducedMotion = typeof window !== "undefined"
-      && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return undefined;
-    const distance = Math.max(0, content.scrollWidth - viewport.clientWidth);
-    if (distance <= 1) return undefined;
-    const travelMs = Math.max(650, distance / MARQUEE_SPEED_PX_PER_SECOND * 1000);
-    const duration = MARQUEE_START_PAUSE_MS + travelMs + MARQUEE_END_PAUSE_MS;
-    animationRef.current = content.animate([
-      { transform: "translateX(0)", offset: 0 },
-      { transform: "translateX(0)", offset: MARQUEE_START_PAUSE_MS / duration },
-      { transform: `translateX(-${distance}px)`, offset: (MARQUEE_START_PAUSE_MS + travelMs) / duration },
-      { transform: `translateX(-${distance}px)`, offset: 1 }
-    ], { duration, iterations: Infinity, easing: "linear" });
+    const motionPreference = typeof window !== "undefined"
+      ? window.matchMedia?.("(prefers-reduced-motion: reduce)")
+      : null;
+    function updateMotion() {
+      animationRef.current?.cancel();
+      animationRef.current = null;
+      if (motionPreference?.matches) return;
+      const distance = Math.max(0, content.scrollWidth - viewport.clientWidth);
+      if (distance <= 1) return;
+      const travelMs = Math.max(650, distance / MARQUEE_SPEED_PX_PER_SECOND * 1000);
+      const duration = MARQUEE_START_PAUSE_MS + travelMs + MARQUEE_END_PAUSE_MS;
+      animationRef.current = content.animate([
+        { transform: "translateX(0)", offset: 0 },
+        { transform: "translateX(0)", offset: MARQUEE_START_PAUSE_MS / duration },
+        { transform: `translateX(-${distance}px)`, offset: (MARQUEE_START_PAUSE_MS + travelMs) / duration },
+        { transform: `translateX(-${distance}px)`, offset: 1 }
+      ], { duration, iterations: Infinity, easing: "linear" });
+    }
+    updateMotion();
+    motionPreference?.addEventListener?.("change", updateMotion);
     return () => {
+      motionPreference?.removeEventListener?.("change", updateMotion);
       animationRef.current?.cancel();
       animationRef.current = null;
     };

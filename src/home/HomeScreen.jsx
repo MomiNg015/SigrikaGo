@@ -1,5 +1,8 @@
 import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
 import TeamLineupPicker, { availableTeamCharacters } from "./TeamLineupPicker.jsx";
+import MatchCharacterPicker from "./MatchCharacterPicker.jsx";
+import MatchCharacterSlots from "./MatchCharacterSlots.jsx";
+import { MATCH_CHARACTER_NOTICE, useMatchCharacterSelection } from "./useMatchCharacterSelection.js";
 import { TEAM_MINIMUM_NOTICE } from "../shared/teamMatch.js";
 import { useEffect, useRef, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
@@ -7,7 +10,7 @@ import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
 import { PRACTICE_DIFFICULTY_OPTIONS } from "../shared/practiceMode.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
-import { Info, UsersRound } from "lucide-react";
+import { Info } from "lucide-react";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { ModalDialog } from "../modals/modalComponents.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
@@ -24,9 +27,10 @@ import {
 } from "../shared/sigrikaCandyArc.js";
 import { useSigrikaCandyDuelAvailability } from "./useSigrikaCandyDuelAvailability.js";
 
-export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
-  const [teamPickerOpen, setTeamPickerOpen] = useState(false);
+  const { available, selections, select } = useMatchCharacterSelection(user, characters);
+  const [characterEntry, setCharacterEntry] = useState(null);
   const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
   const sigrikaDuelActive = user.sigrikaCandyArc?.phase === SIGRIKA_CANDY_PHASES.duelActive;
   const {
@@ -42,10 +46,7 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
     onNotice,
     onPreloadPlayableReady
   });
-  const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
-    mode.id,
-    Number(lobbyStats.matchmakingCounts?.[mode.id] ?? (mode.id === "spark" ? lobbyStats.matchmakingCount : 0) ?? 0)
-  ]));
+
 
   return (
     <>
@@ -92,14 +93,22 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
             sigrikaCorrupted={sigrikaCorrupted}
             sigrikaDuelAvailability={sigrikaDuelAvailability}
             sigrikaDuelWatchPending={sigrikaDuelWatchPending}
-            matchmakingCounts={matchmakingCounts}
-            onTeamSelect={() => {
-              if (availableTeamCharacters(user, characters).length < 3) {
+            user={user}
+            characters={characters}
+            selections={selections}
+            onCharacterOpen={(entry) => {
+              if (entry === "team" && availableTeamCharacters(user, characters).length < 3) {
                 onNotice?.(TEAM_MINIMUM_NOTICE);
                 return;
               }
+              setCharacterEntry(entry);
+            }}
+            onNotice={onNotice}
+            characterPickerOpen={Boolean(characterEntry)}
+            onTeamSelect={() => {
+              if (selections.team.length !== 3) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
               onMatchModePickerOpenChange?.(false);
-              setTeamPickerOpen(true);
+              onStartMatch("team", selections.team);
             }}
             onClose={() => onMatchModePickerOpenChange?.(false)}
             onPreloadPlayableReady={onPreloadPlayableReady}
@@ -122,14 +131,15 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
                 }
               });
             }}
-            onSelect={(mode) => {
+            onSelect={(mode, characterId) => {
               onMatchModePickerOpenChange?.(false);
-              onStartMatch(mode);
+              onStartMatch(mode, undefined, characterId);
             }}
           />
         )}
 
-        {teamPickerOpen && !sigrikaCorrupted && <TeamLineupPicker user={user} characters={characters} onClose={() => setTeamPickerOpen(false)} onStart={onStartMatch} />}
+        {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker user={user} characters={characters} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onConfirm={() => setCharacterEntry(null)} />}
+        {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker available={available} selected={selections[characterEntry][0]} user={user} onClose={() => setCharacterEntry(null)} onSelect={(id) => { select(characterEntry, [id]); setCharacterEntry(null); }} />}
         {!sigrikaCorrupted && <IrisDatabase
           audioSettings={audioSettings}
           greeting={siteSettings.irisGreeting}
@@ -141,11 +151,34 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
   );
 }
 
-function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
+function MatchModePicker({ user, characters, selections, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
   const [sparkExpanded, setSparkExpanded] = useState(false);
   const sparkButtonRef = useRef(null);
+  const modeOptionsRef = useRef(null);
   const [rulesHover, setRulesHover] = useState(null);
+  useEffect(() => {
+    const root = modeOptionsRef.current;
+    if (!root || typeof ResizeObserver === "undefined") return;
+    const titles = [...root.querySelectorAll(".match-mode-sibling strong, .match-mode-submode strong")];
+    let active = true;
+    const measure = () => {
+      if (!active) return;
+      for (const title of titles) {
+        const wrapper = title.closest(".match-mode-sibling, .match-mode-submode");
+        const range = document.createRange();
+        range.selectNodeContents(title);
+        const text = range.getBoundingClientRect();
+        const card = wrapper.getBoundingClientRect();
+        wrapper.style.setProperty("--match-mode-title-right", `${text.right - card.left}px`);
+      }
+    };
+    const observer = new ResizeObserver(measure);
+    titles.forEach(title => observer.observe(title));
+    document.fonts?.ready.then(measure);
+    measure();
+    return () => { active = false; observer.disconnect(); };
+  }, [sparkExpanded]);
   const returnToModes = () => {
     setSparkExpanded(false);
     setRulesHover(null);
@@ -154,7 +187,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
   useEffect(() => {
     const dismiss = () => setRulesHover(null);
     const onKeyDown = (event) => {
-      if (event.key !== "Escape" || practiceDifficultyOpen) return;
+      if (event.key !== "Escape" || practiceDifficultyOpen || characterPickerOpen) return;
       if (rulesHover) dismiss();
       else if (sparkExpanded) {
         setSparkExpanded(false);
@@ -174,7 +207,14 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
       window.removeEventListener("scroll", dismiss, true);
       window.removeEventListener("resize", dismiss);
     };
-  }, [practiceDifficultyOpen, rulesHover, sparkExpanded]);
+  }, [practiceDifficultyOpen, characterPickerOpen, rulesHover, sparkExpanded]);
+  const startSelected = (entry, mode) => {
+    const id = selections[entry][0];
+    if (!id) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
+    if (entry === "capture") onPracticeStart({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId: id });
+    else onSelect(mode, id);
+  };
+  const slots = (entry, title) => <MatchCharacterSlots entry={entry} title={title} selections={selections[entry]} characters={characters} user={user} onOpen={onCharacterOpen} />;
   const showRules = (event, mode) => {
     if (event.pointerType === "touch" || !window.matchMedia("(min-width: 769px) and (hover: hover) and (pointer: fine)").matches) return;
     setRulesHover({ mode, x: event.clientX, y: event.clientY });
@@ -192,7 +232,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
     >
       <section className={`small-modal match-mode-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host"}`} onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
         <WindowTitleSticker titleKey="match-mode" enabled={!sigrikaCorrupted} />
-        <div className={`match-mode-options${sigrikaCorrupted ? "" : " match-mode-drilldown"}${sparkExpanded ? " is-expanded" : ""}`}>
+        <div ref={modeOptionsRef} className={`match-mode-options${sigrikaCorrupted ? "" : " match-mode-drilldown"}${sparkExpanded ? " is-expanded" : ""}`}>
           {modeOrderedEntries().map((mode) => (
             <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : `match-mode-sibling match-mode-sibling-${mode.id}`}`} key={mode.id} inert={sparkExpanded && mode.id !== "spark" ? true : undefined} aria-hidden={sparkExpanded && mode.id !== "spark" ? true : undefined}>
               <button
@@ -213,18 +253,15 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                 onClick={() => {
                   setRulesHover(null);
                   if (mode.id === "spark") setSparkExpanded((current) => !current);
-                  else onSelect(mode.id);
+                  else startSelected(mode.id, mode.id);
                 }}
               >
                 <MatchModeWatermark mode={mode} />
                 <span className="match-mode-copy">
                   <strong>{mode.title}</strong>
                 </span>
-                <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts[mode.id] ?? 0)} 人`}>
-                  <UsersRound size={16} aria-hidden="true" />
-                  <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>
-                </span>
               </button>
+              {!sigrikaCorrupted && mode.id !== "spark" && slots(mode.id, mode.title)}
               {!sigrikaCorrupted && (
                 <button
                   className="match-mode-info-button"
@@ -265,20 +302,15 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
           {!sigrikaCorrupted && (
             <div className="match-mode-submodes" id="spark-match-submodes" inert={!sparkExpanded ? true : undefined} aria-hidden={!sparkExpanded}>
               {[
-                { id: "regular", title: "常规匹配", onClick: () => onSelect("spark") },
-                { id: "capture", title: "吃子挑战赛", rulesText: "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！", onClick: () => onPracticeStart({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random" }) },
+                { id: "regular", title: "常规匹配", onClick: () => startSelected("regular", "spark") },
+                { id: "capture", title: "吃子挑战赛", rulesText: "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！", onClick: () => startSelected("capture", "spark") },
                 { id: "team", title: "队际赛", rulesText: "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！", onClick: onTeamSelect }
               ].map((submode) => (
                 <div className="match-mode-submode" key={submode.id}>
                   <button className="match-mode-option" type="button" disabled={submode.disabled} onClick={submode.onClick} onFocus={() => !submode.disabled && onPreloadPlayableReady?.("spark")} onPointerEnter={(event) => { if (!submode.disabled) onPreloadPlayableReady?.("spark"); if (submode.rulesText) showRules(event, submode); }} onPointerMove={(event) => { if (submode.rulesText) showRules(event, submode); }} onPointerLeave={() => setRulesHover(null)} onPointerDown={() => setRulesHover(null)}>
                     <span className="match-mode-copy"><strong>{submode.title}</strong></span>
-                    {submode.id === "regular" && (
-                      <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts.spark ?? 0)} 人`}>
-                        <UsersRound size={16} aria-hidden="true" /><b>{Number(matchmakingCounts.spark ?? 0)}</b>
-                      </span>
-                    )}
-                    {submode.disabled && <span className="match-mode-count">敬请期待</span>}
                   </button>
+                  {slots(submode.id, submode.title)}
                   {submode.rulesText && <button className="match-mode-info-button" type="button" aria-label={`查看${submode.title}规则`} aria-expanded={Boolean(rulesHover?.tap && rulesHover.mode.id === submode.id)} aria-controls={rulesHover?.tap && rulesHover.mode.id === submode.id ? "match-mode-rules-tooltip" : undefined} onClick={(event) => {
                     event.stopPropagation();
                     const rect = event.currentTarget.getBoundingClientRect();

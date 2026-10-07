@@ -1,0 +1,56 @@
+.match-mode-modal .match-mode-sibling .match-mode-option,
+.match-mode-modal .match-mode-submode .match-mode-option { padding-right: 76px !important; }
+.match-mode-modal .match-mode-submode:last-child .match-mode-option { padding-right: 176px !important; }
+.match-character-slots { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; z-index: 2; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-mode-modal .match-character-slot,
+.app-shell .match-mode-modal .match-character-slot {
+  display: grid; place-items: center; flex: 0 0 44px;
+  width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+  padding: 0 !important; overflow: hidden; border: 2px solid currentColor !important;
+  border-radius: 6px !important; background: transparent !important;
+  background-image: none !important; color: var(--bright-ink, #3d2b25);
+  box-shadow: inset 0 1px 0 var(--bright-paper), 2px 3px 0 color-mix(in srgb, currentColor 45%, transparent) !important;
+  transform: none !important;
+  outline: none;
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out !important;
+
+  &:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: translateY(-2px) !important;
+      box-shadow: inset 0 1px 0 var(--bright-paper), 3px 5px 0 color-mix(in srgb, currentColor 50%, transparent) !important;
+    }
+  }
+  &:active:not(:disabled) {
+    transform: translateY(2px) !important;
+    box-shadow: inset 0 1px 0 var(--bright-paper), 0 1px 0 color-mix(in srgb, currentColor 45%, transparent) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+    &:is(:hover, :active):not(:disabled) { transform: none !important; }
+  }
+}
+.match-character-slot > img, .match-character-slot > .match-character-portrait { width: 100%; height: 100%; object-fit: cover; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal.match-character-picker { width: min(920px, 100%) !important; height: auto !important; max-height: 80dvh !important; display: flex; flex-direction: column; gap: 16px; }
+.match-character-picker .team-character-options { overflow-y: auto; min-height: 0; padding: 4px; }
+.match-mode-modal .match-mode-sibling .match-mode-info-button,
+.match-mode-modal .match-mode-submode .match-mode-info-button { right: 68px !important; }
+.match-mode-modal .match-mode-submode:last-child .match-mode-info-button { right: 168px !important; }
+.match-character-bust { display: block; width: 100%; aspect-ratio: 1; overflow: hidden; }
+.match-character-bust > img, .match-character-bust > svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 768px) {
+  .match-character-slots { right: 16px; gap: 4px; }
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-option {
+    height: 88px !important;
+    min-height: 88px !important;
+    padding-left: 16px !important;
+  }
+  .match-mode-modal .match-mode-submode:last-child .match-mode-option { padding-right: 168px !important; }
+  /* Follow the rendered title width without overriding its existing font size. */
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal .match-mode-sibling .match-mode-info-button,
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal .match-mode-submode .match-mode-info-button {
+    left: calc(var(--match-mode-title-right, 88px) - 4px);
+    right: auto !important;
+    top: calc(50% - 24px);
+  }
+}

@@ -45,7 +45,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-copy > strong {
-    font-size: clamp(18px, 7cqw, 28px) !important;
+    font-size: 28px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-copy {

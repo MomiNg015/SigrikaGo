@@ -281,6 +281,8 @@ describe("MailboxModal information center", () => {
     expect(css).toContain("border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent)");
     expect(informationCenterCss).toContain("border-bottom: 2px dashed");
     expect(informationCenterCss).toContain("padding-bottom: 18px");
+    const proseBlock = informationCenterCss.match(/\.information-center-prose\s*\{[^}]+\}/)?.[0] ?? "";
+    expect(proseBlock).toContain("overflow-wrap: anywhere");
     expect(css).toContain("gap: 14px");
     expect(css).toContain("border-radius: 8px");
     expect(css).toContain(".mailbox-attachment-quantity-badge");

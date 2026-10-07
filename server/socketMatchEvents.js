@@ -1,6 +1,7 @@
 const SOCKET_AUTH_EXPIRED_MESSAGE = "\u767b\u5f55\u72b6\u6001\u5df2\u5931\u6548\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55";
 
 import { createCharacterSelectionData } from "./playerRoutes.js";
+import { resolveMatchCharacter } from "./matchCharacterSelection.js";
 import { resolveTeamLineup } from "./teamMatch.js";
 import { MATCH_EXPANSION_DELAY_MS } from "../src/shared/matchClassification.js";
 
@@ -27,7 +28,7 @@ export function registerMatchSocketEvents(socket, {
     expansionTimer = null;
   };
   const isQueued = () => listWaitingPlayers().some((entry) => entry.user.id === socket.user.id && entry.socketId === socket.id);
-  async function join({ mode: modeInput, lineup } = {}, ack = () => {}, retry = false) {
+  async function join({ mode: modeInput, lineup, characterId } = {}, ack = () => {}, retry = false) {
     if (retry && !isQueued()) return;
     clearExpansionTimer();
     const attempt = ++matchAttempt;
@@ -52,6 +53,21 @@ export function registerMatchSocketEvents(socket, {
         socket.emit("match:left");
         ack({ ok: false, error: "你已有进行中的对局", code: "active_room_exists" });
         return;
+      }
+      let matchUser = socket.user;
+      if (mode !== "team" && characterId != null) {
+        const result = resolveMatchCharacter(socket.user, characterId, await characterSelectionData());
+        if (!result.ok) {
+          if (attempt === matchAttempt && isQueued()) {
+            leaveMatchmaking(socket.user.id);
+            socket.emit("match:left");
+            broadcastLobbyStats();
+          }
+          if (retry && attempt === matchAttempt) socket.emit("error:toast", result.error);
+          ack(result);
+          return;
+        }
+        matchUser = result.user;
       }
       let teamLineup;
       if (mode === "team") {
@@ -98,6 +114,47 @@ export function registerMatchSocketEvents(socket, {
             }
           }
         }
+        if (mode !== "team" && candidate.mode === mode && candidate.characterId != null
+          && candidate.user.id !== socket.user.id) {
+          const waitingSocket = io.sockets?.sockets?.get(candidate.socketId);
+          if (!waitingSocket || waitingSocket.connected === false) {
+            leaveMatchmaking(candidate.user.id);
+            blockedCandidateIds.add(candidate.user.id);
+            broadcastLobbyStats();
+            continue;
+          }
+          try {
+            await refreshSocketUser(waitingSocket);
+            const selectionData = await characterSelectionData();
+            if (attempt !== matchAttempt || socket.connected === false) {
+              ack({ ok: true, cancelled: true });
+              return;
+            }
+            if (!listWaitingPlayers().includes(candidate)) continue;
+            const result = resolveMatchCharacter(waitingSocket.user, candidate.characterId, selectionData);
+            if (!result.ok || waitingSocket.connected === false || isUserInActiveRoom(waitingSocket.user.id)) {
+              leaveMatchmaking(candidate.user.id);
+              blockedCandidateIds.add(candidate.user.id);
+              waitingSocket.emit("match:left");
+              waitingSocket.emit("error:toast", result.error || "所选角色不可用，请重新选择");
+              broadcastLobbyStats();
+              continue;
+            }
+            candidate.user = result.user;
+          } catch {
+            if (attempt !== matchAttempt || socket.connected === false) {
+              ack({ ok: true, cancelled: true });
+              return;
+            }
+            if (!listWaitingPlayers().includes(candidate)) continue;
+            leaveMatchmaking(candidate.user.id);
+            blockedCandidateIds.add(candidate.user.id);
+            waitingSocket.emit("match:left");
+            waitingSocket.emit("error:toast", SOCKET_AUTH_EXPIRED_MESSAGE);
+            broadcastLobbyStats();
+            continue;
+          }
+        }
         if (await hasBlacklistBetween({
           prisma,
           firstUserId: socket.user.id,
@@ -117,7 +174,8 @@ export function registerMatchSocketEvents(socket, {
         return;
       }
       const room = joinMatchmaking(
-        { user: socket.user, socketId: socket.id, mode, ...(teamLineup ? { teamLineup } : {}) },
+        { user: matchUser, socketId: socket.id, mode, ...(teamLineup ? { teamLineup } : {}),
+          ...(mode !== "team" && characterId != null ? { characterId: matchUser.selectedCharacter } : {}) },
         io,
         { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) && !isUserInActiveRoom(candidate.user.id) }
       );
@@ -126,7 +184,7 @@ export function registerMatchSocketEvents(socket, {
         const startedAt = queued?.queuedAt ?? now();
         socket.emit("match:waiting", { startedAt, serverNow: now(), mode });
         if (!retry && mode !== "team") {
-          expansionTimer = setTimeout(() => { void join({ mode, lineup }, () => {}, true); }, Math.max(0, MATCH_EXPANSION_DELAY_MS - (now() - startedAt)));
+          expansionTimer = setTimeout(() => { void join({ mode, lineup, characterId }, () => {}, true); }, Math.max(0, MATCH_EXPANSION_DELAY_MS - (now() - startedAt)));
           expansionTimer.unref?.();
         }
       }

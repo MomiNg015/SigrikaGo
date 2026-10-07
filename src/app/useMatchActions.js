@@ -30,10 +30,11 @@ export function useMatchActions({
   setRoom,
   setView
 }) {
-  const startMatch = useCallback((mode = "spark", lineup) => {
+  const startMatch = useCallback((mode = "spark", lineup, characterId) => {
     startMatchTransition({
       mode,
       lineup,
+      characterId,
       showToast,
       preloadPlayableReady: defaultPreloadPlayableReady,
       setMatchStart,
@@ -217,6 +218,7 @@ export async function startPracticeTransition({
 export function startMatchTransition({
   mode = "spark",
   lineup,
+  characterId,
   showToast = () => {},
   now = Date.now,
   preloadPlayableReady = defaultPreloadPlayableReady,
@@ -261,7 +263,7 @@ export function startMatchTransition({
   });
   socket.on?.("disconnect", disconnected);
   socket.on?.("match:found", found);
-  socket.emit("match:join", { mode, ...(lineup ? { lineup } : {}) }, (ack) => finish(null, ack));
+  socket.emit("match:join", { mode, ...(lineup ? { lineup } : {}), ...(characterId ? { characterId } : {}) }, (ack) => finish(null, ack));
 }
 
 export function matchSuccessCountdownCompletedTransition(matchSuccess, latestTransition = matchSuccess) {

@@ -2,7 +2,7 @@ import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { X } from "lucide-react";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
-import WarehouseTargetModal, { warehouseTargetState } from "./warehouse/WarehouseTargetModal.jsx";
+import WarehouseTargetModal from "./warehouse/WarehouseTargetModal.jsx";
 import { useWarehouseInventory } from "./warehouse/useWarehouseInventory.js";
 
 export default function WarehouseModal({ token, user, characters, onUserChange, onNotice, onStoryScript, onClose, initialTargetState = null }) {
@@ -39,6 +39,7 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
           ownedCharacters={ownedCharacters}
           targetItem={targetItem}
           targetResult={targetResult}
+          busy={Boolean(usingItemId)}
           user={user}
           onClose={closeTargetModal}
           onUseItem={useItem}

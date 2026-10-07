@@ -1,8 +1,8 @@
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Send, X } from "lucide-react";
 import { api } from "../api/client.js";
-import { ModalActionButton } from "./modalComponents.jsx";
+import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
 const FEEDBACK_MAX_LENGTH = 400;
 
@@ -10,14 +10,17 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const submissionPendingRef = useRef(false);
 
   async function submitFeedback(event) {
     event.preventDefault();
+    if (submissionPendingRef.current) return;
     const normalized = content.trim();
     if (!normalized) {
       setError("反馈内容不能为空");
       return;
     }
+    submissionPendingRef.current = true;
     setSubmitting(true);
     setError("");
     try {
@@ -32,17 +35,19 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
     } catch (err) {
       setError(err.message);
     } finally {
+      submissionPendingRef.current = false;
       setSubmitting(false);
     }
   }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <form className="message-board-modal window-sticker-host" onSubmit={submitFeedback} onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
-        <WindowTitleSticker titleKey="message-board" />
+      <ModalDialog as="form" className="message-board-modal window-sticker-host" ariaLabelledBy="message-board-title" onClose={onClose} onSubmit={submitFeedback} onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" type="button" aria-label="关闭反馈窗口" onClick={onClose}><X size={20} /></button>
+        <WindowTitleSticker titleKey="message-board" id="message-board-title" />
         <textarea
           className="message-board-input"
+          aria-label="反馈内容"
           maxLength={FEEDBACK_MAX_LENGTH}
           value={content}
           onChange={(event) => {
@@ -56,7 +61,7 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
         <ModalActionButton variant="primary" type="submit" disabled={submitting}>
           <Send size={18} />{submitting ? "提交中" : "提交"}
         </ModalActionButton>
-      </form>
+      </ModalDialog>
     </div>
   );
 }

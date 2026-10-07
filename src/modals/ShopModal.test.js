@@ -616,12 +616,12 @@ describe("Zahira shop window", () => {
     expect(signpostSource).not.toContain("radial-gradient");
     expect(commerceCss).toContain(SHOP_DIRECTION_SIGN_IMAGE);
     expect(signpostSource).toContain("filter: drop-shadow");
-    expect(signpostSource).toMatch(
-      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\) rotate\(-1deg\) !important;[^}]*filter:\s*brightness\(1\.04\) !important;/s
-    );
-    expect(signpostSource).not.toMatch(
-      /\.shop-switch-button:hover,\s*[^{}]*\.shop-switch-button:focus-visible\s*\{[^}]*drop-shadow/s
-    );
+    const signHoverMotion = signpostSource.match(/@media \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}/)?.[0] ?? "";
+    expect(signHoverMotion).toContain(':hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"], :focus-visible)');
+    expect(signHoverMotion).toContain("transform: translateY(-1px) rotate(-1deg) !important");
+    const signFocusPaint = signpostSource.match(/\.shop-switch-button:focus-visible:not\([^}]+?\{[^}]+\}/)?.[0] ?? "";
+    expect(signFocusPaint).toContain("filter: brightness(1.04) !important");
+    expect(signFocusPaint).not.toMatch(/transform:|drop-shadow/);
     expect(signpostSource).toContain(".shop-switch-button:active");
     expect(shopWindowSource).toContain("overflow: hidden !important");
     expect(shopWindowSource).toContain("scrollbar-gutter: auto !important");

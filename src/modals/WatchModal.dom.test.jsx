@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "../api/client.js";
 import WatchModal from "./WatchModal.jsx";
@@ -12,6 +13,18 @@ describe("WatchModal mode tabs", () => {
   });
 
   afterEach(cleanup);
+
+  it("keeps first-load focus on the close button while refresh is unavailable", async () => {
+    api.mockReturnValue(new Promise(() => {}));
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<WatchModal token="token" characters={{}} onClose={onClose} />);
+    const close = screen.getByRole("button", { name: "关闭对局列表" });
+    expect(screen.getByRole("button", { name: "刷新对局列表" }).disabled).toBe(true);
+    expect(document.activeElement).toBe(close);
+    await user.keyboard("{Escape}");
+    expect(onClose).toHaveBeenCalledOnce();
+  });
 
   it("keeps labels free of counts and loads rooms when switching modes", async () => {
     api.mockResolvedValue({

@@ -236,7 +236,7 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain("请去招募");
     expect(disabledBlock).toContain("cursor: not-allowed");
     expect(disabledBlock).toContain("grayscale");
-    expect(finalMobileCss).toContain(".primary-action:active:not(:disabled)");
+    expect(finalMobileCss).toContain('button:active:not(:disabled):not([aria-disabled="true"], [aria-busy="true"])');
     expect(brightSchoolCss).toContain(".warehouse-item .primary-action:disabled");
     expect(brightSchoolCss).toContain("background: #d8d4cc !important");
     expect(brightSchoolCss).toContain("cursor: not-allowed !important");

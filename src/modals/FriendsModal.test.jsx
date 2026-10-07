@@ -8,6 +8,15 @@ import FriendsOverlays from "./friends/FriendsOverlays.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
+  it("reserves mobile action height and moves narrow status badges below plain identities", () => {
+    const css = readText(new URL("../styles/themes/bright-school/mobile/lists-settings/friends-rows.css", import.meta.url));
+    expect(css).toContain("min-height: 56px");
+    expect(css).toContain("@media (max-width: 360px) and (orientation: portrait)");
+    expect(css).toContain('"avatar info action"');
+    expect(css).toContain('"status status action"');
+    expect(css).toContain(".user-identity:not(.has-nameplate) .user-identity-name");
+    expect(css).toContain("overflow-wrap: anywhere");
+  });
   it("normalizes friend search names with the same width budget as registration", () => {
     expect(normalizeFriendSearchInput("\u4e00\u4e8c\u4e09\u56db\u4e94")).toBe("\u4e00\u4e8c\u4e09\u56db");
     expect(normalizeFriendSearchInput("Alice_123")).toBe("Alice_12");

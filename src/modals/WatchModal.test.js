@@ -64,6 +64,8 @@ describe("WatchModal helpers", () => {
     expect(adaptivePhoneMedia).toContain("min-width: 0");
     expect(brightSchoolMobileCss).toContain(".watch-room-table {\n    overflow-x: hidden !important;");
     expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
+    const rowCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile/lists-settings/watch-rows.css", import.meta.url));
+    expect(rowCss).toContain("min-height: 89px !important");
   });
 
   it("keeps watch mode tabs compact above the room table", () => {

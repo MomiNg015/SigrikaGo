@@ -84,6 +84,44 @@ describe("resolveHandbookPortrait default sources", () => {
 });
 
 describe("resolveHandbookPortrait runtime priorities", () => {
+  it("keeps the legacy effective source available after a standard sprite failure", () => {
+    expect(resolveHandbookPortrait(builtinCharacter("sigrika")).fallbackSrc)
+      .toBe(CHARACTER_PORTRAIT_ASSETS.sigrika.url);
+    expect(resolveHandbookPortrait({ id: "sigrika" }).fallbackSrc)
+      .toBe(CHARACTER_PORTRAIT_ASSETS.sigrika.url);
+  });
+
+  it("prefers a match snapshot to explicit and account equipment", () => {
+    const result = resolveHandbookPortrait(builtinCharacter("sigrika"), {
+      costumeSnapshot: { portraitUrl: "/snapshot.webp", ...framing },
+      equippedCostumes: { sigrika: { portraitUrl: "/supplied.webp" } },
+      user: { equippedCostumes: { sigrika: { portraitUrl: "/account.webp" } } },
+    });
+    expect(result).toMatchObject({ src: "/snapshot.webp", isStandard: false, style: expectedStyle });
+  });
+
+  it("prefers explicitly supplied equipment to account equipment", () => {
+    expect(resolveHandbookPortrait(builtinCharacter("sigrika"), {
+      equippedCostumes: { sigrika: { portraitUrl: "/supplied.webp", ...framing } },
+      user: { equippedCostumes: { sigrika: { portraitUrl: "/account.webp" } } },
+    })).toMatchObject({ src: "/supplied.webp", isStandard: false, style: expectedStyle });
+  });
+
+  it("does not substitute standard art for a winning snapshot using the builtin URL", () => {
+    const character = builtinCharacter("sigrika");
+    expect(resolveHandbookPortrait(character, {
+      costumeSnapshot: { portraitUrl: character.portrait, ...framing },
+      user: { equippedCostumes: { sigrika: { portraitUrl: "/account.webp" } } },
+    })).toMatchObject({ src: character.portrait, isStandard: false, style: expectedStyle });
+  });
+
+  it("uses snapshot candy art and framing ahead of current equipment", () => {
+    expect(resolveHandbookPortrait(builtinCharacter("denia"), {
+      itemEffects: { deniaRainbowGlow: true },
+      costumeSnapshot: { portraitUrl: "/snapshot.webp", candyEffectPortraitUrl: "/snapshot-candy.webp", ...framing },
+      user: { equippedCostumes: { denia: { candyEffectPortraitUrl: "/account-candy.webp" } } },
+    })).toMatchObject({ src: "/snapshot-candy.webp", isStandard: false, style: expectedStyle });
+  });
   it("prefers an equipped costume over custom and builtin character art while preserving framing", () => {
     const result = resolveHandbookPortrait({
       ...builtinCharacter("sigrika"), portraitUrl: "/uploads/sigrika-custom.png",

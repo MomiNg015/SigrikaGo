@@ -1,0 +1,58 @@
+/* Shared identity art: proportional standard busts, authored fallback framing. */
+.character-bust-portrait {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.character-bust-art {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.character-bust-portrait > .character-bust-art,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-bust-portrait > .character-bust-art {
+  max-width: none !important;
+}
+.character-bust-portrait[data-standard="true"] > .character-bust-art {
+  inset: 0 auto auto 50%;
+  width: var(--character-bust-width);
+  height: auto;
+  aspect-ratio: var(--character-bust-ratio);
+  transform: translateX(var(--character-bust-anchor-x));
+}
+.character-bust-portrait[data-variant="team"][data-standard="true"] > .character-bust-art {
+  top: 8%;
+}
+.character-bust-portrait .character-bust-art > .character-bust-image,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-bust-portrait .character-bust-art > .character-bust-image {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+}
+.character-bust-portrait[data-standard="true"] .character-bust-art > .character-bust-image,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-bust-portrait[data-standard="true"] .character-bust-art > .character-bust-image {
+  height: auto !important;
+}

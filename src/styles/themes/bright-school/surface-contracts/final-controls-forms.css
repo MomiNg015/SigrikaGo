@@ -55,7 +55,22 @@
   color: var(--bright-ink) !important;
   border-color: var(--bright-border) !important;
   box-shadow: 3px 3px 0 var(--bright-border) !important;
-  transform: translateY(-1px) !important;
+}
+
+/* Hover geometry belongs to semantic motion owners; retain legacy selected/scene geometry. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  & .settings-tabs button.active,
+  & .shop-tabs button.active,
+  & .friends-tabs button.active,
+  & .theme-choice-button.active,
+  & .theme-choice-button[aria-pressed="true"],
+  & .shop-pagination button.active,
+  & .primary-action,
+  & .login-submit-btn,
+  & .skill-action,
+  & button:where(.is-sigrika-corrupted *):is(:hover, :focus-visible) {
+    transform: translateY(-1px) !important;
+  }
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.practice-entry-button,

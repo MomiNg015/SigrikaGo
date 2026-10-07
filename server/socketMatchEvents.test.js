@@ -244,3 +244,155 @@ it("rechecks the requester and candidate after asynchronous blacklist checks", a
   await second.trigger("match:join", {}, vi.fn());
   expect(deps.joinMatchmaking.mock.calls[0][2].canPair({ user: { id: "other" } })).toBe(false);
 });
+
+it("uses the requested character through range expansion without changing the account", async () => {
+  vi.useFakeTimers();
+  const socket = createSocket({ id: "chosen", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath"] });
+  const queued = [];
+  const deps = createDeps({ characterSelectionData: async () => ({}), now: Date.now,
+    listWaitingPlayers: () => queued,
+    joinMatchmaking: vi.fn((entry) => { queued.splice(0, queued.length, entry); return null; }) });
+  registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join", { mode: "standard", characterId: "aemeath" });
+  expect(deps.joinMatchmaking.mock.calls[0][0].user.selectedCharacter).toBe("aemeath");
+  expect(socket.user.selectedCharacter).toBe("sigrika");
+  await vi.advanceTimersByTimeAsync(16000);
+  expect(deps.joinMatchmaking).toHaveBeenCalledTimes(2);
+  expect(deps.joinMatchmaking.mock.calls[1][0].user.selectedCharacter).toBe("aemeath");
+});
+it("rejects an unowned requested match character before queue admission", async () => {
+  const socket = createSocket({ id: "chosen", ownedCharacters: ["sigrika"] });
+  const deps = createDeps({ characterSelectionData: async () => ({}) });
+  const ack = vi.fn(); registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join", { characterId: "aemeath" }, ack);
+  expect(ack).toHaveBeenCalledWith(expect.objectContaining({ code: "invalid_match_character" }));
+  expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+});
+
+it("removes an unavailable explicit selection when range expansion retries", async () => {
+  vi.useFakeTimers();
+  const queue = createRoomMatchmakingQueue();
+  const socket = createSocket({ id: "chosen", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath"] });
+  let disabled = false;
+  const deps = createDeps({
+    now: Date.now,
+    characterSelectionData: async () => ({ disabledSlugs: new Set(disabled ? ["aemeath"] : []) }),
+    listWaitingPlayers: () => queue.list(),
+    leaveMatchmaking: vi.fn((id) => queue.removeUser(id)),
+    joinMatchmaking: vi.fn((entry, _io, options) => { queue.join(entry, options); return null; })
+  });
+  registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join", { characterId: "aemeath" });
+  expect(queue.list()[0].characterId).toBe("aemeath");
+  disabled = true;
+  await vi.advanceTimersByTimeAsync(16000);
+  expect(queue.list()).toHaveLength(0);
+  expect(deps.joinMatchmaking).toHaveBeenCalledTimes(1);
+  expect(socket.emit).toHaveBeenCalledWith("match:left");
+  expect(socket.emit).toHaveBeenCalledWith("error:toast", "所选角色不可用，请重新选择");
+  expect(deps.broadcastLobbyStats).toHaveBeenCalledTimes(2);
+});
+
+it("clears an existing queue when a replacement explicit selection is rejected", async () => {
+  const socket = createSocket({ id: "chosen", ownedCharacters: ["sigrika"] });
+  const deps = createDeps({
+    characterSelectionData: async () => ({}),
+    listWaitingPlayers: () => [{ user: socket.user, socketId: socket.id, mode: "standard" }]
+  });
+  registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join", { characterId: "aemeath" }, vi.fn());
+  expect(deps.leaveMatchmaking).toHaveBeenCalledWith("chosen");
+  expect(socket.emit).toHaveBeenCalledWith("match:left");
+  expect(deps.broadcastLobbyStats).toHaveBeenCalledOnce();
+});
+
+it.each(["unowned", "disabled", "disconnected", "refresh-failed"])("removes an unavailable waiting explicit selection: %s", async (reason) => {
+  const socket = createSocket({ id: "requester" });
+  const waitingSocket = createSocket({ id: "waiting", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath"] });
+  waitingSocket.id = "socket-b";
+  waitingSocket.connected = reason !== "disconnected";
+  const candidate = { user: waitingSocket.user, socketId: waitingSocket.id, mode: "standard", characterId: "aemeath" };
+  const queue = [candidate];
+  const deps = createDeps({
+    io: { sockets: { sockets: new Map([[waitingSocket.id, waitingSocket]]) } },
+    listWaitingPlayers: () => queue,
+    leaveMatchmaking: vi.fn((id) => { if (id === "waiting") queue.length = 0; }),
+    characterSelectionData: async () => ({ disabledSlugs: new Set(reason === "disabled" ? ["aemeath"] : []) }),
+    refreshSocketUser: async (target) => {
+      if (target !== waitingSocket) return;
+      if (reason === "refresh-failed") throw new Error("unauthorized");
+      if (reason === "unowned") target.user = { ...target.user, ownedCharacters: ["sigrika"] };
+    }
+  });
+  registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join");
+  expect(queue).toHaveLength(0);
+  expect(deps.leaveMatchmaking).toHaveBeenCalledWith("waiting");
+  expect(deps.joinMatchmaking.mock.calls[0][2].canPair(candidate)).toBe(false);
+  if (reason !== "disconnected") {
+    expect(waitingSocket.emit).toHaveBeenCalledWith("match:left");
+    expect(waitingSocket.emit).toHaveBeenCalledWith("error:toast", expect.any(String));
+  }
+});
+
+it("keeps a waiting explicit character while refreshing the account default", async () => {
+  const socket = createSocket({ id: "requester" });
+  const waitingSocket = createSocket({ id: "waiting", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath"] });
+  waitingSocket.id = "socket-b";
+  const candidate = { user: waitingSocket.user, socketId: waitingSocket.id, mode: "standard", characterId: "aemeath" };
+  const deps = createDeps({
+    io: { sockets: { sockets: new Map([[waitingSocket.id, waitingSocket]]) } },
+    listWaitingPlayers: () => [candidate],
+    characterSelectionData: async () => ({}),
+    refreshSocketUser: async (target) => { if (target === waitingSocket) target.user = { ...target.user, username: "fresh" }; }
+  });
+  registerMatchSocketEvents(socket, deps);
+  await socket.trigger("match:join");
+  expect(candidate.user).toEqual(expect.objectContaining({ selectedCharacter: "aemeath", username: "fresh" }));
+  expect(waitingSocket.user.selectedCharacter).toBe("sigrika");
+  expect(deps.leaveMatchmaking).not.toHaveBeenCalled();
+});
+
+it("does not overwrite or remove a replacement candidate after awaiting its refresh", async () => {
+  const socket = createSocket({ id: "requester" });
+  const waitingSocket = createSocket({ id: "waiting", selectedCharacter: "sigrika", ownedCharacters: ["sigrika"] });
+  waitingSocket.id = "socket-b";
+  const candidate = { user: waitingSocket.user, socketId: waitingSocket.id, mode: "standard", characterId: "aemeath" };
+  const queue = [candidate];
+  const replacement = { ...candidate, characterId: "sigrika" };
+  let finishRefresh;
+  const deps = createDeps({
+    io: { sockets: { sockets: new Map([[waitingSocket.id, waitingSocket]]) } },
+    listWaitingPlayers: () => queue,
+    characterSelectionData: async () => ({}),
+    refreshSocketUser: async (target) => {
+      if (target === waitingSocket) await new Promise((resolve) => { finishRefresh = resolve; });
+    }
+  });
+  registerMatchSocketEvents(socket, deps);
+  const pending = socket.trigger("match:join");
+  await vi.waitFor(() => expect(finishRefresh).toBeTypeOf("function"));
+  queue.splice(0, 1, replacement);
+  finishRefresh();
+  await pending;
+  expect(queue).toEqual([replacement]);
+  expect(deps.leaveMatchmaking).not.toHaveBeenCalled();
+  expect(waitingSocket.emit).not.toHaveBeenCalled();
+});
+
+it("does not clear a newer queue when an older rejected selection finishes", async () => {
+  const socket = createSocket({ id: "chosen", ownedCharacters: ["sigrika"] });
+  let finishSelection;
+  const deps = createDeps({
+    listWaitingPlayers: () => [{ user: socket.user, socketId: socket.id, mode: "standard" }],
+    characterSelectionData: () => new Promise((resolve) => { finishSelection = resolve; })
+  });
+  registerMatchSocketEvents(socket, deps);
+  const pending = socket.trigger("match:join", { characterId: "aemeath" }, vi.fn());
+  await vi.waitFor(() => expect(finishSelection).toBeTypeOf("function"));
+  await socket.trigger("match:join");
+  finishSelection({});
+  await pending;
+  expect(deps.leaveMatchmaking).not.toHaveBeenCalled();
+  expect(deps.joinMatchmaking).toHaveBeenCalledOnce();
+});

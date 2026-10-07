@@ -11,7 +11,7 @@ export default function WarehouseItemGrid({ items, usingItemId, onSelectTargetIt
   return (
     <div className="warehouse-grid">
       {items.map((item) => {
-        const disabled = item.usable === false || usingItemId === item.itemId || item.quantity <= 0;
+        const disabled = item.usable === false || Boolean(usingItemId) || item.quantity <= 0;
         const actionLabel = item.usable === false ? "请去招募" : usingItemId === item.itemId ? "使用中" : "使用";
         return (
           <article className={`warehouse-item warehouse-item-category-${item.targetType || "self"}`} key={item.itemId}>

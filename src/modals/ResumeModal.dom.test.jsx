@@ -65,7 +65,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getAllByText("58.3%")).toHaveLength(2);
     expect(screen.getByText("4段")).toBeTruthy();
     expect(document.querySelectorAll(".profile-portrait-mask")).toHaveLength(2);
-    expect(document.querySelector(".profile-hero-portrait > .profile-portrait-mask > img")).toBeTruthy();
+    expect(document.querySelector(".profile-hero-portrait > .profile-portrait-mask .character-bust-image")).toBeTruthy();
     expect(document.querySelector(".profile-character-table .profile-chain-portrait.small > .profile-portrait-mask > img")).toBeTruthy();
     expect(screen.queryByText("积分", { exact: true })).toBeNull();
     expect(screen.getByLabelText("4段 3/6星")).toBeTruthy();

@@ -1,4 +1,4 @@
-import React from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export const ADMIN_TABS = ["overview", "operations", "users", "characters", "skill-traits", "shop", "costumes", "items", "decorations", "music", "gacha", "recruitment", "announcements", "onboarding", "mailbox", "achievements", "iris", "settings", "feedback", "reports", "audit"];
 
@@ -27,6 +27,11 @@ export const ADMIN_TAB_LABELS = {
 };
 
 export default function AdminShell({ user, tab, setTab, onBack, error = "", children }) {
+  const mainRef = useRef(null);
+  useLayoutEffect(() => {
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+  }, [tab]);
+
   return (
     <main className="admin-screen">
       <aside className="admin-sidebar">
@@ -38,7 +43,7 @@ export default function AdminShell({ user, tab, setTab, onBack, error = "", chil
         ))}
         <button onClick={onBack}>返回大厅</button>
       </aside>
-      <section className="admin-main">
+      <section className="admin-main" ref={mainRef}>
         <header><span>{user.username}</span><strong>{ADMIN_TAB_LABELS[tab]}</strong></header>
         {error && <p className="form-error admin-error">{error}</p>}
         {children}

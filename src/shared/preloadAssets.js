@@ -21,6 +21,7 @@ import { RECRUITMENT_ITEMS } from "./recruitment.js";
 import { gameModeSkillEnabled } from "./gameModes.js";
 import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 import { voiceSourceCandidates } from "./systemVoices.js";
+import { resolveHandbookPortrait } from "./handbookPortraits.js";
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
   return locationLike?.origin ?? "";
@@ -69,12 +70,15 @@ export function loginPreloadAssets({
   });
   const equipmentAssets = Object.values(achievementEquipmentAssets ?? {});
   const equippedCostumes = Object.values(user?.equippedCostumes ?? {});
+  const selectedId = canonicalCharacterId(user?.selectedCharacter ?? user?.characterId);
+  const homeCharacter = visibleCharacters.find((character) => canonicalCharacterId(character.id ?? character.slug) === selectedId);
   const corruptionHomeTrack = user?.sigrikaCandyArc?.corrupted === true
     ? SIGRIKA_CORRUPTION_MUSIC.home
     : null;
 
   const criticalImages = compactUnique([
     ...visibleCharacters.map((character) => character?.portrait),
+    ...(homeCharacter ? [resolveHandbookPortrait(homeCharacter, { user, itemEffects: user?.itemEffects }).src] : []),
     ...equippedCostumes.flatMap((costume) => [costume?.portraitUrl, costume?.candyEffectPortraitUrl]),
     ...RUNTIME_IMAGE_ASSETS.home,
     ...RUNTIME_IMAGE_ASSETS.shop,
@@ -118,7 +122,7 @@ export function battlePreloadAssets({
   systemVoices = CHARACTER_SYSTEM_VOICES
 } = {}) {
   const players = (room?.players ?? []).flatMap((player) => [player, ...(player.teamLineup ?? [])
-    .filter((member) => member.characterId)
+    .filter((member) => member.status !== "hidden" && member.characterId)
     .map((member) => ({ ...player, ...member, teamLineup: undefined }))]);
   const skillEnabled = gameModeSkillEnabled(room?.mode ?? room?.game?.mode);
   const characterIds = compactUnique(players.map((player) => canonicalCharacterId(
@@ -155,6 +159,14 @@ export function battlePreloadAssets({
 
   const criticalImages = compactUnique([
     ...roomCharacters.map((character) => character?.portrait),
+    ...(room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource ? [] : players.map((player) => {
+      const id = canonicalCharacterId(player.characterId ?? player.character?.id);
+      const character = characters?.[id] ?? CHARACTERS[id] ?? player.character;
+      if (!character) return "";
+      return resolveHandbookPortrait({ ...character, id }, {
+        user: player.user, itemEffects: player.user?.itemEffects, costumeSnapshot: player.costumeSnapshot
+      }).src;
+    })),
     ...players.flatMap((player) => [
       player.costumeSnapshot?.portraitUrl,
       player.costumeSnapshot?.candyEffectPortraitUrl

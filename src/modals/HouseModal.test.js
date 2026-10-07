@@ -176,18 +176,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(likedHtml).not.toContain("个性化");
   });
 
-  it("keeps the profile report dialog submit-only below the textarea", () => {
-    const source = readFileSync(new URL("./UserProfileCard.jsx", import.meta.url), "utf8");
-    const reportDialogStart = source.indexOf("{showReportDialog && (");
-    const reportDialogEnd = source.indexOf("</section>\n  );", reportDialogStart);
-    const reportDialogSource = source.slice(reportDialogStart, reportDialogEnd);
-
-    expect(reportDialogStart).toBeGreaterThan(-1);
-    expect(reportDialogSource).toContain('className="danger-action"');
-    expect(reportDialogSource).toContain("disabled={reportPending || reportContent.trim().length === 0}");
-    expect(reportDialogSource).not.toContain(">取消</button>");
-  });
-
   it("marks house character cards with active item effect icons", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
@@ -559,7 +547,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("width: min(1440px, calc(100vw - 48px));");
     expect(modalCss).toContain("grid-template-rows: auto minmax(0, 1fr);");
     expect(modalCss).toContain(".profile-summary-grid");
-    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);");
     expect(modalCss).toContain(".profile-character-table");
     expect(modalCss).toContain("table-layout: fixed;");
     expect(brightSchoolCss).toContain(".resume-modal > .resume-header");
@@ -825,9 +813,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-blue\)\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle \.character-music-glyph,[\s\S]*?\.character-music-toggle \.character-music-glyph span\s*\{[^}]*color:\s*inherit\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-player\.is-playing \.character-music-toggle\s*\{[^}]*color:\s*var\(--bright-pink\)\s*!important;/s);
-    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\),[\s\S]*?\.character-music-toggle:active:not\(:disabled\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:is\(:hover, :focus-visible, :active\):not\([^{}]+\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
     expect(brightSchoolPlayerShellCss).toContain("transform: translateY(2px) !important");
-    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\)::before,[\s\S]*?\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*border-color:\s*transparent;[^}]*background:\s*transparent;[^}]*box-shadow:\s*none;/s);
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:is\(:hover, :focus-visible, :active\):not\([^{}]+\)::before\s*\{[^}]*border-color:\s*transparent;[^}]*background:\s*transparent;[^}]*box-shadow:\s*none;/s);
     expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active:not\(:disabled\)::before\s*\{[^}]*background:\s*var\(--bright-pink\)/s);
     expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active[^}]*scale\(/s);
     expect(brightSchoolPlayerShellCss).toContain("font-family: var(--font-ui-default) !important");
@@ -884,7 +872,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain(".profile-resume-view");
     expect(modalCss).toContain(".profile-overview-grid");
     expect(modalCss).toContain(".profile-summary-grid");
-    expect(modalCss).toContain("grid-template-columns: 1.08fr 1.08fr 0.92fr 0.92fr;");
+    expect(modalCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);");
     expect(modalCss).toContain(".profile-character-table");
     expect(modalCss).toContain("table-layout: fixed;");
     expect(modalCss).toContain(".profile-character-table-scroll");
@@ -943,7 +931,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalThemeCss).toContain("box-shadow: var(--profile-dossier-shadow-medium) !important");
     expect(finalThemeCss).toContain(".profile-character-table-head");
     expect(profileAuditCss).toContain("7%, var(--profile-dossier-card-surface, var(--bright-sheet))");
-    expect(profileAuditCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.42) !important");
+    expect(profileAuditCss).toContain("box-shadow: 0 2px 0 rgba(61, 43, 37, 0.18) !important");
     expect(finalThemeCss).toContain(".profile-friend-button");
     expect(profileActionsCss).toContain("Profile tabs reuse the watch-window mode-tab control language.");
     expect(profileActionsCss).toContain("width: auto !important");

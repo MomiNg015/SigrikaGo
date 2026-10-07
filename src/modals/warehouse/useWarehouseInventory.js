@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import { characterListFromCatalog } from "../../shared/characters.js";
@@ -16,6 +16,7 @@ export function useWarehouseInventory({
   const [targetItem, setTargetItem] = useState(null);
   const [targetResult, setTargetResult] = useState(initialTargetState);
   const [usingItemId, setUsingItemId] = useState("");
+  const itemUseInFlightRef = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -36,6 +37,8 @@ export function useWarehouseInventory({
   }, [token, onNotice]);
 
   async function useItem(item, characterId = "") {
+    if (itemUseInFlightRef.current) return;
+    itemUseInFlightRef.current = true;
     setUsingItemId(item.itemId);
     try {
       const data = await api(`/api/items/${item.itemId}/use`, {
@@ -77,6 +80,7 @@ export function useWarehouseInventory({
     } catch (apiError) {
       onNotice?.(apiError.message, "danger");
     } finally {
+      itemUseInFlightRef.current = false;
       setUsingItemId("");
     }
   }

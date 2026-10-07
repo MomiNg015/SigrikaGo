@@ -632,6 +632,8 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/window-title-sticker-content.css",
       "./mobile-adaptive/window-sticker-resume-header.css",
       "./mobile-adaptive/match-mode-title-layout.css",
+      "./modals/replay-mode-resume/match-character-selection.css",
+      "./modals/replay-mode-resume/match-character-cards.css",
       "./mobile-adaptive/mobile-room-shadow-gutters.css",
       "./mobile-adaptive/battle-paper-portrait.css",
       "./mobile-adaptive/battle-paper-panels.css",
@@ -648,14 +650,15 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/home-onboarding.css",
       "./mobile-adaptive/battle-info-typography.css",
       "./mobile-adaptive/handbook-puzzle.css",
-      "./mobile-adaptive/handbook-detail-figure.css"
+      "./mobile-adaptive/handbook-detail-figure.css",
+      "./mobile-adaptive/character-bust-portraits.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/handbook-detail-figure.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/character-bust-portraits.css");
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");

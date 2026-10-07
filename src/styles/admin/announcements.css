@@ -167,7 +167,7 @@
   font-weight: 900;
 }
 
-.admin-announcement-edit-pane input,
+.admin-announcement-edit-pane input:not([type="checkbox"]),
 .admin-announcement-edit-pane textarea {
   width: 100%;
   border: 1px solid #ddcfe2;

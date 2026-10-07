@@ -1,5 +1,7 @@
 import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { UserRound, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ModalDialog } from "../modalComponents.jsx";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import {
@@ -12,21 +14,29 @@ export default function WarehouseTargetModal({
   ownedCharacters,
   targetItem,
   targetResult,
+  busy = false,
   user,
   onClose,
   onUseItem
 }) {
   if (!targetItem && !targetResult) return null;
 
-  return (
+  const dialog = (
     <div className="modal-backdrop nested-backdrop" onClick={onClose}>
-      <section className={`character-target-modal${warehouseTargetState(targetResult).isResolved ? "" : " window-sticker-host"}`} onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={18} /></button>
+      <ModalDialog
+        className={`character-target-modal${warehouseTargetState(targetResult).isResolved ? "" : " window-sticker-host"}`}
+        ariaLabel={warehouseTargetState(targetResult).isResolved ? "道具效果" : undefined}
+        ariaLabelledBy={warehouseTargetState(targetResult).isResolved ? undefined : "warehouse-target-title"}
+        aria-busy={busy || undefined}
+        onClose={onClose}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button className="close-button" type="button" aria-label="关闭角色选择" onClick={onClose}><X size={18} /></button>
         {warehouseTargetState(targetResult).isResolved ? (
           <WarehouseEffectResult targetState={targetResult} characters={characters} user={user} />
         ) : (
           <>
-            <WindowTitleSticker titleKey="select-character" />
+            <WindowTitleSticker titleKey="select-character" id="warehouse-target-title" />
             <div className="warehouse-character-grid">
               {ownedCharacters.map((character) => {
                 const targetAvailability = warehouseCharacterTargetAvailability({
@@ -39,12 +49,12 @@ export default function WarehouseTargetModal({
                     key={character.id}
                     type="button"
                     className={targetAvailability.disabled ? "warehouse-target-disabled" : ""}
-                    disabled={targetAvailability.disabled}
-                    aria-disabled={targetAvailability.disabled}
+                    disabled={busy || targetAvailability.disabled}
+                    aria-disabled={busy || targetAvailability.disabled}
                     title={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
                     aria-label={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
                     onClick={() => {
-                      if (!targetAvailability.disabled) onUseItem(targetItem, character.id);
+                      if (!busy && !targetAvailability.disabled) onUseItem(targetItem, character.id);
                     }}
                   >
                     <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
@@ -58,9 +68,11 @@ export default function WarehouseTargetModal({
             </div>
           </>
         )}
-      </section>
+      </ModalDialog>
     </div>
   );
+  if (typeof document === "undefined") return dialog;
+  return createPortal(dialog, document.querySelector(".app-shell") ?? document.body);
 }
 
 function WarehouseEffectResult({ targetState, characters, user }) {

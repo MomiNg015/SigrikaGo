@@ -35,3 +35,10 @@ test.each(["ack", "found", "cancel"])("%s clears pending timers and cannot clear
   expect(f.showToast).not.toHaveBeenCalled();
   expect(f.setMatchStart).toHaveBeenCalledOnce();
 });
+
+test("includes the card character identity in queue admission", () => {
+  const f = fixture();
+  startMatchTransition({ ...f.options, mode: "standard", characterId: "aemeath" });
+  expect(f.socket.emit).toHaveBeenCalledWith("match:join", { mode: "standard", characterId: "aemeath" }, expect.any(Function));
+  f.acknowledge({ ok: true });
+});

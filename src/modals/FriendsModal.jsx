@@ -1,5 +1,5 @@
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
@@ -7,6 +7,7 @@ import FriendsList from "./friends/FriendsList.jsx";
 import FriendsOverlays from "./friends/FriendsOverlays.jsx";
 import FriendsToolbar from "./friends/FriendsToolbar.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
+import { ModalDialog } from "./modalComponents.jsx";
 
 export default function FriendsModal({ token, socket, characters, onNotice, onClose, onOpenReplay }) {
   const [activeTab, setActiveTab] = useState("friends");
@@ -16,6 +17,14 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   const [duelModeTarget, setDuelModeTarget] = useState(null);
   const [searchUsername, setSearchUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  const [removalPending, setRemovalPending] = useState(false);
+  const removalRequestRef = useRef(false);
+  const overlayReturnFocusRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const overlayOpenRef = useRef(false);
+  const notify = useCallback((text, tone = "danger") => {
+    onNotice?.(text, tone);
+  }, [onNotice]);
   const {
     blacklist,
     friends,
@@ -31,8 +40,22 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   const actionRow = actionTarget?.row;
 
   useEffect(() => {
-    refreshSocial();
-  }, [token]);
+    let alive = true;
+    setLoading(true);
+    loadSocialRelations().finally(() => {
+      if (alive) setLoading(false);
+    });
+    return () => { alive = false; };
+  }, [loadSocialRelations]);
+
+  useEffect(() => {
+    const overlayOpen = Boolean(confirmTarget || duelModeTarget || profileUser);
+    if (overlayOpenRef.current && !overlayOpen) {
+      const target = overlayReturnFocusRef.current;
+      (target?.isConnected ? target : closeButtonRef.current)?.focus();
+    }
+    overlayOpenRef.current = overlayOpen;
+  }, [confirmTarget, duelModeTarget, profileUser]);
 
   useEffect(() => {
     if (!socket) return undefined;
@@ -41,13 +64,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     return () => {
       socket.off("duel:sent", sent);
     };
-  }, [socket]);
-
-  async function refreshSocial() {
-    setLoading(true);
-    await loadSocialRelations();
-    setLoading(false);
-  }
+  }, [notify, socket]);
 
   async function openProfile(row) {
     setActionTarget(null);
@@ -66,6 +83,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
       notify("用户名需为 2-8 位", "danger");
       return;
     }
+    overlayReturnFocusRef.current = document.activeElement;
     setActionTarget(null);
     setConfirmTarget(null);
     try {
@@ -105,12 +123,20 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   }
 
   async function removeTarget(target = confirmTarget) {
-    if (!target) return;
-    const path = target.type === "friend" ? "friends" : "blacklist";
-    if (path === "friends") await updateFriend(target.user.id, "DELETE");
-    else await updateBlacklist(target.user.id, "DELETE");
-    setConfirmTarget(null);
-    setActionTarget(null);
+    if (!target || removalRequestRef.current) return;
+    removalRequestRef.current = true;
+    setRemovalPending(true);
+    try {
+      if (target.type === "friend") await updateFriend(target.user.id, "DELETE");
+      else await updateBlacklist(target.user.id, "DELETE");
+      setConfirmTarget((current) => current === target ? null : current);
+      setActionTarget((current) => current?.row?.id === target.user.id ? null : current);
+    } catch (error) {
+      notify(error.message, "danger");
+    } finally {
+      removalRequestRef.current = false;
+      setRemovalPending(false);
+    }
   }
 
   function requestMatch(row) {
@@ -125,10 +151,6 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     setDuelModeTarget(null);
   }
 
-  function notify(text, tone = "danger") {
-    onNotice?.(text, tone);
-  }
-
   function openConfirm(type, user) {
     setActionTarget(null);
     setProfileUser(null);
@@ -138,12 +160,12 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   return (
     <>
       <div className="modal-backdrop" onClick={onClose}>
-        <section className="friends-modal window-sticker-host window-bookmark-host" onClick={(event) => event.stopPropagation()}>
-          <button className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
+        <ModalDialog className="friends-modal window-sticker-host window-bookmark-host" ariaLabelledBy="friends-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+          <button ref={closeButtonRef} className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
             <X size={20} />
           </button>
           <header className="friends-modal-header window-sticker-header">
-            <WindowTitleSticker titleKey="friends" />
+            <WindowTitleSticker titleKey="friends" id="friends-modal-title" />
           </header>
           <FriendsToolbar
             activeTab={activeTab}
@@ -161,15 +183,19 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
             onOpenConfirm={openConfirm}
             onOpenProfile={openProfile}
             onRequestMatch={requestMatch}
-            onToggleAction={(row) => setActionTarget((current) => current?.row?.id === row.id ? null : { row })}
+            onToggleAction={(row) => {
+              overlayReturnFocusRef.current = document.activeElement;
+              setActionTarget((current) => current?.row?.id === row.id ? null : { row });
+            }}
           />
-        </section>
+        </ModalDialog>
       </div>
       <FriendsOverlays
         characters={characters}
         confirmTarget={confirmTarget}
         duelModeTarget={duelModeTarget}
         profileUser={profileUser}
+        removalPending={removalPending}
         token={token}
         onAddBlacklist={addProfileBlacklist}
         onAddFriend={addProfileFriend}

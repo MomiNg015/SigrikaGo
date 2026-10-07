@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import PlayerPlaque from "./PlayerPlaque.jsx";
 import { readFileSync } from "node:fs";
+import { CHARACTERS } from "../../shared/characters.js";
 
 afterEach(cleanup);
 
@@ -31,9 +32,19 @@ describe("home student ID", () => {
     const costumeUser = { ...user, equippedCostumes: { sigrika: { portraitUrl: "/costume.png", portraitScalePercent: 110 } } };
     rerender(<PlayerPlaque character={character} user={costumeUser} />);
     expect(screen.getByAltText("当前出战角色").getAttribute("src")).toBe("/costume.png");
-    expect(screen.getByAltText("当前出战角色").style.scale).toBe("1.1");
+    expect(screen.getByAltText("当前出战角色").parentElement.style.scale).toBe("1.1");
     rerender(<PlayerPlaque character={{ id: "denia", portraitUrl: "/denia.png" }} user={user} />);
     expect(screen.getByAltText("当前出战角色").getAttribute("src")).toBe("/denia.png");
+  });
+
+  it("uses the standard bust inside the existing student photo mask and recovers to legacy art", () => {
+    const { container } = render(<PlayerPlaque character={CHARACTERS.sigrika} user={user} />);
+    const portrait = screen.getByAltText("当前出战角色");
+    expect(portrait.getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(portrait.closest(".home-student-id-portrait")).toBeTruthy();
+    expect(container.querySelector('.character-bust-portrait[data-variant="student-id"]')).toBeTruthy();
+    fireEvent.error(portrait);
+    expect(portrait.getAttribute("src")).toBe(CHARACTERS.sigrika.portrait);
   });
 
   it("preserves the resume action, dedicated sound opt-out and disabled state", () => {

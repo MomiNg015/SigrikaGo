@@ -24,6 +24,96 @@ import {
 import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadImageAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
+  it("preloads only the selected standard bust in addition to existing accessible portraits", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" }
+      },
+      user: { selectedCharacter: "aemeath", ownedCharacters: ["sigrika", "aemeath"] },
+      tracks: {}, skillVoices: {}, systemVoices: {}
+    });
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/denia.webp");
+  });
+
+  it.each([
+    ["custom catalog art", { portraitUrl: "/selected-custom.webp" }, {}, "/selected-custom.webp"],
+    ["equipped art", {}, { equippedCostumes: { denia: { portraitUrl: "/selected-costume.webp" } } }, "/selected-costume.webp"],
+    ["active candy art", {}, { itemEffects: { deniaRainbowGlow: true } }, DENIA_CANDY_PORTRAIT]
+  ])("preloads the selected login appearance for %s", (_label, catalog, userState, expectedSrc) => {
+    const assets = loginPreloadAssets({
+      characters: { denia: { id: "denia", portrait: "/assets/Danea_centered.webp", ...catalog } },
+      user: { selectedCharacter: "denia", ownedCharacters: ["denia"], ...userState },
+      tracks: {}, skillVoices: {}, systemVoices: {}
+    });
+    expect(assets.criticalImages).toContain(expectedSrc);
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/denia.webp");
+  });
+
+  it("preloads visible battle busts without exposing a hidden teammate or replacing costume snapshots", () => {
+    const assets = battlePreloadAssets({
+      room: { mode: "team", players: [
+        { characterId: "sigrika", costumeSnapshot: { portraitUrl: "/snapshot.webp" },
+          teamLineup: [{ characterId: "aemeath" }, { characterId: null, status: "hidden" }] },
+        { characterId: "denia" }
+      ] },
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" },
+        denia: { id: "denia", portrait: "/assets/Danea_centered.webp" }
+      }, tracks: {}, skillVoices: {}, systemVoices: {}
+    });
+    expect(assets.criticalImages).toContain("/snapshot.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/denia.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/chisa.webp");
+  });
+
+  it("omits hidden team art and audio even when historical metadata still identifies the member", () => {
+    const assets = battlePreloadAssets({
+      room: { mode: "team", players: [{
+        characterId: "sigrika",
+        teamLineup: [{
+          status: "hidden", characterId: "aemeath",
+          character: { id: "aemeath", portrait: "/hidden-character.webp" },
+          costumeSnapshot: { portraitUrl: "/hidden-costume.webp" }
+        }]
+      }] },
+      characters: {
+        sigrika: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { id: "aemeath", portrait: "/hidden-catalog.webp" }
+      },
+      tracks: {}, skillVoices: { aemeath: "/hidden-skill.ogg" },
+      systemVoices: { aemeath: { victory: "/hidden-victory.ogg" } }
+    });
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/hidden-character.webp");
+    expect(assets.criticalImages).not.toContain("/hidden-catalog.webp");
+    expect(assets.criticalImages).not.toContain("/hidden-costume.webp");
+    expect(assets.criticalAudio).not.toContain("/hidden-skill.ogg");
+    expect(assets.criticalAudio).not.toContain("/hidden-victory.ogg");
+  });
+
+  it("preloads the current battle display catalog while retaining frozen costume precedence", () => {
+    const assets = battlePreloadAssets({
+      room: { players: [
+        { characterId: "sigrika", character: { id: "sigrika", portrait: "/assets/sigrika_centered.webp" } },
+        { characterId: "denia", character: { id: "denia", portrait: "/stale-denia.webp" },
+          costumeSnapshot: { portraitUrl: "/frozen-denia.webp" } }
+      ] },
+      characters: {
+        sigrika: { id: "sigrika", portraitUrl: "/current-sigrika.webp" },
+        denia: { id: "denia", portraitUrl: "/current-denia.webp" }
+      }, tracks: {}, skillVoices: {}, systemVoices: {}
+    });
+    expect(assets.criticalImages).toContain("/current-sigrika.webp");
+    expect(assets.criticalImages).toContain("/frozen-denia.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/stale-denia.webp");
+  });
+
   it("uses same-origin socket connections in the browser", () => {
     expect(deploymentSocketBase({ origin: "https://sigrika.fun" })).toBe("https://sigrika.fun");
   });

@@ -1,6 +1,6 @@
 import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
-import { ModalActionButton } from "../modalComponents.jsx";
+import { ModalActionButton, ModalDialog } from "../modalComponents.jsx";
 import MatchModeRuleText from "../../home/MatchModeRuleText.jsx";
 import MatchModeWatermark from "../../home/MatchModeWatermark.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
@@ -11,6 +11,7 @@ export default function FriendsOverlays({
   confirmTarget,
   duelModeTarget,
   profileUser,
+  removalPending = false,
   token,
   onAddBlacklist,
   onAddFriend,
@@ -40,7 +41,7 @@ export default function FriendsOverlays({
       )}
       {confirmTarget && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseConfirm}>
-          <section className="room-floating-modal confirm-inline-modal" onClick={(event) => event.stopPropagation()}>
+          <ModalDialog className="room-floating-modal confirm-inline-modal" ariaLabel={confirmTarget.type === "friend" ? "解除好友" : "从黑名单解除"} aria-busy={removalPending || undefined} onClose={onCloseConfirm} onClick={(event) => event.stopPropagation()}>
             <ConfirmPanel
               message={confirmTarget.type === "friend" ? (
                 <>确定解除<UserIdentity user={confirmTarget.user} compact />好友吗？</>
@@ -48,15 +49,16 @@ export default function FriendsOverlays({
                 <>确定将<UserIdentity user={confirmTarget.user} compact />从黑名单解除吗？</>
               )}
               onConfirm={onRemoveTarget}
+              confirmDisabled={removalPending}
               onCancel={onCloseConfirm}
             />
-          </section>
+          </ModalDialog>
         </div>
       )}
       {duelModeTarget && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseDuelMode}>
-          <section className="room-floating-modal match-mode-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
-            <WindowTitleSticker titleKey="match-mode" />
+          <ModalDialog className="room-floating-modal match-mode-modal window-sticker-host" ariaLabelledBy="friend-duel-mode-title" onClose={onCloseDuelMode} onClick={(event) => event.stopPropagation()}>
+            <WindowTitleSticker titleKey="match-mode" id="friend-duel-mode-title" />
             <p className="quiet-text">向 <UserIdentity user={duelModeTarget} compact /> 发起对局申请</p>
             <div className="match-mode-options">
               {modeOrderedEntries().map((mode) => (
@@ -70,7 +72,7 @@ export default function FriendsOverlays({
               ))}
             </div>
             <ModalActionButton variant="secondary" type="button" onClick={onCloseDuelMode}>取消</ModalActionButton>
-          </section>
+          </ModalDialog>
         </div>
       )}
     </>

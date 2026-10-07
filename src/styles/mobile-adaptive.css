@@ -36,6 +36,8 @@
 @import "./mobile-adaptive/window-title-sticker-content.css";
 @import "./mobile-adaptive/window-sticker-resume-header.css";
 @import "./mobile-adaptive/match-mode-title-layout.css";
+@import "./modals/replay-mode-resume/match-character-selection.css";
+@import "./modals/replay-mode-resume/match-character-cards.css";
 @import "./mobile-adaptive/mobile-room-shadow-gutters.css";
 @import "./mobile-adaptive/battle-paper-portrait.css";
 @import "./mobile-adaptive/battle-paper-panels.css";
@@ -55,3 +57,4 @@
 @import "./mobile-adaptive/battle-info-typography.css";
 @import "./mobile-adaptive/handbook-puzzle.css";
 @import "./mobile-adaptive/handbook-detail-figure.css";
+@import "./mobile-adaptive/character-bust-portraits.css";

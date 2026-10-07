@@ -445,7 +445,8 @@ describe("HomeScreen", () => {
     expect(html).not.toContain('plaque-mode-stat');
     expect(html).not.toContain("plaque-mode-name");
     expect(html).not.toContain("plaque-mode-rating");
-    expect(html).toContain('<span class="home-student-id-portrait"><img');
+    expect(html).toContain('<span class="home-student-id-portrait"><span class="character-bust-portrait"');
+    expect(html).toContain('data-variant="student-id"');
     expect(html).not.toContain("1260分");
     expect(html).not.toContain("920分");
     expect(html).not.toContain("1010分");
@@ -1066,9 +1067,9 @@ describe("HomeScreen", () => {
     expect(html).toContain("<strong>星炬对弈</strong>");
     expect(html).toContain("<strong>标准对弈</strong>");
     expect(html).toContain("<strong>来下五子棋吗？</strong>");
-    expect(html).toContain('aria-label="匹配中 3 人"');
-    expect(html).toContain('aria-label="匹配中 0 人"');
-    expect(html).toContain('aria-label="匹配中 1 人"');
+    expect(html).not.toContain('aria-label="匹配中 3 人"');
+    expect(html).not.toContain('aria-label="匹配中 0 人"');
+    expect(html).not.toContain('aria-label="匹配中 1 人"');
     expect(optionBlock).toContain("position: relative");
     expect(optionBlock).toContain("isolation: isolate");
     expect(optionBlock).toContain("overflow: hidden");

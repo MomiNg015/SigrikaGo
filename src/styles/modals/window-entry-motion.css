@@ -37,7 +37,11 @@
     .leaderboard-modal,
     .friends-modal,
     .watch-list-modal,
-    .message-board-modal
+    .message-board-modal,
+    .user-profile-modal,
+    .profile-report-dialog,
+    .profile-blacklist-dialog,
+    .confirm-inline-modal:not(.sigrika-duel-confirm-modal)
   ) {
     transform-origin: center;
     animation: modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
@@ -54,6 +58,25 @@
 
   .information-center-modal .information-center-reader {
     animation: information-center-reader-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) 70ms backwards;
+  }
+}
+
+/* Body-portal fallbacks receive the same instant reduced-motion behavior. */
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop:has(> :is(.small-modal, .shop-modal, .gacha-modal, .house-modal,
+    .warehouse-modal, .leaderboard-modal, .friends-modal, .watch-list-modal,
+    .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .settings-modal,
+    .message-board-modal, .information-center-modal, .user-profile-modal,
+    .profile-report-dialog, .profile-blacklist-dialog, .confirm-inline-modal)),
+  .nested-modal-backdrop,
+  .modal-backdrop > :is(.small-modal, .shop-modal, .gacha-modal, .house-modal,
+    .warehouse-modal, .leaderboard-modal, .friends-modal, .watch-list-modal,
+    .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .settings-modal,
+    .message-board-modal, .information-center-modal, .user-profile-modal,
+    .profile-report-dialog, .profile-blacklist-dialog, .confirm-inline-modal),
+  .nested-modal-backdrop > .nested-modal,
+  .information-center-modal :is(.information-center-master, .information-center-reader) {
+    animation: none !important;
   }
 }
 

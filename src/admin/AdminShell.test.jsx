@@ -1,5 +1,7 @@
-import React from "react";
-import { describe, expect, it, vi } from "vitest";
+// @vitest-environment jsdom
+import { URL as NodeURL } from "node:url";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import AdminReports from "./AdminReports.jsx";
 import AdminOperations from "./AdminOperations.jsx";
@@ -7,7 +9,8 @@ import AdminOverview from "./AdminOverview.jsx";
 import AdminShell, { ADMIN_TABS, ADMIN_TAB_LABELS } from "./AdminShell.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
-const adminCss = readCssWithImports(new URL("../styles/admin.css", import.meta.url));
+const adminCss = readCssWithImports(new NodeURL("../styles/admin.css", import.meta.url));
+afterEach(cleanup);
 
 describe("AdminShell", () => {
   it("keeps admin action and confirm modal chrome isolated from terminal skins", () => {
@@ -93,23 +96,25 @@ describe("AdminShell", () => {
   it("calls setTab and onBack from shell controls", () => {
     const setTab = vi.fn();
     const onBack = vi.fn();
-    const element = AdminShell({
-      user: { username: "admin" },
-      tab: "overview",
-      setTab,
-      onBack,
-      children: null
-    });
-    const aside = element.props.children[0];
-    const tabButtons = aside.props.children[1];
-    const usersButton = tabButtons[2];
-    const backButton = aside.props.children[2];
-
-    usersButton.props.onClick();
-    backButton.props.onClick();
+    render(<AdminShell user={{ username: "admin" }} tab="overview" setTab={setTab} onBack={onBack} />);
+    fireEvent.click(screen.getByRole("button", { name: "用户管理", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "返回大厅", exact: true }));
 
     expect(setTab).toHaveBeenCalledWith("users");
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it("starts a newly selected admin page at the top without resetting same-page edits", () => {
+    const props = { user: { username: "admin" }, setTab: vi.fn(), onBack: vi.fn() };
+    const view = render(<AdminShell {...props} tab="overview"><input defaultValue="draft" /></AdminShell>);
+    const main = view.container.querySelector(".admin-main");
+    main.scrollTop = 420;
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "edited draft" } });
+    view.rerender(<AdminShell {...props} tab="overview"><input defaultValue="draft" /></AdminShell>);
+    expect(main.scrollTop).toBe(420);
+    expect(screen.getByRole("textbox").value).toBe("edited draft");
+    view.rerender(<AdminShell {...props} tab="announcements"><input defaultValue="draft" /></AdminShell>);
+    expect(main.scrollTop).toBe(0);
   });
 
   it("renders readable admin overview brief instead of a dense first table", () => {

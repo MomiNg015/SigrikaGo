@@ -29,6 +29,7 @@ const user = { id: "team-one", username: "队际赛测试", selectedCharacter: "
 const noop = () => {};
 const root = createRoot(document.getElementById("root"));
 const params = new URLSearchParams(location.search);
+if (params.has("all-owned")) user.ownedCharacters = Object.keys(CHARACTERS);
 const round = Math.max(1, Math.min(3, Number(params.get("round")) || 1));
 const finished = params.get("finished") === "1";
 const currentId = user.ownedCharacters[round - 1];
@@ -59,7 +60,7 @@ root.render(surface === "bookmarks"
   : surface === "capture-opening"
   ? <OpeningModal room={captureRoom} player={players[0]} characters={CHARACTERS} />
   : surface === "modes"
-  ? <HomeScreen user={user} characters={CHARACTERS} matchModePickerOpen onStartMatch={noop} onPracticeStart={() => { window.practiceStarted = true; }} />
+  ? <HomeScreen user={user} characters={CHARACTERS} matchModePickerOpen onNotice={(notice) => { window.matchNotice = notice; }} onStartMatch={(mode, lineup, characterId) => { window.matchSelection = { mode, lineup, characterId }; }} onStartPractice={(options) => { window.practiceStarted = options; }} />
   : surface === "replays"
   ? <HouseReplayDialog titleStickers characterListView={Object.values(CHARACTERS)} currentUser={user} onClose={noop} pagination={{ records, loading: false, error: null, onScroll: noop }} />
   : surface === "lineup"

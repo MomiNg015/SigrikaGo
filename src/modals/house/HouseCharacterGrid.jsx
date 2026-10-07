@@ -5,23 +5,7 @@ import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
 import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
-
-const HANDBOOK_FACTIONS = {
-  sigrika: "roya",
-  denia: "startorch",
-  aemeath: "startorch",
-  lynae: "startorch",
-  mornye: "startorch",
-  chisa: "startorch",
-  nabomo: "startorch",
-  changli: "huanglong",
-  qiuyuan: "huanglong"
-};
-const FACTION_EMBLEMS = {
-  roya: { src: "/assets/factions/roya.webp", strength: 255 / 106 },
-  startorch: { src: "/assets/factions/startorch.webp", strength: 255 / 106 },
-  huanglong: { src: "/assets/factions/huanglong.png", strength: 5 }
-};
+import { CHARACTER_FACTIONS as HANDBOOK_FACTIONS, FACTION_EMBLEMS } from "../../shared/characterFactions.js";
 
 export default function HouseCharacterGrid(props) {
   const boardRef = useRef(null);

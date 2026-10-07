@@ -107,7 +107,12 @@ test("story Excel export/import stays local until draft save and preserves the p
   expect((await saved).status()).toBe(200);
   const persisted = (await api(request, admin, "GET", "/api/admin/story-scripts")).scripts.find((script) => script.key === original.key);
   expect(persisted.title).toBe(title);
-  expect(persisted.draft).toEqual(original.draft);
+  // Present blank Excel columns explicitly opt out of sprite selection;
+  // legacy nodes with absent fields gain these defaults during import.
+  expect(persisted.draft).toEqual({
+    ...original.draft,
+    nodes: original.draft.nodes.map((node) => ({ appearanceId: "", expressionId: "", ...node }))
+  });
   expect(persisted.published).toEqual(original.published);
   await api(request, admin, "PATCH", `/api/admin/story-scripts/${original.key}`, {
     action: "save-draft", title: original.title, triggerType: original.triggerType,

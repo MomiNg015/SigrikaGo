@@ -1,5 +1,6 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CircleAlert, MonitorPlay, ThumbsUp, UserPlus, UserRoundX, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { normalizeGameModeId } from "../shared/gameModes.js";
@@ -318,7 +319,7 @@ export function UserProfileCard({
         />
       )}
 
-      {showReportDialog && (
+      {showReportDialog && profileDialogPortal(
         <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
           <ModalDialog
             className={`room-floating-modal confirm-inline-modal profile-report-dialog${titleStickers ? " window-sticker-host" : ""}`}
@@ -350,7 +351,7 @@ export function UserProfileCard({
         </div>
       )}
 
-      {showBlacklistConfirm && (
+      {showBlacklistConfirm && profileDialogPortal(
         <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
           <ModalDialog
             className={`room-floating-modal confirm-inline-modal profile-blacklist-dialog${titleStickers ? " window-sticker-host" : ""}`}
@@ -388,6 +389,11 @@ export function UserProfileCard({
   );
 }
 
+function profileDialogPortal(dialog) {
+  if (typeof document === "undefined") return dialog;
+  return createPortal(dialog, document.querySelector(".app-shell") ?? document.body);
+}
+
 function profileModeTitle(mode) {
   return orderedProfileModes().find((entry) => entry.id === mode)?.shortTitle ?? "当前模式";
 }
@@ -406,12 +412,12 @@ export function splitRecordSummary(record = "0局 · 0胜0负0和") {
 
 export { characterRecordColumns, sortCharacterStatsByGames };
 
-export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", onConfirm, onCancel }) {
+export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", confirmDisabled = false, onConfirm, onCancel }) {
   return (
     <section className="inline-confirm-panel">
       <p>{message}</p>
       <div>
-        <button data-button-role="danger" className="danger-action" type="button" onClick={onConfirm}>{confirmText}</button>
+        <button data-button-role="danger" className="danger-action" type="button" disabled={confirmDisabled} onClick={onConfirm}>{confirmText}</button>
         <button data-button-role="secondary" type="button" onClick={onCancel}>{cancelText}</button>
       </div>
     </section>

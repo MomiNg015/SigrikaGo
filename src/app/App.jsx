@@ -656,7 +656,12 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
       className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}
     >
       <DesktopViewportGate>
-        <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
+        <BackgroundMusic
+          track={backgroundMusic}
+          audioSettings={audioSettings}
+          resumeSignal={audioResumeSignal}
+          windowFocused={Object.values(overlayState).some(Boolean) || showExitConfirm || Boolean(incomingDuel)}
+        />
         <InteractionFeedback audioSettings={audioSettings} />
         {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
         {showExitConfirm && (

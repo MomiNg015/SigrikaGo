@@ -10,6 +10,7 @@
       "black white"
       "meta meta" !important;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    min-height: 89px !important;
     gap: 4px 8px !important;
     padding: 8px 10px !important;
   }

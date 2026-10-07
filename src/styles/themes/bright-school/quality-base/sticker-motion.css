@@ -1,29 +1,25 @@
-/* Sticker Curl Hover Animation for bright school cards */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .home-image-entry,
-  .shop-item,
-  .warehouse-item,
-  .character-card,
-  .owned-decoration-chip,
-  .record-card,
-  .leaderboard-row,
-  .friend-row,
-  .watch-room-row
+/* Only actionable paper receives lift; artwork and read-only rows keep their owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(
+  button.owned-decoration-chip,
+  button.watch-room-row,
+  .character-card[role="button"]
 ) {
-  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease !important;
-}
+  transition: translate 180ms cubic-bezier(0.25, 1, 0.5, 1) !important;
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .home-image-entry,
-  .shop-item,
-  .warehouse-item,
-  .character-card,
-  .record-card,
-  .leaderboard-row,
-  .friend-row,
-  .watch-room-row
-):hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip:where(:not(:disabled)):hover {
-  transform: translateY(-5px) rotate(-1deg) scale(1.02) !important;
-  box-shadow: 8px 10px 0 rgba(61, 43, 37, 0.85), 0 12px 24px rgba(255, 158, 187, 0.16) !important;
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    &:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+      translate: 0 -2px;
+    }
+  }
+
+  &:is(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+    translate: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &, &:hover, &:active {
+      translate: none;
+      transition: none !important;
+    }
+  }
 }

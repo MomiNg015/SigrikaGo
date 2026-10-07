@@ -72,7 +72,7 @@
 
   &[aria-busy="true"] { cursor: progress; }
 
-  &.coordinate-toggle:is([aria-pressed="true"], :active):not(:disabled) {
+  &.coordinate-toggle:is([aria-pressed="true"], :active):not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
     background: var(--campus-control-fill, var(--campus-button-paper)) !important;
     transform: translate(2px, 2px) !important;
     box-shadow: 1px 1px 0 var(--bright-border) !important;

@@ -17,8 +17,8 @@ import { playEffectSound } from "../audio/playback.jsx";
 import { VICTORY_SOUND } from "../shared/musicLibrary.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
-const user = { id: "a", username: "挑战者", selectedCharacter: "sigrika", modeStats: {} };
+afterEach(() => { cleanup(); localStorage.clear(); vi.clearAllMocks(); });
+const user = { id: "a", ownedCharacters: ["sigrika"], username: "挑战者", selectedCharacter: "sigrika", modeStats: {} };
 const room = {
   matchSource: "practice", rated: false,
   practice: { challenge: CAPTURE_CHALLENGE_MODE, humanColor: "black", result: { captures: 23, rank: 2, breakthrough: true } },
@@ -30,15 +30,17 @@ describe("capture challenge player flow", () => {
   it("starts advanced random-color challenge directly from the picker", async () => {
     const onStartPractice = vi.fn();
     render(<HomeScreen user={user} characters={CHARACTERS} matchModePickerOpen onStartPractice={onStartPractice} onStartMatch={vi.fn()} onMatchModePickerOpenChange={vi.fn()} />);
-    fireEvent.click(screen.getByRole("button", { name: /星炬对弈.*匹配中/ }));
+    fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛选择角色" }));
+    fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
-    expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", playerColor: "random", challenge: CAPTURE_CHALLENGE_MODE });
+    expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", playerColor: "random", challenge: CAPTURE_CHALLENGE_MODE, characterId: "sigrika" });
   });
 
   it("displays tied server ranks and the record character including my pinned row", async () => {
     api.mockImplementation((url) => Promise.resolve({ players: url.includes(CAPTURE_CHALLENGE_MODE) ? [
       { id: "b", username: "第一名", rank: "3段", captures: 30, ranking: 1, recordCharacter: "sigrika" },
-      { id: "a", username: user.username, rank: "4段", captures: 23, ranking: 2, recordCharacter: "denia", commonCharacter: "sigrika" },
+      { id: "a", ownedCharacters: ["sigrika"], username: user.username, rank: "4段", captures: 23, ranking: 2, recordCharacter: "denia", commonCharacter: "sigrika" },
       { id: "c", username: "并列玩家", rank: "3段", captures: 23, ranking: 2, recordCharacter: "sigrika" },
       { id: "d", username: "第四名", rank: "3段", captures: 0, ranking: 4, recordCharacter: "sigrika" }
     ] : [] }));

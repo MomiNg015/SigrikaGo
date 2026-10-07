@@ -53,26 +53,10 @@
       border-color var(--mobile-tap-duration) var(--mobile-tap-ease);
   }
 
-  button:active:not(:disabled),
-  [role="button"]:active,
-  a:active,
-  .primary-action:active:not(:disabled),
-  .secondary-action:active:not(:disabled),
-  .danger-action:active:not(:disabled),
-  .match-button:active,
-  .icon-button:active:not(:disabled),
-  .close-button:active:not(:disabled),
-  .toggle:active:not(:disabled),
-  .mobile-tab-button:active:not(:disabled),
-  .home-image-entry:active,
-  .home-player-plaque:active,
-  .utility-entry:active:not(:disabled),
-  .character-card:active,
-  .shop-item:active,
-  .owned-decoration-chip:active,
-  .replay-table-row:active,
-  .friends-row:active,
-  .watch-room-row:active {
+  button:active:not(:disabled):not([aria-disabled="true"], [aria-busy="true"]),
+  [role="button"]:active:not([aria-disabled="true"], [aria-busy="true"]),
+  a:active:not([aria-disabled="true"], [aria-busy="true"]),
+  .utility-entry:active:not(:disabled):not([aria-disabled="true"], [aria-busy="true"]) {
     transform: translateY(1px) scale(var(--mobile-press-scale));
   }
 
@@ -167,10 +151,28 @@
   .friends-modal,
   .settings-modal,
   .message-board-modal,
-  .room-floating-modal,
+  .user-profile-modal,
+  .confirm-inline-modal,
   .character-target-modal,
   .shop-item-detail-modal {
     transform-origin: center bottom;
-    animation: mobile-sheet-in var(--mobile-sheet-duration) var(--mobile-tap-ease);
+    animation: mobile-sheet-in var(--mobile-sheet-duration) var(--mobile-tap-ease) backwards;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .nested-modal-backdrop,
+  :is(.small-modal, .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal,
+    .shop-modal, .house-modal, .warehouse-modal, .leaderboard-modal, .friends-modal,
+    .settings-modal, .message-board-modal, .user-profile-modal, .confirm-inline-modal,
+    .shop-item-detail-modal),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+    .modal-backdrop, .nested-modal-backdrop, .small-modal,
+    .confirm-modal:not(.sigrika-duel-confirm-modal), .result-modal, .shop-modal,
+    .house-modal, .warehouse-modal, .leaderboard-modal, .friends-modal,
+    .settings-modal, .message-board-modal, .user-profile-modal, .confirm-inline-modal,
+    .nested-modal, .shop-item-detail-modal) {
+    animation: none !important;
   }
 }

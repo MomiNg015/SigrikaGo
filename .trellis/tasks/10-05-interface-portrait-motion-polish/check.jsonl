@@ -1,0 +1,9 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend conventions"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Theme cascade, profile scrolling, student ID and CSS debt ownership"}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Shared component and profile action contracts"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Quality requirements"}
+{"file":".trellis/spec/frontend/identity-bust-contract.md","reason":"Effective appearance, proportional crops, load failures and mobile identity actions"}
+{"file":".trellis/spec/backend/story-sprite-contract.md","reason":"Standard appearance resolution"}
+{"file":".trellis/tasks/10-05-interface-portrait-motion-polish/research/portraits.md","reason":"Portrait integration"}
+{"file":".trellis/tasks/10-05-interface-portrait-motion-polish/research/profile.md","reason":"Profile ownership"}
+{"file":".trellis/tasks/10-05-interface-portrait-motion-polish/research/motion.md","reason":"Motion audit"}

@@ -1,7 +1,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-backdrop {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 80 !important;
+  z-index: 180 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

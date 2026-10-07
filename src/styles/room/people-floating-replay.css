@@ -179,6 +179,10 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .room-person-popover { animation: none !important; }
+}
+
 .room-overlay-backdrop {
   z-index: 34;
 }

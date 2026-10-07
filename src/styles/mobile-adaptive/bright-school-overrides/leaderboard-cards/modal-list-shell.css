@@ -39,6 +39,29 @@
     color: #245b4f !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal .ranked-leaderboard .leaderboard-row {
+    min-height: 109px !important;
+    grid-template-rows: auto 16px 16px !important;
+    grid-template-areas:
+      "rank avatar player"
+      "rank record record"
+      "rank rate rate" !important;
+    grid-template-columns: 24px 46px minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal .capture-leaderboard .leaderboard-row {
+    min-height: 93px !important;
+    grid-template-rows: auto 20px !important;
+    grid-template-areas:
+      "rank avatar player"
+      "rank score score" !important;
+    grid-template-columns: 24px 46px minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal .capture-leaderboard .leaderboard-row > b {
+    grid-row: auto !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
     background: transparent !important;

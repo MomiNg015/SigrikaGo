@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Gamepad2, HelpCircle, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
+import CharacterBustPortrait from "../shared/CharacterBustPortrait.jsx";
 import { characterThemeStyle, findCharacter } from "../shared/characterDisplay.js";
 import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import { CHARACTERS } from "../shared/characters.js";
@@ -49,8 +50,9 @@ export default function ProfileResumeView({
       <section className="profile-resume-hero" aria-label={context === "self" ? "我的身份资料" : "用户身份资料"}>
         <span className="profile-chain-portrait profile-hero-portrait" style={characterThemeStyle(mainCharacter)}>
           <span className="profile-portrait-mask">
-            <img
-              {...characterPortraitImageProps(mainCharacter, { itemEffects: user.itemEffects, user })}
+            <CharacterBustPortrait
+              character={mainCharacter}
+              user={user}
               alt={`${mainCharacter.name}立绘`}
             />
           </span>
@@ -126,7 +128,9 @@ export default function ProfileResumeView({
               <span>和</span>
               <span>胜率</span>
             </div>
-            <div className="profile-character-table-scroll" tabIndex={0} aria-label="角色战绩列表">
+            {/* Keyboard users need a focus stop for the independently scrolling records. */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+            <div className="profile-character-table-scroll" role="region" tabIndex={0} aria-label="角色战绩列表">
               <table className="profile-character-table">
                 <colgroup>
                   <col className="profile-character-col-identity" />
@@ -240,6 +244,8 @@ function ProfileSummaryItem({ icon, label, value, valueClassName = "", tip = "",
         {tip && (
           <span
             className="stat-tip-wrap"
+            // Focus reveals the explanatory tooltip through the existing focus-within rule.
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
             tabIndex="0"
             aria-label={`${label}说明`}
           >

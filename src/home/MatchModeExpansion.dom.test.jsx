@@ -5,14 +5,14 @@ import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); localStorage.clear(); });
 
 function setup(extra = {}) {
   const onStartMatch = vi.fn();
   const onStartPractice = vi.fn();
-  const props = { user: { username: "test", selectedCharacter: "sigrika", role: "player" }, characters: CHARACTERS, matchModePickerOpen: true, onStartMatch, onStartPractice, ...extra };
+  const props = { user: { username: "test", ownedCharacters: ["sigrika"], selectedCharacter: "sigrika", role: "player" }, characters: CHARACTERS, matchModePickerOpen: true, onStartMatch, onStartPractice, ...extra };
   const view = render(<HomeScreen {...props} />);
-  const parent = screen.getByRole("button", { name: /星炬对弈.*匹配中/ });
+  const parent = screen.getAllByRole("button", { name: "星炬对弈" }).at(-1);
   return { ...view, parent, props, onStartMatch, onStartPractice };
 }
 
@@ -23,7 +23,7 @@ describe("Spark mode expansion", () => {
     fireEvent.click(parent);
     expect(onStartMatch).not.toHaveBeenCalled();
     expect(parent.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.queryByRole("button", { name: /标准对弈.*匹配中/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: "标准对弈" })).toBeNull();
     expect(screen.getByRole("button", { name: "队际赛" }).disabled).toBe(false);
     expect(screen.getByRole("button", { name: "准时宝陪练" })).toBe(practice);
     expect(practice.closest("[inert]")).toBeNull();
@@ -34,15 +34,19 @@ describe("Spark mode expansion", () => {
     // Close the nested dialog without collapsing its parent selection.
     fireEvent.click(screen.getAllByRole("button", { name: "返回" }).at(-1));
     expect(parent.getAttribute("aria-expanded")).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: /常规匹配.*匹配中/ }));
-    expect(onStartMatch).toHaveBeenCalledWith("spark");
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配选择角色" }));
+    fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
+    expect(onStartMatch).toHaveBeenCalledWith("spark", undefined, "sigrika");
   });
 
   it("starts the existing capture challenge with its required payload", () => {
     const { parent, onStartMatch, onStartPractice } = setup();
     fireEvent.click(parent);
+    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛选择角色" }));
+    fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
-    expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random" });
+    expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId: "sigrika" });
     expect(onStartMatch).not.toHaveBeenCalled();
   });
 
@@ -69,11 +73,11 @@ describe("Spark mode expansion", () => {
     fireEvent.click(parent);
     rerender(<HomeScreen {...props} matchModePickerOpen={false} />);
     rerender(<HomeScreen {...props} />);
-    expect(screen.getByRole("button", { name: /星炬对弈.*匹配中/ }).getAttribute("aria-expanded")).toBe("false");
+    expect(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1).getAttribute("aria-expanded")).toBe("false");
   });
 
   it("preserves the corrupted-story lockout", () => {
-    const { parent, container, onStartMatch } = setup({ user: { username: "test", selectedCharacter: "sigrika", sigrikaCandyArc: { corrupted: true } } });
+    const { parent, container, onStartMatch } = setup({ user: { username: "test", ownedCharacters: ["sigrika"], selectedCharacter: "sigrika", sigrikaCandyArc: { corrupted: true } } });
     expect(parent.disabled).toBe(true);
     expect(container.querySelector(".match-mode-drilldown")).toBeNull();
     fireEvent.click(parent);
