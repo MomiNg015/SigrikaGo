@@ -1955,3 +1955,36 @@ Enlarged desktop expanded emblem into upper-right cropped region and mobile embl
 ### Next Steps
 
 - 已实现内容与证据保留供用户审阅；当前任务未归档，代码未提交。
+
+
+## Session 180: Commit campus interface work for cross-computer handoff
+
+**Date**: 2026-10-07
+**Task**: Commit campus interface work for cross-computer handoff
+**Branch**: `master`
+
+### Summary
+
+Committed 196 files covering match character selection, window-focused BGM, shared bust portraits, interface and admin polish, assets and handoff documentation. Fixed queued-character invalidation and async cancellation races. Final npm run check passed: 419 test files and 3060 tests, lint, portrait/admin snapshot checks, production build, built CSS and production configuration. Archived the current interface polish task; master is ready to push together with the prior 68 local commits.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d042da0b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
