@@ -7,8 +7,8 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-3.md`
-- **Total Sessions**: 180
+- **Active File**: `journal-4.md`
+- **Total Sessions**: 181
 - **Last Active**: 2026-10-07
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1990 | Active |
+| `journal-4.md` | ~40 | Active |
+| `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 181 | 2026-10-07 | Document repeatable computer handoff workflow | `99674b42` | `master` |
 | 180 | 2026-10-07 | Commit campus interface work for cross-computer handoff | `d042da0b` | `master` |
 | 179 | 2026-10-05 | 全界面、履历胸像与交互动效打磨 | - | `master` |
 | 178 | 2026-10-04 | Handbook large faction emblem placement | `8c2c2bb9` | `master` |
