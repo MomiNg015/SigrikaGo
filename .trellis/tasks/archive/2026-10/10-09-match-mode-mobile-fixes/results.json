@@ -1,0 +1,791 @@
+[
+  {
+    "width": 1440,
+    "category": "星炬对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 1440,
+    "category": "标准对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 1440,
+    "category": "玩些别的",
+    "empty": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 71.59375,
+        "wrapperHeight": 71.59375,
+        "slotsHeight": 44,
+        "top": "35.7969px",
+        "bottom": "-8.20312px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 390,
+    "category": "星炬对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 390,
+    "category": "标准对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 390,
+    "category": "玩些别的",
+    "empty": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 320,
+    "category": "星炬对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "吃子挑战赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      },
+      {
+        "title": "队际赛",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 320,
+    "category": "标准对弈",
+    "empty": [
+      {
+        "title": "常规匹配",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "常规匹配",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  },
+  {
+    "width": 320,
+    "category": "玩些别的",
+    "empty": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "false",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "filled": [
+      {
+        "title": "来下五子棋吗？",
+        "filled": "true",
+        "delta": 0,
+        "cardHeight": 88,
+        "wrapperHeight": 88,
+        "slotsHeight": 44,
+        "top": "44px",
+        "bottom": "0px",
+        "transform": "matrix(1, 0, 0, 1, 0, -22)",
+        "align": "normal",
+        "padding": "0px",
+        "display": "block",
+        "cardMargin": "0px",
+        "grid": "none"
+      }
+    ],
+    "categoryInfo": [
+      "none",
+      "none",
+      "none"
+    ]
+  }
+]
