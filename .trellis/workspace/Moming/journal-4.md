@@ -104,3 +104,36 @@ Added the rolling handoff summary, daily office/home switching steps and reusabl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 184: 邮箱附件图片与排行榜同段排序修正
+
+**Date**: 2026-10-09
+**Task**: 邮箱附件图片与排行榜同段排序修正
+**Branch**: `master`
+
+### Summary
+
+附件图片独立内层等比收框，保留角标及详情；同段进度先比胜场再比精确胜率。17项测试、lint、生产构建、CSS契约与三视口九组图片验证通过，仅提交本任务，保留其它WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7c1205f3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
