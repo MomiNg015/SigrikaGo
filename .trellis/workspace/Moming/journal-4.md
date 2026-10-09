@@ -38,3 +38,36 @@ Added the rolling handoff summary, daily office/home switching steps and reusabl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 182: 对弈模式统一分层入口
+
+**Date**: 2026-10-09
+**Task**: 对弈模式统一分层入口
+**Branch**: `master`
+
+### Summary
+
+按用户选定方向3，在现有窗口上统一三类模式的子页入口。保留选角缓存、陪练、规则与剧情锁定。70组件测试、57样式契约、4浏览器回归、lint及构建通过；只提交本次改动，保留其它WIP。全名单选角的既有手机姓名/阴影断言失败未扩改。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `15f4eeca` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

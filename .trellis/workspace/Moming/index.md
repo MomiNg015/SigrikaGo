@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 181
-- **Last Active**: 2026-10-07
+- **Total Sessions**: 182
+- **Last Active**: 2026-10-09
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~40 | Active |
+| `journal-4.md` | ~73 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 182 | 2026-10-09 | 对弈模式统一分层入口 | `15f4eeca` | `master` |
 | 181 | 2026-10-07 | Document repeatable computer handoff workflow | `99674b42` | `master` |
 | 180 | 2026-10-07 | Commit campus interface work for cross-computer handoff | `d042da0b` | `master` |
 | 179 | 2026-10-05 | 全界面、履历胸像与交互动效打磨 | - | `master` |
