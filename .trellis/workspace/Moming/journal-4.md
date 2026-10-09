@@ -71,3 +71,36 @@ Added the rolling handoff summary, daily office/home switching steps and reusabl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 183: 对弈模式手机图标与选角居中修正
+
+**Date**: 2026-10-09
+**Task**: 对弈模式手机图标与选角居中修正
+**Branch**: `master`
+
+### Summary
+
+大模式手机信息图标隐藏、子模式保留；单子模式行取消拉伸，空槽及已选头像按卡片居中；玩些别的水印 other mode。41组件测试、9组真实桌面/手机检查、lint与组件生产构建通过。范围提交保留其它WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `98d58f47` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
