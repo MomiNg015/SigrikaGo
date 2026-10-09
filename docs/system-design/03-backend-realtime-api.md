@@ -280,7 +280,7 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 - Legacy rating-achievement conditions migrate to numeric rank thresholds using the former rating-to-rank mapping; new conditions use `rank`. Nabomo is permanently persisted on first spark sixth-dan settlement.
 - Result saving shares concurrent requests for a room and restores in-memory user progression after transaction failure so a retry cannot award stars twice. Star/rank/point state writes atomically with the game record. Result payload includes `rankAfter`, `starsAfter`, `ratingAfter` and star delta; match history remains independent.
 
-- 普通排行榜返回 `ranking`：段位、星数/九段积分、未舍入胜率、胜场数依次降序，四项相等采用竞争排名（1、1、3），用户名与 ID 仅稳定并列条目的展示顺序，不影响名次。
+- 普通排行榜返回 `ranking`：段位、星数/九段积分、胜场数、未舍入胜率依次降序，四项相等采用竞争排名（1、1、3），用户名与 ID 仅稳定并列条目的展示顺序，不影响名次。
 
 
 ### 匹配等待计时

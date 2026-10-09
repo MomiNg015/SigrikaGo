@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { buildLeaderboard } from "./leaderboard.js";
 
 describe("leaderboard", () => {
-  it.each(["3段", "9段"])("orders equal %s progress by exact win rate then wins and shares rankings", (rank) => {
-    const users = ["a", "b", "c", "d", "e"].map((id) => ({ id, username: id, rank, stars: 2, rating: 1000 }));
+  it.each(["3段", "9段"])("orders equal %s progress by wins then exact win rate and shares rankings", (rank) => {
+    const users = ["a", "b", "c", "d", "e", "f"].map((id) => ({ id, username: id, rank, stars: 2, rating: 1000 }));
     const games = (id, wins, total) => Array.from({ length: total }, (_, index) => ({
       blackUserId: id, whiteUserId: "outsider", winnerColor: index < wins ? "black" : "white", resultText: index < wins ? "黑中盘胜" : "白中盘胜"
     }));
-    const rows = buildLeaderboard(users, [...games("a", 1, 3), ...games("b", 1, 2), ...games("c", 2, 4), ...games("d", 2, 4), ...games("e", 3, 4)]);
-    expect(rows.map(({ id, ranking }) => [id, ranking])).toEqual([["e", 1], ["c", 2], ["d", 2], ["b", 4], ["a", 5]]);
+    const rows = buildLeaderboard(users, [...games("a", 1, 3), ...games("b", 1, 2), ...games("c", 2, 4), ...games("d", 2, 4), ...games("e", 3, 4), ...games("f", 4, 20)]);
+    expect(rows.map(({ id, ranking }) => [id, ranking])).toEqual([["f", 1], ["e", 2], ["c", 3], ["d", 3], ["b", 5], ["a", 6]]);
   });
   it("lists users with finished games, sorted by rank progress, and picks the most used character", () => {
     const users = [

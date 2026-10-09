@@ -64,8 +64,8 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
 
 function compareLeaderboardStanding(a, b) {
   return compareRankProgress(a, b)
-    || (b.wins * a.totalGames - a.wins * b.totalGames)
-    || b.wins - a.wins;
+    || b.wins - a.wins
+    || (b.wins * a.totalGames - a.wins * b.totalGames);
 }
 
 function modeStatsForUser(user, mode) {

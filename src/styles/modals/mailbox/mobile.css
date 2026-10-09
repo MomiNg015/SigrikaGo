@@ -71,9 +71,8 @@
     height: 70px;
   }
 
-  .mailbox-attachment-icon img {
-    width: 60px;
-    height: 60px;
+  .mailbox-attachment-art {
+    inset: 4px;
   }
 
   .mailbox-claim-button {

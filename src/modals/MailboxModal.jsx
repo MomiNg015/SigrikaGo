@@ -240,7 +240,7 @@ function AttachmentTile({ attachment, claimable, onOpenDetail }) {
         {isCoins ? (
           <Coins size={44} />
         ) : itemPresentation.imageUrl ? (
-          <img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" />
+          <span className="mailbox-attachment-art"><img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" /></span>
         ) : itemPresentation.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
           <Ticket size={42} />
         ) : (
