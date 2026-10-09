@@ -1,5 +1,8 @@
 /* Campus mode names stay centered; desktop rules use a cursor tooltip. */
 @media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal .match-mode-category > .match-mode-info-button {
+    display: none !important;
+  }
   .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-submode-standard .match-mode-info-button {
     top: 8px !important;
   }

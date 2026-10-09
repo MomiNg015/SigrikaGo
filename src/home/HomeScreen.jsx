@@ -266,7 +266,7 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
                   setExpandedMode((current) => current === mode.id ? null : mode.id);
                 }}
               >
-                <MatchModeWatermark mode={mode} />
+                <MatchModeWatermark mode={mode.id === "gomoku" && !sigrikaCorrupted ? { ...mode, englishLabel: "other mode" } : mode} />
                 <span className="match-mode-copy">
                   <strong>{categoryTitle(mode)}</strong>
                 </span>

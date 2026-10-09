@@ -2,6 +2,9 @@
 .match-mode-modal .match-mode-submode .match-mode-option { padding-right: 76px !important; }
 .match-mode-modal .match-mode-submode-team .match-mode-option { padding-right: 176px !important; }
 .match-character-slots { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; z-index: 2; }
+.match-mode-modal .match-mode-submode {
+  align-self: start;
+}
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-mode-modal .match-character-slot,
 .app-shell .match-mode-modal .match-character-slot {
   display: grid; place-items: center; flex: 0 0 44px;

@@ -7,6 +7,7 @@
 - Spark children retain separate `regular`, `capture`, `team` selection keys; standard regular matching uses `standard`; gomoku uses `gomoku`. Do not merge caches because two children share the 常规匹配 title.
 - Keep practice on the Spark header, existing character/team dialogs and callback payloads. Hide inactive categories and collapsed children with `inert` and `aria-hidden`. Return/Escape restores the active category ref, except when rules or nested dialogs handle Escape first.
 - `match-mode-drilldown.css` owns page slides and reduced-motion support. Team slot gutters use `.match-mode-submode-team`, never `:last-child`: standard and gomoku each have a single child.
+- Child rows use `align-self: start` so a single child does not stretch beyond its visible card and offset the absolute character slots. Verify both filled and empty slot centers against card bounds. Portrait categories hide info buttons; child rule buttons remain accessible. Category gomoku watermark displays `other mode` without changing shared gameplay labels.
 - Verify all category clicks do not queue; all child payloads retain the selected identity; missing selection remains guarded; account cache isolation, corruption lockout, desktop and portrait reachability remain covered.
 
 > How components are built in this project.
