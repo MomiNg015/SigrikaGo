@@ -66,7 +66,7 @@ describe("Spark mode expansion", () => {
     fireEvent.click(screen.getByRole("button", { name: "返回" }));
     expect(document.activeElement).toBe(parent);
     expect(screen.queryByRole("button", { name: "吃子挑战赛" })).toBeNull();
-    expect(document.querySelector("#spark-match-submodes").hasAttribute("inert")).toBe(true);
+    expect(document.querySelector("#match-mode-submodes").hasAttribute("inert")).toBe(true);
     fireEvent.click(parent);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(parent.getAttribute("aria-expanded")).toBe("false");
@@ -82,5 +82,28 @@ describe("Spark mode expansion", () => {
     expect(container.querySelector(".match-mode-drilldown")).toBeNull();
     fireEvent.click(parent);
     expect(onStartMatch).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["标准对弈", "常规匹配", "standard"],
+    ["玩些别的", "来下五子棋吗？", "gomoku"]
+  ])("opens %s before its single child queues, and restores category focus", (category, child, mode) => {
+    const { onStartMatch, onStartPractice } = setup();
+    const parent = screen.getByRole("button", { name: category });
+    fireEvent.click(parent);
+    expect(onStartMatch).not.toHaveBeenCalled();
+    expect(onStartPractice).not.toHaveBeenCalled();
+    expect(parent.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.queryByRole("button", { name: "吃子挑战赛" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: `${child}选择角色` }));
+    fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    fireEvent.click(screen.getByRole("button", { name: child }));
+    expect(onStartMatch).toHaveBeenCalledWith(mode, undefined, "sigrika");
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(document.activeElement).toBe(parent);
+    expect(parent.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(parent);
+    fireEvent.click(screen.getByRole("button", { name: "返回" }));
+    expect(document.activeElement).toBe(parent);
   });
 });

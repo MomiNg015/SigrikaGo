@@ -153,8 +153,9 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
 
 function MatchModePicker({ user, characters, selections, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
-  const [sparkExpanded, setSparkExpanded] = useState(false);
-  const sparkButtonRef = useRef(null);
+  const [expandedMode, setExpandedMode] = useState(null);
+  const categoryButtonRefs = useRef({});
+  const expanded = expandedMode !== null;
   const modeOptionsRef = useRef(null);
   const [rulesHover, setRulesHover] = useState(null);
   useEffect(() => {
@@ -178,20 +179,20 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
     document.fonts?.ready.then(measure);
     measure();
     return () => { active = false; observer.disconnect(); };
-  }, [sparkExpanded]);
+  }, [expandedMode]);
   const returnToModes = () => {
-    setSparkExpanded(false);
+    setExpandedMode(null);
     setRulesHover(null);
-    sparkButtonRef.current?.focus({ preventScroll: true });
+    categoryButtonRefs.current[expandedMode]?.focus({ preventScroll: true });
   };
   useEffect(() => {
     const dismiss = () => setRulesHover(null);
     const onKeyDown = (event) => {
       if (event.key !== "Escape" || practiceDifficultyOpen || characterPickerOpen) return;
       if (rulesHover) dismiss();
-      else if (sparkExpanded) {
-        setSparkExpanded(false);
-        sparkButtonRef.current?.focus({ preventScroll: true });
+      else if (expandedMode) {
+        setExpandedMode(null);
+        categoryButtonRefs.current[expandedMode]?.focus({ preventScroll: true });
       }
     };
     const onOutsidePointerDown = (event) => {
@@ -207,7 +208,7 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
       window.removeEventListener("scroll", dismiss, true);
       window.removeEventListener("resize", dismiss);
     };
-  }, [practiceDifficultyOpen, characterPickerOpen, rulesHover, sparkExpanded]);
+  }, [practiceDifficultyOpen, characterPickerOpen, rulesHover, expandedMode]);
   const startSelected = (entry, mode) => {
     const id = selections[entry][0];
     if (!id) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
@@ -222,6 +223,16 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
   const [sigrikaDuelConfirmOpen, setSigrikaDuelConfirmOpen] = useState(false);
   const sigrikaDuelOccupied = sigrikaDuelAvailability === SIGRIKA_CANDY_DUEL_AVAILABILITY.occupied;
   const sigrikaDuelOwned = sigrikaDuelAvailability === SIGRIKA_CANDY_DUEL_AVAILABILITY.owned;
+  const categoryTitle = (mode) => mode.id === "gomoku" && !sigrikaCorrupted ? "玩些别的" : mode.title;
+  const submodes = expandedMode === "standard"
+    ? [{ id: "standard", title: "常规匹配", rulesText: modeOrderedEntries().find((mode) => mode.id === "standard").rulesText, onClick: () => startSelected("standard", "standard") }]
+    : expandedMode === "gomoku"
+      ? [{ id: "gomoku", title: "来下五子棋吗？", rulesText: modeOrderedEntries().find((mode) => mode.id === "gomoku").rulesText, onClick: () => startSelected("gomoku", "gomoku") }]
+      : [
+        { id: "regular", title: "常规匹配", onClick: () => startSelected("regular", "spark") },
+        { id: "capture", title: "吃子挑战赛", rulesText: "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！", onClick: () => startSelected("capture", "spark") },
+        { id: "team", title: "队际赛", rulesText: "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！", onClick: onTeamSelect }
+      ];
 
   return (
     <div
@@ -232,14 +243,14 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
     >
       <section className={`small-modal match-mode-modal ${sigrikaCorrupted ? "is-sigrika-corrupted" : "window-sticker-host"}`} onClick={(event) => event.stopPropagation()} aria-label="选择对弈模式">
         <WindowTitleSticker titleKey="match-mode" enabled={!sigrikaCorrupted} />
-        <div ref={modeOptionsRef} className={`match-mode-options${sigrikaCorrupted ? "" : " match-mode-drilldown"}${sparkExpanded ? " is-expanded" : ""}`}>
+        <div ref={modeOptionsRef} className={`match-mode-options${sigrikaCorrupted ? "" : " match-mode-drilldown"}${expanded ? " is-expanded" : ""}`}>
           {modeOrderedEntries().map((mode) => (
-            <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : `match-mode-sibling match-mode-sibling-${mode.id}`}`} key={mode.id} inert={sparkExpanded && mode.id !== "spark" ? true : undefined} aria-hidden={sparkExpanded && mode.id !== "spark" ? true : undefined}>
+            <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : `match-mode-sibling match-mode-sibling-${mode.id}`} match-mode-category${expandedMode === mode.id ? " is-active-category" : ""}`} key={mode.id} inert={expanded && expandedMode !== mode.id ? true : undefined} aria-hidden={expanded && expandedMode !== mode.id ? true : undefined}>
               <button
                 className="match-mode-option"
-                ref={mode.id === "spark" ? sparkButtonRef : undefined}
-                aria-expanded={mode.id === "spark" && !sigrikaCorrupted ? sparkExpanded : undefined}
-                aria-controls={mode.id === "spark" && !sigrikaCorrupted ? "spark-match-submodes" : undefined}
+                ref={(element) => { categoryButtonRefs.current[mode.id] = element; }}
+                aria-expanded={!sigrikaCorrupted ? expandedMode === mode.id : undefined}
+                aria-controls={!sigrikaCorrupted ? "match-mode-submodes" : undefined}
                 disabled={sigrikaCorrupted}
                 type="button"
                 onFocus={() => onPreloadPlayableReady?.(mode.id)}
@@ -252,21 +263,19 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
                 onPointerDown={() => setRulesHover(null)}
                 onClick={() => {
                   setRulesHover(null);
-                  if (mode.id === "spark") setSparkExpanded((current) => !current);
-                  else startSelected(mode.id, mode.id);
+                  setExpandedMode((current) => current === mode.id ? null : mode.id);
                 }}
               >
                 <MatchModeWatermark mode={mode} />
                 <span className="match-mode-copy">
-                  <strong>{mode.title}</strong>
+                  <strong>{categoryTitle(mode)}</strong>
                 </span>
               </button>
-              {!sigrikaCorrupted && mode.id !== "spark" && slots(mode.id, mode.title)}
               {!sigrikaCorrupted && (
                 <button
                   className="match-mode-info-button"
                   type="button"
-                  aria-label={`查看${mode.title}规则`}
+                  aria-label={`查看${categoryTitle(mode)}规则`}
                   aria-expanded={Boolean(rulesHover?.tap && rulesHover.mode.id === mode.id)}
                   aria-controls={rulesHover?.tap && rulesHover.mode.id === mode.id ? "match-mode-rules-tooltip" : undefined}
                   onClick={(event) => {
@@ -300,14 +309,10 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
             </div>
           ))}
           {!sigrikaCorrupted && (
-            <div className="match-mode-submodes" id="spark-match-submodes" inert={!sparkExpanded ? true : undefined} aria-hidden={!sparkExpanded}>
-              {[
-                { id: "regular", title: "常规匹配", onClick: () => startSelected("regular", "spark") },
-                { id: "capture", title: "吃子挑战赛", rulesText: "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！", onClick: () => startSelected("capture", "spark") },
-                { id: "team", title: "队际赛", rulesText: "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！", onClick: onTeamSelect }
-              ].map((submode) => (
-                <div className="match-mode-submode" key={submode.id}>
-                  <button className="match-mode-option" type="button" disabled={submode.disabled} onClick={submode.onClick} onFocus={() => !submode.disabled && onPreloadPlayableReady?.("spark")} onPointerEnter={(event) => { if (!submode.disabled) onPreloadPlayableReady?.("spark"); if (submode.rulesText) showRules(event, submode); }} onPointerMove={(event) => { if (submode.rulesText) showRules(event, submode); }} onPointerLeave={() => setRulesHover(null)} onPointerDown={() => setRulesHover(null)}>
+            <div className="match-mode-submodes" id="match-mode-submodes" inert={!expanded ? true : undefined} aria-hidden={!expanded} key={expandedMode || "collapsed"}>
+              {submodes.map((submode) => (
+                <div className={`match-mode-submode match-mode-submode-${submode.id}`} key={submode.id}>
+                  <button className="match-mode-option" type="button" disabled={submode.disabled} onClick={submode.onClick} onFocus={() => !submode.disabled && onPreloadPlayableReady?.(expandedMode)} onPointerEnter={(event) => { if (!submode.disabled) onPreloadPlayableReady?.(expandedMode); if (submode.rulesText) showRules(event, submode); }} onPointerMove={(event) => { if (submode.rulesText) showRules(event, submode); }} onPointerLeave={() => setRulesHover(null)} onPointerDown={() => setRulesHover(null)}>
                     <span className="match-mode-copy"><strong>{submode.title}</strong></span>
                   </button>
                   {slots(submode.id, submode.title)}
@@ -349,7 +354,7 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
                 : "与西格莉卡？决战"}
           </button>
         )}
-        <HomeActionButton variant="secondary" type="button" onClick={sparkExpanded ? returnToModes : onClose}>{sparkExpanded ? "返回" : "取消"}</HomeActionButton>
+        <HomeActionButton variant="secondary" type="button" onClick={expanded ? returnToModes : onClose}>{expanded ? "返回" : "取消"}</HomeActionButton>
         {practiceDifficultyOpen && (
           <PracticeDifficultyDialog
             onClose={() => setPracticeDifficultyOpen(false)}

@@ -1,6 +1,6 @@
 .match-mode-modal .match-mode-sibling .match-mode-option,
 .match-mode-modal .match-mode-submode .match-mode-option { padding-right: 76px !important; }
-.match-mode-modal .match-mode-submode:last-child .match-mode-option { padding-right: 176px !important; }
+.match-mode-modal .match-mode-submode-team .match-mode-option { padding-right: 176px !important; }
 .match-character-slots { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; z-index: 2; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-mode-modal .match-character-slot,
 .app-shell .match-mode-modal .match-character-slot {
@@ -35,7 +35,7 @@
 .match-character-picker .team-character-options { overflow-y: auto; min-height: 0; padding: 4px; }
 .match-mode-modal .match-mode-sibling .match-mode-info-button,
 .match-mode-modal .match-mode-submode .match-mode-info-button { right: 68px !important; }
-.match-mode-modal .match-mode-submode:last-child .match-mode-info-button { right: 168px !important; }
+.match-mode-modal .match-mode-submode-team .match-mode-info-button { right: 168px !important; }
 .match-character-bust { display: block; width: 100%; aspect-ratio: 1; overflow: hidden; }
 .match-character-bust > img, .match-character-bust > svg { display: block; width: 100%; height: 100%; object-fit: cover; }
 @media (max-width: 768px) {
@@ -45,7 +45,7 @@
     min-height: 88px !important;
     padding-left: 16px !important;
   }
-  .match-mode-modal .match-mode-submode:last-child .match-mode-option { padding-right: 168px !important; }
+  .match-mode-modal .match-mode-submode-team .match-mode-option { padding-right: 168px !important; }
   /* Follow the rendered title width without overriding its existing font size. */
   .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal .match-mode-sibling .match-mode-info-button,
   .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal .match-mode-submode .match-mode-info-button {

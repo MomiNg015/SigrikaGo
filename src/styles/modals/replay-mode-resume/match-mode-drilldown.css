@@ -5,10 +5,10 @@
   clip-path: inset(-24px -12px -12px -12px);
 }
 
-.match-mode-drilldown > .has-practice-entry {
+.match-mode-drilldown > .match-mode-category {
   grid-area: 1 / 1;
   z-index: 2;
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease-out;
 }
 
 .match-mode-drilldown > .match-mode-sibling {
@@ -43,16 +43,26 @@
 
 .match-mode-submode:nth-child(2) { transform: translateY(calc(-200% - 24px)); }
 .match-mode-submode:nth-child(3) { transform: translateY(calc(-300% - 36px)); }
-.match-mode-drilldown.is-expanded > .has-practice-entry { transform: translateY(-12px); }
-.match-mode-drilldown.is-expanded > .match-mode-sibling { transform: translateX(calc(-100% - 24px)); opacity: 0; }
-.match-mode-drilldown.is-expanded > .match-mode-submodes { pointer-events: auto; visibility: visible; transition-delay: 0s; }
+.match-mode-drilldown.is-expanded > .is-active-category { grid-area: 1 / 1; transform: translateY(-12px); }
+.match-mode-drilldown.is-expanded > .is-active-category:not(.has-practice-entry) { padding-top: 32px; }
+.match-mode-drilldown.is-expanded > .match-mode-category:not(.is-active-category) { transform: translateX(calc(-100% - 24px)); opacity: 0; visibility: hidden; }
+.match-mode-drilldown.is-expanded > .match-mode-submodes { pointer-events: auto; visibility: visible; transition-delay: 0s; animation: match-mode-page-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .match-mode-drilldown.is-expanded .match-mode-submode { transform: translateY(0); opacity: 1; transition-delay: 120ms; }
 .match-mode-drilldown.is-expanded .match-mode-submode:nth-child(2) { transition-delay: 165ms; }
 .match-mode-drilldown.is-expanded .match-mode-submode:nth-child(3) { transition-delay: 210ms; }
 
+@keyframes match-mode-page-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 768px) {
+  .match-mode-drilldown.is-expanded > .is-active-category:not(.has-practice-entry) { padding-top: 24px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .match-mode-drilldown > .has-practice-entry,
+  .match-mode-drilldown > .match-mode-category,
   .match-mode-drilldown > .match-mode-sibling,
   .match-mode-submodes,
-  .match-mode-submode { transition: none; }
+  .match-mode-submode { transition: none; animation: none !important; }
 }

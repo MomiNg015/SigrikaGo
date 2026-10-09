@@ -21,13 +21,20 @@ function setup(extra = {}) {
   return { ...render(<HomeScreen {...props} />), props };
 }
 function select(title, id) {
+  const category = title === "标准对弈" ? "标准对弈" : "玩些别的";
+  const parent = screen.queryByRole("button", { name: category });
+  if (!parent) fireEvent.click(screen.getByRole("button", { name: "返回" }));
+  const button = screen.getByRole("button", { name: category });
+  if (button.getAttribute("aria-expanded") !== "true") fireEvent.click(button);
+  title = title === "标准对弈" ? "常规匹配" : title;
   fireEvent.click(screen.getByRole("button", { name: `${title}选择角色` }));
   fireEvent.click(screen.getByRole("button", { name: CHARACTERS[id].name }));
 }
 describe("match card character selection", () => {
   it.each(["标准对弈", "来下五子棋吗？", "常规匹配", "吃子挑战赛", "队际赛"])("blocks %s without a selection", (title) => {
     const { props, container } = setup();
-    if (!["标准对弈", "来下五子棋吗？"].includes(title)) fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
+    fireEvent.click(screen.getAllByRole("button", { name: title === "标准对弈" ? "标准对弈" : title === "来下五子棋吗？" ? "玩些别的" : "星炬对弈" }).at(-1));
+    if (title === "标准对弈") title = "常规匹配";
     fireEvent.click(screen.getByRole("button", { name: title }));
     expect(props.onNotice).toHaveBeenCalledWith("尚未选择角色，无法匹配");
     expect(props.onStartMatch).not.toHaveBeenCalled();
@@ -38,13 +45,17 @@ describe("match card character selection", () => {
     const { props, unmount } = setup();
     select("标准对弈", "aemeath");
     expect(screen.queryByRole("dialog", { name: "选择角色" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
     expect(props.onStartMatch).toHaveBeenCalledWith("standard", undefined, "aemeath");
     select("来下五子棋吗？", "nabomo");
     unmount();
     setup();
-    expect(screen.getByRole("button", { name: `标准对弈选择角色：${CHARACTERS.aemeath.name}` })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "标准对弈" }));
+    expect(screen.getByRole("button", { name: `常规匹配选择角色：${CHARACTERS.aemeath.name}` })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "返回" }));
+    fireEvent.click(screen.getByRole("button", { name: "玩些别的" }));
     expect(screen.getByRole("button", { name: `来下五子棋吗？选择角色：${CHARACTERS.nabomo.name}` })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "返回" }));
     fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
     expect(screen.getByRole("button", { name: "常规匹配选择角色" })).toBeTruthy();
   });
@@ -66,16 +77,17 @@ describe("match card character selection", () => {
     localStorage.setItem(`sigrika-match-characters:${user.id}`, JSON.stringify({ standard: ["aemeath"], team: ["sigrika", "sigrika", "aemeath"] }));
     const { props, rerender } = setup({ user: { ...user, ownedCharacters: ["sigrika"] } });
     fireEvent.click(screen.getByRole("button", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
     expect(props.onStartMatch).not.toHaveBeenCalled();
     rerender(<HomeScreen {...props} user={{ ...user, id: "other-player" }} />);
-    expect(screen.getByRole("button", { name: "标准对弈选择角色" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "常规匹配选择角色" })).toBeTruthy();
   });
   it("keeps selection usable when storage is unavailable", () => {
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("blocked"); });
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("blocked"); });
     const { props } = setup();
     select("标准对弈", "aemeath");
-    fireEvent.click(screen.getByRole("button", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
     expect(props.onStartMatch).toHaveBeenCalledWith("standard", undefined, "aemeath");
   });
 });

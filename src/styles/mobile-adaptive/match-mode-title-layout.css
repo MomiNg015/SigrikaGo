@@ -1,4 +1,16 @@
 /* Campus mode names stay centered; desktop rules use a cursor tooltip. */
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-submode-standard .match-mode-info-button {
+    top: 8px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-submode-gomoku .match-mode-copy > strong {
+    font-size: clamp(20px, 6vw, 22px) !important;
+  }
+}
+
 .app-shell.player-theme-enabled.theme-bright-school .match-mode-modal.window-sticker-host .match-mode-option {
   container-type: inline-size;
 }

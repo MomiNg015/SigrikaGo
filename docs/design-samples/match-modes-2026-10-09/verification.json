@@ -1,0 +1,15 @@
+{
+  "results": [
+    "desktop v1: all categories, selection, character preview, continue, back, close, picker passed",
+    "desktop v2: all categories, selection, character preview, continue, back, close, picker passed",
+    "desktop v3: all categories, selection, character preview, continue, back, close, picker passed",
+    "mobile v1: all categories, selection, character preview, continue, back, close, picker passed",
+    "mobile v2: all categories, selection, character preview, continue, back, close, picker passed",
+    "mobile v3: all categories, selection, character preview, continue, back, close, picker passed",
+    "small-mobile v1: all categories, selection, character preview, continue, back, close, picker passed",
+    "small-mobile v2: all categories, selection, character preview, continue, back, close, picker passed",
+    "small-mobile v3: all categories, selection, character preview, continue, back, close, picker passed"
+  ],
+  "reducedMotion": "none",
+  "consoleErrors": []
+}

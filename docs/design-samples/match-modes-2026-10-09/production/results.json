@@ -1,0 +1,41 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "allCategories": true,
+    "matchingPayloads": true,
+    "selectionGuard": true,
+    "focusRestoration": true,
+    "horizontalOverflow": false,
+    "reducedMotion": true,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "allCategories": true,
+    "matchingPayloads": true,
+    "selectionGuard": true,
+    "focusRestoration": true,
+    "horizontalOverflow": false,
+    "reducedMotion": true,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "allCategories": true,
+    "matchingPayloads": true,
+    "selectionGuard": true,
+    "focusRestoration": true,
+    "horizontalOverflow": false,
+    "reducedMotion": true,
+    "errors": []
+  }
+]

@@ -1066,7 +1066,7 @@ describe("HomeScreen", () => {
     expect(html).toContain("GOMOKU MODE");
     expect(html).toContain("<strong>星炬对弈</strong>");
     expect(html).toContain("<strong>标准对弈</strong>");
-    expect(html).toContain("<strong>来下五子棋吗？</strong>");
+    expect(html).toContain("<strong>玩些别的</strong>");
     expect(html).not.toContain('aria-label="匹配中 3 人"');
     expect(html).not.toContain('aria-label="匹配中 0 人"');
     expect(html).not.toContain('aria-label="匹配中 1 人"');

@@ -8,7 +8,8 @@ test("match character slots keep their square depth across mouse, touch and redu
   await page.setViewportSize({ width: 1440, height: 900 });
   await mountTeamSurface(page, "modes");
   const modes = page.locator(".match-mode-modal");
-  const slot = modes.getByRole("button", { name: /^标准对弈选择角色/ });
+  await modes.getByRole("button", { name: "标准对弈", exact: true }).click();
+  const slot = modes.getByRole("button", { name: /^常规匹配选择角色/ });
   const settle = (surface) => surface.evaluate(element => Promise.all(element.getAnimations({ subtree: true })
     .filter(animation => animation.effect.getTiming().iterations !== Infinity)
     .map(animation => animation.finished.catch(() => {}))));
@@ -57,12 +58,13 @@ test("match character slots keep their square depth across mouse, touch and redu
     if (state === "empty") {
       await slot.click();
       await page.getByRole("dialog", { name: "选择角色" }).getByRole("button", { name: "爱弥斯", exact: true }).click();
-      await expect(slot).toHaveAttribute("aria-label", "标准对弈选择角色：爱弥斯");
+      await expect(slot).toHaveAttribute("aria-label", "常规匹配选择角色：爱弥斯");
       await expect(slot.locator(".match-character-portrait")).toBeVisible();
     }
   }
   await page.reload();
-  await expect(slot).toHaveAttribute("aria-label", "标准对弈选择角色：爱弥斯");
+  await modes.getByRole("button", { name: "标准对弈", exact: true }).click();
+  await expect(slot).toHaveAttribute("aria-label", "常规匹配选择角色：爱弥斯");
   await page.mouse.move(0, 0);
   await slot.focus();
   await page.keyboard.press("Shift+Tab");
@@ -95,7 +97,8 @@ test("match character slots keep their square depth across mouse, touch and redu
     const touchPage = await touchContext.newPage();
     await touchPage.goto(page.url(), { waitUntil: "domcontentloaded" });
     const touchModes = touchPage.locator(".match-mode-modal");
-    const touchSlot = touchModes.getByRole("button", { name: /^标准对弈选择角色/ });
+    await touchModes.getByRole("button", { name: "标准对弈", exact: true }).tap();
+    const touchSlot = touchModes.getByRole("button", { name: /^常规匹配选择角色/ });
     await touchPage.evaluate(() => document.fonts.ready);
     await settle(touchModes);
     const beforeTap = await measure(touchSlot);
@@ -106,7 +109,7 @@ test("match character slots keep their square depth across mouse, touch and redu
     expectSquare(afterTap);
     expect(Math.abs(afterTap.y - beforeTap.y)).toBeLessThan(0.05);
     expect(afterTap.outlineStyle).toBe("none");
-    await expect(touchSlot).toHaveAttribute("aria-label", "标准对弈选择角色：爱弥斯");
+    await expect(touchSlot).toHaveAttribute("aria-label", "常规匹配选择角色：爱弥斯");
   } finally {
     await touchContext.close();
   }
@@ -335,7 +338,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   test(`full character card layout at ${viewport.width}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
     await mountTeamSurface(page, "modes&all-owned=1");
-    await page.getByRole("button", { name: "标准对弈选择角色", exact: true }).click();
+    await page.getByRole("button", { name: "标准对弈", exact: true }).click();
+    await page.getByRole("button", { name: "常规匹配选择角色", exact: true }).click();
     const picker = page.getByRole("dialog", { name: "选择角色" });
     await page.evaluate(() => document.fonts.ready);
     await expect(picker.locator(".team-character-option")).toHaveCount(10);
@@ -402,9 +406,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await modes.screenshot({ path: testInfo.outputPath("mobile-primary-cards.png"), animations: "disabled" });
     }
     await modes.getByRole("button", { name: "标准对弈", exact: true }).click();
+    expect(await page.evaluate(() => window.matchNotice)).toBeUndefined();
+    await modes.getByRole("button", { name: "常规匹配", exact: true }).click();
     expect(await page.evaluate(() => window.matchNotice)).toBe("尚未选择角色，无法匹配");
     expect(await page.evaluate(() => window.matchSelection)).toBeUndefined();
-    const empty = modes.getByRole("button", { name: "标准对弈选择角色", exact: true });
+    const empty = modes.getByRole("button", { name: "常规匹配选择角色", exact: true });
     await expect(empty).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     const square = await empty.boundingBox();
     expect(square.width).toBe(44); expect(square.height).toBe(44);
@@ -420,10 +426,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     expect(await picker.locator(".match-character-id-frame").evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
     await picker.screenshot({ path: testInfo.outputPath("owned-bust-picker.png"), animations: "disabled" });
     await picker.getByRole("button", { name: "爱弥斯", exact: true }).click();
-    await modes.getByRole("button", { name: "标准对弈", exact: true }).click();
+    await modes.getByRole("button", { name: "常规匹配", exact: true }).click();
     expect(await page.evaluate(() => window.matchSelection)).toEqual({ mode: "standard", characterId: "aemeath" });
     await page.reload();
-    await expect(modes.getByRole("button", { name: "标准对弈选择角色：爱弥斯", exact: true })).toBeVisible();
+    await modes.getByRole("button", { name: "标准对弈", exact: true }).click();
+    await expect(modes.getByRole("button", { name: "常规匹配选择角色：爱弥斯", exact: true })).toBeVisible();
+    await modes.getByRole("button", { name: "返回", exact: true }).click();
     await modes.getByRole("button", { name: "星炬对弈", exact: true }).click({ position: { x: 20, y: 40 } });
     await modes.getByRole("button", { name: "队际赛选择角色1", exact: true }).click();
     const team = page.getByRole("dialog", { name: "队际赛阵容" });
