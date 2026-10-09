@@ -1,0 +1,74 @@
+[
+  {
+    "width": 1440,
+    "shape": "report",
+    "contained": true,
+    "maskWidth": 66,
+    "maskHeight": 66,
+    "badgeVisible": true
+  },
+  {
+    "width": 1440,
+    "shape": "tall",
+    "contained": true,
+    "maskWidth": 66,
+    "maskHeight": 66,
+    "badgeVisible": true
+  },
+  {
+    "width": 1440,
+    "shape": "wide",
+    "contained": true,
+    "maskWidth": 66,
+    "maskHeight": 66,
+    "badgeVisible": true
+  },
+  {
+    "width": 390,
+    "shape": "report",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  },
+  {
+    "width": 390,
+    "shape": "tall",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  },
+  {
+    "width": 390,
+    "shape": "wide",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  },
+  {
+    "width": 320,
+    "shape": "report",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  },
+  {
+    "width": 320,
+    "shape": "tall",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  },
+  {
+    "width": 320,
+    "shape": "wide",
+    "contained": true,
+    "maskWidth": 60,
+    "maskHeight": 60,
+    "badgeVisible": true
+  }
+]
