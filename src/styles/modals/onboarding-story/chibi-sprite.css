@@ -1,0 +1,39 @@
+/* Q版以完整原图比例进入既有舞台，不沿用标准立绘的上半身放大。 */
+.onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"] .onboarding-story-portrait img:not([data-story-fallback]) {
+  height: min(var(--story-sprite-crop), 550px);
+  max-width: 100%;
+  object-fit: contain;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 760px) {
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"] {
+    --story-chibi-paper-height: clamp(210px, 38dvh, 290px);
+  }
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"] .onboarding-story-dialogue {
+    height: var(--story-chibi-paper-height);
+  }
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"] .onboarding-story-portrait {
+    top: 62px;
+    bottom: 120px;
+    height: auto;
+    clip-path: none;
+  }
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"] .onboarding-story-portrait img:not([data-story-fallback]) {
+    top: auto;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"].long-text-compress-portrait {
+    --story-dialogue-base-height: var(--story-chibi-paper-height);
+  }
+  .onboarding-story-modal.standard-story-sprite[data-story-presentation="chibi"].long-text-compress-portrait .onboarding-story-dialogue {
+    height: var(--story-dialogue-height);
+  }
+}
+
+.onboarding-story-modal.standard-story-sprite.story-narration .onboarding-story-portrait { display: none; }
+.onboarding-story-modal.standard-story-sprite.story-narration .onboarding-story-dialogue { padding-left: clamp(18px, 2vw, 25px); }

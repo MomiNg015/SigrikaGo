@@ -178,7 +178,7 @@ describe("PlayerInfo labels", () => {
         characterId: "sigrika",
         user: { itemEffects: { deniaRainbowGlow: true } }
       }
-    )).toBe("/assets/sigrika_centered.webp");
+    )).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
   });
 
   it("renders the safe practice bot portrait metadata with accessible alt text", () => {

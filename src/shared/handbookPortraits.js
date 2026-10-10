@@ -1,5 +1,6 @@
 import { canonicalCharacterId } from './characterAliases.js';
-import { CHARACTER_PORTRAIT_ASSETS } from './characterPortraitAssetCatalog.js';
+import { CHARACTER_PORTRAIT_ASSETS, DENIA_CANDY_PORTRAIT_ASSET } from './characterPortraitAssetCatalog.js';
+import { CHARACTER_CHIBI_LANDMARKS, isBuiltinCharacterPortrait } from './characterChibiPortraits.js';
 import { characterPortraitImageProps } from './characterPortraits.js';
 
 const STANDARD_HANDBOOK_PORTRAITS = {
@@ -16,19 +17,26 @@ const STANDARD_HANDBOOK_PORTRAITS = {
   nabomo: { focal: [402, 216], headWidth: 282, desktopScale: .91, cropWidth: 460 },
 };
 
-// A handbook-specific default view. Costume, candy, corruption and custom URLs
-// continue to resolve through the shared runtime portrait owner.
+// Full-body landmarks for handbook, identity and selection crops. Authored
+// appearances continue through the shared runtime portrait owner.
 export function resolveHandbookPortrait(character = {}, {
-  itemEffects = {}, user = null, equippedCostumes = null, costumeSnapshot = null,
+  itemEffects = {}, user = null, equippedCostumes = null, costumeSnapshot = null, chibi = false,
 } = {}) {
   const id = canonicalCharacterId(character.id ?? character.slug);
   const resolved = characterPortraitImageProps(character, { itemEffects, user, equippedCostumes, costumeSnapshot });
   const builtin = CHARACTER_PORTRAIT_ASSETS[id];
-  const standard = STANDARD_HANDBOOK_PORTRAITS[id];
+  const standard = chibi ? CHARACTER_CHIBI_LANDMARKS[id] : STANDARD_HANDBOOK_PORTRAITS[id];
   const costume = costumeSnapshot ?? equippedCostumes?.[id] ?? user?.equippedCostumes?.[id];
-  const isBuiltin = builtin && (!resolved.src || resolved.src === builtin.url || resolved.src === builtin.legacyUrl);
+  if (chibi && id === 'denia' && resolved.src === DENIA_CANDY_PORTRAIT_ASSET.url && !costume?.candyEffectPortraitUrl) {
+    return { src: DENIA_CANDY_PORTRAIT_ASSET.storyUrl, fallbackSrc: resolved.src,
+      isChibi: true, isStandard: true, width: 832, height: 1216, visibleTop: 0,
+      ...CHARACTER_CHIBI_LANDMARKS.denia };
+  }
+  const isBuiltin = isBuiltinCharacterPortrait(id, resolved.src);
   if (standard && isBuiltin && !costume?.portraitUrl && !costume?.candyEffectPortraitUrl) {
-    return { src: `/assets/characters/handbook-sprites/${id}.webp`, fallbackSrc: resolved.src || builtin.url,
+    return { src: `/assets/characters/${chibi ? 'handbook-chibi-sprites' : 'handbook-sprites'}/${id}.webp`, fallbackSrc: character.portraitUrl || character.portrait || builtin.url,
+      isChibi: chibi,
+      ...(chibi && { silhouetteSrc: `/assets/characters/handbook-chibi-sprites/${id}-silhouette.webp` }),
       isStandard: true, width: 832, height: 1216, visibleTop: 0, ...standard };
   }
   return { ...resolved, isStandard: false, width: 900, height: 900,

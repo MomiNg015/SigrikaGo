@@ -1,0 +1,131 @@
+{
+  "generator": "scripts/export-character-chibi-avatars.mjs",
+  "avatars": [
+    {
+      "id": "qiuyuan",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "13579795290b6f63b5eb1d56756841eb5914cb8062f9e0e30df1e9d576b54e99",
+      "sha256": "7eae8e2f3f72c04565f072b0c234e6974966033e72748d954eab6665209fe9e7",
+      "bytes": 157972
+    },
+    {
+      "id": "aemeath",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "af38bdcbd2a85562485447463a6b59dbbd77d15a3c660c634b8d80a1e1fad7e6",
+      "sha256": "f2cd3482b16bbf312c02fda013a9c7e7de52726b44cbcf65a8369c1d95745c6a",
+      "bytes": 184952
+    },
+    {
+      "id": "changli",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "c8052ffed04b27f478555587a51750a5171622695228cb29035fd4cf85385a6a",
+      "sha256": "85d76d8d48ff592eaf24201e74c6e427d0525de6bd1fc9a06d9934e4c592b90c",
+      "bytes": 231634
+    },
+    {
+      "id": "chisa",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "a4d7533396bfea97b3aa2c53c79c62db82c4cd2db8f05e0719eb9aa8e1c045b4",
+      "sha256": "fc955369556343d9c3788a2857696250ec17cc16e8acc11f4fb80e7b856cfcc5",
+      "bytes": 161740
+    },
+    {
+      "id": "lynae",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "ac4c01304c4d52b0358c2b17ff582a572e8b93217c571cd97f9868cbec8b6c2b",
+      "sha256": "38bf5d86d0351dbd973265418362bb5186be110a0d117b04bcf14577b193b2b5",
+      "bytes": 202378
+    },
+    {
+      "id": "mornye",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "1b4dc1ef9e986ad191600d8934711959b00536f62ab7c323b5f3a1f23094078e",
+      "sha256": "d8ffd509f509c2149e94d45c805ea61a66da00aa15aedf7befa3d550110f8d7c",
+      "bytes": 171684
+    },
+    {
+      "id": "denia",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "ed404c81dce2dc2ebd5dfda3e3dca60d15c52aab264b9149afd02f17bfae3567",
+      "sha256": "6ebe4db3ec574e363f909c7d3ca8e3d6c734b3bc48c28e2320b6cae06d0c7a79",
+      "bytes": 223302
+    },
+    {
+      "id": "sigrika",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "18a804a178a06890757b89fec8677caecbba5dc1c57c817aa6fd7a25ede05bd9",
+      "sha256": "6c17417ccecf3810d8044cd8e13d98b990a53a104049ba3f292e0f36f077faf1",
+      "bytes": 215674
+    },
+    {
+      "id": "nabomo",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "width": 512,
+      "height": 512,
+      "sourceSha256": "d241163656d8d574f93da561fdbe9a34f14f2b3b35535ae18ce14e1c0acd853f",
+      "sha256": "d69d0f314af38f10f80ec0413b0fceefff9a1d4c695d4308d627fe70faeed390",
+      "bytes": 186128
+    }
+  ]
+}

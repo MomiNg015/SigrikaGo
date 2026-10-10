@@ -1,0 +1,603 @@
+{
+  "schemaVersion": 1,
+  "generator": "scripts/export-handbook-sprites.mjs",
+  "dimensions": {
+    "width": 832,
+    "height": 1216
+  },
+  "sharedUsage": "One full-body image per character, reused by handbook puzzle crops and character details.",
+  "transparencyPolicy": "Preserve the source alpha channel exactly. Fully transparent RGB is ignored only during comparison; no color-keying or background removal is applied.",
+  "encoderVersions": {
+    "sharp": "0.34.5",
+    "vips": "8.17.3",
+    "webp": "1.6.0"
+  },
+  "summary": {
+    "spriteCount": 9,
+    "sourceBytes": 10981702,
+    "outputBytes": 5259654,
+    "savedBytes": 5722048,
+    "savedPercent": 52.1053,
+    "losslessCount": 9,
+    "alphaIdenticalForAll": true,
+    "visibleRgbIdenticalForAll": true
+  },
+  "sprites": [
+    {
+      "id": "sigrika",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/sigrika.png",
+        "sha256": "d86fdd740fe705b897b583fb832150ac667ac7ccaa0b818b1d7886302a2f6185",
+        "bytes": 1387611,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 389930,
+          "opaquePixels": 601965,
+          "partialAlphaPixels": 19817,
+          "visiblePixels": 621782,
+          "opaqueBlackPixels": 7,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 815,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "sha256": "18a804a178a06890757b89fec8677caecbba5dc1c57c817aa6fd7a25ede05bd9",
+        "bytes": 636308,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 389930,
+          "opaquePixels": 601965,
+          "partialAlphaPixels": 19817,
+          "visiblePixels": 621782,
+          "opaqueBlackPixels": 7,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 815,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1865346,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "denia",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/denia.png",
+        "sha256": "723d29d42fda9a59fc38c6fa151a388c29917f13250fd586b3fb6c94ba18135a",
+        "bytes": 1358339,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 400421,
+          "opaquePixels": 562348,
+          "partialAlphaPixels": 48943,
+          "visiblePixels": 611291,
+          "opaqueBlackPixels": 1184,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 824,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/denia.webp",
+        "sha256": "ed404c81dce2dc2ebd5dfda3e3dca60d15c52aab264b9149afd02f17bfae3567",
+        "bytes": 737418,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 400421,
+          "opaquePixels": 562348,
+          "partialAlphaPixels": 48943,
+          "visiblePixels": 611291,
+          "opaqueBlackPixels": 1184,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 824,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1833873,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "aemeath",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/aemeath.png",
+        "sha256": "d66b7cd9247b818ba569bf2d3bb6d71cdab402463d126320b7b9f8a6cc663c31",
+        "bytes": 978913,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 466824,
+          "opaquePixels": 515105,
+          "partialAlphaPixels": 29783,
+          "visiblePixels": 544888,
+          "opaqueBlackPixels": 0,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 788,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/aemeath.webp",
+        "sha256": "af38bdcbd2a85562485447463a6b59dbbd77d15a3c660c634b8d80a1e1fad7e6",
+        "bytes": 504400,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 466824,
+          "opaquePixels": 515105,
+          "partialAlphaPixels": 29783,
+          "visiblePixels": 544888,
+          "opaqueBlackPixels": 0,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 788,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1634664,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "lynae",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/lynae.png",
+        "sha256": "1f276915fa96779e2e3a2ec54b5bba01ef90e90d61f3d8b1f4fd999fe73fbce1",
+        "bytes": 1141556,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 463642,
+          "opaquePixels": 517895,
+          "partialAlphaPixels": 30175,
+          "visiblePixels": 548070,
+          "opaqueBlackPixels": 1,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 811,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/lynae.webp",
+        "sha256": "ac4c01304c4d52b0358c2b17ff582a572e8b93217c571cd97f9868cbec8b6c2b",
+        "bytes": 544828,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 463642,
+          "opaquePixels": 517895,
+          "partialAlphaPixels": 30175,
+          "visiblePixels": 548070,
+          "opaqueBlackPixels": 1,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 811,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1644210,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "mornye",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/mornye.png",
+        "sha256": "9e126fe57ecc62b7fe2be8e02a7402938477c23018f5af4c4896b4fbbe91792a",
+        "bytes": 1124239,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 424685,
+          "opaquePixels": 533384,
+          "partialAlphaPixels": 53643,
+          "visiblePixels": 587027,
+          "opaqueBlackPixels": 1,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 808,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/mornye.webp",
+        "sha256": "1b4dc1ef9e986ad191600d8934711959b00536f62ab7c323b5f3a1f23094078e",
+        "bytes": 563466,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 424685,
+          "opaquePixels": 533384,
+          "partialAlphaPixels": 53643,
+          "visiblePixels": 587027,
+          "opaqueBlackPixels": 1,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 808,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1761081,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "chisa",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/chisa.png",
+        "sha256": "b3bbfe8e0469fc1bfab9f9a95b172fa8f96ccd5d93d60f079e8b047038c0cc7a",
+        "bytes": 1132810,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 469956,
+          "opaquePixels": 511106,
+          "partialAlphaPixels": 30650,
+          "visiblePixels": 541756,
+          "opaqueBlackPixels": 12,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 786,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/chisa.webp",
+        "sha256": "a4d7533396bfea97b3aa2c53c79c62db82c4cd2db8f05e0719eb9aa8e1c045b4",
+        "bytes": 463536,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 469956,
+          "opaquePixels": 511106,
+          "partialAlphaPixels": 30650,
+          "visiblePixels": 541756,
+          "opaqueBlackPixels": 12,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 786,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1625268,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "changli",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/changli.png",
+        "sha256": "608b8e2924eef382699b2fdd8e38ca2b0480525b6ae600de7575a42f7df17700",
+        "bytes": 1356203,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 365658,
+          "opaquePixels": 535003,
+          "partialAlphaPixels": 111051,
+          "visiblePixels": 646054,
+          "opaqueBlackPixels": 146,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 795,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/changli.webp",
+        "sha256": "c8052ffed04b27f478555587a51750a5171622695228cb29035fd4cf85385a6a",
+        "bytes": 726800,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 365658,
+          "opaquePixels": 535003,
+          "partialAlphaPixels": 111051,
+          "visiblePixels": 646054,
+          "opaqueBlackPixels": 146,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 795,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1938162,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "qiuyuan",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/qiuyuan.png",
+        "sha256": "c991db5144723f24688c0bcb5b494a35108212baa8f1db1ab6712b5890da099b",
+        "bytes": 1348737,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 399387,
+          "opaquePixels": 592168,
+          "partialAlphaPixels": 20157,
+          "visiblePixels": 612325,
+          "opaqueBlackPixels": 24,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 807,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/qiuyuan.webp",
+        "sha256": "13579795290b6f63b5eb1d56756841eb5914cb8062f9e0e30df1e9d576b54e99",
+        "bytes": 540434,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 399387,
+          "opaquePixels": 592168,
+          "partialAlphaPixels": 20157,
+          "visiblePixels": 612325,
+          "opaqueBlackPixels": 24,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 807,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1836975,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    },
+    {
+      "id": "nabomo",
+      "source": {
+        "path": "docs/design-samples/handbook-chibi/assets/characters/nabomo.png",
+        "sha256": "dc119dd81ae01bdd1fa0272c79d54c9602fd7f66097006e19643d2548e6a6667",
+        "bytes": 1153294,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 422921,
+          "opaquePixels": 567810,
+          "partialAlphaPixels": 20981,
+          "visiblePixels": 588791,
+          "opaqueBlackPixels": 0,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 814,
+            "height": 1216
+          }
+        }
+      },
+      "output": {
+        "path": "public/assets/characters/handbook-chibi-sprites/nabomo.webp",
+        "sha256": "d241163656d8d574f93da561fdbe9a34f14f2b3b35535ae18ce14e1c0acd853f",
+        "bytes": 542464,
+        "width": 832,
+        "height": 1216,
+        "hasAlpha": true,
+        "pixels": {
+          "transparentPixels": 422921,
+          "opaquePixels": 567810,
+          "partialAlphaPixels": 20981,
+          "visiblePixels": 588791,
+          "opaqueBlackPixels": 0,
+          "visibleBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 814,
+            "height": 1216
+          }
+        }
+      },
+      "compression": {
+        "mode": "lossless",
+        "lossless": true,
+        "quality": 100,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "verification": {
+        "dimensionsIdentical": true,
+        "sourceFileUnchanged": true,
+        "alphaIdentical": true,
+        "alphaDifferences": 0,
+        "visibleRgbIdentical": true,
+        "visibleRgbPixelDifferences": 0,
+        "visibleRgbChannelsCompared": 1766373,
+        "visibleRgbMaxChannelDifference": 0,
+        "visibleRgbMeanAbsoluteChannelDifference": 0,
+        "opaqueBlackPixelDifferences": 0
+      }
+    }
+  ]
+}

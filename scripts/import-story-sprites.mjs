@@ -8,12 +8,18 @@ const sourceIndex = process.argv.indexOf("--source-root");
 if (sourceIndex < 0 || !process.argv[sourceIndex + 1]) throw new Error("Usage: node scripts/import-story-sprites.mjs --source-root <delivery-root>");
 const sourceRoot = path.resolve(process.argv[sourceIndex + 1]);
 const outputRoot = path.resolve("public/assets/characters/story-sprites");
-const manifest = { version: 1, fullSize: [832, 1216], avatarSize: [256, 256], files: [] };
+const charactersIndex = process.argv.indexOf("--characters");
+const selected = charactersIndex >= 0 ? process.argv[charactersIndex + 1]?.split(",") : Object.keys(CHARACTER_STORY_SPRITES);
+if (!selected?.length || selected.some((id) => !CHARACTER_STORY_SPRITES[id])) throw new Error("Unknown --characters selection");
+const previous = charactersIndex >= 0 ? JSON.parse(await readFile(path.join(outputRoot, "manifest.json"), "utf8")) : { files: [] };
+const manifest = { version: 1, fullSize: [832, 1216], avatarSize: [256, 256], files: previous.files.filter((file) => !selected.includes(file.characterId)) };
 for (const entry of Object.values(CHARACTER_STORY_SPRITES)) {
+  if (!selected.includes(entry.characterId)) continue;
   const target = path.join(outputRoot, entry.characterId);
   await mkdir(target, { recursive: true });
   for (const expression of entry.expressions) {
-    const input = await readFile(path.join(sourceRoot, entry.sourcePackage, "exports/native", `${entry.sourcePrefix}${expression}.png`));
+    const sourceExpression = entry.sourceExpressions[expression] || expression;
+    const input = await readFile(path.join(sourceRoot, entry.sourcePackage, "exports/native", `${entry.sourcePrefix}${sourceExpression}.png`));
     const original = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     if (original.info.width !== entry.width || original.info.height !== entry.height) throw new Error(`Unexpected source dimensions: ${entry.characterId}/${expression}`);
     const full = await sharp(input).webp({ lossless: true, effort: 6 }).toBuffer();
@@ -24,7 +30,7 @@ for (const entry of Object.values(CHARACTER_STORY_SPRITES)) {
     const avatar = await sharp(input).extract(entry.avatarCrop).resize(256, 256).webp({ lossless: true, effort: 6 }).toBuffer();
     await writeFile(path.join(target, `${expression}.webp`), full);
     await writeFile(path.join(target, `${expression}-avatar.webp`), avatar);
-    manifest.files.push({ characterId: entry.characterId, appearanceId: entry.appearanceId, expressionId: expression, sourcePackage: entry.sourcePackage, sourceSha256: createHash("sha256").update(input).digest("hex"), crop: entry.avatarCrop, fullBytes: full.length, avatarBytes: avatar.length });
+    manifest.files.push({ characterId: entry.characterId, appearanceId: entry.appearanceId, expressionId: expression, sourceExpressionId: sourceExpression, sourcePackage: entry.sourcePackage, sourceSha256: createHash("sha256").update(input).digest("hex"), crop: entry.avatarCrop, fullBytes: full.length, avatarBytes: avatar.length });
   }
 }
 await writeFile(path.join(outputRoot, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");

@@ -1,5 +1,6 @@
+import { useCandyEffectCancellation } from "./useCandyEffectCancellation.js";
 import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
-import TeamLineupPicker, { availableTeamCharacters } from "./TeamLineupPicker.jsx";
+import TeamLineupPicker, { availableTeamCharacters, candyBlockedCharacters } from "./TeamLineupPicker.jsx";
 import MatchCharacterPicker from "./MatchCharacterPicker.jsx";
 import MatchCharacterSlots from "./MatchCharacterSlots.jsx";
 import { MATCH_CHARACTER_NOTICE, useMatchCharacterSelection } from "./useMatchCharacterSelection.js";
@@ -27,9 +28,11 @@ import {
 } from "../shared/sigrikaCandyArc.js";
 import { useSigrikaCandyDuelAvailability } from "./useSigrikaCandyDuelAvailability.js";
 
-export default function HomeScreen({ user, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, token, onUserChange, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const { available, selections, select } = useMatchCharacterSelection(user, characters);
+  const cancellation = useCandyEffectCancellation({ token, user, onUserChange, onNotice });
+  const blocked = candyBlockedCharacters(user, characters, available);
   const [characterEntry, setCharacterEntry] = useState(null);
   const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
   const sigrikaDuelActive = user.sigrikaCandyArc?.phase === SIGRIKA_CANDY_PHASES.duelActive;
@@ -138,8 +141,8 @@ export default function HomeScreen({ user, characters, audioSettings, siteSettin
           />
         )}
 
-        {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker user={user} characters={characters} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onConfirm={() => setCharacterEntry(null)} />}
-        {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker available={available} selected={selections[characterEntry][0]} user={user} onClose={() => setCharacterEntry(null)} onSelect={(id) => { select(characterEntry, [id]); setCharacterEntry(null); }} />}
+        {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker cancellation={cancellation} user={user} characters={characters} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onConfirm={() => setCharacterEntry(null)} />}
+        {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker cancellation={cancellation} blocked={blocked} available={available} selected={selections[characterEntry][0]} user={user} onClose={() => setCharacterEntry(null)} onSelect={(id) => { select(characterEntry, [id]); setCharacterEntry(null); }} />}
         {!sigrikaCorrupted && <IrisDatabase
           audioSettings={audioSettings}
           greeting={siteSettings.irisGreeting}

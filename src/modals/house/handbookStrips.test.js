@@ -4,6 +4,15 @@ import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import { CHARACTERS } from "../../shared/characters.js";
 
 describe("handbook strip pagination", () => {
+  it("keeps rainbow Denia the same size and anchor as her default chibi on desktop and portrait phones", () => {
+    const plain = resolveHandbookPortrait(CHARACTERS.denia, { chibi: true });
+    const rainbow = resolveHandbookPortrait(CHARACTERS.denia, { chibi: true, itemEffects: { deniaRainbowGlow: true } });
+    for (const mobile of [false, true]) for (const expanded of [false, true]) {
+      const box = mobile ? { width: 368, height: 650 } : { width: 1100, height: 580 };
+      const options = { mobile, expanded, count: 10, index: 1 };
+      expect(handbookStripArtStyle(rainbow, box, options)).toEqual(handbookStripArtStyle(plain, box, options));
+    }
+  });
   it("preserves the supplied catalog order and object identity across pages", () => {
     const characters = Array.from({ length: 13 }, (_, index) => ({ id: `member-${12 - index}`, sortOrder: index }));
     const original = [...characters];
@@ -20,6 +29,34 @@ describe("handbook strip pagination", () => {
 });
 
 describe("handbook strip portrait framing", () => {
+  it("normalizes mobile chibi heads and fits desktop bodies on a common baseline without preview rescaling", () => {
+    for (const character of Object.values(CHARACTERS)) {
+      const chibi = resolveHandbookPortrait(character, { chibi: true });
+      if (!chibi.isChibi) continue;
+      for (const expanded of [false, true]) {
+        const style = handbookStripArtStyle(chibi, { width: 280, height: 840 }, { mobile: true, expanded, count: 10 });
+        expect(style.width / style.height).toBeCloseTo(832 / 1216, 8);
+        const scale = style.height / chibi.height;
+        if (expanded) {
+          expect((chibi.bodyBottom - chibi.bodyTop) * scale).toBeCloseTo(220, 8);
+          expect(style.top + chibi.bodyTop * scale).toBeCloseTo(8, 8);
+          expect(style.top + chibi.bodyBottom * scale).toBeCloseTo(228, 8);
+        } else {
+          expect(chibi.headWidth * scale).toBeCloseTo(125, 8);
+          expect(style.top + chibi.focal[1] * scale).toBeCloseTo(48, 8);
+        }
+      }
+      for (const height of [300, 400, 540]) {
+        const size = { width: 940, height };
+        const style = handbookStripArtStyle(chibi, size, { mobile: false, expanded: false, count: 10 });
+        const scale = style.height / chibi.height;
+        expect(style.top + chibi.bodyTop * scale).toBeCloseTo(height * .07, 8);
+        expect(style.top + chibi.bodyBottom * scale).toBeCloseTo(height * .95, 8);
+        expect(style.width / style.height).toBeCloseTo(832 / 1216, 8);
+        expect(handbookStripArtStyle(chibi, size, { mobile: false, expanded: true, count: 10 })).toEqual(style);
+      }
+    }
+  });
   const portrait = { isStandard: true, width: 832, height: 1216, focal: [415, 192] };
   it.each([{ mobile: false, expanded: false }, { mobile: false, expanded: true },
     { mobile: true, expanded: false }, { mobile: true, expanded: true }])("preserves aspect ratio in $mobile/$expanded", (state) => {

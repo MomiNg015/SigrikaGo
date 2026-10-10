@@ -13,406 +13,1729 @@
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "smile",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "8754aa1fbd5dfda50c5476fef3521a5543380206f47edb83381cbcf75074aa38",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "e79f3635edfb22afb80b911bdbe85fa259f34120be69e33083efb6765f4da580",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 688758,
-      "avatarBytes": 97160
+      "fullBytes": 656398,
+      "avatarBytes": 63254
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "closed_smile",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "90ec4b6504bda37e5e32f73d938973314ced6a93eee7c247fdcb56a4779597dc",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "e79f3635edfb22afb80b911bdbe85fa259f34120be69e33083efb6765f4da580",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 690506,
-      "avatarBytes": 95384
+      "fullBytes": 656398,
+      "avatarBytes": 63254
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "thinking",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "a9964c8ec47904890ba22281431b76c7d16805daac4da5c56552022b98f06b29",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "12c1f201cc4d7dd335073eba31478a4cd850dca9571c4cf1fe8575806d4afa69",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 688166,
-      "avatarBytes": 95984
+      "fullBytes": 654828,
+      "avatarBytes": 64634
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "serious",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "be00c829688120fb0d5ed1949f44c32d52da32068fbf38dfa791014976cc0b20",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "12c1f201cc4d7dd335073eba31478a4cd850dca9571c4cf1fe8575806d4afa69",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 688478,
-      "avatarBytes": 96116
+      "fullBytes": 654828,
+      "avatarBytes": 64634
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "surprised",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "ba167baba4fd11579793a1e451d4da858baf1862a9631ccb47cf39e5099e3627",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "d3397cd27a2b2a96015448d742f3326ad1e3231779381d66add9f2a6b3c5bf74",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 693902,
-      "avatarBytes": 96076
+      "fullBytes": 658360,
+      "avatarBytes": 65908
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "worried",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "c49d1e40bc60bec41cb43653ede28d3cfecedfa4fcdf1eeddd162965323fa0c4",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "1411252f761af94bc434515612410b6ac8249f0ad4093132a340a5a7b76dd05a",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 690722,
-      "avatarBytes": 96312
+      "fullBytes": 655372,
+      "avatarBytes": 65096
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "embarrassed",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "3cd4439ec4d3bc46f5c0d0ab60456df345aded6d3797ddf0e5cd876dab9a2eb8",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "472e09b704b1c42ea95af89fd9ff737ffa421afdaa8bbb2facd1e987578d1f49",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 690044,
-      "avatarBytes": 96068
+      "fullBytes": 656450,
+      "avatarBytes": 64674
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "angry",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "6835d5a27599bec81ecebf20f9a1943aa2c9bf95fd97fc3ce9251de472d4f252",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "fa9c7c4f3e9a4c35d258ef901d3155c38a31a2e214a45c86ce2efa7d714a0845",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 688486,
-      "avatarBytes": 97334
+      "fullBytes": 656286,
+      "avatarBytes": 64574
     },
     {
       "characterId": "sigrika",
       "appearanceId": "sigrika-standard-v1",
       "expressionId": "original",
-      "sourcePackage": "sigrika-sprite-expressions",
-      "sourceSha256": "3457caa9ab1666ae9b7c5e854613c34c3bf224ff8de750e6cbabf6acdace4340",
+      "sourceExpressionId": "original",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "d86fdd740fe705b897b583fb832150ac667ac7ccaa0b818b1d7886302a2f6185",
       "crop": {
-        "left": 205,
-        "top": 0,
-        "width": 400,
-        "height": 400
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
       },
-      "fullBytes": 690584,
-      "avatarBytes": 96188
+      "fullBytes": 650986,
+      "avatarBytes": 64226
+    },
+    {
+      "characterId": "sigrika",
+      "appearanceId": "sigrika-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "sigrika-chibi-v1",
+      "sourceSha256": "bf7673745a18a187187a67a19584f7cc00f6f88f4c72dd41279acf40ce7b4011",
+      "crop": {
+        "left": 140,
+        "top": 100,
+        "width": 520,
+        "height": 520
+      },
+      "fullBytes": 657064,
+      "avatarBytes": 65368
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "smile",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "fae2fa8bab5230a7170fe37a26f2fa5cca3d487ea0f43a9c8cf17aae7c450541",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "bf83d4c2f70690ca6603a3ca6c97bcc3ab711f35f3177e5f70ff676c7a284c27",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 738112,
-      "avatarBytes": 86466
+      "fullBytes": 754082,
+      "avatarBytes": 74034
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "closed_smile",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "b4560d59f6a458a1e541a3679fd7154a8dbe8b16b78365f183751d8e9a014ecf",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "bf83d4c2f70690ca6603a3ca6c97bcc3ab711f35f3177e5f70ff676c7a284c27",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 735916,
-      "avatarBytes": 85752
+      "fullBytes": 754082,
+      "avatarBytes": 74034
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "playful",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "f401165c5dd0f52446e80122611446a299a5fd3c34de8af3a0b80fe50208172e",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "bf83d4c2f70690ca6603a3ca6c97bcc3ab711f35f3177e5f70ff676c7a284c27",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 738210,
-      "avatarBytes": 86402
+      "fullBytes": 754082,
+      "avatarBytes": 74034
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "sleepy",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "670b337c4fad12e53e39352036d8b97e22ef6d2023844a3063d5a830ee28d7eb",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "1c21b56b6d635d8f571a9e92f71cbcad6c39221fb9431b158c4546248095c255",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 734862,
-      "avatarBytes": 86294
+      "fullBytes": 758366,
+      "avatarBytes": 75696
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "thinking",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "4530b67b1be2e0dbc1f0bcddf5b4ac075ac53a4422413898c00078ef128e1976",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "594bcbb08dd957dfff3fecb2cd878c94b1cde39dd3e30af73621b097759410b6",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 735872,
-      "avatarBytes": 86374
+      "fullBytes": 763172,
+      "avatarBytes": 75670
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "surprised",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "7b0001ca75d941329ca32cd53f19f42807ec7fb35b9d6e2a197d3d65178f3df2",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "1f7c023f611bd176605bbcd1fdc51f84e13535aa1e7f88d5d72a158b241c0339",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 738356,
-      "avatarBytes": 86636
+      "fullBytes": 759942,
+      "avatarBytes": 75978
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "annoyed",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "a3fdf8d28c29d6e790c70ebb4174ec96a36ca1ffbd2baea77c508783d27556ff",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "48185dcc42d18d9cad1519cf9327240f67a083ca7cc8caa7dd7c3afacdd831a5",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 738100,
-      "avatarBytes": 86498
+      "fullBytes": 758656,
+      "avatarBytes": 75502
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "serious",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "b9bd0ef436e7dbe0546c90ca058d400e967d7bfc2b340f221ad00382fa4ab5a0",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "594bcbb08dd957dfff3fecb2cd878c94b1cde39dd3e30af73621b097759410b6",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 736556,
-      "avatarBytes": 86616
+      "fullBytes": 763172,
+      "avatarBytes": 75670
     },
     {
       "characterId": "denia",
       "appearanceId": "denia-standard-v1",
       "expressionId": "original",
-      "sourcePackage": "denia-sprite-expressions",
-      "sourceSha256": "4b351de896cbb18ab7a6f398cb94d20d1a71b5b9a5d0cb46f8b9869669141d6e",
+      "sourceExpressionId": "original",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "723d29d42fda9a59fc38c6fa151a388c29917f13250fd586b3fb6c94ba18135a",
       "crop": {
-        "left": 220,
-        "top": 0,
-        "width": 420,
-        "height": 420
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
       },
-      "fullBytes": 734868,
-      "avatarBytes": 86494
+      "fullBytes": 757358,
+      "avatarBytes": 74976
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "fee8280a0673e72ddfd41e29d34c74ddf57235ba85cd04e29fdca11501adbddd",
+      "crop": {
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
+      },
+      "fullBytes": 763598,
+      "avatarBytes": 75536
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "1c21b56b6d635d8f571a9e92f71cbcad6c39221fb9431b158c4546248095c255",
+      "crop": {
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
+      },
+      "fullBytes": 758366,
+      "avatarBytes": 75696
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "48185dcc42d18d9cad1519cf9327240f67a083ca7cc8caa7dd7c3afacdd831a5",
+      "crop": {
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
+      },
+      "fullBytes": 758656,
+      "avatarBytes": 75502
+    },
+    {
+      "characterId": "denia",
+      "appearanceId": "denia-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "denia-chibi-v1",
+      "sourceSha256": "46c8e56192ef8ad04e9a798e14a12c20e65f36b1c3186af83d7f7966c796e6c8",
+      "crop": {
+        "left": 190,
+        "top": 100,
+        "width": 540,
+        "height": 540
+      },
+      "fullBytes": 765578,
+      "avatarBytes": 75998
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "3365bfed5c2a7ad5a8fd47c9544f7dc476b74b71d99f5052d0c0e0f031cb8c78",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 523044,
+      "avatarBytes": 60644
     },
     {
       "characterId": "aemeath",
       "appearanceId": "aemeath-standard-v1",
       "expressionId": "smile",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "dec429fbe19f66874a36996246c397fa69cf356a1180a99b96a90c37f3315604",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "d2debbc2b34421d6a5405f3ada8e0d023333c35d9569096351ac4f8c48f7cb6d",
       "crop": {
-        "left": 214,
+        "left": 0,
         "top": 0,
-        "width": 376,
-        "height": 376
+        "width": 832,
+        "height": 832
       },
-      "fullBytes": 759320,
-      "avatarBytes": 82058
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "closed_smile",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "975e6cf52939d8eedcbfb769e218a9e2d49aa399c5ea48c2c003584f4a6dde10",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 757048,
-      "avatarBytes": 81364
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "wink",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "5164791637b046ab703873d726a3b4f6a2509408d28b48d2f1338805680e95c7",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 757798,
-      "avatarBytes": 81586
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "surprised",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "b560671f3d1a100e85362505adc7435e13208a9b0ca68fdc94b566002073df1f",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 761364,
-      "avatarBytes": 82044
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "thinking",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "73ccc4447a94d48167dd9d126c0d1c358204fa28a2e67efd6b0af58e7cfb9816",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 758646,
-      "avatarBytes": 81766
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "wry",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "f666a9e084677582421732ade5d1d832394c0d8b5fd04bb080bfee1a0fd16dc7",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 760822,
-      "avatarBytes": 81856
-    },
-    {
-      "characterId": "aemeath",
-      "appearanceId": "aemeath-standard-v1",
-      "expressionId": "annoyed",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "9149b3b6ce319f4cbd2601bf2fc833c1d704202e549442942a15439455cedad5",
-      "crop": {
-        "left": 214,
-        "top": 0,
-        "width": 376,
-        "height": 376
-      },
-      "fullBytes": 758880,
-      "avatarBytes": 81872
+      "fullBytes": 525988,
+      "avatarBytes": 60304
     },
     {
       "characterId": "aemeath",
       "appearanceId": "aemeath-standard-v1",
       "expressionId": "serious",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "d20953d368c36f16d8ff77a430e013f91ceeae1b30a7694aff11ee528a97460b",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "1f757dfed3f8a6acfeb014acd9d85d494c22a7a3e6266d4c8245b99e5f022686",
       "crop": {
-        "left": 214,
+        "left": 0,
         "top": 0,
-        "width": 376,
-        "height": 376
+        "width": 832,
+        "height": 832
       },
-      "fullBytes": 759466,
-      "avatarBytes": 81948
+      "fullBytes": 525088,
+      "avatarBytes": 60254
     },
     {
       "characterId": "aemeath",
       "appearanceId": "aemeath-standard-v1",
-      "expressionId": "original",
-      "sourcePackage": "amis-sprite-expressions",
-      "sourceSha256": "d93d0cb4492b7ed530cd36c00db2e0d73f9edbbdaddc6cadfe56c7a68cd40d47",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "d5de4d9566038c7de1a89423ef143e42289a0ab872b64073b77a13cf63fba305",
       "crop": {
-        "left": 214,
+        "left": 0,
         "top": 0,
-        "width": 376,
-        "height": 376
+        "width": 832,
+        "height": 832
       },
-      "fullBytes": 757696,
-      "avatarBytes": 81906
+      "fullBytes": 525960,
+      "avatarBytes": 60394
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "68600c7b62c071b74f0f17ebc9fc9eda6f6fa06fe6c164568a92668ea74fa10c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 525584,
+      "avatarBytes": 60242
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "c582fe2a8527abb3ea06bd42c3563b2b4cf9c5693f7f69d12a7ba264d01ccd28",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 524986,
+      "avatarBytes": 60228
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "416d092836778738fe789dc38ca161bb34828190ad279d3c79662ee1ee533b18",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 526264,
+      "avatarBytes": 60400
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "91899b4e67ddb5419a69a6e92ab4f91014cfba24edcdca30deeae0c2d2f1df4f",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 528004,
+      "avatarBytes": 60528
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "655588ea75b5688bb223d6022dcf6bc8a68e866c41359a8024d51e7f190f098c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 516776,
+      "avatarBytes": 58856
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "d9c31d4936c89cc2208524424e37672b2b4b4816bffb78e4dcf92a3d5a4c7617",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 525080,
+      "avatarBytes": 60224
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "wink",
+      "sourceExpressionId": "wink",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "c8e646e6b7de814e87bd84e5d6c606f1969fae363c08c1c1df981704ae542555",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 521408,
+      "avatarBytes": 59540
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "wry",
+      "sourceExpressionId": "wry",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "ee05911f4890e8167a2bc878f6691eee36015323111a8a5ed8f80c70d1d9b24c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 524098,
+      "avatarBytes": 60136
+    },
+    {
+      "characterId": "aemeath",
+      "appearanceId": "aemeath-standard-v1",
+      "expressionId": "annoyed",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "aemeath-chibi-v1",
+      "sourceSha256": "416d092836778738fe789dc38ca161bb34828190ad279d3c79662ee1ee533b18",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 526264,
+      "avatarBytes": 60400
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "b11ac7771113b901cd9a7cb6e3d3f413afb006dbe517d85c00ccaabb8017064e",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 562668,
+      "avatarBytes": 66362
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "0a91019bd4dd6d6accc58daab701bab0955df9c32f8be6b17215560fbfaef6dd",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 561606,
+      "avatarBytes": 66318
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "c54a97736a1dd2f25d516aff70270e3959ac326a235b29c91eb392fbc8a6c904",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 560066,
+      "avatarBytes": 66028
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "fce5168bcc8e5b467d797294cc9e5168c7dfd4ef7fc4f8f6275da3fd4cf5b140",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 561164,
+      "avatarBytes": 66014
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "e985a67c7cb0bcf9a6e446635380db938e6c3543e9c10896c558cb4bcacb86e6",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 561422,
+      "avatarBytes": 66300
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "3bafcc11e2bcce268dd5f7180d6aee441c4e69c9344aa5450fe7c8126676f548",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 562544,
+      "avatarBytes": 66254
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "fd3eba49597822045661e2cb51432b08093281e735d9ed59754a03c6c6ca3e0e",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 562308,
+      "avatarBytes": 66430
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "560c618b732a19e8cfc050f74bb194f95998f5a6ae7e1af121b4180f3d267d0b",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 563588,
+      "avatarBytes": 66388
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "bafc33bf4c8616207d7523fae5c07d02bee74830b1db0b8e9d015c4a3b2f89f9",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555964,
+      "avatarBytes": 64966
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "7fa0a03bf0463c49a392b431da5dd1a73d9a0a1cee2f15d3971c4154ff0bb6d1",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 564178,
+      "avatarBytes": 65778
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "wink",
+      "sourceExpressionId": "wink",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "c3ba7822fd81ca0bd995a2e289bbddcffbb80492a3331650334aabeeba48da64",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 562114,
+      "avatarBytes": 65280
+    },
+    {
+      "characterId": "lynae",
+      "appearanceId": "lynae-standard-v1",
+      "expressionId": "playful",
+      "sourceExpressionId": "playful",
+      "sourcePackage": "lynae-chibi-v1",
+      "sourceSha256": "e73ff50e8c9b98995b7b30753685a3ffb015156e84f354a478eb8d3d8d399430",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 563278,
+      "avatarBytes": 66252
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "4cf6bf98e56b6d8837145d94aa4bfae0c695a333d0cd87b601f41d5ff3435e78",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 586026,
+      "avatarBytes": 55972
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "a2357a8a16854d98a27a2988e8429fa9a3ffd41b85f0812ca6104e4c554d1a01",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 581354,
+      "avatarBytes": 56118
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "bd11d0e8569d5f5c44024673fad02f1aea3afe95b73c3df734a75ce71f548763",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 578804,
+      "avatarBytes": 55474
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "79e4f9ab4f29e80b0466e9a09300da9181efa5817cb600d9aa075c4f9bc6e806",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 584258,
+      "avatarBytes": 55824
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "0600b13820d6e65927e45a7ba984461b1bd2e43473dcd2e5efde74a36d1234c7",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 581940,
+      "avatarBytes": 55782
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "e919d9cd9bc0241b61a8b243d53305b27d3672ecb39b4d5180ca13f1073e0023",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 579606,
+      "avatarBytes": 55606
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "33ff74802d62648f9773cd6c4bd774d2b58a68705d3cc455970db38c7879e5d7",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 581010,
+      "avatarBytes": 55722
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "0395e77029c27e1c817056045aa7fe8d488cea014c4d69a47823ad29419e4d44",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 582122,
+      "avatarBytes": 55934
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "fdd87aad41d87478877a35b92020074df37d9cf615ee9acc5e2160dd6d10d02e",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 577532,
+      "avatarBytes": 54752
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "67481e81a590590b49ca5c26994e091910bac6ce7038ad920241a7b9e227c799",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 578844,
+      "avatarBytes": 55368
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "sleepy",
+      "sourceExpressionId": "sleepy",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "a1b2e6e90b66b4c0fd1177019bcfa81ab3889737580ba42743cdda8661470e74",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 577946,
+      "avatarBytes": 55260
+    },
+    {
+      "characterId": "mornye",
+      "appearanceId": "mornye-standard-v1",
+      "expressionId": "reassuring",
+      "sourceExpressionId": "reassuring",
+      "sourcePackage": "mornye-chibi-v1",
+      "sourceSha256": "8456a014ce0a217957a4d4041dea6187090fbc54533c1f977113544906d794f9",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 584308,
+      "avatarBytes": 55730
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "f30a61a03afcbeda6749de148767dc265f928b68d93a9cec8be4999223600b83",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 473432,
+      "avatarBytes": 50940
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "4580cbae1f0a3c58f82f8f658423560159bb39019c7e9f31f801770a4c1641cc",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 469636,
+      "avatarBytes": 50904
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "3d503d7ef051f434723b1385173d84bfbee438c821631b3125ad004a8b92f03d",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 469652,
+      "avatarBytes": 50852
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "25992310869ce408ed465fd8da6665c3cbb2a5b09009c7a7f74740f01c5bae6d",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 472834,
+      "avatarBytes": 51148
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "2480742ecc4560d8463758b1b04d149515541e2993c54c4ee7abfd73a1459fe8",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 471252,
+      "avatarBytes": 50908
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "fa0c7d8640bf081a1280146f57f27f76da900c3971a766531e5b68f782d1c3df",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 471708,
+      "avatarBytes": 51014
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "ad7dce709f1a6e6c370d89ddce959ca3fd6c602568fc66c04db18818276061c6",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 472092,
+      "avatarBytes": 50964
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "b8177d945e8e3085d5fd584266a38dea4d8700ca45cd432036787415f25486f0",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 473878,
+      "avatarBytes": 51156
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "210dd0b553b85d4321491aa0977baa5f88ffb52882c71e8c72b27213136be20c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 466062,
+      "avatarBytes": 50660
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "1f577ad1c118082c86ae948509d75461c0e5c744282544386df8f9ffc51d1462",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 469688,
+      "avatarBytes": 50930
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "puzzled",
+      "sourceExpressionId": "puzzled",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "81a09a2110df4ee5a1c9c219544d7f565191ec308816798c41c9a7a2a435207c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 471664,
+      "avatarBytes": 50920
+    },
+    {
+      "characterId": "chisa",
+      "appearanceId": "chisa-standard-v1",
+      "expressionId": "determined",
+      "sourceExpressionId": "determined",
+      "sourcePackage": "chisa-chibi-v1",
+      "sourceSha256": "77d922f82fbcba903dbf17294e6712fb3e4aca28455a20a2df9ebc891225e56c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 472986,
+      "avatarBytes": 51006
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "989271c1cf15947f0d88d0fc5e2410008681919e683e2b087571aa5f2d87ba43",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 741128,
+      "avatarBytes": 74002
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "cc221ce928fbcb79cdb351de6e17ba5486ef420c42d1fa7a27198931330616b9",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 742718,
+      "avatarBytes": 74362
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "807144bd5f300ee2818a2ad81214521ea87492849b8023243779bf7cbd753834",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 743742,
+      "avatarBytes": 74452
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "c433dc8aac224bc92c4b2c39dd04d7a34cea4034205b7709fd7c4302aaa6e705",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 744466,
+      "avatarBytes": 74572
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "748cc7af50a9b1cab7fe0071025a4913d10b31e62409d277dbbd5338f9574da7",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 744262,
+      "avatarBytes": 74458
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "704620643baf5dc9ca066e81a45496148f59e2579ad3d0d4bfe237c47512b12e",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 744122,
+      "avatarBytes": 74570
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "76dec4a4bb556b9368f0a654667e4205f11e4850d860fc1ec267a2d7cdbc1310",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 742504,
+      "avatarBytes": 74716
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "3a5882a53e91eba0b1cf79f99e2cfbcb7f3502c29fae063765ecad4972b76645",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 744618,
+      "avatarBytes": 74854
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "66383defc01ec5da9c016817b05c09f1c707914ef422152fd4baba238288d4d3",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 737780,
+      "avatarBytes": 73720
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "17c3218cec9efec70b0350298f210183b6c4c73b611a4b48e749c130e295aeda",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 741482,
+      "avatarBytes": 74314
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "playful",
+      "sourceExpressionId": "playful",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "65a87f3e0f32f36372243550e7f2d1ad56e471423db4ec0a19e34e81082c239c",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 742748,
+      "avatarBytes": 74590
+    },
+    {
+      "characterId": "changli",
+      "appearanceId": "changli-standard-v1",
+      "expressionId": "confident",
+      "sourceExpressionId": "confident",
+      "sourcePackage": "changli-chibi-v1",
+      "sourceSha256": "3a24f88a29a7266045b1ef1ed098a92bf2628ae7d72e2deaf56a34193d8dfe15",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 742554,
+      "avatarBytes": 74534
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "60872628aea84f53da0c6beff15ee1be4a78c53432510c45a5dd1123e833f461",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556644,
+      "avatarBytes": 50316
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "1f80717f4a299df7227378ef03a1d11fed57a7eb287017e68bd8d95bb53fa503",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555372,
+      "avatarBytes": 50960
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "abd558661d78bc861ea387beabfb243db89227a8c3e8452d8de4a078185ced00",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555208,
+      "avatarBytes": 50772
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "6453fc0ee42ef5fe654879f7770b57574b3af86160d0aca08c84f9171afa2fae",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 553884,
+      "avatarBytes": 50822
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "06913abac07c32323623eac45480e58724331b066ce1a9f7196fdd2d69ee0d53",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555142,
+      "avatarBytes": 50338
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "973161d340323e213c078fd1088181046e4ab257c5ca50a21d78c2d0cf18bcaf",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556860,
+      "avatarBytes": 51150
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "3e04b84dd683954939782f29c9a0fb790a04dd6098074d991d07d17bfbde79f4",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555998,
+      "avatarBytes": 50314
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "b4cb71af2981f250b717604e115ed1e4ab3619b614f8c73bfd57aa6e505f9760",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 557192,
+      "avatarBytes": 51356
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "6f1f1e41a216b0c43d77658bf952af208b2039158b1fd0be7205be0a154d317a",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555894,
+      "avatarBytes": 50644
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "fcac7999c081b792c5ad9eb7294aaffda72fffe5643867845facbcac8a5315de",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555260,
+      "avatarBytes": 50394
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "determined",
+      "sourceExpressionId": "determined",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "d6585311b6eddf0b8efeab357ba30dd46262b1a57f71ba98840259f6b12c75d9",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556186,
+      "avatarBytes": 50684
+    },
+    {
+      "characterId": "qiuyuan",
+      "appearanceId": "qiuyuan-standard-v1",
+      "expressionId": "wry",
+      "sourceExpressionId": "wry",
+      "sourcePackage": "qiuyuan-chibi-v1",
+      "sourceSha256": "a6a76cad717075423fdb6ebed1fe796f547cc1d727ad8513070820f2d62d473b",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 557598,
+      "avatarBytes": 51152
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "original",
+      "sourceExpressionId": "original",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "022961f93de2867cbbf8d9253398ec58033d6f39abd85497b4a9cbc043aee03d",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 555066,
+      "avatarBytes": 60358
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "smile",
+      "sourceExpressionId": "smile",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "6e7e20dbf563f7512680fb1fdbffd597f5d55c2e2528893858d6609ae51d4890",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556364,
+      "avatarBytes": 60630
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "serious",
+      "sourceExpressionId": "serious",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "63b9bc20e30704cdb56dafbbda34243f8ede67876b2f6252f8411e6416e1aaf4",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556274,
+      "avatarBytes": 60470
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "surprised",
+      "sourceExpressionId": "surprised",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "2d9b601581dca1de438f76f63004aa6e6aa832b98b007b85f39f962e9fae9325",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 559484,
+      "avatarBytes": 60598
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "worried",
+      "sourceExpressionId": "worried",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "1a5afd11b30bf584d765b61f94c4d9d3aeea2330546e846fc27299858db93cad",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 558264,
+      "avatarBytes": 60770
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "sad",
+      "sourceExpressionId": "sad",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "a0578cdcacefa9d3222097294880d197b93c367eb9acc63bf10d32c357ecd841",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 554524,
+      "avatarBytes": 60580
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "angry",
+      "sourceExpressionId": "angry",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "27d575c356d3ec3860e505cd2c568a24c1219041f0056fd98881e90928784352",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 556974,
+      "avatarBytes": 60886
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "embarrassed",
+      "sourceExpressionId": "embarrassed",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "5bea47bdc8a29ba02e46ed19151820a9dec602ad74af938b4446fd209d3f49be",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 560020,
+      "avatarBytes": 60666
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "closed_smile",
+      "sourceExpressionId": "closed_smile",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "86d125c98b55905c2a6e58d28dfb041300f5ae45483aa7fa4af26ec7c3398cab",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 552088,
+      "avatarBytes": 60330
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "thinking",
+      "sourceExpressionId": "thinking",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "e9b5f71e777e8a519a773865b5c58582fa4284a817846e4c8e5083cf721c29c9",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 553016,
+      "avatarBytes": 60224
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "wink",
+      "sourceExpressionId": "wink",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "1008b624ee05ca727860868dacd1ceff6603c4dff5a180bd26a59b4c6e26501e",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 553120,
+      "avatarBytes": 60300
+    },
+    {
+      "characterId": "nabomo",
+      "appearanceId": "nabomo-standard-v1",
+      "expressionId": "sleepy",
+      "sourceExpressionId": "sleepy",
+      "sourcePackage": "nabomo-chibi-v1",
+      "sourceSha256": "38aff10bcf0bc9ccb8c9c5d05a1af344d059e938b686b78e1e98845eb37bbbe6",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 832,
+        "height": 832
+      },
+      "fullBytes": 552780,
+      "avatarBytes": 60128
     }
   ]
 }

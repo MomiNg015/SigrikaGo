@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { DENIA_CANDY_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
 import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
@@ -33,15 +34,15 @@ describe("deployment preload asset helpers", () => {
       user: { selectedCharacter: "aemeath", ownedCharacters: ["sigrika", "aemeath"] },
       tracks: {}, skillVoices: {}, systemVoices: {}
     });
-    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/aemeath.webp");
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/denia.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/aemeath.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/denia.webp");
   });
 
   it.each([
     ["custom catalog art", { portraitUrl: "/selected-custom.webp" }, {}, "/selected-custom.webp"],
     ["equipped art", {}, { equippedCostumes: { denia: { portraitUrl: "/selected-costume.webp" } } }, "/selected-costume.webp"],
-    ["active candy art", {}, { itemEffects: { deniaRainbowGlow: true } }, DENIA_CANDY_PORTRAIT]
+    ["active candy art", {}, { itemEffects: { deniaRainbowGlow: true } }, DENIA_CANDY_PORTRAIT_ASSET.storyUrl]
   ])("preloads the selected login appearance for %s", (_label, catalog, userState, expectedSrc) => {
     const assets = loginPreloadAssets({
       characters: { denia: { id: "denia", portrait: "/assets/Danea_centered.webp", ...catalog } },
@@ -49,7 +50,7 @@ describe("deployment preload asset helpers", () => {
       tracks: {}, skillVoices: {}, systemVoices: {}
     });
     expect(assets.criticalImages).toContain(expectedSrc);
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/denia.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/denia.webp");
   });
 
   it("preloads visible battle busts without exposing a hidden teammate or replacing costume snapshots", () => {
@@ -66,9 +67,9 @@ describe("deployment preload asset helpers", () => {
       }, tracks: {}, skillVoices: {}, systemVoices: {}
     });
     expect(assets.criticalImages).toContain("/snapshot.webp");
-    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/denia.webp");
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/chisa.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/denia.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/chisa.webp");
   });
 
   it("omits hidden team art and audio even when historical metadata still identifies the member", () => {
@@ -88,7 +89,7 @@ describe("deployment preload asset helpers", () => {
       tracks: {}, skillVoices: { aemeath: "/hidden-skill.ogg" },
       systemVoices: { aemeath: { victory: "/hidden-victory.ogg" } }
     });
-    expect(assets.criticalImages).toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(assets.criticalImages).not.toContain("/hidden-character.webp");
     expect(assets.criticalImages).not.toContain("/hidden-catalog.webp");
     expect(assets.criticalImages).not.toContain("/hidden-costume.webp");
@@ -110,7 +111,7 @@ describe("deployment preload asset helpers", () => {
     });
     expect(assets.criticalImages).toContain("/current-sigrika.webp");
     expect(assets.criticalImages).toContain("/frozen-denia.webp");
-    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(assets.criticalImages).not.toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(assets.criticalImages).not.toContain("/stale-denia.webp");
   });
 
@@ -151,9 +152,9 @@ describe("deployment preload asset helpers", () => {
       systemVoices: CHARACTER_SYSTEM_VOICES
     });
 
-    expect(assets.images).toContain("/assets/sigrika_centered.webp");
-    expect(assets.images).not.toContain("/assets/Aemeath_centered.webp");
-    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.images).toContain("/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp");
+    expect(assets.images).not.toContain("/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp");
     expect(assets.images).toContain("/assets/home/fantasy-match-entry.webp");
     expect(assets.images).toContain("/assets/home/book-entry.webp");
     expect(assets.images).toContain("/assets/home/home-utility-recruitment.webp");
@@ -292,8 +293,8 @@ describe("deployment preload asset helpers", () => {
       }
     });
 
-    expect(assets.criticalImages).toContain("/assets/Aemeath_centered.webp");
-    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp");
     expect(assets.deferredImages).toEqual([]);
   });
 
@@ -320,8 +321,8 @@ describe("deployment preload asset helpers", () => {
       systemVoices: CHARACTER_SYSTEM_VOICES
     });
 
-    expect(assets.criticalImages).toContain("/assets/characters/changli.png");
-    expect(assets.criticalImages).toContain("/assets/nabomo.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/changli-avatar.webp");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
     expect(assets.criticalAudio).toContain("/assets/music/changli_loop.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/busizhe_loop.ogg");
@@ -430,7 +431,7 @@ describe("deployment preload asset helpers", () => {
       systemVoices: CHARACTER_SYSTEM_VOICES
     });
 
-    expect(assets.criticalImages).toContain("/assets/characters/changli.png");
+    expect(assets.criticalImages).toContain("/assets/characters/handbook-chibi-sprites/changli-avatar.webp");
     expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
     expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.criticalAudio).not.toContain("/assets/music/changli_loop.ogg");
@@ -497,7 +498,7 @@ describe("deployment preload asset helpers", () => {
       inventoryItems: [{ imageUrl: DENIA_CANDY_PORTRAIT }]
     });
 
-    expect(assets.images).toContain("/assets/Danea_centered.webp");
+    expect(assets.images).toContain("/assets/characters/handbook-chibi-sprites/denia-avatar.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
   });
 

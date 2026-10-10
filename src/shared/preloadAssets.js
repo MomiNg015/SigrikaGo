@@ -21,7 +21,9 @@ import { RECRUITMENT_ITEMS } from "./recruitment.js";
 import { gameModeSkillEnabled } from "./gameModes.js";
 import { SIGRIKA_CANDY_DUEL } from "./sigrikaCandyArc.js";
 import { voiceSourceCandidates } from "./systemVoices.js";
+import { resolveCharacterPortrait } from "./characterPortraits.js";
 import { resolveHandbookPortrait } from "./handbookPortraits.js";
+import { resultCharacterPortraitUrls } from "./resultCharacterPortraits.js";
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
   return locationLike?.origin ?? "";
@@ -77,8 +79,8 @@ export function loginPreloadAssets({
     : null;
 
   const criticalImages = compactUnique([
-    ...visibleCharacters.map((character) => character?.portrait),
-    ...(homeCharacter ? [resolveHandbookPortrait(homeCharacter, { user, itemEffects: user?.itemEffects }).src] : []),
+    ...visibleCharacters.map((character) => resolveCharacterPortrait(character, { variant: "avatar" })),
+    ...(homeCharacter ? [resolveHandbookPortrait(homeCharacter, { user, itemEffects: user?.itemEffects, chibi: true }).src] : []),
     ...equippedCostumes.flatMap((costume) => [costume?.portraitUrl, costume?.candyEffectPortraitUrl]),
     ...RUNTIME_IMAGE_ASSETS.home,
     ...RUNTIME_IMAGE_ASSETS.shop,
@@ -158,13 +160,14 @@ export function battlePreloadAssets({
       });
 
   const criticalImages = compactUnique([
-    ...roomCharacters.map((character) => character?.portrait),
+    ...roomCharacters.map((character) => resolveCharacterPortrait(character, { variant: "avatar" })),
+    ...(room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource ? [] : roomCharacters.flatMap(resultCharacterPortraitUrls)),
     ...(room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource ? [] : players.map((player) => {
       const id = canonicalCharacterId(player.characterId ?? player.character?.id);
       const character = characters?.[id] ?? CHARACTERS[id] ?? player.character;
       if (!character) return "";
       return resolveHandbookPortrait({ ...character, id }, {
-        user: player.user, itemEffects: player.user?.itemEffects, costumeSnapshot: player.costumeSnapshot
+        chibi: true, user: player.user, itemEffects: player.user?.itemEffects, costumeSnapshot: player.costumeSnapshot
       }).src;
     })),
     ...players.flatMap((player) => [

@@ -24,7 +24,6 @@ export default function HouseModal({ token, user, characterListView, audioSettin
   const [equippingCostumeId, setEquippingCostumeId] = useState("");
   const [applyingDecoration, setApplyingDecoration] = useState("");
   const [decorationError, setDecorationError] = useState("");
-  const [cancellingCandyEffect, setCancellingCandyEffect] = useState("");
   const owned = new Set((user.ownedCharacters ?? []).map(canonicalCharacterId));
   const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
   const itemEffects = user.itemEffects ?? {};
@@ -123,23 +122,6 @@ export default function HouseModal({ token, user, characterListView, audioSettin
     }
   }
 
-  async function cancelCandyEffect(characterId) {
-    if (!import.meta.env.DEV || sigrikaCorrupted || cancellingCandyEffect) return;
-    setCancellingCandyEffect(characterId);
-    try {
-      const data = await api(`/api/items/rainbow-bean-candy/effects/${characterId}/cancel`, {
-        method: "POST",
-        token
-      });
-      onUserChange?.(data.user);
-      onNotice?.("已取消该角色的糖果效果（仅开发环境）", "success");
-    } catch (error) {
-      onNotice?.(error.message, "danger");
-    } finally {
-      setCancellingCandyEffect("");
-    }
-  }
-
   const characterGrid = (
     <HouseCharacterGrid
       panelId={sigrikaCorrupted ? undefined : `${handbookId}-characters-panel`}
@@ -150,10 +132,7 @@ export default function HouseModal({ token, user, characterListView, audioSettin
       owned={owned}
       selectedCharacter={selectedCharacter}
       user={user}
-      candyEffectCancellationEnabled={import.meta.env.DEV && !sigrikaCorrupted}
-      cancellingCandyEffect={cancellingCandyEffect}
       sigrikaCorrupted={sigrikaCorrupted}
-      onCancelCandyEffect={cancelCandyEffect}
       onOpenCharacterDetail={openCharacterDetail}
       onOpenUnknownDetail={() => setShowUnknownDetail(true)}
       onSelectCharacter={onSelectCharacter}

@@ -1,6 +1,7 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
+import CharacterCandyBorder from "../../shared/CharacterCandyBorder.jsx";
 import { CorruptionFragmentImage, CorruptionNoise, createCorruptionCadence } from "../../ui/CorruptionMarks.jsx";
 import {
   activeCharacterItemEffects,
@@ -19,10 +20,7 @@ export default function LegacyHouseCharacterGrid({
   owned,
   selectedCharacter,
   user,
-  candyEffectCancellationEnabled = false,
-  cancellingCandyEffect = "",
   sigrikaCorrupted = false,
-  onCancelCandyEffect,
   onOpenCharacterDetail,
   onSelectCharacter
 }) {
@@ -124,43 +122,7 @@ export default function LegacyHouseCharacterGrid({
                 <Flag size={18} />
               </button>
             )}
-            {itemEffectBadges.length > 0 && (
-              <div
-                className={`character-item-effect-badges${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
-                aria-label={`${character.name}道具效果`}
-              >
-                {itemEffectBadges.map((effect) => candyEffectCancellationEnabled ? (
-                  <button
-                    key={`${characterId}-${effect.effectKey}`}
-                    type="button"
-                    className="character-item-effect-cancel"
-                    aria-label={`取消${character.name}的${effect.label}`}
-                    title="点击取消效果（仅开发环境）"
-                    disabled={cancellingCandyEffect === characterId}
-                    onPointerDown={(event) => event.stopPropagation()}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") event.stopPropagation();
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onCancelCandyEffect?.(characterId);
-                    }}
-                  >
-                    <img className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} loading="lazy" decoding="async" />
-                  </button>
-                ) : (
-                  <img
-                    key={`${characterId}-${effect.effectKey}`}
-                    className="character-item-effect-icon"
-                    src={effect.icon}
-                    alt={effect.label}
-                    title={effect.label}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-              </div>
-            )}
+            {owned.has(characterId) && itemEffectBadges.length > 0 && <><CharacterCandyBorder /><span className="character-candy-status">{itemEffectBadges.map(effect => effect.label).join("，")}</span></>}
             <img
               {...portraitProps}
               alt={displayName}

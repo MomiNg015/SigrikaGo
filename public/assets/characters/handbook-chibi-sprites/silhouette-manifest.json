@@ -1,0 +1,123 @@
+{
+  "generator": "scripts/export-handbook-silhouettes.mjs",
+  "alphaThreshold": 128,
+  "masks": [
+    {
+      "id": "sigrika",
+      "sourceSha256": "d86fdd740fe705b897b583fb832150ac667ac7ccaa0b818b1d7886302a2f6185",
+      "path": "public/assets/characters/handbook-chibi-sprites/sigrika-silhouette.webp",
+      "bytes": 3938,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "denia",
+      "sourceSha256": "723d29d42fda9a59fc38c6fa151a388c29917f13250fd586b3fb6c94ba18135a",
+      "path": "public/assets/characters/handbook-chibi-sprites/denia-silhouette.webp",
+      "bytes": 3888,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "aemeath",
+      "sourceSha256": "d66b7cd9247b818ba569bf2d3bb6d71cdab402463d126320b7b9f8a6cc663c31",
+      "path": "public/assets/characters/handbook-chibi-sprites/aemeath-silhouette.webp",
+      "bytes": 4334,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "lynae",
+      "sourceSha256": "1f276915fa96779e2e3a2ec54b5bba01ef90e90d61f3d8b1f4fd999fe73fbce1",
+      "path": "public/assets/characters/handbook-chibi-sprites/lynae-silhouette.webp",
+      "bytes": 3394,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "mornye",
+      "sourceSha256": "9e126fe57ecc62b7fe2be8e02a7402938477c23018f5af4c4896b4fbbe91792a",
+      "path": "public/assets/characters/handbook-chibi-sprites/mornye-silhouette.webp",
+      "bytes": 3730,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "chisa",
+      "sourceSha256": "b3bbfe8e0469fc1bfab9f9a95b172fa8f96ccd5d93d60f079e8b047038c0cc7a",
+      "path": "public/assets/characters/handbook-chibi-sprites/chisa-silhouette.webp",
+      "bytes": 2278,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "changli",
+      "sourceSha256": "608b8e2924eef382699b2fdd8e38ca2b0480525b6ae600de7575a42f7df17700",
+      "path": "public/assets/characters/handbook-chibi-sprites/changli-silhouette.webp",
+      "bytes": 4000,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "qiuyuan",
+      "sourceSha256": "c991db5144723f24688c0bcb5b494a35108212baa8f1db1ab6712b5890da099b",
+      "path": "public/assets/characters/handbook-chibi-sprites/qiuyuan-silhouette.webp",
+      "bytes": 4576,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    },
+    {
+      "id": "nabomo",
+      "sourceSha256": "dc119dd81ae01bdd1fa0272c79d54c9602fd7f66097006e19643d2548e6a6667",
+      "path": "public/assets/characters/handbook-chibi-sprites/nabomo-silhouette.webp",
+      "bytes": 3940,
+      "width": 832,
+      "height": 1216,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "enclosedHolesFilled": true
+    }
+  ]
+}

@@ -92,6 +92,8 @@ export default function AppRoutes({
 }) {
   const homeScreen = user && (
     <HomeRoute
+      token={token}
+      onUserChange={updateUser}
       user={user}
       characters={characters}
       siteSettings={siteSettings}
@@ -265,6 +267,8 @@ export default function AppRoutes({
 }
 
 const HomeRoute = memo(function HomeRoute({
+  token,
+  onUserChange,
   announcementUnread,
   audioSettings,
   characters,
@@ -300,6 +304,8 @@ const HomeRoute = memo(function HomeRoute({
 }) {
   return (
     <HomeScreen
+      token={token}
+      onUserChange={onUserChange}
       user={user}
       characters={characters}
       audioSettings={audioSettings}

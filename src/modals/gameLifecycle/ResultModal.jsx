@@ -2,7 +2,7 @@ import RankProgress from "../../shared/RankProgress.jsx";
 import { useEffect, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
-import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
+import ResultCharacterPortrait from "./ResultCharacterPortrait.jsx";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
@@ -43,6 +43,8 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
   const userLost = Boolean(winnerColor && currentPlayer && currentPlayer.color !== winnerColor);
   const outcome = isChallenge ? "challenge" : isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
+  const portraitOutcome = isChallenge ? (challengeComplete ? "win" : "loss")
+    : isDraw ? "draw" : displayPlayer?.color === winnerColor ? "win" : "loss";
   const outcomeLabel = isChallenge ? (challengeComplete ? "挑战完成" : "挑战未完成") : outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
   const showPortrait = !isSigrikaCandyDuel && Boolean(displayPlayer && character);
   const resultClasses = [
@@ -80,15 +82,9 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         {showPortrait && (
           <div className="result-winner result-player-portrait">
             <span className="result-winner-portrait-wrap">
-              <img
-                className="result-player-portrait-image"
-                {...characterPortraitImageProps(character, {
-                  itemEffects: displayPlayer?.user?.itemEffects,
-                  user: displayPlayer?.user,
-                  costumeSnapshot: displayPlayer?.costumeSnapshot
-                })}
-                alt={character.name}
-              />
+              <ResultCharacterPortrait character={character} outcome={portraitOutcome}
+                itemEffects={displayPlayer?.user?.itemEffects}
+                user={displayPlayer?.user} costumeSnapshot={displayPlayer?.costumeSnapshot} />
               {outcome === "loss" && (
                 <img
                   className="result-defeat-weather"

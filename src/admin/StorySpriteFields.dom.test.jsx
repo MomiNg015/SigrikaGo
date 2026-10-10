@@ -9,7 +9,7 @@ describe("story appearance editor", () => {
     const node = { characterId: "denia", text: "保留原台词", appearanceId: "denia-standard-v1", expressionId: "smile" };
     const { getByLabelText, queryByText, rerender, unmount } = render(<StorySpriteFields node={node} onPatch={onPatch} />);
     expect(queryByText("困倦")).not.toBeNull();
-    expect(queryByText("害羞")).toBeNull();
+    expect(queryByText("害羞")).not.toBeNull();
     fireEvent.change(getByLabelText("角色表情"), { target: { value: "playful" } });
     expect(onPatch).toHaveBeenLastCalledWith({ expressionId: "playful" });
     fireEvent.change(getByLabelText("立绘造型"), { target: { value: "" } });

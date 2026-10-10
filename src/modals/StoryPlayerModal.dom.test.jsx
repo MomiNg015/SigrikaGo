@@ -4,6 +4,43 @@ import { describe, expect, it, vi } from "vitest";
 import StoryPlayerModal from "./StoryPlayerModal.jsx";
 
 describe("StoryPlayerModal interactions", () => {
+  it("keeps the rainbow candy actor in the chibi stage with a reduced-motion still and safe fallback", () => {
+    const { container, unmount } = render(<StoryPlayerModal typewriterDisabled script={{ startNodeId: "rainbow", nodes: [
+      { id: "rainbow", characterId: "denia-rainbow-glow", speakerName: "达妮娅", text: "唔唔唔——？！" }
+    ] }} />);
+    const stage = container.querySelector(".standard-story-sprite");
+    expect(stage.dataset.storyPresentation).toBe("chibi");
+    const image = stage.querySelector(".onboarding-story-portrait img");
+    expect(image.getAttribute("src")).toBe("/assets/characters/story-sprites/denia/rainbow-spray.webp");
+    expect(stage.querySelector("picture source").getAttribute("media")).toBe("(prefers-reduced-motion: reduce)");
+    expect(stage.querySelector("picture source").getAttribute("srcset")).toContain("rainbow-spray-still.webp");
+    fireEvent.error(image);
+    expect(stage.querySelector("picture source")).toBeNull();
+    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/denia.webp");
+    unmount();
+  });
+  it("uses the same classroom stage for narration before and between character lines", () => {
+    const { container, unmount } = render(<StoryPlayerModal script={{ startNodeId: "intro", nodes: [
+      { id: "intro", text: "午后的围棋部。", nextNodeId: "speech" },
+      { id: "speech", characterId: "aemeath", speakerName: "爱弥斯", appearanceId: "aemeath-standard-v1", expressionId: "thinking", text: "原来如此。", nextNodeId: "narration" },
+      { id: "narration", text: "棋盘上闪过彩虹。" }
+    ] }} portraitNodes={[]} typewriterDisabled />);
+    const stage = container.querySelector(".onboarding-story-modal");
+    expect(stage.classList.contains("standard-story-sprite")).toBe(true);
+    expect(stage.classList.contains("story-narration")).toBe(true);
+    expect(container.querySelector(".onboarding-story-portrait img")).toBeNull();
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(stage.classList.contains("story-narration")).toBe(false);
+    expect(container.querySelector(".onboarding-story-speaker").textContent).toBe("爱弥斯");
+    fireEvent.click(container.querySelector(".onboarding-story-single-action"));
+    expect(container.querySelector(".onboarding-story-modal")).toBe(stage);
+    expect(stage.classList.contains("standard-story-sprite")).toBe(true);
+    expect(stage.classList.contains("story-narration")).toBe(true);
+    expect(container.querySelector(".onboarding-story-speaker")).toBeNull();
+    expect(container.querySelector(".onboarding-story-portrait img")).toBeNull();
+    expect(container.textContent).toContain("棋盘上闪过彩虹。");
+    unmount();
+  });
   it("retries a previously failed expression after another expression without remounting the body", () => {
     const sprite = { characterId: "sigrika", appearanceId: "sigrika-standard-v1", text: "原台词" };
     const { container } = render(<StoryPlayerModal script={{ startNodeId: "a", nodes: [
@@ -37,7 +74,7 @@ describe("StoryPlayerModal interactions", () => {
     expect(image.src).toContain("/legacy.webp");
     fireEvent.click(container.querySelector(".onboarding-story-single-action"));
     expect(container.querySelector(".onboarding-story-portrait").childElementCount).toBe(0);
-    expect(container.querySelector(".standard-story-sprite")).toBeNull();
+    expect(container.querySelector(".standard-story-sprite.story-narration")).not.toBeNull();
     unmount();
   });
   it("clears the entire portrait area when character dialogue advances to narration", () => {

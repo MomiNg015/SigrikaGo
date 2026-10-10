@@ -51,6 +51,14 @@ function renderGrid(overrides = {}) {
 }
 
 describe("HouseCharacterGrid ordered portrait strips", () => {
+  it("uses a solid alpha mask for unavailable chibi members without exposing portrait images", () => {
+    const { container } = renderGrid({ characters: [CHARACTERS.sigrika], owned: new Set(), itemEffects: {} });
+    const silhouette = container.querySelector('.handbook-puzzle-silhouette');
+    expect(silhouette.style.maskImage).toContain('/handbook-chibi-sprites/sigrika-silhouette.webp');
+    expect(silhouette.style.WebkitMaskImage).toContain('/handbook-chibi-sprites/sigrika-silhouette.webp');
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByRole('button').disabled).toBe(true);
+  });
   it("preserves incoming order for owned and locked portraits without selecting a character", async () => {
     mockViewport(false);
     const characters = [CHARACTERS.denia, CHARACTERS.sigrika, CHARACTERS.aemeath];
@@ -283,32 +291,11 @@ describe("HouseCharacterGrid ordered portrait strips", () => {
   });
 });
 
-describe("HouseCharacterGrid candy effect cancellation", () => {
-  it("cancels from the candy icon without opening the character card", async () => {
-    const user = userEvent.setup();
-    const { onCancelCandyEffect, onOpenCharacterDetail } = renderGrid();
-
-    await user.click(screen.getByRole("button", {
-      name: "取消西格莉卡的彩虹豆豆跳跳糖效果中"
-    }));
-
-    expect(onCancelCandyEffect).toHaveBeenCalledOnce();
-    expect(onCancelCandyEffect).toHaveBeenCalledWith("sigrika");
-    expect(onOpenCharacterDetail).not.toHaveBeenCalled();
-  });
-
-  it("keeps Enter and Space cancellation isolated from the character card", async () => {
-    const user = userEvent.setup();
-    const { onCancelCandyEffect, onOpenCharacterDetail } = renderGrid();
-    const cancelButton = screen.getByRole("button", {
-      name: "取消西格莉卡的彩虹豆豆跳跳糖效果中"
-    });
-
-    cancelButton.focus();
-    await user.keyboard("{Enter}");
-    await user.keyboard(" ");
-
-    expect(onCancelCandyEffect).toHaveBeenCalledTimes(2);
-    expect(onOpenCharacterDetail).not.toHaveBeenCalled();
+describe("HouseCharacterGrid candy status", () => {
+  it("retains the rainbow rim without a handbook cancellation action", () => {
+    const { container } = renderGrid();
+    expect(container.querySelector('.character-candy-border')).not.toBeNull();
+    expect(container.querySelector('.character-item-effect-icon')).toBeNull();
+    expect(screen.queryByRole('button', { name: /取消.*糖果|取消.*彩虹/ })).toBeNull();
   });
 });

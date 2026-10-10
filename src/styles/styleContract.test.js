@@ -1720,7 +1720,8 @@ describe("root CSS entry contract", () => {
       "./onboarding-story/portrait-text.css",
       "./onboarding-story/actions-skip.css",
       "./onboarding-story/mobile.css",
-      "./onboarding-story/standard-sprite.css"
+      "./onboarding-story/standard-sprite.css",
+      "./onboarding-story/chibi-sprite.css"
     ]);
     expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
   });

@@ -56,13 +56,15 @@ export default function StoryPlayerModal({
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveStoryCharacter(node?.characterId, characters);
   const portraitPresentation = resolveStoryPortraitPresentation(node ?? {}, { character, user });
+  const narration = !node?.characterId;
+  const usesStoryStage = portraitPresentation.standard || narration;
   if (failedPortraitSource && failedPortraitSource !== portraitPresentation.src) setFailedPortraitSource("");
   const nodeElapsedMs = nodeTimer.nodeId === activeNodeId ? nodeTimer.elapsedMs : 0;
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
-  const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}${portraitPresentation.standard ? " standard-story-sprite" : ""}`;
+  const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}${usesStoryStage ? " standard-story-sprite" : ""}${narration ? " story-narration" : ""}`;
   const portraitKey = `${node?.characterId || ""}:${portraitPresentation.appearanceId || portraitPresentation.src}`;
   const availablePortraitNodes = portraitNodes ?? script?.nodes ?? [];
   const portraitUrls = useMemo(
@@ -71,7 +73,7 @@ export default function StoryPlayerModal({
   );
 
   useStoryLayoutEffect(() => {
-    if (!compressPortrait || !portraitPresentation.standard) return undefined;
+    if (!compressPortrait || !usesStoryStage) return undefined;
     const modal = modalRef.current;
     const dialogue = modal?.querySelector(".onboarding-story-dialogue");
     if (!dialogue) return undefined;
@@ -99,7 +101,7 @@ export default function StoryPlayerModal({
       window.removeEventListener("resize", measure);
       modal.style.removeProperty("--story-dialogue-content-height");
     };
-  }, [activeNodeId, compressPortrait, portraitPresentation.standard]);
+  }, [activeNodeId, compressPortrait, usesStoryStage]);
 
   useStoryLayoutEffect(() => {
     setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
@@ -234,7 +236,7 @@ export default function StoryPlayerModal({
 
   return (
     <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
-      <section ref={modalRef} className={modalClassName} style={{ "--story-character-color": character.palette || "var(--bs-pink, Highlight)" }} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
+      <section ref={modalRef} className={modalClassName} style={{ "--story-character-color": character.palette || "var(--bs-pink, Highlight)" }} data-story-presentation={narration ? "chibi" : portraitPresentation.presentation} data-story-effect={node.effect || undefined} onClick={handleModalClick} aria-label={textLabels.title}>
         {dismissible && <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
           <FastForward size={22} />
         </button>}
@@ -248,21 +250,25 @@ export default function StoryPlayerModal({
           aria-label={character.name || node.speakerName || ""}
         >
           {portraitPresentation.src && (
-            <img
-              key={portraitKey}
-              className={portraitPresentation.standard ? "story-character-sprite" : undefined}
-              src={failedPortraitSource === portraitPresentation.src ? portraitPresentation.fallbackSrc : portraitPresentation.src}
-              data-story-fallback={failedPortraitSource === portraitPresentation.src || undefined}
-              style={portraitPresentation.style}
-              alt=""
-              aria-hidden="true"
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
-              onError={() => {
-                if (portraitPresentation.fallbackSrc && portraitPresentation.fallbackSrc !== portraitPresentation.src) setFailedPortraitSource(portraitPresentation.src);
-              }}
-            />
+            <picture key={portraitKey}>
+              {portraitPresentation.stillSrc && failedPortraitSource !== portraitPresentation.src && (
+                <source media="(prefers-reduced-motion: reduce)" srcSet={portraitPresentation.stillSrc} />
+              )}
+              <img
+                className={portraitPresentation.standard ? "story-character-sprite" : undefined}
+                src={failedPortraitSource === portraitPresentation.src ? portraitPresentation.fallbackSrc : portraitPresentation.src}
+                data-story-fallback={failedPortraitSource === portraitPresentation.src || undefined}
+                style={portraitPresentation.style}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                decoding="sync"
+                fetchPriority="high"
+                onError={() => {
+                  if (portraitPresentation.fallbackSrc && portraitPresentation.fallbackSrc !== portraitPresentation.src) setFailedPortraitSource(portraitPresentation.src);
+                }}
+              />
+            </picture>
           )}
           {!portraitPresentation.standard && (node.speakerName || character.name) && (
             <div>

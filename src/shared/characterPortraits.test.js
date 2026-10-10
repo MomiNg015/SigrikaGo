@@ -108,13 +108,31 @@ describe("resolveCharacterPortrait", () => {
     });
   });
 
-  it("does not change normal Sigrika or unrelated characters", () => {
+  it("uses chibi for builtin Sigrika while preserving unrelated custom art", () => {
     expect(resolveCharacterPortrait({
       id: "sigrika",
       portrait: "/assets/characters/portraits/sigrika.webp"
-    })).toBe("/assets/characters/portraits/sigrika.webp");
+    })).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(resolveCharacterPortrait(character, {
       user: { sigrikaCandyArc: { corrupted: true } }
     })).toBe(character.portrait);
+  });
+});
+
+
+describe("builtin default chibi presentation", () => {
+  it.each(["sigrika", "denia", "aemeath", "lynae", "mornye", "chisa", "changli", "qiuyuan", "nabomo"])("resolves %s full art and a readable avatar", id => {
+    expect(resolveCharacterPortrait({ id })).toBe(`/assets/characters/handbook-chibi-sprites/${id}.webp`);
+    expect(resolveCharacterPortrait({ id }, { variant: "avatar" })).toBe(`/assets/characters/handbook-chibi-sprites/${id}-avatar.webp`);
+  });
+  it("preserves authored equipment even when its URL matches a builtin portrait", () => {
+    const src = "/assets/characters/portraits/sigrika.webp";
+    expect(resolveCharacterPortrait({ id: "sigrika", portrait: src }, {
+      variant: "avatar", costumeSnapshot: { portraitUrl: src }
+    })).toBe(src);
+  });
+  it("keeps custom, bot and unsupported artwork untouched in avatar mode", () => {
+    expect(resolveCharacterPortrait({ id: "sigrika", portrait: "/uploads/custom.png" }, { variant: "avatar" })).toBe("/uploads/custom.png");
+    expect(resolveCharacterPortrait({ id: "bot", portrait: "/bot.png" }, { variant: "avatar" })).toBe("/bot.png");
   });
 });

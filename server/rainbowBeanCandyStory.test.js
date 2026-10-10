@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { applyAuthoredGuideExpressions } from "../src/shared/authoredGuideExpressions.js";
+import { storySpriteSelectionError, resolveStoryPortraitPresentation } from "../src/shared/characterStorySprites.js";
+import { DENIA_CANDY_PORTRAIT_ASSET } from "../src/shared/characterPortraitAssetCatalog.js";
+import { toAdminStoryScriptPayload, toPlayerStoryScriptPayload, interpolateStoryScript } from "./storyScripts.js";
 import {
   defaultRainbowBeanCandyStoryDraft,
   RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY,
@@ -7,6 +11,75 @@ import {
 } from "./rainbowBeanCandyStory.js";
 
 describe("rainbow bean candy story", () => {
+  it("applies authored expressions to all implemented ordinary dialogue without changing story content", () => {
+    const counts = { sigrika: 5, denia: 5, aemeath: 14, lynae: 15 };
+    for (const [characterId, count] of Object.entries(counts)) {
+      const draft = defaultRainbowBeanCandyStoryDraft(characterId);
+      const snapshot = structuredClone(draft.nodes);
+      const nodes = applyAuthoredGuideExpressions(draft.nodes, `item.rainbow-bean-candy.${characterId}`);
+      const lines = nodes.filter((node) => node.appearanceId);
+      expect(lines).toHaveLength(count);
+      expect(new Set(lines.map((node) => node.expressionId)).size).toBeGreaterThan(2);
+      for (const node of lines) {
+        expect(storySpriteSelectionError(node)).toBe("");
+        expect(resolveStoryPortraitPresentation(node).src).toContain(`/story-sprites/${characterId}/`);
+      }
+      expect(nodes.map(({ appearanceId: _appearance, expressionId: _expression, ...node }) => node)).toEqual(snapshot);
+      expect(draft.nodes).toEqual(snapshot);
+      expect(nodes.filter((node) => !node.characterId).every((node) => !Object.hasOwn(node, "appearanceId"))).toBe(true);
+      const ordinaryLines = nodes.filter((node) => node.characterId === characterId && !node.text.includes("占位"));
+      expect(ordinaryLines.every((node) => node.appearanceId)).toBe(true);
+    }
+  });
+
+  it("keeps special candy portraits and corruption placeholders independent of ordinary expressions", () => {
+    const denia = applyAuthoredGuideExpressions(defaultRainbowBeanCandyStoryDraft("denia").nodes, "item.rainbow-bean-candy.denia");
+    const rainbow = denia.filter((node) => node.characterId === "denia-rainbow-glow");
+    expect(rainbow).toHaveLength(3);
+    for (const node of rainbow) {
+      expect(Object.hasOwn(node, "appearanceId")).toBe(false);
+      expect(resolveStoryPortraitPresentation(node).src).toBe(DENIA_CANDY_PORTRAIT_ASSET.storyUrl);
+    }
+    const sigrika = applyAuthoredGuideExpressions(defaultRainbowBeanCandyStoryDraft("sigrika").nodes, "item.rainbow-bean-candy.sigrika");
+    expect(sigrika.find((node) => node.id === "corruption-climax")).not.toHaveProperty("expressionId");
+  });
+
+  it("respects admin choices and applies defaults only to the original script, node, role and text", () => {
+    const scriptKey = "item.rainbow-bean-candy.aemeath";
+    const line = defaultRainbowBeanCandyStoryDraft("aemeath").nodes.find((node) => node.id === "rejected-record");
+    expect(applyAuthoredGuideExpressions([line], scriptKey)[0].expressionId).toBe("wink");
+    for (const edited of [
+      { ...line, text: `${line.text}（修改）` },
+      { ...line, characterId: "lynae" },
+      { ...line, id: "custom-node" },
+      { ...line, appearanceId: "", expressionId: "" },
+      { ...line, appearanceId: "aemeath-standard-v1", expressionId: "serious" }
+    ]) {
+      expect(applyAuthoredGuideExpressions([edited], scriptKey)[0]).toBe(edited);
+    }
+    expect(applyAuthoredGuideExpressions([line], "custom.candy")[0]).toBe(line);
+  });
+
+  it("presents expressions in existing published records and admin drafts before username interpolation", () => {
+    for (const characterId of ["sigrika", "denia", "aemeath", "lynae"]) {
+      const draft = defaultRainbowBeanCandyStoryDraft(characterId);
+      const record = {
+        key: `item.rainbow-bean-candy.${characterId}`, isPublished: true,
+        draftStartNodeId: draft.startNodeId, publishedStartNodeId: draft.startNodeId,
+        draftNodesJson: JSON.stringify(draft.nodes), publishedNodesJson: JSON.stringify(draft.nodes)
+      };
+      const stored = structuredClone(record);
+      const admin = toAdminStoryScriptPayload(record);
+      const player = toPlayerStoryScriptPayload(record);
+      expect(player.nodes).toEqual(admin.draft.nodes);
+      expect(player.nodes).toEqual(admin.published.nodes);
+      expect(record).toEqual(stored);
+      const interpolated = interpolateStoryScript(player, { username: "测试部员" });
+      expect(interpolated.nodes.map((node) => node.expressionId)).toEqual(player.nodes.map((node) => node.expressionId));
+      expect(interpolated.nodes.every((node) => !node.text.includes("{username}"))).toBe(true);
+    }
+  });
+
   it("always accepts for Sigrika and keeps a strict 35 percent rejection boundary for the other supported characters", () => {
     expect(RAINBOW_BEAN_CANDY_REJECTION_PROBABILITY).toBe(0.35);
     expect(rollRainbowBeanCandyOutcome("sigrika", () => 0)).toBe("accepted");

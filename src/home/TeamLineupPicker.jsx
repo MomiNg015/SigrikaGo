@@ -1,10 +1,11 @@
+import { activeCharacterItemEffects } from "../shared/characterCandyEffects.js";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { ModalDialog, ModalActionButton } from "../modals/modalComponents.jsx";
 import { characterListFromCatalog } from "../shared/characters.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import MatchCharacterPortrait from "./MatchCharacterPortrait.jsx";
-import MatchCharacterCardContent from "./MatchCharacterCardContent.jsx";
+import MatchCharacterOption from "./MatchCharacterOption.jsx";
 import { characterSortieDisabledReason } from "../modals/house/houseStats.js";
 import { normalizeTeamLineup } from "../shared/teamMatch.js";
 import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
@@ -17,7 +18,14 @@ export function availableTeamCharacters(user, characters) {
     && character.enabled !== false && !characterSortieDisabledReason(character.id, user.itemEffects));
 }
 
-export default function TeamLineupPicker({ user, characters, onClose, onStart, initialLineup, onChange, onConfirm }) {
+export function candyBlockedCharacters(user, characters, available) {
+  const ids = new Set(available.map(character => character.id));
+  return characterListFromCatalog(characters).filter(character => character.enabled !== false
+    && user.ownedCharacters?.includes(character.id) && !ids.has(character.id)
+    && activeCharacterItemEffects(character.id, user.itemEffects).length);
+}
+
+export default function TeamLineupPicker({ user, characters, onClose, onStart, initialLineup, onChange, onConfirm, cancellation }) {
   const available = availableTeamCharacters(user, characters);
   const availableIds = new Set(available.map((character) => character.id));
   const storageKey = `sigrika-team-lineup:${user.id}`;
@@ -46,9 +54,12 @@ export default function TeamLineupPicker({ user, characters, onClose, onStart, i
       </div>
       <div className="team-lineup-content">
       <div className="team-character-options">
-        {available.map((character) => <button className="team-character-option" type="button" key={character.id} aria-label={character.name} aria-pressed={lineup.includes(character.id)} disabled={lineup.length === 3 && !lineup.includes(character.id)} onClick={() => update(lineup.includes(character.id) ? lineup.filter((id) => id !== character.id) : [...lineup, character.id])}>
-          <MatchCharacterCardContent character={character} user={user} />{lineup.includes(character.id) && <b className="team-order-badge" aria-label={`第${lineup.indexOf(character.id) + 1}位`}>{lineup.indexOf(character.id) + 1}</b>}
-        </button>)}
+        {[...available, ...candyBlockedCharacters(user, characters, available)].map((character) => <MatchCharacterOption
+          key={character.id} character={character} user={user} selected={lineup.includes(character.id)}
+          disabled={!availableIds.has(character.id) || (lineup.length === 3 && !lineup.includes(character.id))}
+          cancellation={cancellation} onSelect={() => update(lineup.includes(character.id) ? lineup.filter((id) => id !== character.id) : [...lineup, character.id])}>
+          {lineup.includes(character.id) && <b className="team-order-badge" aria-label={`第${lineup.indexOf(character.id) + 1}位`}>{lineup.indexOf(character.id) + 1}</b>}
+        </MatchCharacterOption>)}
       </div>
       </div>
       <ModalActionButton disabled={lineup.length !== 3} onClick={() => onConfirm ? onConfirm(lineup) : onStart("team", lineup)}>{onConfirm ? "完成选人" : "开始匹配"}</ModalActionButton>

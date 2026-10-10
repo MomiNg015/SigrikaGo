@@ -168,11 +168,11 @@ describe("character portrait normalization", () => {
 
     expect(validation.ok).toBe(true);
     expect(validation.animation).toMatchObject({
-      pages: 16,
+      pages: 24,
       pageHeight: PORTRAIT_CANVAS_SIZE,
       loop: 0
     });
-    expect(validation.animation.delay).toEqual(Array(16).fill(70));
+    expect(validation.animation.delay).toEqual(Array(24).fill(60));
   });
 
   it("skips remote URLs without trying to read or write them", async () => {

@@ -8,38 +8,7 @@ import { recordWinnerColor } from "../../shared/gameRecords.js";
 import { SYSTEM_VOICE_EVENTS } from "../../shared/systemVoices.js";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
 
-export const RAINBOW_BEAN_CANDY_ICON = "/assets/items/rainbow-bean-candy.webp";
-
-const CHARACTER_ITEM_EFFECT_BADGES = [
-  {
-    characterId: "aemeath",
-    effectKey: "aemeathRainbowMove",
-    itemId: "rainbow-bean-candy",
-    label: "彩虹落子模式",
-    icon: RAINBOW_BEAN_CANDY_ICON
-  },
-  {
-    characterId: "sigrika",
-    effectKey: "sigrikaCandyDisabled",
-    itemId: "rainbow-bean-candy",
-    label: "彩虹豆豆跳跳糖效果中",
-    icon: RAINBOW_BEAN_CANDY_ICON
-  },
-  {
-    characterId: "denia",
-    effectKey: "deniaRainbowGlow",
-    itemId: "rainbow-bean-candy",
-    label: "彩虹豆豆跳跳糖效果中",
-    icon: RAINBOW_BEAN_CANDY_ICON
-  },
-  {
-    characterId: "lynae",
-    effectKey: "lynaeContraryVoice",
-    itemId: "rainbow-bean-candy",
-    label: "反话语音模式",
-    icon: RAINBOW_BEAN_CANDY_ICON
-  }
-];
+export { RAINBOW_BEAN_CANDY_ICON, activeCharacterItemEffects } from "../../shared/characterCandyEffects.js";
 
 export function deriveCharacterRecordStats(user = {}, records = [], characters = []) {
   const owned = new Set((user.ownedCharacters ?? []).map(canonicalCharacterId));
@@ -81,13 +50,6 @@ export function characterCandyPortrait(character = {}, itemEffects = {}, user = 
 
 export function characterCandyPortraitProps(character = {}, itemEffects = {}, user = null) {
   return characterPortraitImageProps(character, { itemEffects, user });
-}
-
-export function activeCharacterItemEffects(characterId, itemEffects = {}) {
-  const canonicalId = canonicalCharacterId(characterId);
-  return CHARACTER_ITEM_EFFECT_BADGES.filter((effect) => (
-    effect.characterId === canonicalId && itemEffects?.[effect.effectKey]
-  ));
 }
 
 export function selectSortieCharacter({

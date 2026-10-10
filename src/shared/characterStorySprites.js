@@ -5,17 +5,31 @@ const labels = Object.freeze({
   original: "原始表情", smile: "微笑", closed_smile: "闭眼开心", thinking: "思考",
   serious: "认真", surprised: "惊讶", worried: "担忧", embarrassed: "害羞",
   angry: "生气", playful: "俏皮", sleepy: "困倦", annoyed: "不满",
-  wink: "眨眼", wry: "无奈"
+  wink: "眨眼", wry: "无奈", sad: "委屈", reassuring: "安慰",
+  puzzled: "疑惑", determined: "坚定", confident: "自信"
 });
+
+const chibiExpressions = ["original", "smile", "serious", "surprised", "worried", "sad", "angry", "embarrassed", "closed_smile", "thinking"];
+const completeHeadCrop = { left: 0, top: 0, width: 832, height: 832 };
 
 export const CHARACTER_STORY_SPRITES = Object.freeze({
-  sigrika: profile("sigrika", "西格莉卡", "sigrika-sprite-expressions", "sigrika-", ["smile", "closed_smile", "thinking", "serious", "surprised", "worried", "embarrassed", "angry", "original"], { left: 205, top: 0, width: 400, height: 400 }),
-  denia: profile("denia", "达妮娅", "denia-sprite-expressions", "", ["smile", "closed_smile", "playful", "sleepy", "thinking", "surprised", "annoyed", "serious", "original"], { left: 220, top: 0, width: 420, height: 420 }),
-  aemeath: profile("aemeath", "爱弥斯", "amis-sprite-expressions", "", ["smile", "closed_smile", "wink", "surprised", "thinking", "wry", "annoyed", "serious", "original"], { left: 214, top: 0, width: 376, height: 376 })
+  sigrika: profile("sigrika", "西格莉卡", "sigrika-chibi-v1", "", ["smile", "closed_smile", "thinking", "serious", "surprised", "worried", "embarrassed", "angry", "original", "sad"], { left: 140, top: 100, width: 520, height: 520 }, { presentation: "chibi", sourceExpressions: { closed_smile: "smile", thinking: "serious" } }),
+  denia: profile("denia", "达妮娅", "denia-chibi-v1", "", ["smile", "closed_smile", "playful", "sleepy", "thinking", "surprised", "annoyed", "serious", "original", "worried", "sad", "angry", "embarrassed"], { left: 190, top: 100, width: 540, height: 540 }, { presentation: "chibi", sourceExpressions: { closed_smile: "smile", playful: "smile", sleepy: "sad", thinking: "serious", annoyed: "angry" } }),
+  aemeath: chibiProfile("aemeath", "爱弥斯", ["wink", "wry", "annoyed"], { annoyed: "angry" }),
+  lynae: chibiProfile("lynae", "琳奈", ["wink", "playful"]),
+  mornye: chibiProfile("mornye", "莫宁", ["sleepy", "reassuring"]),
+  chisa: chibiProfile("chisa", "千咲", ["puzzled", "determined"]),
+  changli: chibiProfile("changli", "长离", ["playful", "confident"]),
+  qiuyuan: chibiProfile("qiuyuan", "秋远", ["determined", "wry"]),
+  nabomo: chibiProfile("nabomo", "纳波莫", ["wink", "sleepy"])
 });
 
-function profile(characterId, name, sourcePackage, sourcePrefix, expressions, avatarCrop) {
-  return Object.freeze({ characterId, name, appearanceId: `${characterId}-standard-v1`, sourcePackage, sourcePrefix, expressions: Object.freeze(expressions), avatarCrop: Object.freeze(avatarCrop), width: 832, height: 1216 });
+function chibiProfile(characterId, name, extraExpressions, sourceExpressions = {}) {
+  return profile(characterId, name, `${characterId}-chibi-v1`, "", [...chibiExpressions, ...extraExpressions], completeHeadCrop, { presentation: "chibi", sourceExpressions });
+}
+
+function profile(characterId, name, sourcePackage, sourcePrefix, expressions, avatarCrop, { presentation = "standard", sourceExpressions = {} } = {}) {
+  return Object.freeze({ characterId, name, appearanceId: `${characterId}-standard-v1`, sourcePackage, sourcePrefix, expressions: Object.freeze(expressions), avatarCrop: Object.freeze(avatarCrop), presentation, sourceExpressions: Object.freeze(sourceExpressions), width: 832, height: 1216 });
 }
 
 export function storySpriteProfile(characterId) {
@@ -66,15 +80,17 @@ export function resolveStoryCharacter(characterId, characters = {}) {
   return { ...character, portraitUrl: character.portraitUrl || character.portrait || character.imageUrl || "" };
 }
 
-export function resolveStoryPortraitPresentation(node = {}, { characters = {}, character = null, user = null, variant = "illustration" } = {}) {
+export function resolveStoryPortraitPresentation(node = {}, { characters = {}, character = null, variant = "illustration" } = {}) {
   const resolved = character ?? resolveStoryCharacter(node.characterId, characters);
   const entry = storySpriteProfile(node.characterId);
-  const legacy = resolveCharacterPortraitPresentation({ ...resolved, id: entry?.characterId ?? node.characterId }, { user, itemEffects: user?.itemEffects });
-  const specialState = (entry?.characterId === "sigrika" && user?.sigrikaCandyArc?.corrupted === true)
-    || (entry?.characterId === "denia" && user?.itemEffects?.deniaRainbowGlow);
-  if (!entry || node.appearanceId !== entry.appearanceId || storySpriteSelectionError(node) || specialState) {
-    return { ...legacy, standard: false, appearanceId: "", expressionId: "", fallbackSrc: legacy.src };
+  // Story actors have script-owned appearances, independent of account equipment/effects.
+  const legacy = resolveCharacterPortraitPresentation({ ...resolved, id: entry?.characterId ?? node.characterId }, { variant: variant === "avatar" ? "avatar" : "full" });
+  if (!entry || node.appearanceId !== entry.appearanceId || storySpriteSelectionError(node)) {
+    const presentation = resolved.presentation === "chibi" ? "chibi" : legacy.presentation;
+    return { ...legacy, presentation, standard: presentation === "chibi", appearanceId: "", expressionId: "",
+      ...(resolved.stillPortraitUrl ? { stillSrc: resolved.stillPortraitUrl } : {}),
+      fallbackSrc: resolved.fallbackPortraitUrl || legacy.src };
   }
   const expressionId = node.expressionId || "smile";
-  return { src: storySpriteUrl(entry.characterId, expressionId, variant), fallbackSrc: legacy.src, standard: true, appearanceId: entry.appearanceId, expressionId, style: undefined };
+  return { src: storySpriteUrl(entry.characterId, expressionId, variant), fallbackSrc: legacy.src, standard: true, presentation: entry.presentation, appearanceId: entry.appearanceId, expressionId, style: undefined };
 }

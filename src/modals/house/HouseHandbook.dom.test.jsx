@@ -70,7 +70,7 @@ describe("member handbook pages", () => {
       "未拥有角色", "未拥有角色", "未拥有角色", "未拥有角色"
     ]);
     const sigrika = screen.getByRole("button", { name: "西格莉卡角色详情", exact: true });
-    expect(sigrika.querySelector("img").getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(sigrika.querySelector("img").getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     await user.click(sigrika);
     const detail = screen.getByRole("dialog", { name: "西格莉卡角色详情", exact: true });
     expect(within(detail).getByText("星辉符文")).toBeTruthy();

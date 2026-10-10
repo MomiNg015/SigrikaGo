@@ -4,6 +4,7 @@ import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
+import CharacterCandyBorder from "../../shared/CharacterCandyBorder.jsx";
 import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 import { CHARACTER_FACTIONS as HANDBOOK_FACTIONS, FACTION_EMBLEMS } from "../../shared/characterFactions.js";
 
@@ -21,8 +22,7 @@ export default function HouseCharacterGrid(props) {
   const [page, setPage] = useState(0);
   const [expanded, setExpanded] = useState(null);
   const { panelId, labelledBy, characters, owned, itemEffects, user, sigrikaCorrupted,
-    onOpenCharacterDetail, candyEffectCancellationEnabled,
-    cancellingCandyEffect, onCancelCandyEffect } = props;
+    onOpenCharacterDetail } = props;
   useEffect(() => {
     const media = window.matchMedia?.("(max-width: 768px)");
     if (!media) return undefined;
@@ -76,7 +76,7 @@ export default function HouseCharacterGrid(props) {
           const isOwned = owned.has(id);
           const hideIntel = id === "baconbits" && !isOwned;
           const isExpanded = isOwned && expanded === character.id;
-          const portrait = hideIntel ? null : resolveHandbookPortrait(character, { itemEffects, user });
+          const portrait = hideIntel ? null : resolveHandbookPortrait(character, { itemEffects, user, chibi: true });
           const catalogIndex = currentPage * HANDBOOK_STRIP_PAGE_SIZE + index;
           const artStyle = portrait && handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length, index: catalogIndex });
           const effects = isOwned ? activeCharacterItemEffects(id, itemEffects) : [];
@@ -108,6 +108,7 @@ export default function HouseCharacterGrid(props) {
               disabled={!isOwned}
               data-character-key={character.id}
               aria-label={isOwned ? `${character.name}角色详情` : hideIntel ? "暂无情报" : "未拥有角色"}
+              aria-description={effects.length ? effects.map(effect => effect.label).join("，") : undefined}
               aria-expanded={isExpanded} title={isOwned ? character.name : undefined} data-ui-sound="none"
               data-home-guide={isOwned && id === "sigrika" ? "sigrika-card" : undefined}
               onPointerDown={(event) => {
@@ -178,20 +179,13 @@ export default function HouseCharacterGrid(props) {
                   alt="" decoding="async" draggable="false" />
               </span> : <>
                 <span className="handbook-puzzle-silhouette" style={{ ...artStyle,
-                  maskImage: `url("${portrait.src}")`, WebkitMaskImage: `url("${portrait.src}")` }} />
+                  maskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")`, WebkitMaskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")` }} />
                 <span className="handbook-puzzle-question">?</span>
               </>}
               {isOwned && <span className="handbook-strip-name">{character.name}</span>}
+              {effects.length > 0 && <CharacterCandyBorder />}
             </button>
-            {effects.length > 0 && <div className={`character-item-effect-badges handbook-puzzle-effects${candyEffectCancellationEnabled ? " is-interactive" : ""}`}
-              aria-label={`${character.name}道具效果`}>
-              {effects.map((effect) => candyEffectCancellationEnabled ? <button key={effect.effectKey}
-                type="button" className="character-item-effect-cancel" aria-label={`取消${character.name}的${effect.label}`}
-                title="点击取消效果（仅开发环境）" disabled={cancellingCandyEffect === id}
-                onClick={() => onCancelCandyEffect?.(id)}>
-                <img className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} />
-              </button> : <img key={effect.effectKey} className="character-item-effect-icon" src={effect.icon} alt={effect.label} title={effect.label} />)}
-            </div>}
+
           </div>;
         })}
       </div>

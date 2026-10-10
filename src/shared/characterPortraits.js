@@ -1,3 +1,4 @@
+import { characterChibiSource, isBuiltinCharacterPortrait } from "./characterChibiPortraits.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
@@ -10,7 +11,8 @@ export function resolveCharacterPortraitPresentation(character = {}, {
   itemEffects = {},
   user = null,
   equippedCostumes = null,
-  costumeSnapshot = null
+  costumeSnapshot = null,
+  variant = "full"
 } = {}) {
   const characterId = canonicalCharacterId(character.id ?? character.slug);
   const costume = costumeSnapshot
@@ -32,6 +34,9 @@ export function resolveCharacterPortraitPresentation(character = {}, {
     || character.portraitUrl
     || character.portrait
     || "";
+  if (!costume?.portraitUrl && isBuiltinCharacterPortrait(characterId, portraitUrl)) {
+    return { ...portraitPresentation(characterChibiSource(characterId, variant)), presentation: "chibi" };
+  }
   return portraitPresentation(portraitUrl, costume?.portraitUrl ? costume : null);
 }
 

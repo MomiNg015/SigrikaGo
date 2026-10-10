@@ -73,3 +73,36 @@
     padding: 8px 10px 12px 6px;
   }
 }
+
+.match-character-option-wrap { position: relative; min-width: 0; }
+.match-character-option-wrap > .team-character-option { width: 100%; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-character-option-wrap > .match-character-candy-cancel {
+  position: absolute;
+  left: -6px;
+  top: -18px;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--bright-ink, #3d2b25);
+  box-shadow: none !important;
+}
+.match-character-candy-cancel::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  background: var(--bright-paper, #fffdf8);
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  z-index: -1;
+}
+.match-character-candy-cancel[aria-disabled="true"] { opacity: .55; cursor: wait; }
+.match-character-candy-cancel:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.match-character-picker, .team-lineup-picker) .team-character-options { padding-top: 30px; }

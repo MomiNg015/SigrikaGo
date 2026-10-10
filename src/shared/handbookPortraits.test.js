@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { CHARACTER_ALIASES } from "./characterAliases.js";
 import {
   CHARACTER_PORTRAIT_ASSETS,
+  DENIA_CANDY_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET,
 } from "./characterPortraitAssetCatalog.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
@@ -28,6 +29,18 @@ function builtinCharacter(id) {
 }
 
 describe("resolveHandbookPortrait default sources", () => {
+  it.each(standardIds)("selects Q landmarks for builtin %s while retaining explicit legacy compatibility", (id) => {
+    const chibi = resolveHandbookPortrait(builtinCharacter(id), { chibi: true });
+    expect(chibi.src).toBe(`/assets/characters/handbook-chibi-sprites/${id}.webp`);
+    expect(chibi.isChibi).toBe(true);
+    expect(chibi.headWidth).toBeGreaterThan(500);
+    expect(resolveHandbookPortrait(builtinCharacter(id)).src).toBe(`/assets/characters/handbook-sprites/${id}.webp`);
+    const custom = resolveHandbookPortrait({ id, portrait: '/custom.webp' }, { chibi: true });
+    expect(custom.src).toBe('/custom.webp');
+    expect(custom.isStandard).toBe(false);
+    const costume = resolveHandbookPortrait(builtinCharacter(id), { chibi: true, equippedCostumes: { [id]: { portraitUrl: '/costume.webp' } } });
+    expect(costume.src).toBe('/costume.webp');
+  });
   it.each(standardIds)("uses the shared full-body sprite and dimensions for builtin %s", (id) => {
     const asset = CHARACTER_PORTRAIT_ASSETS[id];
     for (const portrait of [asset.url, asset.legacyUrl, undefined]) {
@@ -84,6 +97,19 @@ describe("resolveHandbookPortrait default sources", () => {
 });
 
 describe("resolveHandbookPortrait runtime priorities", () => {
+  it("uses native chibi geometry for base rainbow art above ordinary costume framing", () => {
+    const plain = resolveHandbookPortrait(builtinCharacter('denia'), { chibi: true });
+    for (const user of [null, { equippedCostumes: { denia: { portraitUrl: '/costume.webp', ...framing } } }]) {
+      const rainbow = resolveHandbookPortrait(builtinCharacter('denia'), { chibi: true, user, itemEffects: { deniaRainbowGlow: true } });
+      expect(rainbow).toMatchObject({ src: DENIA_CANDY_PORTRAIT_ASSET.storyUrl, fallbackSrc: DENIA_CANDY_PORTRAIT,
+        isChibi: true, isStandard: true, width: 832, height: 1216,
+        focal: plain.focal, headWidth: plain.headWidth, bodyTop: plain.bodyTop, bodyBottom: plain.bodyBottom });
+      expect(rainbow.style).toBeUndefined();
+    }
+    const costume = resolveHandbookPortrait(builtinCharacter('denia'), { chibi: true, itemEffects: { deniaRainbowGlow: true },
+      costumeSnapshot: { candyEffectPortraitUrl: '/costume-candy.webp', ...framing } });
+    expect(costume).toMatchObject({ src: '/costume-candy.webp', isStandard: false, style: expectedStyle });
+  });
   it("keeps the legacy effective source available after a standard sprite failure", () => {
     expect(resolveHandbookPortrait(builtinCharacter("sigrika")).fallbackSrc)
       .toBe(CHARACTER_PORTRAIT_ASSETS.sigrika.url);

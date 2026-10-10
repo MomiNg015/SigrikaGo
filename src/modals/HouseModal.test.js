@@ -50,7 +50,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
     expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
     expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.webp" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
-    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/sigrika_centered.webp");
+    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
   });
 
   it("splits profile record text into total games and result counts", () => {
@@ -176,7 +176,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(likedHtml).not.toContain("个性化");
   });
 
-  it("marks house character cards with active item effect icons", () => {
+  it("marks house character cards with active candy borders", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,
       deniaRainbowGlow: true,
@@ -234,12 +234,11 @@ describe("deriveCharacterRecordStats", () => {
         icon: "/assets/items/rainbow-bean-candy.webp"
       })
     ]);
-    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(4);
-    expect(html).toContain("src=\"/assets/items/rainbow-bean-candy.webp\"");
-    expect(html).toContain("alt=\"彩虹豆豆跳跳糖效果中\"");
-    expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
-    expect(html).toContain("title=\"彩虹落子模式\"");
-    expect(html).toContain("title=\"反话语音模式\"");
+    expect(html.match(/class="character-candy-border"/g)).toHaveLength(4);
+    expect(html).not.toContain("character-item-effect-icon");
+    expect(html).toContain("彩虹豆豆跳跳糖效果中");
+    expect(html).toContain("彩虹落子模式");
+    expect(html).toContain("反话语音模式");
   });
 
   it("hides character chain badges in the house manual character grid", () => {
@@ -317,7 +316,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html.match(/class="handbook-puzzle-piece\b/g)).toHaveLength(10);
     for (const id of Object.keys(CHARACTERS).filter(id => id !== "baconbits")) {
-      expect(html).toContain(`src="/assets/characters/handbook-sprites/${id}.webp"`);
+      expect(html).toContain(`src="/assets/characters/handbook-chibi-sprites/${id}.webp"`);
     }
     expect(html).toContain(`src="${CHARACTERS.baconbits.portrait}"`);
     expect(html).not.toContain("sortie-button");
@@ -340,9 +339,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain('src="/assets/custom-costume.webp"');
     expect(html).toContain("scale:1.15");
     expect(html).toContain("translate:8% -7%");
-    expect(html).toContain(`src="${DENIA_CANDY_PORTRAIT}"`);
-    expect(html).not.toContain("/assets/characters/handbook-sprites/sigrika.webp");
-    expect(html).not.toContain("/assets/characters/handbook-sprites/denia.webp");
+    expect(html).toContain('src="/assets/characters/story-sprites/denia/rainbow-spray.webp"');
+    expect(html).not.toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
+    expect(html).not.toContain("/assets/characters/handbook-chibi-sprites/denia.webp");
   });
 
   it("plays the selected character sortie voice before selecting the character", () => {

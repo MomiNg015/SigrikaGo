@@ -1,7 +1,9 @@
 import { AUTHORED_GUIDE_EXPRESSIONS } from "./authoredGuideExpressionsData.js";
+import { AUTHORED_CANDY_EXPRESSIONS } from "./authoredCandyExpressionsData.js";
 import { storySpriteProfile } from "./characterStorySprites.js";
 
 const groups = {
+  ...AUTHORED_CANDY_EXPRESSIONS,
   "onboarding.default": [...AUTHORED_GUIDE_EXPRESSIONS.onboarding, ...AUTHORED_GUIDE_EXPRESSIONS.legacy],
   "home.onboarding": AUTHORED_GUIDE_EXPRESSIONS.home
 };

@@ -1,8 +1,15 @@
 import { resolveHandbookPortrait } from "../shared/handbookPortraits.js";
 
 export default function MatchCharacterPortrait({ character, user, avatar = false, framed = false }) {
-  const portrait = resolveHandbookPortrait(character, { user, itemEffects: user.itemEffects });
+  const portrait = resolveHandbookPortrait(character, { user, itemEffects: user.itemEffects, chibi: true });
   if (!portrait.isStandard) return <img src={portrait.src} style={portrait.style} alt={character.name} />;
+  if (portrait.isChibi) {
+    // Selection photos show the outfit; small round slots show the complete head.
+    const height = avatar ? portrait.width : portrait.height;
+    return <svg className="match-character-portrait" viewBox={`-24 -24 ${portrait.width + 48} ${height + 48}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={character.name}>
+      <image href={portrait.src} width={portrait.width} height={portrait.height} />
+    </svg>;
+  }
   const width = avatar ? portrait.headWidth * 1.45 : portrait.cropWidth;
   // Match the taller photo window so raising it does not also zoom the face.
   const cropHeight = framed ? width * (0.72 * 4 / 3 / 0.82) : width;

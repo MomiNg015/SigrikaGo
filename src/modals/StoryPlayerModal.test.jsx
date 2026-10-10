@@ -87,7 +87,8 @@ describe("StoryPlayerModal", () => {
     }));
 
     expect(html).toContain("发彩虹光的达妮娅");
-    expect(html).toContain("/assets/characters/portraits/denia-candy.webp");
+    expect(html).toContain("/assets/characters/story-sprites/denia/rainbow-spray.webp");
+    expect(html).toContain('data-story-presentation="chibi"');
   });
 
   it("treats an option with an empty target as the close-window path", () => {
@@ -134,7 +135,8 @@ describe("StoryPlayerModal", () => {
     expect(html).toContain('loading="eager"');
     expect(html).toContain('decoding="sync"');
     expect(html).toContain('fetchPriority="high"');
-    expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
+    expect(html).toContain('src="/assets/characters/sigrika.webp"');
+    expect(html).not.toContain(SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url);
     expect(storyPortraitUrls([
       { characterId: "sigrika" },
       { characterId: "sigrika" },
@@ -143,7 +145,7 @@ describe("StoryPlayerModal", () => {
       sigrika: { portraitUrl: "/sigrika.webp" },
       denia: { portrait: "/denia.webp" }
     }, { sigrikaCandyArc: { corrupted: true } })).toEqual([
-      SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url,
+      "/sigrika.webp",
       "/denia.webp"
     ]);
   });

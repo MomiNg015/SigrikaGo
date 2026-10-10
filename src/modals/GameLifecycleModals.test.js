@@ -129,8 +129,8 @@ describe("GameLifecycleModals helpers", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);");
-    expect(source).toContain("{...characterPortraitImageProps(character, {");
-    expect(source).toContain("costumeSnapshot: displayPlayer?.costumeSnapshot");
+    expect(source).toContain("<ResultCharacterPortrait character={character} outcome={portraitOutcome}");
+    expect(source).toContain("costumeSnapshot={displayPlayer?.costumeSnapshot}");
     expect(source).toContain("currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}");
     expect(source).toContain("<CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />");
     expect(source).toContain("`result-outcome-${outcome}`");

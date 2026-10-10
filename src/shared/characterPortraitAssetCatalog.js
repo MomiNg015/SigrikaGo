@@ -72,6 +72,8 @@ export const COSTUME_PORTRAIT_ASSETS = Object.freeze({
 export const DENIA_CANDY_PORTRAIT_ASSET = Object.freeze({
   url: "/assets/characters/portraits/denia-candy.webp",
   legacyUrl: "/assets/characters/denia_color.webp",
+  storyUrl: "/assets/characters/story-sprites/denia/rainbow-spray.webp",
+  storyStillUrl: "/assets/characters/story-sprites/denia/rainbow-spray-still.webp",
   requiresAnimation: true
 });
 
