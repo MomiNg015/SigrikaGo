@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import { AEMEATH_GLITCH_START_MS, AEMEATH_GLITCH_DURATION_MS } from "../shared/aemeathSkillForm.js";
-
-const BANDS = [
-  [5, 2, 8, 64], [14, 7, -5, 91], [27, 3, 12, 73], [35, 12, -9, 100],
-  [49, 2, 6, 48], [57, 8, 10, 95], [69, 4, -12, 78], [78, 10, 7, 100], [93, 2, -6, 58]
-];
-const DATA = "01 ▪ ▫ 7F / ▰ 10 : ∆ 0x ▪ 001 / ▱ 8E : 11 ▫ ";
+import AemeathSignalFilter from "./AemeathSignalFilter.jsx";
 
 export default function AemeathDataGlitch() {
   const [active, setActive] = useState(false);
+  const id = useId().replace(/:/g, "");
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motion.matches) return undefined;
@@ -19,10 +16,25 @@ export default function AemeathDataGlitch() {
     return () => { clearTimeout(start); clearTimeout(stop); motion.removeEventListener("change", reduce); };
   }, []);
   if (!active) return null;
-  return <div className="aemeath-data-glitch" aria-hidden="true" style={{ "--glitch-duration": `${AEMEATH_GLITCH_DURATION_MS}ms` }}>
-    {BANDS.map(([top, height, shift, width], index) => <div key={top} className="aemeath-glitch-band"
-      style={{ top: `${top}%`, height: `${height}%`, width: `${width}%`, left: index % 2 ? "0" : "auto", right: index % 2 ? "auto" : "0", "--glitch-shift": `${shift}vw` }}>
-      <span>{[0, 1, 2, 3].map(row => DATA.slice((index + row) % 12).repeat(7)).join("\n")}</span>
-    </div>)}
-  </div>;
+  return createPortal(<div className="aemeath-data-glitch aemeath-signal-picture" aria-hidden="true" style={{
+    "--glitch-duration": `${AEMEATH_GLITCH_DURATION_MS}ms`,
+    "--signal-tick": `url("#${id}-tick")`,
+    "--signal-break": `url("#${id}-break")`,
+    "--signal-lock": `url("#${id}-lock")`,
+    "--signal-noise": `url("#${id}-noise")`
+  }}>
+    <svg className="aemeath-signal-defs" width="0" height="0" focusable="false">
+      <defs>
+        <AemeathSignalFilter id={`${id}-tick`} displacement={24} split={2} seed={4} />
+        <AemeathSignalFilter id={`${id}-break`} displacement={150} split={9} seed={12} />
+        <AemeathSignalFilter id={`${id}-lock`} displacement={48} split={4} seed={7} />
+        <filter id={`${id}-noise`} colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency=".8 .65" numOctaves="1" seed="19" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+      </defs>
+    </svg>
+    <div className="aemeath-signal-noise" />
+    <div className="aemeath-signal-dropout" />
+  </div>, document.body);
 }

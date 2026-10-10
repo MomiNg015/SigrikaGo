@@ -34,18 +34,20 @@ describe("Aemeath Voyage Star reveal", () => {
   it("holds for 1s, swaps together inside the burst, then clears without snapshot restarts", () => {
     const { container, rerender } = render(<Scene />);
     advance(999);
-    expect(container.querySelector(".aemeath-data-glitch")).toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     expectForm(container, false);
     advance(1);
-    expect(container.querySelectorAll(".aemeath-glitch-band")).toHaveLength(9);
+    expect(document.querySelectorAll(".aemeath-signal-picture")).toHaveLength(1);
+    expect(document.querySelectorAll("feDisplacementMap")).toHaveLength(3);
+    expect(document.querySelector(".aemeath-data-glitch").textContent).toBe("");
     rerender(<Scene pending={{ ...banner }} />);
     advance(119);
     expectForm(container, false);
     advance(1);
     expectForm(container, true);
-    expect(container.querySelector(".aemeath-data-glitch")).not.toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).not.toBeNull();
     advance(140);
-    expect(container.querySelector(".aemeath-data-glitch")).toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     rerender(<Scene pending={null} actions={history} />);
     expectForm(container, true, false);
     rerender(<Scene pending={null} />);
@@ -55,7 +57,7 @@ describe("Aemeath Voyage Star reveal", () => {
     const { container, rerender } = render(<Scene pending={{ ...banner, effectType: "hidden-hand" }} />);
     advance(1500);
     expectForm(container, false);
-    expect(container.querySelector(".aemeath-data-glitch")).toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     rerender(<Scene actions={history} pending={{ ...banner, id: "later", effectType: "hidden-hand", battleFormBeforeCast: AEMEATH_SKILL_FORM }} />);
     expectForm(container, true);
   });
@@ -67,7 +69,7 @@ describe("Aemeath Voyage Star reveal", () => {
     rerender(<Scene pending={{ ...banner, id: "replacement" }} />);
     advance(120);
     expectForm(container, false);
-    expect(container.querySelector(".aemeath-data-glitch")).toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     advance(1000);
     expectForm(container, true);
     rerender(<Scene pending={null} />);
@@ -82,6 +84,20 @@ describe("Aemeath Voyage Star reveal", () => {
     const { container } = render(<Scene pending={{ ...banner, effectsEnabled: mode !== "disabled" }} />);
     advance(1120);
     expectForm(container, true);
-    expect(container.querySelector(".aemeath-data-glitch")).toBeNull();
+    expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
+  });
+  it("removes the live backdrop and SVG filters when reduced motion is enabled mid-burst", () => {
+    let change;
+    const media = { matches: false, addEventListener: vi.fn((type, listener) => { change = listener; }), removeEventListener: vi.fn() };
+    vi.stubGlobal("matchMedia", () => media);
+    const { container, unmount } = render(<Scene />);
+    advance(1100);
+    expect(document.querySelector(".aemeath-data-glitch")?.parentElement).toBe(document.body);
+    act(() => { media.matches = true; change(); });
+    expect(document.querySelector(".aemeath-signal-defs")).toBeNull();
+    advance(20);
+    expectForm(container, true);
+    unmount();
+    expect(media.removeEventListener).toHaveBeenCalledWith("change", change);
   });
 });
