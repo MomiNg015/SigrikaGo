@@ -389,7 +389,7 @@ Added supplied voyage form PNG and synchronized banner/player art replacement at
 
 | Hash | Message |
 |------|---------|
-| `HEAD~1` | (see git log) |
+| `ebb41f6e` | (see git log) |
 
 ### Testing
 
