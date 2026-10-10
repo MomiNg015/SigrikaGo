@@ -1,4 +1,5 @@
 import { canonicalCharacterId } from './characterAliases.js';
+import { DENIA_SKILL_FORM, DENIA_SKILL_FORM_ASSET } from './deniaSkillForm.js';
 import { CHARACTER_PORTRAIT_ASSETS, DENIA_CANDY_PORTRAIT_ASSET } from './characterPortraitAssetCatalog.js';
 import { CHARACTER_CHIBI_LANDMARKS, isBuiltinCharacterPortrait } from './characterChibiPortraits.js';
 import { characterPortraitImageProps } from './characterPortraits.js';
@@ -20,10 +21,15 @@ const STANDARD_HANDBOOK_PORTRAITS = {
 // Full-body landmarks for handbook, identity and selection crops. Authored
 // appearances continue through the shared runtime portrait owner.
 export function resolveHandbookPortrait(character = {}, {
-  itemEffects = {}, user = null, equippedCostumes = null, costumeSnapshot = null, chibi = false,
+  itemEffects = {}, user = null, equippedCostumes = null, costumeSnapshot = null, chibi = false, battleForm = null,
 } = {}) {
   const id = canonicalCharacterId(character.id ?? character.slug);
-  const resolved = characterPortraitImageProps(character, { itemEffects, user, equippedCostumes, costumeSnapshot });
+  const resolved = characterPortraitImageProps(character, { itemEffects, user, equippedCostumes, costumeSnapshot, battleForm });
+  if (id === 'denia' && battleForm === DENIA_SKILL_FORM) {
+    return { src: DENIA_SKILL_FORM_ASSET, fallbackSrc: DENIA_SKILL_FORM_ASSET,
+      isChibi: true, isStandard: true, width: 832, height: 1216, visibleTop: 0,
+      ...CHARACTER_CHIBI_LANDMARKS.denia };
+  }
   const builtin = CHARACTER_PORTRAIT_ASSETS[id];
   const standard = chibi ? CHARACTER_CHIBI_LANDMARKS[id] : STANDARD_HANDBOOK_PORTRAITS[id];
   const costume = costumeSnapshot ?? equippedCostumes?.[id] ?? user?.equippedCostumes?.[id];

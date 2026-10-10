@@ -1,4 +1,5 @@
 import { skillEffectHasBoardEffect } from "./skillEffectCatalog.js";
+import { DENIA_BANNER_DURATION_MS, isDenia } from "./deniaSkillForm.js";
 
 export const SKILL_BANNER_DURATION_MS = 2000;
 export const SKILL_BOARD_EFFECT_DURATION_MS = 1800;
@@ -94,14 +95,19 @@ export function skillBoardEffectDurationMs({ effectType = "", removalMarkIds = [
   );
 }
 
-export function skillPreviewResolutionDelay({ effectType = "", effectsEnabled = true, removalMarkIds = [] } = {}) {
+export function skillBannerDurationMs({ characterId = "", effectsEnabled = true } = {}) {
+  return effectsEnabled !== false && isDenia(characterId) ? DENIA_BANNER_DURATION_MS : SKILL_BANNER_DURATION_MS;
+}
+
+export function skillPreviewResolutionDelay({ effectType = "", effectsEnabled = true, removalMarkIds = [], characterId = "" } = {}) {
+  const extension = skillBannerDurationMs({ characterId, effectsEnabled }) - SKILL_BANNER_DURATION_MS;
   if (effectsEnabled === false) return SKILL_BANNER_DURATION_MS;
   if (effectType === "liberty-purge") {
-    return SKILL_BANNER_DURATION_MS + skillBoardEffectDurationMs({ effectType, removalMarkIds });
+    return SKILL_BANNER_DURATION_MS + extension + skillBoardEffectDurationMs({ effectType, removalMarkIds });
   }
   const configuredDelay = Number(SKILL_EFFECT_PRESENTATION_CONFIG[effectType]?.resolutionDelayMs);
-  if (Number.isFinite(configuredDelay) && configuredDelay >= 0) return configuredDelay;
-  return SKILL_PREVIEW_DELAY_MS;
+  if (Number.isFinite(configuredDelay) && configuredDelay >= 0) return configuredDelay + extension;
+  return SKILL_PREVIEW_DELAY_MS + extension;
 }
 
 export function skillEffectTimeline(pendingSkill = null, { reducedMotion = false, effectsEnabled = true } = {}) {

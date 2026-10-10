@@ -3,7 +3,10 @@ import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../shared/systemVoices.
 import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
-import { SKILL_BANNER_DURATION_MS } from "../shared/skillPresentation.js";
+import { skillBannerDurationMs } from "../shared/skillPresentation.js";
+import { isDeniaSkillBanner } from "../shared/deniaSkillForm.js";
+import { useDeniaSkillForm } from "../shared/useDeniaSkillForm.js";
+import DeniaPaperSwarm from "./DeniaPaperSwarm.jsx";
 
 const CUTIN_ACCENTS = { sigrika: "#8660ba", changli: "#df7165", qiuyuan: "#67988d" };
 
@@ -12,15 +15,17 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
   const character = findCharacter(characters, banner.character ?? banner.characterId);
   const effectType = banner.effectType;
   const skillName = banner.skillName ?? character.skill.name;
+  const battleForm = useDeniaSkillForm({ pendingSkill: banner }, character.id, banner.color);
   const portrait = characterPortraitImageProps(character, {
     variant: "full",
+    battleForm,
     itemEffects: banner.itemEffects,
     equippedCostumes: banner.equippedCostumes,
     costumeSnapshot: banner.costumeSnapshot
   });
   const requestedDuration = Number(banner.bannerDurationMs);
   const duration = Number.isFinite(requestedDuration) && requestedDuration > 0
-    ? requestedDuration : SKILL_BANNER_DURATION_MS;
+    ? requestedDuration : skillBannerDurationMs({ characterId: character.id, effectsEnabled: banner.effectsEnabled });
 
   useEffect(() => {
     const voiceCharacter = { ...character, itemEffects: banner.itemEffects ?? {} };
@@ -35,6 +40,7 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
     <div key={banner.id} className="skill-cutin-scene" aria-live="polite" aria-atomic="true"
       style={{ "--cutin-accent": CUTIN_ACCENTS[character.id] ?? character.palette ?? "#8660ba", "--cutin-duration": `${duration}ms` }}>
       <div className="skill-cutin-scrim" aria-hidden="true" />
+      {isDeniaSkillBanner(banner) && banner.effectsEnabled !== false && <DeniaPaperSwarm key={banner.id} castId={banner.id} />}
       <div className="skill-cutin">
         <div className="skill-cutin-streak skill-cutin-streak-top" aria-hidden="true" />
         <div className="skill-cutin-streak skill-cutin-streak-bottom" aria-hidden="true" />

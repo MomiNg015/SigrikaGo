@@ -9,11 +9,12 @@ export default function CharacterBustPortrait({
   itemEffects = user?.itemEffects,
   equippedCostumes = null,
   costumeSnapshot = null,
+  battleForm = null,
   variant = "profile",
   alt = character?.name ?? "",
   loading = "eager",
 }) {
-  const portrait = resolveHandbookPortrait(character, { user, itemEffects, equippedCostumes, costumeSnapshot });
+  const portrait = resolveHandbookPortrait(character, { user, itemEffects, equippedCostumes, costumeSnapshot, battleForm });
   return <BustImage key={`${portrait.isStandard ? "standard" : "authored"}:${portrait.src}`}
     portrait={portrait} variant={variant} alt={alt} loading={loading} />;
 }

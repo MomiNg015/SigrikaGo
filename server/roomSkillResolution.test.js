@@ -14,6 +14,21 @@ import {
 } from "./roomSkillResolution.js";
 
 describe("room skill resolution helpers", () => {
+  test("coordinates Denia's longer banner with the authoritative bubble resolution", () => {
+    const player = { color: "black", characterId: "denia", character: CHARACTERS.denia, user: { username: "Denia", itemEffects: {} } };
+    const game = createGameState([player, { color: "white", characterId: "sigrika" }]);
+    game.points.find((point) => point.id === "4,4").stone = "white";
+    const room = { code: "denia", players: [player], game };
+    const lifecycle = createRoomSkillLifecycle({ rooms: new Map([[room.code, room]]),
+      scheduleRoomTimeout: vi.fn(), appendSystem: vi.fn(), appendNotices: vi.fn(), resetByoYomi: vi.fn(),
+      scheduleRoomClose: vi.fn(), broadcastRoom: vi.fn(), randomId: () => "denia-cast" });
+    const now = Date.now();
+    expect(lifecycle.startActiveSkill({ room, player, action: { type: "skill", pointId: "4,4" }, io: {} }).ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({ characterId: "denia", bannerDurationMs: 3200, boardEffectDurationMs: 1800, battleFormBeforeCast: null });
+    expect(room.pendingSkillResolution.resolvesAt - now).toBeGreaterThanOrEqual(4240);
+    expect(room.pendingSkillResolution.resolvesAt - now).toBeLessThan(4300);
+    expect(room.pendingSkillResolution.game.history.at(-1)).toMatchObject({ type: "skill", color: "black" });
+  });
   test("creates a serializable pending skill resolution snapshot", () => {
     const game = { phase: "playing", history: [{ type: "skill" }] };
     const resolution = createPendingSkillResolution({

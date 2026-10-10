@@ -4,7 +4,8 @@ import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
-import CharacterBustPortrait from "../shared/CharacterBustPortrait.jsx";
+import BattleCharacterPortrait from "./BattleCharacterPortrait.jsx";
+import { currentBattleRound, hasDeniaSkillForm } from "../shared/deniaSkillForm.js";
 import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
@@ -101,11 +102,11 @@ function PlayerInfo({
           const memberPlayer = { ...player, ...entry };
           const member = entry.status !== "hidden" && entry.character ? playerCharacterForDisplay(characters, memberPlayer) : null;
           return <div key={index} className={`team-portrait-slot is-${entry.status ?? "hidden"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : entry.status === "finished" ? "，已退场" : ""}`}>
-            {member ? <div className="team-portrait-art"><CharacterBustPortrait character={member} user={memberPlayer.user} costumeSnapshot={memberPlayer.costumeSnapshot} variant="team" alt={member.name} /></div> : <span className="team-portrait-mystery">?</span>}
+            {member ? <div className="team-portrait-art"><BattleCharacterPortrait game={game} player={memberPlayer} character={member} round={index + 1} variant="team" /></div> : <span className="team-portrait-mystery">?</span>}
           </div>;
         })}
         </div>
-      </div> : hasCharacter && !sigrikaCandyDuel && <CharacterBustPortrait character={character} user={player.user} costumeSnapshot={player.costumeSnapshot} variant="battle" alt={character.name} />}
+      </div> : hasCharacter && !sigrikaCandyDuel && <BattleCharacterPortrait game={game} player={player} character={character} />}
       {(isCorruptedPlayer || useTutorialPlayerPortrait) && (
         <img
           className={useTutorialPlayerPortrait ? "tutorial-player-portrait" : "sigrika-corrupted-npc-portrait sigrika-corrupted-player-portrait"}
@@ -323,6 +324,9 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
 function gamePlayerSliceEqual(previousGame, nextGame, color) {
   if (previousGame === nextGame) return true;
   return previousGame?.mode === nextGame?.mode
+    && previousGame?.pendingSkill?.id === nextGame?.pendingSkill?.id
+    && currentBattleRound(previousGame) === currentBattleRound(nextGame)
+    && hasDeniaSkillForm(previousGame, color) === hasDeniaSkillForm(nextGame, color)
     && previousGame?.phase === nextGame?.phase
     && previousGame?.turn === nextGame?.turn
     && previousGame?.winner === nextGame?.winner

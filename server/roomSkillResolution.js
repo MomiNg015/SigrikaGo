@@ -16,7 +16,7 @@ import { effectiveSkillConfigForColor } from "../src/shared/derivedSkills.js";
 import { normalizeSkillConfig } from "../src/shared/gameSkills.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import {
-  SKILL_BANNER_DURATION_MS,
+  skillBannerDurationMs,
   skillBoardEffectDurationMs,
   skillPreviewResolutionDelay
 } from "../src/shared/skillPresentation.js";
@@ -24,6 +24,7 @@ import { gameModeFamily } from "../src/shared/gameModes.js";
 import { getCachedPublicSiteSettings } from "./siteSettings.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
 import { finishCaptureChallenge } from "./captureChallenge.js";
+import { deniaFormBeforeCast, isDenia } from "../src/shared/deniaSkillForm.js";
 
 export function createPendingSkillResolution({
   pendingSkillId,
@@ -31,6 +32,7 @@ export function createPendingSkillResolution({
   notices = [],
   playerColor,
   effectType = "",
+  characterId = "",
   effectsEnabled = true,
   now = Date.now
 }) {
@@ -38,7 +40,7 @@ export function createPendingSkillResolution({
   const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
   return {
     pendingSkillId,
-    resolvesAt: now() + skillPreviewResolutionDelay({ effectType, effectsEnabled, removalMarkIds }),
+    resolvesAt: now() + skillPreviewResolutionDelay({ effectType, effectsEnabled, removalMarkIds, characterId }),
     game,
     notices,
     playerColor,
@@ -87,6 +89,7 @@ export function createRoomSkillLifecycle({
       game: result.state,
       notices: result.notices ?? [],
       playerColor: player.color,
+      characterId: character.id ?? player.characterId,
       effectType,
       effectsEnabled: skillEffectsEnabled()
     });
@@ -261,7 +264,8 @@ export function buildPendingSkillPreview({
     removedStones,
     resolvesAt,
     effectsEnabled,
-    bannerDurationMs: SKILL_BANNER_DURATION_MS,
+    battleFormBeforeCast: isDenia(character.id ?? player.characterId) ? deniaFormBeforeCast(resolvedGame, player.color) : null,
+    bannerDurationMs: skillBannerDurationMs({ characterId: character.id ?? player.characterId, effectsEnabled }),
     boardEffectDurationMs: effectsEnabled === false
       ? 0
       : skillBoardEffectDurationMs({ effectType, removalMarkIds })

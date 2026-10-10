@@ -170,6 +170,7 @@ describe("tutorialGameState", () => {
     expect(result.state.phase).toBe(GAME_PHASES.skillPreview);
     expect(result.state.pendingSkill).toMatchObject({
       id: "tutorial-skill-1",
+      bannerDurationMs: 3200,
       color: "black",
       characterId: "denia",
       skillName: "泡影幻梦",

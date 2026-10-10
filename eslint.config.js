@@ -6,6 +6,15 @@ import react from "eslint-plugin-react";
 
 const maintainedFiles = [
   "src/modals/SkillBanner.jsx",
+  "docs/design-samples/denia-transformation-2026-10-10/preview.jsx",
+  "src/modals/DeniaPaperSwarm.jsx",
+  "src/modals/DeniaTransformation.dom.test.jsx",
+  "src/shared/deniaSkillForm.test.js",
+  "src/modals/deniaPaperSwarm.js",
+  "src/modals/deniaPaperSwarm.test.js",
+  "src/shared/deniaSkillForm.js",
+  "src/shared/useDeniaSkillForm.js",
+  "src/room/BattleCharacterPortrait.jsx",
   "src/modals/SkillBanner.test.js",
   "src/modals/SkillBanner.dom.test.jsx",
   "docs/design-samples/skill-banner-2026-10-10/production.jsx",
