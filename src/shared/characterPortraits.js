@@ -1,7 +1,7 @@
 import { characterChibiSource, isBuiltinCharacterPortrait } from "./characterChibiPortraits.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
-import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
+import { DENIA_CANDY_PORTRAIT_ASSET, SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
 import {
   costumePortraitFrameStyle,
   normalizeCostumePortraitFraming
@@ -28,7 +28,7 @@ export function resolveCharacterPortraitPresentation(character = {}, {
     if (costume?.candyEffectPortraitUrl) {
       return portraitPresentation(costume.candyEffectPortraitUrl, costume);
     }
-    return portraitPresentation(DENIA_CANDY_PORTRAIT);
+    return portraitPresentation(variant === "avatar" ? DENIA_CANDY_PORTRAIT_ASSET.avatarUrl : DENIA_CANDY_PORTRAIT);
   }
   const portraitUrl = costume?.portraitUrl
     || character.portraitUrl

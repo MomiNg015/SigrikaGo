@@ -5,23 +5,22 @@ import { setTimeout } from "node:timers/promises";
 import sharp from "sharp";
 import { normalizePortraitBuffer, validateNormalizedPortrait } from "./characterPortraitNormalization.mjs";
 
-const output = "output/denia-rainbow-covered-v4";
+const output = "output/denia-rainbow-rolling-avatars-v5";
 const sourcePath = "public/assets/characters/story-sprites/denia/surprised.webp";
 const width = 832;
 const height = 1216;
 const count = 24;
 const delay = 60;
+// Match the default Denia avatar's complete-head crop and output dimensions.
+const avatarCrop = { left: 0, top: 0, width: 832, height: 832 };
 // The original GIF advances roughly one spectral band per 70ms. Three full
 // rolls per 1.44s loop match that speed while closing the loop exactly.
 const colorRollsPerLoop = 3;
 const colors = ["#ff3268", "#ff962e", "#ffe83a", "#79f257", "#3ddfee", "#5377ff", "#ba55ff"];
 const jets = [
-  { name: "left-eye", origin: [365, 476], end: [43, 356], startWidth: 120, endWidth: 107,
-    emitter: { center: [354, 467], radii: [80, 62] } },
-  { name: "right-eye", origin: [550, 501], end: [793, 397], startWidth: 112, endWidth: 99,
-    emitter: { center: [555, 501], radii: [69, 61] } },
-  { name: "mouth", origin: [455, 557], end: [660, 774], startWidth: 44, endWidth: 78,
-    emitter: { center: [455, 557], radii: [23, 28] } }
+  { name: "left-eye", origin: [365, 476], end: [43, 356], startWidth: 72, endWidth: 107 },
+  { name: "right-eye", origin: [550, 501], end: [793, 397], startWidth: 68, endWidth: 99 },
+  { name: "mouth", origin: [455, 557], end: [660, 774], startWidth: 22, endWidth: 78 }
 ];
 const number = (value) => value.toFixed(2);
 function ribbonPoint(jet, progress, edge, phase) {
@@ -48,8 +47,8 @@ function overlay(frame) {
   let definitions = "";
   for (const jet of jets) {
     const [x, y] = jet.origin;
-    // Distal light stays translucent; an independent opaque, feathered source
-    // below covers the whole facial feature without making the entire ray solid.
+    // A continuous alpha ramp feathers both ends. Colored bloom stays transparent,
+    // so the original eyes and hair remain visible through the emitted light.
     definitions += `<linearGradient id="fade-${jet.name}" gradientUnits="userSpaceOnUse" x1="${x}" y1="${y}" x2="${jet.end[0]}" y2="${jet.end[1]}"><stop offset="0" stop-color="white" stop-opacity=".12"/><stop offset=".12" stop-color="white" stop-opacity=".82"/><stop offset=".45" stop-color="white"/><stop offset=".72" stop-color="white" stop-opacity=".85"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="mask-${jet.name}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="url(#fade-${jet.name})"/></mask>`;
     let bands = "";
     const colorOffset = (frame / count * colorRollsPerLoop) % 1;
@@ -69,22 +68,8 @@ function overlay(frame) {
       art += `<path d="M${start.map(number).join(",")} L${end.map(number).join(",")}" stroke="#fffce0" stroke-width="3" stroke-linecap="round" opacity="${number(Math.sin(progress * Math.PI) ** 2 * 0.18)}" filter="url(#blend)"/>`;
     }
     art += "</g>";
-    definitions += `<linearGradient id="root-fade-${jet.name}" gradientUnits="userSpaceOnUse" x1="${x}" y1="${y}" x2="${jet.end[0]}" y2="${jet.end[1]}"><stop offset="0" stop-color="white"/><stop offset=".18" stop-color="white"/><stop offset=".5" stop-color="white" stop-opacity="0"/></linearGradient><mask id="root-mask-${jet.name}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="url(#root-fade-${jet.name})"/></mask>`;
-    art += `<g mask="url(#root-mask-${jet.name})"><g filter="url(#blend)">${bands}</g></g>`;
-    const { center: [cx, cy], radii: [rx, ry] } = jet.emitter;
-    definitions += `<radialGradient id="source-fade-${jet.name}"><stop offset="0" stop-color="white"/><stop offset=".82" stop-color="white"/><stop offset=".9" stop-color="white" stop-opacity=".98"/><stop offset="1" stop-color="white" stop-opacity="0"/></radialGradient><mask id="source-mask-${jet.name}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#source-fade-${jet.name})"/></mask>`;
-    // Continue the same spectral bands behind the ray origin so its source covers
-    // the full eye/mouth rather than stopping at the center of the pupil/lips.
-    let sourceBands = "";
-    for (let i = -colors.length; i < colors.length * 3; i++) {
-      const bottom = (i / colors.length - 0.5 - colorOffset) * jet.startWidth;
-      const color = colors[(i + colors.length) % colors.length];
-      sourceBands += `<rect x="-120" y="${number(bottom - 0.5)}" width="240" height="${number(jet.startWidth / colors.length + 1)}" fill="${color}"/>`;
-    }
-    const angle = Math.atan2(jet.end[1] - y, jet.end[0] - x) * 180 / Math.PI;
-    const sourceArt = `<g transform="translate(${x} ${y}) rotate(${number(angle)})">${sourceBands}</g>`;
-    art += `<g filter="url(#glow)" opacity=".35"><g mask="url(#source-mask-${jet.name})">${sourceArt}</g></g>`;
-    art += `<g mask="url(#source-mask-${jet.name})"><g filter="url(#blend)">${sourceArt}</g></g>`;
+    const radius = jet.name === "mouth" ? 11 : 29;
+    art += `<ellipse cx="${x}" cy="${y}" rx="${radius}" ry="${radius * 0.8}" fill="#bcefff" opacity=".15" filter="url(#glow)"/>`;
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="8"/></filter><filter id="blend" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="2.8"/></filter>${definitions}</defs>${art}</svg>`;
 }
@@ -151,6 +136,13 @@ const portraitRoot = "public/assets/characters/story-sprites/denia";
 await writeAsset(`${portraitRoot}/rainbow-spray.webp`, animation);
 const still = await sharp(frames[0]).webp({ lossless: true }).toBuffer();
 await writeAsset(`${portraitRoot}/rainbow-spray-still.webp`, still);
+const avatarFrames = await Promise.all(frames.map(frame => sharp(frame)
+  .extract(avatarCrop).resize(512, 512).png().toBuffer()));
+const avatar = await sharp(avatarFrames, { join: { animated: true } })
+  .webp({ lossless: true, minSize: true, effort: 4, delay: Array(count).fill(delay), loop: 0 }).toBuffer();
+await writeAsset(`${portraitRoot}/rainbow-spray-avatar.webp`, avatar);
+await writeAsset(`${portraitRoot}/rainbow-spray-avatar-still.webp`,
+  await sharp(avatarFrames[0]).webp({ lossless: true }).toBuffer());
 await writeAsset("public/assets/characters/denia_color.webp", animation);
 await writeAsset("public/assets/characters/denia_color.gif", await readFile(`${output}/denia-rainbow.gif`));
 await writeAsset("public/assets/characters/portraits/denia-candy.webp", normalized.buffer);
@@ -158,6 +150,7 @@ await writeFile(`${output}/manifest.json`, JSON.stringify({ sourcePath,
   sourceSha256: createHash("sha256").update(source).digest("hex"),
   width, height, frames: count, delay, loop: 0, durationMs: count * delay, jets,
   colorRollsPerLoop, colorRollPeriodMs: count * delay / colorRollsPerLoop,
+  avatar: { crop: avatarCrop, width: 512, height: 512, bytes: avatar.length },
   sourceProtection: verification, normalizedPortrait: validation,
   nativeBytes: animation.length, normalizedBytes: normalized.buffer.length,
   method: "Unchanged accepted surprised sprite with independent vector effect overlays; no generated face or body repaint."

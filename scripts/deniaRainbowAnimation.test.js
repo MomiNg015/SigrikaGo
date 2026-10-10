@@ -20,7 +20,7 @@ it("rolls the rainbow spectrum through all three beams instead of only shimmerin
   const stride = info.width * metadata.pageHeight * 4;
   // Fixed positions inside the left-eye, right-eye and mouth beams. Motion of a
   // highlight or a tiny change in brightness cannot satisfy full spectral travel.
-  for (const [x, y] of [[156, 398], [708, 433], [588, 698], [365, 476], [550, 501], [455, 557]]) {
+  for (const [x, y] of [[156, 398], [708, 433], [588, 698]]) {
     const hues = Array.from({ length: metadata.pages }, (_, frame) => {
       const offset = frame * stride + (y * info.width + x) * 4;
       return hue(data.subarray(offset, offset + 3));
@@ -31,20 +31,28 @@ it("rolls the rainbow spectrum through all three beams instead of only shimmerin
   }
 }, 15000);
 
-it("covers eye and mouth contours with saturated source light throughout the loop", async () => {
-  const input = await readFile("public/assets/characters/story-sprites/denia/rainbow-spray.webp");
-  const metadata = await sharp(input, { animated: true }).metadata();
-  const { data, info } = await sharp(input, { animated: true }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const stride = info.width * metadata.pageHeight * 4;
-  const contours = [[330, 477], [398, 478], [366, 434], [348, 504],
-    [535, 471], [572, 494], [524, 525], [550, 537],
-    [446, 557], [455, 544], [463, 562], [455, 571]];
-  for (let frame = 0; frame < metadata.pages; frame++) {
-    for (const [x, y] of contours) {
-      const offset = frame * stride + (y * info.width + x) * 4;
-      const rgb = [...data.subarray(offset, offset + 3)];
-      expect(Math.max(...rgb), `source light at ${x},${y}, frame ${frame}`).toBeGreaterThan(180);
-      expect(Math.max(...rgb) - Math.min(...rgb)).toBeGreaterThan(40);
+it("crops every animated avatar frame exactly like the default Denia head avatar", async () => {
+  const directory = "public/assets/characters/story-sprites/denia/";
+  const native = await readFile(`${directory}rainbow-spray.webp`);
+  const avatar = await readFile(`${directory}rainbow-spray-avatar.webp`);
+  const meta = await sharp(avatar, { animated: true }).metadata();
+  expect(meta).toMatchObject({ width: 512, pageHeight: 512, pages: 24, loop: 0 });
+  expect(meta.delay).toEqual(Array(24).fill(60));
+  const manifest = JSON.parse(await readFile("public/assets/characters/handbook-chibi-sprites/avatar-manifest.json", "utf8"));
+  const crop = manifest.avatars.find(entry => entry.id === "denia").crop;
+  const source = await sharp(native, { animated: true }).ensureAlpha().raw().toBuffer();
+  const actual = await sharp(avatar, { animated: true }).ensureAlpha().raw().toBuffer();
+  const sourceStride = 832 * 1216 * 4;
+  const avatarStride = 512 * 512 * 4;
+  for (let frame = 0; frame < 24; frame++) {
+    const expected = await sharp(source.subarray(frame * sourceStride, (frame + 1) * sourceStride),
+      { raw: { width: 832, height: 1216, channels: 4 } }).extract(crop).resize(512, 512).raw().toBuffer();
+    const decoded = actual.subarray(frame * avatarStride, (frame + 1) * avatarStride);
+    let differences = 0;
+    for (let p = 0; p < expected.length; p += 4) {
+      if (expected[p + 3] !== decoded[p + 3]
+        || (expected[p + 3] && !expected.subarray(p, p + 3).equals(decoded.subarray(p, p + 3)))) differences++;
     }
+    expect(differences, `avatar crop frame ${frame}`).toBe(0);
   }
-}, 15000);
+}, 20000);

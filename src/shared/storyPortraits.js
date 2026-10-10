@@ -11,6 +11,9 @@ export const EXTRA_STORY_PORTRAITS = Object.freeze({
     portrait: DENIA_CANDY_PORTRAIT_ASSET.storyUrl,
     portraitUrl: DENIA_CANDY_PORTRAIT_ASSET.storyUrl,
     stillPortraitUrl: DENIA_CANDY_PORTRAIT_ASSET.storyStillUrl,
+    avatarPortraitUrl: DENIA_CANDY_PORTRAIT_ASSET.avatarUrl,
+    avatarStillPortraitUrl: DENIA_CANDY_PORTRAIT_ASSET.avatarStillUrl,
+    fallbackAvatarPortraitUrl: "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
     fallbackPortraitUrl: "/assets/characters/handbook-chibi-sprites/denia.webp",
     presentation: "chibi"
   })

@@ -74,6 +74,8 @@ export const DENIA_CANDY_PORTRAIT_ASSET = Object.freeze({
   legacyUrl: "/assets/characters/denia_color.webp",
   storyUrl: "/assets/characters/story-sprites/denia/rainbow-spray.webp",
   storyStillUrl: "/assets/characters/story-sprites/denia/rainbow-spray-still.webp",
+  avatarUrl: "/assets/characters/story-sprites/denia/rainbow-spray-avatar.webp",
+  avatarStillUrl: "/assets/characters/story-sprites/denia/rainbow-spray-avatar-still.webp",
   requiresAnimation: true
 });
 

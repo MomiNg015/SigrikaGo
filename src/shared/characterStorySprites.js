@@ -87,9 +87,12 @@ export function resolveStoryPortraitPresentation(node = {}, { characters = {}, c
   const legacy = resolveCharacterPortraitPresentation({ ...resolved, id: entry?.characterId ?? node.characterId }, { variant: variant === "avatar" ? "avatar" : "full" });
   if (!entry || node.appearanceId !== entry.appearanceId || storySpriteSelectionError(node)) {
     const presentation = resolved.presentation === "chibi" ? "chibi" : legacy.presentation;
+    const avatar = variant === "avatar" && resolved.avatarPortraitUrl;
+    const stillSrc = avatar ? resolved.avatarStillPortraitUrl : resolved.stillPortraitUrl;
     return { ...legacy, presentation, standard: presentation === "chibi", appearanceId: "", expressionId: "",
-      ...(resolved.stillPortraitUrl ? { stillSrc: resolved.stillPortraitUrl } : {}),
-      fallbackSrc: resolved.fallbackPortraitUrl || legacy.src };
+      ...(avatar ? { src: resolved.avatarPortraitUrl } : {}),
+      ...(stillSrc ? { stillSrc } : {}),
+      fallbackSrc: (avatar ? resolved.fallbackAvatarPortraitUrl : resolved.fallbackPortraitUrl) || legacy.src };
   }
   const expressionId = node.expressionId || "smile";
   return { src: storySpriteUrl(entry.characterId, expressionId, variant), fallbackSrc: legacy.src, standard: true, presentation: entry.presentation, appearanceId: entry.appearanceId, expressionId, style: undefined };

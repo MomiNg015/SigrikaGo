@@ -22,6 +22,7 @@ import {
 } from "./audioAssets.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import {
+  DENIA_CANDY_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
 } from "./characterPortraitAssetCatalog.js";
@@ -74,6 +75,7 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   ]),
   effects: Object.freeze([
     DENIA_CANDY_PORTRAIT,
+    DENIA_CANDY_PORTRAIT_ASSET.avatarUrl,
     "/assets/boards/nabomo-color-illusion-board.webp",
     "/assets/effects/changli-fire-phoenix.svg",
     "/assets/effects/changli-flame-sprite.svg",
