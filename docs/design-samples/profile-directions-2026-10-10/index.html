@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<!-- Isolated review prototype. Statistics and account names are fictional fixtures.
+Assumptions: preserve Bright School, existing functional fields, self/social parity;
+explore hierarchy, density and progressive disclosure before production integration. -->
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>履历与详细资料 · 三个设计方向</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="design.css">
+</head>
+<body>
+  <header class="review-bar">
+    <a class="review-brand" href="README.md">SIGRIKA<span>设计样板 / 10.10</span></a>
+    <nav aria-label="设计方向"><button data-design="folder">01 社团档案夹</button><button data-design="scoresheet">02 对弈成绩单</button><button data-design="collection">03 部员收藏册</button></nav>
+    <div class="review-controls"><select id="context" aria-label="查看身份"><option value="self">本人履历</option><option value="social">他人资料</option></select><button id="phone" aria-pressed="false">竖屏预览</button></div>
+  </header>
+  <main>
+    <div class="direction-note"><div><span id="direction-index">方向 01</span><h1 id="direction-name">社团档案夹</h1></div><p id="direction-description"></p></div>
+    <div class="stage"><section id="profile" aria-label="履历设计样板"></section><button id="reopen" hidden>重新打开窗口</button></div>
+    <footer class="review-footer"><span>独立样板 · 所有账号与战绩均为演示数据</span><label>状态预览 <select id="data-state"><option value="normal">有战绩</option><option value="empty">空战绩</option><option value="loading">加载中</option><option value="error">加载失败</option><option value="long">长用户名</option><option value="nine">九段积分</option></select></label><span>按 1 / 2 / 3 切换方案</span></footer>
+  </main>
+  <dialog id="detail" aria-labelledby="detail-title"><header><h2 id="detail-title"></h2><button data-action="dismiss" aria-label="关闭详情">×</button></header><div id="detail-body"></div></dialog>
+  <div class="toast" role="status" hidden></div>
+  <script src="design.js" defer></script>
+</body>
+</html>

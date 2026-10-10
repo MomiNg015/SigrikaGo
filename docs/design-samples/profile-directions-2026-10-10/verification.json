@@ -1,0 +1,167 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "design": "folder",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "design": "folder",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "design": "scoresheet",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "design": "scoresheet",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "design": "collection",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "design": "collection",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "folder",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "folder",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "scoresheet",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "scoresheet",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "collection",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 390,
+      "design": "collection",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "folder",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "folder",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "scoresheet",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "scoresheet",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "collection",
+      "context": "self",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    },
+    {
+      "width": 360,
+      "design": "collection",
+      "context": "social",
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "interactions": "passed"
+    }
+  ],
+  "errors": []
+}
