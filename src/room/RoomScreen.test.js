@@ -184,7 +184,7 @@ describe("RoomScreen helpers", () => {
       onOpenReplay: () => {}
     }));
 
-    expect(html).toContain("skill-burst");
+    expect(html).toContain("skill-cutin-scene");
     expect(html).toContain(CHARACTERS.sigrika.skill.name);
     expect(html).toContain("/assets/costumes/sigrika-01.webp");
   });

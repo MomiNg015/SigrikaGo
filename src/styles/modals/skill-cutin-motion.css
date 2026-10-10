@@ -1,0 +1,50 @@
+.skill-cutin-ribbon,
+.skill-cutin-backing { animation: cutin-strip var(--cutin-duration, 2000ms) both; }
+.skill-cutin-portrait { animation: cutin-portrait var(--cutin-duration, 2000ms) both; }
+.skill-cutin-copy { animation: cutin-copy var(--cutin-duration, 2000ms) both; }
+.skill-cutin-spark,
+.skill-cutin-streak { animation: cutin-detail var(--cutin-duration, 2000ms) both; }
+.skill-cutin-scrim { animation: cutin-scrim var(--cutin-duration, 2000ms) both; }
+.skill-cutin-sweep { animation: cutin-sweep var(--cutin-duration, 2000ms) both; }
+
+@keyframes cutin-strip {
+  0% { opacity: 0; transform: rotate(-2deg) scaleX(.15); }
+  9%, 82% { opacity: 1; transform: rotate(-2deg) scaleX(1); }
+  100% { opacity: 0; transform: rotate(-2deg) translateX(90px); }
+}
+
+@keyframes cutin-portrait {
+  0%, 3% { opacity: 0; transform: translateX(-48px) rotate(-4deg); }
+  14%, 82% { opacity: 1; transform: translateX(0) rotate(0); }
+  100% { opacity: 0; transform: translateX(38px); }
+}
+
+@keyframes cutin-copy {
+  0%, 6% { opacity: 0; transform: rotate(-2deg) translateX(28px); }
+  15%, 82% { opacity: 1; transform: rotate(-2deg) translateX(0); }
+  100% { opacity: 0; transform: rotate(-2deg) translateX(65px); }
+}
+
+@keyframes cutin-detail {
+  0%, 9% { opacity: 0; }
+  16%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes cutin-scrim {
+  0% { opacity: 0; }
+  10%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes cutin-sweep {
+  0%, 14% { opacity: 0; transform: translateX(-200px) rotate(25deg); }
+  15% { opacity: 1; }
+  36% { opacity: 0; transform: translateX(900px) rotate(25deg); }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-cutin-scene * { animation: none; }
+  .skill-cutin-sweep { display: none; }
+}

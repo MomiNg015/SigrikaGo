@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>技能切入 · SigrikaGo 样板</title>
+  <link rel="stylesheet" href="./sample.css">
+</head>
+<body>
+  <header class="workbench">
+    <div class="intro"><span class="sample-label">SigrikaGo / 演出样板</span><h1>这一手，由我改写。</h1><p>全身立绘 × 漫画切入</p></div>
+    <div class="controls">
+      <label>出场角色<select id="character"><option value="sigrika">西格莉卡</option><option value="changli">长离</option><option value="qiuyuan">仇远</option></select></label>
+      <div class="view-switch" aria-label="预览尺寸"><button id="desktop" aria-pressed="true">桌面</button><button id="phone" aria-pressed="false">手机竖屏</button></div>
+      <button id="replay" class="primary">↻ 重播演出</button><button id="freeze">定格查看</button>
+    </div>
+  </header>
+  <main>
+    <section class="stage" aria-label="技能演出预览">
+      <div class="game-scene" aria-hidden="true">
+        <div class="match-heading"><span>星炬对弈</span><span>第 24 手 · 黑方回合</span></div>
+        <div class="player player-top"><i class="stone black"></i><span>西格莉卡<small>执黑 · 思考中</small></span><b>08:42</b></div>
+        <div class="board"><div class="grid"></div></div>
+        <div class="player player-bottom"><i class="stone white"></i><span>长离<small>执白</small></span><b>09:16</b></div>
+        <div class="game-actions"><span>停一手</span><span>数子</span><span>发动技能</span><span>和棋</span></div>
+      </div>
+      <div class="scrim" aria-hidden="true"></div>
+      <div class="cutin" role="img" aria-label="西格莉卡发动星辉符文">
+        <div class="streak streak-one"></div><div class="streak streak-two"></div>
+        <div class="ribbon-back"></div>
+        <div class="ribbon"><div class="color-field"></div><div class="halftone"></div><div class="ink-slash"></div><div class="sweep"></div></div>
+        <div class="portrait"><div class="echo"></div><img id="portrait" src="/assets/characters/handbook-chibi-sprites/sigrika.webp" alt="西格莉卡全身立绘" fetchpriority="high"></div>
+        <div class="lettering"><div class="name-line"><span class="name">西格莉卡</span></div><strong class="skill-name">星辉符文</strong><div class="accent-line"></div></div>
+        <span class="spark spark-one">✦</span><span class="spark spark-two">✧</span>
+      </div>
+      <div class="preview-status"><i></i><span id="status" aria-live="polite">定格 · 查看完整构图</span></div>
+    </section>
+    <footer><span>窄横带，完整出场。</span><p>头发与脚部越过边框 · 两秒演出 · 角色独立入场</p><small>独立视觉样板，背景棋局为示意。</small></footer>
+  </main>
+  <script type="module" src="./sample.js"></script>
+</body>
+</html>

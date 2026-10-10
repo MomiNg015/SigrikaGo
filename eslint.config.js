@@ -5,6 +5,10 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/SkillBanner.jsx",
+  "src/modals/SkillBanner.test.js",
+  "src/modals/SkillBanner.dom.test.jsx",
+  "docs/design-samples/skill-banner-2026-10-10/production.jsx",
   "src/modals/ResumeModal.jsx",
   "src/modals/ResumeModal.dom.test.jsx",
   "src/modals/ProfilePlayRecords.jsx",
