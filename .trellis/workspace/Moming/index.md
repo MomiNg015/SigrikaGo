@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 184
-- **Last Active**: 2026-10-09
+- **Total Sessions**: 185
+- **Last Active**: 2026-10-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~139 | Active |
+| `journal-4.md` | ~173 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 185 | 2026-10-10 | Club profile folder integration | `f5cfe28c`, `2fc0169a` | `master` |
 | 184 | 2026-10-09 | 邮箱附件图片与排行榜同段排序修正 | `7c1205f3` | `master` |
 | 183 | 2026-10-09 | 对弈模式手机图标与选角居中修正 | `98d58f47` | `master` |
 | 182 | 2026-10-09 | 对弈模式统一分层入口 | `15f4eeca` | `master` |

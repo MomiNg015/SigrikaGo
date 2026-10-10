@@ -137,3 +137,37 @@ Added the rolling handoff summary, daily office/home switching steps and reusabl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 185: Club profile folder integration
+
+**Date**: 2026-10-10
+**Task**: Club profile folder integration
+**Branch**: `master`
+
+### Summary
+
+Reviewed project play hierarchy, delivered three samples, and integrated the selected club dossier. Rank is on the play record page; challenge/team records are separate. Related 161 tests, lint, build and browser QA passed. Three unrelated existing full-suite failures recorded. Preserved unrelated WIP through scoped index commits.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f5cfe28c` | (see git log) |
+| `2fc0169a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
