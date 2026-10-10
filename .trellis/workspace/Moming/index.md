@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 189
+- **Total Sessions**: 190
 - **Last Active**: 2026-10-10
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~305 | Active |
+| `journal-4.md` | ~338 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 190 | 2026-10-10 | Denia combat-reference paper flight | `8c0a84ad` | `master` |
 | 189 | 2026-10-10 | Denia layered paper flight revision | `71876da2` | `master` |
 | 188 | 2026-10-10 | Denia paper swarm transformation | `785cebdb` | `master` |
 | 187 | 2026-10-10 | Integrate approved full-body skill cut-in | `74fe0eef` | `master` |

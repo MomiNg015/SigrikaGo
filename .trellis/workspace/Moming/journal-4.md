@@ -303,3 +303,36 @@ Replaced rejected tiled wall with independent far/mid/near paper trajectories, c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 190: Denia combat-reference paper flight
+
+**Date**: 2026-10-10
+**Task**: Denia combat-reference paper flight
+**Branch**: `master`
+
+### Summary
+
+Inspected official combat video at 46-52 seconds. Replaced uniform dense swarm with clustered depth streams and 14 flexible near-lens passes; total cap 174 particles and 328 draws. Preserved timing and form lifecycle. Added portrait preview video, synced design/spec docs. 15 tests and lint pass; build succeeds. Unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c0a84ad` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
