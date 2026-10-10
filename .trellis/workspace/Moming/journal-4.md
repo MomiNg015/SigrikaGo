@@ -270,3 +270,36 @@ Integrated Denia's 3.2s cut-in with larger reference-inspired paper people, cach
 ### Next Steps
 
 - None - task complete
+
+
+## Session 189: Denia layered paper flight revision
+
+**Date**: 2026-10-10
+**Task**: Denia layered paper flight revision
+**Branch**: `master`
+
+### Summary
+
+Replaced rejected tiled wall with independent far/mid/near paper trajectories, continuous rotation and perspective folding. Preserved portrait swap and persistence. 14 related tests, lint and build passed; visually checked entry, convergence and exit. Desktop draw-submission P95 3.4 ms; peak coverage 83%. Unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `71876da2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
