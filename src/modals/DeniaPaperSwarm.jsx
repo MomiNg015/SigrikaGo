@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { DENIA_PAPER_ASSET, DENIA_SWARM_END_MS } from "../shared/deniaSkillForm.js";
-import { createPaperField, createPaperFrames, drawDeniaPapers } from "./deniaPaperSwarm.js";
+import { createDeniaPapers, createPaperFrames, drawDeniaPapers } from "./deniaPaperSwarm.js";
 
 export default function DeniaPaperSwarm({ castId }) {
   const canvasRef = useRef(null);
@@ -25,7 +25,7 @@ export default function DeniaPaperSwarm({ castId }) {
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      if (frames) papers = createPaperField(frames, width, height);
+      papers = createDeniaPapers(width, height);
     };
     const stop = () => {
       cancelled = true;
@@ -39,7 +39,6 @@ export default function DeniaPaperSwarm({ castId }) {
     image.onload = () => {
       if (cancelled) return;
       frames = createPaperFrames(image);
-      papers = createPaperField(frames, width, height);
       const draw = (now) => {
         if (cancelled) return;
         const elapsed = now - start;

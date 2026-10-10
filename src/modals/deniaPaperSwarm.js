@@ -1,87 +1,71 @@
-import { DENIA_SWARM_END_MS, DENIA_SWARM_START_MS } from "../shared/deniaSkillForm.js";
+import { DENIA_FORM_SWAP_MS, DENIA_SWARM_END_MS, DENIA_SWARM_START_MS } from "../shared/deniaSkillForm.js";
 
-// A seeded, overlapping paper carpet. Only visible sprites are drawn; rotation
-// frames are cached once so the dense cover does not create thousands of DOM nodes.
-export function createDeniaPapers(width, height, { small = width <= 600 } = {}) {
-  const minSize = small ? 34 : 44;
-  const maxSize = small ? 56 : 76;
-  const spacing = small ? 17 : 22;
-  const papers = [];
+// Depth comes from size, speed, contrast and individual folding, never a tiled wall.
+export function createDeniaPapers(width, height) {
+  const mobile = width <= 600;
+  const layers = [
+    { spacing: 6500, size: mobile ? [22, 32] : [28, 42], opacity: .38 },
+    { spacing: 1100, size: mobile ? [40, 58] : [50, 76], opacity: .92 },
+    { spacing: 7500, size: mobile ? [62, 84] : [80, 112], opacity: 1 }
+  ];
   let seed = 173;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let y = -maxSize; y < height + maxSize; y += spacing) {
-    for (let x = 0; x < width * 1.5; x += spacing) {
-      papers.push({ x: x + random() * spacing, y: y + random() * spacing,
-        size: minSize + random() * (maxSize - minSize), angle: Math.floor(random() * 12),
-        drift: random() * 18 - 9, phase: random() * Math.PI * 2 });
-    }
-  }
-  return papers;
+  return layers.flatMap((layer, depth) => {
+    const count = Math.min(depth === 1 ? 1200 : 200, Math.ceil(width * height / layer.spacing));
+    const columns = Math.ceil(Math.sqrt(count * width / height));
+    const rows = Math.ceil(count / columns);
+    return Array.from({ length: count }, (_, index) => {
+      const size = layer.size[0] + random() * (layer.size[1] - layer.size[0]);
+      const x = ((index % columns) + random()) / columns * width;
+      const y = (Math.floor(index / columns) + random()) / rows * height;
+      const speed = Math.max(width / (850 - depth * 150) * (.75 + random() * .5),
+        (x + size) / 750, (width + size - x) / 750);
+      return { depth, x, y, size, speed, opacity: layer.opacity,
+        angle: random() * Math.PI * 2, spin: (random() - .5) * (2 + depth * 2),
+        fold: random() * Math.PI * 2, phase: random() * Math.PI * 2,
+        lift: (18 + random() * 50) * (1 + depth * .45), drift: (random() - .5) * 75 };
+    });
+  });
 }
 
 export function createPaperFrames(image) {
-  return Array.from({ length: 12 }, (_, index) => {
+  return [0, 1, 2].map((depth) => {
     const canvas = document.createElement("canvas");
     canvas.width = 112;
     canvas.height = 112;
     const context = canvas.getContext("2d");
-    context.translate(56, 56);
-    context.rotate(index * Math.PI / 6);
-    context.drawImage(image, -32, -42, 64, 84);
+    context.filter = depth === 0 ? "blur(.65px)" : "none";
+    context.shadowColor = "rgba(8, 7, 25, .35)";
+    context.shadowBlur = depth === 2 ? 6 : 2;
+    context.shadowOffsetY = depth === 2 ? 3 : 1;
+    context.drawImage(image, 24, 14, 64, 84);
     return canvas;
   });
 }
 
-export function createPaperField(frames, width, height) {
-  // A small seamless texture keeps preparation cheap too, including on phones.
-  const papers = createDeniaPapers(256, 256, { small: width <= 600 });
-  const tile = document.createElement("canvas");
-  tile.width = 384;
-  tile.height = 256;
-  const tileContext = tile.getContext("2d");
-  for (const paper of papers) {
-    const size = paper.size * 112 / 84;
-    for (const dx of [-tile.width, 0, tile.width]) {
-      for (const dy of [-tile.height, 0, tile.height]) {
-        const x = paper.x + dx - size / 2;
-        const y = paper.y + dy - size / 2;
-        if (x + size < 0 || x > tile.width || y + size < 0 || y > tile.height) continue;
-        tileContext.drawImage(frames[paper.angle], x, y, size, size);
-      }
-    }
-  }
-  const field = document.createElement("canvas");
-  field.width = Math.ceil(width * 1.5 + 112);
-  field.height = Math.ceil(height + 112);
-  const context = field.getContext("2d");
-  context.fillStyle = context.createPattern(tile, "repeat");
-  context.fillRect(0, 0, field.width, field.height);
-  // Just 64 loose foreground papers tumble; the dense body uses eight cached
-  // strips regardless of screen size or apparent particle count.
-  const loose = Array.from({ length: 64 }, (_, index) => ({ ...papers[Math.floor(index * papers.length / 64)],
-    x: ((index * .618) % 1) * width * 1.5, y: ((index * .381) % 1) * height }));
-  return { field, loose };
+export function deniaPaperPose(paper, elapsed) {
+  const t = (elapsed - DENIA_FORM_SWAP_MS) / 750;
+  return {
+    x: paper.x + (elapsed - DENIA_FORM_SWAP_MS) * paper.speed,
+    y: paper.y + paper.lift * (Math.sin(paper.phase + t * 2.4) - Math.sin(paper.phase)) + paper.drift * t,
+    angle: paper.angle + t * paper.spin,
+    fold: .18 + .82 * Math.abs(Math.cos(paper.fold + t * (2.1 + paper.depth * .6)))
+  };
 }
 
-export function drawDeniaPapers(context, frames, { field, loose }, width, height, elapsed) {
+export function drawDeniaPapers(context, frames, papers, width, height, elapsed) {
   context.clearRect(0, 0, width, height);
   if (elapsed < DENIA_SWARM_START_MS || elapsed >= DENIA_SWARM_END_MS) return;
-  const progress = (elapsed - DENIA_SWARM_START_MS) / (DENIA_SWARM_END_MS - DENIA_SWARM_START_MS);
-  const offset = -width * 1.5 + progress * width * 2.6;
-  for (let index = 0; index < 8; index += 1) {
-    const top = Math.floor(index * field.height / 8);
-    const bottom = Math.floor((index + 1) * field.height / 8);
-    const wave = Math.sin(index * .8 + progress * 5) * 18;
-    context.drawImage(field, 0, top, field.width, bottom - top,
-      offset - 56 + wave, top - 56, field.width, bottom - top);
-  }
-  for (const paper of loose) {
-    const x = paper.x + offset + Math.sin(paper.phase + progress * 5) * 24
-      + Math.sin(paper.y / height * Math.PI * 3) * 24;
-    const y = paper.y + Math.sin(paper.phase + progress * 7) * paper.drift;
-    const frameSize = paper.size * 112 / 84;
-    if (x < -frameSize || x > width + frameSize || y < -frameSize || y > height + frameSize) continue;
-    const rotation = (paper.angle + Math.floor(progress * 4)) % frames.length;
-    context.drawImage(frames[rotation], x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
+  for (const paper of papers) {
+    const pose = deniaPaperPose(paper, elapsed);
+    const size = paper.size * 112 / 84;
+    if (pose.x < -size || pose.x > width + size || pose.y < -size || pose.y > height + size) continue;
+    context.save();
+    context.globalAlpha = paper.opacity;
+    context.translate(pose.x, pose.y);
+    context.rotate(pose.angle);
+    context.scale(pose.fold, 1);
+    context.drawImage(frames[paper.depth], -size / 2, -size / 2, size, size);
+    context.restore();
   }
 }
