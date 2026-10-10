@@ -60,3 +60,18 @@
   }
 
 }
+
+/* Extend the crop upward so lifted artwork still reaches the original bottom. */
+@media (min-width: 901px) {
+  .room-screen:not(.sigrika-candy-duel-room) .portrait-wrap > .character-bust-portrait[data-variant="battle"] {
+    top: -15%;
+    height: 115%;
+
+    &[data-standard="true"] > .character-bust-art {
+      top: calc(var(--character-bust-top, 0%) / 1.15);
+    }
+    &[data-standard="false"] > .character-bust-art {
+      height: calc(100% / 1.15);
+    }
+  }
+}

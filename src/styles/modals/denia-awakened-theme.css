@@ -1,0 +1,41 @@
+/* Match-only markings, derived from the awakened sprite's arms and legs. */
+.skill-cutin-scene[data-battle-form="denia-awakened"] {
+  --cutin-deep: var(--denia-indigo);
+
+  & .skill-cutin-color {
+    background: var(--denia-runes) center / 180px 110px repeat-x,
+      linear-gradient(125deg, var(--denia-indigo), var(--denia-violet));
+  }
+  & .skill-cutin-divider,
+  & .skill-cutin-underline,
+  & .skill-cutin-streak {
+    background: linear-gradient(100deg, var(--denia-cyan), var(--denia-violet));
+  }
+  & .skill-cutin-backing {
+    background: linear-gradient(100deg, var(--denia-indigo) 20%, var(--denia-violet) 72%, var(--denia-cyan));
+  }
+  & .skill-cutin-ribbon::after {
+    content: "";
+    position: absolute;
+    right: 2%;
+    bottom: -18px;
+    width: 100px;
+    height: 78px;
+    background: var(--denia-runes) center / contain no-repeat;
+    opacity: .25;
+    pointer-events: none;
+  }
+}
+
+/* Outrank the final paper owners without changing other character cards. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player][data-battle-form="denia-awakened"] {
+  & .portrait-wrap:not(.no-character)::before {
+    background: var(--denia-runes) bottom right / 140px 86px no-repeat,
+      linear-gradient(135deg, color-mix(in srgb, var(--denia-cyan) 12%, var(--bright-paper)), color-mix(in srgb, var(--denia-violet) 30%, var(--bright-paper)));
+    box-shadow: 4px 5px 0 color-mix(in srgb, var(--denia-violet) 30%, transparent);
+  }
+  & .skill-chip-wrap .skill-chip {
+    background: var(--denia-runes) right -12px bottom -13px / 80px 49px no-repeat,
+      linear-gradient(105deg, color-mix(in srgb, var(--denia-cyan) 28%, var(--bright-paper)), color-mix(in srgb, var(--denia-violet) 36%, var(--bright-paper))) !important;
+  }
+}

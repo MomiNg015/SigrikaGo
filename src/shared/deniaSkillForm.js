@@ -1,6 +1,15 @@
 import { canonicalCharacterId } from "./characterAliases.js";
 
 export const DENIA_SKILL_FORM = "denia-awakened";
+export const DENIA_SKILL_FORM_PALETTE = "#7860e8";
+export const DENIA_RUNE_ASSET = "/assets/effects/denia-awakened-runes.svg";
+// Sampled cyan/electric violet from the supplied arm and leg markings.
+export const DENIA_SKILL_FORM_STYLE = Object.freeze({
+  "--denia-cyan": "#60f8f0",
+  "--denia-violet": DENIA_SKILL_FORM_PALETTE,
+  "--denia-indigo": "#41466f",
+  "--denia-runes": `url("${DENIA_RUNE_ASSET}")`
+});
 export const DENIA_SWARM_START_MS = 1000;
 export const DENIA_FORM_SWAP_MS = 1750;
 export const DENIA_SWARM_END_MS = 2500;

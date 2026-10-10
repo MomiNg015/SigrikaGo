@@ -5,7 +5,8 @@ import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import BattleCharacterPortrait from "./BattleCharacterPortrait.jsx";
-import { currentBattleRound, hasDeniaSkillForm } from "../shared/deniaSkillForm.js";
+import { currentBattleRound, DENIA_SKILL_FORM, DENIA_SKILL_FORM_PALETTE, DENIA_SKILL_FORM_STYLE, hasDeniaSkillForm } from "../shared/deniaSkillForm.js";
+import { useDeniaSkillForm } from "../shared/useDeniaSkillForm.js";
 import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
@@ -49,6 +50,7 @@ function PlayerInfo({
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
   const [tapTooltip, setTapTooltip] = useState(null);
   const [traitPopoverOpen, setTraitPopoverOpen] = useState(false);
+  const battleForm = useDeniaSkillForm(game, player?.character ?? player?.characterId, player?.color);
   useEffect(() => {
     if (!tapTooltip) return undefined;
     const closeTooltip = (event) => {
@@ -70,10 +72,12 @@ function PlayerInfo({
   const useTutorialPlayerPortrait = Boolean(player.isTutorialPlayer && isNoCharacter && !isBot && player.user?.id !== "tutorial-npc");
   const useNoCharacterPortraitLayout = !sigrikaCandyDuel && isNoCharacter && !botPortraitUrl && !useTutorialPlayerPortrait;
   const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
+  const battleCharacter = battleForm === DENIA_SKILL_FORM && baseCharacter
+    ? { ...baseCharacter, palette: DENIA_SKILL_FORM_PALETTE } : baseCharacter;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
-    ? { ...baseCharacter, skill: { ...baseCharacter.skill, ...activeSkill } }
-    : baseCharacter;
+    ? { ...battleCharacter, skill: { ...battleCharacter.skill, ...activeSkill } }
+    : battleCharacter;
   const skillUses = effectiveSkillUsesForColor(game, player.color);
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
@@ -133,7 +137,8 @@ function PlayerInfo({
     <aside
       className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${isPracticeBot ? "practice-bot-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
       data-paper-player={!sigrikaCandyDuel ? "" : undefined}
-      style={{ "--player-accent": character?.palette || "var(--bright-blue)", ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {}) }}
+      data-battle-form={battleForm ?? undefined}
+      style={{ ...(battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_STYLE : {}), "--player-accent": character?.palette || "var(--bright-blue)", ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {}) }}
     >
       {showPortrait && (canSwitchView ? (
         <button

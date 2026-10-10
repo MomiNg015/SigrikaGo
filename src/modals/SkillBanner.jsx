@@ -4,7 +4,7 @@ import { characterPortraitImageProps } from "../shared/characterPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 import { skillBannerDurationMs } from "../shared/skillPresentation.js";
-import { isDeniaSkillBanner } from "../shared/deniaSkillForm.js";
+import { DENIA_SKILL_FORM, DENIA_SKILL_FORM_PALETTE, DENIA_SKILL_FORM_STYLE, isDeniaSkillBanner } from "../shared/deniaSkillForm.js";
 import { useDeniaSkillForm } from "../shared/useDeniaSkillForm.js";
 import DeniaPaperSwarm from "./DeniaPaperSwarm.jsx";
 
@@ -38,7 +38,8 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
 
   return (
     <div key={banner.id} className="skill-cutin-scene" aria-live="polite" aria-atomic="true"
-      style={{ "--cutin-accent": CUTIN_ACCENTS[character.id] ?? character.palette ?? "#8660ba", "--cutin-duration": `${duration}ms` }}>
+      data-battle-form={battleForm ?? undefined}
+      style={{ ...(battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_STYLE : {}), "--cutin-accent": battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_PALETTE : CUTIN_ACCENTS[character.id] ?? character.palette ?? "#8660ba", "--cutin-duration": `${duration}ms` }}>
       <div className="skill-cutin-scrim" aria-hidden="true" />
       {isDeniaSkillBanner(banner) && banner.effectsEnabled !== false && <DeniaPaperSwarm key={banner.id} castId={banner.id} />}
       <div className="skill-cutin">
