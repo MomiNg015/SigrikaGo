@@ -1,5 +1,6 @@
 import { characterChibiSource, isBuiltinCharacterPortrait } from "./characterChibiPortraits.js";
 import { DENIA_SKILL_FORM, DENIA_SKILL_FORM_ASSET } from "./deniaSkillForm.js";
+import { AEMEATH_SKILL_FORM, AEMEATH_SKILL_FORM_ASSET } from "./aemeathSkillForm.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { DENIA_CANDY_PORTRAIT_ASSET, SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "./characterPortraitAssetCatalog.js";
@@ -17,6 +18,9 @@ export function resolveCharacterPortraitPresentation(character = {}, {
   battleForm = null
 } = {}) {
   const characterId = canonicalCharacterId(character.id ?? character.slug);
+  if (characterId === "aemeath" && battleForm === AEMEATH_SKILL_FORM) {
+    return portraitPresentation(AEMEATH_SKILL_FORM_ASSET);
+  }
   if (characterId === "denia" && battleForm === DENIA_SKILL_FORM) {
     return portraitPresentation(DENIA_SKILL_FORM_ASSET);
   }

@@ -16,7 +16,7 @@ import {
   skillBoardEffectDurationMs
 } from "../shared/skillPresentation.js";
 import { TUTORIAL_NODE_TYPES, nodeTypeRequiresPoint } from "../shared/tutorialNodeTypes.js";
-import { deniaFormBeforeCast, isDenia } from "../shared/deniaSkillForm.js";
+import { battleFormBeforeCast } from "../shared/battleSkillForm.js";
 
 const DEFAULT_TUTORIAL_PLAYERS = Object.freeze([
   { color: COLORS.black, name: "Player", characterId: "sigrika" },
@@ -224,7 +224,7 @@ function buildTutorialPendingSkillPreview({
       : [],
     resolvesAt,
     effectsEnabled: true,
-    battleFormBeforeCast: isDenia(characterId) ? deniaFormBeforeCast(resolvedGame, color) : null,
+    battleFormBeforeCast: battleFormBeforeCast(resolvedGame, characterId, color),
     bannerDurationMs: skillBannerDurationMs({ characterId }),
     boardEffectDurationMs: skillBoardEffectDurationMs({ effectType, removalMarkIds })
   };

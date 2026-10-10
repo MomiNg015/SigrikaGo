@@ -1,0 +1,56 @@
+/* One brief data rupture bridges Voyage Star's synchronized art replacement. */
+.aemeath-data-glitch {
+  --glitch-cyan: rgb(103 255 246);
+  --glitch-pink: rgb(249 81 146);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  background: rgb(19 24 43 / 28%);
+  backdrop-filter: contrast(1.6) saturate(.45);
+  animation: aemeath-data-envelope var(--glitch-duration) linear both;
+}
+
+.aemeath-glitch-band {
+  position: absolute;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgb(19 24 43 / 75%) 18%, transparent 18% 24%, rgb(19 24 43 / 60%) 24% 67%, transparent 67% 71%, rgb(19 24 43 / 80%) 71%);
+  border-block: 1px solid var(--glitch-cyan);
+  box-shadow: 0 3px var(--glitch-pink);
+  animation: aemeath-data-shear var(--glitch-duration) steps(1, end) both;
+}
+
+.skill-cutin-scene .aemeath-glitch-band > span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-cutin-scene .aemeath-glitch-band > span {
+  display: block;
+  white-space: pre;
+  font: 12px / 1.25 monospace !important;
+  color: var(--glitch-cyan) !important;
+  letter-spacing: .24em;
+  text-shadow: -3px 0 var(--glitch-pink);
+}
+
+.aemeath-glitch-band:nth-child(3n) {
+  background: rgb(103 255 246 / 22%);
+  backdrop-filter: invert(.85);
+  opacity: .8;
+}
+
+@keyframes aemeath-data-envelope {
+  0%, 100% { opacity: 0; }
+  12%, 68% { opacity: 1; }
+}
+
+@keyframes aemeath-data-shear {
+  0% { transform: translateX(0); }
+  22% { transform: translateX(var(--glitch-shift)); }
+  52% { transform: translateX(calc(var(--glitch-shift) * -.6)); }
+  78% { transform: translateX(calc(var(--glitch-shift) * .2)); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aemeath-data-glitch { display: none; animation: none; }
+  .aemeath-glitch-band { animation: none; }
+}

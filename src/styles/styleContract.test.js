@@ -1670,6 +1670,11 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(modalsEntry)).toEqual([
       "./modals/base-result-skill.css",
+      "./modals/skill-cutin.css",
+      "./modals/skill-cutin-motion.css",
+      "./modals/denia-paper-swarm.css",
+      "./modals/denia-awakened-theme.css",
+      "./modals/aemeath-data-glitch.css",
       "./modals/window-entry-motion.css",
       "./modals/result-modal.css",
       "./modals/result-reward-motion.css",

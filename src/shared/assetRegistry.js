@@ -22,6 +22,7 @@ import {
 } from "./audioAssets.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { DENIA_SKILL_FORM_ASSET, DENIA_PAPER_ASSET, DENIA_RUNE_ASSET } from "./deniaSkillForm.js";
+import { AEMEATH_SKILL_FORM_ASSET } from "./aemeathSkillForm.js";
 import {
   DENIA_CANDY_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
@@ -75,6 +76,7 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
   ]),
   effects: Object.freeze([
+    AEMEATH_SKILL_FORM_ASSET,
     DENIA_RUNE_ASSET,
     DENIA_SKILL_FORM_ASSET,
     DENIA_PAPER_ASSET,

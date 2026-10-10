@@ -5,8 +5,10 @@ import { findCharacter } from "../shared/characterDisplay.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 import { skillBannerDurationMs } from "../shared/skillPresentation.js";
 import { DENIA_SKILL_FORM, DENIA_SKILL_FORM_PALETTE, DENIA_SKILL_FORM_STYLE, isDeniaSkillBanner } from "../shared/deniaSkillForm.js";
-import { useDeniaSkillForm } from "../shared/useDeniaSkillForm.js";
+import { useBattleSkillForm } from "../shared/useBattleSkillForm.js";
 import DeniaPaperSwarm from "./DeniaPaperSwarm.jsx";
+import AemeathDataGlitch from "./AemeathDataGlitch.jsx";
+import { isAemeathVoyageBanner } from "../shared/aemeathSkillForm.js";
 
 const CUTIN_ACCENTS = { sigrika: "#8660ba", changli: "#df7165", qiuyuan: "#67988d" };
 
@@ -15,7 +17,7 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
   const character = findCharacter(characters, banner.character ?? banner.characterId);
   const effectType = banner.effectType;
   const skillName = banner.skillName ?? character.skill.name;
-  const battleForm = useDeniaSkillForm({ pendingSkill: banner }, character.id, banner.color);
+  const battleForm = useBattleSkillForm({ pendingSkill: banner }, character.id, banner.color);
   const portrait = characterPortraitImageProps(character, {
     variant: "full",
     battleForm,
@@ -42,6 +44,7 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
       style={{ ...(battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_STYLE : {}), "--cutin-accent": battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_PALETTE : CUTIN_ACCENTS[character.id] ?? character.palette ?? "#8660ba", "--cutin-duration": `${duration}ms` }}>
       <div className="skill-cutin-scrim" aria-hidden="true" />
       {isDeniaSkillBanner(banner) && banner.effectsEnabled !== false && <DeniaPaperSwarm key={banner.id} castId={banner.id} />}
+      {isAemeathVoyageBanner(banner) && banner.effectsEnabled !== false && <AemeathDataGlitch key={banner.id} />}
       <div className="skill-cutin">
         <div className="skill-cutin-streak skill-cutin-streak-top" aria-hidden="true" />
         <div className="skill-cutin-streak skill-cutin-streak-bottom" aria-hidden="true" />

@@ -1,5 +1,6 @@
 import { canonicalCharacterId } from './characterAliases.js';
 import { DENIA_SKILL_FORM, DENIA_SKILL_FORM_ASSET } from './deniaSkillForm.js';
+import { AEMEATH_SKILL_FORM, AEMEATH_SKILL_FORM_ASSET } from './aemeathSkillForm.js';
 import { CHARACTER_PORTRAIT_ASSETS, DENIA_CANDY_PORTRAIT_ASSET } from './characterPortraitAssetCatalog.js';
 import { CHARACTER_CHIBI_LANDMARKS, isBuiltinCharacterPortrait } from './characterChibiPortraits.js';
 import { characterPortraitImageProps } from './characterPortraits.js';
@@ -25,6 +26,11 @@ export function resolveHandbookPortrait(character = {}, {
 } = {}) {
   const id = canonicalCharacterId(character.id ?? character.slug);
   const resolved = characterPortraitImageProps(character, { itemEffects, user, equippedCostumes, costumeSnapshot, battleForm });
+  if (id === 'aemeath' && battleForm === AEMEATH_SKILL_FORM) {
+    return { src: AEMEATH_SKILL_FORM_ASSET, fallbackSrc: AEMEATH_SKILL_FORM_ASSET,
+      isChibi: true, isStandard: true, width: 832, height: 1216, visibleTop: 0,
+      ...CHARACTER_CHIBI_LANDMARKS.aemeath };
+  }
   if (id === 'denia' && battleForm === DENIA_SKILL_FORM) {
     return { src: DENIA_SKILL_FORM_ASSET, fallbackSrc: DENIA_SKILL_FORM_ASSET,
       isChibi: true, isStandard: true, width: 832, height: 1216, visibleTop: 0,

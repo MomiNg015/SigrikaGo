@@ -6,7 +6,7 @@ import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import BattleCharacterPortrait from "./BattleCharacterPortrait.jsx";
 import { currentBattleRound, DENIA_SKILL_FORM, DENIA_SKILL_FORM_PALETTE, DENIA_SKILL_FORM_STYLE, hasDeniaSkillForm } from "../shared/deniaSkillForm.js";
-import { useDeniaSkillForm } from "../shared/useDeniaSkillForm.js";
+import { useBattleSkillForm } from "../shared/useBattleSkillForm.js";
 import {
   SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET,
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
@@ -50,7 +50,7 @@ function PlayerInfo({
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
   const [tapTooltip, setTapTooltip] = useState(null);
   const [traitPopoverOpen, setTraitPopoverOpen] = useState(false);
-  const battleForm = useDeniaSkillForm(game, player?.character ?? player?.characterId, player?.color);
+  const battleForm = useBattleSkillForm(game, player?.character ?? player?.characterId, player?.color);
   useEffect(() => {
     if (!tapTooltip) return undefined;
     const closeTooltip = (event) => {

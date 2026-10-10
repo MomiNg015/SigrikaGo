@@ -24,7 +24,7 @@ import { gameModeFamily } from "../src/shared/gameModes.js";
 import { getCachedPublicSiteSettings } from "./siteSettings.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
 import { finishCaptureChallenge } from "./captureChallenge.js";
-import { deniaFormBeforeCast, isDenia } from "../src/shared/deniaSkillForm.js";
+import { battleFormBeforeCast } from "../src/shared/battleSkillForm.js";
 
 export function createPendingSkillResolution({
   pendingSkillId,
@@ -264,7 +264,7 @@ export function buildPendingSkillPreview({
     removedStones,
     resolvesAt,
     effectsEnabled,
-    battleFormBeforeCast: isDenia(character.id ?? player.characterId) ? deniaFormBeforeCast(resolvedGame, player.color) : null,
+    battleFormBeforeCast: battleFormBeforeCast(resolvedGame, character.id ?? player.characterId, player.color),
     bannerDurationMs: skillBannerDurationMs({ characterId: character.id ?? player.characterId, effectsEnabled }),
     boardEffectDurationMs: effectsEnabled === false
       ? 0
