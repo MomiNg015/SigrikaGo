@@ -38,7 +38,8 @@ describe("publicUser", () => {
       modeStats: {
         spark: { rating: 1000, stars: 2, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
         standard: { rating: 1000, stars: 2, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 },
-        gomoku: { rating: 0, stars: 2, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 }
+        gomoku: { rating: 0, stars: 2, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 },
+      team: { rating: 0, stars: 2, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       blueGems: 0,

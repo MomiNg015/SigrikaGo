@@ -13,6 +13,45 @@ import {
 } from "./social.js";
 
 describe("social profiles and relationships", () => {
+  it("includes legacy team records, excludes invalid games, and counts only entered members", async () => {
+    const snapshot = (round, ids = ["sigrika", "aemeath", "nabomo"]) => JSON.stringify({
+      team: { round }, players: ["black", "white"].map((color) => ({ color, teamLineup: ids.map((characterId) => ({ characterId })) }))
+    });
+    const profile = await getUserProfile({
+      prisma: socialProfilePrisma({
+        users: [{ id: "team-user", username: "team-user", rank: "8段", stars: 8 }],
+        records: [
+          record({ mode: "team", rated: false, blackUserId: "team-user", snapshot: snapshot(1), moveCount: 45 }),
+          record({ mode: "team", rated: true, whiteUserId: "team-user", snapshot: snapshot(2), moveCount: 85 }),
+          record({ mode: "team", rated: true, blackUserId: "team-user", snapshot: snapshot(3), winnerColor: null, resultReason: "agreement", resultText: "和棋" }),
+          record({ mode: "team", blackUserId: "team-user", snapshot: snapshot(3), resultText: "对局无效" }),
+          record({ mode: "spark", blackUserId: "team-user" })
+        ]
+      }), userId: "team-user", viewerId: "team-user", mode: "team"
+    });
+    expect(profile).toMatchObject({ rank: "3段", stars: 2, recordStats: { totalGames: 3, wins: 1, losses: 1, draws: 1 } });
+    expect(profile.recentResults).toEqual(["draw", "loss", "win"]);
+    expect(profile.characterStats).toEqual([
+      expect.objectContaining({ characterId: "sigrika", total: 3, wins: 1, losses: 1, draws: 1 }),
+      expect.objectContaining({ characterId: "aemeath", total: 2, wins: 0, losses: 1, draws: 1 }),
+      expect.objectContaining({ characterId: "nabomo", total: 1, wins: 0, losses: 0, draws: 1 })
+    ]);
+    expect(profile).not.toHaveProperty("snapshot");
+  });
+
+  it("uses only the latest ten team outcomes while keeping all appearances and stored rank", async () => {
+    const profile = await getUserProfile({ prisma: socialProfilePrisma({
+      users: [{ id: "u", username: "u", modeStats: [{ mode: "team", rank: "5段", stars: 4, wins: 4 }] }],
+      records: Array.from({ length: 12 }, (_, i) => record({
+        mode: "team", blackUserId: "u", blackCharacter: "sigrika", snapshot: "broken-json",
+        winnerColor: i < 10 ? "black" : "white", createdAt: new Date(2026, 0, 12 - i)
+      }))
+    }), userId: "u", viewerId: "u", mode: "team" });
+    expect(profile.recentResults).toEqual(Array(10).fill("win"));
+    expect(profile).toMatchObject({ rank: "5段", stars: 4, recordStats: { totalGames: 12, wins: 10, losses: 2 } });
+    expect(profile.characterStats).toEqual([expect.objectContaining({ characterId: "sigrika", total: 12 })]);
+  });
+
   it("formats profile records and per-character stats in readable Chinese", async () => {
     const profile = await getUserProfile({
       prisma: socialProfilePrisma({

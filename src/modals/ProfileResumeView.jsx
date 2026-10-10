@@ -1,7 +1,7 @@
 import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useRef, useState } from "react";
-import { ProfileCaptureRecord, ProfileTeamRecords } from "./ProfilePlayRecords.jsx";
+import { ProfileCaptureRecord } from "./ProfilePlayRecords.jsx";
 import { Gamepad2, HelpCircle, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
@@ -33,9 +33,7 @@ export default function ProfileResumeView({
   recentAction = null,
   secondaryActions = null,
   status = null,
-  token,
-  onOpenReplay,
-  replayDisabled = false
+  token
 }) {
   const normalizedMode = mode === "team" ? "spark" : normalizeGameModeId(mode);
   const normalizedStats = normalizeProfileStats(stats);
@@ -43,7 +41,7 @@ export default function ProfileResumeView({
   const records = sortCharacterStatsByGames(characterStats);
   const winRate = winRateText(normalizedStats.wins, normalizedStats.totalGames);
   const panelId = `${context}-profile-mode-panel`;
-  const playKey = `${user.id}:${normalizedMode}`;
+  const playKey = `${user.id}:${mode}`;
   const [playSelection, setPlaySelection] = useState(null);
   const play = playSelection?.key === playKey ? playSelection.play : mode === "team" ? "team" : "regular";
   const setPlay = (nextPlay) => setPlaySelection({ key: playKey, play: nextPlay });
@@ -85,19 +83,18 @@ export default function ProfileResumeView({
       <nav className="profile-play-tabs" aria-label="具体玩法">
         {(normalizedMode === "spark" ? [["regular", "常规匹配"], ["capture", "吃子挑战赛"], ["team", "队际赛"]] : [["regular", normalizedMode === "gomoku" ? "五子棋" : "常规匹配"]]).map(([id, label]) => (
           <button key={id} type="button" aria-pressed={play === id} disabled={modePending} onClick={() => {
-            setPlay(id);
-            if (mode === "team" && id === "regular") onModeChange?.("spark");
+            if (id === "team") {
+              if (mode !== "team") onModeChange?.("team");
+              else setPlay("team");
+            } else if (id === "regular" && mode === "team") onModeChange?.("spark");
+            else setPlay(id);
           }}>{label}</button>
         ))}
       </nav>
-      {play !== "regular" ? (
+      {play === "capture" ? (
         <div id={panelId} role="tabpanel" aria-labelledby={`${context}-profile-tab-${normalizedMode}`} className="profile-play-records">
           {status && <div aria-live="polite">{status}</div>}
-          {play === "capture" ? (
-            <ProfileCaptureRecord key={user.id} user={user} token={token} characters={characters} />
-          ) : (
-            <ProfileTeamRecords key={user.id} user={user} token={token} characters={characters} onOpenReplay={onOpenReplay} replayDisabled={replayDisabled} />
-          )}
+          <ProfileCaptureRecord key={user.id} user={user} token={token} characters={characters} />
         </div>
       ) : <>
 
@@ -121,7 +118,7 @@ export default function ProfileResumeView({
             />
             <div className="profile-summary-item profile-record-card">
               <div className="profile-record-header">
-                <span className="profile-summary-label"><Gamepad2 size={17} />升降级战绩</span>
+                <span className="profile-summary-label"><Gamepad2 size={17} />{mode === "team" ? "队际赛战绩" : "升降级战绩"}</span>
                 {recentAction}
               </div>
               <dl className="profile-record-metrics">
@@ -134,7 +131,7 @@ export default function ProfileResumeView({
             </div>
           </div>
           <section className="profile-recent-section" aria-label="最近十盘">
-            <RecentResultMarkers results={recentResults} className="profile-rank-results" />
+            <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘" />
           </section>
         </section>
 
@@ -148,7 +145,7 @@ export default function ProfileResumeView({
           <section className="profile-character-section" aria-label="角色战绩">
             <div className="profile-character-table-head" aria-hidden="true">
               <span />
-              <span>对局</span>
+              <span>出场次数</span>
               <span>胜</span>
               <span>负</span>
               <span>和</span>
@@ -167,7 +164,7 @@ export default function ProfileResumeView({
                 <thead>
                   <tr>
                     <th scope="col" aria-label="角色"></th>
-                    <th scope="col">对局</th>
+                    <th scope="col">出场次数</th>
                     <th scope="col">胜</th>
                     <th scope="col">负</th>
                     <th scope="col">和</th>
@@ -196,7 +193,7 @@ export default function ProfileResumeView({
                             <span className="profile-character-name">{character.name}</span>
                           </span>
                         </th>
-                        <td data-label="对局">{record.total}</td>
+                        <td data-label="出场次数">{record.total}</td>
                         <td data-label="胜">{record.wins}</td>
                         <td data-label="负">{record.losses}</td>
                         <td data-label="和">{record.draws}</td>

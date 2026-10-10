@@ -46,15 +46,18 @@ describe("profile folder play navigation", () => {
     await waitFor(() => expect(screen.queryByText("999")).toBeNull());
   });
 
-  it("loads only team replays and forwards the selected replay id", async () => {
-    api.mockResolvedValue({ records: [{ id: "team-1", blackUserId: "a", whiteUserId: "b", winnerColor: "black", resultText: "黑胜", moveCount: 42, createdAt: "2026-10-10", teamLineups: { black: [{ characterId: "sigrika" }], white: [{ characterId: "aemeath" }] } }], nextCursor: null });
-    const onOpenReplay = vi.fn();
-    render(<ProfileResumeView {...props} onOpenReplay={onOpenReplay} />);
+  it("requests the independent team profile before changing the selected play", () => {
+    const onModeChange = vi.fn();
+    const { rerender } = render(<ProfileResumeView {...props} onModeChange={onModeChange} />);
     fireEvent.click(screen.getByRole("button", { name: "队际赛" }));
-    await screen.findByText("黑胜");
-    expect(screen.queryByText("段位", { exact: true })).toBeNull();
-    expect(api.mock.calls[0][0]).toBe("/api/users/a/replays?mode=team");
-    fireEvent.click(screen.getByRole("button", { name: "对局回放" }));
-    expect(onOpenReplay).toHaveBeenCalledWith("team-1");
+    expect(onModeChange).toHaveBeenCalledWith("team");
+    expect(screen.getByText("升降级战绩")).toBeTruthy();
+    rerender(<ProfileResumeView {...props} mode="team" recentResults={["win", "draw", "loss"]}
+      characterStats={[{ characterId: "sigrika", total: 3, wins: 1, losses: 1, draws: 1 }]} />);
+    expect(screen.getByText("队际赛战绩")).toBeTruthy();
+    expect(screen.getByText("段位", { exact: true })).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "出场次数" })).toBeTruthy();
+    expect(document.querySelector(".recent-result-marker-draw").textContent).toBe("和");
+    expect(screen.getByRole("button", { name: "队际赛" }).getAttribute("aria-pressed")).toBe("true");
   });
 });

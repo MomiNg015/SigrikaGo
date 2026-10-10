@@ -32,7 +32,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   const characterStats = profile?.characterStats ?? [];
   const replayPagination = useReplayPagination({
     enabled: showReplays,
-    endpoint: `/api/replays?mode=${encodeURIComponent(replayMode)}&scope=regular`,
+    endpoint: `/api/replays?mode=${encodeURIComponent(replayMode)}${replayMode === "team" ? "" : "&scope=regular"}`,
     token
   });
 
@@ -162,6 +162,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           recentAction={(
             <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => { setReplayMode(mode); setShowReplays(true); }}>
               <MonitorPlay size={18} aria-hidden="true" />
+              <span>对局回放</span>
             </button>
           )}
           status={(profileLoading || profileError) ? (
@@ -196,6 +197,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
 }
 
 function profileModeTitle(mode) {
+  if (mode === "team") return "队际赛";
   return orderedProfileModes().find((entry) => entry.id === mode)?.shortTitle ?? "当前模式";
 }
 

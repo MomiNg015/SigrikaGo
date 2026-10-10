@@ -130,7 +130,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml.indexOf("profile-folder-tabs")).toBeLessThan(profileHtml.indexOf("profile-summary-grid"));
     expect(profileHtml).not.toContain("3段 · 1160分");
     expect(profileHtml).toContain("<th scope=\"col\" aria-label=\"角色\"></th>");
-    expect(profileHtml).toContain("<th scope=\"col\">对局</th>");
+    expect(profileHtml).toContain("<th scope=\"col\">出场次数</th>");
     expect(profileHtml).toContain("<th scope=\"col\">胜</th>");
     expect(profileHtml).toContain("<th scope=\"col\">负</th>");
     expect(profileHtml).toContain("<th scope=\"col\">和</th>");

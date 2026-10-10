@@ -116,7 +116,7 @@ describe("UserProfileCard dossier interactions", () => {
     expect(within(totalSummary).getByLabelText("总对局 10局")).toBeTruthy();
     expect([...totalSummary.querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
     const replayButton = within(totalSummary).getByRole("button", { name: "对局回放" });
-    expect(replayButton.textContent).toBe("");
+    expect(replayButton.textContent).toBe("对局回放");
     expect(screen.getByLabelText("最近十盘").querySelector(".profile-rank-results")).toBeTruthy();
     expect(document.querySelector(".profile-secondary-actions")).toBeNull();
 
@@ -306,7 +306,7 @@ describe("UserProfileCard dossier interactions", () => {
     });
 
     const headers = screen.getAllByRole("columnheader");
-    expect(headers.map((header) => header.textContent)).toEqual(["", "对局", "胜", "负", "和", "胜率"]);
+    expect(headers.map((header) => header.textContent)).toEqual(["", "出场次数", "胜", "负", "和", "胜率"]);
     expect(headers[0].getAttribute("aria-label")).toBe("角色");
     expect(screen.getAllByRole("rowheader").map((header) => header.textContent)).toEqual(["爱弥斯", "西格莉卡"]);
     expect(document.querySelectorAll(".profile-portrait-mask")).toHaveLength(3);

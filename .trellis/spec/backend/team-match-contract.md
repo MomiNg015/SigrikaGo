@@ -2,7 +2,7 @@
 
 ## Scope / Trigger
 
-Changes to team admission, character handoff, room projection, stage playback or replay-only settlement.
+Changes to team admission, character handoff, room projection, stage playback, independent rank settlement or profile appearances.
 
 ## Signatures
 
@@ -13,13 +13,13 @@ Changes to team admission, character handoff, room projection, stage playback or
 
 ## Contracts
 
-Use an independent FIFO queue and the Spark board/time rules. Do not add team to rated `GAME_MODE_IDS`. Before each handoff finish pending skill resolution and extra turns; thresholds remain global moves 40 and 80. Terminal state wins. Preserve board effects, captures, accumulated costs, turn and clocks; initialize incoming skill/passive state and clear derived skills. Reset the no-first history boundary each round.
+Use an independent FIFO queue and the Spark board/time rules. Team owns independent UserModeStats progression, but do not add it to top-level `GAME_MODE_IDS`. Before each handoff finish pending skill resolution and extra turns; thresholds remain global moves 40 and 80. Terminal state wins. Preserve board effects, captures, accumulated costs, turn and clocks; initialize incoming skill/passive state and clear derived skills. Reset the no-first history boundary each round.
 
 Use authoritative opening deadlines for every five-second stage. Freeze play and clocks. Round 1 includes nigiri. Reconnect uses the remaining deadline. Play only the local participant's current sortie voice once per round; preserve volume/mute controls. Resolve the last skill music from the lineup member at that history event, never from the newly active member. Stage handoffs must not switch BGM.
 
 Persist all three members privately. Project unrevealed opponent/spectator slots as null identity/configuration/costume. Reveal all on finish. Never spread the private lineup into game players or public users. The player's account default character must not change with handoff.
 
-Settlement saves valid terminal replays only; winner.invalid skips replay creation in every mode, and never changes rank, coins or existing record metrics. Replay must interpret round events and restore the character at that step.
+Valid team settlement uses rated=true and recordPolicy=team-ranked. Atomically write the terminal GameRecord and both UserModeStats.team rows through the durable settlement receipt. Reuse existing star rules; draws do not change progression. No coin, Spark-root, item or achievement rewards. winner.invalid skips replay and stats in every mode. Failed writes expose no live mutation; duplicate/restored settlement never re-awards. Historical unrated team replays feed profile totals/last ten/appearances without retroactive progression. Only actually entered members (snapshot.team.round, not move thresholds) count one final outcome each; unused members do not count. Replay must interpret round events and restore the character at that step.
 
 ## Validation & Error Matrix
 

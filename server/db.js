@@ -280,7 +280,7 @@ export function publicUser(user) {
 
 function publicModeStats(user) {
   const rows = modeStatsRows(user.modeStats);
-  const stats = Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, {
+  const stats = Object.fromEntries([...GAME_MODE_IDS, "team"].map((mode) => [mode, {
     rating: mode === "spark" ? Number(user.rating ?? 0) : 0,
     stars: mode === "spark" ? Number(user.stars ?? 2) : 2,
     rank: mode === "spark" ? normalizeRank(user.rank ?? DEFAULT_RANK) : DEFAULT_RANK,

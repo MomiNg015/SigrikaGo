@@ -6,7 +6,7 @@ export default function RecentResultMarkers({ results = [], className = "", labe
       {normalized.length === 0 && <span className="recent-result-empty">暂无最近十盘</span>}
       {normalized.map((result, index) => (
         <span className={`recent-result-marker recent-result-marker-${result}`} key={`${result}-${index}`}>
-          {result === "win" ? "胜" : "负"}
+          {result === "win" ? "胜" : result === "draw" ? "和" : "负"}
         </span>
       ))}
     </span>
@@ -16,5 +16,5 @@ export default function RecentResultMarkers({ results = [], className = "", labe
 function normalizeResults(results) {
   return (Array.isArray(results) ? results : [])
     .map((result) => String(result ?? "").trim().toLowerCase())
-    .filter((result) => result === "win" || result === "loss");
+    .filter((result) => result === "win" || result === "loss" || result === "draw");
 }

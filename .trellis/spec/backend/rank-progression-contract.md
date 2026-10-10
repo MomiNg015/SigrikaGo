@@ -10,7 +10,7 @@ Applies to competitive progression, public projections, leaderboards, admin edit
 - migrateRankStars(prisma) runs once, guarded by the private migration.rank-stars-v1 SiteSetting receipt.
 
 ## Contracts
-- spark, standard and gomoku are independent. Only spark mirrors User rank/stars/rating.
+- spark, standard, gomoku and team are independent. Only spark mirrors User rank/stars/rating.
 - 18级 through 3段: four slots; 4–6段: six; 7–8段: eight. Below 9段 rating is zero.
 - Evaluate promotion/demotion using the state before the game. Full-star win promotes; zero-star loss demotes. Otherwise win/loss changes one star. Target rank starts half full.
 - Every entry into 9段 sets 1000 points. Win +200; loss -250 floored at zero. Losing from zero demotes to 8段 with four stars.
@@ -45,7 +45,7 @@ Correct: persist the six-dan award so later demotion cannot revoke it.
 
 ## Matchmaking classification
 - Ordinary spark/standard/gomoku queues use their own mode rank; rankDistance skips nonexistent zero (1 kyu -> 1 dan is one step).
-- Within two steps is eligible immediately. Choose smallest distance, then oldest queuedAt; both distant players must have waited 15000ms before widening. Team keeps independent FIFO and replay-only settlement.
+- Within two steps is eligible immediately. Choose smallest distance, then oldest queuedAt; both distant players must have waited 15000ms before widening. Team keeps independent FIFO and always settles its own rank without coins; it does not inherit the ordinary rank-distance classification.
 - Queue retries preserve queuedAt. Socket-owned one-shot expansion timers retry without another join event, rechecking admission, authentication and blacklists. Leave/disconnect invalidate pending attempts and clear timers; a retry must still be queued after asynchronous validation, so already-matched users cannot reenter.
 - Room creation freezes rated from the initial mode rank distance. Existing rated projection, persistence and settlement are authoritative; do not recalculate from post-game ranks. Distant matchmaking has matchSource=matchmaking and rated=false, using existing friendly coins and no rated record/progression changes.
 - Match modal displays the expansion notice at 15s. Opening and room-code labels share roomMatchClassification, using pink/red for rated and mint for friendly; independent practice/story/team modes remain unlabelled.

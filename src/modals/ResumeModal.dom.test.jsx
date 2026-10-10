@@ -77,7 +77,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("button", { name: "个性化" }).textContent).toBe("个性化");
     expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
-    expect(screen.getByRole("button", { name: "对局回放" }).textContent).toBe("");
+    expect(screen.getByRole("button", { name: "对局回放" }).textContent).toBe("对局回放");
     expect(document.querySelector(".profile-record-header .profile-replay-button")).toBeTruthy();
     expect(screen.queryByText("点赞", { exact: false })).toBeNull();
     expect(screen.queryByText("加好友")).toBeNull();

@@ -54,7 +54,7 @@ export function UserProfileCard({
   const replayPagination = useReplayPagination({
     enabled: showReplays && !replayDisabled,
     endpoint: profileUser.id
-      ? `/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}&scope=regular`
+      ? `/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}${mode === "team" ? "" : "&scope=regular"}`
       : "",
     token
   });
@@ -296,6 +296,7 @@ export function UserProfileCard({
         recentAction={(
           <button data-button-role="tool" className="profile-replay-button" type="button" aria-label="对局回放" title="对局回放" disabled={replayDisabled} onClick={openReplays}>
             <MonitorPlay size={18} aria-hidden="true" />
+            <span>对局回放</span>
           </button>
         )}
         status={(loadingProfileMode || profileError || profileNotice) ? (
@@ -401,6 +402,7 @@ function profileDialogPortal(dialog) {
 }
 
 function profileModeTitle(mode) {
+  if (mode === "team") return "队际赛";
   return orderedProfileModes().find((entry) => entry.id === mode)?.shortTitle ?? "当前模式";
 }
 

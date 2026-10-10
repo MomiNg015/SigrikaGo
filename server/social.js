@@ -4,6 +4,8 @@ import { validateFeedbackContent } from "./feedback.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { listReplaySummaryPage } from "./replayPagination.js";
+import { isInvalidReplay } from "./replayValidity.js";
+import { enteredTeamCharacterIds } from "./teamProfileRecords.js";
 
 const LEGACY_MOJIBAKE_DRAW_TEXT = "\u935c\u5c7e\ue5d0";
 
@@ -139,13 +141,13 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
     prisma.gameRecord.findMany({
       where: {
         mode,
-        rated: true,
+        ...(mode === "team" ? {} : { rated: true }),
         OR: [
           { blackUserId: userId },
           { whiteUserId: userId }
         ]
       },
-      select: profileRecordSelect(),
+      select: { ...profileRecordSelect(), ...(mode === "team" ? { snapshot: true } : {}) },
       orderBy: { createdAt: "desc" }
     }),
     viewerId && viewerId !== userId
@@ -160,7 +162,8 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
     profileLikeSummary({ prisma, targetUserId: userId, viewerId })
   ]);
   const decoratedUser = decoratedUsers[0] ?? user;
-  const profileStats = recordStats(userId, records);
+  const validRecords = mode === "team" ? records.filter((record) => !isInvalidReplay(record)) : records;
+  const profileStats = recordStats(userId, validRecords);
 
   return {
     ...toSocialUser(decoratedUser, statusForUser?.(decoratedUser.id) ?? "offline", mode),
@@ -174,7 +177,11 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
       losses: profileStats.losses,
       draws: profileStats.draws
     },
-    characterStats: characterStats(userId, records),
+    ...(mode === "team" ? { recentResults: validRecords.slice(0, 10).reverse().map((record) => {
+      const winner = recordWinnerColor(record);
+      return winner ? (winner === (record.blackUserId === userId ? "black" : "white") ? "win" : "loss") : "draw";
+    }) } : {}),
+    characterStats: characterStats(userId, validRecords),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
   };
 }
@@ -352,14 +359,17 @@ function characterStats(userId, records) {
   const stats = new Map();
   for (const record of records) {
     const color = record.blackUserId === userId ? "black" : "white";
-    const characterId = color === "black" ? record.blackCharacter : record.whiteCharacter;
-    const row = stats.get(characterId) ?? { characterId, wins: 0, losses: 0, draws: 0, total: 0 };
-    const winner = recordWinnerColor(record);
-    row.total += 1;
-    if (winner === color) row.wins += 1;
-    else if (winner) row.losses += 1;
-    else if (recordIsDraw(record)) row.draws += 1;
-    stats.set(characterId, row);
+    const characterIds = record.mode === "team" ? enteredTeamCharacterIds(record, color)
+      : [color === "black" ? record.blackCharacter : record.whiteCharacter];
+    for (const characterId of characterIds) {
+      const row = stats.get(characterId) ?? { characterId, wins: 0, losses: 0, draws: 0, total: 0 };
+      const winner = recordWinnerColor(record);
+      row.total += 1;
+      if (winner === color) row.wins += 1;
+      else if (winner) row.losses += 1;
+      else if (recordIsDraw(record)) row.draws += 1;
+      stats.set(characterId, row);
+    }
   }
   return [...stats.values()].map((row) => ({
     characterId: row.characterId,

@@ -1,8 +1,8 @@
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell) .profile-folder-modal.profile-folder-modal {
   .profile-record-panel { display: block !important; overflow: visible !important; padding: 0 !important; height: auto !important; max-height: none !important; }
   .profile-overview-grid { display: block !important; margin: 0 !important; }
-  .profile-summary-grid { display: grid !important; grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) !important; gap: 22px !important; margin: 0 !important; }
-  .profile-summary-item { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; min-width: 0 !important; }
+  .profile-summary-grid { display: grid !important; grid-template-columns: minmax(180px, 1fr) minmax(0, 2.5fr) !important; gap: 24px !important; margin: 0 !important; }
+  .profile-summary-item { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; min-width: 0 !important; min-height: 0 !important; }
   .profile-summary-item.is-primary { border-right: 1px solid var(--folder-line) !important; padding-right: 16px !important; }
   .profile-summary-label { font: 18px/1.4 var(--font-window-title) !important; color: var(--folder-ink) !important; min-height: 36px; }
   .profile-summary-label > svg { display: none; }
@@ -11,14 +11,20 @@
   .rank-progress-name { font-size: 32px !important; }
   .profile-record-metrics { gap: 5px !important; grid-template-columns: 1fr .65fr .65fr .65fr 1.3fr !important; }
   .profile-record-metric dd { font-size: 25px !important; white-space: nowrap; }
-  .profile-record-metric dt { font-size: 11px !important; }
-  .profile-recent-section { margin: 20px 0 12px !important; padding: 12px 0 !important; border-block: 1px solid var(--folder-line) !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+  .profile-record-metric dt { font-size: 12px !important; }
+  .profile-recent-section { margin: 16px 0 8px !important; padding: 10px 0 !important; border-block: 1px solid var(--folder-line) !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+  .profile-rank-results { justify-content: flex-start !important; flex-wrap: wrap !important; gap: 6px !important; }
+  .profile-rank-results .recent-result-label { display: inline !important; margin-right: 8px; font-size: 13px; color: var(--folder-ink); }
+  .recent-result-marker-draw { background: color-mix(in srgb, var(--theme-blue) 20%, var(--folder-paper)) !important; }
   .profile-character-section { margin: 0 !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; background: transparent !important; }
   .profile-character-table-scroll { height: auto !important; max-height: none !important; overflow: visible !important; }
   .profile-character-table { background: transparent !important; border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; min-width: 0 !important; table-layout: fixed !important; }
   .profile-character-table tbody :is(td, th) { background: transparent !important; height: 52px; padding-block: 8px !important; border: 0 !important; border-bottom: 1px solid var(--folder-line) !important; border-radius: 0 !important; box-shadow: none !important; }
-  .profile-character-table tbody tr { height: 60px !important; }
-  .profile-character-table .profile-chain-portrait.small { flex: 0 0 42px !important; width: 42px !important; height: 42px !important; }
+  .profile-character-table tbody tr { height: 64px !important; }
+  .profile-character-table .profile-chain-portrait.small { flex: 0 0 48px !important; width: 48px !important; height: 48px !important; }
   .profile-character-table .profile-chain-portrait.small > .profile-portrait-mask { width: 100% !important; height: 100% !important; }
   .profile-recent-section { border-inline: 0 !important; }
+  .profile-character-table-head { height: auto !important; max-height: none !important; font-size: 13px !important; padding-block: 10px !important; }
+  .profile-character-table .profile-character-name { font-size: 16px !important; }
+  .profile-summary-item .profile-record-header > .profile-replay-button { display: inline-flex !important; align-items: center; gap: 6px; width: auto !important; min-width: 0 !important; min-height: 36px !important; height: auto !important; padding: 6px 10px !important; border-radius: 8px !important; flex: none !important; aspect-ratio: auto !important; font-size: 12px !important; box-shadow: none !important; }
 }

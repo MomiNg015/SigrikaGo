@@ -106,8 +106,8 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
             ? "本次挑战未满100手，成绩不计入排行榜。"
             : room.game.winner?.text ?? "对局结束"}</p>
           {isChallenge && room.practice.result?.breakthrough && <p className="capture-challenge-breakthrough" role="status">突破个人最高排名！</p>}
-          {!isSigrikaCandyDuel && !isPractice && isFriendlyMatch && (
-            <p className="result-match-note">{room.team ? "队际赛 · 不计段位、金币与胜率" : "友谊对局 · 不计入积分与段位"}</p>
+          {!isSigrikaCandyDuel && !isPractice && (isFriendlyMatch || room.team) && (
+            <p className="result-match-note">{room.team ? "队际赛 · 独立段位，不奖励金币" : "友谊对局 · 不计入积分与段位"}</p>
           )}
           {room.team && <div className="team-result-lineups">
             {room.players.map((player) => <p key={player.color}><strong>{player.color === "black" ? "黑方" : "白方"}</strong> {player.teamLineup?.map((member) => member.character?.name ?? "?").join(" → ")}</p>)}

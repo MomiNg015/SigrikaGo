@@ -7,6 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import path from "node:path";
 import { createRoom } from "./roomFactory.js";
 import { saveGameRecord } from "./roomResultPersistence.js";
+import { initializeTeamRoom } from "./teamMatch.js";
 import { roomPersistenceSnapshot, hydratePersistedRoom } from "./roomStatePersistence.js";
 
 describe("durable room settlement", () => {
@@ -84,6 +85,38 @@ describe("durable room settlement", () => {
     expect(await sessions.isActive("reset-user", old.sessionId)).toBe(false);
     expect(await sessions.refresh(old.refreshToken)).toBeNull();
     expect(await prisma.adminAuditLog.count({ where: { action: "user.reset-password" } })).toBe(1);
+  });
+
+  test("team settlement rolls back fully and survives duplicate recovery without touching Spark or coins", async () => {
+    const room = await finishedRoom("team");
+    room.mode = room.game.mode = "team";
+    initializeTeamRoom(room);
+    room.players.forEach((player) => { player.teamLineup = Array.from({ length: 3 }, () => ({ characterId: "sigrika", character: player.character })); });
+    const stale = roomPersistenceSnapshot(room);
+    let fail = true;
+    const failing = new Proxy({}, { get(_target, key) {
+      // Execute the real transaction with a failing operation after the replay/stat writes.
+      if (key === "$transaction") return (operations) => prisma.$transaction(fail
+        ? [...operations, prisma.user.update({ where: { id: "missing-team-user" }, data: { coins: 1 } })] : operations);
+      const value = prisma[key];
+      return typeof value === "function" ? value.bind(prisma) : value;
+    } });
+    await expect(saveGameRecord({ prisma: failing, room })).rejects.toThrow();
+    expect(room.recordSaved).toBe(false);
+    expect(room.game.resultRewards).toBeUndefined();
+    expect(room.players[0].user.modeStats.team).toBeUndefined();
+    expect(await prisma.gameRecord.count({ where: { settlementId: room.settlementId } })).toBe(0);
+    expect(await prisma.userModeStats.count({ where: { mode: "team" } })).toBe(0);
+    fail = false;
+    await saveGameRecord({ prisma: failing, room });
+    const recovered = hydratePersistedRoom(stale);
+    await saveGameRecord({ prisma, room: recovered });
+    expect(await prisma.gameRecord.count({ where: { settlementId: room.settlementId } })).toBe(1);
+    expect(await prisma.userModeStats.findUnique({ where: { userId_mode: { userId: "team-black", mode: "team" } } })).toMatchObject({ wins: 1, stars: 3, rank: "3段" });
+    expect(await prisma.userModeStats.findUnique({ where: { userId_mode: { userId: "team-white", mode: "team" } } })).toMatchObject({ losses: 1, stars: 1 });
+    expect(await prisma.user.findUnique({ where: { id: "team-black" } })).toMatchObject({ coins: 0, wins: 0, stars: 2 });
+    expect(recovered.game.resultRewards).toEqual(room.game.resultRewards);
+    expect(room.game.resultRewards["team-black"]).toMatchObject({ rated: true, stars: 1, coins: 0, starsAfter: 3 });
   });
 
 });

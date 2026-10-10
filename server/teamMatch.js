@@ -24,9 +24,9 @@ export function resolveTeamLineup(user, input, { characters = {}, disabledSlugs 
 
 export function initializeTeamRoom(room) {
   if (room.mode !== TEAM_MODE) return room;
-  room.rated = false;
+  room.rated = true;
   room.matchSource = TEAM_MODE;
-  room.recordPolicy = "replay-only";
+  room.recordPolicy = "team-ranked";
   room.team = { round: 1, rounds: [{ round: 1, startMove: 1 }] };
   room.game.teamRoundStartHistoryIndex = 0;
   return room;

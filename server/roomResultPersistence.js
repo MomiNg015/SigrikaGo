@@ -283,22 +283,33 @@ async function saveTeamGameRecord({ prisma, room }) {
   const black = room.players.find((p) => p.color === COLORS.black);
   const white = room.players.find((p) => p.color === COLORS.white);
   if (!black || !white) return;
+  const metadata = gameResultMetadata(room.game.winner);
+  const settlement = emptySettlement();
+  const deltas = room.players.map((player) => {
+    const before = playerProgressSnapshot(player, "team");
+    const outcome = metadata.winnerColor ? (metadata.winnerColor === player.color ? "wins" : "losses") : "draws";
+    player.user = applyUserReward(player.user, { coins: 0 }, { [outcome]: 1 }, { mode: "team" });
+    fillSettlement(settlement, player, before, "team");
+    return { [`${outcome}Delta`]: 1 };
+  });
+  room.rated = true;
   room.recordSaved = true;
-  room.game.resultRewards = null;
-  try {
-    await prisma.gameRecord.create({ data: {
+  attachResultRewards(room, settlement, { rated: true, matchSource: "team" });
+  await prisma.$transaction([
+    prisma.gameRecord.create({ data: {
       roomCode: room.code, blackUserId: black.user.id, whiteUserId: white.user.id,
       blackName: black.user.username, whiteName: white.user.username,
       blackCharacter: black.characterId, whiteCharacter: white.characterId,
       resultText: room.game.winner?.text ?? "对局结束",
-      ...gameResultMetadata(room.game.winner),
-      rated: false, matchSource: "team", mode: "team", moveCount: room.game.moveNumber,
+      ...metadata,
+      rated: true, matchSource: "team", mode: "team", moveCount: room.game.moveNumber,
+      blackRatingDelta: settlement.black.rating, whiteRatingDelta: settlement.white.rating,
+      blackRankDelta: settlement.black.rank, whiteRankDelta: settlement.white.rank,
+      blackCoinsDelta: 0, whiteCoinsDelta: 0,
       snapshot: JSON.stringify(roomView(room, black.user.id)), snapshotVersion: 2
-    } });
-  } catch (error) {
-    room.recordSaved = false;
-    throw error;
-  }
+    } }),
+    ...room.players.map((player, index) => prisma.userModeStats.upsert(modeStatsUpsertOperation(player, "team", deltas[index])))
+  ]);
 }
 
 async function saveSigrikaCandyDuelRecord({ prisma, room }) {
