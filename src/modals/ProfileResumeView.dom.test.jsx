@@ -31,7 +31,7 @@ describe("profile character record empty state", () => {
   it.each(["self", "social"])("shows complete mode stats and zero-game defaults in %s profiles", (context) => {
     const props = { context, user: { username: "测试部员" }, characters: [], mode: "spark", stats: { totalGames: 10, wins: 6, losses: 3, draws: 1 } };
     const { rerender } = render(<ProfileResumeView {...props} />);
-    const summary = () => screen.getByText("战绩").closest(".profile-summary-item");
+    const summary = () => screen.getByText("升降级战绩").closest(".profile-summary-item");
     expect(within(summary()).getByLabelText("总对局 10局")).toBeTruthy();
     expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
     expect(document.querySelectorAll(".profile-summary-item")).toHaveLength(2);

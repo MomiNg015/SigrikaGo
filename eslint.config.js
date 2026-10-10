@@ -5,6 +5,10 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/ResumeModal.jsx",
+  "src/modals/ResumeModal.dom.test.jsx",
+  "src/modals/ProfilePlayRecords.jsx",
+  "src/modals/ProfilePlayRecords.dom.test.jsx",
   "src/admin/AdminShell.jsx",
   "src/admin/AdminShell.test.jsx",
   "src/admin/AdminSiteSettings.jsx",

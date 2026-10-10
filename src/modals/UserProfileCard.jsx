@@ -54,7 +54,7 @@ export function UserProfileCard({
   const replayPagination = useReplayPagination({
     enabled: showReplays && !replayDisabled,
     endpoint: profileUser.id
-      ? `/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}`
+      ? `/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}&scope=regular`
       : "",
     token
   });
@@ -223,7 +223,7 @@ export function UserProfileCard({
 
   return (
     <ModalDialog
-      className={`room-floating-modal user-profile-modal profile-dossier-modal user-profile-card${titleStickers ? " window-sticker-host window-bookmark-host" : ""}`}
+      className={`room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
       ariaLabelledBy="user-profile-modal-title"
       onClose={onClose}
       onClick={(event) => event.stopPropagation()}
@@ -234,6 +234,9 @@ export function UserProfileCard({
       </header>
 
       <ProfileResumeView
+        token={token}
+        onOpenReplay={onOpenReplay}
+        replayDisabled={replayDisabled}
         context="social"
         user={profileUser}
         characters={characters}
@@ -263,6 +266,7 @@ export function UserProfileCard({
               onClick={addFriend}
             >
               <UserPlus size={18} />
+              <span>{friendLabel}</span>
             </button>
             <button data-button-role="danger"
               className="profile-blacklist-button"
@@ -272,6 +276,7 @@ export function UserProfileCard({
               onClick={openBlacklistConfirm}
             >
               <UserRoundX size={18} />
+              <span>{blacklistLabel}</span>
             </button>
             <button data-button-role="danger"
               className="profile-report-button"
@@ -284,6 +289,7 @@ export function UserProfileCard({
               }}
             >
               <CircleAlert size={18} />
+              <span>举报</span>
             </button>
           </>
         )}

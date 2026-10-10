@@ -22,8 +22,7 @@ const cases = [
   ["排行榜", LeaderboardModal, {}, "标准"],
   ["观战", WatchModal, {}, "标准"],
   ["好友", FriendsModal, {}, "黑名单"],
-  ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "日志"],
-  ["详细资料", UserProfileCard, { titleStickers: true }, "标准"]
+  ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "日志"]
 ];
 
 beforeEach(() => {
@@ -66,11 +65,14 @@ describe("player window bookmark rollout", () => {
     expect(screen.getByRole("button", { name: "使用", exact: true }).disabled).toBe(false);
   });
 
-  it("keeps in-room profile tabs inline without the home window opt-in", () => {
+  it.each([true, false])("keeps profile family tabs inside the folder with title stickers=%s", async (titleStickers) => {
     const { container } = render(<div className="app-shell player-theme-enabled theme-bright-school">
-      <UserProfileCard {...shared} />
+      <UserProfileCard {...shared} titleStickers={titleStickers} />
     </div>);
     expect(container.querySelector(".window-bookmark-rail")).toBeNull();
-    expect(screen.getByRole("tablist").className).toContain("profile-mode-tabs");
+    expect(screen.getByRole("tablist").className).toContain("profile-folder-tabs");
+    const standard = screen.getByRole("tab", { name: "标准对弈" });
+    fireEvent.click(standard);
+    await waitFor(() => expect(standard.getAttribute("aria-selected")).toBe("true"));
   });
 });

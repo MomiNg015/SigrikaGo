@@ -1,4 +1,5 @@
 import express from "express";
+import { profileCaptureRecord } from "./profileCaptureRecord.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { validateUsername } from "./security.js";
 import {
@@ -19,6 +20,7 @@ export function createSocialRouteHandlers({
   deleteRelationshipFn = deleteRelationship,
   getUserProfileByUsernameFn = getUserProfileByUsername,
   getUserProfileFn = getUserProfile,
+  profileCaptureRecordFn = profileCaptureRecord,
   getUserReplaysFn = getUserReplays,
   likeUserProfileFn = likeUserProfile,
   createUserReportFn = createUserReport,
@@ -121,6 +123,7 @@ export function createSocialRouteHandlers({
       prisma,
       userId: req.params.id,
       mode: normalizeMode(req.query.mode),
+      scope: req.query.scope === "regular" ? "regular" : "",
       cursor: req.query.cursor
     });
     if (!page) {
@@ -128,6 +131,12 @@ export function createSocialRouteHandlers({
       return;
     }
     res.json(page);
+  }
+
+  async function getCaptureRecord(req, res) {
+    const record = await profileCaptureRecordFn({ prisma, userId: req.params.id });
+    if (record === undefined) return res.status(404).json({ error: "该用户不存在" });
+    return res.json({ record });
   }
 
   async function likeProfile(req, res) {
@@ -163,6 +172,7 @@ export function createSocialRouteHandlers({
     removeBlacklist,
     searchProfile,
     getProfile,
+    getCaptureRecord,
     getReplays,
     likeProfile,
     reportProfile
@@ -179,6 +189,7 @@ export function createSocialRouter({ authHttp, ...deps }) {
   router.delete("/social/blacklist/:targetId", authHttp, handlers.removeBlacklist);
   router.get("/users/search/profile", authHttp, handlers.searchProfile);
   router.get("/users/:id/profile", authHttp, handlers.getProfile);
+  router.get("/users/:id/capture-record", authHttp, handlers.getCaptureRecord);
   router.post("/users/:id/like", authHttp, handlers.likeProfile);
   router.post("/users/:id/report", authHttp, handlers.reportProfile);
   router.get("/users/:id/replays", handlers.getReplays);

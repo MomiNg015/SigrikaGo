@@ -21,7 +21,9 @@ All title lettering uses the actual `public/assets/fonts/LXGWMarkerGothic-Regula
 
 ## Player window bookmark tabs
 
-- Approved hosts: Resume, Settings, Achievements, Leaderboard, Watch, Friends and Announcements. Home social profiles opt in only with `titleStickers`; in-room profiles, room docks and admin controls stay inline. Do not revive unused ShopTabs/Gacha entry points.
+- The approved profile folder redesign supersedes bookmark tabs for Resume and UserProfileCard: these two windows use internal family tabs plus play buttons. Other bookmark hosts remain unchanged. Their rank placement/data rules are in [Profile Folder Contract](../backend/profile-folder-contract.md).
+
+- Approved bookmark hosts: Settings, Achievements, Leaderboard, Watch, Friends and Announcements. Profile family tabs are internal in both home and room contexts. Room docks and admin controls stay inline. Do not revive unused ShopTabs/Gacha entry points.
 - `WindowBookmarkTabs({ children, className, ...props })` preserves existing inline buttons outside an opted-in ordinary Bright School host. Its portal targets the closest dialog only; an unmarked nested dialog must never attach its tabs to an outer marked host.
 - Keep button IDs, controls, callbacks, pending guards and selection under the profile owner's control. Use Up/Down and Home/End on the vertical rail; leave legacy inline keyboard handlers unchanged. Observe app theme classes and restore inline placement on corruption/theme changes.
 - Bookmark labels hide inline SVG/image icons and decorative unread dots; selection callbacks and unread list data remain intact. Nested label text must explicitly inherit regular weight (400) with font synthesis disabled, because theme span rules can otherwise override the parent weight. Draw only the paper outline; label text uses the actual LXGW font through `--font-window-title`. Keep reduced-motion fallback and visible keyboard focus.

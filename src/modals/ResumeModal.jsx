@@ -32,7 +32,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   const characterStats = profile?.characterStats ?? [];
   const replayPagination = useReplayPagination({
     enabled: showReplays,
-    endpoint: `/api/replays?mode=${encodeURIComponent(replayMode)}`,
+    endpoint: `/api/replays?mode=${encodeURIComponent(replayMode)}&scope=regular`,
     token
   });
 
@@ -116,7 +116,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <ModalDialog
-        className="house-modal resume-modal profile-dossier-modal window-sticker-host window-bookmark-host"
+        className="house-modal resume-modal profile-dossier-modal profile-folder-modal window-sticker-host"
         ariaLabelledBy="resume-modal-title"
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}
@@ -136,6 +136,8 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         </header>
 
         <ProfileResumeView
+          token={token}
+          onOpenReplay={onOpenReplay}
           context="self"
           user={modeUser}
           characters={characterListView}
@@ -149,9 +151,11 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
             <>
               <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
                 <Award size={20} aria-hidden="true" />
+                <span>成就</span>
               </button>
               <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
                 <Palette size={20} aria-hidden="true" />
+                <span>个性化</span>
               </button>
             </>
           )}

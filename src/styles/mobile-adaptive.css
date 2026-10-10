@@ -58,3 +58,7 @@
 @import "./mobile-adaptive/handbook-puzzle.css";
 @import "./mobile-adaptive/handbook-detail-figure.css";
 @import "./mobile-adaptive/character-bust-portraits.css";
+@import "./mobile-adaptive/profile-folder.css";
+@import "./mobile-adaptive/profile-folder-summary.css";
+@import "./mobile-adaptive/profile-folder-records.css";
+@import "./mobile-adaptive/profile-folder-mobile.css";

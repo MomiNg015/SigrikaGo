@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 describe("RoomPeopleList floating actions", () => {
-  it("opens the shared bookmark profile outside the mobile dock", async () => {
+  it("opens the shared folder profile outside the mobile dock", async () => {
     social.loadProfile.mockResolvedValue({
       id: "opponent-user", username: "ABCDEFGH", mode: "spark", relation: "none",
       rank: "2段", rating: 1500, recentResults: [], characterStats: []
@@ -36,7 +36,8 @@ describe("RoomPeopleList floating actions", () => {
     await screen.findByRole("button", { name: "举报", exact: true });
     const profile = document.querySelector(".user-profile-card");
     expect(profile.classList.contains("window-sticker-host")).toBe(true);
-    expect(profile.classList.contains("window-bookmark-host")).toBe(true);
+    expect(profile.classList.contains("profile-folder-modal")).toBe(true);
+    expect(profile.querySelector(".profile-folder-tabs")).toBeTruthy();
     expect(profile.closest(".profile-modal-backdrop")).toBeTruthy();
     expect(profile.closest(".mobile-room-dock")).toBeNull();
   });

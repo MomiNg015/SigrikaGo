@@ -3,14 +3,15 @@ import { isInvalidReplay } from "./replayValidity.js";
 
 export const REPLAY_PAGE_SIZE = 50;
 
-export async function listReplaySummaryPage({ prisma, userId, mode: modeInput = "spark", cursor = "" }) {
+export async function listReplaySummaryPage({ prisma, userId, mode: modeInput = "spark", cursor = "", scope = "" }) {
   const mode = normalizeGameModeId(modeInput);
   let cursorValue = decodeReplayCursor(cursor);
   const records = [];
   while (records.length <= REPLAY_PAGE_SIZE) {
     const batch = await prisma.gameRecord.findMany({
       where: {
-        mode: mode === "spark" ? { in: ["spark", "team"] } : mode,
+        mode: mode === "spark" && scope !== "regular" ? { in: ["spark", "team"] } : mode,
+        ...(scope === "regular" ? { matchSource: { in: ["matchmaking", "duel", "private"] } } : {}),
         AND: [
           {
             OR: [
@@ -106,6 +107,7 @@ function toReplaySummary(record) {
   const { snapshot: _snapshot, ...summary } = record;
   return {
     ...summary,
+    ...(record.mode === "team" ? { teamLineups: replayTeamLineups(_snapshot) } : {}),
     rated: record.rated !== false,
     matchSource: record.matchSource ?? (record.rated === false ? "private" : "matchmaking"),
     blackRatingDelta: record.blackRatingDelta ?? 0,
@@ -116,4 +118,16 @@ function toReplaySummary(record) {
     whiteRankDelta: record.whiteRankDelta ?? 0,
     mode: record.mode ?? "spark"
   };
+}
+
+function replayTeamLineups(snapshot) {
+  try {
+    const room = typeof snapshot === "string" ? JSON.parse(snapshot) : snapshot;
+    // Only completed stored records reach this projection; never send raw room snapshots.
+    if (room?.game?.phase !== "finished") return {};
+    return Object.fromEntries(["black", "white"].map((color) => [color,
+      (room.players?.find((player) => player.color === color)?.teamLineup ?? []).slice(0, 3)
+        .map((entry) => ({ characterId: entry?.characterId ?? "", costumeSnapshot: entry?.costumeSnapshot ?? null }))
+    ]));
+  } catch { return {}; }
 }

@@ -29,3 +29,12 @@ The user identified that the initial samples copied the obsolete three-tab profi
 
 ## Validation and handoff
 18 browser combinations passed with zero console errors; scoped ESLint and system-design generation passed. Desktop and portrait screenshots visually inspected after finishing entrance animations. Design-hook observations classified in sample README without ignoring rules. No new production contracts were introduced, so no spec edits were needed. Samples are ready for selection; production integration and commit are outside this round.
+
+## Approved production integration — 2026-10-10
+The user selected the club dossier and challenged the rank placement. Integrate that direction in the shared ResumeModal/UserProfileCard surface. Rank belongs on the right record page below play navigation, adjacent to ordinary rated stats on desktop and above them on portrait phones. Identity art, nameplates and account actions remain in the identity section. Challenge/team views must not show ordinary rank or personal win rate.
+
+- Preserve current rated profile aggregates, callbacks, confirmation dialogs, and stale-request guards.
+- Add a bounded authenticated challenge-summary read with empty/error/retry states; reuse best-result costume snapshots and the leaderboard's tied ranking.
+- Add explicit regular replay scope before pagination, retaining matchmaking and friend duels. Preserve legacy default replay queries. Team summaries project completed lineup identities/appearances only, with replay callbacks.
+- Cover desktop and 320/360/390 portrait, short viewport, last-row reachability, both profile contexts and all play families.
+- Update runtime contracts/system design, run checks, and commit only this task's delta while preserving unrelated WIP.

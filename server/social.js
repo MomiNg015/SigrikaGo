@@ -188,7 +188,7 @@ export async function getUserProfileByUsername({ prisma, username, viewerId, sta
   return getUserProfile({ prisma, userId: user.id, viewerId, statusForUser, mode });
 }
 
-export async function getUserReplays({ prisma, userId, mode: modeInput = "spark", cursor = "" }) {
+export async function getUserReplays({ prisma, userId, mode: modeInput = "spark", cursor = "", scope = "" }) {
   const mode = normalizeGameModeId(modeInput);
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -196,7 +196,7 @@ export async function getUserReplays({ prisma, userId, mode: modeInput = "spark"
   });
   if (!user) return null;
 
-  return listReplaySummaryPage({ prisma, userId, mode, cursor });
+  return listReplaySummaryPage({ prisma, userId, mode, cursor, scope });
 }
 
 export async function likeUserProfile({ prisma, likerUserId, targetUserId, now = new Date() }) {

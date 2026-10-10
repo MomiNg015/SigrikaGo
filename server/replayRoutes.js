@@ -10,6 +10,7 @@ export function createReplayRouteHandlers({ prisma }) {
       prisma,
       userId: req.user.id,
       mode: req.query?.mode,
+      scope: req.query?.scope === "regular" ? "regular" : "",
       cursor: req.query?.cursor
     }));
   }

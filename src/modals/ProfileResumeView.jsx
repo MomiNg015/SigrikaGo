@@ -1,7 +1,7 @@
 import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
-import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { ProfileCaptureRecord, ProfileTeamRecords } from "./ProfilePlayRecords.jsx";
 import { Gamepad2, HelpCircle, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
@@ -32,18 +32,25 @@ export default function ProfileResumeView({
   identityActions = null,
   recentAction = null,
   secondaryActions = null,
-  status = null
+  status = null,
+  token,
+  onOpenReplay,
+  replayDisabled = false
 }) {
-  const normalizedMode = normalizeGameModeId(mode);
+  const normalizedMode = mode === "team" ? "spark" : normalizeGameModeId(mode);
   const normalizedStats = normalizeProfileStats(stats);
   const mainCharacter = findCharacter(characters, user.characterId ?? user.selectedCharacter) ?? CHARACTERS.sigrika;
   const records = sortCharacterStatsByGames(characterStats);
   const winRate = winRateText(normalizedStats.wins, normalizedStats.totalGames);
   const panelId = `${context}-profile-mode-panel`;
+  const playKey = `${user.id}:${normalizedMode}`;
+  const [playSelection, setPlaySelection] = useState(null);
+  const play = playSelection?.key === playKey ? playSelection.play : mode === "team" ? "team" : "regular";
+  const setPlay = (nextPlay) => setPlaySelection({ key: playKey, play: nextPlay });
 
   return (
     <div
-      className={`profile-resume-view profile-resume-view-${context}`}
+      className={`profile-resume-view profile-resume-view-${context} profile-folder`}
       data-profile-context={context}
       aria-busy={modePending ? "true" : undefined}
     >
@@ -68,12 +75,31 @@ export default function ProfileResumeView({
         )}
       </section>
 
+      <div className="profile-folder-page">
       <ProfileModeTabs
         mode={normalizedMode}
         pending={modePending}
-        onModeChange={onModeChange}
+        onModeChange={(next) => { setPlay("regular"); if (next !== mode) onModeChange?.(next); }}
         panelId={panelId}
       />
+      <nav className="profile-play-tabs" aria-label="具体玩法">
+        {(normalizedMode === "spark" ? [["regular", "常规匹配"], ["capture", "吃子挑战赛"], ["team", "队际赛"]] : [["regular", normalizedMode === "gomoku" ? "五子棋" : "常规匹配"]]).map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={play === id} disabled={modePending} onClick={() => {
+            setPlay(id);
+            if (mode === "team" && id === "regular") onModeChange?.("spark");
+          }}>{label}</button>
+        ))}
+      </nav>
+      {play !== "regular" ? (
+        <div id={panelId} role="tabpanel" aria-labelledby={`${context}-profile-tab-${normalizedMode}`} className="profile-play-records">
+          {status && <div aria-live="polite">{status}</div>}
+          {play === "capture" ? (
+            <ProfileCaptureRecord key={user.id} user={user} token={token} characters={characters} />
+          ) : (
+            <ProfileTeamRecords key={user.id} user={user} token={token} characters={characters} onOpenReplay={onOpenReplay} replayDisabled={replayDisabled} />
+          )}
+        </div>
+      ) : <>
 
       <div
         id={panelId}
@@ -95,7 +121,7 @@ export default function ProfileResumeView({
             />
             <div className="profile-summary-item profile-record-card">
               <div className="profile-record-header">
-                <span className="profile-summary-label"><Gamepad2 size={17} />战绩</span>
+                <span className="profile-summary-label"><Gamepad2 size={17} />升降级战绩</span>
                 {recentAction}
               </div>
               <dl className="profile-record-metrics">
@@ -191,6 +217,8 @@ export default function ProfileResumeView({
           </footer>
         )}
       </div>
+      </>}
+      </div>
     </div>
   );
 }
@@ -212,7 +240,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   }
 
   return (
-    <WindowBookmarkTabs className="mode-tabs window-mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
+    <div className="profile-folder-tabs" role="tablist" aria-label="玩法分类">
       {tabs.map((entry, index) => (
         <button
           key={entry.id}
@@ -228,10 +256,10 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
           onClick={() => { if (!pending) onModeChange?.(entry.id); }}
           onKeyDown={(event) => handleKeyDown(event, index)}
         >
-          {entry.shortTitle}
+          {entry.id === "gomoku" ? "玩些别的" : entry.title}
         </button>
       ))}
-    </WindowBookmarkTabs>
+    </div>
   );
 }
 

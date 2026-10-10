@@ -6,6 +6,8 @@
 
 ## Overview
 
+Profile dossier layout, play families and server summaries follow [Profile Folder Contract](../backend/profile-folder-contract.md).
+
 This directory contains guidelines for frontend development. Fill in each file with your project's specific conventions.
 
 ---
