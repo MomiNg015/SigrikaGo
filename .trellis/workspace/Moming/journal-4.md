@@ -402,3 +402,36 @@ Added supplied voyage form PNG and synchronized banner/player art replacement at
 ### Next Steps
 
 - None - task complete
+
+
+## Session 193: Cinematic Aemeath signal distortion
+
+**Date**: 2026-10-10
+**Task**: Cinematic Aemeath signal distortion
+**Branch**: `master`
+
+### Summary
+
+Researched Maxon Glitch and viewed Motionstash Glitch Hit. Replaced code bars with live full-window SVG backdrop row displacement and RGB channel separation, restrained grain and irregular recovery. Body portal root preserves actual backdrop sampling. Same 1000/1120/1260ms timeline and match form rules. Updated desktop/mobile stills, recording, docs and contract. 13 lifecycle tests, 4 docs tests, lint, build, built CSS and 4 real desktop/mobile skill stability tests passed. Two prior CSS inventory failures remain; unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7697324e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
