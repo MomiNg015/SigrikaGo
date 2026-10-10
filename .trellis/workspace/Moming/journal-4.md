@@ -336,3 +336,36 @@ Inspected official combat video at 46-52 seconds. Replaced uniform dense swarm w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 191: Awakened Denia rune theme and desktop portrait lift
+
+**Date**: 2026-10-10
+**Task**: Awakened Denia rune theme and desktop portrait lift
+**Branch**: `master`
+
+### Summary
+
+Applied cyan/electric-violet limb-inspired runes to transformed Denia banner, player card and skill button using shared match form state; persists through match and resets with form. Lifted desktop ordinary battle artwork by 15 percent while preserving crop bottom and mobile geometry. Updated design docs, contract, screenshots and preview video. Validation: 48 focused tests, lint, build and built CSS contracts passed; desktop/mobile render checks passed. CSS inventory retains two pre-existing failures (899 unrelated bytes and unregistered 360px query). Scoped commit preserves unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `80e631f6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
