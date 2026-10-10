@@ -171,3 +171,36 @@ Reviewed project play hierarchy, delivered three samples, and integrated the sel
 ### Next Steps
 
 - None - task complete
+
+
+## Session 186: Team profile progression and dossier polish
+
+**Date**: 2026-10-10
+**Task**: Team profile progression and dossier polish
+**Branch**: `master`
+
+### Summary
+
+Implemented independent team rank and atomic replay/stats settlement, stage-based character appearances, historical last ten including draws, and 出场次数. Refined the club folder for desktop and portrait; 158 scoped tests passed; lint/build/built CSS/docs passed. Full suite exposed one obsolete header assertion now fixed and three pre-existing failures documented in the task verification. Preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `16a9ecc8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
