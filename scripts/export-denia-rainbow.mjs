@@ -1,30 +1,34 @@
 // Reproducible effect layers over the accepted current Denia sprite.
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rename, unlink } from "node:fs/promises";
+import { setTimeout } from "node:timers/promises";
 import sharp from "sharp";
 import { normalizePortraitBuffer, validateNormalizedPortrait } from "./characterPortraitNormalization.mjs";
 
-const output = "output/denia-rainbow-chibi-v1";
+const output = "output/denia-rainbow-rolling-v3";
 const sourcePath = "public/assets/characters/story-sprites/denia/surprised.webp";
 const width = 832;
 const height = 1216;
 const count = 24;
 const delay = 60;
-const colors = ["#f982ac", "#ffb45a", "#ffe571", "#8de3aa", "#83dbed", "#a3b4fa", "#d5a4ee"];
+// The original GIF advances roughly one spectral band per 70ms. Three full
+// rolls per 1.44s loop match that speed while closing the loop exactly.
+const colorRollsPerLoop = 3;
+const colors = ["#ff3268", "#ff962e", "#ffe83a", "#79f257", "#3ddfee", "#5377ff", "#ba55ff"];
 const jets = [
-  { name: "left-eye", origin: [365, 476], end: [43, 356], startWidth: 49, endWidth: 91 },
-  { name: "right-eye", origin: [550, 501], end: [793, 397], startWidth: 43, endWidth: 83 },
-  { name: "mouth", origin: [455, 557], end: [660, 774], startWidth: 20, endWidth: 77 }
+  { name: "left-eye", origin: [365, 476], end: [43, 356], startWidth: 72, endWidth: 107 },
+  { name: "right-eye", origin: [550, 501], end: [793, 397], startWidth: 68, endWidth: 99 },
+  { name: "mouth", origin: [455, 557], end: [660, 774], startWidth: 22, endWidth: 78 }
 ];
 const number = (value) => value.toFixed(2);
 function ribbonPoint(jet, progress, edge, phase) {
   const dx = jet.end[0] - jet.origin[0];
   const dy = jet.end[1] - jet.origin[1];
   const length = Math.hypot(dx, dy);
-  const wave = Math.sin(progress * Math.PI * 5 - phase) * 8 * progress ** 1.3
-    + Math.sin(phase) * 5 * progress ** 2;
+  const wave = Math.sin(progress * Math.PI * 4 - phase) * 1.8 * progress ** 1.3
+    + Math.sin(phase) * 1.2 * progress ** 2;
   const breadth = (jet.startWidth + (jet.endWidth - jet.startWidth) * progress)
-    * (1 + Math.sin(phase - progress * Math.PI * 4) * 0.035 * progress);
+    * (1 + Math.sin(phase - progress * Math.PI * 4) * 0.02 * progress);
   const normal = wave + breadth * edge;
   return [jet.origin[0] + dx * progress - dy / length * normal,
     jet.origin[1] + dy * progress + dx / length * normal];
@@ -38,30 +42,54 @@ function band(jet, bottom, top, phase) {
 function overlay(frame) {
   const phase = frame / count * Math.PI * 2;
   let art = "";
+  let definitions = "";
   for (const jet of jets) {
-    const outline = band(jet, -0.5, 0.5, phase);
-    art += `<path d="${outline}" fill="#fff9d9" opacity=".32" filter="url(#glow)"/>`;
-    art += `<path d="${outline}" fill="#714453" stroke="#714453" stroke-width="3" stroke-linejoin="round" opacity=".62"/>`;
-    colors.forEach((color, i) => {
-      art += `<path d="${band(jet, i / 7 - 0.5, (i + 1) / 7 - 0.5 + 0.003, phase)}" fill="${color}"/>`;
-    });
-    // Highlights move out from the emission point, never across the whole face.
-    for (let i = 0; i < 3; i++) {
-      const progress = (frame / count + i / 3) % 1;
-      const [x, y] = ribbonPoint(jet, progress, 0.18 * Math.sin(i * 2), phase);
-      const opacity = Math.sin(progress * Math.PI) * 0.65;
-      art += `<path d="M${number(x - 4)},${number(y)} L${number(x)},${number(y - 6)} L${number(x + 4)},${number(y)} L${number(x)},${number(y + 6)} Z" fill="#fffbe8" opacity="${number(opacity)}"/>`;
-    }
     const [x, y] = jet.origin;
-    const radius = jet.name === "mouth" ? 9 : 18;
-    art += `<ellipse cx="${x}" cy="${y}" rx="${radius}" ry="${radius * 0.85}" fill="#fffbe8" opacity=".65" filter="url(#soft)"/>`;
-    art += `<ellipse cx="${x}" cy="${y}" rx="${radius * 0.4}" ry="${radius * 0.35}" fill="#fffbe8" opacity=".85"/>`;
+    // A continuous alpha ramp feathers both ends. Colored bloom stays transparent,
+    // so the original eyes and hair remain visible through the emitted light.
+    definitions += `<linearGradient id="fade-${jet.name}" gradientUnits="userSpaceOnUse" x1="${x}" y1="${y}" x2="${jet.end[0]}" y2="${jet.end[1]}"><stop offset="0" stop-color="white" stop-opacity=".12"/><stop offset=".12" stop-color="white" stop-opacity=".82"/><stop offset=".45" stop-color="white"/><stop offset=".72" stop-color="white" stop-opacity=".85"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="mask-${jet.name}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="url(#fade-${jet.name})"/></mask>`;
+    let bands = "";
+    const colorOffset = (frame / count * colorRollsPerLoop) % 1;
+    for (let i = 0; i < colors.length * 2; i++) {
+      const bottom = Math.max(-0.5, i / colors.length - 0.5 - colorOffset);
+      const top = Math.min(0.5, (i + 1) / colors.length - 0.5 - colorOffset);
+      if (top <= bottom) continue;
+      bands += `<path d="${band(jet, bottom - 0.012, top + 0.012, phase)}" fill="${colors[i % colors.length]}"/>`;
+    }
+    const pulse = 0.93 + 0.07 * Math.sin(phase);
+    art += `<g mask="url(#mask-${jet.name})" opacity="${number(pulse)}"><g filter="url(#glow)" opacity=".36">${bands}</g><g filter="url(#blend)" opacity=".58">${bands}</g>`;
+    // Faint longitudinal glints travel outward with smooth fade-in/out at the loop.
+    for (let i = 0; i < 2; i++) {
+      const progress = (frame / count + i / 3) % 1;
+      const start = ribbonPoint(jet, Math.max(0, progress - 0.14), (i - 0.5) * 0.3, phase);
+      const end = ribbonPoint(jet, progress, (i - 0.5) * 0.3, phase);
+      art += `<path d="M${start.map(number).join(",")} L${end.map(number).join(",")}" stroke="#fffce0" stroke-width="3" stroke-linecap="round" opacity="${number(Math.sin(progress * Math.PI) ** 2 * 0.18)}" filter="url(#blend)"/>`;
+    }
+    art += "</g>";
+    const radius = jet.name === "mouth" ? 11 : 29;
+    art += `<ellipse cx="${x}" cy="${y}" rx="${radius}" ry="${radius * 0.8}" fill="#bcefff" opacity=".15" filter="url(#glow)"/>`;
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><filter id="glow" x="-30%" y="-70%" width="160%" height="240%"><feGaussianBlur stdDeviation="5"/></filter><filter id="soft"><feGaussianBlur stdDeviation="3"/></filter></defs>${art}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="8"/></filter><filter id="blend" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="2.8"/></filter>${definitions}</defs>${art}</svg>`;
 }
-async function atomicWrite(path, data) {
+async function writeAsset(path, data) {
   await writeFile(`${path}.new`, data);
-  await rename(`${path}.new`, path);
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await rename(`${path}.new`, path);
+      return;
+    } catch (error) {
+      // Windows readers/watchers can briefly hold the existing destination open.
+      if (!["EPERM", "EBUSY", "EACCES"].includes(error.code)) throw error;
+      if (attempt >= 5) {
+        // Some Windows preview readers allow writes but deny replacement of the
+        // directory entry. Keep the validated .new copy until the write succeeds.
+        await writeFile(path, data);
+        await unlink(`${path}.new`);
+        return;
+      }
+      await setTimeout(200 * 2 ** attempt);
+    }
+  }
 }
 await mkdir(`${output}/frames`, { recursive: true });
 await mkdir(`${output}/effects`, { recursive: true });
@@ -103,15 +131,16 @@ const normalized = await normalizePortraitBuffer(animation);
 const validation = await validateNormalizedPortrait(normalized.buffer, { requireAnimation: true });
 if (!validation.ok) throw new Error(JSON.stringify(validation));
 const portraitRoot = "public/assets/characters/story-sprites/denia";
-await atomicWrite(`${portraitRoot}/rainbow-spray.webp`, animation);
+await writeAsset(`${portraitRoot}/rainbow-spray.webp`, animation);
 const still = await sharp(frames[0]).webp({ lossless: true }).toBuffer();
-await atomicWrite(`${portraitRoot}/rainbow-spray-still.webp`, still);
-await atomicWrite("public/assets/characters/denia_color.webp", animation);
-await atomicWrite("public/assets/characters/denia_color.gif", await readFile(`${output}/denia-rainbow.gif`));
-await atomicWrite("public/assets/characters/portraits/denia-candy.webp", normalized.buffer);
+await writeAsset(`${portraitRoot}/rainbow-spray-still.webp`, still);
+await writeAsset("public/assets/characters/denia_color.webp", animation);
+await writeAsset("public/assets/characters/denia_color.gif", await readFile(`${output}/denia-rainbow.gif`));
+await writeAsset("public/assets/characters/portraits/denia-candy.webp", normalized.buffer);
 await writeFile(`${output}/manifest.json`, JSON.stringify({ sourcePath,
   sourceSha256: createHash("sha256").update(source).digest("hex"),
   width, height, frames: count, delay, loop: 0, durationMs: count * delay, jets,
+  colorRollsPerLoop, colorRollPeriodMs: count * delay / colorRollsPerLoop,
   sourceProtection: verification, normalizedPortrait: validation,
   nativeBytes: animation.length, normalizedBytes: normalized.buffer.length,
   method: "Unchanged accepted surprised sprite with independent vector effect overlays; no generated face or body repaint."
