@@ -204,3 +204,36 @@ Implemented independent team rank and atomic replay/stats settlement, stage-base
 ### Next Steps
 
 - None - task complete
+
+
+## Session 187: Integrate approved full-body skill cut-in
+
+**Date**: 2026-10-10
+**Task**: Integrate approved full-body skill cut-in
+**Branch**: `master`
+
+### Summary
+
+Applied corrected current chibi full-body banner to ordinary room, spectator and tutorial SkillBanner. Preserved costume/candy resolution, voice deduplication and server duration; isolated corrupted duel. Added scoped CSS owners, appearance/lifecycle tests, documentation and actual-component previews. 140 related tests, project lint, production build and built CSS passed; verified nine characters and 320/360/390/1440px with reduced motion. Existing global CSS inventory drift (899 bytes and unrelated 360px breakpoint) remains documented. Scoped index commit preserved all unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `74fe0eef` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
