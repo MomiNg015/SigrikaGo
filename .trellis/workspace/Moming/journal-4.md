@@ -534,3 +534,36 @@ Compressed no-blackout glitch to 800ms with normalized phase timers, 1400ms form
 ### Next Steps
 
 - None - task complete
+
+
+## Session 197: Compact battle result window
+
+**Date**: 2026-10-11
+**Task**: Compact battle result window
+**Branch**: `master`
+
+### Summary
+
+Selected side layout: centered portraits, no username, board and leave actions in one row, authoritative rank/star/point deltas. 184 related tests, explicit lint, 24 full-theme browser cases, build and built-CSS checks passed. Preserved unrelated WIP; existing global CSS inventory has 822-byte and 360px breakpoint exceptions.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9772d083` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
