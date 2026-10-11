@@ -14,7 +14,7 @@ const SIGNAL_FRAGMENTS = Array.from({ length: 36 }, (_, index) => ({
 // Chromium does not reliably repaint SVG backdrop URLs in a CSS animation.
 // Discrete signal changes invalidate the actual backdrop, without a frame loop.
 const SIGNAL_CUTS = [[24, "tick"], [192, "none"], [264, "lock"], [360, "break"],
-  [444, "lock"], [504, "break"], [792, "lock"], [876, "tick"],
+  [444, "lock"], [504, "break"], [600, "lock"], [648, "break"], [792, "lock"], [876, "tick"],
   [948, "lock"], [1020, "tick"], [1128, "none"]];
 
 export default function AemeathDataGlitch() {
@@ -27,7 +27,7 @@ export default function AemeathDataGlitch() {
     const start = setTimeout(() => setActive(true), AEMEATH_GLITCH_START_MS);
     const stop = setTimeout(() => setActive(false), AEMEATH_GLITCH_START_MS + AEMEATH_GLITCH_DURATION_MS);
     const cuts = SIGNAL_CUTS.map(([time, value]) => setTimeout(() => setSignal(value), AEMEATH_GLITCH_START_MS + time));
-    const clear = () => { clearTimeout(start); clearTimeout(stop); cuts.forEach(clearTimeout); };
+    const clear = () => { clearTimeout(start); clearTimeout(stop); cuts.forEach(timer => clearTimeout(timer)); };
     const reduce = () => { if (motion.matches) { clear(); setActive(false); } };
     motion.addEventListener("change", reduce);
     return () => { clear(); motion.removeEventListener("change", reduce); };
@@ -49,7 +49,6 @@ export default function AemeathDataGlitch() {
         </filter>
       </defs>
     </svg>
-    <div className="aemeath-signal-dropout" />
     <svg className="aemeath-signal-blocks" viewBox="0 0 1000 1000" preserveAspectRatio="none">
       <g fill="rgb(150 173 192)">
         {SIGNAL_FRAGMENTS.map((fragment, index) => <rect key={index} {...fragment} />)}

@@ -1,4 +1,4 @@
-/* Real scene tears, one obscured cut, then a progressively cleaner relock. */
+/* Keep the real scene visible through the tear, form change and relock. */
 .aemeath-data-glitch {
   position: fixed;
   inset: 0;
@@ -19,14 +19,6 @@
   animation: aemeath-signal-grain var(--glitch-duration) steps(1, end) both;
 }
 
-.aemeath-signal-dropout {
-  position: absolute;
-  inset: 0;
-  background: rgb(12 15 23);
-  opacity: 0;
-  animation: aemeath-signal-cover var(--glitch-duration) linear both;
-}
-
 .aemeath-signal-blocks {
   position: absolute;
   inset: -3% 0;
@@ -36,17 +28,6 @@
   animation: aemeath-signal-blocks var(--glitch-duration) steps(1, end) both;
 }
 
-
-/* The 1600ms image replacement falls safely inside the opaque plateau. */
-@keyframes aemeath-signal-cover {
-  0%, 22% { opacity: 0; }
-  30% { opacity: .16; }
-  37% { opacity: .4; }
-  42%, 59% { opacity: 1; }
-  66% { opacity: .45; }
-  79% { opacity: .12; }
-  94%, 100% { opacity: 0; }
-}
 
 @keyframes aemeath-signal-blocks {
   0%, 16% { opacity: 0; transform: translate(0, 0); }
@@ -73,5 +54,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .aemeath-data-glitch { display: none; }
-  .aemeath-signal-picture, .aemeath-signal-noise, .aemeath-signal-dropout, .aemeath-signal-blocks { animation: none; }
+  .aemeath-signal-picture, .aemeath-signal-noise, .aemeath-signal-blocks { animation: none; }
 }
