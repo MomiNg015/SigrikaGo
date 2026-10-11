@@ -1,4 +1,4 @@
-import RankProgress from "../../shared/RankProgress.jsx";
+import ResultRankProgress from "./ResultRankProgress.jsx";
 import { useEffect, useMemo, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
@@ -13,7 +13,6 @@ import {
   formatSignedDelta,
   resultPlayerForRoom,
   resultRewardForRoom,
-  resultRankDeltaText,
   resultVoiceEventForRoom
 } from "./lifecycleHelpers.js";
 
@@ -32,7 +31,6 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
     itemEffects: currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}
   } : null, [resultVoiceCharacter, currentPlayer]);
   const reward = resultRewardForRoom(room, user);
-  const rankDeltaText = resultRankDeltaText(reward);
   const isPractice = isPracticeRoom(room);
   const isChallenge = isCaptureChallenge(room);
   const challengeComplete = isChallenge && room.game.winner?.reason === "capture-challenge";
@@ -112,7 +110,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
           </div>}
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
-              <span className={ratingRewardClass}><strong>段位{rankDeltaText && <em className="result-rank-delta">{rankDeltaText}</em>}</strong><RankProgress showStatus rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
+              <span className={ratingRewardClass}><ResultRankProgress reward={reward} rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
               <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}

@@ -1408,6 +1408,8 @@ Ordinary `ResultModal` uses the final `result-compact.css` owner: content-sized 
 
 `useOverlayActions.leaveResultRoom` accepts finished ordinary rooms, reuses `planRoomBackNavigation`, emits `room:leave`, remembers dismissal, clears room/replay/pending skill, and selects home. Board return only dismisses the result. Authoritative rank changes take precedence over reset stars; account for the skipped zero step between 1 kyu and 1 dan, use points for nine-dan changes, and do not infer pending rewards. DOM tests cover callbacks, dismissal and delta boundaries; browser checks use the actual component with the complete theme at desktop and 320/360/390px portrait widths.
 
+Selected `ResultRankProgress` uses star slots with a persistent dashed gain/loss mark and one-shot transform/opacity arrival, or muted prior rank → highlighted current rank. Never show signed delta copy visually; retain its accessible label. Render 4/6/8 slots, nine-dan before/after points, prioritize rank changes over star resets, and keep pending changes neutral. Stable rerenders must not remount changed slots; reduced motion disables arrival. The final scoped owner is `result-rank-trail.css`.
+
 ## Asynchronous admin draft readiness
 
 `AdminSiteSettings` exposes its editable draft only after the current token's initial GET succeeds. Defaults must not be editable while pending or failed: a late response can otherwise replace a user's changes before save. Show the existing loading state, retain a visible load error and retry action, and ignore responses after token replacement or unmount. Callback-only rerenders must not restart the initial fetch. Preserve the loaded server draft and existing save payload normalization.

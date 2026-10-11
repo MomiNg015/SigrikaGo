@@ -1,0 +1,49 @@
+/* Selected star-trail result reward; scoped after the compact window owner. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-compact) .result-modal.result-compact {
+  & .result-rewards { grid-template-columns: minmax(0, 1fr) 54px !important; align-items: center; min-height: 96px; }
+  & .result-rank-trail { --rank-gold: #b48b38; --rank-fill: #efd480; --rank-pale: #f3e8c8; --rank-line: #d4c7a8; display: flex; flex-direction: column; align-items: start; gap: 7px; }
+  & .result-rank-trail.is-loss { --rank-gold: #78889c; --rank-fill: #c1ccd9; --rank-pale: #e6ebef; --rank-line: #c6ced6; }
+  & :where(.result-rank-trail, .result-rank-trail span) { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: inherit; }
+  & .result-rank-caption { font-size: 11px; color: var(--bright-muted); font-weight: 400; }
+  & .result-rank-number { display: inline-flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+  & .result-rank-number b { font: 700 27px/1 Arial, sans-serif; }
+  & .result-rank-number small { font-size: 11px; }
+  & .result-rank-route { display: flex; align-items: center; gap: 12px; }
+  & .result-rank-route > svg { width: 21px; height: 21px; color: var(--rank-gold); flex-shrink: 0; }
+  & .result-rank-before { opacity: .45; }
+  & .result-rank-before b { font-size: 21px; }
+  & .result-rank-next { padding: 6px 10px; background: var(--rank-pale); border-bottom: 2px solid var(--rank-gold); border-radius: 5px; animation: result-rank-arrival 550ms ease-out both; }
+  & .result-rank-slots { display: grid; grid-template-columns: repeat(4, 20px); gap: 5px; }
+  & .result-rank-slots[data-capacity="6"] { grid-template-columns: repeat(6, 20px); }
+  & .result-rank-slot { display: flex; position: relative; width: 20px; height: 24px; align-items: center; justify-content: center; }
+  & .result-rank-slot > svg { width: 19px; height: 19px; color: var(--rank-line); fill: transparent; }
+  & .result-rank-slot.is-filled > svg { color: var(--rank-gold); fill: var(--rank-fill); }
+  & .result-rank-slot.is-changed { border-radius: 50%; background: var(--rank-pale); outline: 1px dashed var(--rank-gold); outline-offset: 2px; }
+  & .result-rank-slot.is-added > svg { animation: result-star-arrival 700ms cubic-bezier(.2,.8,.3,1) both; }
+  & .result-rank-slot.is-removed > svg { stroke-dasharray: 3 2; color: var(--rank-gold); animation: result-star-loss 600ms ease-out both; }
+  & .result-star-sign { display: flex; position: absolute; right: -5px; top: -3px; width: 10px; height: 10px; background: var(--bright-sheet); border-radius: 50%; }
+  & .result-star-sign svg { width: 10px; height: 10px; stroke-width: 3; }
+  & .result-rank-points { display: flex; align-items: center; gap: 6px; font-size: 16px; }
+  & .result-rank-points > span { font-size: 12px; opacity: .5; }
+  & .result-rank-points > svg { width: 16px; height: 16px; flex-shrink: 0; }
+  & .result-rank-points small { font-size: 10px; }
+  @media (max-width: 768px) {
+    & .result-rewards { grid-template-columns: minmax(0,1fr) 43px !important; gap: 8px !important; }
+    & .result-reward-coins { padding-left: 7px !important; font-size: 17px !important; }
+    & .result-rank-number b { font-size: 24px; }
+    & .result-rank-route { gap: 5px; }
+    & .result-rank-route > svg { width: 17px; height: 17px; }
+    & .result-rank-next { padding: 5px 6px; }
+    & .result-rank-slots { grid-template-columns: repeat(4,15px); gap: 3px; }
+    & .result-rank-slots[data-capacity="6"] { grid-template-columns: repeat(3,15px); }
+    & .result-rank-slot { width: 15px; height: 19px; }
+    & .result-rank-slot > svg { width: 14px; height: 14px; }
+    & .result-rank-points { font-size: 13px; gap: 3px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    & .result-rank-slot.is-added > svg, & .result-rank-slot.is-removed > svg, & .result-rank-next { animation: none; }
+  }
+}
+@keyframes result-star-arrival { from { opacity: .25; transform: translateY(-8px) scale(.55) rotate(-24deg); } 70% { transform: scale(1.18) rotate(5deg); } to { opacity: 1; transform: none; } }
+@keyframes result-star-loss { from { opacity: 1; transform: scale(1.15); } to { opacity: .6; transform: scale(.9); } }
+@keyframes result-rank-arrival { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }

@@ -111,7 +111,7 @@ describe("GameLifecycleModals helpers", () => {
   it("uses semantic rating typography only for rating reward values", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain('<RankProgress showStatus rank={reward.rankAfter');
+    expect(source).toContain('<ResultRankProgress reward={reward} rank={reward.rankAfter');
     expect(source).toContain('className="result-reward-tile result-reward-coins"');
     expect(source).toContain("<strong>金币</strong>{formatSignedDelta(reward.coins)}");
   });

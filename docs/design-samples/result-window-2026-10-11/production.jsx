@@ -7,7 +7,9 @@ import "../../../src/styles.css";
 
 const params = new URLSearchParams(location.search);
 const loss = params.get("outcome") === "loss";
-const changes = { star: { rank: 0, stars: loss ? -1 : 1, rankAfter: "3段", starsAfter: loss ? 1 : 3 },
+const changes = { eight: { rank: 0, stars: loss ? -1 : 1, rankAfter: "8段", starsAfter: loss ? 7 : 8 },
+  unchanged: { rank: 0, stars: 0, rankAfter: "5段", starsAfter: 3 },
+  star: { rank: 0, stars: loss ? -1 : 1, rankAfter: "3段", starsAfter: loss ? 1 : 3 },
   rank: { rank: loss ? -1 : 1, stars: loss ? 4 : -2, rankAfter: loss ? "3段" : "4段", starsAfter: 2 },
   points: { rank: 0, stars: 0, rating: loss ? -250 : 200, rankAfter: "9段", starsAfter: 0, ratingAfter: 1200 } };
 const user = { id: "self", username: "不应显示的用户名", rank: "3段", stars: 2 };

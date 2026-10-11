@@ -1,0 +1,98 @@
+.vr-workbench { min-height: 100dvh; background: #eeeee5; color: #3d392e; padding: 24px 28px; font-family: "Microsoft YaHei", sans-serif; }
+.vr-workbench header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.vr-workbench h1 { font-size: 23px; margin: 0 0 8px; }
+.vr-workbench p, .vr-workbench footer { font-size: 12px; color: #6a6c60; }
+.vr-controls { display: flex; align-items: end; gap: 10px; }
+.vr-controls label { display: grid; gap: 5px; font-size: 12px; }
+.vr-controls select, .vr-controls button { font: inherit; padding: 8px 14px; min-height: 42px; border: 1px solid #bbbfae; background: #fffdf5; border-radius: 5px; box-shadow: none; color: #3d392e; }
+.vr-workbench nav { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 22px 0 18px; }
+.vr-workbench nav button { display: grid; grid-template-columns: 26px 1fr; text-align: left; gap: 6px 10px; padding: 15px; color: #454a3b; border: 1px solid #c1c6b5; background: #f8f9f0; border-radius: 6px; box-shadow: none; }
+.vr-workbench nav button[aria-pressed="true"] { border-color: #456347; background: #e2ead7; box-shadow: inset 0 -3px #456347; }
+.vr-workbench nav small { grid-row: span 2; padding-top: 3px; opacity: .65; }
+.vr-workbench nav strong { font-size: 16px; }
+.vr-workbench nav span { font-size: 12px; line-height: 1.6; }
+.vr-preview { height: max(560px,calc(100dvh - 275px)); }
+.vr-preview iframe { width: 100%; height: 100%; border: 1px solid #c7c9bb; border-radius: 8px; display: block; }
+.vr-phone { width: 390px; max-width: 100%; height: 720px; margin: auto; }
+.vr-workbench footer { text-align: center; margin-top: 14px; }
+.vr-scene { min-height: 100dvh; }
+.vr-board { position: fixed; width: min(70vw, 520px); aspect-ratio: 1; left: 50%; top: 50%; translate: -50% -50%; background-color: #d7c396; background-image: linear-gradient(#94815c88 1px, transparent 1px),linear-gradient(90deg,#94815c88 1px,transparent 1px); background-size: 8.333% 8.333%; border: 10px solid #cbbb94; filter: blur(2px); }
+.vr-destination { position: fixed; inset: 0; display: grid; align-content: center; justify-content: center; gap: 20px; }
+/* Sample-only rank replacement: no production component or token changes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.vr-scene .modal-backdrop:has(.result-compact) .result-modal.result-compact {
+  & .result-rewards { grid-template-columns: minmax(0, 1fr) 54px !important; align-items: center; min-height: 96px; }
+  & .result-reward-rating > :not(.vr-design) { display: none !important; }
+  & .result-reward-rating > .vr-design { display: flex !important; }
+  & :where(.vr-design, .vr-design span) { border: 0; border-radius: 0; padding: 0; background: transparent; box-shadow: none; gap: 0; }
+  & .vr-design { --vr-gold: #b48b38; --vr-gold-fill: #efd480; --vr-ink: #675735; --vr-pale: #f3e8c8; --vr-line: #d4c7a8; flex-direction: column; align-items: start; gap: 7px; font-weight: 400; color: var(--vr-ink); min-width: 0; }
+  & .vr-design.is-loss { --vr-gold: #78889c; --vr-gold-fill: #c1ccd9; --vr-ink: #53667b; --vr-pale: #e6ebef; --vr-line: #c6ced6; }
+  & .vr-design svg { flex: none; }
+  & .vr-caption { font-size: 11px; color: var(--bright-muted); letter-spacing: 1px; }
+  & .vr-number { display: inline-flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+  & .vr-number b { font-size: 27px; line-height: 1; font-family: Arial, sans-serif !important; font-weight: 700; }
+  & .vr-number small { font-size: 11px; font-weight: 600; }
+  & .vr-rank-heading { display: flex; align-items: center; gap: 10px; }
+  & .vr-rank-heading > svg { width: 19px; height: 19px; color: var(--vr-gold); }
+  & .vr-stars { display: inline-flex; gap: 5px; align-items: center; }
+  & .vr-slot { display: inline-flex; position: relative; width: 20px; height: 24px; align-items: center; justify-content: center; }
+  & .vr-slot > svg { width: 19px; height: 19px; color: var(--vr-line); fill: transparent; }
+  & .vr-slot.filled > svg { color: var(--vr-gold); fill: var(--vr-gold-fill); }
+  & .vr-slot.changed { border-radius: 50%; background: var(--vr-pale); outline: 1px dashed var(--vr-gold); outline-offset: 2px; }
+  & .vr-slot.added > svg { animation: vr-star-arrival 700ms cubic-bezier(.2,.8,.3,1) both; }
+  & .vr-slot.removed > svg { stroke-dasharray: 3 2; color: var(--vr-gold); animation: vr-star-loss 600ms ease-out both; }
+  & .vr-change-sign { display: flex; position: absolute; right: -5px; top: -3px; width: 10px; height: 10px; background: var(--bright-sheet); border-radius: 50%; }
+  & .vr-change-sign svg { width: 10px; height: 10px; stroke-width: 3; }
+  & .vr-rank-route { display: flex; align-items: center; gap: 12px; }
+  & .vr-previous { opacity: .45; }
+  & .vr-previous .vr-number b { font-size: 21px; }
+  & .vr-rank-route > svg { width: 24px; height: 24px; color: var(--vr-gold); }
+  & .vr-next { padding: 6px 10px; background: var(--vr-pale); border-bottom: 2px solid var(--vr-gold); border-radius: 5px; animation: vr-rank-arrival 550ms ease-out both; }
+  & .vr-medallion { position: relative; display: flex; width: 65px; height: 65px; border-radius: 50%; align-items: center; justify-content: center; border: 1px solid var(--vr-gold); background: var(--vr-pale); outline: 1px solid var(--vr-line); outline-offset: -5px; box-shadow: 0 3px 0 var(--vr-line); }
+  & .vr-medallion::before, & .vr-medallion::after { content: ""; position: absolute; width: 13px; height: 23px; background: var(--vr-pale); border: 1px solid var(--vr-line); bottom: -15px; z-index: -1; clip-path: polygon(0 0,100% 0,100% 100%,50% 75%,0 100%); }
+  & .vr-medallion::before { left: 13px; rotate: 12deg; } & .vr-medallion::after { right: 13px; rotate: -12deg; }
+  & .vr-medal-wrap { width: fit-content; display: inline-flex; position: relative; isolation: isolate; margin: 3px 0 13px; }
+  & .vr-pin { position: absolute; right: -11px; top: -3px; display: flex; align-items: center; justify-content: center; width: 27px; height: 27px; border-radius: 50%; background: var(--bright-sheet); border: 1px solid var(--vr-gold); rotate: 10deg; animation: vr-rank-arrival 550ms ease-out both; }
+  & .vr-pin > svg { width: 18px; height: 18px; color: var(--vr-gold); }
+  & .vr-pin > span { display: flex; position: absolute; right: -3px; bottom: -2px; border-radius: 50%; background: var(--bright-sheet); }
+  & .vr-pin > span svg { width: 11px; height: 11px; stroke-width: 3; }
+  & .vr-medallion { animation: vr-medal-arrival 650ms ease-out both; }
+  & .vr-medal-foot { display: flex; flex-direction: column; gap: 6px; }
+  & .vr-from { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+  & .vr-from > span { opacity: .5; font-weight: 400; }
+  & .vr-from svg { width: 15px; height: 15px; }
+  & .vr-medallion.vr-number { line-height: 1; }
+  & .vr-design.vr-medal { display: grid !important; grid-template-columns: 78px minmax(0,1fr); align-items: center; gap: 10px; }
+  & .vr-compare-ranks { display: flex; align-items: center; gap: 12px; }
+  & .vr-compare-ranks > span { display: flex; flex-direction: column; gap: 8px; }
+  & .vr-compare-ranks > svg { width: 21px; height: 21px; color: var(--vr-gold); }
+  & .vr-before { opacity: .45; }
+  & .vr-after { background: var(--vr-pale); padding: 8px 10px !important; border-radius: 5px !important; }
+  & .vr-compare-ranks small, & .vr-comparison small { font-size: 10px; font-weight: 400; white-space: nowrap; }
+  & .vr-comparison { display: grid; gap: 7px; }
+  & .vr-comparison > span { display: flex; align-items: center; gap: 10px; }
+  & .vr-stars.quiet { opacity: .4; }
+  & .vr-current { border-top: 1px solid var(--vr-line); padding-top: 7px !important; }
+  @media(max-width:768px) {
+    & .result-rewards { grid-template-columns: minmax(0,1fr) 43px !important; gap: 8px !important; }
+    & .result-reward-coins { padding-left: 7px !important; font-size: 17px !important; }
+    & .vr-stars { gap: 3px; }
+    & .vr-slot { width: 15px; height: 19px; }
+    & .vr-slot > svg { width: 14px; height: 14px; }
+    & .vr-design.vr-medal { grid-template-columns: 1fr; gap: 4px; }
+    & .vr-medal-wrap { margin-bottom: 11px; }
+    & .vr-medallion { width: 54px; height: 54px; }
+    & .vr-number b { font-size: 24px; }
+    & .vr-rank-route, & .vr-compare-ranks { gap: 5px; }
+    & .vr-rank-route > svg, & .vr-compare-ranks > svg { width: 17px; }
+    & .vr-next { padding: 5px 6px; }
+    & .vr-after { padding: 6px !important; }
+    & .vr-comparison > span { gap: 6px; }
+    & .vr-comparison small { font-size: 9px; }
+  }
+}
+@keyframes vr-star-arrival { from { opacity: .25; transform: translateY(-8px) scale(.55) rotate(-24deg); } 70% { transform: translateY(0) scale(1.18) rotate(5deg); } to { opacity: 1; transform: none; } }
+@keyframes vr-star-loss { from { opacity: 1; transform: scale(1.15); } to { opacity: .6; transform: scale(.9); } }
+@keyframes vr-rank-arrival { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes vr-medal-arrival { from { opacity: .3; transform: rotate(-12deg) scale(.9); } to { opacity: 1; transform: none; } }
+@media(prefers-reduced-motion:reduce) { .vr-scene .vr-design svg, .vr-scene .vr-design span { animation: none !important; } }
+@media(max-width:600px) { .vr-workbench { padding: 16px 10px; } .vr-workbench h1 { font-size: 19px; } .vr-workbench nav { gap: 6px; } .vr-workbench nav button { display: flex; flex-direction: column; padding: 10px 8px; } .vr-workbench nav strong { font-size: 13px; } .vr-workbench nav span { display: none; } .vr-controls { flex-wrap: wrap; } .vr-preview { height: 640px; } }

@@ -15,7 +15,8 @@ describe("compact result actions and rank changes", () => {
     const onClose = vi.fn(); const onLeaveRoom = vi.fn();
     render(<ResultModal room={room} user={user} characters={CHARACTERS} onClose={onClose} onLeaveRoom={onLeaveRoom} />);
     expect(screen.queryByText(user.username)).toBeNull();
-    expect(screen.getByText("+1星")).toBeTruthy();
+    expect(screen.getByRole("img", { name: "当前3段，3星，本局+1星" })).toBeTruthy();
+    expect(screen.queryByText("+1星")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "返回棋盘" }));
     expect(onClose).toHaveBeenCalledTimes(1); expect(onLeaveRoom).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "退出房间" }));

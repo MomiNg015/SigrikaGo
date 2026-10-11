@@ -1,0 +1,7 @@
+# Result rank change visual samples
+
+User rejected literal text deltas and requests three attractive alternatives. Keep production unchanged; isolate samples in docs/design-samples/result-rank-2026-10-11. Render alternatives inside the existing ResultModal using a sample-only portal and styling. Directions: changed star slots, rank medallion, before/after comparison. Cover star gain/loss and rank promotion/demotion, desktop and portrait phones, reduced motion and replay. Keep usernames absent, centered portrait, existing result effects and paired actions. No backend or reward semantics changes. Validate visible output early, then scoped lint and browser checks. Update system-design entry and HTML.
+
+Delivery: three working directions and four scenarios, 48 viewport/state cases passed with no browser errors, no overlap into coin column, old literal delta hidden, reduced motion and controls verified. Explicit project ESLint passed. Screenshots and verification.json saved, system design regenerated. Awaiting user direction selection; production files unchanged.
+
+User selected option 1. Production integration completed: ResultRankProgress and isolated final CSS replace visible signed copy with changed star slots and prior/current ranks. Supports 4/6/8 stars, nine-dan points, skipped-zero crossing, neutral pending state and reduced motion. Portrait, original effects and paired action behavior preserved. 121 scoped tests passed; production browser and build validation recorded in delivery.

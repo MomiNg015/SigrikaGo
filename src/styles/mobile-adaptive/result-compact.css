@@ -1,7 +1,6 @@
 /* Selected result layout; final owner after legacy theme and phone rules. */
 .result-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .result-actions button { width: 100%; }
-.result-rank-delta { margin-left: 8px; font-style: normal; white-space: nowrap; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-compact) .result-modal.result-compact {
   width: min(580px, calc(100vw - 32px)) !important;
   min-width: 0 !important;
@@ -33,7 +32,6 @@
   & .result-rewards { margin: 6px 0 0 !important; padding: 10px 0 !important; border-block: 1px solid var(--bright-border); gap: 12px !important; }
   & .result-reward-tile { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; font-size: 20px !important; color: var(--bright-ink) !important; gap: 5px !important; align-content: start; }
   & .result-reward-tile > strong { font-size: 12px !important; color: var(--bright-muted) !important; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-  & .result-rank-delta { font-weight: 800; margin: 0; color: var(--bright-ink); }
   & .result-reward-coins { border-left: 1px solid var(--bright-border) !important; padding-left: 12px !important; }
   & .rank-progress, & .rank-progress span { padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; color: inherit !important; border-radius: 0 !important; }
   & .rank-progress { display: flex !important; justify-content: start !important; flex-wrap: wrap; gap: 4px !important; font-size: 17px; }
