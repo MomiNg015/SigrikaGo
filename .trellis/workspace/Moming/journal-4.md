@@ -501,3 +501,36 @@ Removed full-screen black cover while preserving timing and live pixel tearing; 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 196: Aemeath 800ms glitch timing
+
+**Date**: 2026-10-11
+**Task**: Aemeath 800ms glitch timing
+**Branch**: `master`
+
+### Summary
+
+Compressed no-blackout glitch to 800ms with normalized phase timers, 1400ms form swap, 3200ms banner and 4136ms resolution. Updated docs and sample recording. 73 tests, lint/build/built CSS passed; verified desktop/mobile lifecycle and continuous recording. Preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f9545be9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
