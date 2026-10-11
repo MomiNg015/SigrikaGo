@@ -468,3 +468,36 @@ Rechoreographed 1.2s live backdrop rupture with fully obscured form replacement 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 195: Remove Aemeath blackout
+
+**Date**: 2026-10-11
+**Task**: Remove Aemeath blackout
+**Branch**: `master`
+
+### Summary
+
+Removed full-screen black cover while preserving timing and live pixel tearing; added cut-phase variation. Updated phone recording, desktop/mobile peak frames, docs and CSS budget. Related tests, full lint and build checks passed. Preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `999e97e9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
