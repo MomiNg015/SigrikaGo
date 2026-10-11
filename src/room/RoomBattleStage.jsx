@@ -4,7 +4,8 @@ import { isCaptureChallenge } from "../shared/captureChallenge.js";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
-import RoomPeopleList from "./RoomPeopleList.jsx";
+import SpectatorGallery, { useSpectatorPresence } from "./SpectatorGallery.jsx";
+import { useRoomProfiles } from "./useRoomProfiles.jsx";
 import { useMobileDockBaseline } from "./layout/useMobileDockBaseline.js";
 import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
@@ -27,11 +28,8 @@ export default function RoomBattleStage({
   isReplay,
   liveStep,
   me,
-  onBack,
   onCountingRequest,
-  onCountingRespond,
   onDrawRequest,
-  onDrawRespond,
   onOpenReplay,
   onPass,
   onResign,
@@ -62,8 +60,12 @@ export default function RoomBattleStage({
   winnerColor,
   sigrikaCandyDuel = false
 }) {
-  const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
   const { viewportRef, dockRef, tabsRef, actionsRef } = useMobileDockBaseline(battleLayoutClassName === "mobile-battle-layout");
+  const presenceEnabled = showPeoplePanel && !isReplay;
+  const spectators = useSpectatorPresence(displayRoom);
+  const { openProfile, profileLayer } = useRoomProfiles({ roomKey: displayRoom.code, user, token, characters, onOpenReplay });
+  const openUser = presenceEnabled && token ? openProfile : undefined;
+  const gallery = presenceEnabled && <SpectatorGallery key={displayRoom.code} entries={spectators} characters={characters} onOpenUser={openProfile} />;
   const [floatingLayers, setFloatingLayers] = useState({});
   const bringFloatingLayerToFront = useCallback((layerId) => {
     if (!layerId) return;
@@ -72,9 +74,6 @@ export default function RoomBattleStage({
   const handleNeutralPoint = useCallback((id) => {
     onScoringAction({ type: "mark-neutral", pointId: id });
   }, [onScoringAction]);
-  const handleMembersFloatingLayer = useCallback(() => {
-    bringFloatingLayerToFront("members");
-  }, [bringFloatingLayerToFront]);
   const handleStoryLogFloatingLayer = useCallback(() => {
     bringFloatingLayerToFront("story-log");
   }, [bringFloatingLayerToFront]);
@@ -106,18 +105,8 @@ export default function RoomBattleStage({
       floatingLayerId={`skill-${opponent?.color ?? "opponent"}`}
       floatingLayerZ={floatingLayers[`skill-${opponent?.color ?? "opponent"}`]}
       onFloatingLayerRequest={bringFloatingLayerToFront}
+      onOpenUser={openUser}
       sigrikaCandyDuel={sigrikaCandyDuel}
-    />
-  );
-  const membersPanel = showPeoplePanel && !isReplay && !sigrikaCandyDuel && (
-    <RoomPeopleList
-      room={displayRoom}
-      user={user}
-      characters={characters}
-      token={token}
-      onOpenReplay={onOpenReplay}
-      floatingLayerZ={floatingLayers.members}
-      onFloatingLayerRequest={handleMembersFloatingLayer}
     />
   );
   const boardPanel = (
@@ -192,6 +181,7 @@ export default function RoomBattleStage({
       floatingLayerId={`skill-${selfPlayer?.color ?? "self"}`}
       floatingLayerZ={floatingLayers[`skill-${selfPlayer?.color ?? "self"}`]}
       onFloatingLayerRequest={bringFloatingLayerToFront}
+      onOpenUser={openUser}
       sigrikaCandyDuel={sigrikaCandyDuel}
     />
   );
@@ -209,67 +199,25 @@ export default function RoomBattleStage({
   );
 
   if (isMobileBattleLayout) {
-    const panels = [
-      { id: "actions", label: "操作", content: <div className="mobile-action-panel">{actionPanel}</div> },
-      membersPanel && { id: "members", label: "成员", content: membersPanel }
-    ].filter(Boolean);
-    const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
-
     return (
-      <section ref={viewportRef} className="mobile-room-viewport mobile-battle-layout" data-action-anchored>
+      <section ref={viewportRef} className="mobile-room-viewport mobile-battle-layout" data-action-anchored data-spectator-layout={presenceEnabled ? "" : undefined}>
         <div className="mobile-player-slot mobile-opponent-slot opponent-side">{opponentInfo}</div>
         <div className="mobile-board-viewport mobile-board-slot board-column">{boardPanel}</div>
         <div className="mobile-player-slot mobile-self-slot room-side">{selfInfo}</div>
-        {selectedPanel && (
-          <section ref={dockRef} className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
-            <div
-              className="mobile-tab-list"
-              ref={tabsRef}
-              role="tablist"
-              style={{ "--mobile-room-tab-count": panels.length + (storyLogPanel ? 1 : 0) }}
-            >
-              {panels.map((panel) => (
-                <button
-                  key={panel.id}
-                  type="button"
-                  className={panel.id === selectedPanel.id ? "mobile-tab-button active" : "mobile-tab-button"}
-                  role="tab"
-                  aria-label={panel.badge == null ? panel.label : `${panel.label}，${panel.badge}条`}
-                  aria-selected={panel.id === selectedPanel.id}
-                  aria-controls={`mobile-room-panel-${panel.id}`}
-                  id={`mobile-room-tab-${panel.id}`}
-                  onClick={() => setActiveMobilePanel(panel.id)}
-                >
-                  <span>{panel.label}</span>
-                  {panel.badge != null && <strong className="mobile-tab-badge">{panel.badge}</strong>}
-                </button>
-              ))}
-              {storyLogPanel}
-            </div>
-            {panels.map((panel) => (
-              <div
-                key={panel.id}
-                ref={panel.id === "actions" ? actionsRef : undefined}
-                className="mobile-tab-panel"
-                role="tabpanel"
-                id={`mobile-room-panel-${panel.id}`}
-                aria-labelledby={`mobile-room-tab-${panel.id}`}
-                hidden={panel.id !== selectedPanel.id}
-              >
-                {panel.content}
-              </div>
-            ))}
-          </section>
-        )}
+        {gallery}
+        <section ref={dockRef} className="mobile-room-dock room-direct-actions" aria-label="对局功能">
+          {storyLogPanel && <div ref={tabsRef} className="room-story-log-entry">{storyLogPanel}</div>}
+          <div ref={actionsRef} id="mobile-room-panel-actions" className="mobile-tab-panel"><div className="mobile-action-panel">{actionPanel}</div></div>
+        </section>
+        {profileLayer}
       </section>
     );
   }
 
   return (
-    <section className={battleLayoutClassName}>
+    <section className={`${battleLayoutClassName} room-presence-layout`}>
       <div className="opponent-side">
         {opponentInfo}
-        {membersPanel}
       </div>
       <div className="board-column">
         {boardPanel}
@@ -279,6 +227,8 @@ export default function RoomBattleStage({
         {selfInfo}
         {storyLogPanel}
       </div>
+      {gallery}
+      {profileLayer}
     </section>
   );
 }

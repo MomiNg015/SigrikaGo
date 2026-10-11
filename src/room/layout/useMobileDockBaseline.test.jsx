@@ -5,11 +5,11 @@ import { useMobileDockBaseline } from "./useMobileDockBaseline.js";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
-function Fixture() {
+function Fixture({ withTabs = true }) {
   const { viewportRef, dockRef, tabsRef, actionsRef } = useMobileDockBaseline(true);
   return <section ref={viewportRef} data-testid="viewport">
     <section ref={dockRef} data-part="dock" style={{ border: "2px solid black" }}>
-      <div ref={tabsRef} data-part="tabs" />
+      {withTabs && <div ref={tabsRef} data-part="tabs" />}
       <div ref={actionsRef} data-part="actions" hidden />
     </section>
   </section>;
@@ -40,4 +40,13 @@ it("anchors to actions, ignores the selected dock height and remeasures action c
   view.unmount();
   expect(disconnect).toHaveBeenCalledOnce();
   expect(height()).toBe("");
+});
+
+it("measures direct actions without requiring a removed tab bar", () => {
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+    return { height: this.dataset.part === "actions" ? 64 : 0 };
+  });
+  const view = render(<Fixture withTabs={false} />);
+  expect(view.getByTestId("viewport").style.getPropertyValue("--mobile-action-dock-height")).toBe("68px");
 });

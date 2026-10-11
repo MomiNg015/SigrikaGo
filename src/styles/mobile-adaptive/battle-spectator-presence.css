@@ -1,0 +1,107 @@
+/* Window-space presence: art can tuck behind the protected room surfaces. */
+.app-shell .spectator-gallery {
+  position: fixed;
+  inset: 0;
+  z-index: var(--room-presence-z, 30);
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+.app-shell .spectator-mask { position: absolute; width: 0; height: 0; }
+/* Paint real player content above spectators; leave transparent gutters open.
+   Do not stack the whole player-info: its floating skill panel must stay free. */
+.app-shell .desktop-room-screen:has(.spectator-gallery) .player-info[data-paper-player] > :is(.portrait-wrap, .player-meta, .player-clock-panel) {
+  position: relative;
+  z-index: calc(var(--room-presence-z, 30) + 1) !important;
+}
+.app-shell .spectator-entry { pointer-events: none; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .spectator-gallery .spectator-hit {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  translate: none !important;
+  transition: none !important;
+  clip-path: var(--spectator-hit-area) !important;
+  pointer-events: auto;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .spectator-hit::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .spectator-hit::after { display: none !important; }
+.app-shell .spectator-figure {
+  position: absolute;
+  pointer-events: none;
+}
+.app-shell .spectator-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: rotate(var(--spectator-angle));
+  transform-origin: center;
+}
+.app-shell .spectator-art img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .spectator-art img {
+  position: absolute; inset: 0; min-width: 0; min-height: 0;
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  object-fit: contain;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none; filter: none;
+}
+.app-shell .spectator-art > .spectator-placeholder { width: 100%; height: 100%; color: #6a554d; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .spectator-gallery .spectator-username {
+  position: absolute;
+  z-index: 2;
+  top: 100%; left: 50%;
+  transform: translateX(-50%) rotate(-5deg) !important;
+  display: block;
+  width: max-content !important; max-width: var(--spectator-name-width) !important;
+  min-width: 0 !important; min-height: 0 !important; height: auto !important;
+  pointer-events: auto; cursor: pointer; touch-action: pan-y;
+  box-sizing: border-box;
+  padding: 2px 6px !important; margin: 0 !important;
+  border: 1px solid var(--bright-border) !important; border-radius: 0 !important;
+  background: var(--bright-paper) !important; box-shadow: 2px 2px 0 var(--bright-border) !important; text-shadow: none;
+  color: var(--bright-ink);
+  font: 400 12px/18px var(--font-window-title) !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .spectator-gallery .spectator-username { font-size: 10px !important; line-height: 16px !important; }
+.app-shell .spectator-hit:focus-visible + .spectator-figure .spectator-username { text-decoration: underline; }
+.app-shell .spectator-arriving { animation: spectator-arrival 220ms ease-out; }
+@keyframes spectator-arrival { from { opacity: 0; } to { opacity: 1; } }
+.app-shell .player-info button.player-meta { cursor: pointer; text-align: inherit; font: inherit; }
+.app-shell .player-info button.player-meta:focus-visible { outline: 2px solid #3d2b25; outline-offset: 3px; }
+.app-shell .room-profile-status { padding: 24px; max-width: 360px; }
+.app-shell .room-profile-status button { margin: 8px; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-viewport[data-spectator-layout] {
+  grid-template-areas: "opponent" "board" "self" "dock" !important;
+  grid-template-rows: max-content max-content max-content max-content !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+  align-content: start;
+}
+.app-shell.player-theme-enabled .mobile-room-dock.room-direct-actions {
+  grid-area: dock;
+  height: auto; min-height: 0; overflow: visible;
+  border: 0 !important; background: transparent !important; box-shadow: none !important;
+  padding: 4px 6px 8px;
+}
+.app-shell .room-direct-actions .mobile-action-panel { padding: 0; }
+.app-shell .room-story-log-entry { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .spectator-arriving { animation: none; }
+}

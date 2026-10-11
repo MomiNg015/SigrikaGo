@@ -45,6 +45,7 @@ function PlayerInfo({
   floatingLayerId,
   floatingLayerZ,
   onFloatingLayerRequest,
+  onOpenUser,
   sigrikaCandyDuel = false
 }) {
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
@@ -67,6 +68,7 @@ function PlayerInfo({
   const hasCharacter = !(player.character === null && !player.characterId);
   const isNoCharacter = !hasCharacter;
   const isBot = Boolean(player.isBot || player.user?.isBot);
+  const IdentityTag = onOpenUser && !isBot ? "button" : "div";
   const isPracticeBot = isBot && isNoCharacter;
   const botPortraitUrl = isBot ? player.botProfile?.portraitUrl : "";
   const useTutorialPlayerPortrait = Boolean(player.isTutorialPlayer && isNoCharacter && !isBot && player.user?.id !== "tutorial-npc");
@@ -155,7 +157,9 @@ function PlayerInfo({
           {portraitContent}
         </div>
       ))}
-      <div className="player-meta">
+      <IdentityTag className="player-meta" type={IdentityTag === "button" ? "button" : undefined}
+        aria-label={IdentityTag === "button" ? `查看${player.user.username}的详细信息` : undefined}
+        onClick={IdentityTag === "button" ? () => onOpenUser(player.user) : undefined}>
         <div className="name-button player-name">
           <BattleUserIdentity user={player.user} />
         </div>
@@ -163,7 +167,7 @@ function PlayerInfo({
         {showNoCharacterRankPlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
         {showNoCharacterRatingPlaceholder && <span className="meta-tag rating-tag meta-placeholder" aria-hidden="true" />}
-      </div>
+      </IdentityTag>
       <div className="player-clock-panel">
         <TimeBar time={player.time} />
         {showGoStats && <div className="captures">
@@ -301,6 +305,7 @@ export function arePlayerInfoPropsEqual(previous, next) {
     && previous.floatingLayerId === next.floatingLayerId
     && previous.floatingLayerZ === next.floatingLayerZ
     && previous.onFloatingLayerRequest === next.onFloatingLayerRequest
+    && previous.onOpenUser === next.onOpenUser
     && previous.sigrikaCandyDuel === next.sigrikaCandyDuel
     && gamePlayerSliceEqual(previous.game, next.game, color);
 }

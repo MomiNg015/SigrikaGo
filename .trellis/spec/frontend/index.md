@@ -21,6 +21,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Skill Cut-in](./skill-cutin-contract.md) | Full-body skill banner, snapshot appearance, timing, mobile safe area and theme cascade | Filled |
 | [Hook Guidelines](./hook-guidelines.md) | Custom hooks, data fetching patterns | To fill |
 | [State Management](./state-management.md) | Local state, global state, server state | Partially filled |
+| [Spectator Presence](./spectator-presence-contract.md) | Direct battle profiles, stable spectator positions, clipping, gestures and social actions | Filled |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
 | [CSS Architecture](./css-architecture.md) | Stylesheet layer order, theme contracts, Tailwind route | Filled |
 | [Handbook Portrait Strips](./handbook-puzzle-contract.md) | Ordered diagonal slices, hover/touch expansion, ownership, portrait precedence and full-body details | Filled |

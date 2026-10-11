@@ -299,12 +299,10 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("onNeutral={(id) => onScoringAction");
   });
 
-  it("passes stable floating-layer handlers into tutorial records and member panels", () => {
+  it("passes stable floating-layer handlers into tutorial records", () => {
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(battleSource).toContain("const handleMembersFloatingLayer = useCallback");
     expect(battleSource).toContain("const handleStoryLogFloatingLayer = useCallback");
-    expect(battleSource).toContain("onFloatingLayerRequest={handleMembersFloatingLayer}");
     expect(battleSource).toContain("onFloatingLayerRequest={handleStoryLogFloatingLayer}");
     expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"story-log\")}");
     expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"members\")}");
@@ -395,7 +393,7 @@ describe("RoomScreen helpers", () => {
     expect(headerSource).toContain("<span>坐标</span>");
     expect(battleSource).toContain("className=\"mobile-room-viewport mobile-battle-layout\"");
     expect(battleSource).toContain("className=\"mobile-board-viewport mobile-board-slot board-column\"");
-    expect(battleSource).toContain("className=\"mobile-room-dock mobile-room-tabs\"");
+    expect(battleSource).toContain("className=\"mobile-room-dock room-direct-actions\"");
     expect(battleSource).toContain("className=\"mobile-action-panel\"");
     expect(battleSource).not.toContain("content: <>{hintPanel}{actionPanel}</>");
     expect(portraitMedia).toContain(".mobile-room-screen .player-info");
@@ -539,7 +537,7 @@ describe("RoomScreen helpers", () => {
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
     const layoutSource = readText(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
 
-    expect(battleSource).toContain("mobile-room-dock mobile-room-tabs");
+    expect(battleSource).toContain("mobile-room-dock room-direct-actions");
     expect(battleSource).toContain("mobile-tab-panel");
     expect(layoutSource).not.toContain("Children.toArray");
   });
@@ -549,13 +547,12 @@ describe("RoomScreen helpers", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
 
-    expect(battleSource).toContain("activeMobilePanel");
     expect(battleSource).toContain("mobile-room-dock");
-    expect(battleSource).toContain("mobile-room-tabs");
-    expect(battleSource).toContain("mobile-tab-list");
     expect(battleSource).toContain("mobile-tab-panel");
     expect(battleSource).toContain("actionPanel");
-    expect(battleSource).toContain("membersPanel");
+    expect(battleSource).not.toContain("RoomPeopleList");
+    expect(battleSource).not.toContain("activeMobilePanel");
+    expect(battleSource).toContain("<SpectatorGallery");
     expect(battleSource).toContain("showTutorialLog = false");
     expect(battleSource).toContain("storyLogPanel");
     expect(battleSource).toContain("mobileDockPopup={isMobileBattleLayout}");
@@ -563,9 +560,6 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("storyLogPanel && { id: \"story-log\", label: \"剧情记录\"");
     expect(battleSource).not.toContain("{ id: \"chat\", label: \"聊天\"");
     expect(battleSource).not.toContain("presentation=");
-    expect(battleSource).toContain("panels.map((panel) => (");
-    expect(battleSource).toContain("hidden={panel.id !== selectedPanel.id}");
-    expect(battleSource).toContain("panel.badge != null && <strong className=\"mobile-tab-badge\"");
     expect(battleSource).not.toContain("trailingAction={");
     expect(battleSource).not.toContain("chat-exit-action exit-action");
     expect(css).toContain("grid-area: dock");
@@ -592,7 +586,6 @@ describe("RoomScreen helpers", () => {
     const landscapeMedia = mediaBlock(mobileRoomCss, "@media (max-width: 900px) and (orientation: landscape)");
 
     expect(actionSource).toContain("mobile-action-button-label");
-    expect(battleSource).toContain("aria-label={panel.badge == null ? panel.label : `${panel.label}，${panel.badge}条`}");
     expect(portraitMedia).toContain("--mobile-room-dock-panel-height: clamp(112px, 17dvh, 150px)");
     expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px)");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-action-panel");
@@ -765,7 +758,6 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("readonly");
     expect(tutorialSource).toContain("showTutorialLog");
     expect(battleSource).toContain("mobileDockPopup={isMobileBattleLayout}");
-    expect(battleSource).toContain("panels.length + (storyLogPanel ? 1 : 0)");
     expect(battleSource).not.toContain("presentation=");
     expect(chatSource).toContain("const trimmedText = text.trim()");
     expect(roomCss).toContain(".chat-widget");
@@ -919,7 +911,6 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("bringFloatingLayerToFront");
     expect(battleSource).toContain("setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers[\"story-log\"]}");
-    expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
     expect(battleSource).toContain("<div className=\"room-side\">\n        {selfInfo}\n        {storyLogPanel}");
     expect(battleSource).not.toContain("OperationHint");
     expect(battleSource).not.toContain("{hintPanel}");
@@ -964,7 +955,6 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("showPeoplePanel && !isReplay");
     expect(battleSource).toContain("showTutorialLog = false");
     expect(battleSource).toContain("compactMessages");
-    expect(battleSource).toContain("membersPanel && { id: \"members\"");
     expect(tutorialSource).toContain("showUtilityControls={false}");
     expect(tutorialSource).toContain("showPeoplePanel={false}");
     expect(tutorialSource).toContain("showTutorialLog");

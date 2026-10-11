@@ -5,6 +5,13 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/room/SpectatorGallery*.jsx",
+  "src/room/spectatorPresence*.js",
+  "src/room/spectatorLayout*.js",
+  "src/room/useRoomProfiles*.jsx",
+  "src/room/RoomBattleStage.jsx",
+  "tests/e2e/spectator-presence*.js",
+  "tests/e2e/fixtures/spectator-presence.jsx",
   "src/modals/SkillBanner.jsx",
   "docs/design-samples/denia-transformation-2026-10-10/preview.jsx",
   "src/modals/DeniaPaperSwarm.jsx",

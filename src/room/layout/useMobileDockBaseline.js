@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 
-// Measure the action tab even while another tab is selected. The visible dock
-// may grow below this reserved row, but cannot redistribute board/player rows.
+// Reserve direct actions plus the optional story-log trigger without letting
+// popup content redistribute the board/player rows.
 export function useMobileDockBaseline(enabled) {
   const viewportRef = useRef(null);
   const dockRef = useRef(null);
@@ -14,13 +14,13 @@ export function useMobileDockBaseline(enabled) {
     const dock = dockRef.current;
     const tabs = tabsRef.current;
     const actions = actionsRef.current;
-    if (!viewport || !dock || !tabs || !actions) return undefined;
+    if (!viewport || !dock || !actions) return undefined;
     let previousHeight = 0;
     const measure = () => {
       const style = getComputedStyle(dock);
       const chrome = ["borderTopWidth", "borderBottomWidth", "paddingTop", "paddingBottom"]
         .reduce((sum, key) => sum + (parseFloat(style[key]) || 0), 0);
-      const height = Math.ceil(tabs.getBoundingClientRect().height + actions.getBoundingClientRect().height + chrome);
+      const height = Math.ceil((tabs?.getBoundingClientRect().height ?? 0) + actions.getBoundingClientRect().height + chrome);
       if (height > 0 && height !== previousHeight) {
         previousHeight = height;
         viewport.style.setProperty("--mobile-action-dock-height", `${height}px`);
@@ -28,7 +28,7 @@ export function useMobileDockBaseline(enabled) {
     };
     measure();
     const observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
-    [dock, tabs, actions].forEach((element) => observer?.observe(element));
+    [dock, tabs, actions].filter(Boolean).forEach((element) => observer?.observe(element));
     window.addEventListener("resize", measure);
     return () => {
       observer?.disconnect();

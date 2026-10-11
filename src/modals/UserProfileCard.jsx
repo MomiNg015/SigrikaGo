@@ -25,6 +25,8 @@ export function UserProfileCard({
   replayDisabled = false,
   onAddFriend,
   onAddBlacklist,
+  onRemoveFriend,
+  onRemoveBlacklist,
   onNotice
 }) {
   const [mode, setMode] = useState(normalizeGameModeId(user.mode));
@@ -37,6 +39,7 @@ export function UserProfileCard({
   const [failedMode, setFailedMode] = useState("");
   const [likePending, setLikePending] = useState(false);
   const [friendPending, setFriendPending] = useState(false);
+  const [showFriendRemoval, setShowFriendRemoval] = useState(false);
   const [blacklistPending, setBlacklistPending] = useState(false);
   const [showBlacklistConfirm, setShowBlacklistConfirm] = useState(false);
   const [blacklistError, setBlacklistError] = useState("");
@@ -74,6 +77,7 @@ export function UserProfileCard({
     setShowReplays(false);
     setLikePending(false);
     setFriendPending(false);
+    setShowFriendRemoval(false);
     setBlacklistPending(false);
     setReportPending(false);
     setReportContent("");
@@ -148,14 +152,16 @@ export function UserProfileCard({
   }
 
   async function addFriend() {
-    if (!canActOnProfile || isFriend || friendPending || !onAddFriend) return;
+    const action = isFriend ? onRemoveFriend : onAddFriend;
+    if (!canActOnProfile || friendPending || !action) return;
     const requestedUserId = profileUser.id;
     setFriendPending(true);
     setProfileError("");
     try {
-      await onAddFriend(profileUser);
+      await action(profileUser);
       if (activeUserIdRef.current !== requestedUserId) return;
-      setProfileUser((current) => ({ ...current, relation: "friend" }));
+      setProfileUser((current) => ({ ...current, relation: isFriend ? "none" : "friend" }));
+      setShowFriendRemoval(false);
     } catch (error) {
       if (activeUserIdRef.current === requestedUserId) notify(error.message, "danger");
     } finally {
@@ -164,17 +170,21 @@ export function UserProfileCard({
   }
 
   async function addBlacklist() {
-    if (!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist) return;
+    const action = isBlacklisted ? onRemoveBlacklist : onAddBlacklist;
+    if (!canActOnProfile || blacklistPending || !action || (onRemoveFriend && isFriend)) return;
     const requestedUserId = profileUser.id;
     setBlacklistPending(true);
     setBlacklistError("");
     try {
-      await onAddBlacklist(profileUser);
+      await action(profileUser);
       if (activeUserIdRef.current !== requestedUserId) return;
-      setProfileUser((current) => ({ ...current, relation: "blacklist" }));
+      setProfileUser((current) => ({ ...current, relation: isBlacklisted ? "none" : "blacklist" }));
       setShowBlacklistConfirm(false);
     } catch (error) {
-      if (activeUserIdRef.current === requestedUserId) setBlacklistError(error.message);
+      if (activeUserIdRef.current === requestedUserId) {
+        setBlacklistError(error.message);
+        if (isBlacklisted) notify(error.message, "danger");
+      }
     } finally {
       if (activeUserIdRef.current === requestedUserId) setBlacklistPending(false);
     }
@@ -218,8 +228,8 @@ export function UserProfileCard({
 
   const likeCount = profileUser.likeCount ?? 0;
   const likeLabel = likePending ? `点赞中 ${likeCount}` : profileUser.likedToday ? `已点赞 ${likeCount}` : `点赞 ${likeCount}`;
-  const friendLabel = friendPending ? "添加中…" : isFriend ? "已是好友" : "加好友";
-  const blacklistLabel = blacklistPending ? "处理中…" : isBlacklisted ? "已在黑名单" : "加入黑名单";
+  const friendLabel = friendPending ? "处理中…" : isFriend ? (onRemoveFriend ? "解除好友" : "已是好友") : "加好友";
+  const blacklistLabel = blacklistPending ? "处理中…" : isBlacklisted ? (onRemoveBlacklist ? "移出黑名单" : "已在黑名单") : "加入黑名单";
 
   return (
     <ModalDialog
@@ -262,8 +272,8 @@ export function UserProfileCard({
               className="profile-friend-button"
               type="button"
               aria-label={friendLabel}
-              disabled={!canActOnProfile || isFriend || friendPending || !onAddFriend}
-              onClick={addFriend}
+              disabled={!canActOnProfile || friendPending || !(isFriend ? onRemoveFriend : onAddFriend)}
+              onClick={isFriend ? () => setShowFriendRemoval(true) : addFriend}
             >
               <UserPlus size={18} />
               <span>{friendLabel}</span>
@@ -272,8 +282,8 @@ export function UserProfileCard({
               className="profile-blacklist-button"
               type="button"
               aria-label={blacklistLabel}
-              disabled={!canActOnProfile || isBlacklisted || blacklistPending || !onAddBlacklist}
-              onClick={openBlacklistConfirm}
+              disabled={!canActOnProfile || blacklistPending || !(isBlacklisted ? onRemoveBlacklist : onAddBlacklist) || Boolean(onRemoveFriend && isFriend)}
+              onClick={isBlacklisted ? addBlacklist : openBlacklistConfirm}
             >
               <UserRoundX size={18} />
               <span>{blacklistLabel}</span>
@@ -358,6 +368,15 @@ export function UserProfileCard({
         </div>
       )}
 
+      {showFriendRemoval && profileDialogPortal(
+        <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!friendPending) setShowFriendRemoval(false); }}>
+          <ModalDialog className="room-floating-modal confirm-inline-modal" ariaLabel="解除好友" onClose={() => { if (!friendPending) setShowFriendRemoval(false); }} onClick={(event) => event.stopPropagation()}>
+            <ConfirmPanel message={`确定解除与${profileUser.username}的好友关系吗？`} confirmDisabled={friendPending}
+              onConfirm={addFriend} onCancel={() => { if (!friendPending) setShowFriendRemoval(false); }} />
+            {profileError && <p role="alert">{profileError}</p>}
+          </ModalDialog>
+        </div>
+      )}
       {showBlacklistConfirm && profileDialogPortal(
         <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
           <ModalDialog
