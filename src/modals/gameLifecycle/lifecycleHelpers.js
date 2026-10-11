@@ -1,6 +1,7 @@
 import { isCaptureChallenge, isCompletedCaptureChallenge } from "../../shared/captureChallenge.js";
 import { COLORS } from "../../shared/game.js";
 import { resultRewardDelta } from "../../shared/resultRewards.js";
+import { rankToStep } from "../../shared/rankProgression.js";
 import { SYSTEM_VOICE_EVENTS } from "../../shared/systemVoices.js";
 import { PRACTICE_RECORD_POLICY, isPracticeRoom } from "../../shared/practiceMode.js";
 
@@ -20,6 +21,20 @@ export function secondsUntilTimestamp(timestamp, now) {
 
 export function formatSignedDelta(value) {
   return value > 0 ? `+${value}` : String(value);
+}
+
+export function resultRankDeltaText(reward) {
+  if (!reward) return "";
+  if (reward.rank) {
+    const after = rankToStep(reward.rankAfter);
+    const before = after - reward.rank;
+    const crossedZero = before * after < 0;
+    const delta = reward.rank - (crossedZero ? Math.sign(reward.rank) : 0);
+    return `${formatSignedDelta(delta)}${before < 0 && after < 0 ? "级" : "段"}`;
+  }
+  if (reward.stars) return `${formatSignedDelta(reward.stars)}星`;
+  if (reward.rating) return `${formatSignedDelta(reward.rating)}分`;
+  return reward.rankAfter || reward.rated === false ? "无变化" : "";
 }
 
 export function resultRewardForRoom(room, user) {

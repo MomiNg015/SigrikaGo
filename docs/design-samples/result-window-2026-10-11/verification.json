@@ -1,0 +1,1362 @@
+{
+  "cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "side",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 435,
+          "y": 339,
+          "right": 1005,
+          "bottom": 625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 427,
+          "y": 300,
+          "right": 672,
+          "bottom": 640,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 676,
+          "y": 554,
+          "right": 975,
+          "bottom": 598,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "side",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 435,
+          "y": 339,
+          "right": 1005,
+          "bottom": 625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 427,
+          "y": 300,
+          "right": 672,
+          "bottom": 640,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 676,
+          "y": 554,
+          "right": 975,
+          "bottom": 598,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 466.1875,
+          "y": 249,
+          "right": 632.78125,
+          "bottom": 478.4375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "side",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 435,
+          "y": 339,
+          "right": 1005,
+          "bottom": 625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 427,
+          "y": 300,
+          "right": 672,
+          "bottom": 640,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 676,
+          "y": 554,
+          "right": 975,
+          "bottom": 598,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "top",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 550,
+          "y": 394.703125,
+          "right": 890,
+          "bottom": 715.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 599,
+          "y": 147.703125,
+          "right": 841,
+          "bottom": 457.703125,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 580,
+          "y": 646.296875,
+          "right": 860,
+          "bottom": 690.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "top",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 550,
+          "y": 394.703125,
+          "right": 890,
+          "bottom": 715.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 599,
+          "y": 147.703125,
+          "right": 841,
+          "bottom": 457.703125,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 580,
+          "y": 646.296875,
+          "right": 860,
+          "bottom": 690.296875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 637.71875,
+          "y": 101.203125,
+          "right": 802.265625,
+          "bottom": 327.8125,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "top",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 550,
+          "y": 394.703125,
+          "right": 890,
+          "bottom": 715.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 599,
+          "y": 147.703125,
+          "right": 841,
+          "bottom": 457.703125,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 580,
+          "y": 646.296875,
+          "right": 860,
+          "bottom": 690.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "slash",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 410,
+          "y": 334.09375,
+          "right": 1030,
+          "bottom": 629.890625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 402,
+          "y": 288.890625,
+          "right": 685,
+          "bottom": 653.890625,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 695,
+          "y": 559.890625,
+          "right": 998,
+          "bottom": 603.890625,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "slash",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 410,
+          "y": 334.09375,
+          "right": 1030,
+          "bottom": 629.890625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 402,
+          "y": 288.890625,
+          "right": 685,
+          "bottom": 653.890625,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 695,
+          "y": 559.890625,
+          "right": 998,
+          "bottom": 603.890625,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 447.265625,
+          "y": 234.140625,
+          "right": 639.703125,
+          "bottom": 499.171875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "direction": "slash",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 410,
+          "y": 334.09375,
+          "right": 1030,
+          "bottom": 629.890625,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 402,
+          "y": 288.890625,
+          "right": 685,
+          "bottom": 653.890625,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 695,
+          "y": 559.890625,
+          "right": 998,
+          "bottom": 603.890625,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "side",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 323.703125,
+          "right": 372,
+          "bottom": 576.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 287,
+          "right": 154.1875,
+          "bottom": 537,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 157.796875,
+          "y": 511.296875,
+          "right": 355,
+          "bottom": 555.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "side",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 323.703125,
+          "right": 372,
+          "bottom": 576.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 287,
+          "right": 154.1875,
+          "bottom": 537,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 157.796875,
+          "y": 511.296875,
+          "right": 355,
+          "bottom": 555.296875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 29.703125,
+          "y": 249.5,
+          "right": 130.46875,
+          "bottom": 388.265625,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "side",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 323.703125,
+          "right": 372,
+          "bottom": 576.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 287,
+          "right": 154.1875,
+          "bottom": 537,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 157.796875,
+          "y": 511.296875,
+          "right": 355,
+          "bottom": 555.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "top",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 47,
+          "y": 385.296875,
+          "right": 343,
+          "bottom": 655.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 89.5,
+          "y": 160.296875,
+          "right": 300.5,
+          "bottom": 435.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 72,
+          "y": 589.6875,
+          "right": 318,
+          "bottom": 633.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "top",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 47,
+          "y": 385.296875,
+          "right": 343,
+          "bottom": 655.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 89.5,
+          "y": 160.296875,
+          "right": 300.5,
+          "bottom": 435.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 72,
+          "y": 589.6875,
+          "right": 318,
+          "bottom": 633.6875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 123.25,
+          "y": 119.046875,
+          "right": 266.71875,
+          "bottom": 316.625,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "top",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 47,
+          "y": 385.296875,
+          "right": 343,
+          "bottom": 655.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 89.5,
+          "y": 160.296875,
+          "right": 300.5,
+          "bottom": 435.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 72,
+          "y": 589.6875,
+          "right": 318,
+          "bottom": 633.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "slash",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 315.90625,
+          "right": 372,
+          "bottom": 584.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 282.5,
+          "right": 154.1875,
+          "bottom": 542.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 158.421875,
+          "y": 518.09375,
+          "right": 355,
+          "bottom": 562.09375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "slash",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 315.90625,
+          "right": 372,
+          "bottom": 584.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 282.5,
+          "right": 154.1875,
+          "bottom": 542.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 158.421875,
+          "y": 518.09375,
+          "right": 355,
+          "bottom": 562.09375,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 29.703125,
+          "y": 243.5,
+          "right": 130.46875,
+          "bottom": 382.265625,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "direction": "slash",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 315.90625,
+          "right": 372,
+          "bottom": 584.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 282.5,
+          "right": 154.1875,
+          "bottom": 542.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 158.421875,
+          "y": 518.09375,
+          "right": 355,
+          "bottom": 562.09375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "side",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 221.703125,
+          "right": 342,
+          "bottom": 474.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 185,
+          "right": 142.796875,
+          "bottom": 435,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 145.796875,
+          "y": 409.296875,
+          "right": 325,
+          "bottom": 453.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "side",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 221.703125,
+          "right": 342,
+          "bottom": 474.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 185,
+          "right": 142.796875,
+          "bottom": 435,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 145.796875,
+          "y": 409.296875,
+          "right": 325,
+          "bottom": 453.296875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 27.875,
+          "y": 147.5,
+          "right": 120.890625,
+          "bottom": 275.59375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "side",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 221.703125,
+          "right": 342,
+          "bottom": 474.296875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 185,
+          "right": 142.796875,
+          "bottom": 435,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 145.796875,
+          "y": 409.296875,
+          "right": 325,
+          "bottom": 453.296875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "top",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 32,
+          "y": 283.296875,
+          "right": 328,
+          "bottom": 553.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 90,
+          "y": 98.296875,
+          "right": 270,
+          "bottom": 333.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 57,
+          "y": 487.6875,
+          "right": 303,
+          "bottom": 531.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "top",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 32,
+          "y": 283.296875,
+          "right": 328,
+          "bottom": 553.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 90,
+          "y": 98.296875,
+          "right": 270,
+          "bottom": 333.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 57,
+          "y": 487.6875,
+          "right": 303,
+          "bottom": 531.6875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 118.796875,
+          "y": 63.046875,
+          "right": 241.1875,
+          "bottom": 231.59375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "top",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 32,
+          "y": 283.296875,
+          "right": 328,
+          "bottom": 553.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 90,
+          "y": 98.296875,
+          "right": 270,
+          "bottom": 333.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 57,
+          "y": 487.6875,
+          "right": 303,
+          "bottom": 531.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "slash",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 213.90625,
+          "right": 342,
+          "bottom": 482.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 180.5,
+          "right": 142.796875,
+          "bottom": 440.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 146.71875,
+          "y": 416.09375,
+          "right": 325,
+          "bottom": 460.09375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "slash",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 213.90625,
+          "right": 342,
+          "bottom": 482.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 180.5,
+          "right": 142.796875,
+          "bottom": 440.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 146.71875,
+          "y": 416.09375,
+          "right": 325,
+          "bottom": 460.09375,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 27.875,
+          "y": 141.5,
+          "right": 120.890625,
+          "bottom": 269.59375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "direction": "slash",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 18,
+          "y": 213.90625,
+          "right": 342,
+          "bottom": 482.09375,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 6,
+          "y": 180.5,
+          "right": 142.796875,
+          "bottom": 440.5,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 146.71875,
+          "y": 416.09375,
+          "right": 325,
+          "bottom": 460.09375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "side",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 187.5,
+          "right": 308,
+          "bottom": 436.5,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 149,
+          "right": 123.59375,
+          "bottom": 399,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 128.59375,
+          "y": 371.5,
+          "right": 291,
+          "bottom": 415.5,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "side",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 187.5,
+          "right": 308,
+          "bottom": 436.5,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 149,
+          "right": 123.59375,
+          "bottom": 399,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 128.59375,
+          "y": 371.5,
+          "right": 291,
+          "bottom": 415.5,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 21.453125,
+          "y": 111.5,
+          "right": 104.125,
+          "bottom": 225.34375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "side",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 187.5,
+          "right": 308,
+          "bottom": 436.5,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 149,
+          "right": 123.59375,
+          "bottom": 399,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 128.59375,
+          "y": 371.5,
+          "right": 291,
+          "bottom": 415.5,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "top",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 247.296875,
+          "right": 308,
+          "bottom": 517.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 70,
+          "y": 62.296875,
+          "right": 250,
+          "bottom": 297.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 37,
+          "y": 451.6875,
+          "right": 283,
+          "bottom": 495.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "top",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 247.296875,
+          "right": 308,
+          "bottom": 517.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 70,
+          "y": 62.296875,
+          "right": 250,
+          "bottom": 297.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 37,
+          "y": 451.6875,
+          "right": 283,
+          "bottom": 495.6875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 98.796875,
+          "y": 27.046875,
+          "right": 221.1875,
+          "bottom": 195.59375,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "top",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 247.296875,
+          "right": 308,
+          "bottom": 517.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 70,
+          "y": 62.296875,
+          "right": 250,
+          "bottom": 297.296875,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 37,
+          "y": 451.6875,
+          "right": 283,
+          "bottom": 495.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "slash",
+      "outcome": "win",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 180.296875,
+          "right": 308,
+          "bottom": 443.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 144.484375,
+          "right": 123.59375,
+          "bottom": 404.484375,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 129.796875,
+          "y": 377.6875,
+          "right": 291,
+          "bottom": 421.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "result-character-hop",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "slash",
+      "outcome": "loss",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 180.296875,
+          "right": 308,
+          "bottom": 443.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 144.484375,
+          "right": 123.59375,
+          "bottom": 404.484375,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 129.796875,
+          "y": 377.6875,
+          "right": 291,
+          "bottom": 421.6875,
+          "fits": true
+        },
+        {
+          "selector": ".weather",
+          "x": 21.453125,
+          "y": 105.484375,
+          "right": 104.125,
+          "bottom": 219.328125,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "direction": "slash",
+      "outcome": "draw",
+      "elements": [
+        {
+          "selector": ".result-sample",
+          "x": 12,
+          "y": 180.296875,
+          "right": 308,
+          "bottom": 443.6875,
+          "fits": true
+        },
+        {
+          "selector": ".portrait-art",
+          "x": 2,
+          "y": 144.484375,
+          "right": 123.59375,
+          "bottom": 404.484375,
+          "fits": true
+        },
+        {
+          "selector": ".confirm",
+          "x": 129.796875,
+          "y": 377.6875,
+          "right": 291,
+          "bottom": 421.6875,
+          "fits": true
+        }
+      ],
+      "overflow": false,
+      "animation": "none",
+      "loaded": true
+    }
+  ],
+  "failures": [],
+  "errors": []
+}

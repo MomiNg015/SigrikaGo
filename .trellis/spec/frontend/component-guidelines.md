@@ -1396,9 +1396,17 @@ warn(tutorialWrongPointWarning(node, skillPhase, result.message));
 ### Team lineup geometry
 
 Keep the name row mounted and reserve the same two-line height in empty and occupied slots. Removing placeholder copy must not remove layout space. Browser regression checks compare dialog x/y/width/height at zero, one, two and three selections and after deselection on desktop and portrait phones.
+
+The slot heading uses `Round 1`, `Round 2`, `Round 3` with the corresponding move range. Do not add the removed click-to-remove caption or reserve a separate hint row: the occupied slot's accessible button label retains its cancellation meaning. Keep the same three-row geometry (round, portrait, name) in empty and occupied production slots. The selected round-timeline presentation connects three round headers with a horizontal rule and omits outer card borders, shadows and portrait backplates. Empty slots use a grayscale blank character-card image with no plus sign or visible placeholder name; retain the empty name row; focus remains visible. Production CSS lives in team-lineup-timeline.css, imported immediately after match-character-cards.css to retain the concrete-file size guard, with fixed 52/126/26px rows on desktop and 44/100/24px on portrait phones. Alternatives remain under docs/design-samples/team-lineup-2026-10-09/; prototype CSS must never be imported by production.
 ## Standard story sprite presentation
 
 `StoryPlayerModal`, teaching NPC bubbles and the fixed home tour share [Story Sprite And Expression Contract](../backend/story-sprite-contract.md). Only valid standard appearances opt into `.standard-story-sprite`; existing portraits retain their layout. Same appearance retains its image element while expression changes its source. Desktop uses an independent art column; portrait phones use a bounded bust stage above the text scroller, with choices outside that scroller. Preserve long-text effect/typewriter timing, narration clearing and existing guide target geometry. Bright School's final phone shell owner must use the matching standard-sprite grid override.
+
+## Compact battle result
+
+Ordinary `ResultModal` uses the final `result-compact.css` owner: content-sized two-column paper, vertically centered portrait wrapper without defeat-only padding, no username, and one row for Return to board / Leave room. Preserve existing expression, hop, weather, reward and voice behavior. The special candy duel retains its dedicated continuation without an ordinary leave shortcut.
+
+`useOverlayActions.leaveResultRoom` accepts finished ordinary rooms, reuses `planRoomBackNavigation`, emits `room:leave`, remembers dismissal, clears room/replay/pending skill, and selects home. Board return only dismisses the result. Authoritative rank changes take precedence over reset stars; account for the skipped zero step between 1 kyu and 1 dan, use points for nine-dan changes, and do not infer pending rewards. DOM tests cover callbacks, dismissal and delta boundaries; browser checks use the actual component with the complete theme at desktop and 320/360/390px portrait widths.
 
 ## Asynchronous admin draft readiness
 

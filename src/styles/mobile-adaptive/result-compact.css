@@ -1,0 +1,60 @@
+/* Selected result layout; final owner after legacy theme and phone rules. */
+.result-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.result-actions button { width: 100%; }
+.result-rank-delta { margin-left: 8px; font-style: normal; white-space: nowrap; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-compact) .result-modal.result-compact {
+  width: min(580px, calc(100vw - 32px)) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 48px) !important;
+  padding: 26px 26px 26px 16px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 40%) minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 16px !important;
+  overflow: visible !important;
+  text-align: left !important;
+  background: var(--bright-sheet) !important;
+  border: 1px solid var(--bright-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 5px 6px 0 color-mix(in srgb, var(--bright-ink) 25%, transparent) !important;
+
+  &.no-result-portrait { grid-template-columns: minmax(0, 1fr) !important; }
+  &::before, &::after { display: none !important; }
+  & .result-winner { padding: 0 !important; margin: 0 !important; gap: 0 !important; align-self: center !important; }
+  & .result-winner-portrait-wrap { position: relative; display: block; width: 100% !important; height: auto !important; aspect-ratio: 832 / 1216; overflow: visible !important; }
+  & .result-player-portrait-image { display: block; width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  & .result-defeat-weather { width: 68% !important; top: -14%; }
+  & .result-summary { width: 100%; gap: 8px !important; justify-items: stretch !important; text-align: left !important; }
+  & .result-outcome-label { font-family: var(--font-window-title); font-size: 36px !important; line-height: 1.2 !important; }
+  & .result-detail-text { font-size: 17px !important; line-height: 1.45 !important; color: var(--bright-ink) !important; }
+  & .result-match-note, & .result-reward-limit-note { border: 0 !important; padding: 0 !important; font-size: 12px !important; justify-content: start; color: var(--bright-muted) !important; }
+  & .result-rewards { margin: 6px 0 0 !important; padding: 10px 0 !important; border-block: 1px solid var(--bright-border); gap: 12px !important; }
+  & .result-reward-tile { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; font-size: 20px !important; color: var(--bright-ink) !important; gap: 5px !important; align-content: start; }
+  & .result-reward-tile > strong { font-size: 12px !important; color: var(--bright-muted) !important; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  & .result-rank-delta { font-weight: 800; margin: 0; color: var(--bright-ink); }
+  & .result-reward-coins { border-left: 1px solid var(--bright-border) !important; padding-left: 12px !important; }
+  & .rank-progress, & .rank-progress span { padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; color: inherit !important; border-radius: 0 !important; }
+  & .rank-progress { display: flex !important; justify-content: start !important; flex-wrap: wrap; gap: 4px !important; font-size: 17px; }
+  & .rank-progress-name { display: inline !important; }
+  & .rank-progress-stars { display: inline-grid !important; }
+  & .result-actions { margin-top: 8px; gap: 8px; }
+  & .result-actions button { min-width: 0; min-height: 44px; padding: 9px 4px !important; font-size: 14px !important; white-space: nowrap; border: 1px solid var(--bright-border) !important; border-radius: 5px !important; background: var(--bright-mint) !important; color: var(--bright-ink) !important; box-shadow: 0 3px 0 var(--bright-border) !important; }
+  & .result-actions .result-leave { background: var(--bright-sheet) !important; }
+  & .result-actions button:active { translate: 0 2px; box-shadow: 0 1px 0 var(--bright-border) !important; }
+  & .result-actions button:focus-visible { outline: 2px solid var(--bright-ink); outline-offset: 3px; }
+
+  @media (max-width: 768px) {
+    width: calc(100vw - 28px) !important;
+    padding: 20px 14px 20px 8px !important;
+    gap: 10px !important;
+    grid-template-columns: minmax(0, 37%) minmax(0, 1fr) !important;
+    & .result-outcome-label { font-size: 28px !important; }
+    & .result-detail-text { font-size: 14px !important; }
+    & .result-actions { gap: 6px; }
+    & .result-actions button { font-size: 12px !important; }
+    & .result-rewards { gap: 8px !important; }
+    & .rank-progress { font-size: 15px; }
+  }
+}

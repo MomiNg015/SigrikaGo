@@ -81,7 +81,6 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     setAudioSettings
   } = useAudioRuntimeState();
   const {
-    dismissedResultRoom,
     pendingSkill,
     replayStep,
     resultModalOpen,
@@ -377,6 +376,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     cancelMatch,
     closeAllOverlays,
     closeResultModal,
+    leaveResultRoom,
     completeMatchSuccess,
     emitGame,
     emitScoring,
@@ -614,6 +614,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
       onRecruitmentStatusChange: handleRecruitmentStatusChange,
       onRemoveToast: removeToast,
       onResultClose: closeResultModal,
+      onResultLeaveRoom: leaveResultRoom,
       onSpecialResultContinue: continueSigrikaCandyResult,
       onStoryPlayerClose: closeStoryPlayerOverlay,
       onStoryNodeEnter: handleStoryNodeEnter,

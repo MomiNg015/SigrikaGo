@@ -31,7 +31,11 @@ export function useAppActions({
     room,
     view,
     setDismissedResultRoom,
-    setRoom
+    setRoom,
+    socket,
+    setPendingSkill,
+    setReplayStep,
+    setView
   });
 
   const accountActions = useAccountActions({

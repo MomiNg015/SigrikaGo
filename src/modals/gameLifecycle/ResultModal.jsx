@@ -1,10 +1,9 @@
 import RankProgress from "../../shared/RankProgress.jsx";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
 import ResultCharacterPortrait from "./ResultCharacterPortrait.jsx";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
-import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { COLORS } from "../../shared/game.js";
 import { isPracticeRoom } from "../../shared/practiceMode.js";
@@ -14,12 +13,13 @@ import {
   formatSignedDelta,
   resultPlayerForRoom,
   resultRewardForRoom,
+  resultRankDeltaText,
   resultVoiceEventForRoom
 } from "./lifecycleHelpers.js";
 
 const RESULT_DEFEAT_WEATHER_GIF = "/assets/effects/result-defeat-rain.gif";
 
-export default function ResultModal({ room, user, characters, audioSettings, onClose, onSpecialContinue }) {
+export default function ResultModal({ room, user, characters, audioSettings, onClose, onLeaveRoom, onSpecialContinue }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
@@ -27,11 +27,12 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);
   const character = displayPlayer ? findCharacter(characters, displayPlayer?.character ?? displayPlayer?.characterId) : null;
   const resultVoiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
-  const voiceCharacter = resultVoiceCharacter ? {
+  const voiceCharacter = useMemo(() => resultVoiceCharacter ? {
     ...resultVoiceCharacter,
     itemEffects: currentPlayer?.completedItemEffects ?? currentPlayer?.user?.itemEffects ?? {}
-  } : null;
+  } : null, [resultVoiceCharacter, currentPlayer]);
   const reward = resultRewardForRoom(room, user);
+  const rankDeltaText = resultRankDeltaText(reward);
   const isPractice = isPracticeRoom(room);
   const isChallenge = isCaptureChallenge(room);
   const challengeComplete = isChallenge && room.game.winner?.reason === "capture-challenge";
@@ -48,7 +49,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const outcomeLabel = isChallenge ? (challengeComplete ? "挑战完成" : "挑战未完成") : outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
   const showPortrait = !isSigrikaCandyDuel && Boolean(displayPlayer && character);
   const resultClasses = [
-    `result-modal${isSigrikaCandyDuel ? " sigrika-corruption-result-modal" : ""}`,
+    `result-modal${isSigrikaCandyDuel ? " sigrika-corruption-result-modal" : " result-compact"}`,
     !isChallenge && winnerColor === COLORS.black ? "black-win" : "",
     !isChallenge && isDraw ? "draw-result" : "",
     `result-outcome-${outcome}`,
@@ -95,9 +96,6 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
               )}
               <CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />
             </span>
-            <strong>
-              <UserIdentity user={displayPlayer?.user} />
-            </strong>
           </div>
         )}
         <div className="result-summary">
@@ -114,18 +112,17 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
           </div>}
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
-              <span className={ratingRewardClass}><strong>段位{reward.rank > 0 ? " · 晋级" : reward.rank < 0 ? " · 降级" : ""}</strong><RankProgress showStatus rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
+              <span className={ratingRewardClass}><strong>段位{rankDeltaText && <em className="result-rank-delta">{rankDeltaText}</em>}</strong><RankProgress showStatus rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
               <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}
           {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}
-          <button
-            onClick={isSigrikaCandyDuel
-              ? () => onSpecialContinue?.({ owner: isSigrikaCandyDuelOwner })
-              : onClose}
-          >
-            {isSigrikaCandyDuel && isSigrikaCandyDuelOwner ? "继续" : "确认"}
-          </button>
+          {isSigrikaCandyDuel ? <button onClick={() => onSpecialContinue?.({ owner: isSigrikaCandyDuelOwner })}>
+            {isSigrikaCandyDuelOwner ? "继续" : "确认"}
+          </button> : <div className="result-actions">
+            <button onClick={onClose}>返回棋盘</button>
+            {onLeaveRoom && <button className="result-leave" onClick={onLeaveRoom}>退出房间</button>}
+          </div>}
         </div>
       </section>
     </div>

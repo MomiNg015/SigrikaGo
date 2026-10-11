@@ -45,6 +45,7 @@ export default function AppOverlays({
   onRecruitmentInteractionLockChange,
   onRecruitmentStatusChange,
   onResultClose,
+  onResultLeaveRoom,
   onSpecialResultContinue,
   openReplay,
   resultModalOpen,
@@ -133,6 +134,7 @@ export default function AppOverlays({
           characters={characters}
           audioSettings={audioSettings}
           onClose={onResultClose}
+          onLeaveRoom={onResultLeaveRoom}
           onSpecialContinue={onSpecialResultContinue}
         />
       )}
