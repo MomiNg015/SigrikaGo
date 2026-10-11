@@ -463,11 +463,11 @@ describe("room skill resolution helpers", () => {
       id: "skill-voyage-star",
       effectType: "voyage-star",
       musicEffectType: "voyage-star",
-      bannerDurationMs: 3600,
+      bannerDurationMs: 3200,
       boardEffectDurationMs: 1800
     });
-    expect(room.pendingSkillResolution.resolvesAt - startedAt).toBeGreaterThanOrEqual(4536);
-    expect(room.pendingSkillResolution.resolvesAt - Date.now()).toBeLessThanOrEqual(4536);
+    expect(room.pendingSkillResolution.resolvesAt - startedAt).toBeGreaterThanOrEqual(4136);
+    expect(room.pendingSkillResolution.resolvesAt - Date.now()).toBeLessThanOrEqual(4136);
     expect(room.pendingSkillResolution.game.history.at(-1)).toMatchObject({
       type: "skill",
       effectType: "voyage-star",

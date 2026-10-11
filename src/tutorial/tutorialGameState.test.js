@@ -160,7 +160,7 @@ describe("tutorialGameState", () => {
       skillId: { ...first.resolvedState.derivedSkills.black, characterId: "aemeath" }
     });
     expect(second.ok).toBe(true);
-    expect(second.pendingSkill).toMatchObject({ effectType: "voyage-star", bannerDurationMs: 3600, boardEffectDurationMs: 1800 });
+    expect(second.pendingSkill).toMatchObject({ effectType: "voyage-star", bannerDurationMs: 3200, boardEffectDurationMs: 1800 });
   });
 
   it("creates a skill preview state and a resolved result for skill tutorial nodes", () => {
