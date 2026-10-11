@@ -27,7 +27,7 @@ export default function SkillBanner({ banner, characters, audioSettings }) {
   });
   const requestedDuration = Number(banner.bannerDurationMs);
   const duration = Number.isFinite(requestedDuration) && requestedDuration > 0
-    ? requestedDuration : skillBannerDurationMs({ characterId: character.id, effectsEnabled: banner.effectsEnabled });
+    ? requestedDuration : skillBannerDurationMs({ characterId: character.id, effectType: banner.effectType, effectsEnabled: banner.effectsEnabled });
 
   useEffect(() => {
     const voiceCharacter = { ...character, itemEffects: banner.itemEffects ?? {} };

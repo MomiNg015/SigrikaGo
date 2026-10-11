@@ -36,6 +36,10 @@ describe("Aemeath match appearance", () => {
     expect(characterPortraitImageProps(CHARACTERS.denia, options).src).toBe("/frozen.png");
     expect(characterPortraitImageProps(CHARACTERS.aemeath).src).not.toBe(AEMEATH_SKILL_FORM_ASSET);
     expect(skillBannerDurationMs({ characterId: "aemeath" })).toBe(2000);
-    expect(skillPreviewResolutionDelay({ characterId: "aemeath", effectType: "voyage-star" })).toBe(2936);
+    expect(skillBannerDurationMs({ characterId: "aemeath", effectType: "voyage-star" })).toBe(3600);
+    expect(skillBannerDurationMs({ characterId: "aemeath", effectType: "hidden-hand" })).toBe(2000);
+    expect(skillBannerDurationMs({ characterId: "aemeath", effectType: "voyage-star", effectsEnabled: false })).toBe(2000);
+    expect(skillPreviewResolutionDelay({ characterId: "aemeath", effectType: "voyage-star", effectsEnabled: false })).toBe(2000);
+    expect(skillPreviewResolutionDelay({ characterId: "aemeath", effectType: "voyage-star" })).toBe(4536);
   });
 });

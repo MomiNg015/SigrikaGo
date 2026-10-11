@@ -1,5 +1,6 @@
 import { skillEffectHasBoardEffect } from "./skillEffectCatalog.js";
 import { DENIA_BANNER_DURATION_MS, isDenia } from "./deniaSkillForm.js";
+import { AEMEATH_BANNER_DURATION_MS, isAemeath } from "./aemeathSkillForm.js";
 
 export const SKILL_BANNER_DURATION_MS = 2000;
 export const SKILL_BOARD_EFFECT_DURATION_MS = 1800;
@@ -95,12 +96,15 @@ export function skillBoardEffectDurationMs({ effectType = "", removalMarkIds = [
   );
 }
 
-export function skillBannerDurationMs({ characterId = "", effectsEnabled = true } = {}) {
-  return effectsEnabled !== false && isDenia(characterId) ? DENIA_BANNER_DURATION_MS : SKILL_BANNER_DURATION_MS;
+export function skillBannerDurationMs({ characterId = "", effectType = "", effectsEnabled = true } = {}) {
+  if (effectsEnabled === false) return SKILL_BANNER_DURATION_MS;
+  if (isDenia(characterId)) return DENIA_BANNER_DURATION_MS;
+  if (isAemeath(characterId) && effectType === "voyage-star") return AEMEATH_BANNER_DURATION_MS;
+  return SKILL_BANNER_DURATION_MS;
 }
 
 export function skillPreviewResolutionDelay({ effectType = "", effectsEnabled = true, removalMarkIds = [], characterId = "" } = {}) {
-  const extension = skillBannerDurationMs({ characterId, effectsEnabled }) - SKILL_BANNER_DURATION_MS;
+  const extension = skillBannerDurationMs({ characterId, effectType, effectsEnabled }) - SKILL_BANNER_DURATION_MS;
   if (effectsEnabled === false) return SKILL_BANNER_DURATION_MS;
   if (effectType === "liberty-purge") {
     return SKILL_BANNER_DURATION_MS + extension + skillBoardEffectDurationMs({ effectType, removalMarkIds });

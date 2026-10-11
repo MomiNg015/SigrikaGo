@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import RoomScreen from "/src/room/RoomScreen.jsx";
 import { CHARACTERS } from "/src/shared/characters.js";
 import { createGameState } from "/src/shared/game.js";
+import { skillBannerDurationMs, skillPreviewResolutionDelay } from "/src/shared/skillPresentation.js";
 import "/src/styles.css";
 
 const player = { color: "black", characterId: "aemeath", character: CHARACTERS.aemeath,
@@ -17,12 +18,12 @@ function Preview() {
   const [resolved, setResolved] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const banner = cast && !resolved ? { id: `aemeath-preview-${cast}`, characterId: "aemeath", color: "black", effectType: "voyage-star", skillName: "远航星",
-    effectsEnabled: !disabled, bannerDurationMs: 2000 } : null;
+    effectsEnabled: !disabled, bannerDurationMs: skillBannerDurationMs({ characterId: "aemeath", effectType: "voyage-star", effectsEnabled: !disabled }) } : null;
   const game = { ...initial, phase: banner ? "skill-preview" : "playing", pendingSkill: banner, history: resolved ? [{ type: "skill", color: "black", effectType: "voyage-star" }] : [] };
   const room = { code: "PREVIEW", mode: "spark", role: "player", players, game, spectators: [], chat: [], rated: false, unlimitedTime: true };
   useEffect(() => {
     if (!cast) return undefined;
-    const timer = setTimeout(() => setResolved(true), disabled ? 2000 : 2936);
+    const timer = setTimeout(() => setResolved(true), skillPreviewResolutionDelay({ characterId: "aemeath", effectType: "voyage-star", effectsEnabled: !disabled }));
     return () => clearTimeout(timer);
   }, [cast, disabled]);
   return <div className="app-shell player-theme-enabled theme-bright-school" style={{ minHeight: "100dvh", padding: "24px 16px" }}>

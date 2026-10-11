@@ -41,12 +41,12 @@ describe("Aemeath Voyage Star reveal", () => {
     expect(document.querySelectorAll("feDisplacementMap")).toHaveLength(3);
     expect(document.querySelector(".aemeath-data-glitch").textContent).toBe("");
     rerender(<Scene pending={{ ...banner }} />);
-    advance(119);
+    advance(599);
     expectForm(container, false);
     advance(1);
     expectForm(container, true);
     expect(document.querySelector(".aemeath-data-glitch")).not.toBeNull();
-    advance(140);
+    advance(600);
     expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     rerender(<Scene pending={null} actions={history} />);
     expectForm(container, true, false);
@@ -67,7 +67,7 @@ describe("Aemeath Voyage Star reveal", () => {
     const { container, rerender, unmount } = render(<Scene />);
     advance(1000);
     rerender(<Scene pending={{ ...banner, id: "replacement" }} />);
-    advance(120);
+    advance(600);
     expectForm(container, false);
     expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
     advance(1000);
@@ -76,13 +76,13 @@ describe("Aemeath Voyage Star reveal", () => {
     expectForm(container, false, false);
     unmount();
     timers.mock.calls.forEach((args, index) => {
-      if ([1000, 1120, 1260].includes(args[1])) expect(clear).toHaveBeenCalledWith(timers.mock.results[index].value);
+      if ([1000, 1600, 2200].includes(args[1])) expect(clear).toHaveBeenCalledWith(timers.mock.results[index].value);
     });
   });
   it.each(["reduced", "disabled"])("preserves reveal without the burst when %s", mode => {
     vi.stubGlobal("matchMedia", () => ({ matches: mode === "reduced", addEventListener: vi.fn(), removeEventListener: vi.fn() }));
     const { container } = render(<Scene pending={{ ...banner, effectsEnabled: mode !== "disabled" }} />);
-    advance(1120);
+    advance(1600);
     expectForm(container, true);
     expect(document.querySelector(".aemeath-data-glitch")).toBeNull();
   });
@@ -95,7 +95,7 @@ describe("Aemeath Voyage Star reveal", () => {
     expect(document.querySelector(".aemeath-data-glitch")?.parentElement).toBe(document.body);
     act(() => { media.matches = true; change(); });
     expect(document.querySelector(".aemeath-signal-defs")).toBeNull();
-    advance(20);
+    advance(500);
     expectForm(container, true);
     unmount();
     expect(media.removeEventListener).toHaveBeenCalledWith("change", change);

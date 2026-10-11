@@ -450,6 +450,7 @@ describe("room skill resolution helpers", () => {
       randomId: () => "skill-voyage-star"
     });
 
+    const startedAt = Date.now();
     const result = lifecycle.startActiveSkill({
       room,
       player,
@@ -461,8 +462,12 @@ describe("room skill resolution helpers", () => {
     expect(room.game.pendingSkill).toMatchObject({
       id: "skill-voyage-star",
       effectType: "voyage-star",
-      musicEffectType: "voyage-star"
+      musicEffectType: "voyage-star",
+      bannerDurationMs: 3600,
+      boardEffectDurationMs: 1800
     });
+    expect(room.pendingSkillResolution.resolvesAt - startedAt).toBeGreaterThanOrEqual(4536);
+    expect(room.pendingSkillResolution.resolvesAt - Date.now()).toBeLessThanOrEqual(4536);
     expect(room.pendingSkillResolution.game.history.at(-1)).toMatchObject({
       type: "skill",
       effectType: "voyage-star",

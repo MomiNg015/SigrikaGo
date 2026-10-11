@@ -1,4 +1,4 @@
-/* Process the real backdrop: torn image rows, separated RGB edges, relock. */
+/* Real scene tears, one obscured cut, then a progressively cleaner relock. */
 .aemeath-data-glitch {
   position: fixed;
   inset: 0;
@@ -9,17 +9,13 @@
 
 .aemeath-signal-defs { position: absolute; width: 0; height: 0; }
 
-.aemeath-signal-picture {
-  backdrop-filter: var(--signal-tick);
-  animation: aemeath-signal-cut var(--glitch-duration) steps(1, end) both;
-}
 
 .aemeath-signal-noise {
   position: absolute;
   inset: 0;
   filter: var(--signal-noise);
   opacity: 0;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: screen;
   animation: aemeath-signal-grain var(--glitch-duration) steps(1, end) both;
 }
 
@@ -28,31 +24,54 @@
   inset: 0;
   background: rgb(12 15 23);
   opacity: 0;
-  clip-path: polygon(0 38%, 100% 38%, 100% 39%, 0 39%, 0 63%, 100% 63%, 100% 67%, 0 67%);
-  animation: aemeath-signal-grain var(--glitch-duration) steps(1, end) both;
+  animation: aemeath-signal-cover var(--glitch-duration) linear both;
 }
 
-@keyframes aemeath-signal-cut {
-  0% { backdrop-filter: var(--signal-tick); }
-  16% { backdrop-filter: none; }
-  26%, 48% { backdrop-filter: var(--signal-break); }
-  58% { backdrop-filter: var(--signal-lock); }
-  73% { backdrop-filter: none; }
-  82% { backdrop-filter: var(--signal-tick); }
-  100% { backdrop-filter: none; }
+.aemeath-signal-blocks {
+  position: absolute;
+  inset: -3% 0;
+  width: 100%;
+  height: 106%;
+  opacity: 0;
+  animation: aemeath-signal-blocks var(--glitch-duration) steps(1, end) both;
+}
+
+
+/* The 1600ms image replacement falls safely inside the opaque plateau. */
+@keyframes aemeath-signal-cover {
+  0%, 22% { opacity: 0; }
+  30% { opacity: .16; }
+  37% { opacity: .4; }
+  42%, 59% { opacity: 1; }
+  66% { opacity: .45; }
+  79% { opacity: .12; }
+  94%, 100% { opacity: 0; }
+}
+
+@keyframes aemeath-signal-blocks {
+  0%, 16% { opacity: 0; transform: translate(0, 0); }
+  22% { opacity: .3; transform: translateX(-8%); }
+  30% { opacity: .6; transform: translate(12%, 2%); }
+  37% { opacity: .4; transform: translate(-4%, -1%); }
+  42% { opacity: .85; transform: translate(0, 0); }
+  49% { opacity: .65; transform: translate(-14%, 2%); }
+  56% { opacity: .8; transform: translate(8%, -2%); }
+  66% { opacity: .45; transform: translateX(-6%); }
+  79% { opacity: .16; transform: translateX(4%); }
+  94%, 100% { opacity: 0; }
 }
 
 @keyframes aemeath-signal-grain {
-  0% { opacity: .03; }
-  16% { opacity: 0; }
-  26% { opacity: .18; }
-  58% { opacity: .07; }
-  73% { opacity: 0; }
-  82% { opacity: .02; }
-  100% { opacity: 0; }
+  0%, 16% { opacity: .03; }
+  22% { opacity: .1; }
+  30% { opacity: .2; }
+  42%, 59% { opacity: .24; }
+  66% { opacity: .2; }
+  79% { opacity: .06; }
+  94%, 100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .aemeath-data-glitch { display: none; }
-  .aemeath-signal-picture, .aemeath-signal-noise, .aemeath-signal-dropout { animation: none; }
+  .aemeath-signal-picture, .aemeath-signal-noise, .aemeath-signal-dropout, .aemeath-signal-blocks { animation: none; }
 }

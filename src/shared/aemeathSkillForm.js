@@ -4,8 +4,10 @@ import { currentBattleRound } from "./deniaSkillForm.js";
 export const AEMEATH_SKILL_FORM = "aemeath-voyage";
 export const AEMEATH_SKILL_FORM_ASSET = "/assets/characters/skill-forms/aemeath-voyage.png";
 export const AEMEATH_GLITCH_START_MS = 1000;
-export const AEMEATH_GLITCH_DURATION_MS = 260;
-export const AEMEATH_FORM_SWAP_MS = 1120;
+export const AEMEATH_GLITCH_DURATION_MS = 1200;
+// The swap sits inside the opaque 42–59% signal-loss plateau.
+export const AEMEATH_FORM_SWAP_MS = 1600;
+export const AEMEATH_BANNER_DURATION_MS = 3600;
 
 export function isAemeath(character) {
   return canonicalCharacterId(typeof character === "object" ? character?.id ?? character?.slug : character) === "aemeath";

@@ -148,6 +148,21 @@ describe("tutorialGameState", () => {
     expect(moved.state.tutorialLastMovePointId).toBe("");
   });
 
+  it("uses the extended Voyage Star banner only for Aemeath's second skill", () => {
+    const game = createTutorialGameState({ players: [
+      { color: "black", characterId: "aemeath" }, { color: "white", characterId: "sigrika" }
+    ] });
+    const node = { id: "aemeath", type: "player-skill", characterId: "aemeath", color: "black" };
+    const first = applyTutorialSkillAction(game, node, { pointId: "6,6" });
+    expect(first.ok).toBe(true);
+    expect(first.pendingSkill).toMatchObject({ effectType: "hidden-hand", bannerDurationMs: 2000 });
+    const second = applyTutorialSkillAction(first.resolvedState, { ...node,
+      skillId: { ...first.resolvedState.derivedSkills.black, characterId: "aemeath" }
+    });
+    expect(second.ok).toBe(true);
+    expect(second.pendingSkill).toMatchObject({ effectType: "voyage-star", bannerDurationMs: 3600, boardEffectDurationMs: 1800 });
+  });
+
   it("creates a skill preview state and a resolved result for skill tutorial nodes", () => {
     const game = createTutorialGameState({
       initialBoard: {

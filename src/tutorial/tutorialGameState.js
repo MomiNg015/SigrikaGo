@@ -225,7 +225,7 @@ function buildTutorialPendingSkillPreview({
     resolvesAt,
     effectsEnabled: true,
     battleFormBeforeCast: battleFormBeforeCast(resolvedGame, characterId, color),
-    bannerDurationMs: skillBannerDurationMs({ characterId }),
+    bannerDurationMs: skillBannerDurationMs({ characterId, effectType }),
     boardEffectDurationMs: skillBoardEffectDurationMs({ effectType, removalMarkIds })
   };
 }

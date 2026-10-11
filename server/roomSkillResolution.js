@@ -265,7 +265,7 @@ export function buildPendingSkillPreview({
     resolvesAt,
     effectsEnabled,
     battleFormBeforeCast: battleFormBeforeCast(resolvedGame, character.id ?? player.characterId, player.color),
-    bannerDurationMs: skillBannerDurationMs({ characterId: character.id ?? player.characterId, effectsEnabled }),
+    bannerDurationMs: skillBannerDurationMs({ characterId: character.id ?? player.characterId, effectType, effectsEnabled }),
     boardEffectDurationMs: effectsEnabled === false
       ? 0
       : skillBoardEffectDurationMs({ effectType, removalMarkIds })
