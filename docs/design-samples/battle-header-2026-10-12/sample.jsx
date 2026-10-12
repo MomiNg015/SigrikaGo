@@ -25,13 +25,14 @@ const game = createTutorialGameState({ players });
 const room = createTutorialBattleRoom({ game, players, code: "123456" });
 const playerRole = "player";
 
-function PreviewHeader({ variant, moves, longNames, team, coords, setCoords, notify }) {
+function PreviewHeader({ variant, moves, longNames, team, turn, coords, setCoords, notify }) {
   const ref = useRef(null);
   const [target, setTarget] = useState(null);
   useLayoutEffect(() => { setTarget(ref.current.querySelector(".room-title-stack")); }, []);
-  return <div ref={ref} className={`bh-header-host bh-variant-${variant}`}>
-    <RoomHeader room={room} showCoords={coords} onToggleCoords={() => setCoords(!coords)} onOpenSettings={() => notify("设置按钮 · 本地样板")} onOpenMessageBoard={() => notify("留言板按钮 · 本地样板")} onBack={() => notify("退出按钮 · 本地样板，不会退出当前对局")}/>
-    {target && createPortal(<HeaderDesign variant={variant} moves={moves} longNames={longNames} team={team}/>, target)}
+  const info = { moves: `${moves}手`, black: longNames ? "西格莉卡·星辉符文继承者 3段" : "西格莉卡 3段", white: longNames ? "达妮娅·泡泡魔法研究员 3段" : "达妮娅 3段" };
+  return <div ref={ref} className={variant === "score" ? "bh-production-header" : `bh-header-host bh-variant-${variant}`}>
+    <RoomHeader room={{ ...room, game: { ...room.game, turn }, team: team ? { round: 2 } : null }} roomGameInfo={variant === "score" ? info : null} showCoords={coords} onToggleCoords={() => setCoords(!coords)} onOpenSettings={() => notify("设置按钮 · 本地样板")} onOpenMessageBoard={() => notify("留言板按钮 · 本地样板")} onBack={() => notify("退出按钮 · 本地样板，不会退出当前对局")}/>
+    {target && variant !== "score" && createPortal(<HeaderDesign variant={variant} moves={moves} longNames={longNames} team={team}/>, target)}
   </div>;
 }
 
@@ -40,6 +41,7 @@ function Sample() {
   const [moves, setMoves] = useState(params.has("moves") ? Math.max(0, Math.min(999, Number(params.get("moves")) || 0)) : 47);
   const [longNames, setLongNames] = useState(params.has("long"));
   const [team, setTeam] = useState(params.has("team"));
+  const [turn, setTurn] = useState(params.get("turn") === "white" ? "white" : "black");
   const [coords, setCoords] = useState(true);
   const [phone, setPhone] = useState(false);
   const [compact, setCompact] = useState(matchMedia("(max-width: 768px)").matches);
@@ -66,13 +68,13 @@ function Sample() {
     {!embedded && <div className="bh-workbench">
       <div className="bh-workbench-heading"><b>对弈 HEADER</b><span>三种构图 / 右上按钮沿用原版</span></div>
       <nav aria-label="Header 样板">{directions.map(({ id, title }, index) => <button key={id} aria-pressed={variant === id} onClick={() => setVariant(id)}><small>0{index + 1}</small>{title}</button>)}</nav>
-      <div className="bh-demo-controls"><button onClick={() => setMoves(Math.max(0, moves - 1))} disabled={moves === 0} aria-label="减少手数">−</button><label>手数<input aria-label="手数" type="number" min="0" max="999" value={moves} onChange={(event) => setMoves(Math.max(0, Math.min(999, Number(event.target.value) || 0)))}/></label><button onClick={() => setMoves(Math.min(999, moves + 1))} disabled={moves === 999} aria-label="增加手数">＋</button><button onClick={() => setLongNames(!longNames)} aria-pressed={longNames}>长名称</button><button onClick={() => setTeam(!team)} aria-pressed={team}>组队局</button><button className="bh-phone-switch" onClick={() => setPhone(!phone)} aria-pressed={phone}>手机预览</button></div>
+      <div className="bh-demo-controls"><button onClick={() => setMoves(Math.max(0, moves - 1))} disabled={moves === 0} aria-label="减少手数">−</button><label>手数<input aria-label="手数" type="number" min="0" max="999" value={moves} onChange={(event) => setMoves(Math.max(0, Math.min(999, Number(event.target.value) || 0)))}/></label><button onClick={() => setMoves(Math.min(999, moves + 1))} disabled={moves === 999} aria-label="增加手数">＋</button><button onClick={() => setLongNames(!longNames)} aria-pressed={longNames}>长名称</button><button onClick={() => setTeam(!team)} aria-pressed={team}>组队局</button><button onClick={() => setTurn(turn === "black" ? "white" : "black")}>切换行棋方：{turn === "black" ? "黑方" : "白方"}</button><button className="bh-phone-switch" onClick={() => setPhone(!phone)} aria-pressed={phone}>手机预览</button></div>
     </div>}
     {!embedded && <div className="bh-caption"><span>{describe.note}</span><span role="status">{message}</span></div>}
-    {phone && !compact && !embedded ? <div className="bh-phone"><iframe title="Header 手机预览" src={`?embed&view=${variant}&moves=${moves}${longNames ? "&long" : ""}${team ? "&team" : ""}`}/></div> : <div className="app-shell player-theme-enabled theme-bright-school bh-scene">
+    {phone && !compact && !embedded ? <div className="bh-phone"><iframe title="Header 手机预览" src={`?embed&view=${variant}&moves=${moves}&turn=${turn}${longNames ? "&long" : ""}${team ? "&team" : ""}`}/></div> : <div className="app-shell player-theme-enabled theme-bright-school bh-scene">
       <main className={`room-screen ${compact ? "mobile-room-screen" : "desktop-room-screen"}`}>
-        <PreviewHeader variant={variant} moves={moves} longNames={longNames} team={team} coords={coords} setCoords={setCoords} notify={notify}/>
-        <Stage battleLayoutClassName={compact ? "mobile-battle-layout" : "battle-layout"} characters={CHARACTERS} displayRoom={room} me={players[0]} opponent={players[1]} user={players[0].user} role={playerRole} viewColor="black" showCoords={coords} skillAvailable pendingSkill={pending} setPendingSkill={setPending} onScoringAction={() => notify("静态棋盘参照")} showPeoplePanel={false} actionPanelOverride={<ActionBar role={playerRole} mode={game.mode} phase="playing" me={players[0]} isMyTurn skillEnabled skillName="星辉符文" skillUses={1} skillAvailable pendingSkill={pending} setPendingSkill={setPending} countingEnabled drawEnabled opponentConnected hasAnyStones onPass={() => notify("停一手 · 本地样板")} onCountingRequest={() => notify("数子 · 本地样板")} onDrawRequest={() => notify("求和 · 本地样板")} onResign={() => notify("认输 · 本地样板")}/>}/>
+        <PreviewHeader variant={variant} moves={moves} longNames={longNames} team={team} turn={turn} coords={coords} setCoords={setCoords} notify={notify}/>
+        <Stage battleLayoutClassName={compact ? "mobile-battle-layout" : "battle-layout"} characters={CHARACTERS} displayRoom={{ ...room, game: { ...room.game, turn } }} me={players[0]} opponent={players[1]} user={players[0].user} role={playerRole} viewColor="black" showCoords={coords} skillAvailable pendingSkill={pending} setPendingSkill={setPending} onScoringAction={() => notify("静态棋盘参照")} showPeoplePanel={false} actionPanelOverride={<ActionBar role={playerRole} mode={game.mode} phase="playing" me={players[0]} isMyTurn={turn === "black"} skillEnabled skillName="星辉符文" skillUses={1} skillAvailable pendingSkill={pending} setPendingSkill={setPending} countingEnabled drawEnabled opponentConnected hasAnyStones onPass={() => notify("停一手 · 本地样板")} onCountingRequest={() => notify("数子 · 本地样板")} onDrawRequest={() => notify("求和 · 本地样板")} onResign={() => notify("认输 · 本地样板")}/>}/>
       </main>
     </div>}
     {embedded && <p className="bh-embedded-status" role="status">{message}</p>}

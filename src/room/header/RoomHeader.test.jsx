@@ -53,7 +53,8 @@ describe("room header labels", () => {
       showUtilityControls: false
     }));
     expect(markup).toContain(`>${label} AB123</span>`);
-    expect(markup).toContain('<span class="room-info-tag move-count">42手</span>');
+    expect(markup).toContain('aria-label="42手"><strong>42</strong><span>手</span>');
+    expect(markup).not.toContain("第42手");
     expect(markup).not.toContain("房间号");
     expect(markup).not.toContain("提子22");
     expect(markup).not.toContain("100手");

@@ -658,6 +658,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/profile-folder-mobile.css",
       "./mobile-adaptive/result-compact.css",
       "./mobile-adaptive/result-rank-trail.css",
+      "./mobile-adaptive/room-header-scoreboard.css",
       "./mobile-adaptive/battle-spectator-presence.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");

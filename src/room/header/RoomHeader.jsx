@@ -20,6 +20,9 @@ export default function RoomHeader({
   onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const showScoreboard = Boolean(roomGameInfo) && !room.sigrikaCandyDuel;
+  const moveCount = String(roomGameInfo?.moves ?? "").replace(/^第\s*/, "").replace(/\s*手$/, "").trim();
+  const turnColor = ["black", "white"].includes(room.game?.turn) ? room.game.turn : undefined;
   const matchClassification = roomMatchClassification(room);
   const modeLabel = isCaptureChallenge(room)
     ? "吃子赛"
@@ -32,9 +35,23 @@ export default function RoomHeader({
   };
 
   return (
-    <header className="room-header">
+    <header className={`room-header${showScoreboard ? " room-header-scoreboard" : ""}`}>
       <div className="room-title-stack">
-        <p className="room-title-line">
+        {showScoreboard ? <div className="room-scoreboard-identity">
+          <div className={`room-move-placard${moveCount.length > 2 ? " is-long-count" : ""}`} data-turn={turnColor} aria-label={`${moveCount}手${turnColor ? `，轮${turnColor === "black" ? "黑" : "白"}方行棋` : ""}`}>
+            <strong>{moveCount}</strong><span>手</span>
+          </div>
+          <div className="room-scoreboard-details">
+            <div className="room-scoreboard-meta">
+              <span title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${room.code}` : undefined}>{modeLabel} {room.code}</span>
+              {room.team && <span>Round {room.team.round}</span>}
+            </div>
+            <div className="room-scoreboard-players">
+              <span className="room-scoreboard-player black-side" title={`黑方：${roomGameInfo.black}`} aria-label={`黑方：${roomGameInfo.black}`}><i aria-hidden="true"/><span>{roomGameInfo.black}</span></span>
+              <span className="room-scoreboard-player white-side" title={`白方：${roomGameInfo.white}`} aria-label={`白方：${roomGameInfo.white}`}><i aria-hidden="true"/><span>{roomGameInfo.white}</span></span>
+            </div>
+          </div>
+        </div> : <p className="room-title-line">
           <span className={`room-code-label${matchClassification ? ` match-classification-tag is-${matchClassification.id}` : ""}`} title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${room.code}` : undefined}>{modeLabel}{" "}{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
           {room.team && <span className="room-info-tag">Round {room.team.round}</span>}
           {roomGameInfo && (
@@ -44,7 +61,7 @@ export default function RoomHeader({
               <span className="room-info-tag move-count">{roomGameInfo.moves}</span>
             </>
           )}
-        </p>
+        </p>}
       </div>
       {showTestTools && !isCaptureChallenge(room) && <TestTools disabled={testToolsDisabled} onGameAction={onGameAction} />}
       {showUtilityControls && <div className="room-toggles">

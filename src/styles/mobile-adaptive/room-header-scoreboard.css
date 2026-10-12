@@ -1,0 +1,80 @@
+/* Selected compact scoreboard; utilities and corrupted-duel chrome keep their owners. */
+.room-header-scoreboard {
+  --scoreboard-ink: var(--bright-border, #3d2b25);
+  --scoreboard-paper: var(--bright-paper, #fffbf2);
+}
+
+.app-shell .room-header-scoreboard .room-scoreboard-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  color: var(--scoreboard-ink);
+}
+
+.room-scoreboard-identity .room-move-placard {
+  position: relative;
+  flex: 0 0 92px;
+  min-width: max-content;
+  height: 54px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 5px 3px;
+  border: 1px solid var(--scoreboard-ink);
+  border-radius: 0;
+  background: var(--scoreboard-paper);
+  box-shadow: 2px 2px 0 var(--scoreboard-ink);
+}
+
+.room-move-placard::before,
+.room-move-placard::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 13px;
+  width: 3px;
+  height: 8px;
+  border: 1px solid var(--scoreboard-ink);
+  background: var(--scoreboard-paper);
+}
+
+.room-move-placard::after { left: auto; right: 13px; }
+.room-scoreboard-identity .room-move-placard[data-turn="black"] { background: #171717; color: #ffffff; }
+.room-scoreboard-identity .room-move-placard[data-turn="white"] { background: #ffffff; color: #171717; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-header-scoreboard .room-move-placard > :is(strong, span) { color: inherit !important; }
+.room-move-placard strong { font: 700 42px/1 Arial, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
+.room-move-placard > span { font: 12px/1 var(--font-window-title); }
+.room-move-placard.is-long-count strong { font-size: 36px; }
+.room-scoreboard-details { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.room-scoreboard-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 11px; line-height: 1.2; }
+.room-scoreboard-players { display: flex; align-items: center; gap: 22px; min-width: 0; }
+.room-scoreboard-player { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 14px; line-height: 1.25; }
+.room-scoreboard-player > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.room-scoreboard-player i { flex: 0 0 12px; width: 12px; height: 12px; border: 1px solid var(--scoreboard-ink); border-radius: 50%; background: var(--scoreboard-ink); }
+.room-scoreboard-player.white-side i { background: var(--scoreboard-paper); }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen .room-header.room-header-scoreboard {
+  min-height: 0 !important;
+  padding: 8px 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--scoreboard-ink) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: var(--scoreboard-paper) !important;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen .room-header.room-header-scoreboard { padding: 6px !important; }
+  .app-shell .room-header-scoreboard .room-scoreboard-identity { gap: 9px; }
+  .room-scoreboard-identity .room-move-placard { flex-basis: 64px; height: 46px; padding: 6px 3px 3px; gap: 3px; }
+  .room-move-placard strong { font-size: 34px; }
+  .room-move-placard > span { font-size: 10px; }
+  .room-move-placard.is-long-count strong { font-size: 27px; }
+  .room-scoreboard-details { gap: 3px; }
+  .room-scoreboard-meta { gap: 4px; font-size: 9px; }
+  .room-scoreboard-players { flex-direction: column; align-items: stretch; gap: 3px; }
+  .room-scoreboard-player { gap: 4px; font-size: 10px; }
+  .room-scoreboard-player i { flex-basis: 9px; width: 9px; height: 9px; }
+}

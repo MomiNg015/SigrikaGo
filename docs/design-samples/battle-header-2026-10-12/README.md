@@ -1,5 +1,7 @@
 # Battle header visual samples
 
+The user selected direction 1. It now renders the production compact scoreboard: no leading 第, a 54px desktop / 46px phone placard, and approximately 71px / 59px overall header height. Directions 2 and 3 remain comparison references. The utility area is unchanged. The original exploration scope below describes the initial sample round.
+
 Open `/docs/design-samples/battle-header-2026-10-12/` with the Vite development server.
 
 ## Scope
@@ -21,3 +23,5 @@ The preview chrome is separate from the proposed header. Project palette and rad
 ## Verification
 
 Browser checks cover all three designs at 1440×1000, 390×844 and 360×640, plus three-digit counts, long names and team rounds. Check overflow, image loading, hidden original title, utility menu, coordinate toggle, numeric boundaries, keyboard switching, phone state forwarding and reduced motion. Evidence lives in `.codex-run/battle-header-2026-10-12/`. Explicit project-rule ESLint includes both preview JSX files because the default maintained-file list excludes this directory.
+
+The selected placard follows the displayed game turn (not move parity): black uses #171717 with white text; white reverses those colors. This explicitly requested black/white game-state palette is local to the scoreboard, not a new global brand palette. The preview includes a turn toggle and forwards it into phone mode.
