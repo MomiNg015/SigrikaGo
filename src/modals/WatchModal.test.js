@@ -37,134 +37,15 @@ describe("WatchModal helpers", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("uses compact mobile watch cards instead of a horizontally scrolling table", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
-    const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
-    const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
-    const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
-
-    expect(phoneModalMedia).toContain(".watch-room-table");
-    expect(phoneModalMedia).toContain("overflow-x: hidden");
-    expect(phoneModalMedia).toContain(".watch-room-head");
-    expect(phoneModalMedia).toContain("display: none");
-    expect(phoneModalMedia).toContain(".watch-room-row");
-    expect(phoneModalMedia).toContain("grid-template-areas:");
-    expect(phoneModalMedia).toContain("\"code status\"");
-    expect(phoneModalMedia).toContain("\"black white\"");
-    expect(phoneModalMedia).not.toContain("\"black black\"");
-    expect(phoneModalMedia).not.toContain("min-width: 680px");
-    expect(phoneModalMedia).not.toContain("--watch-room-grid-columns");
-    expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
-    expect(phoneModalMedia).toContain("position: static");
-    expect(phoneModalMedia).toContain("width: var(--modal-close-size, 44px)");
-    expect(adaptivePhoneMedia).toContain(".watch-room-table");
-    expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
-    expect(adaptivePhoneMedia).toContain(".watch-room-row");
-    expect(adaptivePhoneMedia).toContain("min-width: 0");
-    expect(brightSchoolMobileCss).toContain(".watch-room-table {\n    overflow-x: hidden !important;");
-    expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
-    const rowCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile/lists-settings/watch-rows.css", import.meta.url));
-    expect(rowCss).toContain("min-height: 89px !important");
-  });
-
-  it("keeps watch mode tabs compact above the room table", () => {
-    const css = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
-    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-
-    expect(css).toContain("grid-template-rows: auto auto minmax(318px, 1fr) auto auto;");
-    expect(css).toContain(".watch-list-actions .icon-button,\n.watch-list-actions .inline-close");
-    expect(css).toContain("width: var(--modal-close-size, 44px);");
-    expect(modalCss).toContain(".modal-backdrop .watch-list-actions .close-button");
-    expect(modalCss).toContain("position: static;");
-    expect(modalCss).toContain(".modal-backdrop .watch-list-actions .icon-button");
-    expect(css).toContain(".watch-list-modal .mode-tabs");
-    expect(css).toContain("width: 100%;");
-    expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
-    expect(css).toContain("min-height: 44px;");
-    expect(css).toContain("font-size: 16px;");
-    const modeTabsBlock = cssBlock(css, ".watch-list-modal .mode-tabs");
-    const modeButtonBlock = cssBlock(css, ".watch-list-modal .mode-tabs button");
-    expect(modeTabsBlock).toContain("padding: 0;");
-    expect(modeTabsBlock).toContain("border: 0;");
-    expect(modeTabsBlock).toContain("background: transparent;");
-    expect(modeButtonBlock).toContain("display: inline-flex;");
-    expect(modeButtonBlock).toContain("align-items: center;");
-    expect(modeButtonBlock).toContain("justify-content: center;");
-    expect(modeButtonBlock).toContain("gap: 1em;");
-    expect(css).toContain("grid-template-rows: auto auto minmax(220px, 1fr) auto auto;");
-    expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
-    expect(css).toContain("min-height: 40px;");
-  });
-
-  it("uses the short Gomoku label in watch mode tabs", () => {
-    const html = renderToStaticMarkup(createElement(WatchModal, {
-      token: "token",
-      characters: {},
-      onJoinRoom: () => {},
-      onClose: () => {}
-    }));
-
-    expect(html).toContain(">五子棋</span>");
-    expect(html).not.toContain(">来下五子棋吗？</span>");
-    expect(html).toContain('aria-label="五子棋"');
-  });
-
-  it("keeps watch list headers and rows on the same mobile columns", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
-    const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
-
-    expect(phoneModalMedia).toContain("padding: 0 8px");
-    expect(phoneModalMedia).toContain(".watch-room-row");
-    expect(phoneModalMedia).toContain("display: grid");
-    expect(phoneModalMedia).toContain(".small-modal .watch-room-row");
-    expect(phoneModalMedia).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)");
-    expect(phoneModalMedia).toContain(".watch-player-cell");
-    expect(phoneModalMedia).toContain("min-width: 0");
-    expect(phoneModalMedia).toContain("justify-self: stretch");
-    expect(phoneModalMedia).toContain("justify-content: center");
-    expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
-    expect(phoneModalMedia).toContain("position: static");
-    expect(phoneModalMedia).toContain("width: var(--modal-close-size, 44px)");
-    expect(phoneModalMedia).toContain("height: var(--modal-close-size, 44px)");
-  });
-
-  it("keeps Bright School mobile window titles aligned above dashed dividers", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const headerCss = mediaBlock(css, "@media (max-width: 768px)");
-
-    expect(headerCss).toContain("--mobile-window-title-size: clamp(20px, 6vw, 28px)");
-    expect(headerCss).toContain("--mobile-window-header-clearance: 12px");
-    expect(headerCss).toContain(".leaderboard-header");
-    expect(headerCss).toContain(".warehouse-header");
-    expect(headerCss).toContain(".house-header");
-    expect(headerCss).toContain(".friends-modal-header");
-    expect(headerCss).toContain(".watch-list-header");
-    expect(headerCss).toContain("var(--modal-close-size, 44px)");
-    expect(headerCss).toContain("align-items: center !important");
-    expect(headerCss).toContain("font-size: var(--mobile-window-title-size) !important");
-    expect(headerCss).toContain(".watch-list-actions");
-    expect(headerCss).toContain("position: static !important");
-    expect(headerCss).toContain("inset: auto !important");
+  it("uses a bounded ledger with parallel mobile players and an explicit type column", () => {
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive/watch-ledger.css", import.meta.url));
+    expect(css).toContain('"black black black white white white"');
+    expect(css).toContain('"moves moves people people action action"');
+    expect(css).toContain("var(--window-sticker-available-height)");
+    expect(css).toContain(".wl-scroll { flex: 1; min-height: 0; overflow: auto;");
+    const html = renderToStaticMarkup(createElement(WatchModal, { characters: {} }));
+    expect(html).not.toContain('role="tab"');
+    expect(html).not.toContain('window-bookmark-host');
+    expect(html).toContain('aria-label="搜索房间或玩家"');
   });
 });
-
-function mediaBlock(css, marker) {
-  const blocks = [];
-  let start = css.indexOf(marker);
-  while (start >= 0) {
-    const next = css.indexOf("\n@media", start + 1);
-    blocks.push(css.slice(start, next >= 0 ? next : undefined));
-    start = css.indexOf(marker, start + marker.length);
-  }
-  return blocks.join("\n");
-}
-
-function cssBlock(css, selector) {
-  const source = css.replace(/\r\n/g, "\n");
-  const start = source.indexOf(`${selector} {`);
-  if (start === -1) return "";
-  const bodyStart = source.indexOf("{", start);
-  const bodyEnd = source.indexOf("}", bodyStart);
-  return source.slice(bodyStart + 1, bodyEnd);
-}

@@ -1,5 +1,7 @@
 # Component Guidelines
 
+Watch uses [Watch Ledger Contract](./watch-ledger-contract.md): all eligible modes, no type tabs and compact parallel mobile players.
+
 ## Match mode category navigation
 
 - `MatchModePicker` owns `expandedMode: null | "spark" | "standard" | "gomoku"`. Category clicks only change this state; matching occurs exclusively through child actions.
@@ -396,7 +398,7 @@ Correct:
 - Home match-mode picker buttons must keep the ordinary Chinese title, rules copy, and waiting-count chip in their existing content flow. Decorative mode icons and English labels belong in a centered, pointer-transparent watermark layer using `mode.iconUrl` plus `mode.englishLabel`, with the watermark at 50% desktop opacity and 20% mobile opacity so it cannot replace or obscure the actionable copy.
 - Bright School final button-child reset layers must reassert `.match-mode-option > .match-mode-watermark { transform: translate(-50%, -50%) !important; }` after any `button > * { transform: none !important; }` rule, otherwise the absolute-positioned watermark starts at the button center and appears lower-right clipped.
 - Duel requests open the same mode picker before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
-- Mode tabs are required for leaderboard, watch list, profile/detail, and record/history views. These tabs must use each mode's `shortTitle`, stay in one non-wrapping row, and allocate the three current modes across one line.
+- Mode tabs are required for leaderboard, profile/detail, and record/history views. These tabs must use each mode's `shortTitle`, stay in one non-wrapping row, and allocate the three current modes across one line.
 - Home player plaques render compact three-column mode stat rows from `modeOrderedEntries()`: spark icon/rank first, standard icon/rank second, gomoku icon/rank third. Do not render rating points on the plaque, do not collapse the stats back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
 - Home plaque mode icons are immediately visible home-shell resources. `RUNTIME_IMAGE_ASSETS.home` must derive every `mode.iconUrl` from `modeOrderedEntries()` instead of duplicating an asset list, and `PlayerPlaque` must render these critical icons with `decoding="sync"` so the third icon cannot remain blank until a hover/focus/click repaint.
 - No-skill room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels. Gomoku additionally hides Go-only pass/counting/dead-stone controls and capture/removal/overclock info chips.
@@ -425,7 +427,7 @@ Correct:
 - Standard room state renders 19-line board star points and no skill UI; gomoku room state renders the 13-line board with the spark star points, no skill UI, and no Go-only controls.
 - Standard room accepts moves at the 19-line edge, gomoku rejects pass/skill actions, and Board CSS tests assert coordinate rows/columns use `var(--size)`.
 - Gomoku decisive five-in-row results expose `game.winner.winningLine` with the five highlighted point ids. `Board` renders those stones with a persistent point-local `.gomoku-winning-line` gold effect in live rooms and replay snapshots; the effect stays pointer-transparent and includes a reduced-motion fallback.
-- Leaderboard/watch/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
+- Leaderboard/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
 - Home plaque tests assert `plaque-mode-stat-spark`, `plaque-mode-stat-standard`, and `plaque-mode-stat-gomoku` render shared mode icons plus stored ranks, while rating text is absent and recent result markers stay limited to profile/history detail surfaces.
 - Home plaque preload tests assert every shared `mode.iconUrl` belongs to `RUNTIME_IMAGE_ASSETS.home` and `criticalImages`; component markup tests assert all three plaque icon images use `decoding="sync"`.
 - Friend duel request payload and incoming banner include mode.

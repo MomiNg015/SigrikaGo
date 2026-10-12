@@ -114,7 +114,7 @@ export function createPublicRouteHandlers({
       if (Object.hasOwn(roomCounts, roomMode)) roomCounts[roomMode] += 1;
     }
     res.json({
-      rooms: watchableRooms.filter((room) => normalizeMode(room.mode) === mode),
+      rooms: req.query.mode === "all" ? watchableRooms : watchableRooms.filter((room) => normalizeMode(room.mode) === mode),
       roomCounts
     });
   }

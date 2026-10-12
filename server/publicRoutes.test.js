@@ -174,6 +174,19 @@ describe("public and lobby route handlers", () => {
     });
   });
 
+  it("returns the eligible mixed-mode list only for explicit all, preserving the default filter", async () => {
+    const rooms = ["spark", "standard", "gomoku", "team"].map((mode) => ({ code: mode, mode }));
+    const handlers = createPublicRouteHandlers({ prisma: {}, normalizeMode: (mode) => rooms.some((room) => room.mode === mode) ? mode : "spark", listWatchRooms: () => rooms });
+    const all = createResponse();
+    await handlers.watchRooms({ query: { mode: "all" } }, all);
+    expect(all.body.rooms).toEqual(rooms);
+    for (const mode of [undefined, "invalid"]) {
+      const filtered = createResponse();
+      await handlers.watchRooms({ query: { mode } }, filtered);
+      expect(filtered.body.rooms).toEqual([rooms[0]]);
+    }
+  });
+
   it("mounts public catalog routes separately from authenticated lobby routes", () => {
     const router = createPublicRouter({
       prisma: {},

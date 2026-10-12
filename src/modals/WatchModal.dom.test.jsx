@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "../api/client.js";
@@ -7,7 +7,7 @@ import WatchModal from "./WatchModal.jsx";
 
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
 
-describe("WatchModal mode tabs", () => {
+describe("WatchModal ledger", () => {
   beforeEach(() => {
     api.mockReset();
   });
@@ -26,31 +26,44 @@ describe("WatchModal mode tabs", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("keeps labels free of counts and loads rooms when switching modes", async () => {
-    api.mockResolvedValue({
-      rooms: [],
-      roomCounts: { spark: 2, standard: 1, gomoku: 3 }
-    });
-
-    render(
-      <WatchModal
-        token="token"
-        characters={{}}
-        onJoinRoom={() => {}}
-        onClose={() => {}}
-      />
-    );
-
-    await waitFor(() => expect(screen.getByRole("tab", { name: "星炬" })).toBeTruthy());
-    expect(screen.getByRole("tab", { name: "标准" })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "五子棋" })).toBeTruthy();
-    expect(api).toHaveBeenCalledWith("/api/rooms/watch?mode=spark", { token: "token" });
-    expect(document.querySelector(".watch-mode-count")).toBeNull();
-    expect(screen.queryByRole("table")).toBeNull();
-    fireEvent.click(screen.getByRole("tab", { name: "标准", exact: true }));
-    await waitFor(() => expect(api).toHaveBeenCalledWith("/api/rooms/watch?mode=standard", { token: "token" }));
-    expect(screen.getByRole("tab", { name: "标准", exact: true }).getAttribute("aria-selected")).toBe("true");
+  it("shows every type without tabs, searches locally and joins the chosen room", async () => {
+    const onJoinRoom = vi.fn();
+    const onClose = vi.fn();
+    api.mockResolvedValue({ rooms: [
+      { code: "483126", mode: "spark", black: { user: { username: "橘子" }, characterId: "sigrika", connected: true }, white: null, moveNumber: 86, onlineCount: 12, status: "playing" },
+      ...["standard", "gomoku", "team"].map((mode, index) => ({ code: String(500001 + index), mode, moveNumber: 1024, onlineCount: 128, status: "finished" }))
+    ] });
+    render(<WatchModal token="token" characters={{}} onJoinRoom={onJoinRoom} onClose={onClose}/>);
+    await screen.findByRole("table", { name: "全部类型对局" });
+    expect(api).toHaveBeenCalledWith("/api/rooms/watch?mode=all", { token: "token" });
+    expect(screen.queryByRole("tab")).toBeNull();
+    for (const label of ["星炬", "标准", "五子棋", "队际赛"]) expect(screen.getByText(label)).toBeTruthy();
+    const search = screen.getByRole("textbox", { name: "搜索房间或玩家" });
+    fireEvent.change(search, { target: { value: "橘子" } });
+    expect(screen.getAllByRole("row")).toHaveLength(2);
+    fireEvent.change(search, { target: { value: "nothing" } });
+    expect(screen.getByText("未找到对局")).toBeTruthy();
+    fireEvent.change(search, { target: { value: "500003" } });
+    fireEvent.click(screen.getByRole("button", { name: "观战房间 500003" }));
+    expect(onJoinRoom).toHaveBeenCalledWith("500003");
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(api).toHaveBeenCalledTimes(1);
   });
+
+  it("preserves rooms on refresh failure and recovers on retry", async () => {
+    api.mockResolvedValueOnce({ rooms: [{ code: "123456", mode: "standard", moveNumber: 1, onlineCount: 2 }] });
+    render(<WatchModal token="token" characters={{}} onClose={() => {}}/>);
+    await screen.findByText("123456");
+    api.mockRejectedValueOnce(new Error("刷新失败"));
+    fireEvent.click(screen.getByRole("button", { name: "刷新对局列表" }));
+    expect(await screen.findByRole("alert")).toHaveProperty("textContent", "刷新失败");
+    expect(screen.getByText("123456")).toBeTruthy();
+    api.mockResolvedValueOnce({ rooms: [] });
+    fireEvent.click(screen.getByRole("button", { name: "刷新对局列表" }));
+    expect(await screen.findByText("暂无对局")).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
   it("shows a load error without presenting it as an empty room list", async () => {
     api.mockRejectedValue(new Error("网络不可用"));
     const { container } = render(<WatchModal token="token" characters={{}} onClose={() => {}} />);

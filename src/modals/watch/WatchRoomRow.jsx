@@ -1,36 +1,31 @@
+import { ArrowRight } from "lucide-react";
+import { gameModeById } from "../../shared/gameModes.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export default function WatchRoomRow({ room, characters, onJoinRoom, onClose }) {
-  return (
-    <button
-      className="watch-room-row"
-      key={watchRoomRowKey(room)}
-      type="button"
-      role="row"
-      onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}
-    >
-      <span className="watch-code-cell">{room.code}</span>
-      <span className="watch-online-cell">{room.onlineCount}</span>
-      <WatchPlayerCell player={room.black} characters={characters} side="black" />
-      <WatchPlayerCell player={room.white} characters={characters} side="white" />
-      <span className="watch-move-cell">{room.moveNumber}</span>
-      <span className={`watch-status ${room.status}`}>{statusTextForWatchRoom(room)}</span>
-    </button>
-  );
+  const mode = gameModeById(room.mode);
+  return <tr className={`wl-row ${room.status === "finished" ? "finished" : ""}`}>
+    <td className="wl-code">{room.code}</td>
+    <td className={`wl-mode mode-${mode.id}`}><span>{mode.shortTitle}</span></td>
+    <td className="wl-black"><WatchPlayerCell player={room.black} characters={characters} side="black"/></td>
+    <td className="wl-white"><WatchPlayerCell player={room.white} characters={characters} side="white"/></td>
+    <td className="wl-moves"><b>{room.moveNumber}</b><span className="wl-unit">手</span></td>
+    <td className="wl-people" title="房间人数">{room.onlineCount}<span className="wl-unit">人</span></td>
+    <td className="wl-status"><span>{statusTextForWatchRoom(room)}</span></td>
+    <td className="wl-action"><button type="button" aria-label={`观战房间 ${room.code}`} onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}><ArrowRight size={18} aria-hidden="true"/><span>观战</span></button></td>
+  </tr>;
 }
 
 function WatchPlayerCell({ player, characters, side }) {
-  if (!player) return <span className={`watch-player-cell empty ${side}`}>-</span>;
+  if (!player) return <span className={`wl-player ${side}`}>—</span>;
   const character = findCharacter(characters, player.character ?? player.characterId);
-  return (
-    <span className={`watch-player-cell ${side} ${player.connected ? "" : "disconnected"}`}>
-      <span className="watch-side-label">{side === "black" ? "●" : "○"}</span>
-      <img {...characterPortraitImageProps(character, { itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot })} alt={character.name} />
-      <UserIdentity user={player.user} compact />
-    </span>
-  );
+  return <span className={`wl-player ${side}${player.connected ? "" : " offline"}`} title={`${side === "black" ? "黑" : "白"}方 · ${player.user?.username ?? ""}${player.connected ? "" : " · 暂离"}`}>
+    <span className="wl-stone" aria-label={side === "black" ? "黑方" : "白方"}/>
+    <img {...characterPortraitImageProps(character, { variant: "avatar", itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot })} alt={character.name}/>
+    <UserIdentity user={player.user} compact />
+  </span>;
 }
 
 export function statusTextForWatchRoom(room) {

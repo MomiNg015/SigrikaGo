@@ -20,7 +20,6 @@ const cases = [
   ["设置", SettingsModal, { audioSettings: { master: 80, bgm: 60, sfx: 60, voice: 80 }, setAudioSettings: noop }, "关于"],
   ["成就", AchievementModal, {}, "已达成"],
   ["排行榜", LeaderboardModal, {}, "标准"],
-  ["观战", WatchModal, {}, "标准"],
   ["好友", FriendsModal, {}, "黑名单"],
   ["公告", AnnouncementModal, { unreadByKind: { changelog: true } }, "日志"]
 ];
@@ -37,6 +36,12 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("player window bookmark rollout", () => {
+  it("keeps the watch ledger free of bookmark rails", async () => {
+    const { container } = render(<div className="app-shell player-theme-enabled theme-bright-school"><WatchModal {...shared}/></div>);
+    await screen.findByText("暂无对局");
+    expect(container.querySelector(".window-bookmark-rail")).toBeNull();
+    expect(screen.queryByRole("tab")).toBeNull();
+  });
   it.each(cases)("moves %s tabs outside the content and keeps selection working", async (_name, Component, extra, targetName) => {
     const { container } = render(<div className="app-shell player-theme-enabled theme-bright-school">
       <Component {...shared} {...extra} />
