@@ -18,11 +18,12 @@
   .mw-type { font: 15px/1.35 var(--font-window-title); white-space: nowrap; background: color-mix(in srgb, var(--mw-pink) 48%, var(--mw-paper)); padding: 2px 7px; clip-path: polygon(3% 0,100% 3%,97% 100%,0 96%); }
   .mode-standard { background: color-mix(in srgb, var(--mw-blue) 48%, var(--mw-paper)); }
   .mode-gomoku { background: color-mix(in srgb, var(--mw-mint) 65%, var(--mw-paper)); }
+  .mw-room-info { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
   .mw-code { font: 12px/1.4 Arial, sans-serif; white-space: nowrap; }
   .mw-room-label { display: none; }
-  .mw-status { margin-left: auto; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-  .mw-status::before { content: ''; width: 5px; height: 5px; background: color-mix(in srgb, var(--mw-ink) 55%, var(--mw-mint)); border-radius: 50%; }
-  .finished .mw-status::before { background: var(--mw-rule); }
+  .mw-status { color: #2c6f46 !important; margin-left: auto; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .mw-status::before { content: ''; width: 5px; height: 5px; background: currentColor; border-radius: 50%; }
+  .finished .mw-status { color: #666 !important; }
   .mw-players { grid-area: players; min-width: 0; display: grid; gap: 5px; }
   .mw-player { position: relative; min-width: 0; display: flex; align-items: center; gap: 7px; }
   .mw-side { position: absolute; top: 25px; left: 24px; width: 10px; height: 10px; border: 1px solid var(--mw-ink); border-radius: 50%; background: var(--mw-ink); font-size: 0; }

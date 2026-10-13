@@ -38,8 +38,8 @@
   .wl-moves { font: 700 19px Arial, sans-serif; font-variant-numeric: tabular-nums; }
   .wl-people { font: 14px Arial, sans-serif; font-variant-numeric: tabular-nums; }
   .wl-unit { display: none; }
-  .wl-status > span { white-space: nowrap; font-size: 12px; border-bottom: 3px solid var(--wl-mint); padding-bottom: 3px; }
-  .finished .wl-status > span { border-color: var(--wl-rule); }
+  .wl-status > span { color: #2c6f46 !important; white-space: nowrap; font-size: 12px; border-bottom: 3px solid currentColor; padding-bottom: 3px; }
+  .finished .wl-status > span { color: #666 !important; }
   .wl-action button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 100%; min-height: 44px; padding: 6px !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; color: var(--wl-ink) !important; box-shadow: none !important; transform: none !important; font-size: 12px; }
   .wl-action button:hover, .wl-action button[aria-pressed="true"] { background: var(--wl-mint) !important; }
   .wl-action button:focus-visible { outline: 2px solid var(--wl-ink); outline-offset: 2px; }

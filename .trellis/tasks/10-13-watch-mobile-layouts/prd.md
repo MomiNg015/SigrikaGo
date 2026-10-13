@@ -10,3 +10,7 @@ Removed all standalone watch buttons and freed their layout tracks. A native tra
 
 ## Scoreboard visual revision
 User rejected the dry text layout. All three previews now use real header move-placard styling, Users icon/count, portraits and side-stone marks. Variants are right-hand ledger placard, central duel placard, and perforated score ticket. Counts remain neutral without turn data. Three/four digits fit their placards; ordinary identity padding is removed without touching equipped nameplate padding. Whole-row activation and the original shell remain. Production unchanged.
+
+## 房间信息与状态配色修订
+
+三版人数图标与数字移到房间号旁，手数牌保持独立。对局中绿色、已结束中性灰色，同时更新正式观战列表桌面及手机状态样式；不提前接入尚未选定的手机布局。

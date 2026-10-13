@@ -29,13 +29,12 @@ function Match({ room, selected, onSelect }) {
   return <article className={`mw-row ${room.status === "finished" ? "finished" : ""}`} aria-label={`房间 ${room.code}`} data-selected={selected}>
     <div className="mw-meta">
       <span className={`mw-type mode-${room.mode}`}>{gameModeById(room.mode).shortTitle}</span>
-      <span className="mw-code"><span className="mw-room-label">房间 </span>{view === "columns" ? "#" : ""}{room.code}</span>
+      <span className="mw-room-info"><span className="mw-code"><span className="mw-room-label">房间 </span>{view === "columns" ? "#" : ""}{room.code}</span><span className="mw-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></span></span>
       <span className="mw-status">{room.status === "finished" ? "已结束" : "对局中"}</span>
     </div>
     <div className="mw-players"><Player entry={room.black} side="black"/>{view === "versus" && <span className="mw-vs" aria-hidden="true">VS</span>}<Player entry={room.white} side="white"/></div>
     <div className="mw-stats room-header-scoreboard">
       <div className="room-scoreboard-identity"><span className={`room-move-placard${room.moveNumber >= 1000 ? " is-long-count" : room.moveNumber >= 100 ? " is-medium-count" : ""}`} aria-label={`${room.moveNumber} 手`}><strong>{room.moveNumber}</strong><span>手</span></span></div>
-      <span className="mw-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></span>
     </div>
     <button className="mw-row-hit" type="button" aria-label={`观战房间 ${room.code}`} aria-pressed={selected} onClick={() => onSelect(room.code)}/>
   </article>;
