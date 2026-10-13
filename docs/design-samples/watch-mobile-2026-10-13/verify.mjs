@@ -32,6 +32,8 @@ try {
           return { height: shell.offsetHeight, rowHeight: shell.querySelector('.mw-row')?.offsetHeight,
             overflow: Math.max(document.documentElement.scrollWidth - innerWidth, scroll.scrollWidth - scroll.clientWidth),
             clippedNames,
+            clippedCounts: [...shell.querySelectorAll('.room-move-placard')].some(node => node.scrollWidth > node.clientWidth + 1),
+            peopleIcons: [...shell.querySelectorAll('.mw-people')].every(node => node.querySelector('svg') && node.getAttribute('aria-label').startsWith('房间人数 ')),
             readableNames: names.every(name => parseFloat(getComputedStyle(name).fontSize) >= 14 && getComputedStyle(name).whiteSpace === 'normal'),
             readableLabels: [...shell.querySelectorAll('.mw-code,.mw-status,.mw-stats')].every(node => parseFloat(getComputedStyle(node).fontSize) >= 12),
             actionTargets: [...shell.querySelectorAll('.mw-row-hit')].every(node => node.offsetWidth >= 44 && node.offsetHeight >= 44),
@@ -40,6 +42,8 @@ try {
         assert.equal(await page.getByText('观战', { exact: true }).count(), 0);
         const label = `${view}/${width}/${state}`;
         assert.ok(result.overflow <= 1, `${label}: overflow ${result.overflow}`);
+        assert.equal(result.clippedCounts, false, `${label}: count outside placard`);
+        assert.ok(result.peopleIcons, `${label}: people icon/label`);
         assert.deepEqual(result.clippedNames, [], `${label}: clipped names`);
         assert.ok(result.readableNames && result.readableLabels && result.actionTargets, `${label}: readability or hit targets`);
         if (!state) { normalHeight = result.height; heights[`${view}-${width}`] = result.rowHeight; }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { RefreshCw, Search, X } from "lucide-react";
+import { RefreshCw, Search, Users, X } from "lucide-react";
 import WindowTitleSticker from "../../../src/modals/WindowTitleSticker.jsx";
 import WindowEmptyState from "../../../src/modals/WindowEmptyState.jsx";
 import { ModalDialog } from "../../../src/modals/modalComponents.jsx";
@@ -18,8 +18,8 @@ const view = ["split", "versus", "columns"].includes(requested) ? requested : "s
 function Player({ entry, side }) {
   const character = CHARACTERS[entry.characterId];
   return <div className={`mw-player ${side}${entry.connected ? "" : " offline"}`}>
-    <span className="mw-side" aria-label={side === "black" ? "黑方" : "白方"}>{view === "columns" ? (side === "black" ? "黑" : "白") : (side === "black" ? "●" : "○")}</span>
-    {view !== "columns" && <img {...characterPortraitImageProps(character, { variant: "avatar", user: entry.user })} alt={character.name}/>}
+    <span className="mw-side" aria-label={side === "black" ? "黑方" : "白方"}>{side === "black" ? "●" : "○"}</span>
+    {<img {...characterPortraitImageProps(character, { variant: "avatar", user: entry.user })} alt={character.name}/>}
     <UserIdentity user={entry.user} compact/>
     {!entry.connected && <span className="mw-away">暂离</span>}
   </div>;
@@ -33,7 +33,10 @@ function Match({ room, selected, onSelect }) {
       <span className="mw-status">{room.status === "finished" ? "已结束" : "对局中"}</span>
     </div>
     <div className="mw-players"><Player entry={room.black} side="black"/>{view === "versus" && <span className="mw-vs" aria-hidden="true">VS</span>}<Player entry={room.white} side="white"/></div>
-    <div className="mw-stats"><span className="mw-moves"><b>{room.moveNumber}</b> 手</span><span className="mw-people" title="房间人数"><b>{room.onlineCount}</b> 人</span></div>
+    <div className="mw-stats room-header-scoreboard">
+      <div className="room-scoreboard-identity"><span className={`room-move-placard${room.moveNumber >= 1000 ? " is-long-count" : room.moveNumber >= 100 ? " is-medium-count" : ""}`} aria-label={`${room.moveNumber} 手`}><strong>{room.moveNumber}</strong><span>手</span></span></div>
+      <span className="mw-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></span>
+    </div>
     <button className="mw-row-hit" type="button" aria-label={`观战房间 ${room.code}`} aria-pressed={selected} onClick={() => onSelect(room.code)}/>
   </article>;
 }
@@ -51,7 +54,6 @@ function Preview() {
         <header className="watch-list-header window-sticker-header"><WindowTitleSticker titleKey="watch" id="mw-title"/><div className="watch-list-actions"><button className="icon-button" aria-label="刷新对局列表" disabled={refreshing} onClick={refresh}><RefreshCw size={18}/></button><button className="close-button inline-close" aria-label="关闭对局列表" onClick={() => setOpen(false)}><X size={20}/></button></div></header>
         <div className="mw-toolbar"><label className="mw-search"><Search size={16}/><input aria-label="搜索房间或玩家" placeholder="房间号 / 玩家" value={query} onChange={event => setQuery(event.target.value)}/></label><span role="status">{refreshing ? "刷新中…" : `${visible.length} 场`}</span></div>
         <div className="mw-scroll" aria-busy={refreshing}>
-          {view === "columns" && visible.length > 0 && <div className="mw-head" aria-hidden="true"><span>对局</span><span>玩家</span><span>进度</span></div>}
           {visible.length ? visible.map(room => <Match key={room.code} room={room} selected={selected === room.code} onSelect={code => { setSelected(code); setOpen(false); }}/>) : <WindowEmptyState>{query ? "未找到对局" : "暂无对局"}</WindowEmptyState>}
         </div>
       </ModalDialog>

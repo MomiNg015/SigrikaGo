@@ -7,3 +7,6 @@ Three isolated variants delivered. All 48 browser cases, comparison controls and
 
 ## Whole-row activation revision
 Removed all standalone watch buttons and freed their layout tracks. A native transparent button covers each whole row; Enter/Space and pointer activation close the sample list without live room access. All 48 browser cases and scoped lint pass. At 390px ordinary heights are now 103/84/79px.
+
+## Scoreboard visual revision
+User rejected the dry text layout. All three previews now use real header move-placard styling, Users icon/count, portraits and side-stone marks. Variants are right-hand ledger placard, central duel placard, and perforated score ticket. Counts remain neutral without turn data. Three/four digits fit their placards; ordinary identity padding is removed without touching equipped nameplate padding. Whole-row activation and the original shell remain. Production unchanged.
