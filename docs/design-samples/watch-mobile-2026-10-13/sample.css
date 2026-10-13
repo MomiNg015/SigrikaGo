@@ -34,17 +34,14 @@
   .offline img { filter: grayscale(1); opacity: .5; }
   .mw-stats { grid-area: stats; display: flex; gap: 10px; align-items: baseline; white-space: nowrap; font: 12px var(--font-ui-default); }
   .mw-stats b { font: 700 16px Arial, sans-serif; font-variant-numeric: tabular-nums; }
-  .mw-watch { grid-area: action; display: flex; justify-content: center; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; color: var(--mw-ink) !important; box-shadow: none !important; transform: none !important; font: 13px var(--font-ui-default); }
-  .mw-watch:hover, .mw-watch[aria-pressed="true"] { background: var(--mw-mint) !important; }
-  .mw-watch:focus-visible { outline: 2px solid var(--mw-ink); outline-offset: -2px; }
-  &.mw-split .mw-row { grid-template-columns: minmax(0, 1fr) 88px; grid-template-areas: "meta meta" "players stats" "players action"; gap: 4px 8px; }
-  &.mw-split .mw-stats { justify-content: center; flex-wrap: wrap; gap: 2px 7px; }
+  .mw-row-hit { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 44px; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; transform: none !important; cursor: pointer; }
+  .mw-row:has(.mw-row-hit:hover) { background: color-mix(in srgb, var(--mw-mint) 24%, var(--mw-paper)); }
+  .mw-row-hit:focus-visible { outline: 2px solid var(--mw-ink); outline-offset: -2px; }
+  &.mw-split .mw-row { grid-template-columns: minmax(0, 1fr) 64px; grid-template-areas: "meta meta" "players stats"; gap: 4px 8px; }
+  &.mw-split .mw-stats { justify-content: center; flex-direction: column; align-items: center; gap: 5px; }
   &.mw-split .mw-stats b { font-size: 15px; }
   &.mw-split .mw-players { align-self: stretch; align-content: center; }
-  &.mw-split .mw-watch { background: color-mix(in srgb, var(--mw-mint) 48%, var(--mw-paper)) !important; }
-  &.mw-versus .mw-row { grid-template-columns: minmax(0, 1fr) 60px minmax(0, 1fr); grid-template-areas: "meta meta action" "black stats white"; gap: 2px 3px; padding-block: 3px 7px; }
-  &.mw-versus .mw-meta { flex-wrap: wrap; gap: 0 6px; }
-  &.mw-versus .mw-status { width: 100%; margin: 0; }
+  &.mw-versus .mw-row { grid-template-columns: minmax(0, 1fr) 60px minmax(0, 1fr); grid-template-areas: "meta meta meta" "black stats white"; gap: 2px 3px; padding-block: 3px 7px; }
   &.mw-versus .mw-players { display: contents; }
   &.mw-versus .black { grid-area: black; }
   &.mw-versus .white { grid-area: white; }
@@ -56,8 +53,7 @@
   &.mw-versus .mw-away { grid-column: 1 / -1; }
   .mw-vs { display: none; }
   &.mw-versus .mw-stats { flex-direction: column; align-items: center; gap: 5px; }
-  &.mw-versus .mw-watch { justify-self: end; padding-inline: 8px !important; }
-  &.mw-columns .mw-row { grid-template-columns: 60px minmax(0, 1fr) 64px; grid-template-areas: "meta players stats" "meta players action"; gap: 0 7px; padding-block: 8px; }
+  &.mw-columns .mw-row { grid-template-columns: 60px minmax(0, 1fr) 64px; grid-template-areas: "meta players stats"; gap: 0 7px; padding-block: 8px; }
   &.mw-columns .mw-meta { flex-direction: column; align-items: flex-start; gap: 4px; }
   &.mw-columns .mw-room-label { display: none; }
   &.mw-columns .mw-status { margin: 0; }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { ArrowRight, RefreshCw, Search, X } from "lucide-react";
+import { RefreshCw, Search, X } from "lucide-react";
 import WindowTitleSticker from "../../../src/modals/WindowTitleSticker.jsx";
 import WindowEmptyState from "../../../src/modals/WindowEmptyState.jsx";
 import { ModalDialog } from "../../../src/modals/modalComponents.jsx";
@@ -34,7 +34,7 @@ function Match({ room, selected, onSelect }) {
     </div>
     <div className="mw-players"><Player entry={room.black} side="black"/>{view === "versus" && <span className="mw-vs" aria-hidden="true">VS</span>}<Player entry={room.white} side="white"/></div>
     <div className="mw-stats"><span className="mw-moves"><b>{room.moveNumber}</b> 手</span><span className="mw-people" title="房间人数"><b>{room.onlineCount}</b> 人</span></div>
-    <button className="mw-watch" aria-label={`观战房间 ${room.code}`} aria-pressed={selected} onClick={() => onSelect(room.code)}>{selected ? "已选" : "观战"}<ArrowRight size={15} aria-hidden="true"/></button>
+    <button className="mw-row-hit" type="button" aria-label={`观战房间 ${room.code}`} aria-pressed={selected} onClick={() => onSelect(room.code)}/>
   </article>;
 }
 
@@ -52,7 +52,7 @@ function Preview() {
         <div className="mw-toolbar"><label className="mw-search"><Search size={16}/><input aria-label="搜索房间或玩家" placeholder="房间号 / 玩家" value={query} onChange={event => setQuery(event.target.value)}/></label><span role="status">{refreshing ? "刷新中…" : `${visible.length} 场`}</span></div>
         <div className="mw-scroll" aria-busy={refreshing}>
           {view === "columns" && visible.length > 0 && <div className="mw-head" aria-hidden="true"><span>对局</span><span>玩家</span><span>进度</span></div>}
-          {visible.length ? visible.map(room => <Match key={room.code} room={room} selected={selected === room.code} onSelect={setSelected}/>) : <WindowEmptyState>{query ? "未找到对局" : "暂无对局"}</WindowEmptyState>}
+          {visible.length ? visible.map(room => <Match key={room.code} room={room} selected={selected === room.code} onSelect={code => { setSelected(code); setOpen(false); }}/>) : <WindowEmptyState>{query ? "未找到对局" : "暂无对局"}</WindowEmptyState>}
         </div>
       </ModalDialog>
     </div>}

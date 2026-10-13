@@ -4,3 +4,6 @@ Prototype-only review of the current mobile watch ledger. Deliver three working 
 
 ## Results
 Three isolated variants delivered. All 48 browser cases, comparison controls and scoped ESLint passed. Names are 14px and wrap fully, labels >=12px, action targets >=44px. At 390px ordinary first-row heights are 109/107/96px. Original and new screenshots inspected. Production unchanged, awaiting user choice. No production contract/spec change is introduced.
+
+## Whole-row activation revision
+Removed all standalone watch buttons and freed their layout tracks. A native transparent button covers each whole row; Enter/Space and pointer activation close the sample list without live room access. All 48 browser cases and scoped lint pass. At 390px ordinary heights are now 103/84/79px.

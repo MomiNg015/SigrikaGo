@@ -34,9 +34,10 @@ try {
             clippedNames,
             readableNames: names.every(name => parseFloat(getComputedStyle(name).fontSize) >= 14 && getComputedStyle(name).whiteSpace === 'normal'),
             readableLabels: [...shell.querySelectorAll('.mw-code,.mw-status,.mw-stats')].every(node => parseFloat(getComputedStyle(node).fontSize) >= 12),
-            actionTargets: [...shell.querySelectorAll('.mw-watch')].every(node => node.offsetWidth >= 44 && node.offsetHeight >= 44),
+            actionTargets: [...shell.querySelectorAll('.mw-row-hit')].every(node => node.offsetWidth >= 44 && node.offsetHeight >= 44),
           };
         });
+        assert.equal(await page.getByText('观战', { exact: true }).count(), 0);
         const label = `${view}/${width}/${state}`;
         assert.ok(result.overflow <= 1, `${label}: overflow ${result.overflow}`);
         assert.deepEqual(result.clippedNames, [], `${label}: clipped names`);
@@ -44,20 +45,26 @@ try {
         if (!state) { normalHeight = result.height; heights[`${view}-${width}`] = result.rowHeight; }
         assert.equal(result.height, normalHeight);
         if (state !== 'empty') {
-          await page.locator('.mw-watch').last().scrollIntoViewIfNeeded();
-          await page.locator('.mw-watch').last().click();
-          assert.equal(await page.locator('.mw-watch[aria-pressed="true"]').count(), 1);
+          await page.locator('.mw-row-hit').last().scrollIntoViewIfNeeded();
+          await page.locator('.mw-row-hit').last().click();
+          await page.getByRole('button', { name: '打开观战窗口' }).click();
+          await page.locator('.mw-window').waitFor();
         }
         if (!state) {
           await page.getByRole('button', { name: '刷新对局列表' }).click();
           await page.waitForFunction(() => document.querySelector('.mw-scroll').getAttribute('aria-busy') === 'false');
-          assert.equal(await page.locator('.mw-watch[aria-pressed="true"]').count(), 0);
+          assert.equal(await page.locator('.mw-row-hit[aria-pressed="true"]').count(), 0);
           const search = page.getByRole('textbox', { name: '搜索房间或玩家' });
           await search.fill('483126'); assert.equal(await page.locator('.mw-row').count(), 1);
           await search.fill('无结果'); assert.equal(await page.locator('.mw-row').count(), 0);
           await search.fill(''); assert.equal(await page.locator('.mw-row').count(), 7);
           await search.focus(); await page.keyboard.press('Tab');
-          assert.ok(await page.locator('.mw-watch').first().evaluate(node => node === document.activeElement));
+          assert.ok(await page.locator('.mw-row-hit').first().evaluate(node => node === document.activeElement));
+          for (const key of ['Enter', 'Space']) {
+            await page.locator('.mw-row-hit').first().focus();
+            await page.keyboard.press(key);
+            await page.getByRole('button', { name: '打开观战窗口' }).click();
+          }
           await page.getByRole('button', { name: '关闭对局列表' }).click();
           await page.getByRole('button', { name: '打开观战窗口' }).click();
           await page.waitForTimeout(400);
