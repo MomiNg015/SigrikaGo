@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { Users } from "lucide-react";
 import { gameModeById } from "../../shared/gameModes.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
@@ -11,10 +11,10 @@ export default function WatchRoomRow({ room, characters, onJoinRoom, onClose }) 
     <td className={`wl-mode mode-${mode.id}`}><span>{mode.shortTitle}</span></td>
     <td className="wl-black"><WatchPlayerCell player={room.black} characters={characters} side="black"/></td>
     <td className="wl-white"><WatchPlayerCell player={room.white} characters={characters} side="white"/></td>
-    <td className="wl-moves"><b>{room.moveNumber}</b><span className="wl-unit">手</span></td>
-    <td className="wl-people" title="房间人数">{room.onlineCount}<span className="wl-unit">人</span></td>
+    <td className="wl-moves"><span className="wl-desktop-moves">{room.moveNumber}</span><span className="room-header-scoreboard wl-placard"><span className="room-scoreboard-identity"><span className={`room-move-placard${room.moveNumber >= 1000 ? " is-long-count" : room.moveNumber >= 100 ? " is-medium-count" : ""}`}><strong>{room.moveNumber}</strong><span>手</span></span></span></span></td>
+    <td className="wl-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></td>
     <td className="wl-status"><span>{statusTextForWatchRoom(room)}</span></td>
-    <td className="wl-action"><button type="button" aria-label={`观战房间 ${room.code}`} onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}><ArrowRight size={18} aria-hidden="true"/><span>观战</span></button></td>
+    <td className="wl-action"><button type="button" aria-label={`观战房间 ${room.code}`} onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}/></td>
   </tr>;
 }
 
@@ -25,6 +25,7 @@ function WatchPlayerCell({ player, characters, side }) {
     <span className="wl-stone" aria-label={side === "black" ? "黑方" : "白方"}/>
     <img {...characterPortraitImageProps(character, { variant: "avatar", itemEffects: player.user?.itemEffects, user: player.user, costumeSnapshot: player.costumeSnapshot })} alt={character.name}/>
     <UserIdentity user={player.user} compact />
+    {!player.connected && <span className="wl-offline">暂离</span>}
   </span>;
 }
 

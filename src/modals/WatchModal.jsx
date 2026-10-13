@@ -66,7 +66,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
         </div>
         <div className="wl-scroll" aria-busy={loading}>
           {visibleRooms.length > 0 && <table className="wl-table" aria-label="全部类型对局">
-            <thead><tr><th scope="col">房间</th><th scope="col">类型</th><th scope="col">黑方</th><th scope="col">白方</th><th scope="col">手数</th><th scope="col" title="房间人数">人数</th><th scope="col">状态</th><th scope="col"><span className="wl-sr-only">操作</span></th></tr></thead>
+            <thead><tr><th scope="col">房间</th><th scope="col">类型</th><th scope="col">黑方</th><th scope="col">白方</th><th scope="col">手数</th><th scope="col" title="房间人数">人数</th><th scope="col">状态</th><th scope="col" className="wl-sr-only">进入观战</th></tr></thead>
             <tbody>{visibleRooms.map((room) => <WatchRoomRow key={watchRoomRowKey(room)} room={room} characters={characters} onJoinRoom={onJoinRoom} onClose={onClose}/>)}</tbody>
           </table>}
           {!loading && !error && visibleRooms.length === 0 && <WindowEmptyState>{search ? "未找到对局" : "暂无对局"}</WindowEmptyState>}

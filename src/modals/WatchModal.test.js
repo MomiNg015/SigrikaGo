@@ -37,10 +37,11 @@ describe("WatchModal helpers", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("uses a bounded ledger with parallel mobile players and an explicit type column", () => {
+  it("uses a bounded ledger with mobile score placards and an explicit type column", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive/watch-ledger.css", import.meta.url));
-    expect(css).toContain('"black black black white white white"');
-    expect(css).toContain('"moves moves people people action action"');
+    const mobile = readCssWithImports(new URL("../styles/mobile-adaptive/watch-ledger-mobile.css", import.meta.url));
+    expect(mobile).toContain("overflow-wrap: anywhere");
+    expect(mobile).toContain(".room-move-placard");
     expect(css).toContain("var(--window-sticker-available-height)");
     expect(css).toContain(".wl-scroll { flex: 1; min-height: 0; overflow: auto;");
     const html = renderToStaticMarkup(createElement(WatchModal, { characters: {} }));
