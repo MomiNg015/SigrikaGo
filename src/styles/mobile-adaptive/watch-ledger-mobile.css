@@ -24,13 +24,6 @@
     .wl-player .user-identity-name { font: 14px/1.4 var(--font-ui-default); white-space: normal !important; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
     .wl-offline { font-size: 12px; }
     .wl-moves { grid-area: moves; }
-    .wl-desktop-moves { display: none; }
-    .wl-placard { display: flex; justify-content: center; padding: 5px 3px 3px; }
-    .room-scoreboard-identity { width: 100%; justify-content: center; }
-    .room-scoreboard-identity .room-move-placard { flex: none; width: 70px; height: 48px; min-width: 0; padding: 9px 3px 3px; gap: 3px; background: var(--wl-paper); color: var(--wl-ink); transform: rotate(-2deg); }
-    .room-move-placard strong { font-size: 30px; }
-    .room-move-placard > span { font-size: 12px; }
-    .room-move-placard.is-medium-count strong { font-size: 26px; }
-    .room-move-placard.is-long-count strong { font-size: 20px; }
+
   }
 }

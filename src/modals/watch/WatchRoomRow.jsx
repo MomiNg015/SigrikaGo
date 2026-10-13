@@ -9,10 +9,10 @@ export default function WatchRoomRow({ room, characters, onJoinRoom, onClose }) 
   return <tr className={`wl-row ${room.status === "finished" ? "finished" : ""}`}>
     <td className="wl-code">{room.code}</td>
     <td className={`wl-mode mode-${mode.id}`}><span>{mode.shortTitle}</span></td>
+    <td className="wl-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></td>
     <td className="wl-black"><WatchPlayerCell player={room.black} characters={characters} side="black"/></td>
     <td className="wl-white"><WatchPlayerCell player={room.white} characters={characters} side="white"/></td>
-    <td className="wl-moves"><span className="wl-desktop-moves">{room.moveNumber}</span><span className="room-header-scoreboard wl-placard"><span className="room-scoreboard-identity"><span className={`room-move-placard${room.moveNumber >= 1000 ? " is-long-count" : room.moveNumber >= 100 ? " is-medium-count" : ""}`}><strong>{room.moveNumber}</strong><span>手</span></span></span></span></td>
-    <td className="wl-people" title="房间人数" aria-label={`房间人数 ${room.onlineCount}`}><Users size={17} strokeWidth={1.8} aria-hidden="true"/><b>{room.onlineCount}</b></td>
+    <td className="wl-moves"><span className="room-header-scoreboard wl-placard"><span className="room-scoreboard-identity"><span className={`room-move-placard${room.moveNumber >= 1000 ? " is-long-count" : room.moveNumber >= 100 ? " is-medium-count" : ""}`}><strong>{room.moveNumber}</strong><span>手</span></span></span></span></td>
     <td className="wl-status"><span>{statusTextForWatchRoom(room)}</span></td>
     <td className="wl-action"><button type="button" aria-label={`观战房间 ${room.code}`} onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}/></td>
   </tr>;

@@ -41,7 +41,7 @@ describe("WatchModal helpers", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive/watch-ledger.css", import.meta.url));
     const mobile = readCssWithImports(new URL("../styles/mobile-adaptive/watch-ledger-mobile.css", import.meta.url));
     expect(mobile).toContain("overflow-wrap: anywhere");
-    expect(mobile).toContain(".room-move-placard");
+    expect(css).toContain(".room-move-placard");
     expect(css).toContain("var(--window-sticker-available-height)");
     expect(css).toContain(".wl-scroll { flex: 1; min-height: 0; overflow: auto;");
     const html = renderToStaticMarkup(createElement(WatchModal, { characters: {} }));

@@ -2,7 +2,7 @@
 
 ### 2026-10-13 移动端观战方案 1 正式接入
 
-计分牌名册已接入正式 `WatchModal`：手机行首为类型、房间号及人数图标、状态，左侧上下排列双方角色与完整换行昵称，右侧复用对弈 Header 中性手数牌；三位／四位手数适配牌面。桌面保留七列名册，人数显示图标与数字。两端取消独立观战按钮，透明原生按钮覆盖整行，鼠标／触摸／Enter／Space 复用加入并关闭窗口流程。保留原图片标题、边框背景阴影、固定窗口高度、绿色对局中和灰色已结束；搜索、刷新和 API 不变。样式分为 `watch-ledger.css` 与 `watch-ledger-mobile.css` 两个有限范围文件。[桌面截图](./design-samples/watch-mobile-2026-10-13/production-desktop.png)／[手机截图](./design-samples/watch-mobile-2026-10-13/production-mobile.png)由正式组件配隔离样板数据渲染。
+计分牌名册已接入正式 `WatchModal`：手机行首为类型、房间号及人数图标、状态，左侧上下排列双方角色与完整换行昵称，右侧复用对弈 Header 中性手数牌；三位／四位手数适配牌面。桌面七列顺序为房间、类型、人数、黑方、白方、手数、状态；人数显示图标与数字，手数与手机共用 70×48 纸质计分牌及三位／四位数字适配。两端取消独立观战按钮，透明原生按钮覆盖整行，鼠标／触摸／Enter／Space 复用加入并关闭窗口流程。保留原图片标题、边框背景阴影、固定窗口高度、绿色对局中和灰色已结束；搜索、刷新和 API 不变。样式分为 `watch-ledger.css` 与 `watch-ledger-mobile.css` 两个有限范围文件。[桌面截图](./design-samples/watch-mobile-2026-10-13/production-desktop.png)／[手机截图](./design-samples/watch-mobile-2026-10-13/production-mobile.png)由正式组件配隔离样板数据渲染。
 
 ### 2026-10-13 移动端观战布局复审样板
 
