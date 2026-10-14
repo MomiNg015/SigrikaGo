@@ -44,6 +44,7 @@ Non-user admin deployment configuration lives in `server/adminDefaultSnapshot.js
 - `rating`: 积分，默认 1000，允许为负数。积分继续用于积分榜排序、奖励流水和积分解锁，但不再决定段位。
 - `UserModeStats.rank`: 模式独立段位，新用户/新模式默认 `3段`，最高 `9段`，最低 `18级`。
 - `UserModeStats.recentResults`: 模式独立升降级窗口，CSV 存储 `win/loss`，最多 10 个，从老到新；和棋不进入窗口，升降级触发后写回空字符串。
+- `UserModeStats.leaderboardReachedAt`: 当前可比较成绩的达成时间，成绩变化或首次入榜时在结算事务内写入；原排序条件全部相同时先达成者在前。旧数据以该玩法最后更新时间兼容。
 - `wins`: 胜局数，默认 0。
 - `losses`: 负局数，默认 0。
 - `coins`: 金币，默认 300。
@@ -348,7 +349,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 ### 吃子挑战赛成绩
 
-`CaptureChallengeBest` 以 `userId` 为主键，保存个人最高 `captures`、对应 `characterId`、`costumeSnapshot` 与历史最佳 `bestRank`。仅严格超过最高提子数时替换成绩和角色；名次纪录独立维护。`captures` 索引供排名统计与排序。
+`CaptureChallengeBest` 以 `userId` 为主键，保存个人最高 `captures`、对应 `characterId`、`costumeSnapshot`、首次达成该成绩的 `reachedAt` 与历史最佳 `bestRank`。首次记录或严格超过最高提子数时写入时间，重复最高成绩保留原时间和角色；名次纪录独立维护。`captures/reachedAt/userId` 复合索引用于同分先达成优先的唯一排名。旧记录按匹配最高成绩的最早结算时间回填，缺少历史的时间为零；正常结算显式写入达成时间。
 
 `CaptureChallengeResult` 以服务器生成并写入房间快照的挑战 UUID 为主键，保存 `userId`、本局 `captures`、结算时 `rank`、`breakthrough` 与创建时间。事务内先查回执，再计算名次、更新最高纪录、创建回执；重试复用已保存结果。两表均随用户级联删除，不进入 GameRecord、普通战绩或成长统计。新增迁移 `20260923000000_capture_challenge`；`ensureCaptureChallengeSchema` 同步支持旧 SQLite 库的启动兼容路径。
 

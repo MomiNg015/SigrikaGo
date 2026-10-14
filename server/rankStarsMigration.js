@@ -57,8 +57,8 @@ export async function migrateRankStars(prisma) {
       for (const mode of GAME_MODE_IDS) {
         await tx.userModeStats.upsert({
           where: { userId_mode: { userId: user.id, mode } },
-          create: { userId: user.id, mode, rank: "3段", stars: 2, rating: 0 },
-          update: { rank: "3段", stars: 2, rating: 0 }
+          create: { userId: user.id, mode, rank: "3段", stars: 2, rating: 0, leaderboardReachedAt: new Date() },
+          update: { rank: "3段", stars: 2, rating: 0, leaderboardReachedAt: new Date() }
         });
       }
     }

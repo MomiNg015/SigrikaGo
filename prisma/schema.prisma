@@ -74,9 +74,11 @@ model CaptureChallengeBest {
   characterId     String
   costumeSnapshot String @default("null")
   bestRank        Int
+  reachedAt       DateTime @default(dbgenerated("0"))
   user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([captures])
+  @@index([captures, reachedAt, userId])
 }
 
 model CaptureChallengeResult {
@@ -134,6 +136,7 @@ model UserModeStats {
   stars     Int      @default(2)
   rank      String   @default("3段")
   recentResults String @default("")
+  leaderboardReachedAt DateTime?
   wins      Int      @default(0)
   losses    Int      @default(0)
   draws     Int      @default(0)

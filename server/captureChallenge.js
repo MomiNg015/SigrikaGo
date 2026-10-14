@@ -1,6 +1,7 @@
 import { GAME_PHASES, exposeHiddenHands } from "../src/shared/game.js";
 import { CAPTURE_CHALLENGE_MOVE_LIMIT, isCaptureChallenge, captureChallengeResultText } from "../src/shared/captureChallenge.js";
 import { modeStatsForUser } from "./roomFactory.js";
+import { capturePredecessors } from "./leaderboardOrder.js";
 
 export function finishCaptureChallenge(room) {
   if (!isCaptureChallenge(room) || room.game.phase !== GAME_PHASES.playing
@@ -26,12 +27,14 @@ export async function saveCaptureChallengeResult({ prisma, room }) {
     const previous = await tx.captureChallengeResult.findUnique({ where: { id: room.practice.challengeId } });
     if (previous) return previous;
     const best = await tx.captureChallengeBest.findUnique({ where: { userId: player.user.id } });
+    const reachedAt = best && captures === best.captures ? best.reachedAt : new Date();
     const rank = 1 + await tx.captureChallengeBest.count({
-      where: { userId: { not: player.user.id }, captures: { gt: captures } }
+      where: capturePredecessors({ userId: player.user.id, captures, reachedAt })
     });
     const breakthrough = !best || rank < best.bestRank;
     const recordData = {
       captures,
+      reachedAt,
       characterId: player.characterId,
       costumeSnapshot: JSON.stringify(player.costumeSnapshot ?? null)
     };
@@ -55,15 +58,13 @@ export async function saveCaptureChallengeResult({ prisma, room }) {
 export async function listCaptureChallengeLeaderboard(prisma) {
   const records = await prisma.captureChallengeBest.findMany({
     include: { user: { select: { id: true, username: true, rank: true, modeStats: true } } },
-    orderBy: [{ captures: "desc" }, { userId: "asc" }]
+    orderBy: [{ captures: "desc" }, { reachedAt: "asc" }, { userId: "asc" }]
   });
-  let ranking = 0;
   return records.map((record, index) => {
-    if (index === 0 || record.captures !== records[index - 1].captures) ranking = index + 1;
     return {
       id: record.userId, username: record.user.username,
       rank: modeStatsForUser(record.user, "spark").rank,
-      ranking, captures: record.captures, recordCharacter: record.characterId,
+      ranking: index + 1, captures: record.captures, recordCharacter: record.characterId,
       costumeSnapshot: JSON.parse(record.costumeSnapshot)
     };
   });

@@ -440,6 +440,7 @@ export function modeStatsUpsertOperation(player, mode, { winsDelta = 0, lossesDe
     create: {
       userId: player.user.id,
       mode,
+      leaderboardReachedAt: player.user.modeStats?.[mode]?.leaderboardReachedAt ?? new Date(),
       rating: Number(player.user.modeStats?.[mode]?.rating ?? player.user.rating ?? 0),
       rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
       stars: Number(player.user.modeStats?.[mode]?.stars ?? 2),
@@ -449,6 +450,7 @@ export function modeStatsUpsertOperation(player, mode, { winsDelta = 0, lossesDe
       draws: Math.max(0, Number(player.user.modeStats?.[mode]?.draws ?? 0))
     },
     update: {
+      ...(player.user.modeStats?.[mode]?.leaderboardReachedAt ? { leaderboardReachedAt: player.user.modeStats[mode].leaderboardReachedAt } : {}),
       rating: Number(player.user.modeStats?.[mode]?.rating ?? 0),
       rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
       stars: Number(player.user.modeStats?.[mode]?.stars ?? 2),

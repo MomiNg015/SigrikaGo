@@ -1,0 +1,55 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-podium-modal {
+  --lp-paper: var(--bright-sheet, #fffaf0);
+  --lp-ink: var(--bright-ink, #3d2b25);
+  --lp-muted: #786457;
+  --lp-rule: #d6cbb9;
+  --lp-mine: #e3f0e5;
+  display: flex !important;
+  flex-direction: column;
+  gap: 0 !important;
+  width: min(1040px, 100%) !important;
+  min-height: 0 !important;
+  height: min(730px, var(--window-sticker-available-height, calc(100dvh - 90px)));
+  max-height: var(--window-sticker-available-height, calc(100dvh - 90px)) !important;
+  color: var(--lp-ink);
+  .leaderboard-header { flex: none; }
+  .lp-standings { flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .lp-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0 6px 8px 0; scrollbar-gutter: stable; }
+  .lp-scroll:focus-visible { outline: 2px solid var(--lp-ink); outline-offset: -2px; }
+  .lp-columns, .lp-row { display: grid; grid-template-columns: 60px minmax(150px, 1.2fr) minmax(120px, .8fr) minmax(170px, 1fr) 76px; align-items: center; gap: 12px; }
+  .lp-columns { position: sticky; top: 0; z-index: 1; padding: 10px 16px; background: var(--lp-paper); border-bottom: 1px solid var(--lp-rule); font-size: 12px; }
+  .lp-columns > span:not(:nth-child(2)) { text-align: center; }
+  .lp-row { padding: 8px 16px; min-height: 72px; border: 0; border-bottom: 1px solid var(--lp-rule); border-radius: 0; background: transparent; }
+  .lp-row[data-current="true"] { background: var(--lp-mine); }
+  .lp-position { font: 500 25px Arial, sans-serif; text-align: center; font-variant-numeric: tabular-nums; }
+  .lp-player { display: flex; align-items: center; gap: 13px; min-width: 0; }
+  .lp-avatar { flex: none; position: relative; display: grid; place-items: center; width: 57px; }
+  .lp-avatar > img { display: block; width: 57px !important; height: 51px !important; object-fit: contain; }
+  .lp-avatar-fallback { display: grid; place-items: center; width: 100%; aspect-ratio: 1; border: 1px solid var(--lp-rule); border-radius: 6px; color: var(--lp-muted); background: var(--lp-paper); font-size: 22px; }
+  .lp-player-text { min-width: 0; }
+  .lp-name { font-size: 15px; font-weight: 700; min-width: 0; max-width: 100%; }
+  .lp-name .user-identity { padding: 0; }
+  .lp-name .user-identity:not(.has-nameplate) .user-identity-name-tag { padding-inline: 0; }
+  .lp-name .user-identity.has-nameplate { max-width: none; }
+  .lp-name .user-identity, .lp-name .user-identity-main, .lp-name .user-identity-name-tag { min-width: 0; max-width: 100%; }
+  .lp-name .user-identity-name { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lp-avatar-place, .lp-compact-rank, .lp-wins { display: none; }
+  .lp-rank { display: flex; justify-content: center; }
+  .lp-row .rank-progress { display: inline-flex; flex-direction: column; gap: 5px; align-items: center; }
+  .lp-record { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; font-variant-numeric: tabular-nums; }
+  .lp-record > span { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .lp-record b { font-size: 14px; font-weight: 400; }
+  .lp-record small { font-size: 10px; color: var(--lp-muted); }
+  .lp-metrics { font-variant-numeric: tabular-nums; }
+  .lp-rate { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; white-space: nowrap; }
+  .lp-rate b { font-size: 18px; font-weight: 600; line-height: 1.2; }
+  .lp-rate i { font-style: normal; font-size: 11px; }
+  .lp-row .lp-rate small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .lp-personal { flex: none; margin: 12px 6px 0 0; padding-top: 10px; border-top: 2px solid var(--lp-ink); }
+  .lp-personal-label { font-family: var(--font-window-title); font-size: 18px; }
+  .lp-personal .lp-row { margin-top: 5px; border: 0; border-radius: 6px; }
+  .lp-unranked { display: block; margin-top: 8px; padding: 16px; background: var(--lp-mine); }
+  .lp-capture .lp-columns, .lp-capture .lp-row { grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, .7fr) 110px; }
+  .lp-captures { font-size: 24px; text-align: center; white-space: nowrap; }
+  .lp-captures small { margin-left: 5px; font-size: 12px; }
+}

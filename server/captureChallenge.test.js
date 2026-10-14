@@ -121,7 +121,7 @@ describe("capture challenge SQLite persistence", () => {
     await prisma.$executeRawUnsafe('CREATE TABLE "User" ("id" TEXT PRIMARY KEY, "username" TEXT, "rank" TEXT)');
     await prisma.$executeRawUnsafe(`CREATE TABLE "UserModeStats" (
       "id" TEXT PRIMARY KEY, "userId" TEXT, "mode" TEXT, "rating" INTEGER, "stars" INTEGER DEFAULT 2, "rank" TEXT,
-      "recentResults" TEXT, "wins" INTEGER, "losses" INTEGER, "draws" INTEGER, "createdAt" DATETIME, "updatedAt" DATETIME
+      "recentResults" TEXT, "wins" INTEGER, "losses" INTEGER, "draws" INTEGER, "createdAt" DATETIME, "updatedAt" DATETIME, "leaderboardReachedAt" DATETIME
     )`);
     await ensureCaptureChallengeSchema(prisma);
     await ensureCaptureChallengeSchema(prisma);
@@ -155,15 +155,17 @@ describe("capture challenge SQLite persistence", () => {
     expect((await listCaptureChallengeLeaderboard(prisma))[0]).toMatchObject({ captures: 21, recordCharacter: "sigrika", ranking: 1 });
   });
 
-  it("ranks this attempt against other bests and persists historical breakthroughs and competition ties", async () => {
+  it("ranks equal captures by first achievement and persists historical breakthroughs", async () => {
     await complete("b", 30);
     await complete("c", 20);
     await complete("d", 10);
     expect((await complete("a", 5)).practice.result).toMatchObject({ rank: 4, breakthrough: true });
-    expect((await complete("a", 20)).practice.result).toMatchObject({ rank: 2, breakthrough: true });
-    expect((await listCaptureChallengeLeaderboard(prisma)).map((row) => row.ranking)).toEqual([1, 2, 2, 4]);
+    expect((await complete("a", 20)).practice.result).toMatchObject({ rank: 3, breakthrough: true });
+    const reached = (await prisma.captureChallengeBest.findUnique({ where: { userId: "a" } })).reachedAt;
+    expect((await listCaptureChallengeLeaderboard(prisma)).map((row) => [row.id, row.ranking])).toEqual([["b", 1], ["c", 2], ["a", 3], ["d", 4]]);
     expect((await complete("a", 5)).practice.result).toMatchObject({ rank: 4, breakthrough: false });
-    expect((await complete("a", 20)).practice.result).toMatchObject({ rank: 2, breakthrough: false });
+    expect((await complete("a", 20)).practice.result).toMatchObject({ rank: 3, breakthrough: false });
+    expect((await prisma.captureChallengeBest.findUnique({ where: { userId: "a" } })).reachedAt).toEqual(reached);
     const record = await complete("a", 31);
     expect(record.practice.result).toMatchObject({ rank: 1, breakthrough: true });
     const restored = structuredClone(record);

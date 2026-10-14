@@ -5,6 +5,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/leaderboard/LeaderboardStandings.jsx",
+  "src/modals/LeaderboardRanking.dom.test.jsx",
+  "src/modals/CaptureChallenge.dom.test.jsx",
   "src/room/SpectatorGallery*.jsx",
   "src/room/spectatorPresence*.js",
   "src/room/spectatorLayout*.js",

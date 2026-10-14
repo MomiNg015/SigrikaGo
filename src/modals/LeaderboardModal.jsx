@@ -5,7 +5,7 @@ import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
-import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
+import LeaderboardStandings from "./leaderboard/LeaderboardStandings.jsx";
 import { modeOrderedEntries } from "../shared/gameModes.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 import { ModalDialog } from "./modalComponents.jsx";
@@ -16,9 +16,6 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const isCapture = mode === CAPTURE_CHALLENGE_MODE;
-  const currentUserIndex = players.findIndex((player) => isLeaderboardCurrentUser(player, user));
-  const currentUserPlayer = currentUserIndex >= 0 ? players[currentUserIndex] : null;
-  const currentUserRank = currentUserPlayer ? (currentUserPlayer.ranking ?? currentUserIndex + 1) : null;
 
   useEffect(() => {
     let alive = true;
@@ -41,7 +38,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="leaderboard-modal window-sticker-host window-bookmark-host" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+      <ModalDialog className="leaderboard-modal leaderboard-podium-modal window-sticker-host window-bookmark-host" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭排行榜" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header window-sticker-header">
           <WindowTitleSticker titleKey="leaderboard" id="leaderboard-modal-title" />
@@ -51,46 +48,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
         {error && <p className="form-error admin-action-error">{error}</p>}
         {!loading && !error && players.length === 0 && <WindowEmptyState>暂无排行</WindowEmptyState>}
         {!loading && !error && players.length > 0 && (
-          <div className={`leaderboard-table${isCapture ? " capture-leaderboard" : " ranked-leaderboard"}`}>
-            <div className="leaderboard-heading">
-              <span>排名</span>
-              <span>{isCapture ? "纪录角色" : "常用角色"}</span>
-              <span>用户名</span>
-              <span>段位</span>
-              {isCapture && <span>提子数</span>}
-              {!isCapture && <>
-              <span>总对局数</span>
-              <span>胜局数</span>
-              <span>负局数</span>
-              <span>胜率</span>
-              </>}
-            </div>
-            <div className="leaderboard-list">
-              {players.map((player, index) => (
-                <LeaderboardRow
-                  key={player.id}
-                  player={player}
-                  rank={player.ranking ?? index + 1}
-                  captureChallenge={isCapture}
-                  characters={characters}
-                  highlight={isLeaderboardCurrentUser(player, user)}
-                />
-              ))}
-            </div>
-            {currentUserPlayer && (
-              <div className="leaderboard-current">
-                <span className="leaderboard-current-label">我的排名</span>
-                <LeaderboardRow
-                  player={currentUserPlayer}
-                  rank={currentUserRank}
-                  captureChallenge={isCapture}
-                  characters={characters}
-                  highlight
-                  pinned
-                />
-              </div>
-            )}
-          </div>
+          <LeaderboardStandings players={players} characters={characters} capture={isCapture} isCurrentUser={player => isLeaderboardCurrentUser(player, user)}/>
         )}
       </ModalDialog>
     </div>

@@ -2,6 +2,18 @@ import { describe, expect, it } from "vitest";
 import { applyResultRewardsToRoomUsers, applyUserReward } from "./roomRewards.js";
 
 describe("room rewards", () => {
+  it("preserves arrival on unchanged zero-win standings, but refreshes it when exact win rate changes", () => {
+    const old = "2020-01-01T00:00:00.000Z";
+    const stats = { rank: "18级", stars: 0, rating: 0, wins: 0, losses: 1, draws: 0, leaderboardReachedAt: old };
+    const user = { modeStats: { standard: stats, spark: { ...stats } }, coins: 0 };
+    const unchanged = applyUserReward(user, { coins: 0 }, { losses: 1 }, { mode: "standard" });
+    expect(unchanged.modeStats.standard.leaderboardReachedAt).toBe(old);
+    const changed = applyUserReward({ ...user, modeStats: { ...user.modeStats, standard: { ...stats, wins: 1 } } }, { coins: 0 }, { draws: 1 }, { mode: "standard" });
+    expect(changed.modeStats.standard.leaderboardReachedAt).not.toBe(old);
+    expect(changed.modeStats.spark.leaderboardReachedAt).toBe(old);
+    const first = applyUserReward({ modeStats: { standard: { ...stats, losses: 0 } } }, { coins: 0 }, { draws: 1 }, { mode: "standard" });
+    expect(first.modeStats.standard.leaderboardReachedAt).not.toBe(old);
+  });
   it("applies rating coins and record deltas to room users", () => {
     const user = {
       wins: 2,

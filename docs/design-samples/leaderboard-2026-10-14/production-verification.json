@@ -1,0 +1,446 @@
+{
+  "cases": 40,
+  "errors": [],
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "normal",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "long",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "tie",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "unranked",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "solo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 1
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "duo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 2
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "decorated",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "empty",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "loading",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "error",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "normal",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "long",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "tie",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "unranked",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "solo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 1
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "duo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 2
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "decorated",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "empty",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "loading",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "error",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "normal",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "long",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "tie",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "unranked",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "solo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 1
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "duo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 2
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "decorated",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "empty",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "loading",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "state": "error",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "normal",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "long",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "tie",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "unranked",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "solo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 1
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "duo",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 2
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "decorated",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 3
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "empty",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "loading",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "state": "error",
+      "pageOverflow": false,
+      "scrollOverflow": false,
+      "footerVisible": true,
+      "winners": 0
+    }
+  ]
+}

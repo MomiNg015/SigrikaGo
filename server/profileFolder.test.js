@@ -4,14 +4,14 @@ import { listReplaySummaryPage } from "./replayPagination.js";
 import { createSocialRouteHandlers, createSocialRouter } from "./socialRoutes.js";
 
 describe("profile folder records", () => {
-  it("uses the same competition ranking as the leaderboard and preserves best appearance", async () => {
+  it("uses the same arrival tie-break as the leaderboard and preserves best appearance", async () => {
     const count = vi.fn(async () => 2);
     const prisma = {
       user: { findUnique: async () => ({ id: "a" }) },
-      captureChallengeBest: { findUnique: async () => ({ captures: 86, characterId: "sigrika", costumeSnapshot: '{"portraitUrl":"/costume.webp"}' }), count }
+      captureChallengeBest: { findUnique: async () => ({ captures: 86, reachedAt: new Date(1000), characterId: "sigrika", costumeSnapshot: '{"portraitUrl":"/costume.webp"}' }), count }
     };
     expect(await profileCaptureRecord({ prisma, userId: "a" })).toEqual({ captures: 86, ranking: 3, characterId: "sigrika", costumeSnapshot: { portraitUrl: "/costume.webp" } });
-    expect(count).toHaveBeenCalledWith({ where: { captures: { gt: 86 } } });
+    expect(count).toHaveBeenCalledWith({ where: { userId: { not: "a" }, OR: [{ captures: { gt: 86 } }, { captures: 86, reachedAt: { lt: new Date(1000) } }, { captures: 86, reachedAt: new Date(1000), userId: { lt: "a" } }] } });
   });
 
   it.each([null, { id: "a" }])("distinguishes a missing user from an empty challenge record: %j", async (user) => {

@@ -50,7 +50,7 @@ export const USER_ASSET_RELATION_SELECT = {
       }
     }
   },
-  modeStats: { select: { mode: true, stars: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true } }
+  modeStats: { select: { mode: true, stars: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true, leaderboardReachedAt: true } }
 };
 
 export async function ensureGameModeSchema(client = prisma) {
@@ -83,6 +83,11 @@ export async function ensureGameModeSchema(client = prisma) {
   }
 
   const modeStatsColumns = await client.$queryRawUnsafe(`PRAGMA table_info("UserModeStats")`);
+  if (!modeStatsColumns.some((column) => column.name === "leaderboardReachedAt")) {
+    await client.$executeRawUnsafe(`ALTER TABLE "UserModeStats" ADD COLUMN "leaderboardReachedAt" DATETIME`);
+    // Legacy rows lack a dedicated arrival clock; preserve their last persisted stats time.
+    await client.$executeRawUnsafe(`UPDATE "UserModeStats" SET "leaderboardReachedAt" = "updatedAt" WHERE "leaderboardReachedAt" IS NULL`);
+  }
   const hasModeRank = modeStatsColumns.some((column) => column.name === "rank");
   if (!hasModeRank) {
     await client.$executeRawUnsafe(`ALTER TABLE "UserModeStats" ADD COLUMN "rank" TEXT NOT NULL DEFAULT '3段'`);
@@ -156,6 +161,7 @@ export async function ensureGameModeSchema(client = prisma) {
     SELECT "id" || ':gomoku', "id", 'gomoku', 0, '3段', '', 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
     FROM "User"
   `);
+  await client.$executeRawUnsafe(`UPDATE "UserModeStats" SET "leaderboardReachedAt" = "updatedAt" WHERE "leaderboardReachedAt" IS NULL`);
 }
 
 async function ensureGameRecordColumn(client, columns, name, sql) {
@@ -299,7 +305,8 @@ function publicModeStats(user) {
       recentResults: parseRecentResults(row.recentResults),
       wins: Number(row.wins ?? 0),
       losses: Number(row.losses ?? 0),
-      draws: Number(row.draws ?? 0)
+      draws: Number(row.draws ?? 0),
+      ...(row.leaderboardReachedAt ? { leaderboardReachedAt: row.leaderboardReachedAt } : {})
     };
   }
   return stats;

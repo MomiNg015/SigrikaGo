@@ -659,14 +659,19 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/result-compact.css",
       "./mobile-adaptive/result-rank-trail.css",
       "./mobile-adaptive/room-header-scoreboard.css",
-      "./mobile-adaptive/battle-spectator-presence.css"
+      "./mobile-adaptive/watch-ledger.css",
+      "./mobile-adaptive/watch-ledger-mobile.css",
+      "./mobile-adaptive/battle-spectator-presence.css",
+      "./mobile-adaptive/leaderboard-podium.css",
+      "./mobile-adaptive/leaderboard-podium-winners.css",
+      "./mobile-adaptive/leaderboard-podium-mobile.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/battle-spectator-presence.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/leaderboard-podium-mobile.css");
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");

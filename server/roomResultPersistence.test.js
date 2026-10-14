@@ -256,6 +256,7 @@ describe("roomResultPersistence", () => {
       create: {
         userId: "player-1",
         mode: "standard",
+        leaderboardReachedAt: expect.any(Date),
         rating: 1300,
         rank: "6段", stars: 2,
         recentResults: "win,loss",

@@ -1,4 +1,5 @@
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { standingReachedAt } from "./leaderboardOrder.js";
 import {
   DEFAULT_RANK,
   applyRankProgression,
@@ -38,6 +39,7 @@ export function applyUserReward(user, reward, recordDelta, { mode = "spark" } = 
       draws
     }
   };
+  modeStats[normalizedMode].leaderboardReachedAt = standingReachedAt(currentModeStats, modeStats[normalizedMode]);
   return {
     ...user,
     wins: normalizedMode === "spark" ? wins : Number(user.wins ?? 0),

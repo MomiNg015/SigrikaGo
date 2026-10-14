@@ -37,11 +37,11 @@ describe("capture challenge player flow", () => {
     expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", playerColor: "random", challenge: CAPTURE_CHALLENGE_MODE, characterId: "sigrika" });
   });
 
-  it("displays tied server ranks and the record character including my pinned row", async () => {
+  it("displays unique server ranks and the record character including my pinned row", async () => {
     api.mockImplementation((url) => Promise.resolve({ players: url.includes(CAPTURE_CHALLENGE_MODE) ? [
       { id: "b", username: "第一名", rank: "3段", captures: 30, ranking: 1, recordCharacter: "sigrika" },
       { id: "a", ownedCharacters: ["sigrika"], username: user.username, rank: "4段", captures: 23, ranking: 2, recordCharacter: "denia", commonCharacter: "sigrika" },
-      { id: "c", username: "并列玩家", rank: "3段", captures: 23, ranking: 2, recordCharacter: "sigrika" },
+      { id: "c", username: "较晚达成的玩家", rank: "3段", captures: 23, ranking: 3, recordCharacter: "sigrika" },
       { id: "d", username: "第四名", rank: "3段", captures: 0, ranking: 4, recordCharacter: "sigrika" }
     ] : [] }));
     const events = userEvent.setup();
@@ -49,13 +49,13 @@ describe("capture challenge player flow", () => {
     await events.click(screen.getByRole("tab", { name: "吃子赛" }));
     await screen.findByText("第四名");
     expect(api).toHaveBeenLastCalledWith(`/api/leaderboard?mode=${CAPTURE_CHALLENGE_MODE}`, { token: "test" });
-    const rows = [...container.querySelectorAll(".leaderboard-list .leaderboard-row")];
-    expect(rows.map((row) => row.dataset.rank)).toEqual(["1", "2", "2", "4"]);
-    expect(rows[1].querySelector(".leaderboard-avatar").dataset.characterId).toBe("denia");
-    expect(within(container.querySelector(".leaderboard-current")).getByText("#2")).toBeTruthy();
+    const rows = [...container.querySelectorAll(".lp-scroll .lp-winner, .lp-scroll > .lp-row")];
+    expect(rows.map((row) => row.dataset.rank)).toEqual(["1", "2", "3", "4"]);
+    expect(rows[1].querySelector(".lp-avatar").dataset.characterId).toBe("denia");
+    expect(within(container.querySelector(".lp-personal")).getByLabelText(`第2名 ${user.username}`).dataset.rank).toBe("2");
     expect(screen.queryByText("常用角色")).toBeNull();
     expect(screen.queryByText("胜率")).toBeNull();
-    expect(screen.getByText("纪录角色")).toBeTruthy();
+    expect(screen.getByText("纪录角色 / 用户名")).toBeTruthy();
   });
 
   it("celebrates the authoritative completed challenge with both victory audio channels", () => {

@@ -308,7 +308,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Nested dialogs handle Escape at the innermost dialog and mark the keyboard event handled; `useModalDismissal()` ignores already-prevented Escape events so it does not close the parent app overlay.
 - Leaderboard, watch-list, personalization、公告信息中心、邮箱信息中心和个性化选择器已迁移到该边界。公告/邮箱在其上复用 `InformationCenterLayout`，并保持各自业务和视觉域所有权。
 
-- 对弈信息区 `PlayerInfo` 只显示段位名称；排行榜仍显示完整星数/积分，并读取服务端 `ranking` 保持并列名次与固定“我的排名”一致。开场和房间号通过 `roomMatchClassification` 读取冻结的 `rated` 标志，分别显示浅红升降级、浅绿友谊标签；普通匹配满15秒追加扩大段位范围提示。
+- 对弈信息区 `PlayerInfo` 只显示段位名称；排行榜按服务端唯一顺序展示名次与固定“我的排名”，领奖台只取前三位金银铜，第四名起进入列表，普通同分按成绩达成时间先后排序。桌面保留完整星数/积分，手机名单压缩星数进度并仅显示胜局和胜率。开场和房间号通过 `roomMatchClassification` 读取冻结的 `rated` 标志，分别显示浅红升降级、浅绿友谊标签；普通匹配满15秒追加扩大段位范围提示。
 
 
 ## 启动与匹配失败恢复（2026-10-02）

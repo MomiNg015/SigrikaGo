@@ -251,7 +251,7 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 - 和棋申请及响应由客户端与服务端禁用；认输、超时、引擎异常等提前结束不上榜；可恢复断线沿用原手数。有效结束仅保存玩家 `captures`，不叠加 `skillRemovals`，不创建普通战绩、奖励、积分或段位变化。
 - 结算在 SQLite 事务中保存幂等回执及个人纪录，名次 = 1 + 其他玩家最高提子数严格高于本次的数量。个人最高纪录仅在严格更高时更新角色与服装快照；打平保留首次纪录角色。历史最好名次取历次有效结算名次的最小值，首次成功完成即标记 breakthrough；后续仅严格超越历史最好名次才标记 breakthrough。结果提示使用红色双线印章和 280ms 盖章入场，减少动态效果设置下直接显示。
 - 事务成功后才标记 `recordSaved` 并广播结果；失败沿用房间保存重试，过期但未保存的挑战房恢复时仍重试。回执固定首次计算的名次与突破标志，避免重连或重复保存重算。
-- `GET /api/leaderboard?mode=capture-challenge` 返回每人一行最高成绩：`id`、`username`、当前星炬 `rank`、并列名次 `ranking`、`captures`、`recordCharacter` 和 `costumeSnapshot`。按提子数降序，用户名和段位不参与名次；同分以用户 ID 稳定展示，排名采用 1、2、2、4。无赛季，0 提子有效完成也入榜。
+- `GET /api/leaderboard?mode=capture-challenge` 返回每人一行最高成绩：`id`、`username`、当前星炬 `rank`、唯一名次 `ranking`、`captures`、`recordCharacter` 和 `costumeSnapshot`。按提子数降序，同分按首次达成该最高成绩的 `reachedAt` 升序，时间也相同时按用户 ID 稳定排序；名次连续为 1、2、3、4。结算与个人资料共用相同的前序人数条件，重复最高成绩不刷新时间或服装，旧结算回执重试仍返回原结果。无赛季，0 提子有效完成也入榜。
 - 对局 header 展示当前手数 / 100 和提子；开局提示挑战规则。结算不判胜负、不播胜负／平局语音，显示“你这次提了x个子，位列总排名中的第x位，可喜可贺！”，突破时以主题红字显示“突破个人最高排名！”。榜单固定本人行仍展示最高提子纪录的当前名次。
 
 
@@ -280,7 +280,7 @@ Windows 本地运行按 `PRACTICE_ENGINE_PATH`、`%LOCALAPPDATA%\SigrikaGo\pract
 - Legacy rating-achievement conditions migrate to numeric rank thresholds using the former rating-to-rank mapping; new conditions use `rank`. Nabomo is permanently persisted on first spark sixth-dan settlement.
 - Result saving shares concurrent requests for a room and restores in-memory user progression after transaction failure so a retry cannot award stars twice. Star/rank/point state writes atomically with the game record. Result payload includes `rankAfter`, `starsAfter`, `ratingAfter` and star delta; match history remains independent.
 
-- 普通排行榜返回 `ranking`：段位、星数/九段积分、胜场数、未舍入胜率依次降序，四项相等采用竞争排名（1、1、3），用户名与 ID 仅稳定并列条目的展示顺序，不影响名次。
+- 普通排行榜返回唯一 `ranking`：段位、星数/九段积分、胜场数、未舍入胜率依次降序；四项相等时按该玩法 `leaderboardReachedAt` 升序，时间相同以用户 ID 兜底，改名不改变顺序。达成时间与成绩在同一结算事务保存，只在排序成绩变化或首次入榜时更新；玩法独立。新增迁移及启动兼容守卫：普通旧数据使用玩法 `updatedAt`，吃子赛旧数据取历史同分结算最早时间，没有历史则使用零时间与 ID，不能恢复普通旧数据未记录的精确先后。
 
 
 ### 匹配等待计时
