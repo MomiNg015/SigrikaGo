@@ -295,7 +295,7 @@ describe("ReplayList", () => {
   it("uses mobile replay cards instead of relying on a bottom horizontal scrollbar", () => {
     const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
-    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive/bright-school-overrides/replay-dialog.css", import.meta.url), "utf8");
 
     expect(phoneModalMedia).toContain(".replay-table");
     expect(phoneModalMedia).toContain("overflow-x: hidden");
@@ -311,8 +311,8 @@ describe("ReplayList", () => {
     expect(phoneModalMedia).toContain(".replay-player-cell");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog");
     expect(finalMobileCss).toContain("grid-template-rows: auto minmax(0, 1fr) !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-dialog-list-scroll");
+    expect(finalMobileCss).toContain(".replay-table");
+    expect(finalMobileCss).toContain(".replay-dialog-list-scroll");
     expect(finalMobileCss).not.toContain(".profile-replay-dialog");
     expect(finalMobileCss).not.toContain(".profile-replay-list-scroll");
     expect(finalMobileCss).toContain("grid-template-rows: none !important");
@@ -321,23 +321,42 @@ describe("ReplayList", () => {
     expect(finalMobileCss).toContain("overflow: visible !important");
     expect(finalMobileCss).toContain("overscroll-behavior: auto !important");
     expect(finalMobileCss).toContain("overflow-y: auto !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-heading");
+    expect(finalMobileCss).toContain(".replay-table-heading");
     expect(finalMobileCss).toContain("display: none !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row");
-    expect(finalMobileCss).toContain("min-height: 94px !important");
-    expect(finalMobileCss).toMatch(/\.nested-modal\.replay-dialog \.replay-table\.compact \.replay-table-row\s*\{[^}]*overflow: visible !important;/);
-    expect(finalMobileCss).toContain('"time moves result"');
-    expect(finalMobileCss).toContain('"black black white" !important');
-    expect(finalMobileCss).toContain("grid-template-rows: auto minmax(26px, auto) !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row > span:nth-child(1)");
+    expect(finalMobileCss).toContain(".replay-table-row");
+    expect(finalMobileCss).toContain("min-height: 124px !important");
+    expect(finalMobileCss).toMatch(/\.replay-table\.compact \.replay-table-row\s*\{[^}]*overflow: visible !important;/);
+    expect(finalMobileCss).toContain('"time result"');
+    expect(finalMobileCss).toContain('"black moves"');
+    expect(finalMobileCss).toContain('"white moves" !important');
+    expect(finalMobileCss).toContain("grid-template-rows: auto minmax(36px, auto) minmax(36px, auto) !important");
+    expect(finalMobileCss).toContain(".replay-table-row > span:nth-child(1)");
     expect(finalMobileCss).toContain("justify-self: start !important");
-    expect(finalMobileCss).toMatch(/\.nested-modal\.replay-dialog \.replay-table-row > span:nth-child\(1\)\s*\{[^}]*overflow: visible !important;/);
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row .replay-time-cell");
+    expect(finalMobileCss).toMatch(/\.replay-table-row > span:nth-child\(1\)\s*\{[^}]*overflow: visible !important;/);
+    expect(finalMobileCss).toContain(".replay-table-row .replay-time-cell");
     expect(finalMobileCss).toContain("justify-content: flex-start !important");
     expect(finalMobileCss).toContain("justify-self: center !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-player-cell img");
-    expect(finalMobileCss).toContain("height: 22px !important");
-    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-player-cell b");
+    expect(finalMobileCss).toContain(".replay-player-cell img");
+    expect(finalMobileCss).toContain("height: 36px !important");
+    expect(finalMobileCss).toContain(".replay-player-cell b");
+  });
+
+  it("preserves both player sides and readable three/four-digit mobile move placards", () => {
+    const html = renderToStaticMarkup(createElement(ReplayList, {
+      characters,
+      records: [0, 128, 1024].map((moveCount) => ({
+        id: `moves-${moveCount}`, createdAt: "2026-10-14T00:00:00Z",
+        blackName: "黑方玩家", whiteName: "白方玩家", blackCharacter: "sigrika",
+        whiteCharacter: "denia", resultText: "黑中盘胜", moveCount
+      }))
+    }));
+    expect(html).toContain('replay-player-cell replay-player-black');
+    expect(html).toContain('replay-player-cell replay-player-white');
+    expect(html).toContain('aria-label="黑方"');
+    expect(html).toContain('aria-label="白方"');
+    expect(html).toContain('class="replay-moves-text">0手');
+    expect(html).toContain('room-move-placard is-medium-count');
+    expect(html).toContain('room-move-placard is-long-count');
   });
 });
 

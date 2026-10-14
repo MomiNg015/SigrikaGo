@@ -45,6 +45,7 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
             <span>{formatReplayTime(record.createdAt)}</span>
           </span>
           <ReplayPlayer
+            side="black"
             name={record.blackName}
             characterId={record.blackCharacter}
             costumePortraitUrl={record.blackCostumePortraitUrl}
@@ -53,6 +54,7 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
             specialPortrait={isSigrikaCandyDuel ? specialReplayPortrait("black", specialHumanColor, record.blackName) : null}
           />
           <ReplayPlayer
+            side="white"
             name={record.whiteName}
             characterId={record.whiteCharacter}
             costumePortraitUrl={record.whiteCostumePortraitUrl}
@@ -60,8 +62,15 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
             characters={characters}
             specialPortrait={isSigrikaCandyDuel ? specialReplayPortrait("white", specialHumanColor, record.whiteName) : null}
           />
-          <span>{record.resultText}</span>
-          <span>{record.moveCount}手</span>
+          <span className="replay-result-cell">{record.resultText}</span>
+          <span className="replay-moves-cell room-header-scoreboard">
+            <span className="replay-moves-text">{record.moveCount}手</span>
+            <span className="replay-move-placard room-scoreboard-identity" aria-hidden="true">
+              <span className={`room-move-placard${record.moveCount >= 1000 ? " is-long-count" : record.moveCount >= 100 ? " is-medium-count" : ""}`}>
+                <strong>{record.moveCount}</strong><span>手</span>
+              </span>
+            </span>
+          </span>
         </button>
         );
       })}
@@ -94,11 +103,12 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
   );
 }
 
-function ReplayPlayer({ name, characterId, costumePortraitUrl, costumeFraming, characters, specialPortrait = null }) {
+function ReplayPlayer({ side, name, characterId, costumePortraitUrl, costumeFraming, characters, specialPortrait = null }) {
   const character = findCharacter(characters, characterId);
   const portraitUrl = specialPortrait?.url || costumePortraitUrl || character?.portrait || "";
   return (
-    <span className="replay-player-cell">
+    <span className={`replay-player-cell replay-player-${side}`}>
+      <span className={`replay-stone is-${side}`} role="img" aria-label={side === "black" ? "黑方" : "白方"} />
       {portraitUrl && (
         <img
           className={specialPortrait ? `sigrika-duel-replay-portrait is-${specialPortrait.kind}` : undefined}

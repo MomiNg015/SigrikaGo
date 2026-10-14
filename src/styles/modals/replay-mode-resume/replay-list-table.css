@@ -137,6 +137,10 @@
   white-space: nowrap;
 }
 
+/* Mobile scoreboard decorations; desktop keeps its existing table presentation. */
+.replay-table .replay-move-placard,
+.replay-table .replay-stone { display: none !important; }
+
 .replay-table.compact {
   min-width: 0;
 }
