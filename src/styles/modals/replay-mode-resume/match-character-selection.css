@@ -36,6 +36,9 @@
 .match-character-slot > img, .match-character-slot > .match-character-portrait { width: 100%; height: 100%; object-fit: cover; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal.match-character-picker { width: min(920px, 100%) !important; height: auto !important; max-height: 80dvh !important; display: flex; flex-direction: column; gap: 16px; }
 .match-character-picker .team-character-options { overflow-y: auto; min-height: 0; padding: 4px; }
+.match-character-picker > .match-character-start { flex-shrink: 0; align-self: stretch; }
+.practice-character-row { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.practice-character-row .match-character-slots { position: static; transform: none; }
 .match-mode-modal .match-mode-sibling .match-mode-info-button,
 .match-mode-modal .match-mode-submode .match-mode-info-button { right: 68px !important; }
 .match-mode-modal .match-mode-submode-team .match-mode-info-button { right: 168px !important; }

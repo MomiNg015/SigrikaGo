@@ -9,11 +9,10 @@ import { useEffect, useRef, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
-import { PRACTICE_DIFFICULTY_OPTIONS } from "../shared/practiceMode.js";
+import PracticeDifficultyDialog from "./PracticeDifficultyDialog.jsx";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 import { Info } from "lucide-react";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
-import { ModalDialog } from "../modals/modalComponents.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
@@ -99,6 +98,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
             user={user}
             characters={characters}
             selections={selections}
+            practiceCharacterProps={{ available, blocked, user, audioSettings, cancellation, selected: selections.practice[0], onSelect: (id) => select("practice", [id]) }}
             onCharacterOpen={(entry) => {
               if (entry === "team" && availableTeamCharacters(user, characters).length < 3) {
                 onNotice?.(TEAM_MINIMUM_NOTICE);
@@ -142,7 +142,17 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
         )}
 
         {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker cancellation={cancellation} user={user} characters={characters} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onConfirm={() => setCharacterEntry(null)} />}
-        {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker cancellation={cancellation} blocked={blocked} available={available} selected={selections[characterEntry][0]} user={user} onClose={() => setCharacterEntry(null)} onSelect={(id) => { select(characterEntry, [id]); setCharacterEntry(null); }} />}
+        {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker cancellation={cancellation} blocked={blocked} available={available} selected={selections[characterEntry][0]} user={user}
+          onClose={() => setCharacterEntry(null)} onSelect={(id) => select(characterEntry, [id])}
+          startLabel={characterEntry === "capture" ? "开始吃子挑战赛" : `开始${characterEntry === "regular" ? "星炬对弈" : characterEntry === "standard" ? "标准对弈" : "五子棋"}匹配`}
+          onConfirm={() => {
+            const characterId = selections[characterEntry][0];
+            if (!characterId) return;
+            setCharacterEntry(null);
+            onMatchModePickerOpenChange?.(false);
+            if (characterEntry === "capture") onStartPractice?.({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId });
+            else onStartMatch(characterEntry === "regular" ? "spark" : characterEntry, undefined, characterId);
+          }} />}
         {!sigrikaCorrupted && <IrisDatabase
           audioSettings={audioSettings}
           greeting={siteSettings.irisGreeting}
@@ -154,7 +164,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   );
 }
 
-function MatchModePicker({ user, characters, selections, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
+function MatchModePicker({ user, characters, selections, practiceCharacterProps, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
   const [expandedMode, setExpandedMode] = useState(null);
   const categoryButtonRefs = useRef({});
@@ -360,10 +370,13 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
         <HomeActionButton variant="secondary" type="button" onClick={expanded ? returnToModes : onClose}>{expanded ? "返回" : "取消"}</HomeActionButton>
         {practiceDifficultyOpen && (
           <PracticeDifficultyDialog
+            characters={characters}
+            characterProps={practiceCharacterProps}
             onClose={() => setPracticeDifficultyOpen(false)}
             onSelect={(difficulty) => onPracticeStart({
               difficulty,
-              playerColor: "random"
+              playerColor: "random",
+              characterId: practiceCharacterProps.selected
             })}
           />
         )}
@@ -381,51 +394,6 @@ function MatchModePicker({ user, characters, selections, onCharacterOpen, onNoti
           }}
         />
       )}
-    </div>
-  );
-}
-
-function PracticeDifficultyDialog({ onClose, onSelect }) {
-  return (
-    <div
-      className="nested-modal-backdrop practice-difficulty-backdrop"
-      onClick={(event) => {
-        event.stopPropagation();
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <ModalDialog
-        ariaLabelledBy="practice-difficulty-title"
-        className="nested-modal practice-difficulty-modal window-sticker-host"
-        onClick={(event) => event.stopPropagation()}
-        onClose={onClose}
-      >
-        <div className="practice-difficulty-heading window-sticker-header">
-          <WindowTitleSticker titleKey="practice" id="practice-difficulty-title" />
-          <p>
-            <span>随机猜先。</span>
-            <br />
-            <span>普通陪练：</span><span>吃掉准时宝22颗子或数子胜即算胜利！</span>
-          </p>
-        </div>
-        <div className="practice-difficulty-options">
-          {PRACTICE_DIFFICULTY_OPTIONS.map((difficulty, index) => (
-            <button
-              className={`practice-difficulty-option practice-difficulty-${difficulty.id}`}
-              key={difficulty.id}
-              type="button"
-              onClick={() => onSelect(difficulty.id)}
-            >
-              <span className="practice-difficulty-index" aria-hidden="true">0{index + 1}</span>
-              <span className="practice-difficulty-copy">
-                <strong>{difficulty.label}</strong>
-                <small>{difficulty.description}</small>
-              </span>
-            </button>
-          ))}
-        </div>
-        <HomeActionButton variant="secondary" type="button" onClick={onClose}>返回</HomeActionButton>
-      </ModalDialog>
     </div>
   );
 }

@@ -1,0 +1,39 @@
+/* Confirmed practice window composition; retain the nested dialog's behavior. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-backdrop .practice-difficulty-modal.practice-dialog-sheet {
+  display: block !important; position: relative; inset: auto;
+  width: min(560px, 100%) !important; max-width: 100% !important;
+  height: auto !important; max-height: none !important; padding: 0 !important;
+  border: 3px solid var(--bright-ink) !important; border-radius: 18px !important;
+  overflow: visible !important; text-align: left;
+
+  .practice-sheet-title { position: absolute; top: -28px; left: 12px; width: 236px; height: 86px; z-index: 1; }
+  .practice-sheet-title .window-title-sticker-art { inset: 0 !important; width: 100% !important; height: 100% !important; max-width: none !important; transform: none !important; }
+  .practice-sheet-controls { height: 100px; display: flex; justify-content: flex-end; align-items: flex-start; gap: 18px; padding: 16px 20px 0; }
+  .practice-sheet-controls .close-button { position: static !important; inset: auto !important; width: 44px; height: 44px; min-width: 44px; padding: 0 !important; flex: 0 0 44px; display: grid; place-items: center; }
+  .practice-sheet-character { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+  .practice-sheet-character .match-character-slots { position: static; transform: none; }
+  .practice-sheet-form { padding: 0 26px; }
+  .practice-difficulty-options { gap: 11px; }
+  .practice-difficulty-option { grid-template-columns: 32px 1fr 20px; min-height: 72px; padding: 12px 18px; gap: 12px; border-radius: 14px !important; outline: none !important; }
+  .practice-difficulty-option[aria-pressed="true"] { transform: none !important; }
+  .practice-difficulty-index { color: var(--bright-ink); font-family: var(--font-ui-default); font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .practice-difficulty-copy strong { font-size: 17px; }
+  .practice-difficulty-copy small { font-size: 12px; }
+  .practice-sheet-start { width: 100%; min-height: 46px; margin-top: 19px; padding: 10px 14px; font-size: 15px; }
+
+  @media (max-width: 768px) {
+    .practice-sheet-title { top: -27px; left: 2px; width: 178px; height: 65px; }
+    .practice-sheet-controls { height: 92px; padding: 12px 14px 0; gap: 12px; }
+    .practice-sheet-character { flex-direction: column; gap: 3px; font-size: 10px; }
+    .practice-sheet-form { padding: 0 16px; }
+    .practice-difficulty-options { gap: 9px; }
+    .practice-difficulty-option { min-height: 62px; padding: 9px 12px; grid-template-columns: 26px 1fr 18px; gap: 8px; }
+    .practice-difficulty-copy strong { font-size: 16px; }
+    .practice-sheet-start { margin-top: 15px; min-height: 44px; }
+  }
+}
+/* Scroll the backdrop on short screens so the sticker and lower artwork stay intact. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .nested-modal-backdrop.practice-difficulty-backdrop:has(> .practice-dialog-sheet) {
+  overflow-y: auto; align-items: safe center; padding: 54px 20px 24px !important;
+  @media (max-width: 768px) { padding: 48px 12px 18px !important; }
+}

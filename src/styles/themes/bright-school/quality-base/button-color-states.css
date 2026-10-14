@@ -50,9 +50,8 @@
     }
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--bright-ink) !important;
-    outline-offset: 3px !important;
+  &:focus {
+    outline: none !important;
   }
 
   &:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {

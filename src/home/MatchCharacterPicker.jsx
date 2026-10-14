@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { ModalDialog } from "../modals/modalComponents.jsx";
 import MatchCharacterOption from "./MatchCharacterOption.jsx";
 
-export default function MatchCharacterPicker({ available, blocked = [], selected, user, onSelect, onClose, cancellation }) {
+export default function MatchCharacterPicker({ available, blocked = [], selected, user, onSelect, onClose, onConfirm, startLabel, cancellation }) {
   return <div className="modal-backdrop match-character-backdrop">
     <ModalDialog className="small-modal match-character-picker" ariaLabel="选择角色" onClose={onClose}>
       <header className="team-lineup-heading"><h2>选择角色</h2><button type="button" aria-label="关闭选择角色" onClick={onClose}><X size={20} /></button></header>
@@ -12,6 +12,8 @@ export default function MatchCharacterPicker({ available, blocked = [], selected
           cancellation={cancellation} onSelect={() => onSelect(character.id)} />)}
       </div>
       {!available.length && <p>暂无可用角色</p>}
+      <button className="primary-action match-character-start" data-button-role="primary" type="button"
+        disabled={!available.some(character => character.id === selected)} onClick={onConfirm}>{startLabel}</button>
     </ModalDialog>
   </div>;
 }

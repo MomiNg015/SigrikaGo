@@ -18,6 +18,7 @@ describe("HomeScreen practice difficulty picker", () => {
         user={{
           username: "practice-test",
           selectedCharacter: "sigrika",
+          ownedCharacters: ["sigrika"],
           role: "player",
           modeStats: {}
         }}
@@ -34,8 +35,10 @@ describe("HomeScreen practice difficulty picker", () => {
 
     expect(screen.getByRole("dialog", { name: "准时宝陪练" })).toBeTruthy();
     expect(screen.queryByText("选择难度")).toBeNull();
-    expect(screen.getByText("随机猜先。")).toBeTruthy();
-    expect(screen.getByText("吃掉准时宝22颗子或数子胜即算胜利！")).toBeTruthy();
+    expect(screen.getByText("随机猜先。吃掉准时宝22个子或数子胜就算胜利！")).toBeTruthy();
+    expect(within(screen.getByRole("dialog", { name: "准时宝陪练" })).queryByRole("button", { name: "返回" })).toBeNull();
+    expect(screen.getByRole("button", { name: "关闭准时宝陪练" })).toBeTruthy();
+    expect(within(screen.getByRole("dialog", { name: "准时宝陪练" })).getByAltText("西格莉卡").getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(screen.getByText("沙包型准时宝")).toBeTruthy();
     expect(screen.getByText("一般型准时宝")).toBeTruthy();
     expect(screen.getByText("红温型准时宝")).toBeTruthy();
@@ -47,11 +50,20 @@ describe("HomeScreen practice difficulty picker", () => {
 
     await user.click(screen.getByRole("button", { name: /中级/ }));
 
+    expect(onStartPractice).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "开始准时宝对局" }).disabled).toBe(true);
+    await user.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
+    await user.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    expect(screen.getByRole("dialog", { name: "选择角色" })).toBeTruthy();
+    expect(onStartPractice).not.toHaveBeenCalled();
+    await user.click(within(screen.getByRole("dialog", { name: "选择角色" })).getByRole("button", { name: "开始准时宝对局" }));
+
     expect(onMatchModePickerOpenChange).toHaveBeenCalledWith(false);
     expect(onStartPractice).toHaveBeenCalledTimes(1);
     expect(onStartPractice).toHaveBeenCalledWith({
       difficulty: "intermediate",
-      playerColor: "random"
+      playerColor: "random",
+      characterId: "sigrika"
     });
   });
 

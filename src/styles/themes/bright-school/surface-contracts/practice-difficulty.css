@@ -22,3 +22,9 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-copy small {
   color: var(--bright-ink-soft) !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-modal .practice-difficulty-option[aria-pressed="true"] {
+  background: var(--bright-mint) !important;
+  box-shadow: 1px 1px 0 var(--bright-border) !important;
+  transform: translate(2px, 2px) !important;
+}

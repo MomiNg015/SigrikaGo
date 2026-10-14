@@ -32,11 +32,12 @@ describe("Spark mode expansion", () => {
     expect(within(screen.getByRole("dialog")).queryByRole("button", { name: /吃子挑战赛/ })).toBeNull();
     expect(within(screen.getByRole("dialog")).getByRole("button", { name: /高级/ })).toBeTruthy();
     // Close the nested dialog without collapsing its parent selection.
-    fireEvent.click(screen.getAllByRole("button", { name: "返回" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "关闭准时宝陪练" }));
     expect(parent.getAttribute("aria-expanded")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "常规匹配选择角色" }));
     fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
-    fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
+    expect(onStartMatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "开始星炬对弈匹配" }));
     expect(onStartMatch).toHaveBeenCalledWith("spark", undefined, "sigrika");
   });
 
@@ -45,7 +46,8 @@ describe("Spark mode expansion", () => {
     fireEvent.click(parent);
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛选择角色" }));
     fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
-    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
+    expect(onStartPractice).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "开始吃子挑战赛" }));
     expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId: "sigrika" });
     expect(onStartMatch).not.toHaveBeenCalled();
   });
@@ -97,7 +99,8 @@ describe("Spark mode expansion", () => {
     expect(screen.queryByRole("button", { name: "吃子挑战赛" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: `${child}选择角色` }));
     fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
-    fireEvent.click(screen.getByRole("button", { name: child }));
+    expect(onStartMatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: mode === "standard" ? "开始标准对弈匹配" : "开始五子棋匹配" }));
     expect(onStartMatch).toHaveBeenCalledWith(mode, undefined, "sigrika");
     fireEvent.keyDown(window, { key: "Escape" });
     expect(document.activeElement).toBe(parent);

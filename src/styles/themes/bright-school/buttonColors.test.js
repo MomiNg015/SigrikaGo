@@ -40,7 +40,7 @@ describe("campus button color boundary", () => {
     expect(states).toContain("(hover: hover) and (pointer: fine)");
     expect(states).toContain(':active:not(:disabled, [aria-disabled="true"], [aria-busy="true"])');
     expect(states).toContain(':is(:disabled, [aria-disabled="true"], [aria-busy="true"])');
-    expect(states).toContain(":focus-visible");
+    expect(states).toMatch(/&:focus\s*\{\s*outline:\s*none\s*!important;/);
     expect(states).toContain("prefers-reduced-motion: reduce");
     expect(states).not.toMatch(/(?:\{|;)\s*(?:width|height|padding|margin|display|position|font-size|border-radius)\s*:/);
     expect(states).not.toMatch(/url\(|@keyframes/);

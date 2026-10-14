@@ -1,0 +1,15 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .practice-difficulty-backdrop .practice-dialog-sheet {
+  .practice-sheet-dialogue { position: relative; height: 202px; margin-top: 20px; }
+  .practice-sheet-bubble { position: absolute; left: 26px; top: 38px; width: 260px; padding: 17px 20px; border: 2px solid var(--bright-ink); border-radius: 16px; background: var(--bright-paper); box-shadow: 3px 3px 0 rgb(61 43 37 / 16%); font-size: 16px; line-height: 1.7; font-weight: 700; z-index: 1; }
+  .practice-sheet-bubble::after { content: ''; position: absolute; right: -9px; top: 36px; width: 16px; height: 16px; background: var(--bright-paper); border-top: 2px solid var(--bright-ink); border-right: 2px solid var(--bright-ink); transform: rotate(45deg); }
+  .practice-sheet-bust { position: absolute; right: 0; bottom: -3px; width: 240px; height: 218px; overflow: hidden; border-bottom-right-radius: 16px; pointer-events: none; }
+  .practice-sheet-bust img { display: block; position: absolute; width: 240px; max-width: none; height: auto; left: 0; top: -20px; }
+  /* The original frame is repainted above the portrait without intercepting input. */
+  &::after { content: '' !important; position: absolute; inset: auto -3px -3px; height: 18px; border: 3px solid var(--bright-ink) !important; border-top: 0 !important; border-radius: 0 0 18px 18px; z-index: 2; pointer-events: none; display: block !important; background: none !important; }
+  @media (max-width: 768px) {
+    .practice-sheet-dialogue { height: 154px; margin-top: 18px; }
+    .practice-sheet-bubble { left: 14px; top: 22px; width: calc(100% - 146px); padding: 12px; font-size: 13px; line-height: 1.65; }
+    .practice-sheet-bust { width: 154px; height: 158px; }
+    .practice-sheet-bust img { width: 166px; left: -6px; top: -14px; }
+  }
+}

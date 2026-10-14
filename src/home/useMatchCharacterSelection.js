@@ -2,7 +2,7 @@ import { useState } from "react";
 import { availableTeamCharacters } from "./TeamLineupPicker.jsx";
 
 export const MATCH_CHARACTER_NOTICE = "尚未选择角色，无法匹配";
-const ENTRIES = ["standard", "gomoku", "regular", "capture", "team"];
+const ENTRIES = ["standard", "gomoku", "regular", "capture", "practice", "team"];
 
 export function useMatchCharacterSelection(user, characters) {
   const storageKey = `sigrika-match-characters:${user.id ?? user.username}`;

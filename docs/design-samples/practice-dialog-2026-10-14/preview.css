@@ -1,0 +1,58 @@
+/* Isolated preview: never imported by the production app. */
+.pp-root { min-height: 100dvh; background: var(--bright-paper); color: var(--bright-ink); }
+.pp-root .pp-preview-bar { position: fixed; inset: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 22px; font-size: 12px; color: var(--bright-ink-soft); }
+.pp-root .pp-preview-bar button, .pp-root .pp-dismissed button { background: var(--bright-paper); color: var(--bright-ink); border: 1px solid var(--bright-ink); border-radius: 8px; padding: 6px 12px; font-size: 12px; }
+.pp-root .pp-dismissed { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.pp-root .pp-backdrop { min-height: 100dvh; padding: 74px 20px 30px; display: grid; place-items: center; background: rgb(61 43 37 / 12%); }
+.app-shell.pp-root .pp-window { position: relative; width: min(560px, 100%); border: 3px solid var(--bright-ink); border-radius: 18px; background-color: var(--bright-paper); background-image: linear-gradient(rgb(154 211 222 / 20%) 1px, transparent 1px), linear-gradient(90deg, rgb(154 211 222 / 20%) 1px, transparent 1px); background-size: 22px 22px; box-shadow: 6px 7px 0 rgb(61 43 37 / 22%); outline: none; }
+.pp-root .pp-title { position: absolute; top: -28px; left: 12px; width: 236px; height: 86px; margin: 0; z-index: 1; }
+.pp-root .pp-title img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.pp-root .pp-title > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.pp-root .pp-controls { height: 100px; display: flex; align-items: flex-start; justify-content: flex-end; gap: 18px; padding: 16px 20px 0; }
+.app-shell.pp-root .pp-close { flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; background: var(--bright-paper); color: var(--bright-ink); border: 3px solid var(--bright-ink); border-radius: 14px; box-shadow: 3px 3px 0 var(--bright-ink); }
+.app-shell.pp-root .pp-character { display: flex; align-items: center; gap: 10px; background: transparent; color: var(--bright-ink); border: 0; box-shadow: none; padding: 0; font-size: 13px; font-weight: 700; }
+.pp-root .pp-character-frame { width: 48px; height: 48px; display: block; overflow: hidden; border: 2px solid var(--bright-ink); border-radius: 8px; background: var(--bright-paper); box-shadow: 2px 3px 0 rgb(61 43 37 / 16%); }
+.pp-root .pp-character-frame > svg { display: block; width: 100%; height: 100%; }
+.pp-root .pp-form { padding: 0 26px; }
+.pp-root .pp-difficulties { display: grid; gap: 11px; }
+.app-shell.pp-root .pp-difficulty { display: grid; grid-template-columns: 32px 1fr 20px; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px 18px; text-align: left; color: var(--bright-ink); background: var(--bright-paper); border: 2px solid var(--bright-ink); border-radius: 14px; box-shadow: 3px 3px 0 rgb(61 43 37 / 16%); transition: background-color 160ms ease-out; }
+.app-shell.pp-root .pp-difficulty[aria-pressed="true"] { background: var(--bright-mint); box-shadow: 1px 1px 0 var(--bright-ink); }
+.pp-root .pp-number { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pp-root .pp-difficulty-copy { display: grid; gap: 4px; }
+.pp-root .pp-difficulty-copy strong { font-size: 17px; line-height: 1.2; }
+.pp-root .pp-difficulty-copy small { font-size: 12px; color: var(--bright-ink-soft); line-height: 1.4; }
+.app-shell.pp-root .pp-start { display: block; width: 100%; min-height: 46px; margin: 19px 0 0; padding: 10px 14px; border: 3px solid var(--bright-ink); border-radius: 14px; background: var(--bright-pink); color: var(--bright-ink); box-shadow: 3px 3px 0 var(--bright-ink); font-size: 15px; font-weight: 700; }
+.pp-root .pp-dialogue-stage { position: relative; height: 202px; margin-top: 20px; }
+.pp-root .pp-bubble { position: absolute; left: 26px; top: 38px; width: 260px; padding: 17px 20px; border: 2px solid var(--bright-ink); border-radius: 16px; background: var(--bright-paper); box-shadow: 3px 3px 0 rgb(61 43 37 / 16%); font-size: 16px; line-height: 1.7; font-weight: 700; z-index: 1; }
+.pp-root .pp-bubble::after { content: ''; position: absolute; right: -9px; top: 36px; width: 16px; height: 16px; background: var(--bright-paper); border-top: 2px solid var(--bright-ink); border-right: 2px solid var(--bright-ink); transform: rotate(45deg); }
+/* Crop the existing default sprite at chest height; the crop terminates at the outer window edge. */
+.pp-root .pp-bust { position: absolute; right: 0; bottom: -3px; width: 240px; height: 218px; overflow: hidden; border-bottom-right-radius: 16px; pointer-events: none; }
+.pp-root .pp-bust img { display: block; position: absolute; width: 240px; max-width: none; height: auto; left: 0; top: -20px; }
+/* Repaint the lower frame above the bust, including both rounded corners. */
+.pp-root .pp-window::after { content: ''; position: absolute; left: -3px; right: -3px; bottom: -3px; height: 18px; border: 3px solid var(--bright-ink); border-top: 0; border-radius: 0 0 18px 18px; z-index: 2; pointer-events: none; }
+.pp-root :is(.pp-close, .pp-start):active { translate: 2px 2px; box-shadow: 1px 1px 0 var(--bright-ink); }
+.pp-root :is(.pp-close, .pp-start, .pp-character, .pp-difficulty):focus { outline: none; }
+/* Explicit sample owners override the production theme's generic button fallback. */
+.app-shell.player-theme-enabled.theme-bright-school.pp-root button.pp-character { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; padding: 0 !important; }
+.app-shell.player-theme-enabled.theme-bright-school.pp-root button.pp-difficulty { border-width: 2px !important; background: var(--bright-paper) !important; box-shadow: 3px 3px 0 rgb(61 43 37 / 16%) !important; outline: none !important; }
+.app-shell.player-theme-enabled.theme-bright-school.pp-root button.pp-difficulty[aria-pressed="true"] { background: var(--bright-mint) !important; box-shadow: 1px 1px 0 var(--bright-ink) !important; }
+.app-shell.player-theme-enabled.theme-bright-school.pp-root button.pp-start { background: var(--bright-pink) !important; outline: none !important; }
+.app-shell.player-theme-enabled.theme-bright-school.pp-root button.pp-close { outline: none !important; }
+@media (max-width: 600px) {
+  .pp-root .pp-preview-bar { padding: 0 14px; height: 38px; font-size: 11px; }
+  .pp-root .pp-backdrop { padding: 66px 12px 20px; }
+  .pp-root .pp-title { top: -27px; left: 2px; width: 178px; height: 65px; }
+  .pp-root .pp-controls { height: 92px; padding: 12px 14px 0; gap: 12px; }
+  .app-shell.pp-root .pp-character { flex-direction: column; gap: 3px; font-size: 10px; }
+  .pp-root .pp-character-frame { width: 44px; height: 44px; }
+  .pp-root .pp-form { padding: 0 16px; }
+  .pp-root .pp-difficulties { gap: 9px; }
+  .app-shell.pp-root .pp-difficulty { min-height: 62px; padding: 9px 12px; grid-template-columns: 26px 1fr 18px; gap: 8px; }
+  .pp-root .pp-difficulty-copy strong { font-size: 16px; }
+  .app-shell.pp-root .pp-start { margin-top: 15px; min-height: 44px; }
+  .pp-root .pp-dialogue-stage { height: 154px; margin-top: 18px; }
+  .pp-root .pp-bubble { left: 14px; top: 22px; width: calc(100% - 146px); padding: 12px; font-size: 13px; line-height: 1.65; }
+  .pp-root .pp-bust { width: 154px; height: 158px; }
+  .pp-root .pp-bust img { width: 166px; left: -6px; top: -14px; }
+}
+@media (prefers-reduced-motion: reduce) { .app-shell.pp-root .pp-difficulty { transition: none; } }
