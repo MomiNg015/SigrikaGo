@@ -1,4 +1,3 @@
-import { activeCharacterItemEffects } from "../shared/characterCandyEffects.js";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { ModalDialog, ModalActionButton } from "../modals/modalComponents.jsx";
@@ -6,8 +5,10 @@ import { characterListFromCatalog } from "../shared/characters.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import MatchCharacterPortrait from "./MatchCharacterPortrait.jsx";
 import MatchCharacterOption from "./MatchCharacterOption.jsx";
+import { activeCharacterItemEffects } from "../shared/characterCandyEffects.js";
 import { characterSortieDisabledReason } from "../modals/house/houseStats.js";
-import { normalizeTeamLineup } from "../shared/teamMatch.js";
+import { teamLineupSlots, toggleTeamMember } from "./teamLineupSlots.js";
+import { playMatchSortieVoice } from "./matchSortieVoice.js";
 import WindowTitleSticker from "../modals/WindowTitleSticker.jsx";
 
 const ROUND_MOVE_RANGES = ["0-40手", "41-80手", "81手-终局"];
@@ -25,15 +26,15 @@ export function candyBlockedCharacters(user, characters, available) {
     && activeCharacterItemEffects(character.id, user.itemEffects).length);
 }
 
-export default function TeamLineupPicker({ user, characters, onClose, onStart, initialLineup, onChange, onConfirm, cancellation }) {
+export default function TeamLineupPicker({ user, characters, audioSettings, onClose, onStart, initialLineup, onChange, onConfirm, cancellation }) {
   const available = availableTeamCharacters(user, characters);
   const availableIds = new Set(available.map((character) => character.id));
   const storageKey = `sigrika-team-lineup:${user.id}`;
   const [selected, setSelected] = useState(() => {
-    try { return [...new Set(normalizeTeamLineup(initialLineup ?? JSON.parse(localStorage.getItem(storageKey))))].filter((id) => availableIds.has(id)).slice(0, 3); }
-    catch { return []; }
+    try { return teamLineupSlots(initialLineup ?? JSON.parse(localStorage.getItem(storageKey)), availableIds); }
+    catch { return teamLineupSlots([]); }
   });
-  const lineup = selected.filter((id) => availableIds.has(id));
+  const lineup = teamLineupSlots(selected, availableIds);
   function update(next) {
     setSelected(next);
     onChange?.(next);
@@ -45,24 +46,27 @@ export default function TeamLineupPicker({ user, characters, onClose, onStart, i
       <div className="team-lineup-slots">
         {[0, 1, 2].map((index) => {
           const character = characters[lineup[index]];
-          return <section key={index} className="team-lineup-slot" aria-label={`第${index + 1}位`}>
-            <div className="team-lineup-round"><strong>Round {index + 1}</strong><span>({ROUND_MOVE_RANGES[index]})</span></div>
-            <div className="team-lineup-image">{character ? <MatchCharacterPortrait character={character} user={user} /> : <span>?</span>}</div>
+          return <button type="button" key={index} className="team-lineup-slot" data-filled={Boolean(character)}
+            aria-label={character ? `取消第${index + 1}位：${character.name}` : `第${index + 1}位待选`}
+            onClick={() => { if (character) update(lineup.map((id, position) => position === index ? "" : id)); }}>
+            <span className="team-lineup-round"><strong>Round {index + 1}</strong><span>{ROUND_MOVE_RANGES[index]}</span></span>
+            <span className="team-lineup-image">{character ? <MatchCharacterPortrait character={character} user={user} /> : <img className="team-lineup-empty-card" src="/assets/home/character-selection-id-v4.png" alt="" aria-hidden="true" />}</span>
             <span className="team-lineup-name" title={character?.name}>{character?.name ?? ""}</span>
-          </section>;
+          </button>;
         })}
       </div>
       <div className="team-lineup-content">
       <div className="team-character-options">
         {[...available, ...candyBlockedCharacters(user, characters, available)].map((character) => <MatchCharacterOption
           key={character.id} character={character} user={user} selected={lineup.includes(character.id)}
-          disabled={!availableIds.has(character.id) || (lineup.length === 3 && !lineup.includes(character.id))}
-          cancellation={cancellation} onSelect={() => update(lineup.includes(character.id) ? lineup.filter((id) => id !== character.id) : [...lineup, character.id])}>
-          {lineup.includes(character.id) && <b className="team-order-badge" aria-label={`第${lineup.indexOf(character.id) + 1}位`}>{lineup.indexOf(character.id) + 1}</b>}
-        </MatchCharacterOption>)}
+          disabled={!availableIds.has(character.id) || (lineup.every(Boolean) && !lineup.includes(character.id))}
+          cancellation={cancellation} selectionStamp={lineup.includes(character.id) ? lineup.indexOf(character.id) + 1 : undefined} onSelect={() => {
+          if (!lineup.includes(character.id)) playMatchSortieVoice(character, user, audioSettings);
+          update(toggleTeamMember(lineup, character.id));
+        }} />)}
       </div>
       </div>
-      <ModalActionButton disabled={lineup.length !== 3} onClick={() => onConfirm ? onConfirm(lineup) : onStart("team", lineup)}>{onConfirm ? "完成选人" : "开始匹配"}</ModalActionButton>
+      <ModalActionButton disabled={!lineup.every(Boolean)} onClick={() => onConfirm ? onConfirm(lineup) : onStart("team", lineup)}>{onConfirm ? "完成选人" : "开始匹配"}</ModalActionButton>
     </ModalDialog>
   </div>;
 }

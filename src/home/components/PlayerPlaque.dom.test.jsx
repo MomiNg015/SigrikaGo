@@ -40,7 +40,7 @@ describe("home student ID", () => {
   it("uses the standard bust inside the existing student photo mask and recovers to legacy art", () => {
     const { container } = render(<PlayerPlaque character={CHARACTERS.sigrika} user={user} />);
     const portrait = screen.getByAltText("当前出战角色");
-    expect(portrait.getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(portrait.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(portrait.closest(".home-student-id-portrait")).toBeTruthy();
     expect(container.querySelector('.character-bust-portrait[data-variant="student-id"]')).toBeTruthy();
     fireEvent.error(portrait);

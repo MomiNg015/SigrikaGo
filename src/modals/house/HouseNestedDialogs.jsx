@@ -40,7 +40,7 @@ export function CharacterDetailDialog({
     "--detail-label-border": "2px solid #6b7280",
     "--detail-label-radius": "0"
   };
-  const portrait = resolveHandbookPortrait(character, { itemEffects, user, kind: "full" });
+  const portrait = resolveHandbookPortrait(character, { itemEffects, user, chibi: true });
   const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
     characterId: character.id,
     trackId,

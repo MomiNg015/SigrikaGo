@@ -1,0 +1,76 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/modals/ProfileMobileLayout.test.js src/modals/ProfileResumeView.dom.test.jsx src/modals/ResumeModal.dom.test.jsx src/modals/UserProfileCard.dom.test.jsx src/styles/cssLayerInventory.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 2 failed) 627ms
+   × CSS layer inventory > records the current CSS debt baseline as a non-growth contract 149ms
+     → totalBytes: expected 1691790 to be less than or equal to 1690901
+   ✓ CSS layer inventory > registers high z-index declarations and keeps future values on a named layer scale 142ms
+   ✓ CSS layer inventory > documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family 117ms
+   × CSS layer inventory > registers responsive breakpoint families used by current CSS media queries 119ms
+     → expected [ Array(1) ] to deeply equal []
+   ✓ CSS layer inventory > keeps every inventory file pointed at an existing CSS file 27ms
+   ✓ CSS layer inventory > classifies every root stylesheet import into a refactor layer 1ms
+   ✓ CSS layer inventory > documents route-lazy CSS entries outside the initial root stylesheet 2ms
+   ✓ CSS layer inventory > keeps the round-3 cleanup candidates out of gameplay and skill protected files 0ms
+   ✓ CSS layer inventory > documents the required refactor rounds before visual cleanup 0ms
+   ✓ CSS layer inventory > documents the low-intrusion Tailwind utility layer decision 9ms
+   ✓ CSS layer inventory > documents the phased Tailwind migration roadmap and protected exclusions 1ms
+   ✓ CSS layer inventory > documents and enforces the Bright School broad fallback ban 41ms
+   ✓ CSS layer inventory > documents the round-4 desktop, mobile, and skill regression gates 0ms
+   ✓ CSS layer inventory > documents final full-repo CSS cleanup verification gates 0ms
+   ✓ CSS layer inventory > keeps round-3 shared splits import-only and in the low-risk inventory bucket 5ms
+   ✓ CSS layer inventory > keeps final mobile safety splits import-only and in the final safety bucket 2ms
+   ✓ CSS layer inventory > keeps theme overlay splits import-only and in the theme overlay bucket 4ms
+   ✓ CSS layer inventory > keeps gameplay room splits import-only and in the high-risk room bucket 1ms
+   ✓ CSS layer inventory > keeps skill presentation splits import-only and in the protected bucket 1ms
+   ✓ CSS layer inventory > keeps protected surface contracts backed by current CSS fragments 3ms
+ ✓ src/modals/ProfileMobileLayout.test.js (5 tests) 33ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (17 tests) 2413ms
+   ✓ UserProfileCard dossier interactions > opts report titles in explicitly and restores focus (stickers: false)  396ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 517ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (9 tests) 187ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalBytes: expected 1691790 to be less than or equal to 1690901
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126|
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > registers responsive breakpoint families used by current CSS media queries
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "mobile-adaptive/match-mode-title-layout.css: (max-width: 360px)",
++ ]
+
+ ❯ src/styles/cssLayerInventory.test.js:197:31
+    195|       "regular desktop"
+    196|     ]);
+    197|     expect(unexpectedQueries).toEqual([]);
+       |                               ^
+    198|   });
+    199|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  2 failed | 53 passed (55)
+   Start at  18:25:40
+   Duration  10.73s (transform 601ms, setup 0ms, collect 1.88s, tests 3.78s, environment 3.17s, prepare 481ms)

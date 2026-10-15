@@ -4,10 +4,28 @@ import { afterEach, describe, expect, it } from "vitest";
 import ProfileResumeView from "./ProfileResumeView.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); localStorage.clear(); });
 
 describe("profile character record empty state", () => {
+  it.each(["self", "social"])("uses the student-ID identity for the user's own %s details across modes", (context) => {
+    localStorage.setItem("sigrika-match-characters:identity-user", JSON.stringify({ regular: ["lynae"], standard: ["denia"] }));
+    const props = { context, user: { id: "identity-user", relation: "self", characterId: "denia", selectedCharacter: "denia", ownedCharacters: ["lynae", "denia", "sigrika"] }, characters: CHARACTERS, mode: "spark", stats: {} };
+    const { rerender } = render(<ProfileResumeView {...props} />);
+    expect(screen.getByAltText(`${CHARACTERS.lynae.name}立绘`).getAttribute("src")).toContain("/lynae-avatar.webp");
+    rerender(<ProfileResumeView {...props} mode="standard" />);
+    expect(screen.getByAltText(`${CHARACTERS.lynae.name}立绘`)).toBeTruthy();
+    localStorage.removeItem("sigrika-match-characters:identity-user");
+    rerender(<ProfileResumeView {...props} />);
+    expect(screen.getByAltText(`${CHARACTERS.sigrika.name}立绘`)).toBeTruthy();
+  });
+
+  it("uses the remote account identity instead of the viewer's cache or battle character", () => {
+    localStorage.setItem("sigrika-match-characters:other-user", JSON.stringify({ regular: ["lynae"] }));
+    render(<ProfileResumeView context="social" user={{ id: "other-user", selectedCharacter: "aemeath", characterId: "denia" }} characters={CHARACTERS} mode="spark" stats={{}} />);
+    expect(screen.getByAltText(`${CHARACTERS.aemeath.name}立绘`)).toBeTruthy();
+  });
   it.each(["self", "social"])("shares the selected-character bust and costume compositor in the %s hero", (context) => {
+    localStorage.setItem("sigrika-match-characters:测试部员", JSON.stringify({ regular: ["aemeath"] }));
     const props = {
       context, user: { username: "测试部员", characterId: "aemeath" },
       characters: CHARACTERS, mode: "spark", stats: {},
@@ -15,7 +33,7 @@ describe("profile character record empty state", () => {
     };
     const { container, rerender } = render(<ProfileResumeView {...props} />);
     const image = screen.getByAltText(`${CHARACTERS.aemeath.name}立绘`);
-    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp");
     expect(image.closest(".profile-portrait-mask")).toBeTruthy();
     const recordImage = container.querySelector(".profile-character-table img");
     expect(recordImage.getAttribute("loading")).toBe("lazy");

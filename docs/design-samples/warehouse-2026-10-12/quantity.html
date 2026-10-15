@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,"><title>仓库数量 · 三套样板</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#fffaf0;color:#3d2b25;font-family:"Microsoft YaHei",sans-serif;height:100dvh;display:flex;flex-direction:column}
+    nav{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 16px;border-bottom:2px solid #3d2b25;flex:none}
+    button{display:flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:8px 22px;background:transparent;color:inherit;border:1px solid transparent;font:inherit;cursor:pointer}
+    button[aria-pressed="true"]{border-color:#3d2b25;background:#bfe8dd;box-shadow:2px 2px #3d2b25}button:focus-visible{outline:2px solid #3d2b25;outline-offset:3px}
+    .swatch{display:inline-grid;place-items:center;min-width:44px;height:26px;font:700 16px/1 Arial,sans-serif;font-variant-numeric:tabular-nums}
+    .tag{background:color-mix(in srgb, #ff9ebb 35%, #fffaf0);clip-path:polygon(8px 0,100% 0,100% 100%,8px 100%,0 50%)}
+    .stamp{color:color-mix(in srgb, #3d2b25 76%, #ff9ebb);border:2px solid currentColor;outline:1px solid currentColor;outline-offset:-5px;rotate:-5deg}
+    .counter{background:#3d2b25;color:#bfe8dd;border-bottom:3px solid #9ad3de}
+    iframe{display:block;width:100%;flex:1;min-height:0;border:0}
+    @media(max-width:600px){nav{gap:6px;padding:10px 6px}button{flex:1;flex-direction:column;gap:5px;padding:5px 2px;font-size:12px;min-height:66px}.swatch{font-size:14px}}
+  </style>
+</head>
+<body>
+  <nav aria-label="数量样板">
+    <button type="button" data-style="tag" aria-pressed="true"><span class="swatch tag" aria-hidden="true">×3</span>1 · 纸签数量</button>
+    <button type="button" data-style="stamp" aria-pressed="false"><span class="swatch stamp" aria-hidden="true">×3</span>2 · 印章数量</button>
+    <button type="button" data-style="counter" aria-pressed="false"><span class="swatch counter" aria-hidden="true">×3</span>3 · 游戏计数牌</button>
+  </nav>
+  <iframe title="仓库数量样板" src="./production.html?quantity=tag"></iframe>
+  <script>
+    const frame=document.querySelector('iframe');
+    const buttons=[...document.querySelectorAll('button[data-style]')];
+    function select(style){
+      if(!buttons.some(button=>button.dataset.style===style))style='tag';
+      buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.style===style)));
+      frame.src=`./production.html?quantity=${style}`;
+      history.replaceState(null,'',`?style=${style}`);
+    }
+    buttons.forEach(button=>button.addEventListener('click',()=>select(button.dataset.style)));
+    select(new URLSearchParams(location.search).get('style')||'tag');
+  </script>
+</body>
+</html>

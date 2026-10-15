@@ -11,5 +11,5 @@ export function resolveMatchCharacter(user, input, { characters = {}, disabledSl
     || blockedCharactersForItemEffects(user.itemEffects).has(id) || user.sigrikaCandyArc?.corrupted) {
     return { ok: false, error: "所选角色不可用，请重新选择", code: "invalid_match_character" };
   }
-  return { ok: true, user: { ...user, selectedCharacter: id } };
+  return { ok: true, user: { ...user, selectedCharacter: id, characterConfig: character } };
 }

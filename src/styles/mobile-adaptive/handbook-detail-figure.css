@@ -1,4 +1,4 @@
-/* The portrait can leave the paper window; only the copy owns scrolling. */
+/* Keep the portrait inside its paper frame; only the copy owns scrolling. */
 .character-detail-figure-backdrop,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
   position: fixed !important;
@@ -28,7 +28,7 @@
     gap: 18px;
     margin: 0 !important;
     padding: 20px !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     clip-path: none !important;
   }
 
@@ -40,7 +40,7 @@
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
-    overflow: visible;
+    overflow: hidden;
   }
 
   & .character-detail-figure {
@@ -49,7 +49,7 @@
     top: 50%;
     left: 50%;
     width: 100%;
-    height: min(720px, calc(100dvh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+    height: 100%;
     transform: translate(-50%, -50%);
     pointer-events: none;
   }
@@ -106,7 +106,7 @@
       grid-template-columns: minmax(0, 1fr) !important;
       grid-template-rows: min(260px, 32dvh) minmax(0, 1fr);
       align-items: start !important;
-      gap: 34px;
+      gap: 18px;
       padding: 12px !important;
     }
 
@@ -117,7 +117,7 @@
 
     & .character-detail-figure {
       width: min(280px, 90%);
-      height: min(330px, 42dvh);
+      height: 100%;
     }
 
     & .character-detail-copy {

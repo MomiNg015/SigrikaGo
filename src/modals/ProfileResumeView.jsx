@@ -8,9 +8,10 @@ import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import CharacterBustPortrait from "../shared/CharacterBustPortrait.jsx";
 import { characterThemeStyle, findCharacter } from "../shared/characterDisplay.js";
 import { characterPortraitImageProps } from "../shared/characterPortraits.js";
-import { CHARACTERS } from "../shared/characters.js";
+import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
+import { studentIdentityCharacterId } from "../shared/studentIdentity.js";
 
 export const PROFILE_RESUME_MODE_ORDER = ["spark", "standard", "gomoku"];
 
@@ -37,7 +38,10 @@ export default function ProfileResumeView({
 }) {
   const normalizedMode = mode === "team" ? "spark" : normalizeGameModeId(mode);
   const normalizedStats = normalizeProfileStats(stats);
-  const mainCharacter = findCharacter(characters, user.characterId ?? user.selectedCharacter) ?? CHARACTERS.sigrika;
+  const mainCharacter = findCharacter(characters, studentIdentityCharacterId(user, {
+    self: context === "self" || user.relation === "self",
+    availableIds: new Set(characterListFromCatalog(characters).filter((character) => character.enabled !== false).map((character) => character.id))
+  })) ?? CHARACTERS.sigrika;
   const records = sortCharacterStatsByGames(characterStats);
   const winRate = winRateText(normalizedStats.wins, normalizedStats.totalGames);
   const panelId = `${context}-profile-mode-panel`;
@@ -182,7 +186,7 @@ export default function ProfileResumeView({
                             <span className="profile-chain-portrait small">
                               <span className="profile-portrait-mask">
                                 <img
-                                  {...characterPortraitImageProps(character, { itemEffects: user.itemEffects, user })}
+                                  {...characterPortraitImageProps(character, { variant: "avatar", itemEffects: user.itemEffects, user })}
                                   alt=""
                                   loading="lazy"
                                   decoding="async"

@@ -5,8 +5,9 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const sourceDirectory = "docs/design-samples/handbook-puzzle/assets/characters";
-const outputDirectory = "public/assets/characters/handbook-sprites";
+const chibi = process.argv.includes("--chibi");
+const sourceDirectory = chibi ? "docs/design-samples/handbook-chibi/assets/characters" : "docs/design-samples/handbook-puzzle/assets/characters";
+const outputDirectory = chibi ? "public/assets/characters/handbook-chibi-sprites" : "public/assets/characters/handbook-sprites";
 const characterIds = [
   "sigrika", "denia", "aemeath", "lynae", "mornye",
   "chisa", "changli", "qiuyuan", "nabomo",

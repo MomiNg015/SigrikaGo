@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "layout": "dossier",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "horizontal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "notebook",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "dossier",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "horizontal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "notebook",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "dossier",
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "horizontal",
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    },
+    {
+      "layout": "notebook",
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "overflow": false,
+      "images": true,
+      "font": true,
+      "collisions": false,
+      "interactions": "passed"
+    }
+  ],
+  "errors": []
+}

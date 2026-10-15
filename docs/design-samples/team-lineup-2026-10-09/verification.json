@@ -1,0 +1,299 @@
+[
+  {
+    "variant": "roster",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "layout": [
+      {
+        "height": 138,
+        "width": 280.65625,
+        "rows": "64px 40px",
+        "columns": "126.328px 126.328px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 138,
+        "width": 280.671875,
+        "rows": "64px 40px",
+        "columns": "126.328px 126.344px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 138,
+        "width": 280.65625,
+        "rows": "64px 40px",
+        "columns": "126.328px 126.328px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "stage",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "layout": [
+      {
+        "height": 232,
+        "width": 280.65625,
+        "rows": "154px 26px 42px",
+        "columns": "256.656px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 232,
+        "width": 280.671875,
+        "rows": "154px 26px 42px",
+        "columns": "256.672px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 232,
+        "width": 280.65625,
+        "rows": "154px 26px 42px",
+        "columns": "256.656px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "timeline",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "layout": [
+      {
+        "height": 214,
+        "width": 275.328125,
+        "rows": "52px 126px 26px",
+        "columns": "259.328px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 214,
+        "width": 275.328125,
+        "rows": "52px 126px 26px",
+        "columns": "259.328px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 214,
+        "width": 275.34375,
+        "rows": "52px 126px 26px",
+        "columns": "259.344px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "roster",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "layout": [
+      {
+        "height": 170,
+        "width": 102,
+        "rows": "40px 80px 22px",
+        "columns": "92px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 170,
+        "width": 102,
+        "rows": "40px 80px 22px",
+        "columns": "92px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 170,
+        "width": 102,
+        "rows": "40px 80px 22px",
+        "columns": "92px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "stage",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "layout": [
+      {
+        "height": 179,
+        "width": 102,
+        "rows": "106px 22px 45px",
+        "columns": "92px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 179,
+        "width": 102,
+        "rows": "106px 22px 45px",
+        "columns": "92px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 179,
+        "width": 102,
+        "rows": "106px 22px 45px",
+        "columns": "92px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "timeline",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "layout": [
+      {
+        "height": 178,
+        "width": 103.328125,
+        "rows": "44px 100px 24px",
+        "columns": "103.328px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 178,
+        "width": 103.328125,
+        "rows": "44px 100px 24px",
+        "columns": "103.328px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 178,
+        "width": 103.34375,
+        "rows": "44px 100px 24px",
+        "columns": "103.344px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "roster",
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "layout": [
+      {
+        "height": 170,
+        "width": 92,
+        "rows": "40px 80px 22px",
+        "columns": "82px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 170,
+        "width": 92,
+        "rows": "40px 80px 22px",
+        "columns": "82px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 170,
+        "width": 92,
+        "rows": "40px 80px 22px",
+        "columns": "82px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "stage",
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "layout": [
+      {
+        "height": 179,
+        "width": 92,
+        "rows": "106px 22px 45px",
+        "columns": "82px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 179,
+        "width": 92,
+        "rows": "106px 22px 45px",
+        "columns": "82px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 179,
+        "width": 92,
+        "rows": "106px 22px 45px",
+        "columns": "82px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  },
+  {
+    "variant": "timeline",
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "layout": [
+      {
+        "height": 178,
+        "width": 93.328125,
+        "rows": "44px 100px 24px",
+        "columns": "93.3281px",
+        "text": "Round 10-40手西格莉卡"
+      },
+      {
+        "height": 178,
+        "width": 93.328125,
+        "rows": "44px 100px 24px",
+        "columns": "93.3281px",
+        "text": "Round 241-80手爱弥斯"
+      },
+      {
+        "height": 178,
+        "width": 93.34375,
+        "rows": "44px 100px 24px",
+        "columns": "93.3438px",
+        "text": "Round 381手-终局莫宁"
+      }
+    ],
+    "fixedSlots": true,
+    "stableDialog": true,
+    "confirmation": true
+  }
+]

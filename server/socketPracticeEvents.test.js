@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { registerPracticeSocketEvents } from "./socketPracticeEvents.js";
+import { createPracticeRoom as buildPracticeRoom } from "./roomFactory.js";
+import { CHARACTERS } from "../src/shared/characters.js";
+import { voiceCharacterForPlayer } from "../src/room/roomView.js";
+import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../src/shared/systemVoices.js";
 
 function createSocket() {
   const handlers = new Map();
@@ -12,6 +16,26 @@ function createSocket() {
 }
 
 describe("practice socket events", () => {
+  it.each(["beginner", "intermediate", "advanced", "capture-challenge"])("applies the selected character to the actual %s room, skills and voice", async (mode) => {
+    const socket = createSocket();
+    socket.user = { ...socket.user, selectedCharacter: "sigrika", characterConfig: CHARACTERS.sigrika, ownedCharacters: ["sigrika", "aemeath"] };
+    const character = { ...CHARACTERS.aemeath, skill: { ...CHARACTERS.aemeath.skill, uses: 3 }, systemVoices: { [SYSTEM_VOICE_EVENTS.gameStart]: "/selected-start.ogg" } };
+    const createPracticeRoom = vi.fn((player, _io, options) => buildPracticeRoom(player, options));
+    registerPracticeSocketEvents(socket, { io: {}, refreshSocketUser: vi.fn(), createPracticeRoom,
+      isUserInActiveRoom: () => false, leaveMatchmaking: vi.fn(), characterSelectionData: async () => ({ characters: { aemeath: character } }) });
+    const ack = vi.fn();
+    await socket.trigger("practice:start", { difficulty: mode === "capture-challenge" ? "advanced" : mode,
+      ...(mode === "capture-challenge" ? { challenge: mode } : {}), playerColor: "white", characterId: "aemeath", engineVersion: "gnugo-3.8-v1" }, ack);
+    expect(ack).toHaveBeenCalledWith({ ok: true, roomCode: expect.any(String) });
+    const room = createPracticeRoom.mock.results[0].value;
+    const player = room.players.find(entry => entry.user.id === socket.user.id);
+    expect(player).toMatchObject({ characterId: "aemeath", character });
+    expect(room.game.players.find(entry => entry.userId === socket.user.id)).toMatchObject({ characterId: "aemeath", character });
+    expect(room.game.skillUses.white).toBe(3);
+    expect(voiceCharacterForPlayer(player, CHARACTERS)).toMatchObject({ id: "aemeath", systemVoices: character.systemVoices });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, { character: voiceCharacterForPlayer(player, CHARACTERS) })).toEqual({ type: "audio", src: "/selected-start.ogg" });
+    expect(socket.user).toMatchObject({ selectedCharacter: "sigrika", characterConfig: CHARACTERS.sigrika });
+  });
   it.each(["beginner", "intermediate", "advanced"])("admits a prepared local %s engine without probing the server", async (difficulty) => {
     const socket = createSocket();
     const createPracticeRoom = vi.fn(() => ({ code: "24680" }));

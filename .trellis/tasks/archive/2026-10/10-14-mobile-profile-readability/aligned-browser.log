@@ -1,0 +1,162 @@
+[
+  {
+    context: 'self',
+    width: 320,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 155.15625,
+      width: 142,
+      height: 29.6875,
+      top: 155.15625,
+      right: 287,
+      bottom: 184.84375,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'self',
+    width: 360,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 155.15625,
+      width: 182,
+      height: 29.6875,
+      top: 155.15625,
+      right: 327,
+      bottom: 184.84375,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'self',
+    width: 390,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 153.796875,
+      width: 212,
+      height: 32.390625,
+      top: 153.796875,
+      right: 357,
+      bottom: 186.1875,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'self',
+    width: 412,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 153.796875,
+      width: 234,
+      height: 32.390625,
+      top: 153.796875,
+      right: 379,
+      bottom: 186.1875,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'self',
+    width: 1440,
+    overflow: false,
+    identity: {
+      x: 407,
+      y: 182.203125,
+      width: 549.375,
+      height: 33.59375,
+      top: 182.203125,
+      right: 956.375,
+      bottom: 215.796875,
+      left: 407
+    },
+    hero: '"portrait identity actions" 96px / 96px minmax(0px, 1fr) auto'
+  },
+  {
+    context: 'social',
+    width: 320,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 151.15625,
+      width: 142,
+      height: 29.6875,
+      top: 151.15625,
+      right: 287,
+      bottom: 180.84375,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'social',
+    width: 360,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 151.15625,
+      width: 182,
+      height: 29.6875,
+      top: 151.15625,
+      right: 327,
+      bottom: 180.84375,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'social',
+    width: 390,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 149.796875,
+      width: 212,
+      height: 32.390625,
+      top: 149.796875,
+      right: 357,
+      bottom: 182.1875,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'social',
+    width: 412,
+    overflow: false,
+    identity: {
+      x: 145,
+      y: 149.796875,
+      width: 234,
+      height: 32.390625,
+      top: 149.796875,
+      right: 379,
+      bottom: 182.1875,
+      left: 145
+    },
+    hero: 'auto auto / 72px minmax(0px, 1fr)'
+  },
+  {
+    context: 'social',
+    width: 1440,
+    overflow: false,
+    identity: {
+      x: 407,
+      y: 176.203125,
+      width: 438,
+      height: 33.59375,
+      top: 176.203125,
+      right: 845,
+      bottom: 209.796875,
+      left: 407
+    },
+    hero: '"portrait identity actions" 96px / 96px minmax(0px, 1fr) auto'
+  }
+]

@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
+vi.mock("./matchSortieVoice.js", () => ({ playMatchSortieVoice: vi.fn() }));
 
 afterEach(() => { cleanup(); localStorage.clear(); });
 

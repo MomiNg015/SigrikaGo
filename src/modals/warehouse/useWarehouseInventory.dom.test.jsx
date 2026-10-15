@@ -9,6 +9,14 @@ vi.mock("../../api/client.js", () => ({ api: vi.fn() }));
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
 describe("warehouse candy story", () => {
+  it("routes recruitment items to navigation without consuming inventory", async () => {
+    api.mockResolvedValueOnce({ items: [{ itemId: "campus-recruitment-poster", name: "招募海报", quantity: 2, usable: false }] });
+    const onOpenRecruitment = vi.fn();
+    render(<WarehouseModal token="test-token" user={{}} characters={{}} onClose={vi.fn()} onOpenRecruitment={onOpenRecruitment} />);
+    fireEvent.click(await screen.findByRole("button", { name: "前去招募：招募海报" }));
+    expect(onOpenRecruitment).toHaveBeenCalledOnce();
+    expect(api).toHaveBeenCalledTimes(1);
+  });
   it("serializes rapid item requests and releases the lock after rejection and success", async () => {
     const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" };
     const other = { itemId: "other-item", name: "其他道具" };
@@ -58,7 +66,9 @@ describe("warehouse candy story", () => {
     expect(target.disabled).toBe(true);
     expect(screen.getByRole("button", { name: "爱弥斯" }).disabled).toBe(true);
     expect(screen.getByRole("button", { name: "使用中：彩虹豆豆跳跳糖" }).disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "其他道具，数量 1" }));
     expect(screen.getByRole("button", { name: "使用：其他道具" }).disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "彩虹豆豆跳跳糖，数量 2" }));
     expect(screen.getByRole("button", { name: "关闭仓库" }).disabled).toBe(false);
     expect(screen.getByRole("button", { name: "关闭角色选择" }).disabled).toBe(false);
     expect(document.activeElement).toBe(screen.getByRole("dialog", { name: "选择角色" }));
@@ -67,6 +77,7 @@ describe("warehouse candy story", () => {
     expect(api).toHaveBeenCalledTimes(2);
     await act(async () => rejectRequest(new Error("请重试")));
     expect(target.disabled).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "其他道具，数量 1" }));
     expect(screen.getByRole("button", { name: "使用：其他道具" }).disabled).toBe(false);
     expect(onNotice).toHaveBeenCalledTimes(1);
     api.mockResolvedValueOnce({ items: [{ ...item, quantity: 1 }, other], user: {}, target: { characterId: "sigrika" }, effectText: "效果已同步" });

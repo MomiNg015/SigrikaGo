@@ -99,7 +99,7 @@
   }
   .handbook-puzzle-piece[data-portrait-side="right"] .handbook-strip-name { left: 6px; right: auto; }
   .handbook-strip-name::after { width: 24px; margin: 5px auto 0; }
-  .handbook-puzzle-piece.is-expanded .handbook-strip-name { top: 30%; }
+  .handbook-puzzle-piece.is-expanded .handbook-strip-name { top: 85%; }
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-strip-name,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label { font-size: clamp(23px, 7vw, 30px); }
   .handbook-missing-label { writing-mode: horizontal-tb; }

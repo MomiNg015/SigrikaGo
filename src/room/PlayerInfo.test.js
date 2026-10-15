@@ -42,8 +42,8 @@ describe("PlayerInfo labels", () => {
     expect(markup).toContain('aria-label="第3位：未揭晓"');
     expect(markup).toContain('class="team-portrait-mystery">?</span>');
     expect((markup.match(/class="team-portrait-slot /g) ?? [])).toHaveLength(3);
-    expect(markup).toContain("/assets/characters/handbook-sprites/sigrika.webp");
-    expect(markup).toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(markup).toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
+    expect(markup).toContain("/assets/characters/handbook-chibi-sprites/aemeath.webp");
   });
 
   it("does not load a hidden team member even if historical metadata includes a character", () => {
@@ -53,8 +53,8 @@ describe("PlayerInfo labels", () => {
         { characterId: "aemeath", character: CHARACTERS.aemeath, status: "hidden" },
       ] },
     })));
-    expect(markup).toContain("/assets/characters/handbook-sprites/sigrika.webp");
-    expect(markup).not.toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(markup).toContain("/assets/characters/handbook-chibi-sprites/sigrika.webp");
+    expect(markup).not.toContain("/assets/characters/handbook-chibi-sprites/aemeath.webp");
     expect(markup).not.toContain(CHARACTERS.aemeath.name);
   });
 
@@ -73,7 +73,7 @@ describe("PlayerInfo labels", () => {
       { characterId: "aemeath", character: CHARACTERS.aemeath, status: "active", costumeSnapshot: null },
     ] } }));
     expect(team).toContain('src="/first.webp"');
-    expect(team).toContain("/assets/characters/handbook-sprites/aemeath.webp");
+    expect(team).toContain("/assets/characters/handbook-chibi-sprites/aemeath.webp");
     expect(team).not.toContain("/started.webp");
     expect(arePlayerInfoPropsEqual({ ...base, player }, { ...base, player: { ...player, costumeSnapshot: { portraitUrl: "/updated.webp" } } })).toBe(false);
   });

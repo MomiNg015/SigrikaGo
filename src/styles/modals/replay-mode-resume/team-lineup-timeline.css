@@ -1,0 +1,88 @@
+/* Selected round timeline: fixed slots and portrait phone geometry. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slots {
+  position: relative;
+  gap: 20px;
+  padding-top: 14px;
+}
+.team-lineup-picker .team-lineup-slots::before {
+  content: "";
+  position: absolute;
+  left: 16.6%;
+  right: 16.6%;
+  top: 36px;
+  border-top: 2px solid color-mix(in srgb, var(--bright-ink, #3d2b25) 35%, var(--bright-paper, #fffbf2));
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slot {
+  position: relative;
+  display: grid;
+  grid-template-rows: 52px 126px 26px;
+  gap: 3px;
+  padding: 0 8px 4px;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--bright-ink);
+  transition: transform 150ms ease-out;
+}
+.team-lineup-picker .team-lineup-slot:focus-visible {
+  outline: 3px solid var(--bright-ink, #3d2b25) !important;
+  outline-offset: 3px;
+}
+.team-lineup-slot .team-lineup-round {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: fit-content;
+  justify-self: center;
+  padding: 0 12px;
+  background: var(--bright-paper, #fffbf2);
+  font-size: 12px;
+}
+.team-lineup-slot .team-lineup-round strong { font-size: 18px; }
+.team-lineup-slot .team-lineup-round span { font-size: 12px; font-weight: 400; color: var(--bright-muted-ink, #6a554d); }
+.team-lineup-slot .team-lineup-image {
+  width: 100%;
+  height: 126px;
+  border-radius: 8px;
+  background: transparent;
+  overflow: visible;
+}
+.team-lineup-slot .team-lineup-name { height: 26px; font-size: 16px; font-weight: 700; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slot .team-lineup-image > .team-lineup-empty-card {
+  width: 100% !important;
+  height: 126px !important;
+  max-width: 100% !important;
+  max-height: 126px !important;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-slot .team-lineup-image > :is(svg.match-character-portrait, img) {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: contain;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .team-lineup-picker .team-lineup-slot[data-filled="true"]:hover {
+    transform: translateY(-3px);
+  }
+}
+.team-lineup-picker .team-lineup-slot:active { transform: translateY(2px); }
+@media (prefers-reduced-motion: reduce) {
+  .team-lineup-picker .team-lineup-slot { transition: none; }
+  .team-lineup-picker .team-lineup-slot:is(:hover, :active) { transform: none; }
+}
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slots { gap: 4px; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slot {
+    grid-template-rows: 44px 100px 24px;
+    padding-inline: 0;
+  }
+  .team-lineup-slot .team-lineup-round { padding-inline: 4px; }
+  .team-lineup-slot .team-lineup-round strong { font-size: 14px; }
+  .team-lineup-slot .team-lineup-round span { font-size: 10px; }
+  .team-lineup-slot .team-lineup-image { height: 100px; }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .team-lineup-picker .team-lineup-slot .team-lineup-image > .team-lineup-empty-card { height: 100px !important; max-height: 100px !important; }
+  .team-lineup-slot .team-lineup-name { height: 24px; font-size: 13px; }
+}

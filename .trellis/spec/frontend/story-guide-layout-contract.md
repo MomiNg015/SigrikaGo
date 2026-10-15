@@ -1,10 +1,16 @@
 # Story Guide Layout Contract
 
+The dedicated `denia-rainbow-glow` candy identity uses the modern chibi stage, with native 832x1216 animation geometry instead of the square general-purpose portrait. Its source declares chibi presentation even though it is not a selectable default expression. A picture media source picks the same-size still under reduced motion; failed sources remove that source and fall back to the current default art. Verify actual animation frame changes and both eye/mouth origins at desktop and portrait phone dimensions; narration after the candy branch clears the actor.
+
 ## Scope and owners
+
+Narration / character-free `StoryPlayerModal` nodes also use the modern stage (`standard-story-sprite story-narration`, chibi stage geometry). Hide the empty portrait, retain no speaker name, and remove portrait-reserved dialogue padding. Do not invent or retain the previous actor. Measure long-text content against stage usage rather than portrait existence. Check introduction -> character -> narration with unchanged stage element, empty portrait and reachable actions at desktop and portrait phone sizes.
 
 Applies to valid standard appearances in `StoryPlayerModal`, `NpcDialogue` and `HomeOnboarding`. Asset selection, authored expressions and legacy/special-form precedence follow [Story Sprite Contract](../backend/story-sprite-contract.md). Do not alter plot text, node graph, typewriter timing, wait/skip behavior or room layout to accommodate artwork.
 
 ## Standard story stage
+
+Chibi profiles use `data-story-presentation="chibi"` on the same stage. Desktop full-image height is `min(--story-sprite-crop, 550px)` with centered native proportions, avoiding the standard 1.72 upper-body zoom. On portrait phones, paper height is `clamp(210px, 38dvh, 290px)`; art fills the stage between the 62px top clearance and 120px bottom anchor, extending behind the dialogue paper. The paper can cover the lower body while the face remains readable. Keep expression geometry fixed. Authored long-text nodes retain content-driven paper growth, unchanged art scale, upward translation and internal text scrolling. Failed sources retain the existing fallback sizing instead of the chibi image rule.
 
 - `standard-sprite.css` owns the classroom stage, portrait crop and bottom dialogue paper. Legacy `.onboarding-story-dialogue` uses `display: contents` so the original grid remains intact.
 - Portrait and paper have independent absolute geometry. The fixed crop/image-height ratio is `1 / 1.72`, showing at most the upper thighs. Only viewport size changes the crop size; expressions and text never rescale it. Authored long-text effects may translate it on mobile as specified below.

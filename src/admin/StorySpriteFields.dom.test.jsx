@@ -10,10 +10,14 @@ describe("story appearance editor", () => {
     const { getByLabelText, queryByText, rerender, unmount } = render(<StorySpriteFields node={node} onPatch={onPatch} />);
     expect(queryByText("困倦")).not.toBeNull();
     expect(queryByText("害羞")).not.toBeNull();
+    expect(queryByText("委屈")).not.toBeNull();
     fireEvent.change(getByLabelText("角色表情"), { target: { value: "playful" } });
     expect(onPatch).toHaveBeenLastCalledWith({ expressionId: "playful" });
     fireEvent.change(getByLabelText("立绘造型"), { target: { value: "" } });
     expect(onPatch).toHaveBeenLastCalledWith({ appearanceId: "", expressionId: "" });
+    rerender(<StorySpriteFields node={{ characterId: "sigrika", appearanceId: "sigrika-standard-v1" }} onPatch={onPatch} />);
+    expect(queryByText("困倦")).toBeNull();
+    expect(queryByText("委屈")).not.toBeNull();
     rerender(<StorySpriteFields node={{ characterId: "denia-rainbow-glow" }} onPatch={onPatch} />);
     expect(queryByText("立绘造型")).toBeNull();
     unmount();

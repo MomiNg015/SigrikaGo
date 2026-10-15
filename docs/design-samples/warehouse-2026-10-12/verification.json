@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "view": "case",
+      "width": 1440,
+      "height": 1000,
+      "result": "passed"
+    },
+    {
+      "view": "case",
+      "width": 390,
+      "height": 844,
+      "result": "passed"
+    },
+    {
+      "view": "case",
+      "width": 360,
+      "height": 640,
+      "result": "passed"
+    },
+    {
+      "view": "case",
+      "width": 320,
+      "height": 568,
+      "result": "passed"
+    },
+    {
+      "view": "book",
+      "width": 1440,
+      "height": 1000,
+      "result": "passed"
+    },
+    {
+      "view": "book",
+      "width": 390,
+      "height": 844,
+      "result": "passed"
+    },
+    {
+      "view": "book",
+      "width": 360,
+      "height": 640,
+      "result": "passed"
+    },
+    {
+      "view": "book",
+      "width": 320,
+      "height": 568,
+      "result": "passed"
+    },
+    {
+      "view": "arcade",
+      "width": 1440,
+      "height": 1000,
+      "result": "passed"
+    },
+    {
+      "view": "arcade",
+      "width": 390,
+      "height": 844,
+      "result": "passed"
+    },
+    {
+      "view": "arcade",
+      "width": 360,
+      "height": 640,
+      "result": "passed"
+    },
+    {
+      "view": "arcade",
+      "width": 320,
+      "height": 568,
+      "result": "passed"
+    }
+  ],
+  "lint": "passed",
+  "errors": [],
+  "extra": [
+    "picker",
+    "phone frame",
+    "reset frame",
+    "reduced motion"
+  ]
+}

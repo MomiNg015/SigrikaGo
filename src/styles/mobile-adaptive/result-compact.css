@@ -39,9 +39,16 @@
   & .rank-progress-stars { display: inline-grid !important; }
   & .result-actions { margin-top: 8px; gap: 8px; }
   & .result-actions button { min-width: 0; min-height: 44px; padding: 9px 4px !important; font-size: 14px !important; white-space: nowrap; border: 1px solid var(--bright-border) !important; border-radius: 5px !important; background: var(--bright-mint) !important; color: var(--bright-ink) !important; box-shadow: 0 3px 0 var(--bright-border) !important; }
-  & .result-actions .result-leave { background: var(--bright-sheet) !important; }
-  & .result-actions button:active { translate: 0 2px; box-shadow: 0 1px 0 var(--bright-border) !important; }
+  & .result-actions button { transition: translate 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out !important; }
+  @media (hover: hover) and (pointer: fine) {
+    & .result-actions button:hover:not(:disabled) { translate: 0 -2px; background: color-mix(in srgb, var(--bright-mint) 80%, white) !important; box-shadow: 0 5px 0 var(--bright-border) !important; }
+  }
+  & .result-actions button:active:not(:disabled) { translate: 0 2px; box-shadow: 0 1px 0 var(--bright-border) !important; }
   & .result-actions button:focus-visible { outline: 2px solid var(--bright-ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    & .result-actions button { transition: none !important; }
+    & .result-actions button:is(:hover, :active):not(:disabled) { translate: none; }
+  }
 
   @media (max-width: 768px) {
     width: calc(100vw - 28px) !important;

@@ -1,0 +1,29 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "thirdPositionPreserved": true,
+    "reloadPreserved": true,
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "thirdPositionPreserved": true,
+    "reloadPreserved": true,
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "thirdPositionPreserved": true,
+    "reloadPreserved": true,
+    "overflow": false
+  }
+]

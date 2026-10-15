@@ -1,0 +1,932 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "id": "denia",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "height": 220.5847964801928,
+        "baseline": 236.29239598617437,
+        "labelGap": 21.70760401382563,
+        "frame": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "svg": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "top": {
+          "x": 234.67398222039242,
+          "y": 159.70759950598156
+        },
+        "bottom": {
+          "x": 386.326029800525,
+          "y": 380.29239598617437
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-01.webp",
+        "height": 220.5847826857776,
+        "baseline": 236.29239439744623,
+        "labelGap": 21.70760560255377,
+        "frame": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "svg": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "top": {
+          "x": 487.96896247043185,
+          "y": 159.70761171166862
+        },
+        "bottom": {
+          "x": 679.0310343422038,
+          "y": 380.29239439744623
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-02.webp",
+        "height": 220.58478036636293,
+        "baseline": 236.2923925767268,
+        "labelGap": 21.707607423273203,
+        "frame": {
+          "x": 740,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 973,
+          "bottom": 396,
+          "left": 740
+        },
+        "svg": {
+          "x": 740,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 973,
+          "bottom": 396,
+          "left": 740
+        },
+        "top": {
+          "x": 752.4821420972871,
+          "y": 159.70761221036386
+        },
+        "bottom": {
+          "x": 960.5178515199252,
+          "y": 380.2923925767268
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "id": "sigrika",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "height": 224.99999821325656,
+        "baseline": 238.49999812950296,
+        "labelGap": 19.500001870497044,
+        "frame": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "svg": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "top": {
+          "x": 229.45492180317353,
+          "y": 157.4999999162464
+        },
+        "bottom": {
+          "x": 391.5450844504285,
+          "y": 382.49999812950296
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/sigrika-costume-01.webp",
+        "height": 225.00000557342145,
+        "baseline": 238.50000590240813,
+        "labelGap": 19.499994097591866,
+        "frame": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "svg": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "top": {
+          "x": 489.03977255486257,
+          "y": 157.5000003289867
+        },
+        "bottom": {
+          "x": 677.9602317800208,
+          "y": 382.50000590240813
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "id": "nabomo",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo.webp",
+        "height": 225.00000498351656,
+        "baseline": 238.5000053988096,
+        "labelGap": 19.499994601190394,
+        "frame": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "svg": {
+          "x": 194,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 427,
+          "bottom": 396,
+          "left": 194
+        },
+        "top": {
+          "x": 235.91278266921208,
+          "y": 157.50000041529304
+        },
+        "bottom": {
+          "x": 385.08721442373655,
+          "y": 382.5000053988096
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-01.webp",
+        "height": 225.00000557342145,
+        "baseline": 238.50000590240813,
+        "labelGap": 19.499994097591866,
+        "frame": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "svg": {
+          "x": 467,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 700,
+          "bottom": 396,
+          "left": 467
+        },
+        "top": {
+          "x": 493.58522287802816,
+          "y": 157.5000003289867
+        },
+        "bottom": {
+          "x": 673.4147727870885,
+          "y": 382.50000590240813
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-02.webp",
+        "height": 225.00000557342145,
+        "baseline": 238.50000590240813,
+        "labelGap": 19.499994097591866,
+        "frame": {
+          "x": 740,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 973,
+          "bottom": 396,
+          "left": 740
+        },
+        "svg": {
+          "x": 740,
+          "y": 144,
+          "width": 233,
+          "height": 252,
+          "top": 144,
+          "right": 973,
+          "bottom": 396,
+          "left": 740
+        },
+        "top": {
+          "x": 767.5795410844764,
+          "y": 157.5000003289867
+        },
+        "bottom": {
+          "x": 945.4204545806404,
+          "y": 382.50000590240813
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "id": "denia",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "height": 125.43985207564614,
+        "baseline": 147.7199247560863,
+        "labelGap": 38.2800752439137,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 78.13005426696135,
+          "y": 147.28007268044016
+        },
+        "bottom": {
+          "x": 164.36995256896807,
+          "y": 272.7199247560863
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-01.webp",
+        "height": 125.43984423118255,
+        "baseline": 147.71992385262502,
+        "labelGap": 38.280076147374984,
+        "frame": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "svg": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "top": {
+          "x": 228.4244099885503,
+          "y": 147.28007962144247
+        },
+        "bottom": {
+          "x": 337.0755881988928,
+          "y": 272.719923852625
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-02.webp",
+        "height": 125.4398429122021,
+        "baseline": 147.71992281723738,
+        "labelGap": 38.280077182762625,
+        "frame": {
+          "x": 55,
+          "y": 414,
+          "width": 132.5,
+          "height": 170,
+          "top": 414,
+          "right": 187.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 414,
+          "width": 132.5,
+          "height": 170,
+          "top": 414,
+          "right": 187.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "top": {
+          "x": 62.09821385360753,
+          "y": 436.2800799050353
+        },
+        "bottom": {
+          "x": 180.40178251669568,
+          "y": 561.7199228172374
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "id": "sigrika",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "height": 140.89689021831924,
+        "baseline": 155.44844449727555,
+        "labelGap": 30.551555502724455,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 70.49889077283304,
+          "y": 139.5515542789563
+        },
+        "bottom": {
+          "x": 172.0011131432251,
+          "y": 280.44844449727555
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/sigrika-costume-01.webp",
+        "height": 140.89688737907184,
+        "baseline": 155.44844564061174,
+        "labelGap": 30.551554359388263,
+        "frame": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "svg": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "top": {
+          "x": 223.59821467350574,
+          "y": 139.5515582615399
+        },
+        "bottom": {
+          "x": 341.9017880410345,
+          "y": 280.44844564061174
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "id": "nabomo",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo.webp",
+        "height": 148.01963288169364,
+        "baseline": 159.00981835329424,
+        "labelGap": 26.990181646705764,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 187.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 72.18167874472208,
+          "y": 135.9901854716006
+        },
+        "bottom": {
+          "x": 170.31831934283053,
+          "y": 284.00981835329424
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-01.webp",
+        "height": 148.01962980649904,
+        "baseline": 159.0098169529578,
+        "labelGap": 26.990183047042194,
+        "frame": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "svg": {
+          "x": 216.5,
+          "y": 125,
+          "width": 132.5,
+          "height": 170,
+          "top": 125,
+          "right": 349,
+          "bottom": 295,
+          "left": 216.5
+        },
+        "top": {
+          "x": 223.5982146931097,
+          "y": 135.99018714645877
+        },
+        "bottom": {
+          "x": 341.9017824551222,
+          "y": 284.0098169529578
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-02.webp",
+        "height": 148.0196298064991,
+        "baseline": 159.00981695295786,
+        "labelGap": 26.990183047042137,
+        "frame": {
+          "x": 55,
+          "y": 414,
+          "width": 132.5,
+          "height": 170,
+          "top": 414,
+          "right": 187.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 414,
+          "width": 132.5,
+          "height": 170,
+          "top": 414,
+          "right": 187.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "top": {
+          "x": 62.75234184503239,
+          "y": 424.99018714645877
+        },
+        "bottom": {
+          "x": 179.74765530319956,
+          "y": 573.0098169529579
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "id": "denia",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "height": 111.23911410481827,
+        "baseline": 140.61955591577464,
+        "labelGap": 45.38044408422536,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 75.51155755749404,
+          "y": 154.38044181095637
+        },
+        "bottom": {
+          "x": 151.9884485045566,
+          "y": 265.61955591577464
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-01.webp",
+        "height": 111.23910714840719,
+        "baseline": 140.619555114592,
+        "labelGap": 45.380444885408,
+        "frame": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "svg": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "top": {
+          "x": 212.07447678229934,
+          "y": 154.38044796618482
+        },
+        "bottom": {
+          "x": 308.4255216103389,
+          "y": 265.619555114592
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/denia-costume-02.webp",
+        "height": 111.23910597874521,
+        "baseline": 140.619554196418,
+        "labelGap": 45.380445803582006,
+        "frame": {
+          "x": 55,
+          "y": 414,
+          "width": 117.5,
+          "height": 170,
+          "top": 414,
+          "right": 172.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 414,
+          "width": 117.5,
+          "height": 170,
+          "top": 414,
+          "right": 172.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "top": {
+          "x": 61.29464247395384,
+          "y": 443.3804482176728
+        },
+        "bottom": {
+          "x": 166.20535430725843,
+          "y": 554.619554196418
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "id": "sigrika",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "height": 124.94629887284913,
+        "baseline": 147.4731488938104,
+        "labelGap": 38.52685110618961,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 68.74429936458779,
+          "y": 147.52685002096126
+        },
+        "bottom": {
+          "x": 158.75570410814305,
+          "y": 272.4731488938104
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/sigrika-costume-01.webp",
+        "height": 124.94629635502596,
+        "baseline": 147.4731499077123,
+        "labelGap": 38.5268500922877,
+        "frame": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "svg": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "top": {
+          "x": 207.7946432010334,
+          "y": 147.52685355268633
+        },
+        "bottom": {
+          "x": 312.7053592062004,
+          "y": 272.4731499077123
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "id": "nabomo",
+    "figures": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo.webp",
+        "height": 131.26269331018116,
+        "baseline": 150.6313483510345,
+        "labelGap": 35.36865164896551,
+        "frame": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 172.5,
+          "bottom": 295,
+          "left": 55
+        },
+        "top": {
+          "x": 70.2365830377724,
+          "y": 144.36865504085333
+        },
+        "bottom": {
+          "x": 157.2634152662837,
+          "y": 275.6313483510345
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-01.webp",
+        "height": 131.2626905831218,
+        "baseline": 150.63134710922674,
+        "labelGap": 35.36865289077326,
+        "frame": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "svg": {
+          "x": 201.5,
+          "y": 125,
+          "width": 117.5,
+          "height": 170,
+          "top": 125,
+          "right": 319,
+          "bottom": 295,
+          "left": 201.5
+        },
+        "top": {
+          "x": 207.79464321841806,
+          "y": 144.36865652610493
+        },
+        "bottom": {
+          "x": 312.7053542526555,
+          "y": 275.63134710922674
+        },
+        "contained": true
+      },
+      {
+        "src": "/assets/costumes/portraits/nabomo-costume-02.webp",
+        "height": 131.26269058312175,
+        "baseline": 150.63134710922668,
+        "labelGap": 35.36865289077332,
+        "frame": {
+          "x": 55,
+          "y": 414,
+          "width": 117.5,
+          "height": 170,
+          "top": 414,
+          "right": 172.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "svg": {
+          "x": 55,
+          "y": 414,
+          "width": 117.5,
+          "height": 170,
+          "top": 414,
+          "right": 172.5,
+          "bottom": 584,
+          "left": 55
+        },
+        "top": {
+          "x": 61.874718239934374,
+          "y": 433.3686565261049
+        },
+        "bottom": {
+          "x": 165.62527923113922,
+          "y": 564.6313471092267
+        },
+        "contained": true
+      }
+    ],
+    "sameHeight": true
+  }
+]

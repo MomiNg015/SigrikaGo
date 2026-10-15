@@ -109,6 +109,7 @@ function PlayerInfo({
           const member = entry.status !== "hidden" && entry.character ? playerCharacterForDisplay(characters, memberPlayer) : null;
           return <div key={index} className={`team-portrait-slot is-${entry.status ?? "hidden"}`} aria-label={`第${index + 1}位：${member?.name ?? "未揭晓"}${entry.status === "active" ? "，当前出场" : entry.status === "finished" ? "，已退场" : ""}`}>
             {member ? <div className="team-portrait-art"><BattleCharacterPortrait game={game} player={memberPlayer} character={member} round={index + 1} variant="team" /></div> : <span className="team-portrait-mystery">?</span>}
+            <span className="team-portrait-order" aria-hidden="true">{index + 1}</span>
           </div>;
         })}
         </div>

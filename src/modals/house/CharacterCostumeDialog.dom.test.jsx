@@ -3,10 +3,25 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import CharacterCostumeDialog from "./CharacterCostumeDialog.jsx";
+import { CHARACTERS } from "../../shared/characters.js";
 
 afterEach(cleanup);
 
 describe("CharacterCostumeDialog overlay", () => {
+  it("shows the default chibi in both the wardrobe card and detail even when another costume is equipped", () => {
+    const onEquip = vi.fn();
+    render(<main className="app-shell"><CharacterCostumeDialog character={CHARACTERS.sigrika} characterOwned
+      costumes={[]} loading={false} equippingId="" user={{ equippedCostumes: { sigrika: { id: 'other', portraitUrl: '/other.webp' } } }}
+      onEquip={onEquip} onClose={vi.fn()} /></main>);
+    const card = screen.getByRole('button', { name: '查看默认服装详情' });
+    expect(card.querySelector('img').getAttribute('src')).toBe('/assets/characters/handbook-chibi-sprites/sigrika.webp');
+    fireEvent.click(card);
+    const detail = screen.getByRole('dialog', { name: '默认服装详情' });
+    expect(detail.querySelector('img').getAttribute('src')).toBe('/assets/characters/handbook-chibi-sprites/sigrika.webp');
+    fireEvent.click(screen.getByRole('button', { name: '关闭服装详情' }));
+    fireEvent.click(screen.getByRole('button', { name: '装扮默认服装' }));
+    expect(onEquip.mock.calls[0][0].id).toBe('default');
+  });
   it("portals the wardrobe outside the clipped character-detail parent", () => {
     render(
       <main className="app-shell player-theme-enabled theme-bright-school">

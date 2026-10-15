@@ -111,14 +111,34 @@ describe("room view serialization", () => {
     expect(view.players[1].costumeSnapshot).toBeNull();
   });
 
-  it("uses game as the black spectator view and includes only the white alternate view", () => {
+  it("uses a public spectator view without alternate player views during a match", () => {
     const view = buildRoomView(testRoom(), "spectator");
 
     expect(view.role).toBe("spectator");
-    expect(view.gameViews).not.toHaveProperty("black");
-    expect(view.gameViews.white).toBeTruthy();
-    expect(getPoint(view.game, pointId(3, 3)).stone).toBe(COLORS.black);
-    expect(getPoint(view.gameViews.white, pointId(3, 3)).stone).toBeNull();
+    expect(view.gameViews).toBeNull();
+    expect(getPoint(view.game, pointId(3, 3)).stone).toBeNull();
+  });
+
+  it("hides both hidden hands and applies both owners' illusions without changing player views", () => {
+    const room = testRoom();
+    const whiteHidden = getPoint(room.game, pointId(4, 4));
+    whiteHidden.stone = COLORS.white;
+    whiteHidden.hiddenHand = { owner: COLORS.white, exposed: false };
+    for (const [id, color, visibleAs] of [
+      [pointId(5, 5), COLORS.black, COLORS.white],
+      [pointId(6, 6), COLORS.white, COLORS.black]
+    ]) {
+      Object.assign(getPoint(room.game, id), { stone: color, colorIllusion: { owner: color, visibleAs } });
+    }
+    const original = structuredClone(room.game);
+    const publicGame = buildRoomView(room, "spectator").game;
+    expect(getPoint(publicGame, pointId(3, 3)).stone).toBeNull();
+    expect(getPoint(publicGame, pointId(4, 4)).stone).toBeNull();
+    expect(getPoint(publicGame, pointId(5, 5)).stone).toBe(COLORS.white);
+    expect(getPoint(publicGame, pointId(6, 6)).stone).toBe(COLORS.black);
+    expect(getPoint(buildRoomView(room, "black-user").game, pointId(3, 3)).stone).toBe(COLORS.black);
+    expect(getPoint(buildRoomView(room, "white-user").game, pointId(4, 4)).stone).toBe(COLORS.white);
+    expect(room.game).toEqual(original);
   });
 
   it("projects only safe practice metadata and treats the virtual bot as connected", () => {
@@ -248,7 +268,7 @@ describe("room view serialization", () => {
     expect(calls).toEqual([COLORS.white]);
   });
 
-  it("builds both color views once for spectators", () => {
+  it("builds only the public view for ongoing spectators", () => {
     const calls = [];
     buildRoomView(testRoom(), "spectator", {
       gameView: (game, color) => {
@@ -257,6 +277,6 @@ describe("room view serialization", () => {
       }
     });
 
-    expect(calls).toEqual([COLORS.black, COLORS.white]);
+    expect(calls).toEqual([null]);
   });
 });

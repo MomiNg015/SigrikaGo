@@ -1,0 +1,106 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    },
+    "id": "sigrika",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 414,
+    "frameHeight": 414,
+    "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    },
+    "id": "denia",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 414,
+    "frameHeight": 414,
+    "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 768
+    },
+    "id": "sigrika",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 414,
+    "frameHeight": 414,
+    "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 768
+    },
+    "id": "denia",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 414,
+    "frameHeight": 414,
+    "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "id": "sigrika",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 260,
+    "frameHeight": 260,
+    "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "id": "denia",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 260,
+    "frameHeight": 260,
+    "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "id": "sigrika",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 204.796875,
+    "frameHeight": 204.796875,
+    "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "id": "denia",
+    "contained": true,
+    "artContained": true,
+    "imageHeight": 204.796875,
+    "frameHeight": 204.796875,
+    "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+    "overflow": false
+  }
+]

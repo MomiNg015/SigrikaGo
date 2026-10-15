@@ -3,7 +3,7 @@ import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
-import { resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
+import { resolveCharacterPortrait, resolveCharacterPortraitPresentation } from "../shared/characterPortraits.js";
 import {
   authPortraitReadySources,
   authPortraitReadyVersion,
@@ -72,7 +72,7 @@ export function randomPreloadCharacter(
 ) {
   const allCandidates = preloadCharacterCandidates(characters);
   const readyCandidates = readyPortraitSources?.size
-    ? allCandidates.filter((character) => readyPortraitSources.has(character.portrait))
+    ? allCandidates.filter((character) => readyPortraitSources.has(resolveCharacterPortrait(character)))
     : [];
   const candidates = readyCandidates.length > 0 ? readyCandidates : allCandidates;
   if (candidates.length === 0) return CHARACTERS.sigrika;
@@ -117,6 +117,7 @@ export default function AssetPreloadScreen({
   statusText = "",
   showTips = true,
   tipsText,
+  tipStyle = "plain",
   user = null
 }) {
   const readyVersion = useSyncExternalStore(
@@ -170,7 +171,7 @@ export default function AssetPreloadScreen({
   useEffect(() => {
     if (fixedCharacter || readyPortraitSources.size === 0) return;
     setDisplayState((current) => {
-      if (readyPortraitSources.has(current.randomCharacter?.portrait)) return current;
+      if (readyPortraitSources.has(resolveCharacterPortrait(current.randomCharacter))) return current;
       return {
         ...current,
         randomCharacter: randomPreloadCharacter(
@@ -236,7 +237,7 @@ export default function AssetPreloadScreen({
   }, [percent]);
 
   return (
-    <main className="asset-preload-screen">
+    <main className={`asset-preload-screen${tipStyle === "brush" ? " login-loading-screen" : ""}`}>
       <section className="asset-preload-panel">
         {portraitSource ? (
           <span className="preload-character" aria-label={portraitLabel}>
@@ -286,7 +287,12 @@ export default function AssetPreloadScreen({
           </div>
         </div>
         {progressHint && <p className="preload-status preload-progress-hint">{progressHint}</p>}
-        {showTips && displayTip && <p className="preload-tip" aria-live="polite">{displayTip}</p>}
+        {showTips && displayTip && (tipStyle === "brush" ? (
+          <div className="login-loading-tip" aria-live="polite">
+            <span className="login-loading-tip-label">Tip：</span>
+            <span className="login-loading-tip-copy">{displayTip.replace(/^Tip：/, "")}</span>
+          </div>
+        ) : <p className="preload-tip" aria-live="polite">{displayTip}</p>)}
       </section>
     </main>
   );

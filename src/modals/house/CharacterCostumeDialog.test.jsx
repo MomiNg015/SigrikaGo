@@ -85,8 +85,9 @@ describe("CharacterCostumeDialog", () => {
     expect(html).toContain('aria-label="装扮默认服装"');
     expect(html).toContain('aria-current="true"');
     expect(html).toContain("达妮娅的衣柜");
-    expect(html).toContain("scale:0.88");
-    expect(html).toContain("translate:-2% 3%");
+    expect(html).toContain('class="portrait-showcase"');
+    expect(html).not.toContain("scale:0.88");
+    expect(html).not.toContain("translate:-2% 3%");
     expect(html).not.toContain("character-costume-equipped-label");
     expect(html).not.toContain('character-costume-card is-unowned is-equipped');
     expect(html).not.toContain("部员手册 · 服装");

@@ -20,6 +20,8 @@ This directory contains guidelines for backend development. Fill in each file wi
 
 ## Guidelines Index
 
+Live spectator and historical browsing changes follow [Spectator Visibility Contract](./spectator-visibility-contract.md).
+
 Team relay matchmaking and stage handoffs follow [Team Match Contract](./team-match-contract.md).
 
 | Guide | Description | Status |

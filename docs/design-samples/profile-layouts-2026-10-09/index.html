@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>履历 · 三套布局样板</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="samples.css">
+</head>
+<body>
+  <header class="preview-tools">
+    <div class="sample-label">履历布局 <small>演示数据</small></div>
+    <nav aria-label="选择布局样板">
+      <button data-layout="dossier" aria-pressed="true">1 侧栏档案</button>
+      <button data-layout="horizontal" aria-pressed="false">2 横排履历</button>
+      <button data-layout="notebook" aria-pressed="false">3 双页手帐</button>
+    </nav>
+    <button id="phone-toggle" aria-pressed="false">手机预览</button>
+  </header>
+  <main class="preview-stage">
+    <section id="profile" class="profile dossier" aria-label="履历样板"></section>
+  </main>
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <div class="detail-header"><h2 id="detail-title"></h2><button id="detail-close" aria-label="关闭详情">×</button></div>
+    <div id="detail-body"></div>
+  </dialog>
+  <script type="module" src="samples.js"></script>
+</body>
+</html>

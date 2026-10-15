@@ -1,0 +1,122 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    },
+    "owned": "all",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x1024-all.png"
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    },
+    "owned": "partial",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x1024-partial.png"
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    },
+    "owned": "none",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x1024-none.png"
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 768
+    },
+    "owned": "all",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x768-all.png"
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 768
+    },
+    "owned": "partial",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x768-partial.png"
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 768
+    },
+    "owned": "none",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/1440x768-none.png"
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "owned": "all",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/390x844-all.png"
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "owned": "partial",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/390x844-partial.png"
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "owned": "none",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/390x844-none.png"
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "owned": "all",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/360x640-all.png"
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "owned": "partial",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/360x640-partial.png"
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "owned": "none",
+    "overflow": false,
+    "errors": [],
+    "screenshot": "docs/design-samples/handbook-chibi/verified-2026-10-09/360x640-none.png"
+  }
+]

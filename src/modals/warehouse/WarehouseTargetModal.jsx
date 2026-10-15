@@ -3,6 +3,7 @@ import { UserRound, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { ModalDialog } from "../modalComponents.jsx";
 import { characterPortraitImageProps } from "../../shared/characterPortraits.js";
+import MatchCharacterCardContent from "../../home/MatchCharacterCardContent.jsx";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import {
   RAINBOW_BEAN_CANDY_ID,
@@ -24,7 +25,7 @@ export default function WarehouseTargetModal({
   const dialog = (
     <div className="modal-backdrop nested-backdrop" onClick={onClose}>
       <ModalDialog
-        className={`character-target-modal${warehouseTargetState(targetResult).isResolved ? "" : " window-sticker-host"}`}
+        className={`character-target-modal${warehouseTargetState(targetResult).isResolved ? "" : " window-sticker-host match-character-picker"}`}
         ariaLabel={warehouseTargetState(targetResult).isResolved ? "道具效果" : undefined}
         ariaLabelledBy={warehouseTargetState(targetResult).isResolved ? undefined : "warehouse-target-title"}
         aria-busy={busy || undefined}
@@ -37,7 +38,7 @@ export default function WarehouseTargetModal({
         ) : (
           <>
             <WindowTitleSticker titleKey="select-character" id="warehouse-target-title" />
-            <div className="warehouse-character-grid">
+            <div className="team-character-options">
               {ownedCharacters.map((character) => {
                 const targetAvailability = warehouseCharacterTargetAvailability({
                   character,
@@ -45,21 +46,21 @@ export default function WarehouseTargetModal({
                   itemEffects: user?.itemEffects
                 });
                 return (
-                  <button
-                    key={character.id}
-                    type="button"
-                    className={targetAvailability.disabled ? "warehouse-target-disabled" : ""}
-                    disabled={busy || targetAvailability.disabled}
-                    aria-disabled={busy || targetAvailability.disabled}
-                    title={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
-                    aria-label={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
-                    onClick={() => {
-                      if (!busy && !targetAvailability.disabled) onUseItem(targetItem, character.id);
-                    }}
-                  >
-                    <img {...characterPortraitImageProps(character, { itemEffects: user?.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
-                    <span>{character.name}{targetItem?.disabledCharacterReasons?.[canonicalCharacterId(character.id)] ? "（暂不可用）" : ""}</span>
-                  </button>
+                  <div className="match-character-option-wrap" key={character.id}>
+                    <button
+                      type="button"
+                      className={`team-character-option${targetAvailability.disabled ? " warehouse-target-disabled" : ""}`}
+                      disabled={busy || targetAvailability.disabled}
+                      aria-disabled={busy || targetAvailability.disabled}
+                      title={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
+                      aria-label={targetAvailability.reason ? `${character.name}：${targetAvailability.reason}` : character.name}
+                      onClick={() => {
+                        if (!busy && !targetAvailability.disabled) onUseItem(targetItem, character.id);
+                      }}
+                    >
+                      <MatchCharacterCardContent character={character} user={user ?? {}} />
+                    </button>
+                  </div>
                 );
               })}
               {ownedCharacters.length === 0 && (
@@ -80,7 +81,7 @@ function WarehouseEffectResult({ targetState, characters, user }) {
   if (!character) return null;
   return (
     <div className={`warehouse-effect-result warehouse-item-category-${targetState.item?.targetType || "self"}`}>
-      <img {...characterPortraitImageProps(character, { itemEffects: targetState.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
+      <img {...characterPortraitImageProps(character, { variant: "avatar", itemEffects: targetState.itemEffects, user })} alt={character.name} loading="lazy" decoding="async" />
       <strong>{character.name}</strong>
       <p>{targetState.effectText}</p>
     </div>

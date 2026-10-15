@@ -4,9 +4,7 @@
 
 .preload-mark { width: 72px; aspect-ratio: 1; border: 3px solid rgba(93, 127, 232, 0.18); border-top-color: #5d7fe8; border-radius: 50%; animation: preload-spin 0.9s linear infinite; }
 
-.preload-character { width: clamp(132px, 28vw, 190px); aspect-ratio: 1; display: grid; place-items: end center; overflow: hidden; background: transparent; box-shadow: none; animation: preload-character-hop 1.08s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 50% 100%; }
-
-.preload-character img { width: 100%; height: 100%; object-fit: contain; background: transparent; box-shadow: none; filter: none; }
+.preload-character { position: relative; width: clamp(132px, 28vw, 190px); aspect-ratio: 1; display: grid; place-items: end center; overflow: hidden; background: transparent; box-shadow: none; animation: preload-character-hop 1.08s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 50% 100%; }
 
 .asset-preload-panel p { margin: 0; color: #4f3d55; font-weight: 900; }
 
@@ -48,7 +46,7 @@
 
 @media (max-width: 640px) {
   .asset-preload-panel { gap: 14px; }
-  .preload-character { width: clamp(124px, 42vw, 174px); }
+  .preload-character { position: relative; width: clamp(124px, 42vw, 174px); }
   .preload-progress { --bar-h: 18px; }
 }
 

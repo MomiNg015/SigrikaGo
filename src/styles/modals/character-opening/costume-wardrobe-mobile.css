@@ -26,13 +26,13 @@
 
   .character-costume-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: minmax(226px, auto) !important;
+    grid-auto-rows: minmax(280px, auto) !important;
     gap: 9px !important;
     padding: 10px !important;
   }
 
   .character-costume-card {
-    min-height: 226px !important;
+    min-height: 280px !important;
     display: grid !important;
     grid-template-rows: minmax(0, 1fr) auto !important;
     justify-items: center !important;

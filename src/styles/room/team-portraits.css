@@ -9,24 +9,24 @@
   border: 0;
 }
 .team-portrait-slot:nth-child(1) {
-  --team-art-left: -18.333%;
+  --team-art-left: -3.333%;
   --team-center: 16.667%;
   clip-path: polygon(0 7%, 40% 0, 22% 94%, 0 100%);
 }
 .team-portrait-slot:nth-child(2) {
-  --team-art-left: 15%;
+  --team-art-left: 30%;
   --team-center: 50%;
   clip-path: polygon(44% 3%, 75% 0, 55% 100%, 25% 97%);
 }
 .team-portrait-slot:nth-child(3) {
-  --team-art-left: 48.333%;
+  --team-art-left: 63.333%;
   --team-center: 83.333%;
   background: color-mix(in srgb, var(--bright-pink) 18%, var(--bright-paper));
   clip-path: polygon(79% 5%, 100% 0, 100% 96%, 59% 100%);
 }
 .team-portrait-slot.is-active { background: color-mix(in srgb, var(--bright-yellow) 40%, var(--bright-paper)); }
 .team-portrait-slot.is-finished .team-portrait-art { filter: grayscale(1); opacity: 0.55; }
-.team-portrait-art { position: absolute; left: var(--team-art-left); bottom: 0; width: 70%; height: 100%; }
+.team-portrait-art { position: absolute; left: var(--team-art-left); top: 0; width: 40%; height: 100%; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap .team-portrait-art > img {
   position: absolute !important;
   inset: 0 !important;
@@ -50,4 +50,54 @@
   color: var(--bright-ink);
   font-size: clamp(18px, 3vw, 36px);
   font-weight: 800;
+}
+.team-portrait-order {
+  position: absolute;
+  z-index: 1;
+  left: var(--team-center);
+  bottom: 8%;
+  translate: -50% 0;
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--bright-ink);
+  border-radius: 50%;
+  color: var(--bright-ink);
+  background: var(--bright-paper);
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Portrait phones reserve the readable top photo for the current member.
+   The other two stay in sequence below it, instead of cutting three faces
+   into 20px diagonal slivers. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .team-portrait-strip {
+    inset: 2px 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 2px;
+  }
+  .team-portrait-slot:nth-child(n) {
+    position: relative;
+    inset: auto;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 4px;
+    clip-path: none;
+  }
+  .team-portrait-slot.is-active,
+  .team-portrait-strip:not(:has(.is-active)) .team-portrait-slot:first-child {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .team-portrait-art { inset: 0; width: 100%; height: 100%; }
+  .team-portrait-slot .character-bust-portrait[data-variant="team"][data-standard="true"] > .character-bust-art {
+    top: 4%;
+    transform: translate(-50%, 0);
+  }
+  .team-portrait-mystery { left: 50%; font-size: 16px; }
+  .team-portrait-order { left: auto; right: 1px; bottom: 1px; translate: none; width: 12px; height: 12px; font-size: 9px; }
 }

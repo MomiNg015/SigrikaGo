@@ -17,7 +17,7 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
     <article className={`leaderboard-row ${leaderboardRankClass(rank)} ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`} data-rank={rank}>
       <strong className="leaderboard-rank">#{rank}</strong>
       <div className="leaderboard-avatar" data-character-id={characterId}>
-        <img {...characterPortraitImageProps(character, { itemEffects: player.itemEffects, user: player, ...(captureChallenge ? { costumeSnapshot: player.costumeSnapshot } : {}) })} alt={`${player.username}头像`} />
+        <img {...characterPortraitImageProps(character, { variant: "avatar", itemEffects: player.itemEffects, user: player, ...(captureChallenge ? { costumeSnapshot: player.costumeSnapshot } : {}) })} alt={`${player.username}头像`} />
       </div>
       <div className="leaderboard-player">
         <strong>

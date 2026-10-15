@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
+vi.mock("./matchSortieVoice.js", () => ({ playMatchSortieVoice: vi.fn() }));
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.unstubAllGlobals(); });
 

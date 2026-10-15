@@ -39,6 +39,8 @@ function configureDevApiProxy(proxy) {
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   optimizeDeps: {
+    // Only crawl the application, not copied builds, fixtures and HTML prototypes.
+    entries: ["index.html"],
     exclude: PIXI_OPTIMIZE_DEPS_EXCLUDE,
     include: PIXI_OPTIMIZE_DEPS_INCLUDE
   },
@@ -69,6 +71,16 @@ export default defineConfig({
     }
   },
   server: {
+    watch: {
+      // These trees can contain entire toolchains; watching them delays first load
+      // and can exhaust Windows file watchers. Source and public assets stay live.
+      ignored: [
+        "**/.codex-run/**", "**/.tmp/**", "**/.worktrees/**",
+        "**/.codex-temp/**", "**/.trellis/**", "**/.releases/**",
+        "**/output/**", "**/outputs/**", "**/prototypes/**",
+        "**/artifacts/**", "**/test-results/**", "**/playwright-report/**"
+      ]
+    },
     proxy: {
       "/api": {
         target: "http://localhost:3001",

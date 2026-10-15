@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
@@ -9,7 +10,7 @@ import { LOGIN_LOADING_ART } from "./loginLoadingAssets.js";
 export const SITE_ENTRY_IMAGES = [
   "/assets/login-sigrika-mascot.webp",
   "/assets/preload/orange-mascot.png",
-  ...Object.values(LOGIN_LOADING_ART)
+  LOGIN_LOADING_ART.tip
 ];
 export const SITE_ENTRY_FONTS = [
   '400 16px "Sigrika Accent Latin"',
@@ -18,7 +19,7 @@ export const SITE_ENTRY_FONTS = [
 
 export function siteEntryPortraits(characters = CHARACTERS) {
   return [...new Set([...Object.values(CHARACTERS), ...Object.values(characters)]
-    .map((character) => character?.portrait).filter(Boolean))];
+    .map((character) => resolveCharacterPortrait(character)).filter(Boolean))];
 }
 
 export async function preloadSiteEntry({

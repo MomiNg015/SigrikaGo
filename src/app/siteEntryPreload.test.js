@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
@@ -11,7 +12,7 @@ describe("site entry resources", () => {
     const sources = siteEntryPortraits({ custom: { portrait: "/uploads/custom.webp" } });
     expect(sources).toContain(CHARACTERS.baconbits.portrait);
     expect(sources).toContain("/uploads/custom.webp");
-    expect(sources).toEqual(expect.arrayContaining(Object.values(CHARACTERS).map(c => c.portrait).filter(Boolean)));
+    expect(sources).toEqual(expect.arrayContaining(Object.values(CHARACTERS).map(c => resolveCharacterPortrait(c)).filter(Boolean)));
     expect(new Set(sources).size).toBe(sources.length);
     expect(sources.some(src => /\.(ogg|mp3|wav)$/.test(src))).toBe(false);
   });

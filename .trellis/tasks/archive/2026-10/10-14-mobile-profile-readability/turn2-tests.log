@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/modals/ReplayList.test.jsx src/modals/ProfileMobileLayout.test.js src/modals/ProfileResumeView.dom.test.jsx src/modals/ResumeModal.dom.test.jsx src/modals/TeamProfile.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 864ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  450ms
+ ✓ src/modals/TeamProfile.dom.test.jsx (2 tests) 839ms
+   ✓ loads independent team stats, retries failures, and scopes self replay browsing  568ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (9 tests) 373ms
+ ✓ src/modals/ReplayList.test.jsx (13 tests) 92ms
+ ✓ src/modals/ProfileMobileLayout.test.js (5 tests) 34ms
+
+ Test Files  5 passed (5)
+      Tests  33 passed (33)
+   Start at  19:31:55
+   Duration  10.99s (transform 707ms, setup 0ms, collect 2.66s, tests 2.20s, environment 4.28s, prepare 525ms)

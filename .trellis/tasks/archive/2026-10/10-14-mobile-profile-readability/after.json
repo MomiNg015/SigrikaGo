@@ -1,0 +1,2052 @@
+[
+  {
+    "context": "self",
+    "width": 320,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.13897705078125,
+          "y": 120.43363952636719,
+          "width": 263.7220458984375,
+          "height": 153.8378448486328,
+          "top": 120.43363952636719,
+          "right": 299.86102294921875,
+          "bottom": 274.271484375,
+          "left": 36.13897705078125
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 262,
+        "width": 262
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.89213562011719,
+          "y": 134.1846923828125,
+          "width": 74.3905029296875,
+          "height": 74.3905029296875,
+          "top": 134.1846923828125,
+          "right": 122.28263854980469,
+          "bottom": 208.5751953125,
+          "left": 47.89213562011719
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.03684997558594,
+          "y": 156.55181884765625,
+          "width": 153.83787536621094,
+          "height": 29.65625,
+          "top": 156.55181884765625,
+          "right": 286.8747253417969,
+          "bottom": 186.20806884765625,
+          "left": 133.03684997558594
+        },
+        "font": "16px",
+        "grid": "29.6875px / 154px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 154,
+        "width": 154
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 134.4572296142578,
+          "y": 215.3336181640625,
+          "width": 152.41749572753906,
+          "height": 43.95367431640625,
+          "top": 215.3336181640625,
+          "right": 286.8747253417969,
+          "bottom": 259.28729248046875,
+          "left": 134.4572296142578
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.13897705078125,
+          "y": 286.25885009765625,
+          "width": 263.7220458984375,
+          "height": 1100.41845703125,
+          "top": 286.25885009765625,
+          "right": 299.86102294921875,
+          "bottom": 1386.6773071289062,
+          "left": 36.13897705078125
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 263,
+        "width": 262
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.11897277832031,
+          "y": 330.2125244140625,
+          "width": 225.7620391845703,
+          "height": 64.93157958984375,
+          "top": 330.2125244140625,
+          "right": 280.8810119628906,
+          "bottom": 395.14410400390625,
+          "left": 55.11897277832031
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.11897277832031,
+          "y": 409.1293640136719,
+          "width": 225.7620391845703,
+          "height": 46.950531005859375,
+          "top": 409.1293640136719,
+          "right": 280.8810119628906,
+          "bottom": 456.07989501953125,
+          "left": 55.11897277832031
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 238,
+        "width": 226
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.11897277832031,
+          "y": 572.7537841796875,
+          "width": 225.7620391845703,
+          "height": 70.92523193359375,
+          "top": 572.7537841796875,
+          "right": 280.8810119628906,
+          "bottom": 643.6790161132812,
+          "left": 55.11897277832031
+        },
+        "font": "16px",
+        "grid": "auto / 226px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.06211853027344,
+          "y": 728.27734375,
+          "width": 30.483505249023438,
+          "height": 32.15362548828125,
+          "top": 728.27734375,
+          "right": 139.54562377929688,
+          "bottom": 760.4309692382812,
+          "left": 109.06211853027344
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 31,
+        "width": 31
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.11476135253906,
+          "y": 720.3794555664062,
+          "width": 43.95367431640625,
+          "height": 47.949462890625,
+          "top": 720.3794555664062,
+          "right": 103.06843566894531,
+          "bottom": 768.3289184570312,
+          "left": 59.11476135253906
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 144.54034423828125,
+          "y": 712.3878784179688,
+          "width": 37.9912109375,
+          "height": 64.43206787109375,
+          "top": 712.3878784179688,
+          "right": 182.53155517578125,
+          "bottom": 776.8199462890625,
+          "left": 144.54034423828125
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 38,
+        "width": 38
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 360,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.15974044799805,
+          "y": 120.4310302734375,
+          "width": 303.6805419921875,
+          "height": 153.838134765625,
+          "top": 120.4310302734375,
+          "right": 339.84028244018555,
+          "bottom": 274.2691650390625,
+          "left": 36.15974044799805
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 302,
+        "width": 302
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.912925720214844,
+          "y": 134.18211364746094,
+          "width": 74.39064025878906,
+          "height": 74.39064025878906,
+          "top": 134.18211364746094,
+          "right": 122.3035659790039,
+          "bottom": 208.57275390625,
+          "left": 47.912925720214844
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.05780029296875,
+          "y": 156.54928588867188,
+          "width": 193.796142578125,
+          "height": 29.656295776367188,
+          "top": 156.54928588867188,
+          "right": 326.85394287109375,
+          "bottom": 186.20558166503906,
+          "left": 133.05780029296875
+        },
+        "font": "16px",
+        "grid": "29.6875px / 194px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 194,
+        "width": 194
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 174.43614196777344,
+          "y": 215.33119201660156,
+          "width": 152.4178009033203,
+          "height": 43.95375061035156,
+          "top": 215.33119201660156,
+          "right": 326.85394287109375,
+          "bottom": 259.2849426269531,
+          "left": 174.43614196777344
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.15974044799805,
+          "y": 286.256591796875,
+          "width": 303.6805419921875,
+          "height": 1100.42041015625,
+          "top": 286.256591796875,
+          "right": 339.84028244018555,
+          "bottom": 1386.677001953125,
+          "left": 36.15974044799805
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 303,
+        "width": 302
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.1397705078125,
+          "y": 330.2103271484375,
+          "width": 265.720458984375,
+          "height": 64.93170166015625,
+          "top": 330.2103271484375,
+          "right": 320.8602294921875,
+          "bottom": 395.14202880859375,
+          "left": 55.1397705078125
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.1397705078125,
+          "y": 409.1273193359375,
+          "width": 265.720458984375,
+          "height": 46.950592041015625,
+          "top": 409.1273193359375,
+          "right": 320.8602294921875,
+          "bottom": 456.0779113769531,
+          "left": 55.1397705078125
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.1397705078125,
+          "y": 572.7520141601562,
+          "width": 265.720458984375,
+          "height": 70.9254150390625,
+          "top": 572.7520141601562,
+          "right": 320.8602294921875,
+          "bottom": 643.6774291992188,
+          "left": 55.1397705078125
+        },
+        "font": "16px",
+        "grid": "auto / 266px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.08302307128906,
+          "y": 728.2759399414062,
+          "width": 46.2950439453125,
+          "height": 32.15362548828125,
+          "top": 728.2759399414062,
+          "right": 155.37806701660156,
+          "bottom": 760.4295654296875,
+          "left": 109.08302307128906
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 46,
+        "width": 46
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.13556671142578,
+          "y": 720.3779907226562,
+          "width": 43.953758239746094,
+          "height": 47.94952392578125,
+          "top": 720.3779907226562,
+          "right": 103.08932495117188,
+          "bottom": 768.3275146484375,
+          "left": 59.13556671142578
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 160.37281799316406,
+          "y": 712.3864135742188,
+          "width": 44.71856689453125,
+          "height": 64.43218994140625,
+          "top": 712.3864135742188,
+          "right": 205.0913848876953,
+          "bottom": 776.818603515625,
+          "left": 160.37281799316406
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 45,
+        "width": 45
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 390,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.2204704284668,
+          "y": 120.79766845703125,
+          "width": 333.55908203125,
+          "height": 153.79669189453125,
+          "top": 120.79766845703125,
+          "right": 369.7795524597168,
+          "bottom": 274.5943603515625,
+          "left": 36.2204704284668
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 332,
+        "width": 332
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.97048568725586,
+          "y": 134.5450439453125,
+          "width": 74.37059020996094,
+          "height": 74.37059020996094,
+          "top": 134.5450439453125,
+          "right": 122.3410758972168,
+          "bottom": 208.91563415527344,
+          "left": 47.97048568725586
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.0924072265625,
+          "y": 155.54861450195312,
+          "width": 223.70428466796875,
+          "height": 32.34785461425781,
+          "top": 155.54861450195312,
+          "right": 356.79669189453125,
+          "bottom": 187.89646911621094,
+          "left": 133.0924072265625
+        },
+        "font": "16px",
+        "grid": "32.3906px / 224px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 224,
+        "width": 224
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 204.4199981689453,
+          "y": 215.67225646972656,
+          "width": 152.37669372558594,
+          "height": 43.94190979003906,
+          "top": 215.67225646972656,
+          "right": 356.79669189453125,
+          "bottom": 259.6141662597656,
+          "left": 204.4199981689453
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.2204704284668,
+          "y": 286.5785217285156,
+          "width": 333.55908203125,
+          "height": 1100.1239013671875,
+          "top": 286.5785217285156,
+          "right": 369.7795524597168,
+          "bottom": 1386.7024230957031,
+          "left": 36.2204704284668
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 333,
+        "width": 332
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.19538497924805,
+          "y": 330.5204162597656,
+          "width": 295.6092529296875,
+          "height": 64.91421508789062,
+          "top": 330.5204162597656,
+          "right": 350.80463790893555,
+          "bottom": 395.43463134765625,
+          "left": 55.19538497924805
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.19538497924805,
+          "y": 409.4161376953125,
+          "width": 295.6092529296875,
+          "height": 46.937957763671875,
+          "top": 409.4161376953125,
+          "right": 350.80463790893555,
+          "bottom": 456.3540954589844,
+          "left": 55.19538497924805
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.19538497924805,
+          "y": 572.9967651367188,
+          "width": 295.6092529296875,
+          "height": 70.90625,
+          "top": 572.9967651367188,
+          "right": 350.80463790893555,
+          "bottom": 643.9030151367188,
+          "left": 55.19538497924805
+        },
+        "font": "16px",
+        "grid": "auto / 296px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.12409973144531,
+          "y": 736.5150146484375,
+          "width": 58.15748596191406,
+          "height": 16.07244873046875,
+          "top": 736.5150146484375,
+          "right": 167.28158569335938,
+          "bottom": 752.5874633789062,
+          "left": 109.12409973144531
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 58,
+        "width": 58
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.19010543823242,
+          "y": 720.5829467773438,
+          "width": 43.94191360473633,
+          "height": 47.93658447265625,
+          "top": 720.5829467773438,
+          "right": 103.13201904296875,
+          "bottom": 768.51953125,
+          "left": 59.19010543823242
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 172.27499389648438,
+          "y": 712.593505859375,
+          "width": 49.746734619140625,
+          "height": 64.414794921875,
+          "top": 712.593505859375,
+          "right": 222.021728515625,
+          "bottom": 777.00830078125,
+          "left": 172.27499389648438
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 50,
+        "width": 50
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 412,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.234657287597656,
+          "y": 120.79512023925781,
+          "width": 355.5306701660156,
+          "height": 153.79698181152344,
+          "top": 120.79512023925781,
+          "right": 391.7653274536133,
+          "bottom": 274.59210205078125,
+          "left": 36.234657287597656
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 354,
+        "width": 354
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.98469543457031,
+          "y": 134.54251098632812,
+          "width": 74.3707275390625,
+          "height": 74.37074279785156,
+          "top": 134.54251098632812,
+          "right": 122.35542297363281,
+          "bottom": 208.9132537841797,
+          "left": 47.98469543457031
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.10678100585938,
+          "y": 155.54611206054688,
+          "width": 245.67568969726562,
+          "height": 32.347930908203125,
+          "top": 155.54611206054688,
+          "right": 378.782470703125,
+          "bottom": 187.89404296875,
+          "left": 133.10678100585938
+        },
+        "font": "16px",
+        "grid": "32.3906px / 246px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 246,
+        "width": 246
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 226.40548706054688,
+          "y": 215.6698760986328,
+          "width": 152.37698364257812,
+          "height": 43.94200134277344,
+          "top": 215.6698760986328,
+          "right": 378.782470703125,
+          "bottom": 259.61187744140625,
+          "left": 226.40548706054688
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.234657287597656,
+          "y": 286.5762939453125,
+          "width": 355.5306701660156,
+          "height": 1085.754150390625,
+          "top": 286.5762939453125,
+          "right": 391.7653274536133,
+          "bottom": 1372.3304443359375,
+          "left": 36.234657287597656
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 355,
+        "width": 354
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.2096061706543,
+          "y": 330.5182800292969,
+          "width": 317.5807800292969,
+          "height": 64.914306640625,
+          "top": 330.5182800292969,
+          "right": 372.7903861999512,
+          "bottom": 395.4325866699219,
+          "left": 55.2096061706543
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.2096061706543,
+          "y": 409.41412353515625,
+          "width": 317.5807800292969,
+          "height": 46.93804931640625,
+          "top": 409.41412353515625,
+          "right": 372.7903861999512,
+          "bottom": 456.3521728515625,
+          "left": 55.2096061706543
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.2096061706543,
+          "y": 572.9950561523438,
+          "width": 317.5807800292969,
+          "height": 70.9063720703125,
+          "top": 572.9950561523438,
+          "right": 372.7903861999512,
+          "bottom": 643.9014282226562,
+          "left": 55.2096061706543
+        },
+        "font": "16px",
+        "grid": "auto / 318px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.13842010498047,
+          "y": 722.1419067382812,
+          "width": 66.84925079345703,
+          "height": 16.07257080078125,
+          "top": 722.1419067382812,
+          "right": 175.9876708984375,
+          "bottom": 738.2144775390625,
+          "left": 109.13842010498047
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 67,
+        "width": 67
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.2043342590332,
+          "y": 706.2098388671875,
+          "width": 43.94198989868164,
+          "height": 47.93670654296875,
+          "top": 706.2098388671875,
+          "right": 103.14632415771484,
+          "bottom": 754.1465454101562,
+          "left": 59.2043342590332
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 180.9810791015625,
+          "y": 698.2203979492188,
+          "width": 53.445068359375,
+          "height": 64.4149169921875,
+          "top": 698.2203979492188,
+          "right": 234.4261474609375,
+          "bottom": 762.6353149414062,
+          "left": 180.9810791015625
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 54,
+        "width": 54
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 1440,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 265.0404357910156,
+          "y": 137.22747802734375,
+          "width": 905.9190673828125,
+          "height": 133.10653686523438,
+          "top": 137.22747802734375,
+          "right": 1170.9595031738281,
+          "bottom": 270.3340148925781,
+          "left": 265.0404357910156
+        },
+        "font": "16px",
+        "grid": "\"portrait identity actions\" 96px / 96px minmax(0px, 1fr) auto",
+        "margin": "0px 0px 14px",
+        "padding": "18px 24px",
+        "scrollWidth": 910,
+        "width": 910
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 288.2388000488281,
+          "y": 154.46583557128906,
+          "width": 98.62982177734375,
+          "height": 98.62982177734375,
+          "top": 154.46583557128906,
+          "right": 386.8686218261719,
+          "bottom": 253.0956573486328,
+          "left": 288.2388000488281
+        },
+        "font": "16px",
+        "grid": "96px / 96px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 96,
+        "width": 96
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 409.0736389160156,
+          "y": 187.09585571289062,
+          "width": 545.7119140625,
+          "height": 33.36976623535156,
+          "top": 187.09585571289062,
+          "right": 954.7855529785156,
+          "bottom": 220.4656219482422,
+          "left": 409.0736389160156
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 549,
+        "width": 549
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 978.6256103515625,
+          "y": 181.92742919921875,
+          "width": 167.5006103515625,
+          "height": 43.706634521484375,
+          "top": 181.92742919921875,
+          "right": 1146.126220703125,
+          "bottom": 225.63406372070312,
+          "left": 978.6256103515625
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 169,
+        "width": 169
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 265.0404357910156,
+          "y": 284.24066162109375,
+          "width": 905.9190673828125,
+          "height": 1023.5203247070312,
+          "top": 284.24066162109375,
+          "right": 1170.9595031738281,
+          "bottom": 1307.760986328125,
+          "left": 265.0404357910156
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 24px 18px",
+        "scrollWidth": 911,
+        "width": 910
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 289.8737487792969,
+          "y": 327.9472961425781,
+          "width": 856.25244140625,
+          "height": 64.56658935546875,
+          "top": 327.9472961425781,
+          "right": 1146.1261901855469,
+          "bottom": 392.5138854980469,
+          "left": 289.8737487792969
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 16px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 289.8737487792969,
+          "y": 412.3805236816406,
+          "width": 237.82546997070312,
+          "height": 94.16482543945312,
+          "top": 412.3805236816406,
+          "right": 527.69921875,
+          "bottom": 506.54534912109375,
+          "left": 289.8737487792969
+        },
+        "font": "16px",
+        "grid": "36px 35.1875px / 222.422px",
+        "margin": "0px",
+        "padding": "0px 16px 0px 0px",
+        "scrollWidth": 250,
+        "width": 238
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 289.8737487792969,
+          "y": 522.4386596679688,
+          "width": 856.25244140625,
+          "height": 53.63995361328125,
+          "top": 522.4386596679688,
+          "right": 1146.1261901855469,
+          "bottom": 576.07861328125,
+          "left": 289.8737487792969
+        },
+        "font": "16px",
+        "grid": "auto / 862px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 363.3803405761719,
+          "y": 657.1282958984375,
+          "width": 220.83023071289062,
+          "height": 19.86663818359375,
+          "top": 657.1282958984375,
+          "right": 584.2105712890625,
+          "bottom": 676.9949340820312,
+          "left": 363.3803405761719
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 222,
+        "width": 222
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 303.7803955078125,
+          "y": 643.2216796875,
+          "width": 47.679962158203125,
+          "height": 47.679931640625,
+          "top": 643.2216796875,
+          "right": 351.4603576660156,
+          "bottom": 690.901611328125,
+          "left": 303.7803955078125
+        },
+        "font": "16px",
+        "grid": "48px / 48px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 48,
+        "width": 48
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 598.1171875,
+          "y": 635.2750244140625,
+          "width": 109.592529296875,
+          "height": 64.06988525390625,
+          "top": 635.2750244140625,
+          "right": 707.709716796875,
+          "bottom": 699.3449096679688,
+          "left": 598.1171875
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 14px",
+        "scrollWidth": 110,
+        "width": 110
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 320,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.42329025268555,
+          "y": 119.37931823730469,
+          "width": 263.1534423828125,
+          "height": 202.3490447998047,
+          "top": 119.37931823730469,
+          "right": 299.57673263549805,
+          "bottom": 321.7283630371094,
+          "left": 36.42329025268555
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 262,
+        "width": 262
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 48.1511116027832,
+          "y": 133.10073852539062,
+          "width": 74.2301025390625,
+          "height": 74.23008728027344,
+          "top": 133.10073852539062,
+          "right": 122.3812141418457,
+          "bottom": 207.33082580566406,
+          "left": 48.1511116027832
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.11224365234375,
+          "y": 155.4196319580078,
+          "width": 153.50616455078125,
+          "height": 29.592300415039062,
+          "top": 155.4196319580078,
+          "right": 286.618408203125,
+          "bottom": 185.01193237304688,
+          "left": 133.11224365234375
+        },
+        "font": "16px",
+        "grid": "29.6875px / 154px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 154,
+        "width": 154
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49.3816032409668,
+          "y": 214.07467651367188,
+          "width": 237.23680114746094,
+          "height": 92.7017822265625,
+          "top": 214.07467651367188,
+          "right": 286.61840438842773,
+          "bottom": 306.7764587402344,
+          "left": 49.3816032409668
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 238,
+        "width": 238
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.42329025268555,
+          "y": 333.68988037109375,
+          "width": 263.1534423828125,
+          "height": 1094.05859375,
+          "top": 333.68988037109375,
+          "right": 299.57673263549805,
+          "bottom": 1427.7484741210938,
+          "left": 36.42329025268555
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 263,
+        "width": 262
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.362361907958984,
+          "y": 377.54876708984375,
+          "width": 225.2752685546875,
+          "height": 64.79156494140625,
+          "top": 377.54876708984375,
+          "right": 280.6376304626465,
+          "bottom": 442.34033203125,
+          "left": 55.362361907958984
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.362361907958984,
+          "y": 456.2954406738281,
+          "width": 225.2752685546875,
+          "height": 46.84930419921875,
+          "top": 456.2954406738281,
+          "right": 280.6376304626465,
+          "bottom": 503.1447448730469,
+          "left": 55.362361907958984
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.362361907958984,
+          "y": 619.5670776367188,
+          "width": 225.2752685546875,
+          "height": 70.7723388671875,
+          "top": 619.5670776367188,
+          "right": 280.6376304626465,
+          "bottom": 690.3394165039062,
+          "left": 55.362361907958984
+        },
+        "font": "16px",
+        "grid": "auto / 226px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.18920135498047,
+          "y": 770.7681274414062,
+          "width": 30.417762756347656,
+          "height": 32.08428955078125,
+          "top": 770.7681274414062,
+          "right": 139.60696411132812,
+          "bottom": 802.8524169921875,
+          "left": 109.18920135498047
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 31,
+        "width": 31
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.34953689575195,
+          "y": 762.8872680664062,
+          "width": 43.85890579223633,
+          "height": 47.8460693359375,
+          "top": 762.8872680664062,
+          "right": 103.20844268798828,
+          "bottom": 810.7333374023438,
+          "left": 59.34953689575195
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 144.5909423828125,
+          "y": 754.9129028320312,
+          "width": 37.90928649902344,
+          "height": 64.29315185546875,
+          "top": 754.9129028320312,
+          "right": 182.50022888183594,
+          "bottom": 819.2060546875,
+          "left": 144.5909423828125
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 38,
+        "width": 38
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 360,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.61089324951172,
+          "y": 120.48873901367188,
+          "width": 302.7781982421875,
+          "height": 202.18411254882812,
+          "top": 120.48873901367188,
+          "right": 339.3890914916992,
+          "bottom": 322.6728515625,
+          "left": 36.61089324951172
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 302,
+        "width": 302
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 48.32915496826172,
+          "y": 134.19895935058594,
+          "width": 74.16960906982422,
+          "height": 74.16960144042969,
+          "top": 134.19895935058594,
+          "right": 122.49876403808594,
+          "bottom": 208.36856079101562,
+          "left": 48.32915496826172
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.22103881835938,
+          "y": 156.49966430664062,
+          "width": 193.22030639648438,
+          "height": 29.568191528320312,
+          "top": 156.49966430664062,
+          "right": 326.44134521484375,
+          "bottom": 186.06785583496094,
+          "left": 133.22103881835938
+        },
+        "font": "16px",
+        "grid": "29.6875px / 194px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 194,
+        "width": 194
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49.55864715576172,
+          "y": 215.10691833496094,
+          "width": 276.8826904296875,
+          "height": 92.62623596191406,
+          "top": 215.10691833496094,
+          "right": 326.4413375854492,
+          "bottom": 307.733154296875,
+          "left": 49.55864715576172
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 278,
+        "width": 278
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.61089324951172,
+          "y": 334.6246337890625,
+          "width": 302.7781982421875,
+          "height": 1093.1668701171875,
+          "top": 334.6246337890625,
+          "right": 339.3890914916992,
+          "bottom": 1427.79150390625,
+          "left": 36.61089324951172
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 303,
+        "width": 302
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.53453063964844,
+          "y": 378.4477844238281,
+          "width": 264.930908203125,
+          "height": 64.73876953125,
+          "top": 378.4477844238281,
+          "right": 320.46543884277344,
+          "bottom": 443.1865539550781,
+          "left": 55.53453063964844
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.53453063964844,
+          "y": 457.1302795410156,
+          "width": 264.930908203125,
+          "height": 46.81109619140625,
+          "top": 457.1302795410156,
+          "right": 320.46543884277344,
+          "bottom": 503.9413757324219,
+          "left": 55.53453063964844
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.53453063964844,
+          "y": 620.2688598632812,
+          "width": 264.930908203125,
+          "height": 70.71466064453125,
+          "top": 620.2688598632812,
+          "right": 320.46543884277344,
+          "bottom": 690.9835205078125,
+          "left": 55.53453063964844
+        },
+        "font": "16px",
+        "grid": "auto / 266px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.31749725341797,
+          "y": 771.3466796875,
+          "width": 46.157493591308594,
+          "height": 32.05816650390625,
+          "top": 771.3466796875,
+          "right": 155.47499084472656,
+          "bottom": 803.4048461914062,
+          "left": 109.31749725341797
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 46,
+        "width": 46
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.518455505371094,
+          "y": 763.4722290039062,
+          "width": 43.823158264160156,
+          "height": 47.80706787109375,
+          "top": 763.4722290039062,
+          "right": 103.34161376953125,
+          "bottom": 811.279296875,
+          "left": 59.518455505371094
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 160.45489501953125,
+          "y": 755.50439453125,
+          "width": 44.58570861816406,
+          "height": 64.24078369140625,
+          "top": 755.50439453125,
+          "right": 205.0406036376953,
+          "bottom": 819.7451782226562,
+          "left": 160.45489501953125
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 45,
+        "width": 45
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 390,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.53642272949219,
+          "y": 119.38664245605469,
+          "width": 332.92718505859375,
+          "height": 202.3479461669922,
+          "top": 119.38664245605469,
+          "right": 369.46360778808594,
+          "bottom": 321.7345886230469,
+          "left": 36.53642272949219
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 332,
+        "width": 332
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 48.26417541503906,
+          "y": 133.10797119140625,
+          "width": 74.22970581054688,
+          "height": 74.22970581054688,
+          "top": 133.10797119140625,
+          "right": 122.49388122558594,
+          "bottom": 207.33767700195312,
+          "left": 48.26417541503906
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.224853515625,
+          "y": 154.07174682617188,
+          "width": 223.28048706054688,
+          "height": 32.28657531738281,
+          "top": 154.07174682617188,
+          "right": 356.5053405761719,
+          "bottom": 186.3583221435547,
+          "left": 133.224853515625
+        },
+        "font": "16px",
+        "grid": "32.3906px / 224px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 224,
+        "width": 224
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49.49466323852539,
+          "y": 214.0814971923828,
+          "width": 279.1006164550781,
+          "height": 92.70127868652344,
+          "top": 214.0814971923828,
+          "right": 328.5952796936035,
+          "bottom": 306.78277587890625,
+          "left": 49.49466323852539
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.53642272949219,
+          "y": 333.696044921875,
+          "width": 332.92718505859375,
+          "height": 1094.0526123046875,
+          "top": 333.696044921875,
+          "right": 369.46360778808594,
+          "bottom": 1427.7486572265625,
+          "left": 36.53642272949219
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 333,
+        "width": 332
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.47539138793945,
+          "y": 377.5547180175781,
+          "width": 295.0491943359375,
+          "height": 64.79119873046875,
+          "top": 377.5547180175781,
+          "right": 350.52458572387695,
+          "bottom": 442.3459167480469,
+          "left": 55.47539138793945
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.47539138793945,
+          "y": 456.30096435546875,
+          "width": 295.0491943359375,
+          "height": 46.849029541015625,
+          "top": 456.30096435546875,
+          "right": 350.52458572387695,
+          "bottom": 503.1499938964844,
+          "left": 55.47539138793945
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.47539138793945,
+          "y": 619.5717163085938,
+          "width": 295.0491943359375,
+          "height": 70.77191162109375,
+          "top": 619.5717163085938,
+          "right": 350.52458572387695,
+          "bottom": 690.3436279296875,
+          "left": 55.47539138793945
+        },
+        "font": "16px",
+        "grid": "auto / 296px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.30194091796875,
+          "y": 778.79296875,
+          "width": 58.04731750488281,
+          "height": 16.04205322265625,
+          "top": 778.79296875,
+          "right": 167.34925842285156,
+          "bottom": 794.8350219726562,
+          "left": 109.30194091796875
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 58,
+        "width": 58
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.46254348754883,
+          "y": 762.89111328125,
+          "width": 43.85866928100586,
+          "height": 47.8458251953125,
+          "top": 762.89111328125,
+          "right": 103.32121276855469,
+          "bottom": 810.7369384765625,
+          "left": 59.46254348754883
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 172.33319091796875,
+          "y": 754.9168090820312,
+          "width": 49.65251159667969,
+          "height": 64.2928466796875,
+          "top": 754.9168090820312,
+          "right": 221.98570251464844,
+          "bottom": 819.2096557617188,
+          "left": 172.33319091796875
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 50,
+        "width": 50
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 412,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36.713531494140625,
+          "y": 120.47444152832031,
+          "width": 354.5729064941406,
+          "height": 202.1862335205078,
+          "top": 120.47444152832031,
+          "right": 391.28643798828125,
+          "bottom": 322.6606750488281,
+          "left": 36.713531494140625
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 354,
+        "width": 354
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 48.431915283203125,
+          "y": 134.184814453125,
+          "width": 74.1703872680664,
+          "height": 74.17037963867188,
+          "top": 134.184814453125,
+          "right": 122.60230255126953,
+          "bottom": 208.35519409179688,
+          "left": 48.431915283203125
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133.32469177246094,
+          "y": 155.1318359375,
+          "width": 245.0138702392578,
+          "height": 32.260772705078125,
+          "top": 155.1318359375,
+          "right": 378.33856201171875,
+          "bottom": 187.39260864257812,
+          "left": 133.32469177246094
+        },
+        "font": "16px",
+        "grid": "32.3906px / 246px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 246,
+        "width": 246
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49.66141891479492,
+          "y": 215.09361267089844,
+          "width": 278.8775939941406,
+          "height": 92.62721252441406,
+          "top": 215.09361267089844,
+          "right": 328.53901290893555,
+          "bottom": 307.7208251953125,
+          "left": 49.66141891479492
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36.713531494140625,
+          "y": 334.6125793457031,
+          "width": 354.5729064941406,
+          "height": 1078.845458984375,
+          "top": 334.6125793457031,
+          "right": 391.28643798828125,
+          "bottom": 1413.4580383300781,
+          "left": 36.713531494140625
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 355,
+        "width": 354
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55.637367248535156,
+          "y": 378.4361877441406,
+          "width": 316.7252502441406,
+          "height": 64.73944091796875,
+          "top": 378.4361877441406,
+          "right": 372.3626174926758,
+          "bottom": 443.1756286621094,
+          "left": 55.637367248535156
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55.637367248535156,
+          "y": 457.1195068359375,
+          "width": 316.7252502441406,
+          "height": 46.811614990234375,
+          "top": 457.1195068359375,
+          "right": 372.3626174926758,
+          "bottom": 503.9311218261719,
+          "left": 55.637367248535156
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55.637367248535156,
+          "y": 620.259765625,
+          "width": 316.7252502441406,
+          "height": 70.71539306640625,
+          "top": 620.259765625,
+          "right": 372.3626174926758,
+          "bottom": 690.9751586914062,
+          "left": 55.637367248535156
+        },
+        "font": "16px",
+        "grid": "auto / 318px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109.4208984375,
+          "y": 765.0209350585938,
+          "width": 66.66917419433594,
+          "height": 16.02923583984375,
+          "top": 765.0209350585938,
+          "right": 176.09007263183594,
+          "bottom": 781.0501708984375,
+          "left": 109.4208984375
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 67,
+        "width": 67
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59.621334075927734,
+          "y": 749.1317138671875,
+          "width": 43.8236198425293,
+          "height": 47.8076171875,
+          "top": 749.1317138671875,
+          "right": 103.44495391845703,
+          "bottom": 796.9393310546875,
+          "left": 59.621334075927734
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 181.0700225830078,
+          "y": 741.163818359375,
+          "width": 53.30110168457031,
+          "height": 64.24139404296875,
+          "top": 741.163818359375,
+          "right": 234.37112426757812,
+          "bottom": 805.4052124023438,
+          "left": 181.0700225830078
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 54,
+        "width": 54
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 1440,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 263.59136962890625,
+          "y": 128.7570037841797,
+          "width": 908.8173217773438,
+          "height": 133.53236389160156,
+          "top": 128.7570037841797,
+          "right": 1172.40869140625,
+          "bottom": 262.28936767578125,
+          "left": 263.59136962890625
+        },
+        "font": "16px",
+        "grid": "\"portrait identity actions\" 96px / 96px minmax(0px, 1fr) auto",
+        "margin": "0px 0px 14px",
+        "padding": "18px 24px",
+        "scrollWidth": 910,
+        "width": 910
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 286.86395263671875,
+          "y": 146.05050659179688,
+          "width": 98.94534301757812,
+          "height": 98.94535827636719,
+          "top": 146.05050659179688,
+          "right": 385.8092956542969,
+          "bottom": 244.99586486816406,
+          "left": 286.86395263671875
+        },
+        "font": "16px",
+        "grid": "96px / 96px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 96,
+        "width": 96
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 408.0853576660156,
+          "y": 178.78492736816406,
+          "width": 436.4714050292969,
+          "height": 33.47651672363281,
+          "top": 178.78492736816406,
+          "right": 844.5567626953125,
+          "bottom": 212.26144409179688,
+          "left": 408.0853576660156
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 438,
+        "width": 438
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 868.4730224609375,
+          "y": 147.69070434570312,
+          "width": 279.0228271484375,
+          "height": 95.66496276855469,
+          "top": 147.69070434570312,
+          "right": 1147.495849609375,
+          "bottom": 243.3556671142578,
+          "left": 868.4730224609375
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 263.59136962890625,
+          "y": 276.2405090332031,
+          "width": 908.8173217773438,
+          "height": 1026.7947998046875,
+          "top": 276.2405090332031,
+          "right": 1172.40869140625,
+          "bottom": 1303.0353088378906,
+          "left": 263.59136962890625
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 24px 18px",
+        "scrollWidth": 911,
+        "width": 910
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 288.504150390625,
+          "y": 320.0869445800781,
+          "width": 858.99169921875,
+          "height": 64.77316284179688,
+          "top": 320.0869445800781,
+          "right": 1147.495849609375,
+          "bottom": 384.860107421875,
+          "left": 288.504150390625
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 16px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 288.504150390625,
+          "y": 404.7903137207031,
+          "width": 238.5863037109375,
+          "height": 94.46603393554688,
+          "top": 404.7903137207031,
+          "right": 527.0904541015625,
+          "bottom": 499.25634765625,
+          "left": 288.504150390625
+        },
+        "font": "16px",
+        "grid": "36px 35.1875px / 222.422px",
+        "margin": "0px",
+        "padding": "0px 16px 0px 0px",
+        "scrollWidth": 250,
+        "width": 238
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 288.504150390625,
+          "y": 515.2005615234375,
+          "width": 858.99169921875,
+          "height": 53.8115234375,
+          "top": 515.2005615234375,
+          "right": 1147.495849609375,
+          "bottom": 569.0120849609375,
+          "left": 288.504150390625
+        },
+        "font": "16px",
+        "grid": "auto / 862px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 362.2458801269531,
+          "y": 650.321044921875,
+          "width": 221.53671264648438,
+          "height": 19.93017578125,
+          "top": 650.321044921875,
+          "right": 583.7825927734375,
+          "bottom": 670.251220703125,
+          "left": 362.2458801269531
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 222,
+        "width": 222
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 302.4552917480469,
+          "y": 636.369873046875,
+          "width": 47.832489013671875,
+          "height": 47.83251953125,
+          "top": 636.369873046875,
+          "right": 350.28778076171875,
+          "bottom": 684.202392578125,
+          "left": 302.4552917480469
+        },
+        "font": "16px",
+        "grid": "48px / 48px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 48,
+        "width": 48
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 597.7337036132812,
+          "y": 628.3978271484375,
+          "width": 109.94305419921875,
+          "height": 64.27490234375,
+          "top": 628.3978271484375,
+          "right": 707.6767578125,
+          "bottom": 692.6727294921875,
+          "left": 597.7337036132812
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 14px",
+        "scrollWidth": 110,
+        "width": 110
+      }
+    }
+  }
+]

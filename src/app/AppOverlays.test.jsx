@@ -8,6 +8,14 @@ import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 
 describe("AppOverlays", () => {
+  it("switches from warehouse to recruitment through the warehouse action", () => {
+    const props = overlayProps({ showWarehouse: true, user: { id: "user-1" } });
+    const tree = AppOverlays(props);
+    const warehouse = tree.props.children.find(node => node?.props?.children?.props?.onOpenRecruitment).props.children;
+    warehouse.props.onOpenRecruitment();
+    expect(props.setShowWarehouse).toHaveBeenCalledWith(false);
+    expect(props.setShowRecruitment).toHaveBeenCalledWith(true);
+  });
   it("passes public site settings into the shop overlay", () => {
     const source = readFileSync(new URL("./AppOverlays.jsx", import.meta.url), "utf8");
     const shopBlock = source.slice(source.indexOf("{showShop &&"), source.indexOf("{showRecruitment &&"));

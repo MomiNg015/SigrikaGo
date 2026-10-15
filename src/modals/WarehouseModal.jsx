@@ -5,7 +5,7 @@ import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal from "./warehouse/WarehouseTargetModal.jsx";
 import { useWarehouseInventory } from "./warehouse/useWarehouseInventory.js";
 
-export default function WarehouseModal({ token, user, characters, onUserChange, onNotice, onStoryScript, onClose, initialTargetState = null }) {
+export default function WarehouseModal({ token, user, characters, onUserChange, onNotice, onStoryScript, onClose, onOpenRecruitment, initialTargetState = null }) {
   const {
     closeTargetModal,
     items,
@@ -19,8 +19,8 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
   } = useWarehouseInventory({ characters, initialTargetState, token, user, onNotice, onStoryScript, onUserChange });
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <section className="warehouse-modal window-sticker-host" onClick={(event) => event.stopPropagation()}>
+    <div className="modal-backdrop warehouse-guide-backdrop" onClick={onClose}>
+      <section className="warehouse-modal warehouse-field-guide window-sticker-host" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭仓库" onClick={onClose}><X size={20} /></button>
         <header className="warehouse-header window-sticker-header">
           <WindowTitleSticker titleKey="warehouse" />
@@ -32,6 +32,7 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
             usingItemId={usingItemId}
             onSelectTargetItem={setTargetItem}
             onUseItem={useItem}
+            onOpenRecruitment={onOpenRecruitment}
           />
         )}
         <WarehouseTargetModal

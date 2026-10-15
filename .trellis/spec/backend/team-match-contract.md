@@ -1,5 +1,9 @@
 # Team Match Contract
 
+## Client lineup editing (2026-10-09)
+
+Draft selection uses three fixed positions with empty strings for vacancies. Clearing the second member leaves the third at index two; selecting a new member fills the first vacancy. Duplicate/unavailable saved members are cleared in place. Both account mode selection and lineup editor storage preserve holes. Only a complete valid three-member draft can enter `match:join`; the server/network schema remains `string[3]` with three real IDs. Selection plays the shared sortie voice after stopping the previous voice request, using current audio settings; removal is silent. Top relay cards are clickable to clear their own position.
+
 ## Scope / Trigger
 
 Changes to team admission, character handoff, room projection, stage playback, independent rank settlement or profile appearances.

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,"><title>仓库标题 · 手绘下划线样板</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#fffaf0;color:#3d2b25;font-family:"Microsoft YaHei",sans-serif;height:100dvh;display:flex;flex-direction:column}
+    nav{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 16px;border-bottom:2px solid #3d2b25;flex:none}
+    button{display:flex;align-items:center;justify-content:center;min-height:50px;padding:8px 22px;background:transparent;color:inherit;border:1px solid transparent;font:inherit;cursor:pointer}
+    button[aria-pressed="true"]{border-color:#3d2b25;background:#fffaf0;box-shadow:2px 2px #3d2b25}button:focus-visible{outline:2px solid #3d2b25;outline-offset:3px}
+    button span{padding:4px 3px 7px;background-repeat:no-repeat;background-position:left bottom;background-size:100% 18px}
+    [data-style="marker"] span{background-image:url('./title-marker.svg')}[data-style="pencil"] span{background-image:url('./title-pencil.svg')}[data-style="wave"] span{background-image:url('./title-wave.svg')}
+    iframe{display:block;width:100%;flex:1;min-height:0;border:0}
+    @media(max-width:600px){nav{gap:6px;padding:8px 6px}button{flex:1;padding:5px 2px;font-size:12px;min-height:52px}}
+  </style>
+</head>
+<body>
+  <nav aria-label="标题样板">
+    <button type="button" data-style="marker" aria-pressed="true"><span>1 · 粉色轻涂</span></button>
+    <button type="button" data-style="pencil" aria-pressed="false"><span>2 · 随手双线</span></button>
+    <button type="button" data-style="wave" aria-pressed="false"><span>3 · 软糖波浪</span></button>
+  </nav>
+  <iframe title="仓库手绘标题样板" src="./production.html?titleStyle=marker"></iframe>
+  <script>
+    const frame=document.querySelector('iframe');
+    const buttons=[...document.querySelectorAll('button[data-style]')];
+    function select(style){
+      if(!buttons.some(button=>button.dataset.style===style))style='marker';
+      buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.style===style)));
+      frame.src=`./production.html?titleStyle=${style}`;
+      history.replaceState(null,'',`?style=${style}`);
+    }
+    buttons.forEach(button=>button.addEventListener('click',()=>select(button.dataset.style)));
+    select(new URLSearchParams(location.search).get('style')||'marker');
+  </script>
+</body>
+</html>

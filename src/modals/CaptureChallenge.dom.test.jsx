@@ -11,6 +11,7 @@ import OpeningModal from "./gameLifecycle/OpeningModal.jsx";
 import { api } from "../api/client.js";
 
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
+vi.mock("../home/matchSortieVoice.js", () => ({ playMatchSortieVoice: vi.fn() }));
 vi.mock("../audio/playback.jsx", () => ({ playEffectSound: vi.fn() }));
 vi.mock("../audio/systemVoicePlayback.js", () => ({ playSystemVoice: vi.fn() }));
 import { playEffectSound } from "../audio/playback.jsx";

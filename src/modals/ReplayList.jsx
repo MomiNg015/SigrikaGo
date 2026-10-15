@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { Crown, Flag, Handshake } from "lucide-react";
@@ -105,7 +106,7 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
 
 function ReplayPlayer({ side, name, characterId, costumePortraitUrl, costumeFraming, characters, specialPortrait = null }) {
   const character = findCharacter(characters, characterId);
-  const portraitUrl = specialPortrait?.url || costumePortraitUrl || character?.portrait || "";
+  const portraitUrl = specialPortrait?.url || costumePortraitUrl || resolveCharacterPortrait(character, { variant: "avatar" });
   return (
     <span className={`replay-player-cell replay-player-${side}`}>
       <span className={`replay-stone is-${side}`} role="img" aria-label={side === "black" ? "黑方" : "白方"} />

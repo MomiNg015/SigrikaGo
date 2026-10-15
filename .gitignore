@@ -9,6 +9,7 @@ dev-server.*.log
 .worktrees/
 .tmp/
 .codex-temp/
+.codex-run/
 *.db.backup-*
 
 dev-client.*.log

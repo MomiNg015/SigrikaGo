@@ -600,3 +600,36 @@ Selected option 1 integrated with changed star slots and prior/current rank visu
 ### Next Steps
 
 - None - task complete
+
+
+## Session 199: Mobile profile alignment and replay scoreboard
+
+**Date**: 2026-10-14
+**Task**: Mobile profile alignment and replay scoreboard
+**Branch**: `master`
+
+### Summary
+
+Centered mobile identity with desktop spacing, improved profile readability, and watch-style portrait replay cards. Browser checks and 33 focused tests, lint/build/built CSS pass. Preserved unrelated WIP and documented three existing global CSS guard failures.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4f31b676` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

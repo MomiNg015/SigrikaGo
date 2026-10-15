@@ -7,19 +7,21 @@
 // Follow-up: +485 bytes and +7 important declarations restore the existing portrait stone badge and right-align rank-only member rows.
 // 2026-10-01: +2313 normalized bytes, +4 important, +8 color fallbacks for the requested four-column record summary, circular replay geometry and rated/friendly tags; existing owners only.
 export const CSS_DEBT_BASELINE = {
-  date: "2026-09-07",
+  date: "2026-10-15",
   scope: "Window loading adds 1035 normalized bytes, three targeted important declarations and reduced-motion coverage in the existing empty-state owner. Ordinary button states replace three repeated selector lists with one nested state owner, add complete press/focus/disabled/reduced-motion rules, and retire generic icon/action motion selectors. Specialty button opt-in removes dossier, purchase and recruitment state duplication while retaining artwork and geometry. All CSS files under src/styles after the import-only split work, including the focused normal/corrupted theme-transition visual structure and reduced-motion owners, the focused corrupted-duel atmosphere, panel, timer, control, icon, secondary-surface, mobile-readability, portaled system-log, lifecycle, replay/result, and dialogue/fake-skill presentation owners, the ten focused production IRIS Database V2 entry/shell/greeting/portrait/archive/record/theme/typography owners with image-free desktop/mobile art reservations and the scoped Dotted Songti Circle plus WuWa Latin/numeric font stack, the shared and Bright School character-music-player subdomains with the transparent hand-painted radio shell, contained alpha-safe asset geometry, and painted-circle control alignment, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned open-starlight rune-ink Semantic Ignition with a persistent rim, separated open-center left-to-right filaments/contour streams, and paired right-tail streaks, Danya off-center pearlescent dream bubble, and Aemeath paper-flight beacon nameplate shells plus their reduced-motion owners, Aemeath exact-ID ice-white username treatment, separated paper-wake and perimeter traces, paired right-tail light, the board-owned Aemeath rainbow grid-trace and particle owners with their reduced-motion fallback, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox text-only low-chrome list, completion-state dimming, quiet paper reader, independent item/coin tiles, portaled shop-style item detail, quantity/claimed overlays, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the semantic Bright School login header with its responsive mascot-panel composition and extended layered paper-rule shelf, the dedicated 900px mobile-layout login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared orange preload fill-flow, borderless warm-glow, upright endpoint-glide, and disabled password-toggle centering owners, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, desktop raster background, dedicated portrait raster background, and enlarged mascot-copy owner files, the deep-red theatrical costume storefront with a separate card/art owner, portaled wardrobe dialog, split responsive wardrobe layout, Bright School costume overlay owners, and home-scoped portrait width guard, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, the full-width 16px watch-mode tabs with one-em room-count spacing, the final Bright School practice-entry rotation, reduced-motion behavior, and home-utility hard-shadow parity owner, the shared skill-trait description popover, admin glossary, mobile character-detail scrolling owner rules, the scoped Bright School root scrollbar, final portrait modal shadow-gutter, admin neutral scrollbar owners, and the Bright School unobtained-roster monochrome CRT surface, hidden-intel monitor, and shared signal-fault motion owners.",
   metrics: {
-    totalFiles: 737,
-    totalBytes: 1690091,
-    importantCount: 9843,
-    importantFiles: 389,
-    hardcodedHexCount: 2477,
-    mediaFiles: 320,
-    reducedMotionFiles: 82,
+    totalFiles: 742,
+    totalBytes: 1706329,
+    importantCount: 9938,
+    importantFiles: 394,
+    hardcodedHexCount: 2485,
+    mediaFiles: 324,
+    reducedMotionFiles: 84,
     highZIndexFiles: 7
   },
   featureDeltas: [
+    "2026-10-15: master consolidation audits the complete portrait, team-lineup, warehouse, restored loader and result-button owners. Reconcile measured ceilings: 742 files, 1706329 normalized bytes, 9938 important declarations in 394 files, 2485 hex literals, 324 media files and 84 reduced-motion files. Login tips no longer own motion; retain shared loader motion coverage. Register the existing 360px mode-title compact-phone breakpoint.",
+    "2026-10-15: result action hover reuses the compact result owner; +518 normalized bytes, +3 important declarations and +1 reduced-motion file. Existing pointer/media families, no new files or colors. Preserve unrelated baseline drift.",
     "2026-10-14: approved leaderboard podium production layout uses three bounded final owners: shell/list, podium and portrait mobile. Exact delta: 3 files, 10803 normalized bytes including imports, 22 important declarations in 3 files, 12 palette literals and 1 media file. Existing breakpoint families; no motion or high-layer additions.",
     "2026-10-14: mobile replay scoreboard and 24px centered profile identity gap; reuse existing owners and nest replay selectors. Exact delta 427 normalized bytes and 14 important declarations; no new files, colors or breakpoints.",
     "2026-10-14: mobile dossier identity row, paper gutters and readable character records; existing owner only, 521 normalized bytes and 6 important declarations. No new files, colors or breakpoints.",
@@ -27,6 +29,7 @@ export const CSS_DEBT_BASELINE = {
     "2026-10-13: selected mobile watch scoreboard stacks full player identities beside the shared move placard, groups room/count metadata and promotes native whole-row watch actions on both viewports. Split mobile rules into one bounded owner. Exact delta {'totalFiles': 1, 'totalBytes': 1258, 'importantCount': -1, 'importantFiles': 1, 'hardcodedHexCount': 0, 'mediaFiles': 0}.",
     "2026-10-13: watch status uses requested green and neutral gray on desktop and mobile; exact delta 19 normalized bytes, two semantic color literals and two targeted color overrides, no new owner.",
     "2026-10-12: selected watch ledger adds one bounded final owner, 6608 normalized bytes including import, 25 scoped overrides, five existing palette literals, and the existing 768px family; mobile pairs players in a compact 116px row. No stacking or motion growth.",
+    "2026-10-12: approved warehouse field guide adds three bounded final owners, 9846 normalized bytes including imports, 59 scoped overrides and four existing palette literals; directory/inspector replaces repeated cards, existing 768px family, no animation or stacking growth.",
     "2026-10-12: compact battle header scoreboard adds one final owner, 3760 normalized bytes including import, 9 scoped theme overrides and 6 palette literals for paper/ink plus requested black-white turn inversion; 54px desktop and 46px phone placards, no new animation or stacking family. Utilities and corrupted-duel presentation keep their existing owners.",
     "2026-10-11: spectator presence removes member tabs and scatters center-anchored, rotated, unboxed art in window-space gaps; one bounded final owner. Exact delta {'totalFiles': 1, 'totalBytes': 4611, 'importantCount': 21, 'importantFiles': 1, 'hardcodedHexCount': 7, 'mediaFiles': 1, 'reducedMotionFiles': 1, 'highZIndexFiles': 0}. Desktop transparency fix adds 392 normalized bytes and one targeted z-index precedence declaration for child-only paint stacking; no new color, file or media owners. Revision 4 and same-screen correction restore full artwork at 80% size, compact spacing and clickable paper tags above overlapping art; cumulative exact delta +227 normalized bytes, +15 targeted important declarations and -1 hex color. Revision 3 adds 347 bytes for intrinsic-size containment and a soft lower-art mask above the username; no new important declarations or colors. Revision 2 changes this owner by {'totalBytes': -560, 'importantCount': 5, 'hardcodedHexCount': -4}; artwork can be occluded by UI. Window-space paint and hit masks protect controls; the mobile spacer is half the measured dock height. Only local theme resets use important, with existing palette and a reduced-motion-safe opacity entry.",
     "2026-10-11: selected star-trail result presentation adds one bounded final owner, 4243 normalized bytes including import and retired text rules, 5 scoped overrides, eight local gold/blue-gray color tokens, one media and reduced-motion owner; existing breakpoints and layers are reused.",
@@ -39,7 +42,12 @@ export const CSS_DEBT_BASELINE = {
     "2026-10-10: awakened Denia rune theme adds one 1874-byte owner with one scoped skill-chip background override; reuses JS appearance tokens, no CSS literal colors or new motion/breakpoints.",
     "2026-10-10: Denia paper transformation adds one 253-byte modal canvas owner including its import, one media/reduced-motion owner, and no literal colors, important declarations or new overlay depths.",
     "2026-10-10: approved full-body skill cut-in adds two isolated modal owners, 6830 normalized bytes, three ink/paper hex occurrences, two media files and one reduced-motion owner; existing 120 overlay depth and breakpoint families are reused. Two scoped important declarations preserve approved ink/font against theme resets. Corrupted duel remains on its legacy owner.",
-    "2026-10-10: result expressions, narration and native Denia rainbow presentation add one bounded chibi story owner (+6275 bytes, 11 scoped important declarations, 12 palette fallbacks and two media owners); candy rims and cancellation use existing owners. Preserve unrelated identity/team-layout CSS work outside this commit.",
+    "2026-10-09: match selection redesign adds 2737 normalized bytes and thirteen scoped overrides in existing card/slot owners, removes one literal color, and reuses existing motion and breakpoints. Fixed relay-position cards, mint selected paper edges and dashed add controls add no CSS files, media owners, motion families or z-index owners.",
+    "2026-10-09: user-requested student full body/profile head switch and border-safe inner mask add 496 normalized bytes and one student-image cascade reset in existing owners; mobile story lower body can overlap the dialogue. No files, colors, media families, motion or z-index growth.",
+    "2026-10-09: visible-alpha costume comparison adds 1223 normalized bytes and fourteen scoped cascade resets in the existing portrait owner. One existing file gains the existing 768px responsive family. No new CSS files, colors, motion or z-index owners. SVG and foreign-object images override inherited button/shop dimensions so normalized source coordinates remain accurate.",
+    "2026-10-09: user-requested scene-specific Q composition adds 2713 normalized bytes in the existing team and chibi-story owners. Two existing files gain responsive rules for readable active-member photos and complete art above mobile dialogue. No new CSS files, important declarations, hardcoded colors, motion or high-z-index owners; existing palette and breakpoints are reused.",
+    "2026-10-09: default Q portraits reuse bounded identity crops with a measured vertical face anchor; one bounded preload image owner absolutely contains illustration images to prevent intrinsic-height clipping. No new colors, important declarations, breakpoints or motion.",
+    "2026-10-08: chibi story art adds one bounded proportional-image owner and 405 normalized bytes, retaining standard stage geometry and fixed NPC avatar frames. No important, color, breakpoint or motion growth.",
     "2026-10-05: the existing special candy-duel secondary-surfaces owner adds 1996 normalized bytes and seven important declarations to repair its independently scoped supported-landscape player containment, square board/SVG and complete action dock. Sources, authored fit/transform, palette, cinematics, timers and portrait/desktop geometry remain intact. Reuses the registered 900px landscape family; no new CSS/important/media file, color, motion or high-layer family.",
     "2026-10-05: final social-window readability adds 1804 normalized bytes and twelve important declarations in four existing owners for small-phone names/status/actions, watch-row height, large leaderboard counters and unbroken mail text. Ordinary landscape portraits, square board containment and reachable action dock add 1957 bytes and seven important declarations in one existing owner using the registered 900px landscape family. The warehouse target reuses nested layer 180 with a two-byte adjustment. Combined 3763-byte delta adds one important file, no CSS file, literal color, media-file, motion or high-layer family; all owners remain below 6000 bytes.",
     "2026-10-05: specialty shop/music hover and live reduced-motion guards add 950 normalized bytes, nine important declarations, one repeated existing color, one media file and one reduced-motion file. The existing admin shell adds 549 bytes and one media file to restore single-column navigation after its lazy CSS loads. Mobile equipped-profile action tracks simplify the same existing selector by 40 bytes. No new files, important files, breakpoint families or high layers.",
@@ -194,11 +202,11 @@ export const CSS_MOTION_CONTRACT = {
   requiredTokenFragments: ["--theme-transition: 180ms ease", "--ease-sigrika-standard"],
   durationRangeMs: { micro: [100, 180], sheet: [180, 300] },
   reducedMotionFiles: [
+    "mobile-adaptive/result-compact.css",
     "mobile-adaptive/battle-spectator-presence.css",
     "admin/polish/forms-actions.css",
     "admin/story-workbench/layout.css",
     "base/asset-preload.css",
-    "base/login-asset-preload.css",
     "base/message-feedback.css",
     "commerce/recruitment/board/motion.css",
     "commerce/shop-settings/shop-shell-tabs.css",
@@ -244,6 +252,7 @@ export const CSS_BREAKPOINT_CONTRACT = {
     "(max-width: 1180px)",
     "(max-width: 1260px)",
     "(max-width: 340px) and (orientation: portrait)",
+    "(max-width: 360px)",
     "(max-width: 360px) and (orientation: portrait)",
     "(max-width: 560px)",
       "(max-width: 600px)",
@@ -1167,7 +1176,7 @@ export const CSS_PROTECTED_SURFACES = [
 
 export const CSS_REFACTOR_ROUNDS = [
   {
-    round: 3,
+    round: 2,
     focus: "Inventory and contract guardrails",
     allowedWork: ["classify CSS layers", "add static contract tests", "document protected surfaces"]
   },
@@ -1185,7 +1194,7 @@ export const CSS_REFACTOR_ROUNDS = [
 
 export const CSS_TAILWIND_MIGRATION_PHASES = [
   {
-    phase: 6,
+    phase: 1,
     focus: "Baseline, contracts, and token scaffold",
     risk: "low",
     allowedWork: [

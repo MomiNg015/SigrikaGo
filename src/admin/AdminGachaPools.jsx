@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { adminApi } from "../api/client.js";
@@ -19,7 +20,7 @@ export function prizeOptionsForType(type, resourceCatalogs = {}) {
     return (resourceCatalogs.characters ?? []).map((character) => ({
       value: character.id ?? character.slug ?? "",
       name: character.name ?? character.id ?? character.slug ?? "",
-      imageUrl: character.portrait ?? character.portraitUrl ?? character.imageUrl ?? ""
+      imageUrl: resolveCharacterPortrait({ ...character, portrait: character.portrait ?? character.imageUrl }, { variant: "avatar" })
     })).filter((option) => option.value);
   }
   if (type === "decoration") {

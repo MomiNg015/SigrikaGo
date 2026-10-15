@@ -5,8 +5,33 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
 import HomeScreen from "./HomeScreen.jsx";
 
+vi.mock("./matchSortieVoice.js", () => ({ playMatchSortieVoice: vi.fn() }));
+
 describe("HomeScreen practice difficulty picker", () => {
-  afterEach(cleanup);
+  it("uses the regular Spark selection for the student ID and defaults to Sigrika", () => {
+    const user = { id: "student-selection", username: "同学", selectedCharacter: "denia", ownedCharacters: ["sigrika", "denia", "lynae"], modeStats: {} };
+    localStorage.setItem("sigrika-match-characters:student-selection", JSON.stringify({ regular: ["lynae"], standard: ["denia"] }));
+    const { unmount } = render(<HomeScreen user={user} characters={CHARACTERS} />);
+    expect(screen.getByAltText("当前出战角色").getAttribute("src")).toContain("/lynae.webp");
+    unmount();
+    localStorage.removeItem("sigrika-match-characters:student-selection");
+    render(<HomeScreen user={user} characters={CHARACTERS} />);
+    expect(screen.getByAltText("当前出战角色").getAttribute("src")).toContain("/sigrika.webp");
+  });
+  afterEach(() => { cleanup(); localStorage.clear(); });
+
+  it("publishes the student-ID regular selection to the account without duplicate writes", async () => {
+    const user = { id: "identity-sync", username: "同学", selectedCharacter: "denia", ownedCharacters: ["sigrika", "denia", "lynae"], modeStats: {} };
+    localStorage.setItem("sigrika-match-characters:identity-sync", JSON.stringify({ regular: ["lynae"] }));
+    const onSelectCharacter = vi.fn().mockResolvedValue(undefined);
+    const props = { user, characters: CHARACTERS, onSelectCharacter };
+    const { rerender } = render(<HomeScreen {...props} />);
+    await act(async () => {});
+    expect(onSelectCharacter).toHaveBeenCalledWith("lynae");
+    rerender(<HomeScreen {...props} user={{ ...user, selectedCharacter: "lynae" }} />);
+    await act(async () => {});
+    expect(onSelectCharacter).toHaveBeenCalledTimes(1);
+  });
 
   it("opens three levels and starts the selected one with a random color", async () => {
     const onMatchModePickerOpenChange = vi.fn();
@@ -56,7 +81,9 @@ describe("HomeScreen practice difficulty picker", () => {
     await user.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
     expect(screen.getByRole("dialog", { name: "选择角色" })).toBeTruthy();
     expect(onStartPractice).not.toHaveBeenCalled();
-    await user.click(within(screen.getByRole("dialog", { name: "选择角色" })).getByRole("button", { name: "开始准时宝对局" }));
+    expect(within(screen.getByRole("dialog", { name: "选择角色" })).queryByRole("button", { name: "开始准时宝对局" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "关闭选择角色" }));
+    await user.click(screen.getByRole("button", { name: "开始准时宝对局" }));
 
     expect(onMatchModePickerOpenChange).toHaveBeenCalledWith(false);
     expect(onStartPractice).toHaveBeenCalledTimes(1);

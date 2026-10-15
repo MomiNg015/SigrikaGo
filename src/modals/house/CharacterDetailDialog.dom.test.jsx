@@ -4,7 +4,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../../shared/characters.js";
-import { DENIA_CANDY_PORTRAIT } from "../../shared/candyPortraits.js";
 import { SIGRIKA_CORRUPTED_PORTRAIT_ASSET } from "../../shared/characterPortraitAssetCatalog.js";
 import { CharacterDetailDialog } from "./HouseNestedDialogs.jsx";
 
@@ -34,7 +33,7 @@ describe("character detail full-body portrait", () => {
     expect(dialog.parentElement.parentElement.classList.contains("app-shell")).toBe(true);
     expect(document.querySelector(".house-modal").contains(dialog)).toBe(false);
     const image = screen.getByRole("img", { name: "西格莉卡" });
-    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-sprites/sigrika.webp");
+    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(image.parentElement.classList.contains("is-standard-figure")).toBe(true);
     expect(screen.getByText(CHARACTERS.sigrika.skill.name)).toBeTruthy();
     expect(screen.getByText("获得途径")).toBeTruthy();
@@ -52,14 +51,14 @@ describe("character detail full-body portrait", () => {
   });
 
   it.each([
-    ["costume", CHARACTERS.sigrika, { equippedCostumes: { sigrika: { portraitUrl: "/costume.webp", portraitScalePercent: 125 } } }, {}, "/costume.webp"],
-    ["candy", CHARACTERS.denia, {}, { deniaRainbowGlow: true }, DENIA_CANDY_PORTRAIT],
-    ["corruption", CHARACTERS.sigrika, { sigrikaCandyArc: { corrupted: true } }, {}, SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url]
-  ])("preserves the effective %s portrait", (_state, character, user, itemEffects, expectedSrc) => {
+    ["costume", CHARACTERS.sigrika, { equippedCostumes: { sigrika: { portraitUrl: "/costume.webp", portraitScalePercent: 125 } } }, {}, "/costume.webp", false],
+    ["candy", CHARACTERS.denia, {}, { deniaRainbowGlow: true }, "/assets/characters/story-sprites/denia/rainbow-spray.webp", true],
+    ["corruption", CHARACTERS.sigrika, { sigrikaCandyArc: { corrupted: true } }, {}, SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url, false]
+  ])("preserves the effective %s portrait", (_state, character, user, itemEffects, expectedSrc, standardFigure) => {
     render(<div className="app-shell"><CharacterDetailDialog {...detailProps({ character, user, itemEffects })} /></div>);
     const image = screen.getByRole("img", { name: character.name });
     expect(image.getAttribute("src")).toBe(expectedSrc);
-    expect(image.parentElement.classList.contains("is-standard-figure")).toBe(false);
+    expect(image.parentElement.classList.contains("is-standard-figure")).toBe(standardFigure);
     if (user.equippedCostumes) expect(image.style.scale).toBe("1.25");
   });
 

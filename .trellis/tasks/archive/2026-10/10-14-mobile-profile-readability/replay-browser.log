@@ -1,0 +1,360 @@
+320 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 118,
+    height: 39.1875,
+    top: 152.796875,
+    right: 180,
+    bottom: 191.984375,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 197.984375,
+    width: 118,
+    height: 39.1875,
+    top: 197.984375,
+    right: 180,
+    bottom: 237.171875,
+    left: 62
+  },
+  moves: {
+    x: 191,
+    y: 166.984375,
+    width: 76,
+    height: 56,
+    top: 166.984375,
+    right: 267,
+    bottom: 222.984375,
+    left: 191
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+320 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 118,
+    height: 39.1875,
+    top: 152.796875,
+    right: 180,
+    bottom: 191.984375,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 197.984375,
+    width: 118,
+    height: 39.1875,
+    top: 197.984375,
+    right: 180,
+    bottom: 237.171875,
+    left: 62
+  },
+  moves: {
+    x: 191,
+    y: 166.984375,
+    width: 76,
+    height: 56,
+    top: 166.984375,
+    right: 267,
+    bottom: 222.984375,
+    left: 191
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+360 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 158,
+    height: 36,
+    top: 152.796875,
+    right: 220,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 158,
+    height: 36,
+    top: 194.796875,
+    right: 220,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 231,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 307,
+    bottom: 219.796875,
+    left: 231
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+360 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 158,
+    height: 36,
+    top: 152.796875,
+    right: 220,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 158,
+    height: 36,
+    top: 194.796875,
+    right: 220,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 231,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 307,
+    bottom: 219.796875,
+    left: 231
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+390 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 188,
+    height: 36,
+    top: 152.796875,
+    right: 250,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 188,
+    height: 36,
+    top: 194.796875,
+    right: 250,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 261,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 337,
+    bottom: 219.796875,
+    left: 261
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+390 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 188,
+    height: 36,
+    top: 152.796875,
+    right: 250,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 188,
+    height: 36,
+    top: 194.796875,
+    right: 250,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 261,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 337,
+    bottom: 219.796875,
+    left: 261
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+412 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 210,
+    height: 36,
+    top: 152.796875,
+    right: 272,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 210,
+    height: 36,
+    top: 194.796875,
+    right: 272,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 283,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 359,
+    bottom: 219.796875,
+    left: 283
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+412 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 62,
+    y: 152.796875,
+    width: 210,
+    height: 36,
+    top: 152.796875,
+    right: 272,
+    bottom: 188.796875,
+    left: 62
+  },
+  white: {
+    x: 62,
+    y: 194.796875,
+    width: 210,
+    height: 36,
+    top: 194.796875,
+    right: 272,
+    bottom: 230.796875,
+    left: 62
+  },
+  moves: {
+    x: 283,
+    y: 163.796875,
+    width: 76,
+    height: 56,
+    top: 163.796875,
+    right: 359,
+    bottom: 219.796875,
+    left: 283
+  },
+  grid: '"time result" "black moves" "white moves"',
+  display: 'flex'
+}
+1440 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 360,
+    y: 257,
+    width: 281.03125,
+    height: 34,
+    top: 257,
+    right: 641.03125,
+    bottom: 291,
+    left: 360
+  },
+  white: {
+    x: 649.03125,
+    y: 257,
+    width: 281.03125,
+    height: 34,
+    top: 257,
+    right: 930.0625,
+    bottom: 291,
+    left: 649.03125
+  },
+  moves: {
+    x: 1166,
+    y: 264,
+    width: 64,
+    height: 20,
+    top: 264,
+    right: 1230,
+    bottom: 284,
+    left: 1166
+  },
+  grid: 'none',
+  display: 'none'
+}
+1440 {
+  overflow: false,
+  listOverflow: false,
+  black: {
+    x: 360,
+    y: 257,
+    width: 281.03125,
+    height: 34,
+    top: 257,
+    right: 641.03125,
+    bottom: 291,
+    left: 360
+  },
+  white: {
+    x: 649.03125,
+    y: 257,
+    width: 281.03125,
+    height: 34,
+    top: 257,
+    right: 930.0625,
+    bottom: 291,
+    left: 649.03125
+  },
+  moves: {
+    x: 1166,
+    y: 264,
+    width: 64,
+    height: 20,
+    top: 264,
+    right: 1230,
+    bottom: 284,
+    left: 1166
+  },
+  grid: 'none',
+  display: 'none'
+}

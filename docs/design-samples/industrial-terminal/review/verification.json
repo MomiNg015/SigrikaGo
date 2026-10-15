@@ -1,0 +1,164 @@
+{
+  "qa": [
+    "9 characters, skill and profile tabs",
+    "Search, no results, deploy, home synchronization",
+    "Battle selected character, alternating stones, occupied rejection, undo, pass, coordinate toggle and reset",
+    "Skill feedback/spent state, Escape/focus restoration, draw and resign flows",
+    "Practice selection, stone-count preview",
+    "15 desktop/portrait layouts: no horizontal overflow or broken images",
+    "Portrait deploy flow, keyboard tabs, reduced motion, local settings"
+  ],
+  "layouts": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "view": "home",
+      "overflow": 0,
+      "documentHeight": 1000,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "view": "battle",
+      "overflow": 0,
+      "documentHeight": 1010,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "view": "members",
+      "overflow": 0,
+      "documentHeight": 1018,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "view": "home",
+      "overflow": 0,
+      "documentHeight": 827,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "view": "battle",
+      "overflow": 0,
+      "documentHeight": 902,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "view": "members",
+      "overflow": 0,
+      "documentHeight": 943,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "view": "home",
+      "overflow": 0,
+      "documentHeight": 874,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "view": "battle",
+      "overflow": 0,
+      "documentHeight": 853,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "view": "members",
+      "overflow": 0,
+      "documentHeight": 1233,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "view": "home",
+      "overflow": 0,
+      "documentHeight": 874,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "view": "battle",
+      "overflow": 0,
+      "documentHeight": 823,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "view": "members",
+      "overflow": 0,
+      "documentHeight": 1233,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "view": "home",
+      "overflow": 0,
+      "documentHeight": 874,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "view": "battle",
+      "overflow": 0,
+      "documentHeight": 783,
+      "broken": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "view": "members",
+      "overflow": 0,
+      "documentHeight": 1233,
+      "broken": 0
+    }
+  ],
+  "errors": []
+}

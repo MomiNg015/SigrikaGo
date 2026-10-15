@@ -7,8 +7,9 @@ export function buildRoomView(room, viewerId, options = {}) {
   const viewerColor = playerColor ?? COLORS.black;
   const isFinished = room.game.phase === GAME_PHASES.finished;
   const role = !isFinished && room.players.some((player) => player.user.id === viewerId) ? "player" : "spectator";
-  const spectatorBlackView = role === "spectator" ? gameView(room.game, COLORS.black) : null;
-  const views = role === "spectator" ? { white: gameView(room.game, COLORS.white) } : null;
+  // A live spectator owns neither color, so both players' visual restrictions apply.
+  const spectatorView = role === "spectator" ? gameView(room.game, isFinished ? COLORS.black : null) : null;
+  const views = role === "spectator" && isFinished ? { white: gameView(room.game, COLORS.white) } : null;
 
   return {
     code: room.code,
@@ -66,7 +67,7 @@ export function buildRoomView(room, viewerId, options = {}) {
     spectators: room.spectators.map((spectator) => ({
       user: spectator.user
     })),
-    game: role === "spectator" ? spectatorBlackView : gameView(room.game, viewerColor),
+    game: role === "spectator" ? spectatorView : gameView(room.game, viewerColor),
     gameViews: views,
     chat: room.chat,
     openingEndsAt: room.openingEndsAt,

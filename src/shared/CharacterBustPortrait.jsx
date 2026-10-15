@@ -14,7 +14,7 @@ export default function CharacterBustPortrait({
   alt = character?.name ?? "",
   loading = "eager",
 }) {
-  const portrait = resolveHandbookPortrait(character, { user, itemEffects, equippedCostumes, costumeSnapshot, battleForm });
+  const portrait = resolveHandbookPortrait(character, { user, itemEffects, equippedCostumes, costumeSnapshot, chibi: true, battleForm });
   return <BustImage key={`${portrait.isStandard ? "standard" : "authored"}:${portrait.src}`}
     portrait={portrait} variant={variant} alt={alt} loading={loading} />;
 }
@@ -22,15 +22,18 @@ export default function CharacterBustPortrait({
 function BustImage({ portrait, variant, alt, loading }) {
   const [failed, setFailed] = useState(false);
   const standard = portrait.isStandard && !failed;
-  const src = failed ? portrait.fallbackSrc : portrait.src;
-  const faceFraction = variant === "team" ? .46 : variant === "student-id" ? .64 : .58;
+  const compactHead = portrait.isChibi && variant === "profile";
+  const src = failed ? portrait.fallbackSrc : compactHead ? portrait.src.replace(/\.webp$/, "-avatar.webp") : portrait.src;
+  const centered = compactHead || variant === "team";
+  const faceFraction = variant === "team" ? .72 : variant === "student-id" ? .64 : .58;
   const cropWidth = standard
     ? variant === "student-id" ? portrait.headWidth / faceFraction : Math.max(portrait.cropWidth, portrait.headWidth / faceFraction)
     : null;
   const artStyle = standard ? {
-    "--character-bust-width": `${portrait.width / cropWidth * 100}%`,
-    "--character-bust-anchor-x": `${-portrait.focal[0] / portrait.width * 100}%`,
-    "--character-bust-ratio": `${portrait.width} / ${portrait.height}`,
+    "--character-bust-width": portrait.isChibi ? compactHead ? "100%" : "94%" : `${portrait.width / cropWidth * 100}%`,
+    "--character-bust-anchor-x": portrait.isChibi ? "-50%" : `${-portrait.focal[0] / portrait.width * 100}%`,
+    ...(portrait.isChibi ? { "--character-bust-top": centered ? "50%" : "4%", "--character-bust-anchor-y": centered ? "-50%" : "0%" } : {}),
+    "--character-bust-ratio": compactHead ? "1 / 1" : `${portrait.width} / ${portrait.height}`,
   } : portrait.style;
 
   return (
@@ -42,7 +45,7 @@ function BustImage({ portrait, variant, alt, loading }) {
           alt={alt}
           loading={loading}
           decoding="async"
-          {...(standard ? { width: portrait.width, height: portrait.height } : {})}
+          {...(standard ? { width: compactHead ? 512 : portrait.width, height: compactHead ? 512 : portrait.height } : {})}
           onError={() => {
             if (standard && portrait.fallbackSrc && portrait.fallbackSrc !== portrait.src) setFailed(true);
           }}

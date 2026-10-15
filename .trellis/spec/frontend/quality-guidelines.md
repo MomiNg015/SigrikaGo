@@ -4,6 +4,15 @@
 
 `RoomHeader` uses the compact scoreboard when `roomGameInfo` exists and the room is not a corrupted candy duel. Keep `roomGameInfo.moves` as the displayed-state source for live, tutorial and replay headers; render the numeral plus 手 without 第. Read the displayed `room.game.turn` directly for black-background/white-text and white-background/black-text states, never move parity; inherit the selected ink on both numeral and unit against legacy theme rules. Room mode/code, team round, player names/ranks and classification accessibility remain available. Identity rows show only the stone marker and name/rank; black/white prefixes remain in accessibility labels and tooltips, not visible text. Do not restyle utility buttons or change their callbacks. The final `mobile-adaptive/room-header-scoreboard.css` owner precedes spectator-presence CSS and overrides only header chrome; desktop/phone placards are 54px/46px tall. Check 0, three-digit values, long names, missing players, mode labels, original menu behavior and corrupted fallback. Browser checks at 1440px and 320/360/390px portrait must preserve header height and avoid horizontal overflow.
 
+### Development Scan And Watch Boundaries
+
+- Keep `optimizeDeps.entries` scoped to `["index.html"]`; default recursive HTML discovery crawls copied builds and fixtures.
+- The default unit-test command excludes `.trellis/` together with other tool-output trees. Archived task code fragments are evidence, not runnable application suites. Keep untracked `.codex-run/` outputs ignored by Git; retained design artifacts belong under `docs/design-samples/`.
+- Keep temporary toolchains, agent artifacts, release copies and test outputs excluded by `server.watch.ignored` in `vite.config.js`. Never exclude `src` or `public`.
+- Preserve the Pixi optimizer exclusions and nested dependency includes when adjusting startup configuration.
+- Verify actual watcher behavior and source change events with `scripts/devStartupWatch.integration.test.js`.
+- Vite interprets `server.port: 0` as its default port, unlike Node HTTP servers. Integration tests must reserve an ephemeral HTTP port and pass the resulting number with `strictPort: true`.
+
 - Ordinary Bright School room player cards are an exception to mobile flat-card styling: the existing `active-turn` state raises the card with a 3px hard shadow; inactive cards move 3px right/down with no shadow. The theme room owner must win against portrait resets without changing layout dimensions or corrupted-duel styling. Room headers replace the room-code prefix with the mode short label (capture challenge before practice before game mode), and the move badge contains only the current move count.
 
 - Ordinary player `ActionBar` retains all five controls in every game mode. Unsupported pass/count/skill/draw actions use native `disabled`, never conditional removal; spectator, dead-stone decision, and tutorial override bars retain their own layouts. Test five-control rendering for practice, capture challenge, standard Go, and gomoku.

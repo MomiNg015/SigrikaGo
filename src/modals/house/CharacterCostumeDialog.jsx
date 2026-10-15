@@ -3,10 +3,9 @@ import { Shirt, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import {
-  costumePortraitFrameStyle,
-  defaultCostumeCard
-} from "../../shared/costumes.js";
+import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
+import { defaultCostumeCard } from "../../shared/costumes.js";
+import PortraitShowcase, { portraitShowcaseAspect } from "../../shared/PortraitShowcase.jsx";
 import { ModalDialog } from "../modalComponents.jsx";
 
 export default function CharacterCostumeDialog({
@@ -25,6 +24,7 @@ export default function CharacterCostumeDialog({
     () => orderCostumeCards(character, costumes, user),
     [character, costumes, user]
   );
+  const showcaseAspect = portraitShowcaseAspect(cards.map((card) => card.portraitUrl));
 
   useEffect(() => {
     setPortalTarget(document.querySelector(".app-shell") ?? document.body);
@@ -63,12 +63,10 @@ export default function CharacterCostumeDialog({
                   aria-label={`查看${costume.name}详情${equipped ? "，正在装扮" : ""}`}
                   onClick={() => setDetailCostume(costume)}
                 >
-                  <img
+                  <PortraitShowcase
                     src={costume.portraitUrl}
-                    style={costume.isDefault ? undefined : costumePortraitFrameStyle(costume)}
                     alt=""
-                    loading="lazy"
-                    decoding="async"
+                    groupAspect={showcaseAspect}
                   />
                   <strong>{costume.name}</strong>
                 </button>
@@ -102,7 +100,7 @@ export default function CharacterCostumeDialog({
       >
         <button className="close-button" type="button" aria-label="关闭服装详情" onClick={() => setDetailCostume(null)}><X size={18} /></button>
         <div className="shop-detail-art character-costume-detail-art" aria-hidden="true">
-          <img src={detailCostume.portraitUrl} alt="" loading="lazy" decoding="async" />
+          <PortraitShowcase src={detailCostume.portraitUrl} groupAspect={showcaseAspect} />
         </div>
         <div className="shop-detail-copy character-costume-detail-copy">
           <span className="shop-detail-category character-costume-detail-category">{character.name}服装</span>
@@ -128,6 +126,8 @@ export default function CharacterCostumeDialog({
 
 export function orderCostumeCards(character, costumes = [], user = {}) {
   const defaultCard = defaultCostumeCard(character);
+  const defaultPortrait = resolveHandbookPortrait({ ...character, portrait: defaultCard.portraitUrl }, { chibi: true });
+  if (defaultPortrait.isChibi) defaultCard.portraitUrl = defaultPortrait.src;
   const characterId = canonicalCharacterId(character?.id ?? character?.slug);
   const characterCostumes = costumes
     .filter((costume) => canonicalCharacterId(costume.characterSlug) === characterId && costume.enabled !== false);

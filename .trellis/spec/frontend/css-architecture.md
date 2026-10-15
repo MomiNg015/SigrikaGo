@@ -8,6 +8,12 @@ Use this guide before changing `src/styles/**`, player theme CSS, HUD compatibil
 
 ## Layer Order
 
+### Character selection stamps
+
+`MatchCharacterCardContent` owns the transparent `selection-stamp-{flag,1,2,3}-v2.png` image inside `.match-character-id`. The stamp center is inset diagonally toward the card interior by 30% of its size using `top: 0; right: 0; transform: translate(20%, -20%) rotate(var(--selection-stamp-tilt))`. The red ring is thick and distressed, with solid flag/numerals and coarse transparent missing-ink texture. Generate its random local angle in [-15, 15] once per mounted card, so rerenders and selection toggles preserve it. Ordinary selection uses the flag; team selection uses the fixed slot index, retaining III when II is cleared. Do not restore the selected-card pseudo-element border or old order badge. Keep keyboard focus visible separately and reserve stamp overhang in desktop and portrait scroll gutters. DOM tests cover asset choice, vacancy stability and angle persistence; browser checks must validate loaded, unclipped stamps at 1440px, 390px and 360px.
+
+Card press feedback follows the battle clock's displacement/shadow relationship: apply `translate: 4px 6px` to the whole `.match-character-id` when its button is selected. Portrait, frame, name and stamp move together. The default hard 4px/6px shadow belongs to a `::before` raster backing at z-index -1, beneath all card content; selection clears its filter. Never filter the foreground frame: its transparent photo opening casts an inward shadow onto the portrait and visually separates the subject from the card. Reduced motion disables the 150ms translate transition while preserving state displacement. Browser regression checks compare portrait/frame/name bounds before/after and assert identical 4px/6px deltas with the same scroll position, plus no foreground filter.
+
 `src/styles.css` is the only global CSS entry imported by React. Keep it as an import map:
 
 1. Shared foundation and domain entries such as `base.css`, `lobby.css`, `room.css`, `modals.css`, `commerce-settings.css`, and responsive/mobile entries.

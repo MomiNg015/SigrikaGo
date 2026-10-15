@@ -20,12 +20,15 @@ async function fixture(configure) {
   const reservation = createHttpServer();
   const backendPort = await listen(reservation);
   await new Promise((resolve) => reservation.close(resolve));
+  const viteReservation = createHttpServer();
+  const vitePort = await listen(viteReservation);
+  await new Promise((resolve) => viteReservation.close(resolve));
   const vite = await createViteServer({
     configFile: false,
     appType: "custom",
     logLevel: "silent",
     server: {
-      host: "127.0.0.1", port: 0,
+      host: "127.0.0.1", port: vitePort, strictPort: true,
       proxy: { "/api": { target: `http://127.0.0.1:${backendPort}`, configure } }
     }
   });

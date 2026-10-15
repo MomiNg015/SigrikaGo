@@ -71,7 +71,12 @@ test("each character keeps a loaded identity and authored costume framing", asyn
   for (const id of characterIds) {
     await mount(page, "profile", `&character=${id}`);
     await expect(page.locator(".profile-hero-portrait .character-bust-portrait")).toHaveAttribute("data-standard", id === "baconbits" ? "false" : "true");
-    if (id !== "baconbits") await expect(page.locator(".profile-hero-portrait img")).toHaveAttribute("src", new RegExp(`/handbook-sprites/${id}\\.webp$`));
+    if (id !== "baconbits") await expect(page.locator(".profile-hero-portrait img")).toHaveAttribute("src", new RegExp(`/handbook-chibi-sprites/${id}-avatar\\.webp$`));
+    const gap = await page.locator(".profile-hero-portrait .character-bust-portrait").evaluate((portrait) => {
+      const frame = portrait.parentElement.getBoundingClientRect(), inner = portrait.getBoundingClientRect();
+      return Math.min(inner.left - frame.left, inner.top - frame.top, frame.right - inner.right, frame.bottom - inner.bottom);
+    });
+    expect(gap).toBeGreaterThanOrEqual(2.9);
   }
   await mount(page, "profile", "&costume=1");
   await expect(page.locator(".profile-hero-portrait .character-bust-portrait")).toHaveAttribute("data-standard", "false");
@@ -82,11 +87,11 @@ test("each character keeps a loaded identity and authored costume framing", asyn
 });
 
 test("missing standard sprite falls back once to the same character", async ({ page }) => {
-  await page.route("**/handbook-sprites/sigrika.webp", route => route.abort());
+  await page.route("**/handbook-chibi-sprites/sigrika-avatar.webp", route => route.abort());
   await mount(page, "profile");
   const portrait = page.locator(".profile-hero-portrait .character-bust-portrait");
   await expect(portrait).toHaveAttribute("data-standard", "false");
-  await expect(portrait.locator("img")).not.toHaveAttribute("src", /handbook-sprites/);
+  await expect(portrait.locator("img")).not.toHaveAttribute("src", /handbook-chibi-sprites/);
   await expect(portrait.locator("img")).toHaveAttribute("alt", "西格莉卡立绘");
 });
 
@@ -326,12 +331,15 @@ async function expectLandscapeBattle(page, { authoredSpecial = false } = {}) {
     const mask = portrait.getBoundingClientRect();
     const image = portrait.querySelector("img");
     const bounds = image.getBoundingClientRect();
+    const team = portrait.closest('.team-portrait-strip');
     return { width: mask.width, height: mask.height, loaded: image.complete && image.naturalWidth > 0,
+      minimumWidth: team ? team.getBoundingClientRect().width / 3 : 60,
+      headSafe: portrait.dataset.standard !== 'true' || (bounds.top >= mask.top - 1 && bounds.left >= mask.left - 1 && bounds.right <= mask.right + 1),
       ratioDelta: Math.abs(bounds.width / bounds.height - image.naturalWidth / image.naturalHeight) };
   }));
   if (!authoredSpecial) {
     expect(art.length).toBeGreaterThanOrEqual(2);
-    expect(art.every(portrait => portrait.width > 60 && portrait.height > 60 && portrait.loaded
+    expect(art.every(portrait => portrait.width > portrait.minimumWidth && portrait.height > 60 && portrait.loaded && portrait.headSafe
       && Number.isFinite(portrait.ratioDelta) && portrait.ratioDelta < .002)).toBe(true);
   }
   const portraitRows = await page.locator(".player-info[data-paper-player]").evaluateAll(players => players.map(player => {

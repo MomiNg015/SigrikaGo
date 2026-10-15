@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { preloadImageAssets } from "../shared/preloadAssets.js";
@@ -23,7 +24,7 @@ export function authPortraitPrewarmSources(characters = CHARACTERS) {
       priority: AUTH_PORTRAIT_PREWARM_PRIORITY.get(canonicalCharacterId(character?.id)) ?? 2
     }))
     .sort((left, right) => left.priority - right.priority || left.index - right.index)
-    .map(({ character }) => character.portrait);
+    .map(({ character }) => resolveCharacterPortrait(character));
 }
 
 export function prewarmAuthPortraits({

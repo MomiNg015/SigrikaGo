@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { CHARACTER_ALIASES } from "./characterAliases.js";
 import {
   CHARACTER_PORTRAIT_ASSETS,
@@ -29,6 +31,15 @@ function builtinCharacter(id) {
 }
 
 describe("resolveHandbookPortrait default sources", () => {
+  it.each([
+    ['sigrika', 'd86fdd740fe705b897b583fb832150ac667ac7ccaa0b818b1d7886302a2f6185'],
+    ['denia', '723d29d42fda9a59fc38c6fa151a388c29917f13250fd586b3fb6c94ba18135a'],
+  ])("keeps the user-confirmed %s source identity", (id, hash) => {
+    const source = readFileSync(new URL(`../../docs/design-samples/handbook-chibi/assets/characters/${id}.png`, import.meta.url));
+    expect(createHash('sha256').update(source).digest('hex')).toBe(hash);
+    const manifest = JSON.parse(readFileSync(new URL('../../public/assets/characters/handbook-chibi-sprites/manifest.json', import.meta.url), 'utf8'));
+    expect(manifest.sprites.find((sprite) => sprite.id === id).source.sha256).toBe(hash);
+  });
   it.each(standardIds)("selects Q landmarks for builtin %s while retaining explicit legacy compatibility", (id) => {
     const chibi = resolveHandbookPortrait(builtinCharacter(id), { chibi: true });
     expect(chibi.src).toBe(`/assets/characters/handbook-chibi-sprites/${id}.webp`);

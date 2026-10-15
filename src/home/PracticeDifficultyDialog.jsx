@@ -43,6 +43,6 @@ export default function PracticeDifficultyDialog({ characters, characterProps, o
         <div className="practice-sheet-bust"><img src={resolveCharacterPortrait(CHARACTERS.sigrika)} width="832" height="1216" alt="西格莉卡" /></div>
       </div>
     </ModalDialog>
-    {characterPickerOpen && <MatchCharacterPicker {...characterProps} startLabel="开始准时宝对局" onConfirm={start} onClose={() => setCharacterPickerOpen(false)} />}
+    {characterPickerOpen && <MatchCharacterPicker {...characterProps} onClose={() => setCharacterPickerOpen(false)} />}
   </div>;
 }

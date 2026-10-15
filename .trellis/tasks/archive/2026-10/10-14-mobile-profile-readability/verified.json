@@ -1,0 +1,2052 @@
+[
+  {
+    "context": "self",
+    "width": 320,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 119,
+          "width": 264,
+          "height": 154,
+          "top": 119,
+          "right": 300,
+          "bottom": 273,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 262,
+        "width": 262
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 132.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 132.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 207.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 155.15625,
+          "width": 154,
+          "height": 29.6875,
+          "top": 155.15625,
+          "right": 287,
+          "bottom": 184.84375,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "29.6875px / 154px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 154,
+        "width": 154
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 134.421875,
+          "y": 214,
+          "width": 152.578125,
+          "height": 44,
+          "top": 214,
+          "right": 287,
+          "bottom": 258,
+          "left": 134.421875
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 285,
+          "width": 264,
+          "height": 1101.578125,
+          "top": 285,
+          "right": 300,
+          "bottom": 1386.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 263,
+        "width": 262
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 329,
+          "width": 226,
+          "height": 65,
+          "top": 329,
+          "right": 281,
+          "bottom": 394,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 408,
+          "width": 226,
+          "height": 47,
+          "top": 408,
+          "right": 281,
+          "bottom": 455,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 238,
+        "width": 226
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 571.796875,
+          "width": 226,
+          "height": 71,
+          "top": 571.796875,
+          "right": 281,
+          "bottom": 642.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 226px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 727.484375,
+          "width": 30.515625,
+          "height": 32.1875,
+          "top": 727.484375,
+          "right": 139.515625,
+          "bottom": 759.671875,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 31,
+        "width": 31
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 719.578125,
+          "width": 44,
+          "height": 48,
+          "top": 719.578125,
+          "right": 103,
+          "bottom": 767.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 144.515625,
+          "y": 711.578125,
+          "width": 38.03125,
+          "height": 64.5,
+          "top": 711.578125,
+          "right": 182.546875,
+          "bottom": 776.078125,
+          "left": 144.515625
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 38,
+        "width": 38
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 360,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 119,
+          "width": 304,
+          "height": 154,
+          "top": 119,
+          "right": 340,
+          "bottom": 273,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 302,
+        "width": 302
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 132.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 132.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 207.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 155.15625,
+          "width": 194,
+          "height": 29.6875,
+          "top": 155.15625,
+          "right": 327,
+          "bottom": 184.84375,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "29.6875px / 194px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 194,
+        "width": 194
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 174.421875,
+          "y": 214,
+          "width": 152.578125,
+          "height": 44,
+          "top": 214,
+          "right": 327,
+          "bottom": 258,
+          "left": 174.421875
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 285,
+          "width": 304,
+          "height": 1101.578125,
+          "top": 285,
+          "right": 340,
+          "bottom": 1386.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 303,
+        "width": 302
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 329,
+          "width": 266,
+          "height": 65,
+          "top": 329,
+          "right": 321,
+          "bottom": 394,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 408,
+          "width": 266,
+          "height": 47,
+          "top": 408,
+          "right": 321,
+          "bottom": 455,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 571.796875,
+          "width": 266,
+          "height": 71,
+          "top": 571.796875,
+          "right": 321,
+          "bottom": 642.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 266px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 727.484375,
+          "width": 46.34375,
+          "height": 32.1875,
+          "top": 727.484375,
+          "right": 155.34375,
+          "bottom": 759.671875,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 46,
+        "width": 46
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 719.578125,
+          "width": 44,
+          "height": 48,
+          "top": 719.578125,
+          "right": 103,
+          "bottom": 767.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 160.34375,
+          "y": 711.578125,
+          "width": 44.765625,
+          "height": 64.5,
+          "top": 711.578125,
+          "right": 205.109375,
+          "bottom": 776.078125,
+          "left": 160.34375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 45,
+        "width": 45
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 390,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 119,
+          "width": 334,
+          "height": 154,
+          "top": 119,
+          "right": 370,
+          "bottom": 273,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 332,
+        "width": 332
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 132.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 132.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 207.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 153.796875,
+          "width": 224,
+          "height": 32.390625,
+          "top": 153.796875,
+          "right": 357,
+          "bottom": 186.1875,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "32.3906px / 224px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 224,
+        "width": 224
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 204.421875,
+          "y": 214,
+          "width": 152.578125,
+          "height": 44,
+          "top": 214,
+          "right": 357,
+          "bottom": 258,
+          "left": 204.421875
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 285,
+          "width": 334,
+          "height": 1101.578125,
+          "top": 285,
+          "right": 370,
+          "bottom": 1386.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 333,
+        "width": 332
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 329,
+          "width": 296,
+          "height": 65,
+          "top": 329,
+          "right": 351,
+          "bottom": 394,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 408,
+          "width": 296,
+          "height": 47,
+          "top": 408,
+          "right": 351,
+          "bottom": 455,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 571.796875,
+          "width": 296,
+          "height": 71,
+          "top": 571.796875,
+          "right": 351,
+          "bottom": 642.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 296px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 735.53125,
+          "width": 58.234375,
+          "height": 16.09375,
+          "top": 735.53125,
+          "right": 167.234375,
+          "bottom": 751.625,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 58,
+        "width": 58
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 719.578125,
+          "width": 44,
+          "height": 48,
+          "top": 719.578125,
+          "right": 103,
+          "bottom": 767.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 172.234375,
+          "y": 711.578125,
+          "width": 49.8125,
+          "height": 64.5,
+          "top": 711.578125,
+          "right": 222.046875,
+          "bottom": 776.078125,
+          "left": 172.234375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 50,
+        "width": 50
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 412,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 119,
+          "width": 356,
+          "height": 154,
+          "top": 119,
+          "right": 392,
+          "bottom": 273,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 354,
+        "width": 354
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 132.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 132.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 207.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 153.796875,
+          "width": 246,
+          "height": 32.390625,
+          "top": 153.796875,
+          "right": 379,
+          "bottom": 186.1875,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "32.3906px / 246px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 246,
+        "width": 246
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 226.421875,
+          "y": 214,
+          "width": 152.578125,
+          "height": 44,
+          "top": 214,
+          "right": 379,
+          "bottom": 258,
+          "left": 226.421875
+        },
+        "font": "16px",
+        "grid": "none / minmax(0px, 1fr)",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 153,
+        "width": 153
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 285,
+          "width": 356,
+          "height": 1087.1875,
+          "top": 285,
+          "right": 392,
+          "bottom": 1372.1875,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 355,
+        "width": 354
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 329,
+          "width": 318,
+          "height": 65,
+          "top": 329,
+          "right": 373,
+          "bottom": 394,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 408,
+          "width": 318,
+          "height": 47,
+          "top": 408,
+          "right": 373,
+          "bottom": 455,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 571.796875,
+          "width": 318,
+          "height": 71,
+          "top": 571.796875,
+          "right": 373,
+          "bottom": 642.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 318px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 721.140625,
+          "width": 66.9375,
+          "height": 16.09375,
+          "top": 721.140625,
+          "right": 175.9375,
+          "bottom": 737.234375,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 67,
+        "width": 67
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 705.1875,
+          "width": 44,
+          "height": 48,
+          "top": 705.1875,
+          "right": 103,
+          "bottom": 753.1875,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 180.9375,
+          "y": 697.1875,
+          "width": 53.515625,
+          "height": 64.5,
+          "top": 697.1875,
+          "right": 234.453125,
+          "bottom": 761.6875,
+          "left": 180.9375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 54,
+        "width": 54
+      }
+    }
+  },
+  {
+    "context": "self",
+    "width": 1440,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 262,
+          "y": 132,
+          "width": 912,
+          "height": 134,
+          "top": 132,
+          "right": 1174,
+          "bottom": 266,
+          "left": 262
+        },
+        "font": "16px",
+        "grid": "\"portrait identity actions\" 96px / 96px minmax(0px, 1fr) auto",
+        "margin": "0px 0px 14px",
+        "padding": "18px 24px",
+        "scrollWidth": 910,
+        "width": 910
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 285.35406494140625,
+          "y": 149.35406494140625,
+          "width": 99.2918701171875,
+          "height": 99.2918701171875,
+          "top": 149.35406494140625,
+          "right": 384.64593505859375,
+          "bottom": 248.64593505859375,
+          "left": 285.35406494140625
+        },
+        "font": "16px",
+        "grid": "96px / 96px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 96,
+        "width": 96
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 407,
+          "y": 182.203125,
+          "width": 549.375,
+          "height": 33.59375,
+          "top": 182.203125,
+          "right": 956.375,
+          "bottom": 215.796875,
+          "left": 407
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 549,
+        "width": 549
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 980.375,
+          "y": 177,
+          "width": 168.625,
+          "height": 44,
+          "top": 177,
+          "right": 1149,
+          "bottom": 221,
+          "left": 980.375
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 169,
+        "width": 169
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 262,
+          "y": 280,
+          "width": 912,
+          "height": 1030.390625,
+          "top": 280,
+          "right": 1174,
+          "bottom": 1310.390625,
+          "left": 262
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 24px 18px",
+        "scrollWidth": 911,
+        "width": 910
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 287,
+          "y": 324,
+          "width": 862,
+          "height": 65,
+          "top": 324,
+          "right": 1149,
+          "bottom": 389,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 16px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 287,
+          "y": 409,
+          "width": 239.421875,
+          "height": 94.796875,
+          "top": 409,
+          "right": 526.421875,
+          "bottom": 503.796875,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "36px 35.1875px / 222.422px",
+        "margin": "0px",
+        "padding": "0px 16px 0px 0px",
+        "scrollWidth": 250,
+        "width": 238
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 287,
+          "y": 519.796875,
+          "width": 862,
+          "height": 54,
+          "top": 519.796875,
+          "right": 1149,
+          "bottom": 573.796875,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "auto / 862px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 361,
+          "y": 655.390625,
+          "width": 222.3125,
+          "height": 20,
+          "top": 655.390625,
+          "right": 583.3125,
+          "bottom": 675.390625,
+          "left": 361
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 222,
+        "width": 222
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 301,
+          "y": 641.390625,
+          "width": 48,
+          "height": 48,
+          "top": 641.390625,
+          "right": 349,
+          "bottom": 689.390625,
+          "left": 301
+        },
+        "font": "16px",
+        "grid": "48px / 48px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 48,
+        "width": 48
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 597.3125,
+          "y": 633.390625,
+          "width": 110.328125,
+          "height": 64.5,
+          "top": 633.390625,
+          "right": 707.640625,
+          "bottom": 697.890625,
+          "left": 597.3125
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 14px",
+        "scrollWidth": 110,
+        "width": 110
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 320,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 115,
+          "width": 264,
+          "height": 203,
+          "top": 115,
+          "right": 300,
+          "bottom": 318,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 262,
+        "width": 262
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 128.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 128.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 203.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 151.15625,
+          "width": 154,
+          "height": 29.6875,
+          "top": 151.15625,
+          "right": 287,
+          "bottom": 180.84375,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "29.6875px / 154px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 154,
+        "width": 154
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49,
+          "y": 210,
+          "width": 238,
+          "height": 93,
+          "top": 210,
+          "right": 287,
+          "bottom": 303,
+          "left": 49
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 238,
+        "width": 238
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 330,
+          "width": 264,
+          "height": 1097.578125,
+          "top": 330,
+          "right": 300,
+          "bottom": 1427.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 263,
+        "width": 262
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 374,
+          "width": 226,
+          "height": 65,
+          "top": 374,
+          "right": 281,
+          "bottom": 439,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 453,
+          "width": 226,
+          "height": 47,
+          "top": 453,
+          "right": 281,
+          "bottom": 500,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 616.796875,
+          "width": 226,
+          "height": 71,
+          "top": 616.796875,
+          "right": 281,
+          "bottom": 687.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 226px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 226,
+        "width": 226
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 768.484375,
+          "width": 30.515625,
+          "height": 32.1875,
+          "top": 768.484375,
+          "right": 139.515625,
+          "bottom": 800.671875,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 31,
+        "width": 31
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 760.578125,
+          "width": 44,
+          "height": 48,
+          "top": 760.578125,
+          "right": 103,
+          "bottom": 808.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 144.515625,
+          "y": 752.578125,
+          "width": 38.03125,
+          "height": 64.5,
+          "top": 752.578125,
+          "right": 182.546875,
+          "bottom": 817.078125,
+          "left": 144.515625
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 38,
+        "width": 38
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 360,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 115,
+          "width": 304,
+          "height": 203,
+          "top": 115,
+          "right": 340,
+          "bottom": 318,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 302,
+        "width": 302
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 128.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 128.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 203.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 151.15625,
+          "width": 194,
+          "height": 29.6875,
+          "top": 151.15625,
+          "right": 327,
+          "bottom": 180.84375,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "29.6875px / 194px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 194,
+        "width": 194
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49,
+          "y": 210,
+          "width": 278,
+          "height": 93,
+          "top": 210,
+          "right": 327,
+          "bottom": 303,
+          "left": 49
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 278,
+        "width": 278
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 330,
+          "width": 304,
+          "height": 1097.578125,
+          "top": 330,
+          "right": 340,
+          "bottom": 1427.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 303,
+        "width": 302
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 374,
+          "width": 266,
+          "height": 65,
+          "top": 374,
+          "right": 321,
+          "bottom": 439,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 453,
+          "width": 266,
+          "height": 47,
+          "top": 453,
+          "right": 321,
+          "bottom": 500,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 616.796875,
+          "width": 266,
+          "height": 71,
+          "top": 616.796875,
+          "right": 321,
+          "bottom": 687.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 266px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 266,
+        "width": 266
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 768.484375,
+          "width": 46.34375,
+          "height": 32.1875,
+          "top": 768.484375,
+          "right": 155.34375,
+          "bottom": 800.671875,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 46,
+        "width": 46
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 760.578125,
+          "width": 44,
+          "height": 48,
+          "top": 760.578125,
+          "right": 103,
+          "bottom": 808.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 160.34375,
+          "y": 752.578125,
+          "width": 44.765625,
+          "height": 64.5,
+          "top": 752.578125,
+          "right": 205.109375,
+          "bottom": 817.078125,
+          "left": 160.34375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 45,
+        "width": 45
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 390,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 115,
+          "width": 334,
+          "height": 203,
+          "top": 115,
+          "right": 370,
+          "bottom": 318,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 332,
+        "width": 332
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 128.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 128.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 203.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 149.796875,
+          "width": 224,
+          "height": 32.390625,
+          "top": 149.796875,
+          "right": 357,
+          "bottom": 182.1875,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "32.3906px / 224px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 224,
+        "width": 224
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49,
+          "y": 210,
+          "width": 280,
+          "height": 93,
+          "top": 210,
+          "right": 329,
+          "bottom": 303,
+          "left": 49
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 330,
+          "width": 334,
+          "height": 1097.578125,
+          "top": 330,
+          "right": 370,
+          "bottom": 1427.578125,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 333,
+        "width": 332
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 374,
+          "width": 296,
+          "height": 65,
+          "top": 374,
+          "right": 351,
+          "bottom": 439,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 453,
+          "width": 296,
+          "height": 47,
+          "top": 453,
+          "right": 351,
+          "bottom": 500,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 616.796875,
+          "width": 296,
+          "height": 71,
+          "top": 616.796875,
+          "right": 351,
+          "bottom": 687.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 296px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 296,
+        "width": 296
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 776.53125,
+          "width": 58.234375,
+          "height": 16.09375,
+          "top": 776.53125,
+          "right": 167.234375,
+          "bottom": 792.625,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 58,
+        "width": 58
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 760.578125,
+          "width": 44,
+          "height": 48,
+          "top": 760.578125,
+          "right": 103,
+          "bottom": 808.578125,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 172.234375,
+          "y": 752.578125,
+          "width": 49.8125,
+          "height": 64.5,
+          "top": 752.578125,
+          "right": 222.046875,
+          "bottom": 817.078125,
+          "left": 172.234375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 50,
+        "width": 50
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 412,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 36,
+          "y": 115,
+          "width": 356,
+          "height": 203,
+          "top": 115,
+          "right": 392,
+          "bottom": 318,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "auto auto / 72px minmax(0px, 1fr)",
+        "margin": "0px 0px 12px",
+        "padding": "14px 12px",
+        "scrollWidth": 354,
+        "width": 354
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 47.76554870605469,
+          "y": 128.7655487060547,
+          "width": 74.46890258789062,
+          "height": 74.46890258789062,
+          "top": 128.7655487060547,
+          "right": 122.23445129394531,
+          "bottom": 203.2344512939453,
+          "left": 47.76554870605469
+        },
+        "font": "16px",
+        "grid": "72px / 72px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 72,
+        "width": 72
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 133,
+          "y": 149.796875,
+          "width": 246,
+          "height": 32.390625,
+          "top": 149.796875,
+          "right": 379,
+          "bottom": 182.1875,
+          "left": 133
+        },
+        "font": "16px",
+        "grid": "32.3906px / 246px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 246,
+        "width": 246
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 49,
+          "y": 210,
+          "width": 280,
+          "height": 93,
+          "top": 210,
+          "right": 329,
+          "bottom": 303,
+          "left": 49
+        },
+        "font": "16px",
+        "grid": "none / minmax(58px, 1.25fr) repeat(3, minmax(44px, 1fr))",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 36,
+          "y": 330,
+          "width": 356,
+          "height": 1083.1875,
+          "top": 330,
+          "right": 392,
+          "bottom": 1413.1875,
+          "left": 36
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 18px 16px",
+        "scrollWidth": 355,
+        "width": 354
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 55,
+          "y": 374,
+          "width": 318,
+          "height": 65,
+          "top": 374,
+          "right": 373,
+          "bottom": 439,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 12px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 55,
+          "y": 453,
+          "width": 318,
+          "height": 47,
+          "top": 453,
+          "right": 373,
+          "bottom": 500,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 10px",
+        "padding": "0px 0px 10px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 55,
+          "y": 616.796875,
+          "width": 318,
+          "height": 71,
+          "top": 616.796875,
+          "right": 373,
+          "bottom": 687.796875,
+          "left": 55
+        },
+        "font": "16px",
+        "grid": "auto / 318px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 318,
+        "width": 318
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 109,
+          "y": 762.140625,
+          "width": 66.9375,
+          "height": 16.09375,
+          "top": 762.140625,
+          "right": 175.9375,
+          "bottom": 778.234375,
+          "left": 109
+        },
+        "font": "14px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 67,
+        "width": 67
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 59,
+          "y": 746.1875,
+          "width": 44,
+          "height": 48,
+          "top": 746.1875,
+          "right": 103,
+          "bottom": 794.1875,
+          "left": 59
+        },
+        "font": "13px",
+        "grid": "48px / 44px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 44,
+        "width": 44
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 180.9375,
+          "y": 738.1875,
+          "width": 53.515625,
+          "height": 64.5,
+          "top": 738.1875,
+          "right": 234.453125,
+          "bottom": 802.6875,
+          "left": 180.9375
+        },
+        "font": "13px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 2px",
+        "scrollWidth": 54,
+        "width": 54
+      }
+    }
+  },
+  {
+    "context": "social",
+    "width": 1440,
+    "overflow": false,
+    "nodes": {
+      ".profile-resume-hero": {
+        "rect": {
+          "x": 262,
+          "y": 126,
+          "width": 912,
+          "height": 134,
+          "top": 126,
+          "right": 1174,
+          "bottom": 260,
+          "left": 262
+        },
+        "font": "16px",
+        "grid": "\"portrait identity actions\" 96px / 96px minmax(0px, 1fr) auto",
+        "margin": "0px 0px 14px",
+        "padding": "18px 24px",
+        "scrollWidth": 910,
+        "width": 910
+      },
+      ".profile-hero-portrait": {
+        "rect": {
+          "x": 285.35406494140625,
+          "y": 143.35406494140625,
+          "width": 99.2918701171875,
+          "height": 99.2918701171875,
+          "top": 143.35406494140625,
+          "right": 384.64593505859375,
+          "bottom": 242.64593505859375,
+          "left": 285.35406494140625
+        },
+        "font": "16px",
+        "grid": "96px / 96px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 96,
+        "width": 96
+      },
+      ".profile-identity-block": {
+        "rect": {
+          "x": 407,
+          "y": 176.203125,
+          "width": 438,
+          "height": 33.59375,
+          "top": 176.203125,
+          "right": 845,
+          "bottom": 209.796875,
+          "left": 407
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 438,
+        "width": 438
+      },
+      ".profile-identity-actions": {
+        "rect": {
+          "x": 869,
+          "y": 145,
+          "width": 280,
+          "height": 96,
+          "top": 145,
+          "right": 1149,
+          "bottom": 241,
+          "left": 869
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 280,
+        "width": 280
+      },
+      ".profile-folder-page": {
+        "rect": {
+          "x": 262,
+          "y": 274,
+          "width": 912,
+          "height": 1030.390625,
+          "top": 274,
+          "right": 1174,
+          "bottom": 1304.390625,
+          "left": 262
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px 24px 18px",
+        "scrollWidth": 911,
+        "width": 910
+      },
+      ".profile-play-tabs": {
+        "rect": {
+          "x": 287,
+          "y": 318,
+          "width": 862,
+          "height": 65,
+          "top": 318,
+          "right": 1149,
+          "bottom": 383,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px 0px 16px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-summary-item.is-primary": {
+        "rect": {
+          "x": 287,
+          "y": 403,
+          "width": 239.421875,
+          "height": 94.796875,
+          "top": 403,
+          "right": 526.421875,
+          "bottom": 497.796875,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "36px 35.1875px / 222.422px",
+        "margin": "0px",
+        "padding": "0px 16px 0px 0px",
+        "scrollWidth": 250,
+        "width": 238
+      },
+      ".profile-recent-section": {
+        "rect": {
+          "x": 287,
+          "y": 513.796875,
+          "width": 862,
+          "height": 54,
+          "top": 513.796875,
+          "right": 1149,
+          "bottom": 567.796875,
+          "left": 287
+        },
+        "font": "16px",
+        "grid": "auto / 862px",
+        "margin": "16px 0px 8px",
+        "padding": "10px 0px",
+        "scrollWidth": 862,
+        "width": 862
+      },
+      ".profile-character-name": {
+        "rect": {
+          "x": 361,
+          "y": 649.390625,
+          "width": 222.3125,
+          "height": 20,
+          "top": 649.390625,
+          "right": 583.3125,
+          "bottom": 669.390625,
+          "left": 361
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 222,
+        "width": 222
+      },
+      ".profile-chain-portrait.small": {
+        "rect": {
+          "x": 301,
+          "y": 635.390625,
+          "width": 48,
+          "height": 48,
+          "top": 635.390625,
+          "right": 349,
+          "bottom": 683.390625,
+          "left": 301
+        },
+        "font": "16px",
+        "grid": "48px / 48px",
+        "margin": "0px",
+        "padding": "0px",
+        "scrollWidth": 48,
+        "width": 48
+      },
+      ".profile-character-table td": {
+        "rect": {
+          "x": 597.3125,
+          "y": 627.390625,
+          "width": 110.328125,
+          "height": 64.5,
+          "top": 627.390625,
+          "right": 707.640625,
+          "bottom": 691.890625,
+          "left": 597.3125
+        },
+        "font": "16px",
+        "grid": "none",
+        "margin": "0px",
+        "padding": "8px 14px",
+        "scrollWidth": 110,
+        "width": 110
+      }
+    }
+  }
+]

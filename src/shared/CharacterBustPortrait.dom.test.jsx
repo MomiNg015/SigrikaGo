@@ -8,19 +8,28 @@ import { resolveHandbookPortrait } from "./handbookPortraits.js";
 afterEach(cleanup);
 
 describe("shared character busts", () => {
-  it.each(["sigrika", "denia", "aemeath", "lynae", "mornye", "chisa", "changli", "qiuyuan", "nabomo"])("frames %s proportionally from the shared face landmark", (id) => {
+  it.each(["sigrika", "denia", "aemeath", "lynae", "mornye", "chisa", "changli", "qiuyuan", "nabomo"])("keeps %s in a proportional headwear-safe identity frame", (id) => {
     const character = CHARACTERS[id];
-    const portrait = resolveHandbookPortrait(character);
+    const portrait = resolveHandbookPortrait(character, { chibi: true });
     const { container } = render(<CharacterBustPortrait character={character} />);
     const image = screen.getByAltText(character.name);
     const art = image.parentElement;
-    expect(image.getAttribute("src")).toBe(portrait.src);
+    expect(image.getAttribute("src")).toBe(portrait.src.replace(".webp", "-avatar.webp"));
+    expect(image.getAttribute("width")).toBe("512");
+    expect(image.getAttribute("height")).toBe("512");
+    expect(art.style.getPropertyValue("--character-bust-ratio")).toBe("1 / 1");
+    expect(art.style.getPropertyValue("--character-bust-anchor-x")).toBe("-50%");
+    expect(container.querySelector('[data-standard="true"]')).toBeTruthy();
+  });
+
+  it("uses the complete outfit in the student ID", () => {
+    render(<CharacterBustPortrait character={CHARACTERS.mornye} variant="student-id" />);
+    const image = screen.getByAltText(CHARACTERS.mornye.name);
+    expect(image.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/mornye.webp");
     expect(image.getAttribute("width")).toBe("832");
     expect(image.getAttribute("height")).toBe("1216");
-    expect(art.style.getPropertyValue("--character-bust-ratio")).toBe("832 / 1216");
-    expect(Number.parseFloat(art.style.getPropertyValue("--character-bust-anchor-x")))
-      .toBeCloseTo(-portrait.focal[0] / 832 * 100);
-    expect(container.querySelector('[data-standard="true"]')).toBeTruthy();
+    fireEvent.error(image);
+    expect(image.getAttribute("src")).toBe(CHARACTERS.mornye.portrait);
   });
 
   it("recovers to effective legacy art once and tries a changed standard source normally", () => {
@@ -33,10 +42,10 @@ describe("shared character busts", () => {
     expect(image.getAttribute("src")).toBe(CHARACTERS.sigrika.portrait);
     rerender(<CharacterBustPortrait character={CHARACTERS.denia} />);
     expect(screen.getByAltText(CHARACTERS.denia.name).getAttribute("src"))
-      .toBe("/assets/characters/handbook-sprites/denia.webp");
+      .toBe("/assets/characters/handbook-chibi-sprites/denia-avatar.webp");
     rerender(<CharacterBustPortrait character={CHARACTERS.sigrika} />);
     expect(screen.getByAltText(CHARACTERS.sigrika.name).getAttribute("src"))
-      .toBe("/assets/characters/handbook-sprites/sigrika.webp");
+      .toBe("/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp");
   });
 
   it("retains custom source and authored costume framing on the compositor", () => {
@@ -55,7 +64,7 @@ describe("shared character busts", () => {
   });
 
   it("retries authored art sharing a failed standard URL without inheriting its fallback state", () => {
-    const src = "/assets/characters/handbook-sprites/sigrika.webp";
+    const src = "/assets/characters/handbook-chibi-sprites/sigrika.webp";
     const { rerender } = render(<CharacterBustPortrait character={CHARACTERS.sigrika} />);
     fireEvent.error(screen.getByAltText(CHARACTERS.sigrika.name));
     expect(screen.getByAltText(CHARACTERS.sigrika.name).getAttribute("src"))
@@ -69,7 +78,7 @@ describe("shared character busts", () => {
     expect(image.closest(".character-bust-portrait").dataset.standard).toBe("false");
 
     rerender(<CharacterBustPortrait character={CHARACTERS.sigrika} />);
-    expect(screen.getByAltText(CHARACTERS.sigrika.name).getAttribute("src")).toBe(src);
+    expect(screen.getByAltText(CHARACTERS.sigrika.name).getAttribute("src")).toBe(src.replace(".webp", "-avatar.webp"));
     expect(screen.getByAltText(CHARACTERS.sigrika.name).closest(".character-bust-portrait").dataset.standard)
       .toBe("true");
   });

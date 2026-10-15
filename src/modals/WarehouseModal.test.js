@@ -12,7 +12,7 @@ import {
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
-  it("disables the server-restricted Sigrika target with a visible explanation", () => {
+  it("disables the server-restricted Sigrika target with an accessible explanation", () => {
     const item = {
       itemId: "rainbow-bean-candy",
       disabledCharacterReasons: { sigrika: "西格莉卡的糖果剧情尚未开放，暂不可使用" }
@@ -28,11 +28,14 @@ describe("WarehouseModal candy feedback", () => {
       user: {}, onClose: () => {}, onUseItem: () => {}
     }));
     expect(html.match(/disabled=""/g)).toHaveLength(1);
-    expect(html).toContain("西格莉卡（暂不可用）");
+    expect(html).toContain("/assets/home/character-selection-id-v4.png");
+    expect(html).toContain('class="match-character-name"');
+    expect(html).toContain('class="team-character-options"');
+    expect(html).not.toContain('class="warehouse-character-grid"');
     expect(html).toContain(item.disabledCharacterReasons.sigrika);
   });
 
-  it("renders a labelled warehouse sticker header", () => {
+  it("preserves the original warehouse sticker title and close control", () => {
     const html = renderToStaticMarkup(createElement(WarehouseModal, {
       token: "token",
       user: { ownedCharacters: [] },
@@ -41,8 +44,9 @@ describe("WarehouseModal candy feedback", () => {
     }));
 
     expect(html).toContain('<header class="warehouse-header window-sticker-header">');
-    expect(html).toContain('<span class="window-title-sticker-label">仓库</span>');
+    expect(html).toContain('warehouse-field-guide');
     expect(html).toContain('/assets/window-titles/warehouse.webp');
+    expect(html).not.toContain('收藏图鉴');
     expect(html).toContain('aria-label="关闭仓库"');
     expect(html).not.toContain("查看并使用已经购买的道具。");
     expect(html).not.toContain("lucide-package");
@@ -124,7 +128,7 @@ describe("WarehouseModal candy feedback", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("/assets/characters/portraits/denia-candy.webp");
+    expect(html).toContain("/assets/characters/story-sprites/denia/rainbow-spray-avatar.webp");
     expect(html).not.toContain("/assets/Danea_centered.webp");
   });
 
@@ -206,7 +210,7 @@ describe("WarehouseModal candy feedback", () => {
     expect(finalMobileCss).toContain(".warehouse-item-quantity");
   });
 
-  it("renders unusable item actions as disabled gray buttons on desktop and mobile", () => {
+  it("keeps recruitment navigation disabled when no destination callback is provided", () => {
     const html = renderToStaticMarkup(createElement(WarehouseItemGrid, {
       items: [{
         itemId: "recruitment-poster",
@@ -225,15 +229,15 @@ describe("WarehouseModal candy feedback", () => {
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
     const disabledBlock = commerceCss.match(/\.warehouse-item \.primary-action:disabled\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(html).toContain('class="primary-action"');
-    expect(html).toContain('class="warehouse-item-media"');
-    expect(html).toContain('class="warehouse-item-copy"');
-    expect(html).toContain('class="warehouse-item-quantity"');
+    expect(html).toContain('class="wg-use"');
+    expect(html).toContain('class="wg-thumbnail"');
+    expect(html).toContain('class="wg-details"');
+    expect(html).toContain('class="wg-quantity"');
     expect(html).toContain("×2");
     expect(html).toContain('aria-label="数量 2"');
-    expect(html).toContain('aria-label="请去招募：招新贴报"');
+    expect(html).toContain('aria-label="前去招募：招新贴报"');
     expect(html).toContain("disabled=\"\"");
-    expect(html).toContain("请去招募");
+    expect(html).toContain("前去招募");
     expect(disabledBlock).toContain("cursor: not-allowed");
     expect(disabledBlock).toContain("grayscale");
     expect(finalMobileCss).toContain('button:active:not(:disabled):not([aria-disabled="true"], [aria-busy="true"])');

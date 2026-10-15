@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 198
-- **Last Active**: 2026-10-11
+- **Total Sessions**: 199
+- **Last Active**: 2026-10-14
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~602 | Active |
+| `journal-4.md` | ~635 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 199 | 2026-10-14 | Mobile profile alignment and replay scoreboard | `4f31b676` | `master` |
 | 198 | 2026-10-11 | Result rank star-trail integration | `7932e421` | `master` |
 | 197 | 2026-10-11 | Compact battle result window | `9772d083` | `master` |
 | 196 | 2026-10-11 | Aemeath 800ms glitch timing | `f9545be9` | `master` |

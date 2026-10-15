@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import { useRef, useState } from "react";
 import { Plus, Upload } from "lucide-react";
 import { adminApi, uploadPortrait } from "../api/client.js";
@@ -34,7 +35,7 @@ export default function AdminCharacters({ characters, skillTraits = [], token, o
               className={`admin-character-card ${draft?.dbId === character.dbId ? "selected" : ""}`}
               onClick={() => selectCharacter(character)}
             >
-              <img src={character.portrait} alt={character.name} />
+              <img src={resolveCharacterPortrait(character, { variant: "avatar" })} alt={character.name} />
               <span>
                 <strong>{character.name}</strong>
                 <small>{character.id}</small>
@@ -200,7 +201,7 @@ function CharacterEditor({ draft, setDraft, skillTraits, token, onCancel, onSave
       </div>
       {draft.portraitUrl && (
         <div className="admin-portrait-preview">
-          <img src={draft.portraitUrl} alt={draft.name || "character portrait"} />
+          <img src={resolveCharacterPortrait({ ...draft, id: draft.id ?? draft.slug })} alt={draft.name || "character portrait"} />
         </div>
       )}
       <h3>技能</h3>

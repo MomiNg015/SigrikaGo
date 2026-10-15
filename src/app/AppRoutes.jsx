@@ -160,7 +160,12 @@ export default function AppRoutes({
           progressHint="（首次加载需要1-3分钟，请耐心等待哦~）"
           user={user}
           tipsText={siteSettings.preloadTips}
-        /> : <LoginAssetPreloadScreen progress={assetProgress} tipsText={siteSettings.preloadTips} />
+        /> : <LoginAssetPreloadScreen
+          characters={characters}
+          loadingLinesText={siteSettings.characterLoadingLines}
+          progress={assetProgress}
+          tipsText={siteSettings.preloadTips}
+        />
       )}
       {view === "match-preloading" && (
         <Suspense fallback={routeLoadingScreen}>

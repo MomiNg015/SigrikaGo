@@ -1,12 +1,13 @@
 # 资源、音频与启动预加载
 
-本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。
+本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。`npm run check:portraits` 同时验证原素材规范及展示边界目录与当前素材一致，防止替换图片后继续使用过期构图数据。
 
 ## 当前结论
 
 - 固定功能标题资源由 `src/shared/windowTitleStickers.js` 登记，共 23 组，位于 `public/assets/window-titles/`。每组交付透明 PNG 和运行用无损 WebP，像素尺寸为逻辑显示尺寸的 3 倍。`node scripts/generate-window-title-stickers.mjs` 使用项目的 `LXGWMarkerGothic-Regular.ttf`（霞鹭）排版，绘制带浅蓝横线和轻微暖色层次的纸面、白色裁切边、细棕轮廓、小折角与投影；不再使用插画簇或模拟笔刷字体。标题按窗口打开时加载，不加入启动阻塞资源；图片未加载或失败时显示相同字体的语义文字标题。
 
 - 运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。
+- 默认 Q 版全身素材与方形皮肤的展览尺寸由 `PortraitShowcase` 统一：生成目录 `portraitVisibleBounds.js` 记录源尺寸与可见 Alpha 边界，同一衣柜按最大姿势宽高比展示相同可见高度，详情居中展示完整轮廓。未知上传图居中 contain；动画使用所有帧的边界并集。替换已登记源图后运行 `node scripts/export-portrait-visible-bounds.mjs`，不会改写源像素、装备构图或历史快照。九张默认 Q 版素材为832×1216；下述900×900规范仍适用于旧默认、当前皮肤及糖果素材。
 - 首批服装店源资源仍保留在 `public/assets/costumes/`：西格莉卡 1 套、达妮娅 2 套、娜波摩 2 套，以及看板娘娜波摩 greeting/thanks/empty 三种状态。当前角色/衣柜消费者使用 `public/assets/costumes/portraits/` 下的规范化 lossless VP8L WebP；五张服装与十张默认角色立绘、达妮娅基础糖果特效立绘共用 900×900 单帧透明画布、792px 安全框和底部中心锚点，因此衣柜不再依靠 83/88/94 的逐件缩放补偿。达妮娅糖果特效在同一几何规范内保持 24 帧、每帧 60ms 的动画 WebP，而不是静态首帧。看板娘仍保持独立的 1024×1024 接待区构图，不进入角色立绘规范。常态商品/看板娘资源进入商店启动清单，用户已装备服装及其可选糖果特效立绘进入登录 critical images，房间双方开局服装快照进入 battle preload。
 - 招募道具运行期图标由 `src/shared/recruitment.js` 统一暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 `imageUrl` 归一到当前共享配置，启动种子也会按每个道具的 `staleImageUrls` 回填空值或精确旧默认 SVG 路径，避免已有 SQLite 行继续显示旧资源且不覆盖后台自定义图。“招新贴报/招新海报”使用 `public/assets/items/recruitment-poster.webp`，由 `C:/codex/image/item/Recruitment_paper.png` 无损 WebP 转换而来；“先约电台广播券”使用 `public/assets/items/radio-recruitment-ticket.webp`，由 `C:/codex/image/item/boardcast_ticket.png` 转换而来。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 `public/assets/items/rainbow-bean-candy.webp`，由 `C:/codex/image/item/rainbow-candy-cutout-full.png` 无损 WebP 转换而来；服务端 `server/itemImages.js` 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 `/assets/items/rainbow-bean-candy.png`。`public/assets/promotional/` 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 `recruitment-poster-v1..v3.png` 和“先约电台广播券”候选 `radio-coupon-v1..v3.png`。这些候选 PNG 不进入 `RUNTIME_IMAGE_ASSETS` 或启动预加载，除非后续 UI 明确引用。
 - Bright School 首页主面板背景板是运行期 home 资源：桌面/窄桌面使用 `/assets/home/home-main-panel-desktop.webp`，手机/竖屏使用 `/assets/home/home-main-panel-mobile.webp`。两张图由主题 CSS 挂到 `.home-main-panel.home-terminal-main`，使用 `background-size: 100% 100%` 随当前面板尺寸自适应伸缩，而不是通过 React 标记或外部绝对路径加载。
@@ -239,8 +240,12 @@ Player windows use `WindowLoadingState` for pending content, sharing the empty-s
 
 正式剧情引导已登记西格莉卡、达妮娅、爱弥斯三套标准立绘，爱弥斯素材目录 `amis-sprite-expressions` 对应运行角色 `aemeath`。资源独立位于 `public/assets/characters/story-sprites/`：27 张 832×1216 无损透明 WebP 与 27 张固定裁切的 256×256 表情头像，共约 22.05 MB。原 PNG、身体、透明度与表情包保持不变；导入脚本逐像素核验完整图可见 RGB 和 Alpha，并在 manifest 中记录来源 SHA-256 和头像裁切。
 
-`characterStorySprites.js` 统一造型、表情白名单与用途解析。StoryScript 节点增加可选 `appearanceId/expressionId`；后台可选择原立绘／标准立绘及角色合法表情，Excel v1 增加两个可选列并兼容旧表。标准造型固定剧情服装，不继承账号时装构图；堕化西格莉卡与彩虹达妮娅仍优先，未知版本、未支持角色和图片错误回退原肖像体系。默认 900×900 肖像与全站启动预加载入口保持独立。
+`characterStorySprites.js` 统一造型、表情白名单与用途解析。StoryScript 节点增加可选 `appearanceId/expressionId`；后台可选择原立绘／标准立绘及角色合法表情，Excel v1 增加两个可选列并兼容旧表。所有剧情与引导使用脚本默认造型及指定表情，不继承账号皮肤、构图或特效；堕化／彩虹外观仅在脚本明确指定对应角色时展示。未知版本、未支持角色和图片错误回退角色默认肖像。预加载、缺省NPC头像及全身回退遵循同一规则。全站默认肖像启动预加载入口保持独立。
 
 现有数据库无需覆盖：`authoredGuideExpressionsData.js` 按脚本 key、节点 ID、角色和完整原文匹配作者配置，再在响应阶段加入展示字段，先于用户名插值。显式字段（包括空值）优先；修改台词后不误用原配置。225 节点的现有新手引导中，169 段角色对白已逐段配置表情，首页导览另有 22 段；台词、分支、延迟、棋盘动作均保持原内容。爱弥斯当前没有引导台词，素材可在后台选择。剧情窗口预加载实际使用的完整表情图；教学 NPC 和首页导览显示、预加载既有256px表情头像，复用四并发缓存加载器。头像在固定方框内展示，与动态打字正文分开定位。
 
 复现：`node scripts/import-story-sprites.mjs --source-root <素材根目录>`。合同与验证入口见 `.trellis/spec/backend/story-sprite-contract.md`；图库完整性、原文等值、后台/Excel 往返及真实组件竖屏检查均有对应测试。
+
+### 登录后加载页恢复（2026-10-15）
+
+普通登录加载复用 `AssetPreloadScreen` 的随机角色、跳动、纸质进度条与 10 秒提示轮换；`LoginAssetPreloadScreen` 仅适配实时目录、台词、进度与笔刷 Tip 样式。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。

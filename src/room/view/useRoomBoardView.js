@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { COLORS, canStartSkill, gameViewForColor } from "../../shared/game.js";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { COLORS, GAME_PHASES, canStartSkill, gameViewForColor } from "../../shared/game.js";
 import { effectiveSkillConfigForPlayer } from "../../shared/derivedSkills.js";
 import { skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation } from "../../shared/gameSkills.js";
 import { canPreviewPoint, replayGameAt, replayRoomAt } from "../roomView.js";
@@ -8,16 +8,21 @@ import { useRoomCountdownClock } from "./useRoomCountdownClock.js";
 
 export function useRoomBoardView({ room, user, replayStep }) {
   const [spectatorStep, setSpectatorStep] = useState(null);
-  const [viewColor, setViewColor] = useState(COLORS.black);
+  const [selectedViewColor, setSelectedViewColor] = useState(COLORS.black);
   const liveStepRef = useRef(room.game.history.length);
   const isReplay = replayStep !== null;
   const liveStep = room.game.history.length;
   const effectiveRole = effectiveRoomRole(room, isReplay);
   const isLiveSpectator = effectiveRole === "spectator" && !isReplay;
+  const isViewLocked = isLiveSpectator && room.game.phase !== GAME_PHASES.finished;
+  const viewColor = isViewLocked ? null : selectedViewColor;
+  const setViewColor = useCallback((color) => {
+    if (!isViewLocked) setSelectedViewColor(color);
+  }, [isViewLocked]);
   const effectiveSpectatorStep = spectatorStep ?? liveStep;
   const boardStep = isReplay ? replayStep : isLiveSpectator ? effectiveSpectatorStep : null;
-  const liveSpectatorGame = liveSpectatorGameForColor(room, viewColor);
-  const hasServerSpectatorView = viewColor === COLORS.black || Boolean(room.gameViews?.[viewColor]);
+  const liveSpectatorGame = isLiveSpectator ? liveSpectatorGameForColor(room, viewColor) : room.game;
+  const hasServerSpectatorView = isViewLocked || viewColor === COLORS.black || Boolean(room.gameViews?.[viewColor]);
   const rawBoardGame = boardStep == null || boardStep >= liveStep
     ? isLiveSpectator ? liveSpectatorGame : room.game
     : replayGameAt(room, boardStep);
@@ -43,7 +48,7 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const opponentConnected = role !== "player" || opponent?.connected !== false;
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
-  const canSwitchView = role === "spectator";
+  const canSwitchView = role === "spectator" && !isViewLocked;
   const roomViewStatus = roomViewStatusFor({
     isReplay,
     isLiveSpectator,
@@ -97,12 +102,16 @@ export function useRoomBoardView({ room, user, replayStep }) {
 }
 
 export function liveSpectatorGameForColor(room, color) {
+  if (room.game.phase && room.game.phase !== GAME_PHASES.finished) {
+    // Current server payloads are already projected; only legacy payloads need re-projection.
+    return room.gameViews === null ? room.game : gameViewForColor(room.game, null);
+  }
   if (color === COLORS.black) return room.game;
   return room.gameViews?.[color] ?? room.game;
 }
 
 export function roomViewStatusFor({ isReplay, isLiveSpectator, boardStep, liveStep, viewColor }) {
-  const viewpoint = viewColor === COLORS.white ? "白方" : "黑方";
+  const viewpoint = viewColor == null ? "公共观战" : viewColor === COLORS.white ? "白方" : "黑方";
 
   if (isReplay) {
     return {

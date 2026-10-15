@@ -1,3 +1,4 @@
+import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
 import NpcDialogue from "./NpcDialogue.jsx";
 import { canAnimateTypewriter, prefersReducedMotion } from "./TypewriterText.jsx";
 export { TypewriterText } from "./TypewriterText.jsx";
@@ -106,7 +107,7 @@ export default function TutorialBattleScreen({
     ...(script?.nodes ?? [])
       .flatMap((node) => [node.characterId, node.npcCharacterId, node.playerCharacterId])
       .filter(Boolean)
-      .map((characterId) => findCharacter(characters, characterId).portrait)
+      .map((characterId) => resolveCharacterPortrait(findCharacter(characters, characterId)))
       .filter(Boolean)
   ])], [activeNpcCharacterId, characters, script?.nodes, user]);
   const [game, setGame] = useState(() => createTutorialGameState({

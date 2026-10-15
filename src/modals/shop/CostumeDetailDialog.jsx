@@ -2,6 +2,7 @@ import { Shirt, X } from "lucide-react";
 import { useId } from "react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import { CHARACTERS } from "../../shared/characters.js";
+import PortraitShowcase from "../../shared/PortraitShowcase.jsx";
 import { ModalActionButton, ModalDialog } from "../modalComponents.jsx";
 
 export default function CostumeDetailDialog({
@@ -45,7 +46,7 @@ export default function CostumeDetailDialog({
       >
         <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭服装详情" onClick={onClose}><X size={18} /></button>
         <div className="shop-detail-art costume-detail-art" aria-hidden="true">
-          <img src={costume.portraitUrl} alt="" />
+          <PortraitShowcase src={costume.portraitUrl} />
         </div>
         <div className="shop-detail-copy costume-detail-copy">
           <span className="shop-detail-category costume-detail-category">{characterName}服装</span>

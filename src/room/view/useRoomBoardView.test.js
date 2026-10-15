@@ -3,6 +3,16 @@ import { COLORS } from "../../shared/game.js";
 import { liveSpectatorGameForColor, roomViewStatusFor } from "./useRoomBoardView.js";
 
 describe("live spectator room views", () => {
+  it("reuses the public server projection and cannot select a legacy alternate view mid-match", () => {
+    const publicGame = { phase: "playing", points: [], derivedSkills: {} };
+    expect(liveSpectatorGameForColor({ game: publicGame, gameViews: null }, COLORS.white)).toBe(publicGame);
+    const hiddenGame = {
+      phase: "playing",
+      points: [{ stone: COLORS.black, hiddenHand: { owner: COLORS.black, exposed: false } }]
+    };
+    expect(liveSpectatorGameForColor({ game: hiddenGame, gameViews: { white: { id: "alternate" } } }, COLORS.white).points[0].stone).toBeNull();
+  });
+
   it("uses the canonical game field for the black perspective", () => {
     const blackGame = { id: "black" };
     const room = { game: blackGame, gameViews: { white: { id: "white" } } };

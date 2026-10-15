@@ -19,6 +19,9 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await page.evaluate(() => document.fonts.ready);
     const originalCrop = await portrait.boundingBox();
     const originalImage = await image.boundingBox();
+    await expect(page.locator(".onboarding-story-modal")).toHaveAttribute("data-story-presentation", "chibi");
+    expect(originalImage.height).toBeLessThanOrEqual(originalCrop.height + 1);
+    await page.screenshot({ path: `test-results/chibi-story-${viewport.width}.png` });
     await expect(page.getByRole("button", { name: "剧情对话文本" })).toContainText(source[0].text.replaceAll("{username}", "新同学"));
     await page.getByRole("button", { name: "你怎么知道的？", exact: true }).click();
     await expect(image).toHaveAttribute("src", /closed_smile\.webp$/);
@@ -69,6 +72,8 @@ test("Denia story uses full art and teaching NPC uses a fixed avatar", async ({ 
   await page.goto(url(denia.id), { waitUntil: "domcontentloaded" });
   await expect(page.locator(".onboarding-story-portrait img")).toHaveAttribute("src", /denia\/.*(?<!-avatar)\.webp$/);
   await expect(page.getByRole("button", { name: "剧情对话文本" })).toContainText(denia.text);
+  await expect(page.locator(".onboarding-story-modal")).toHaveAttribute("data-story-presentation", "chibi");
+  await page.screenshot({ path: "test-results/chibi-denia-story.png" });
   await page.clock.install();
   await page.clock.pauseAt(new Date());
   await page.goto(url(npc.id) + "&battle=1", { waitUntil: "domcontentloaded" });
@@ -79,6 +84,23 @@ test("Denia story uses full art and teaching NPC uses a fixed avatar", async ({ 
   await expect(bubble.locator(".tutorial-npc-portrait-slot")).toHaveCSS("height", "88px");
   await expect(bubble).toContainText(npc.speakerName || "达妮娅");
 });
+
+for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 640 }]) {
+  test(`Denia chibi face remains above the dialogue on ${viewport.width}px phones`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto(url(denia.id), { waitUntil: "domcontentloaded" });
+    const image = page.locator(".onboarding-story-portrait img");
+    await expect.poll(() => image.evaluate(element => element.complete && element.naturalWidth)).toBe(832);
+    await page.evaluate(() => document.fonts.ready);
+    const art = await image.boundingBox();
+    const paper = await page.locator(".onboarding-story-dialogue").boundingBox();
+    // The native face ends at y=605; keep the expression above the paper.
+    expect(art.y + art.height * 605 / 1216).toBeLessThan(paper.y);
+    expect(art.y + art.height).toBeGreaterThan(paper.y + 40);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `test-results/chibi-denia-story-${viewport.width}.png` });
+  });
+}
 
 for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
   test(`NPC square avatar stays at the bubble top ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {

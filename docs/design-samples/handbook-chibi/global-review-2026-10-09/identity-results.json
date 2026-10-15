@@ -1,0 +1,173 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "home",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.000055701341783453984,
+        "faceX": 0.49992107580363315,
+        "faceY": 0.44994587926742524
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "profile",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.00000824817096811703,
+        "faceX": 0.5000000143140608,
+        "faceY": 0.4499383752035633
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "room",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath.webp",
+        "ratioError": 0.000005047140290259655,
+        "faceX": 0.4999999912406492,
+        "faceY": 0.45
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.000005047140290259655,
+        "faceX": 0.49999989488779095,
+        "faceY": 0.44999997108861023
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "home",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.00006526573564469285,
+        "faceX": 0.4998616641282846,
+        "faceY": 0.44992404947188736
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "profile",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.00006883959147574448,
+        "faceX": 0.50000001562287,
+        "faceY": 0.4498697749355382
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "room",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath.webp",
+        "ratioError": 0.00003252208791804101,
+        "faceX": 0.49987475499868156,
+        "faceY": 0.4499289772727273
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.00003252208791804101,
+        "faceX": 0.49987480673435125,
+        "faceY": 0.44992894076844697
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "home",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0,
+        "faceX": 0.49985350131848816,
+        "faceY": 0.4499096566954427
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "profile",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.000019324978500989687,
+        "faceX": 0.5000000335358001,
+        "faceY": 0.4498356319860739
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "room",
+    "bounds": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath.webp",
+        "ratioError": 0.000011745498537663046,
+        "faceX": 0.4999999796201323,
+        "faceY": 0.4499289772727273
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika.webp",
+        "ratioError": 0.000011745498537663046,
+        "faceX": 0.5000000203798677,
+        "faceY": 0.44992919629840794
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  }
+]

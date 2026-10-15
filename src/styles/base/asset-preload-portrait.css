@@ -1,0 +1,3 @@
+/* Illustration geometry stays contained despite later theme media normalization. */
+.preload-character img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-character > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: transparent; box-shadow: none; filter: none; }

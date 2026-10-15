@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { CHARACTER_CHIBI_LANDMARKS } from "../../src/shared/characterChibiPortraits.js";
 
 async function mountTeamSurface(page, surface) {
   await page.goto(`/tests/e2e/fixtures/team-match.html?surface=${surface}`, { waitUntil: "domcontentloaded" });
@@ -25,9 +26,10 @@ test("match character slots keep their square depth across mouse, touch and redu
       shadowX: shadow[0] ?? 0, shadowY: shadow[1] ?? 0 };
   });
   const expectSquare = (metric) => {
-    expect(metric.width).toBeCloseTo(44, 2);
-    expect(metric.height).toBeCloseTo(44, 2);
-    expect(metric.background).toBe("rgba(0, 0, 0, 0)");
+    expect(metric.width).toBeCloseTo(metric.height, 2);
+    expect(metric.width).toBeGreaterThanOrEqual(44);
+    expect(metric.width).toBeLessThan(48);
+    expect(metric.background).not.toBe("rgba(0, 0, 0, 0)");
   };
   await page.evaluate(() => document.fonts.ready);
   for (const state of ["empty", "selected"]) {
@@ -220,7 +222,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     const titleBounds = await title.boundingBox();
     expect(titleBounds.y).toBeGreaterThanOrEqual(0);
     expect(titleBounds.x).toBeGreaterThanOrEqual(0);
-    for (const range of ["(0-40手)", "(41-80手)", "(81手-终局)"]) {
+    for (const range of ["0-40手", "41-80手", "81手-终局"]) {
       await expect(dialog.getByText(range, { exact: true })).toBeVisible();
     }
     const initialBounds = await dialog.boundingBox();
@@ -240,13 +242,12 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await toggleMember("爱弥斯");
     await toggleMember("爱弥斯");
     await page.getByRole("button", { name: "开始匹配" }).click();
-    expect(await page.evaluate(() => window.teamSelection)).toEqual({ mode: "team", lineup: ["sigrika", "nabomo", "aemeath"] });
+    expect(await page.evaluate(() => window.teamSelection)).toEqual({ mode: "team", lineup: ["sigrika", "aemeath", "nabomo"] });
     for (const card of await page.locator('.team-character-option[aria-pressed="true"]').all()) {
       await expect(card).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-      await expect(card).toHaveCSS("outline-color", "rgb(61, 43, 37)");
-      await expect(card).toHaveCSS("outline-width", "2px");
+      await expect(card).toHaveCSS("outline-style", "none");
       await expect(card).toHaveCSS("box-shadow", "none");
-      await expect(card).toHaveCSS("transform", "matrix(0.97, 0, 0, 0.97, 0, 2)");
+      await expect(card).toHaveCSS("transform", "none");
       await expect(card.locator('.team-order-badge')).toHaveCSS('border-radius', '50%');
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -290,6 +291,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
             const mask = img.closest(".character-bust-portrait");
             const crop = mask.getBoundingClientRect();
             const frame = mask.closest(".team-portrait-art").getBoundingClientRect();
+            const focalY = -parseFloat(img.parentElement.style.getPropertyValue("--character-bust-anchor-y")) / 100;
             const focalX = -parseFloat(img.parentElement.style.getPropertyValue("--character-bust-anchor-x")) / 100;
             return { widthDelta: Math.abs(image.width - art.width), heightDelta: Math.abs(image.height - art.height),
               maskWidthDelta: Math.abs(crop.width - frame.width), maskHeightDelta: Math.abs(crop.height - frame.height),
@@ -297,6 +299,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
               standard: mask.dataset.standard === "true",
               imageRatio: image.width / image.height, naturalRatio: img.naturalWidth / img.naturalHeight,
               faceCenterDelta: Math.abs(image.x + image.width * focalX - crop.x - crop.width / 2),
+              faceY: (image.top + image.height * focalY - crop.top) / crop.height,
               widthRatio: image.width / crop.width,
               headTopGap: image.top - crop.top,
               bottomCrop: image.bottom - crop.bottom,
@@ -308,9 +311,27 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         expect(metric.width).toBeGreaterThan(30);
         expect(metric.height).toBeGreaterThanOrEqual(44);
         expect(metric.clips).toHaveLength(3);
-        expect(metric.clips.every(clip => clip.startsWith("polygon("))).toBe(true);
-        expect(new Set(metric.clips).size).toBe(3);
-        for (let index = 1; index < metric.centers.length; index++) expect(metric.centers[index]).toBeGreaterThan(metric.centers[index - 1]);
+        if (viewport.width > 768) {
+          expect(metric.clips.every(clip => clip.startsWith("polygon("))).toBe(true);
+          expect(new Set(metric.clips).size).toBe(3);
+          for (let index = 1; index < metric.centers.length; index++) expect(metric.centers[index]).toBeGreaterThan(metric.centers[index - 1]);
+        } else {
+          expect(metric.clips.every(clip => clip === "none")).toBe(true);
+          for (const active of await page.locator('.team-portrait-slot.is-active').all()) {
+            const bounds = await active.boundingBox();
+            expect(bounds.width).toBeGreaterThanOrEqual(metric.width - 1);
+            expect(bounds.height).toBeGreaterThanOrEqual(32);
+            const face = await active.locator('img').evaluate((image, landmarks) => {
+              const id = image.getAttribute('src').split('/').at(-1).replace('.webp', '');
+              const source = image.getBoundingClientRect();
+              const frame = image.closest('.character-bust-portrait').getBoundingClientRect();
+              const eyeY = source.top + source.height * landmarks[id].focal[1] / image.naturalHeight;
+              return { eyeY, top: frame.top, bottom: frame.bottom };
+            }, CHARACTER_CHIBI_LANDMARKS);
+            expect(face.eyeY).toBeGreaterThan(face.top + 8);
+            expect(face.eyeY).toBeLessThan(face.bottom - 8);
+          }
+        }
         for (const image of metric.images) {
           expect(image.widthDelta).toBeLessThan(1);
           expect(image.heightDelta).toBeLessThan(1);
@@ -318,13 +339,13 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
           expect(image.maskHeightDelta).toBeLessThan(1);
           expect(image.maskOverflow).toBe("hidden");
           if (image.standard) {
-            // Full-height art stays proportional behind a stable chest-up crop.
+            // The source keeps its proportions and complete top edge. Phone
+            // active members get the whole column rather than a diagonal mask.
             expect(image.imageRatio).toBeCloseTo(image.naturalRatio, 2);
             expect(image.faceCenterDelta).toBeLessThan(1);
-            expect(image.widthRatio).toBeGreaterThan(1.2);
+            expect(image.widthRatio).toBeLessThanOrEqual(1);
             expect(image.headTopGap).toBeGreaterThanOrEqual(0);
-            expect(image.bottomCrop).toBeGreaterThan(0);
-            expect(image.visibleHeightRatio).toBeGreaterThan(0.8);
+            expect(image.visibleHeightRatio).toBeGreaterThan(.3);
           }
         }
       }
@@ -411,7 +432,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     expect(await page.evaluate(() => window.matchNotice)).toBe("尚未选择角色，无法匹配");
     expect(await page.evaluate(() => window.matchSelection)).toBeUndefined();
     const empty = modes.getByRole("button", { name: "常规匹配选择角色", exact: true });
-    await expect(empty).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(empty).toHaveCSS("border-style", "dashed");
     const square = await empty.boundingBox();
     expect(square.width).toBe(44); expect(square.height).toBe(44);
     await empty.click();

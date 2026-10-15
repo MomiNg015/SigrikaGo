@@ -53,18 +53,27 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h3>2026-10-15 主分支整合与验证边界</h3>
+<p>整合现有角色立绘与头像、选角及队际阵容、仓库、登录加载、公共观战、准时宝角色配置和结果按钮改动及配套样板、资源、测试和规范。开发运行产物目录 <code>.codex-run/</code> 加入 Git 忽略，已跟踪证据文件保留；单元测试排除 <code>.trellis/</code> 历史任务中的代码副本，避免把归档片段当成完整应用运行。CSS 清单按现有样式逐项核对，登记已有 360px 标题断点，并移除已不承担动效的登录提示样式登记；手册字体及糖果 Q 版立绘测试同步到当前设计。</p>
+<h3>2026-10-15 对局结果按钮悬停反馈</h3>
+<p>“返回棋盘”和“退出房间”共用薄荷色默认底色及全部交互状态；精细指针悬停时上移 2px、硬阴影由 3px 增至 5px，底色同步变浅；移出恢复，按下仍下移 2px、阴影缩至 1px。过渡为 160ms，减少动态效果时取消位移与过渡；触屏不启用悬停。窗口几何、原有圆角和两个按钮的导航行为保持不变。</p>
+<h3>2026-10-15 准时宝选角与角色配置一致性</h3>
+<p>准时宝角色选择窗口只保存出战角色，移除重复的“开始准时宝对局”按钮；关闭选角后由难度窗口唯一的开始按钮提交当前角色、难度与随机执色。服务端 <code>resolveMatchCharacter</code> 校验成功后同时更新对局用户的 <code>selectedCharacter</code> 和 <code>characterConfig</code>，角色配置来自已校验目录，避免立绘已切换但技能和语音仍读取账号默认角色。账号默认选择保持不变；该公共边界同时保障普通匹配、准时宝与吃子挑战的角色一致性。回归覆盖三档准时宝及吃子挑战实际房间的角色、技能次数和语音解析。</p>
 <h3>2026-10-15 桌面部员手册姓名强调</h3>
 <p>桌面角色姓名使用霞鹜漫黑和角色主题色水彩短下划线，保留原卡片高度、原立绘尺寸与位置。撤销额外64px底部姓名空间；四字及以上长姓名仅在原右下区域向右对齐，解决西格莉卡名字压住脚部的问题，短姓名和手机布局不随之移动。字体显式传递至文字内层。回归检查覆盖四种桌面尺寸，验证长姓名与人物像素的安全间距及卡片高度未增加。</p>
 <h3>2026-10-15 设置窗口三套设计样板</h3>
 <p>新增<a href="./design-samples/settings-2026-10-15/index.html">设置窗口比较页</a>，提供纸页清单、社团调音台、折页设置册及正式组件对照。三版保留原手绘设置标题、音频／界面／关于分类和四个声道，分别探索主音量优先的横向清单、复用手绘播放器的纵向推杆、左侧目录与双列便笺；手机竖屏有独立排列。</p>
 <p>样板复用正式默认配置，仅操作本地 React 状态，不写音频或主题缓存、不访问账号接口、不播放声音；拖动音量解除该声道静音，静音保留原数值，未来主题仍不可用。支持分类键盘切换、关闭／重新打开和焦点循环；三版三分类在桌面与 320／390px 共 27 组布局检查通过。正式窗口未替换，待选定方案。<a href="./design-samples/settings-2026-10-15/README.md">样板说明与截图</a>。</p>
+<h3>2026-10-15 登录注册界面三套手绘设计样板</h3>
+<p>新增<a href="./design-samples/auth-2026-10-15/index.html">登录注册三版比较页</a>：社团签到纸保留角色探出纸面，左右迎新页将原手绘角色与表单分区，入部登记册使用页角角色与目录页签。三版均复用原始 <code>login-sigrika-mascot.webp</code>，保留现有登录／注册字段、行动文案与校验规则，调整表单层次、英文标识／版本号可读性和注册规则的位置；支持桌面、390px 和 320px 竖屏预览。</p>
+<p>样板只在本地演示密码显隐、逐字段错误、提交锁定及反馈，不发认证请求、不创建账号、不写缓存；正式登录注册组件与主题样式未改动。审查依据、方案取舍及验证记录见<a href="./design-samples/auth-2026-10-15/README.md">样板说明</a>，正式接入待用户选定。</p>
 <h3>2026-10-14 准时宝难度窗口对话样板</h3>
 <p>用户确认后已正式接入 <code>PracticeDifficultyDialog</code>：右上关闭及独立选角区、三档难度、开始按钮与底部对白胸像保持样板构图。默认西格莉卡通过共享立绘解析器取得，固定为默认造型，不随本局所选角色变化；窗口底线在立绘上方重绘，短屏由背景层滚动，标题与胸像不被内容区裁切。正式样式由两个有限范围的 <code>practice-sheet*.css</code> 所有者承担，原选角缓存、难度状态、开局参数与焦点恢复保持原流程。</p>
 <p>样板底边及两侧底部圆角在胸像上方重绘，边框线完整可见，立绘仍贴底；覆盖层不拦截点击。</p>
 <p>保留<a href="./design-samples/practice-dialog-2026-10-14/index.html">准时宝陪练独立预览</a>：关闭按钮放右上，出战角色框位于其左侧，顶部规则说明移至底部聊天框；三档难度与开始按钮下方留出对白区，右侧使用当前默认西格莉卡 Q 版立绘的胸像裁切，下缘与窗口外边缘精确对齐。对白为“随机猜先。吃掉准时宝22个子或数子胜就算胜利！”。预览可选择难度与角色、关闭／重新打开，并显示本地开局确认；该样板仍不请求后端、不写账号缓存。</p>
 <h3>2026-10-14 选角确认开局与准时宝独立选角</h3>
 <p>非队际赛选角窗口现在只在点击底部开始按钮后发起对局，选择角色会即时保存并保持窗口打开；标准、星炬、五子棋分别显示“开始…匹配”，吃子挑战赛显示“开始吃子挑战赛”。原模式卡片保留使用已选角色快捷开始的能力，队际赛继续原有选人确认流程。</p>
-<p>准时宝难度窗口新增出战角色框，使用独立的账号本地 <code>practice</code> 角色缓存；默认入门，点击难度仅改变选择，难度窗口与选角窗口均可点击“开始准时宝对局”。请求明确携带所选 <code>characterId</code>、难度及随机执棋，不再依赖账号默认角色。未选或已失效的角色禁用开始，沿用拥有状态、角色可用性及糖果限制校验；不影响星炬身份同步和吃子赛选角。角色列表内部滚动，底部开始按钮保持可达。</p>
+<p>准时宝难度窗口新增出战角色框，使用独立的账号本地 <code>practice</code> 角色缓存；默认入门，点击难度仅改变选择，仅难度窗口可点击“开始准时宝对局”，选角窗口只保存角色。请求明确携带所选 <code>characterId</code>、难度及随机执棋，不再依赖账号默认角色。未选或已失效的角色禁用开始，沿用拥有状态、角色可用性及糖果限制校验；不影响星炬身份同步和吃子赛选角。角色列表内部滚动；其他匹配选角窗口保留底部开始按钮并保持可达。</p>
 <h3>2026-10-14 移除普通按钮额外焦点描边</h3>
 <p>校园主题普通按钮（含关闭、返回、确认等）在原有 <code>button-color-states.css</code> 状态所有者中统一取消焦点轮廓，不再因弹窗自动聚焦或操作后保留焦点而叠加深色边框。保留按钮本身的边框、阴影、悬停与按压反馈，以及键盘切换、弹窗焦点循环、Escape 和关闭后的焦点恢复；输入框与专用图片／卡片控件保持原样。</p>
 <h3>2026-10-14 排行榜取消并列名次</h3>
@@ -80,6 +89,8 @@
 <h3>2026-10-14 移动端履历可读性调整</h3>
 <p>移动端履历与用户资料在现有 <code>profile-folder-mobile.css</code> 中统一调整：头像与右侧用户名垂直居中，间距与桌面统一为 24px，操作按钮独占下一排；内容纸页左右内边距增至 18px，使玩法、段位与最近十盘保持一致留白。角色战绩头像增至 44×48px，名称 14px、数据 13px、表头 12px，窄屏长角色名允许换行，表头与数据列保持同一比例。沿用单一正文滚动区，桌面布局与业务数据不变。</p>
 <p>手机竖屏对局回放沿用观战列表的信息层次：时间与结果在顶部，黑白双方头像及名字上下排列，右侧复用纸质手数牌，支持三位／四位数，长名字和结果自然换行。保留整卡点击、键盘打开、原胜负配色、友谊／队际／特殊对局标识、历史服装快照及分页滚动；桌面继续使用原五列表格。</p>
+<h3>2026-10-14 浅灰工业终端第二主题样板</h3>
+<p>新增<a href="./design-samples/industrial-terminal/index.html">浅灰工业终端样板</a>，包含主界面、对弈界面、部员手册，采用灰白底、深色功能模块、少量黄绿强调与项目已有完整角色立绘。三页可切换，九角色搜索、技能／档案页签及本地出战选择相互同步；棋盘支持交替放置、占位反馈、撤回、弃手、重置和坐标切换，技能与确认操作仅演示反馈，不实现规则、AI 或联网请求。角色文案取自已提交默认配置快照，账号与对局数据为隔离样例。桌面与手机竖屏分别构图，五种尺寸共十五组检查无横向溢出或图片加载失败，并验证键盘页签、对话框 Escape 与减少动态效果。<a href="./design-samples/industrial-terminal/README.md">边界及验证说明</a>。保留现有校园主题，生产仍只有 Bright School 可用；主题名称及正式接入待样板反馈。</p>
 <h3>2026-10-13 观战桌面栏目标题样板</h3>
 <p>新增<a href="./design-samples/watch-headers-2026-10-13/index.html">三版栏目标题样板</a>：手写涂线、纸胶带栏目签、棋社记分表。复用正式观战组件与隔离对局数据，仅在样板中改变桌面表头；保留原窗口美术、配色、类型后人数列、手数牌和整行点击。三版增加黑白方棋子标记，手机正式布局与线上接口不变，待用户选定。</p>
 <h3>2026-10-13 移动端观战方案 1 正式接入</h3>
@@ -88,10 +99,21 @@
 <p>新增<a href="./design-samples/watch-mobile-2026-10-13/index.html">手机三版比较页</a>，按用户最新反馈将纯文字方案重做为计分牌名册、中央对阵牌、赛程票签：手数复用对弈 Header <code>.room-move-placard</code> 的挂环、纸面描边和硬阴影；人数使用紧随房间号的双人图标＋数字，三版恢复角色头像与黑白棋子角标。牌面中性，不推测当前行棋方，三位／四位数字单独适配。昵称 14px 完整换行，原窗口外观和整行点击保留，样板点击后关闭列表；四种手机尺寸及正常、长昵称大数值、多对局、空状态共 48 组验证。三版比较页保留，用户已选定方案 1 并正式接入（见上）；对局中绿色、已结束灰色同步到正式列表的桌面及手机状态文字与下划线，接口不变。<a href="./design-samples/watch-mobile-2026-10-13/README.md">复审记录</a>。</p>
 <h3>2026-10-12 观战赛事名册正式接入</h3>
 <p>选定方案 1 接入 <code>WatchModal</code>：取消左侧类型选项卡，类型作为独立列，一次加载全部可观战对局；保留原标签标题、边框、方格纸和阴影。桌面延续紧凑名册，手机改为房间／类型／状态、并排黑白方、手数／人数／观战三行，单条约 116px；窗口高度固定并由列表内部滚动。搜索按房间号或玩家昵称本地过滤；明确观战按钮复用原加入并关闭窗口流程，保留装扮快照与暂离灰显。接口新增显式 <code>mode=all</code>，其他值与省略参数保留原过滤规则，练习与特殊剧情局继续由原查询层排除。最终样式由 <code>mobile-adaptive/watch-ledger.css</code> 负责。<a href="./design-samples/watch-2026-10-12/index.html?view=ledger">方案 1 预览</a>已使用正式组件。</p>
+<h3>2026-10-12 仓库标题手绘下划线样板</h3>
+<p>用户否定标题纸签色块，要求随手绘制的可爱下划线；新增<a href="./design-samples/warehouse-2026-10-12/title.html">三套标题交互样板</a>：粉色轻涂、浅蓝随手双线、粉色软糖波浪。局部 SVG 笔触沿用现有粉／蓝／薄荷色，通过预览页 <code>data-title-style</code> 切换，仅装饰标题下沿，去掉色块与左边线，不增添说明或图标。复用正式仓库与已选印章数量，支持选物、长标题及手机竖屏；用户已选定第 1 套“粉色轻涂”，现已应用到正式仓库：<code>warehouse-title-marker.svg</code> 作为标题下沿不规则笔触，桌面 22px、手机 14px 高，替换纸签色块和左侧线；完整标题继续换行，不改变数量印章、窗口高度或操作位置。正式版与三套样板共 24 组样式／尺寸／长度检查通过。</p>
+<h3>2026-10-12 仓库数量样板</h3>
+<p>新增<a href="./design-samples/warehouse-2026-10-12/quantity.html">三套数量交互样板</a>：纸签数量、印章数量、游戏计数牌。样板通过隔离预览页的 <code>data-quantity-style</code> 切换，沿用正式仓库布局与现有配色；仅比较目录数量和大图数量，隐藏重复的“持有”计数。支持实际选物、样板库存变化及一至四位数验证；用户选定第 2 套后，印章数量已接入正式仓库：目录采用墨色数字与短下划线，大图数量采用倾斜双线印章，数字使用 Arial 与等宽数字特性；移除重复“持有”节点，操作按钮保持右侧位置。手机使用紧凑印章尺寸，完整保留四位数。样板作为对照保留，正式版与三套样板共 24 组状态验证溢出、完整数字、库存更新及切换。</p>
+<h3>2026-10-12 仓库道具图鉴正式接入</h3>
+<p>选定方案 2 接入正式 <code>WarehouseModal</code>：左侧为带数量的道具目录，右侧为大图、真实名称说明与单一操作区；手机竖屏改为双列目录在上、详情在下。按用户后续修订，恢复原 <code>WindowTitleSticker</code> 标签图片标题、关闭按钮，以及原窗口边框、方格纸背景、圆角和阴影，仅重排内部内容。窗口固定为桌面 680px、手机 740px，并受现有标签标题安全可用高度约束；内部网格按剩余高度分配空间，桌面目录行与道具展示撑满两栏，手机双列目录和详情分区铺满窗口；目录和长说明各自滚动，使用操作与翻页固定在内容底部，切换分类、切换道具、加载及空库存不改变窗口高度。去掉目录序号、“道具档案”及档案序号和所有装饰星形；保留数量、分类与实际翻页位置。内部仍用浅粉选中、薄荷绿操作。道具详情标题使用随文字宽度延伸的粉色手绘轻涂下划线，与分类和说明正文区分；标题保持透明底色、无边框，长标题自动换行，手机缩小笔触高度。</p>
+<p><code>WarehouseItemGrid</code> 新增全部／消耗品／招募分类、目录选择及当前分类内循环翻页；分类使用共享招募目录与服务器标记。所选道具始终从最新库存解析，消耗后条目移除则回退到相邻有效位置；空分类不残留操作。招募道具显示可点击的“前去招募”，经 <code>onOpenRecruitment</code> 交由 <code>AppOverlays</code> 同时关闭仓库并打开现有招募窗口，不调用道具使用接口；使用请求进行中仍锁定该入口。道具数量、说明、可用性及隐藏按钮均以服务器响应为准，角色选择、串行使用锁、效果限制、剧情与拒绝反馈沿用既有流程，不新增接口或道具规则。道具选人弹窗复用匹配选角的 <code>MatchCharacterCardContent</code> 与卡片样式，统一纸质卡框、角色配色、全身立绘、姓名和糖果状态边框；桌面五列，手机两列并在窗口内滚动，不可用角色置灰，禁用原因保留在悬浮提示与无障碍名称中。点击仍直接执行既有道具使用流程，不触发匹配选择或出战语音。样式由 <code>warehouse-field-guide*.css</code> 三个局部最终层负责，位于观战最终层之前。<a href="./design-samples/warehouse-2026-10-12/production.html">正式组件预览</a>使用隔离样板数据；<a href="./design-samples/warehouse-2026-10-12/README.md">验证记录</a>包含桌面、手机、长文案、大库存及空状态检查。</p>
+<h3>2026-10-12 仓库三套游戏感样板</h3>
+<p>新增<a href="./design-samples/warehouse-2026-10-12/index.html">仓库三套交互样板</a>：社团补给箱采用分格托盘与单一详情区，道具图鉴采用目录与翻页档案，街机背包采用斜切选物区与放大道具展示。三版沿用现有奶油白、浅粉、薄荷绿、浅蓝及深棕描边，复用道具美术和窗口标题字体，减少重复圆角容器和逐项操作按钮。支持桌面及手机竖屏、分类、选物、部员选择、库存耗尽、关闭重开和重置；全部操作为样板本地状态，招募入口仅展示准备反馈，不调用真实账号或招募接口。正式仓库组件与主题样式不变。<a href="./design-samples/warehouse-2026-10-12/README.md">审查与验证记录</a>。</p>
 <h3>2026-10-12 紧凑手数计分牌正式接入</h3>
 <p>牌面依据当前展示局面的 <code>room.game.turn</code> 切换：黑方行棋黑底白字，白方行棋白底黑字，手数与“手”字同时反色；不按手数奇偶推断，因此兼容技能连续回合与回放。对弈 Header 采用选定的左侧计分牌：只显示“大数字＋手”，不带“第”；牌面桌面 54px、手机 46px，普通双位数状态整体 Header 约 71px／59px。房间模式、号码、组队局数和双方姓名段位在旁侧无框排列，姓名前只保留黑白棋子标记，不显示“黑方：／白方：”前缀；右上按钮、坐标切换和手机菜单沿用现有组件。<code>RoomHeader</code> 直接消费当前展示局面的 <code>roomGameInfo</code>，回放、教学及真人对局共用；双方尚未就绪或特殊污染对局保留原呈现。最终样式由 <code>mobile-adaptive/room-header-scoreboard.css</code> 局部接管，位于观战者最终层之前。<a href="./design-samples/battle-header-2026-10-12/index.html?view=score">预览方案 1</a>已切换到正式组件。</p>
 <h3>2026-10-12 对弈 Header 手数视觉样板</h3>
 <p>新增<a href="./design-samples/battle-header-2026-10-12/index.html">三套 Header 比较页</a>：左侧计分牌、中央对阵旗、横向棋谱栏。三版突出手数，保留房间、黑白方及组队局数；取消信息区重复圆角容器。样板通过局部 portal 替换真实 <code>RoomHeader</code> 的标题信息区，右上按钮与手机菜单继续使用原组件，并在真实棋盘、角色和完整主题中比较。支持 0–999 手、长名称、组队局与手机竖屏预览；仅修改隔离样板，不接入正式对局或服务器。<a href="./design-samples/battle-header-2026-10-12/README.md">范围与验证说明</a>。</p>
+<h3>2026-10-11 校园物件游戏感界面样板</h3>
+<p>新增<a href="./design-samples/game-feel-2026-10-11/index.html">设置、仓库、好友交互样板</a>，回应圆角容器审查后“优先保留游戏感”的要求。三个界面分别采用社团音响台、随身道具箱、部员联络册的物件组织方式，复用现有角色、道具、教室与播放器美术，通过拨杆、拿起物品、翻选角色和短促按压反馈建立层次；包含桌面及手机竖屏预览。所有社交与库存操作均为本地演示，只有提示声试听播放真实本地音频；不接入生产组件、账号、API 或游戏规则。适用范围、设计取舍与验证说明见<a href="./design-samples/game-feel-2026-10-11/README.md">样板说明</a>。</p>
 <h3>2026-10-11 对弈用户详情与自由散布观战形象</h3>
 <p>对弈成员列表及手机“操作／成员”选项卡已移除。真人玩家的用户名卡片与观战立绘直接打开 <code>UserProfileCard</code>，详情按关系提供好友与黑名单的添加／解除；解除好友需确认，自己及机器人沿用限制，好友不能直接加入黑名单。资料请求支持载入、失败重试、关闭与切房后忽略旧响应，复用现有社交 API。</p>
 <p>按用户最新修订，观战角色恢复完整立绘，移除上一轮的内部裁切、末端渐隐与随人数缩小逻辑；固定采用原版 80% 尺寸：手机 144×160px，桌面 192×232px。角色中心在整窗口空白中随机定位，静态旋转 −30°～30°；保留功能界面及窗口边界的自然遮挡。用户名使用信息区角色名同款纸质标签：主题纸色底、细边框、2px 硬阴影、标题字体及 −5° 倾斜，标签通常附在完整立绘下方，靠近窗口底边时向内收至角色中心下方并显示在其他立绘上层；标签可直接打开对应用户，长名称省略显示，详情与无障碍入口保留全名。</p>
@@ -149,12 +171,42 @@
 <h3>2026-10-10 七名角色默认 Q 版表情</h3>
 <p>爱弥斯、琳奈、莫宁、千咲、长离、秋远、纳波莫的当前默认 Q 版立绘新增独立表情工作包，每名角色提供原表情、微笑、认真、惊讶、担忧、难过、生气、害羞、闭眼笑、思考及两种特色表情。工作包位于 <code>output/character-expressions/{id}-chibi-v1/</code>，保留原图、生成候选、提示词、单独校准的五官选区、透明 PNG、分层 PSD、固定头像与核验报告；原表情直接复制来源，Alpha 和选区外像素精确保留。莫宁保留遮眼刘海，长离保留扇子遮挡，纳波莫保留雀斑。制作与交付索引见<a href="../output/character-expressions/remaining-chibi-v1/README.md">七角色表情说明</a>。</p>
 <p>共享剧情目录登记七套表情，统一使用 Q 版比例和固定完整头部头像裁切 <code>[0,0,832,832]</code>，通过既有编辑器和逐节点 <code>appearanceId</code>／<code>expressionId</code> 选择。爱弥斯继续保留 <code>aemeath-standard-v1</code> 及历史表情 ID，<code>annoyed</code> 明确映射到 <code>angry</code>；新制作的闭眼笑和思考各自使用独立素材。默认展示来源及台词不做改写，不按文字猜测表情；预加载仍只读取当前脚本。本轮不新增西格莉卡、达妮娅及猪小仙的表情工作包；前两者的运行时表情资源沿用当前 Q 版来源。</p>
+<h3>2026-10-09 履历三套布局样板</h3>
+<p>新增<a href="./design-samples/profile-layouts-2026-10-09/index.html">履历布局对比样板</a>，沿用 Bright School 纸面、深棕墨线、标题字体和当前 Q 版头像，提供侧栏档案、横排履历、双页手帐三种布局。样板保留现有身份操作、模式、段位、战绩、最近十盘及角色统计字段，通过独立演示数据提供切换、空状态和详情窗口；支持桌面与手机竖屏预览。此轮为独立视觉探索，正式履历组件、接口和数据模型不变；布局选定后再接入。验证记录及截图见<a href="./design-samples/profile-layouts-2026-10-09/README.md">样板说明</a>。</p>
 <h3>2026-10-09 邮箱附件图片与同段排行榜修正</h3>
 <p>邮箱附件的图片使用独立内层画布限制尺寸并保留原比例，外层数量徽章和已领取标记继续允许出框，避免纵向道具图越过卡框或压到名称。普通排行榜在段位、星数／九段积分相同后，改为先比较胜场数，再比较未舍入胜率；完全相同继续并列排名，榜单和固定本人行使用同一服务端名次。吃子挑战榜及对局统计口径不变。</p>
 <h3>2026-10-09 对弈模式手机入口修正</h3>
 <p>手机竖屏大模式卡片隐藏规则信息按钮，子模式保留规则入口；玩些别的的窗口水印文案改为 <code>other mode</code>，不改变五子棋的共享模式目录或剧情锁定文案。子模式行不再被单子模式网格拉伸，容器高度贴合卡片，空槽和已选头像均按卡片垂直居中，保留原按钮尺寸、悬停及按压反馈。</p>
 <h3>2026-10-09 对弈模式统一分层入口</h3>
 <p>对弈模式窗口采用选定的第三种逐页交互，在现有窗口、标题贴纸、卡片及水印样式上做小范围改动：星炬对弈进入常规匹配、吃子挑战赛和队际赛；标准对弈进入常规匹配；玩些别的进入来下五子棋吗？。点击大模式只打开子模式页，不选角、不发起匹配；单子模式也保留此层。选角与队际阵容使用既有入口及各自缓存键，陪练、赛事规则与侵蚀剧情锁定继续有效。返回／Escape 恢复对应大模式焦点，子模式按短时横向滑入并支持减少动态设置。桌面和竖屏手机验证见<a href="./design-samples/match-modes-2026-10-09/README.md">设计与验证记录</a>。</p>
+<h3>2026-10-09 进行中对局的公共观战视角</h3>
+<p>对局未结束时，实时观战和观战回看均锁定为公共观战视角：双方未公开的隐藏手都不可见，双方娜波摩伪色等视觉技能按当前所查看棋盘的阶段同时生效。服务端仅下发公共棋盘投影，不再提供可切换的黑白视角；前端隐藏切换入口并拦截视角切换调用。终局房间和独立棋谱回放恢复自由切换，参赛双方视角保持既有规则。详见<a href="./system-design/07-performance-tech-debt.md">棋盘投影与性能边界</a>。</p>
+<h3>2026-10-09 队际赛阵容文案与视觉样板</h3>
+<p>队际赛上方固定三槽标题恢复 Round 1/2/3，保留对应手数范围；移除“点击移出此位置”及其独占布局行，点击已选位置仍取消对应成员，空位与已选槽位保持一致高度。正式界面采用用户选定的“回合时间线”：三轮标题沿一条横线连接，取消阵容卡外围边框、阴影与人物底色，保留完整人物和姓名；空位在人物区域显示复用证件卡资源的灰色空白角色卡，去掉加号、虚线框及“待选部员”文字；空姓名行保持占位以稳定窗口高度。桌面与竖屏使用固定三行高度，取消中间成员不改变窗口位置或第三轮角色。三套探索造型保留于<a href="./design-samples/team-lineup-2026-10-09/README.md">队际赛阵容样板</a>，正式样式由独立 team-lineup-timeline.css 所有者维护，在选角卡样式后导入，不导入样板 CSS。</p>
+<h3>2026-10-09 选角红色缺墨印章</h3>
+<p>普通模式选中的证件卡使用透明红圈实心旗子印章；队际赛使用罗马数字 I、II、III 印章，分别对应固定三槽棒次。资源为 imagegen 生成的 public/assets/home/selection-stamp-{flag,1,2,3}-v2.png，保留透明背景；红圈加粗，旗子及罗马数字使用实心红墨，并以较大、较多的透明缺墨碎纹呈现橡皮印章质感。印章由共享 MatchCharacterCardContent 渲染，中心从证件卡最右上角向左下各内移印章尺寸的 30%，让印章更多盖在卡片上并随卡片旋转，每枚印章另有 -15°～15° 随机旋转，组件挂载期间保持角度稳定；选中不再额外绘制薄荷色边框或旧位置徽章。选人证件卡的投影由人物与卡框下方的整卡底层承载，默认为 4px/6px、65% 墨色硬投影，卡框本身不再投影到照片中的人物。选中出场后整张证件（人物、卡框、姓名和印章）一起向右下移动 4px/6px，同时移除底层投影，按棋钟卡片的位移／投影收缩关系形成按下效果；普通选人与队际赛共用该状态规则，减少动态效果时取消位移动画但保留状态位移。桌面及竖屏选角网格预留顶部、右侧和行列印章空间，保留 aria-pressed、键盘焦点、语音及固定槽位交互。</p>
+<h3>2026-10-09 学生证与履历身份统一</h3>
+<p>学生证、自己的履历及详细信息共用 <code>studentIdentityCharacterId</code>：读取该账号常规匹配选角，未选或不可用时默认西格莉卡，不随战绩模式切换。首页通过既有 <code>/api/me/character</code> 同步该角色到账号的 <code>selectedCharacter</code>，串行写入防止快速切换造成旧选择覆盖；他人详细信息读取服务器发布的账号角色，不读取查看者的本地选角。照片仍分别采用学生证全身、资料头像构图，皮肤继续按对应角色的已装备外观解析。</p>
+<h3>2026-10-09 模式选角与队际赛阵容交互</h3>
+<p>模式选角选中角色时播放对应出场语音，复用系统语音解析及音量设置；每次播放前停止当前语音并取消待启动请求，保证后选角色中断前一句。取消队员不播放出场语音。加号入口使用纸色虚线卡及轻微悬停反馈，选中证件卡以右上角透明红色缺墨印章标记。</p>
+<p>队际赛编辑草稿为固定三槽 <code>string[3]</code>，空位用空字符串，取消任一位置不压缩其后的角色；新选择填入首个空位，重复或不可用成员在原位置置空。账号级模式缓存及阵容缓存保留空位，三个位置全部有效才允许匹配。服务器接口仍仅接收完整三人阵容，开局顺序、隐藏信息及回放协议不变。上方采用三张固定阵容卡，展示 Round、手数、完整人物和姓名，已选卡可点击清空。复核见<a href="./design-samples/handbook-chibi/match-selection-2026-10-09/README.md">模式选角改良</a>。</p>
+<h3>2026-10-09 学生证、资料头像及剧情外观规则</h3>
+<p>首页学生证使用星炬对弈常规匹配的账号级本地 <code>regular</code> 选角，未选或无有效可用角色时默认西格莉卡，不读取旧出战字段或其他模式选角；证件照片展示完整全身。履历及用户详情使用完整头部头像，人物在头像框内缩3px并裁切，保留边框可见。普通对局与队伍照片继续使用原构图。</p>
+<p>剧情及引导统一通过 <code>resolveStoryPortraitPresentation</code> 读取脚本指定的默认造型／表情，未配置表情、历史节点和预加载回退也不读取账号皮肤、皮肤缩放或账号特效。脚本明确指定的特殊角色仍按节点展示。手机剧情人物舞台延伸至对白框后方，允许遮住下半身；脸部、台词和操作保持可见。既有服装、对局和回放展示不受剧情规则影响。</p>
+<h3>2026-10-09 默认立绘与皮肤展示尺寸统一</h3>
+<p>衣柜及服装详情使用 <code>PortraitShowcase</code> 按人物可见 Alpha 边界构图，同一角色的衣柜卡片共用最大姿势宽高比、相同可见高度及底部基线，避免竖幅默认图与方形皮肤图的透明留白造成大小悬殊。展示保留完整轮廓和安全间距，手机继续双列。已登记素材的边界由 <code>scripts/export-portrait-visible-bounds.mjs</code> 生成，动画取所有帧并集以避免跳动；未知上传图片居中 contain。衣柜比较不使用对局专用缩放／偏移，装备、对局及回放快照的构图字段继续有效。桌面和两种竖屏的复核见<a href="./design-samples/handbook-chibi/wardrobe-standardization-2026-10-09/README.md">服装尺寸标准化</a>。</p>
+<h3>2026-10-09 Q 版立绘逐场景构图改良</h3>
+<p>选角证件卡改为带留白的全身展示，完整保留头饰和服装；首页学生证现按上方最新规则展示全身，资料使用完整头部头像，普通对局保留头顶安全间距和半身构图。派生头像先保留原图完整宽度及头顶／光环，再无损缩放为512px，避免裁切阶段丢失角色特征。桌面队伍栏保留斜切纸片并居中人物，手机竖屏改为当轮角色大照片与另外两名角色的小照片，显示原出场编号并继续隐藏未揭晓素材。</p>
+<p>手机 Q 版剧情立绘现按上方最新规则延伸至对白纸后方，人物下半身可以被遮住；对白纸高度随视口约束，脸部保持可见。表情切换保持构图，长文本继续使用既有上推及内部滚动。完整主题页面和九名角色逐一截图复核，自动检查包括选角完整性、手机当轮照片宽度及剧情脸部可见约束；加载成功和无溢出不能替代视觉验收。最新学生证／头像／剧情截图见<a href="./design-samples/handbook-chibi/student-profile-story-2026-10-09/README.md">展示规则复核</a>。</p>
+<h3>2026-10-09 开发服务器首次加载扫描边界</h3>
+<p>Vite 开发依赖扫描显式以 <code>index.html</code> 为入口，避免递归扫描临时构建、测试夹具及 HTML 样板。文件监听排除 <code>.codex-run</code>、<code>.tmp</code>、<code>.worktrees</code>、<code>.codex-temp</code>、<code>.trellis</code>、<code>.releases</code>、<code>output</code>、<code>outputs</code>、<code>prototypes</code>、<code>artifacts</code>、<code>test-results</code> 和 <code>playwright-report</code>，防止这些目录内的大量工具链文件拖慢首次页面请求或耗尽 Windows 文件监听资源。<code>src</code> 与 <code>public</code> 继续热更新；Pixi 预优化边界、开发代理及生产构建分包保持既有契约。详见<a href="./system-design/07-performance-tech-debt.md#开发服务器扫描边界">性能与技术债</a>。</p>
+<h3>2026-10-08 Q 版表情接入剧情及对弈引导</h3>
+<p>西格莉卡、达妮娅的 Q 版表情通过共享剧情目录接入剧情窗口、对弈教学及首页引导。保留既有 <code>*-standard-v1</code> 造型字段和逐句表情指定，历史已发布节点与默认引导均切换到新素材；闭眼开心／思考等历史表情通过明确素材别名兼容，新增委屈等可选表情。特殊外观、服装回退、台词、节点关系及教学操作沿用原契约。运行时透明素材及来源哈希进入 <code>public/assets/characters/story-sprites/</code>，选择性导入不会替换爱弥斯素材。</p>
+<p>剧情窗口对这两名角色使用 Q 版原图比例。桌面图高不超过既有立绘区域及550px，保留左侧角色与右侧对话；手机按对白框上方可见区域缩放完整人物，具体尺寸见本页逐场景构图改良摘要。长文本既有上推、滚动及选项区域继续生效。对弈教学与首页引导使用固定裁切的256px表情头像，沿用88px／76px头像框及原棋盘、目标提示布局，表情切换不重新缩放角色。</p>
+<h3>2026-10-08 西格莉卡 Q 版表情工作包</h3>
+<p>西格莉卡新增同规格独立素材包 <code>output/character-expressions/sigrika-chibi-v1/</code>，以本次提供的 832×1216 透明原图重新校准面部选区、橙色刘海保护和固定头像裁切，制作默认、开心、认真、惊讶、担忧、委屈、生气及害羞八种表情。交付透明 PNG、分层 PSD、无损全身 WebP、256px 头像及源像素核验报告，保留生成候选、提示词和制作配置；默认图精确复制源文件。该制作包保留独立美术源文件；现已通过既有 <code>sigrika-standard-v1</code> 字段接入运行时，详见上方 Q 版表情接入摘要。</p>
+<h3>2026-10-08 达妮娅 Q 版表情工作包</h3>
+<p>达妮娅新增独立表情制作包 <code>output/character-expressions/denia-chibi-v1/</code>，以用户提供的透明 Q 版原图为固定来源，制作默认、开心、认真、惊讶、担忧、委屈、生气及害羞八种表情。包内保留原尺寸透明 PNG、分层 PSD、候选、眉眼嘴选区、生成提示词及像素核验报告；同时导出固定构图的无损 WebP 与 256px 头像。原图 Alpha 及允许选区外 RGBA 必须精确保留，默认图直接复制来源。该制作包保留独立美术源文件；现已通过既有 <code>denia-standard-v1</code> 字段接入运行时，继续遵循逐节点 <code>appearanceId</code>／<code>expressionId</code> 契约。</p>
 <h3>2026-10-05 界面、履历与胸像统一打磨</h3>
 <p>本轮以 Bright School 校园纸张、深棕墨线和粉蓝薄荷色点缀为统一基准，审查首页、玩家窗口、对局信息与后台页面。履历及他人详细资料继续共用 <code>ProfileResumeView</code>，优化身份区构图和战绩摘要层级；三个目标位置复用现有 <code>handbook-sprites</code> 透明立绘及面部定位元数据，保留服装、糖果、侵蚀和对局快照的外观优先级。普通交互动效以短时状态反馈为原则，并覆盖键盘焦点、禁用、触屏和减少动态设置。</p>
 <p>登录图片预加载在原有可用资源之外，只新增当前首页角色的有效胸像来源；对局预加载新增参赛者及已揭晓队员的有效立绘，继续保留服装快照和机器人专用图片，隐藏队员不解析素材。该策略避免为身份展示把全部标准立绘和剧情表情加入登录关键路径。实际页面浏览验证使用隔离测试数据库及正式 React 组件，复核证据写入本轮任务目录；生产账号和数据库不参与验证。</p>
@@ -179,7 +231,7 @@
 <p>最终质量门通过 419 个测试文件、3051 项测试及构建后 CSS 检查，包含后台设置读取竞态的四项新回归；全项目五个浏览器套件共 64 条用例通过。开发和生产构建分别完成四条真实页面流程，覆盖桌面／手机玩家窗口及全部 21 个后台页面，各保存 74 张固定视口截图。专项界面 17 条浏览器用例及对局跨层 442 项测试通过；360×568、390×568 支持视口再补查 12 组滚动、焦点及操作可达性场景。手机视口模拟和 CPU 降速数据按实际环境记录，真机键盘与硬件帧率另行区分。</p>
 <p>完整交接存于本轮任务的 <code>research/final-review.md</code>，Trellis 第 179 次工作日志记录实现与验证；最新生产页面复核四项全部通过。本轮预览和测试进程已清理，截图及原始日志保留，工作区改动进入审阅状态。</p>
 <p>忙碌状态复核覆盖真实请求等待、拒绝和键盘操作。共享对话框记录自身控件焦点，在该控件禁用或移除后，仅当焦点仍停在失效控件或落至页面背景时恢复至对话框，不抢夺输入框或子窗口的焦点；对话框根节点支持正反向 Tab 回到可用控件。仓库目标选择与道具使用区共享进行中状态，库存使用请求以同步单次保护串行提交，避免一次目标操作被重复提交或多份响应覆盖同一库存视图。关闭入口仍可用，音频及道具效果沿用原数据路径。目标窗口通过主题壳层 portal 避开仓库入场变换，并采用既有 180 层级，保持完整遮罩及实际指针操作；好友移除确认保留待处理目标，在失败后可重试，并阻止等待期间的重复提交。</p>
-<p>登录后普通资源加载路由现已实装确认的思考立绘设计：死活题云朵、圆形连接泡、快速眨眼、真实百分比灯泡，以及资源和站点设置就绪后的恍然大悟表情。灯泡由底向头填充，100% 画面静止 2 秒再进入首页；重试或卸载会取消待执行跳转，房间与匹配恢复仍优先。运行时素材位于 <code>public/assets/preload/thinking/</code>，通过站点入口的有界图片预加载准备。原有加载页背景及主题背景规则保持；教程、对局、懒加载和黑化角色专用表现沿用原流程。Tip 消费实时站点配置，标签与正文使用独立两列，正文续行对齐并仅向下增长，稳定滚动槽防止插画移动。桌面、手机和减少动态模式共用正式 React 组件。</p>
+<p>登录后普通资源加载页恢复随机角色 Q 版立绘跳动、横向纸质加载条与下方 Tip。<code>LoginAssetPreloadScreen</code> 复用 <code>AssetPreloadScreen</code>，接收实时角色目录、角色加载台词及站点 tips；角色和提示沿用 10 秒轮换，优先使用已预热立绘。Tip 保留粉色笔刷标签与两列对齐，桌面正文缩为 14px、手机 13px，宽度上限 440px。入口预热仅保留 Tip 笔刷，不再加载旧思考场景的云朵、灯泡及表情素材。资源就绪门禁和既有 2 秒完成停留保持；教程、对局、懒加载和黑化专用表现沿用原流程，减少动态效果时停止角色跳动。思考灯泡方案留在设计样板中。</p>
 <p>加载样板默认题图改为用户提供的 <code>life-death-problem.png</code>，原文件逐字节保留，完整按比例显示，不截取棋盘或坐标。题图区域缩入云朵的安全内区，390px 手机上与两帧描边的最小内间距约 13px。灯泡头内新增随进度同步的百分比文本，沿用进度条的四舍五入及 0–100 边界；数字反向抵消灯泡旋转而保持正向，字号按灯泡自身宽度缩放，玻璃中心留出安全内间距。灯泡最小宽度为 46px，避免小横屏数字过小；原先较大视口的灯泡尺寸、填充方向、完成表情及满载静止 2 秒保持一致，长 Tip 仍不影响插画位置。</p>
 <p>按用户反馈再次加强加载样板的连接圆泡描边：新素材 <code>round-thought-bubble-bold.png</code> 保留深棕手绘空心轮廓与透明内外，512px 归一素材的中轴线宽由约 23px 增至约 60px，手机三颗气泡显示线宽约 3.6/2.3/1.6px。仅替换素材引用，三枚气泡的布局位置和尺寸保持不变；桌面及手机均验证与角色零像素重叠、长 Tip 不移动插画，预览截图及视觉对照同步更新。</p>
 <p>思考立绘加载样板按用户选择的第三张方向图实现：保留原角色像素及眨眼动画，采用紧凑的云朵、圆泡与灯泡构图，沿用淡格纸与深棕描边，Tip 标签下使用克制的粉色笔触。两张新云朵轮廓保持中心、线粗及明暗一致；圆泡和灯泡同步统一墨色，新灯泡使用独立的透明填充遮罩与派生几何。题图样例取自教学样板 <code>doc-liberty-question-1</code> 的左下棋型原生渲染，正式接入仍需实际题图。插画区域使用独立的顶端锚点和视口尺寸，Tip 在其后正常排版，随机文案增加行数时只向下增高，不影响角色、云朵、连接泡及灯泡的位置；预留滚动条空间避免长文案造成宽度变化，小屏长文案可向下滚动，满载静止 2 秒等加载行为沿用原样板。四种视口的短、中、长 Tip 坐标检查及手机、桌面视觉复核通过，证据存于样板 review 目录和根目录 <code>design-qa.md</code>。</p>
@@ -1161,6 +1213,23 @@
 <p>移动端（768px及以下）同级模式卡片统一为88px高，选人方框保留44px触控尺寸并距右边缘16px，三个队际赛方框间隔4px。所有层级卡片标题统一使用28px大字，不按层级或剩余宽度缩小；规则感叹号位于标题右上方，星炬主入口保留原规则按钮位置与陪练入口。ResizeObserver及字体加载完成后测量实际标题宽度，通过局部CSS变量同步规则按钮位置，避免占用选人区域。</p>
 <h3>窗口专注时的背景音乐</h3>
 <p>主界面或对弈界面打开功能窗口时，BGM 使用 900 Hz 低通（Q=0.5）和 72% 相对音量，形成隔着一道门的朦胧听感；打开和关闭均以 500 ms 平滑过渡。<code>BackgroundMusic.windowFocused</code> 合并应用浮层状态与 <code>ModalDialog</code> 的独立窗口请求，嵌套窗口全部关闭后恢复清晰。所有曲目共用专注滤波总线，切歌、静音、明确演出压低音量和音乐预览暂停继续遵循原有逻辑，窗口切换不重播音乐、不改变本地音量设置。语音和音效不经过该滤波器；Web Audio 不可用时 HTML Audio 降级为相同相对音量衰减。</p>
+<h3>2026-10-08 部员手册新版 Q 版立绘</h3>
+<p>普通部员手册的九名角色条带与全身详情启用用户提供的新版透明 Q 版立绘。原始 832×1216 PNG 保存在 <code>docs/design-samples/handbook-chibi/assets/characters/</code>，通过 <code>node scripts/export-handbook-sprites.mjs --chibi</code> 生成 <code>public/assets/characters/handbook-chibi-sprites/</code> 下的无损 WebP 与逐像素校验清单；九张图片的 alpha 与可见 RGB 完全一致，总体积约5.26MB，比源 PNG 减少52.1%。原图透明区域的隐藏 RGB 不作背景使用，也不进行抠图或重绘。</p>
+<p><code>resolveHandbookPortrait</code> 增加仅手册调用的 <code>chibi: true</code> 选项，独立维护新版的瞳孔中心和头部宽度。共享身份、对弈、选人等默认调用继续使用原版资源与几何；服装、糖果、黑化、自定义图片和猪小仙沿用有效造型解析优先级。桌面新版按各图的可见全身边界缩放：全身高度为条带88%，脚底基线为条带95%，头顶留白7%，展开仅横移。手机竖屏收起按头宽125px，展开按可见全身220px等比缩放、顶部8px，姓名位于行高85%，保留交错站位、对侧姓名、原生点击详情和滚动合同。全身详情继续采用现有 contain 容器。</p>
+<p>当前桌面与手机截图见<a href="./design-samples/handbook-chibi/README.md">新版手册资源与预览</a>。本次不增加 CSS owner、主题规则或动画。</p>
+<h3>2026-10-09 手册角色映射与桌面全身高度修正</h3>
+<p>按用户验收纠正西格莉卡／达妮娅资源映射：橙发双辫、紫白服装为西格莉卡，粉发、白裙与黑色人形发饰为达妮娅；交换持久 PNG 源文件、重新无损导出并同步瞳孔及头宽参数。桌面不再按头宽和统一眼线决定全身高度，改用独立 bodyTop/bodyBottom 边界归一化可见全身高度与脚底基线，避免原先千咲偏低、其他角色高低不一；手机竖屏及详情布局沿用既有规则。角色源文件哈希与清单一致性、不同桌面高度下的全身上下留白和展开前后尺寸稳定性由测试覆盖。视觉验收由用户完成。</p>
+<h3>2026-10-09 未持有 Q 版角色实心剪影</h3>
+<p>未持有角色此前直接复用原图 alpha 遮罩，内部半透明服饰和发丝导致灰色剪影出现明暗纹理。九名标准 Q 版角色现使用独立 <code>{id}-silhouette.webp</code> 二值 alpha 遮罩：通过 <code>scripts/export-handbook-silhouettes.mjs</code> 对 alpha 使用128阈值，从画布边缘洪泛识别背景连通区域，并填实人物内部闭合孔洞。输出保持原画布比例，原立绘不变；九张遮罩共约34KB，清单记录源文件哈希并校验输出 alpha 完全一致。<code>resolveHandbookPortrait</code> 的 Q 版分支返回 <code>silhouetteSrc</code>，未持有条带仅切换 mask URL，灰色背景、问号、不可交互与猪小仙暂无情报合同保持。非 Q 版有效造型仍使用既有遮罩来源。算法与组件测试覆盖内部半透明归一、闭合孔洞填充、外部开口保留以及匿名禁用状态，视觉由用户验收。</p>
+<h3>2026-10-09 部员手册视觉验收与手机展开修正</h3>
+<p>用户重新交由 AI 完成视觉验收。真实手册组件／全量样式夹具在桌面1440×1024、1440×768及手机390×844、360×640下，检查全持有、部分持有和未持有12组状态，均无页面异常和横向溢出。角色映射、桌面全身高度／脚底基线、纯灰剪影及详情对应通过。手机展开时头饰、长发与对侧姓名发生重叠，改为可见全身220px、顶部8px，姓名下移至行高85%，九名角色逐一复查通过；收起特写、左右站位及详情交互保持。新增文案与人物垂直净距断言防止重叠复发，样式修改不增加字节、颜色、重要声明或断点。截图与验收记录见<a href="./design-samples/handbook-chibi/verified-2026-10-09/README.md">当前验收证据</a>，旧截图仅作历史。</p>
+<h3>2026-10-09 Q 版角色详情收框与衣柜默认造型</h3>
+<p>角色详情取消全身立绘的出框展示。既有 handbook-detail-figure owner 将人物高度约束为角色图片区100%，窗口与图片区使用内部裁切，继续 contain 等比显示；手机图文间距由34px收为18px，文案独立滚动及衣柜／关闭入口保持。修改降低样式字节数，不增加 owner、颜色、重要声明或断点。</p>
+<p>衣柜在本地 orderCostumeCards 中为内置角色的虚拟默认卡接入手册 Q 版适配器，卡片缩略图与默认服装详情使用同一新版源。默认造型不读取当前装备、糖果或黑化效果，自定义基础图片及其他服装保留原源与造型参数；共享 defaultCostumeCard、后端装备默认ID和持久化逻辑不变。两名角色在四种视口共八组页面中，图片边界均位于窗口与图片区内，衣柜源正确且无横向溢出，当前截图见<a href="./design-samples/handbook-chibi/contained-details-2026-10-09/README.md">详情与衣柜验收</a>。</p>
+<h3>全项目默认 Q 版立绘统一（2026-10-09）</h3>
+<p>九名部员的默认外观由共享 <code>characterPortraits</code> 解析器统一切换到 <code>handbook-chibi-sprites</code> 新版透明全身图；历史目录和旧 URL 保留兼容，自定义上传、衣装／房间快照、糖果与黑化的优先级继续生效。<code>characterChibiPortraits</code> 独立保存资源映射与面部地标，避免手册适配器与通用解析器循环依赖。全身舞台用于匹配、结算、招募结果、衣柜、加载和默认剧情；首页学生证、资料与对局名牌按眼睛位置做等比例裁切。好友、排行榜、观战、资料战绩、回放、仓库选人和技能横幅使用从原图确定性生成的512×512头像，导出脚本和清单核验 alpha 与可见像素。后台角色和奖池预览也通过同一解析器显示默认外观。</p>
+<p>登录前资源预热、登录后可访问资源和对局可见成员预载同步使用实际展示的新版 URL；账号登录仅预载所选全身图与可访问头像，不把所有全身／剧情表情加入关键路径，隐藏队员继续先排除。加载舞台固定包含完整图片，避免旧方形布局裁掉 Q 版下半身。显式剧情表情差分、首页／登录专用吉祥物与招募动画保留独立素材，普通剧情默认或未知造型使用新版默认图。默认展示替换不改数据库衣装 ID 或历史对局快照。</p>
+<p>验收使用完整主题样式下的实际组件：桌面1440×900、手机390×844与360×640，并执行身份／手册与队际赛浏览器回归；截图和几何／加载报告保存在 <code>docs/design-samples/handbook-chibi/global-review-2026-10-09/</code>。</p>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2767,7 +2836,7 @@
 <li>竖屏回放卡片为左上角角标预留 7px 列表内沟槽；嵌套回放卡片与时间单元的最终 owner 允许角标外伸可见，滚动仍由外层列表负责，因此好友 <code>Handshake</code> 和特殊局 <code>Crown</code> 不会被卡片或滚动边界裁切。</li>
 </ul>
 <ul>
-<li>星炬模式选择项使用 <code>.match-mode-option-wrap</code> 保持正式匹配按钮与准时宝陪练入口为并列交互元素，禁止嵌套按钮并保留键盘焦点。入口按钮以 <code>/assets/home/home-practice-zhunshibao.webp</code> 透明图作为完整视觉内容，保留“准时宝陪练”可访问名称和桌面 <code>144px</code> / 竖屏 <code>136px</code> 标题右上锚点；Bright School 的硬边阴影、按钮级抬升/旋转和 reduced-motion 合同不变。点击入口打开共享 <code>ModalDialog</code> 驱动的内层难度窗，集中渲染 <code>PRACTICE_DIFFICULTY_OPTIONS</code> 的“入门 / 中级 / 高级”及简短说明；三个按钮直接发送 <code>{ difficulty, playerColor: &quot;random&quot; }</code>，没有执色控件或额外开始按钮。内层 Escape、本层遮罩与“返回”只关闭难度窗并将焦点交还入口；选档才关闭整个模式窗。Bright School 语义 owner 把桌面宽度锁在 <code>520px</code>，竖屏以父遮罩可用宽度约束，390px 视口实测宽 356px、选项高 65px且不越界。<code>useMatchActions.startPractice</code> 继续预热 Spark 资源并复用 <code>match:found</code>。共享 <code>OpeningModal</code> 从安全投影的 <code>room.practice.captureResignThreshold</code> 显示练习房红色提子规则；新房三档均为 22，旧入门房缺字段时兼容 11，普通房不渲染。<code>battlePreloadAssets</code> 继续预载 <code>botProfile.portraitUrl</code>；准时宝立绘、占位、结果页和成员交互合同不变。</li>
+<li>星炬模式选择项使用 <code>.match-mode-option-wrap</code> 保持正式匹配按钮与准时宝陪练入口为并列交互元素，禁止嵌套按钮并保留键盘焦点。入口按钮以 <code>/assets/home/home-practice-zhunshibao.webp</code> 透明图作为完整视觉内容，保留“准时宝陪练”可访问名称和桌面 <code>144px</code> / 竖屏 <code>136px</code> 标题右上锚点；Bright School 的硬边阴影、按钮级抬升/旋转和 reduced-motion 合同不变。点击入口打开共享 <code>ModalDialog</code> 驱动的内层难度窗，集中渲染 <code>PRACTICE_DIFFICULTY_OPTIONS</code> 的“入门 / 中级 / 高级”及简短说明；三个按钮只更新难度；角色入口打开独立选角窗，选角即时保存但不开始，且选角窗没有开始按钮。关闭选角窗保留难度并恢复焦点；唯一的“开始准时宝对局”按钮位于难度窗口，发送 <code>{ difficulty, playerColor: &quot;random&quot;, characterId }</code>，未选可用角色时禁用。难度窗的 Escape、遮罩和关闭按钮只关闭当前窗口；显式开始才关闭整个模式窗。Bright School 语义 owner 把桌面宽度锁在 <code>520px</code>，竖屏以父遮罩可用宽度约束，390px 视口实测宽 356px、选项高 65px且不越界。<code>useMatchActions.startPractice</code> 继续预热 Spark 资源并复用 <code>match:found</code>。共享 <code>OpeningModal</code> 从安全投影的 <code>room.practice.captureResignThreshold</code> 显示练习房红色提子规则；新房三档均为 22，旧入门房缺字段时兼容 11，普通房不渲染。<code>battlePreloadAssets</code> 继续预载 <code>botProfile.portraitUrl</code>；准时宝立绘、占位、结果页和成员交互合同不变。</li>
 </ul>
 <ul>
 <li>难度窗不渲染顶部 eyebrow，小窗标题直接为“准时宝陪练”；规则说明固定用换行分隔“随机猜先。”与“吃掉准时宝22颗子或数子胜即算胜利！”，三档辅助文案由共享配置提供“沙包型准时宝 / 一般型准时宝 / 红温型准时宝”。393×852 竖屏实测弹窗宽 359px、高 386px，内容区无横向或纵向溢出。</li>
@@ -3446,7 +3515,7 @@
 <li><code>server/index.js</code> 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 <code>server/serverStartup.js</code>，具体 HTTP 领域逻辑已逐步拆到 <code>*Routes.js</code> 和领域模块，Socket 连接事件套件已由 <code>server/socketEvents.js</code> 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 <code>server/socket*Events.js</code> 分组模块维护。</li>
 </ul>
 <ul>
-<li><code>server/socketPracticeEvents.js</code> owns <code>practice:start</code>：参数为 <code>{ difficulty: &quot;beginner&quot; | &quot;intermediate&quot; | &quot;advanced&quot;, playerColor: &quot;black&quot; | &quot;white&quot; | &quot;random&quot;, engineVersion: &quot;gnugo-3.8-v1&quot;, challenge?: &quot;capture-challenge&quot; }</code>，ack 为 <code>{ ok, roomCode?, error?, code? }</code>。前端先完成本地引擎初始化，服务端刷新认证用户、执行容量与活跃房检查，并校验版本；旧客户端返回 <code>local_practice_version</code>，三档新房均不探测服务器 GNU Go。创建 Spark / unrated / practice / recordPolicy=none 房间，持久化并安全投影 <code>practice.engineBackend=&quot;browser&quot;</code>，保留难度、执色及提子阈值；虚拟准时宝已 ready、无正式角色／技能／socket／社交身份，内部 bot actor id 不投影。<code>practice:compute</code> 与 <code>practice:computed</code> 只接受房主当前连接，具体见本地陪练引擎。</li>
+<li><code>server/socketPracticeEvents.js</code> owns <code>practice:start</code>：参数为 <code>{ difficulty: &quot;beginner&quot; | &quot;intermediate&quot; | &quot;advanced&quot;, playerColor: &quot;black&quot; | &quot;white&quot; | &quot;random&quot;, engineVersion: &quot;gnugo-3.8-v1&quot;, challenge?: &quot;capture-challenge&quot;, characterId?: string }</code>，ack 为 <code>{ ok, roomCode?, error?, code? }</code>。前端先完成本地引擎初始化，服务端刷新认证用户、执行容量与活跃房检查，并校验版本；显式 <code>characterId</code> 通过拥有权、禁用和道具限制校验后，同步覆盖对局用户的 <code>selectedCharacter</code> 与目录 <code>characterConfig</code>，让房间技能及语音快照匹配所选角色，保持账号默认角色不变；旧客户端返回 <code>local_practice_version</code>，三档新房均不探测服务器 GNU Go。创建 Spark / unrated / practice / recordPolicy=none 房间，持久化并安全投影 <code>practice.engineBackend=&quot;browser&quot;</code>，保留难度、执色及提子阈值；虚拟准时宝已 ready、无正式角色／技能／socket／社交身份，内部 bot actor id 不投影。<code>practice:compute</code> 与 <code>practice:computed</code> 只接受房主当前连接，具体见本地陪练引擎。</li>
 </ul>
 <ul>
 <li>Realtime room behavior is composed in <code>server/rooms.js</code>; <code>server/roomMembershipIndex.js</code> maintains userId/socketId to roomCode indexes for active-room checks, <code>room:resume</code>, and <code>disconnect</code> cleanup so growing room counts do not force full scans.</li>
@@ -4643,13 +4712,16 @@
 <p><code>GameRecord.settlementId</code> 为可空唯一字段，新房使用 UUID，旧房通过稳定摘要获得回执标识；<code>settlementState</code> 为 JSON，保存本次提交后的用户变更、道具效果和结果奖励。迁移 <code>20261002040000_game_settlement_receipt</code> 为旧记录保留空值，不推断历史回执。记录与奖励等更新同事务，恢复重复请求复用回执而不重发奖励；<code>PersistedRoom</code> 同步保存 settlementId 与提交后的 recordSaved。</p>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
-<p>本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。</p>
+<p>本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。<code>npm run check:portraits</code> 同时验证原素材规范及展示边界目录与当前素材一致，防止替换图片后继续使用过期构图数据。</p>
 <h2>当前结论</h2>
 <ul>
 <li>固定功能标题资源由 <code>src/shared/windowTitleStickers.js</code> 登记，共 23 组，位于 <code>public/assets/window-titles/</code>。每组交付透明 PNG 和运行用无损 WebP，像素尺寸为逻辑显示尺寸的 3 倍。<code>node scripts/generate-window-title-stickers.mjs</code> 使用项目的 <code>LXGWMarkerGothic-Regular.ttf</code>（霞鹭）排版，绘制带浅蓝横线和轻微暖色层次的纸面、白色裁切边、细棕轮廓、小折角与投影；不再使用插画簇或模拟笔刷字体。标题按窗口打开时加载，不加入启动阻塞资源；图片未加载或失败时显示相同字体的语义文字标题。</li>
 </ul>
 <ul>
 <li>运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。</li>
+</ul>
+<ul>
+<li>默认 Q 版全身素材与方形皮肤的展览尺寸由 <code>PortraitShowcase</code> 统一：生成目录 <code>portraitVisibleBounds.js</code> 记录源尺寸与可见 Alpha 边界，同一衣柜按最大姿势宽高比展示相同可见高度，详情居中展示完整轮廓。未知上传图居中 contain；动画使用所有帧的边界并集。替换已登记源图后运行 <code>node scripts/export-portrait-visible-bounds.mjs</code>，不会改写源像素、装备构图或历史快照。九张默认 Q 版素材为832×1216；下述900×900规范仍适用于旧默认、当前皮肤及糖果素材。</li>
 </ul>
 <ul>
 <li>首批服装店源资源仍保留在 <code>public/assets/costumes/</code>：西格莉卡 1 套、达妮娅 2 套、娜波摩 2 套，以及看板娘娜波摩 greeting/thanks/empty 三种状态。当前角色/衣柜消费者使用 <code>public/assets/costumes/portraits/</code> 下的规范化 lossless VP8L WebP；五张服装与十张默认角色立绘、达妮娅基础糖果特效立绘共用 900×900 单帧透明画布、792px 安全框和底部中心锚点，因此衣柜不再依靠 83/88/94 的逐件缩放补偿。达妮娅糖果特效在同一几何规范内保持 24 帧、每帧 60ms 的动画 WebP，而不是静态首帧。看板娘仍保持独立的 1024×1024 接待区构图，不进入角色立绘规范。常态商品/看板娘资源进入商店启动清单，用户已装备服装及其可选糖果特效立绘进入登录 critical images，房间双方开局服装快照进入 battle preload。</li>
@@ -5256,9 +5328,11 @@
 <p>Player windows use <code>WindowLoadingState</code> for pending content, sharing the empty-state paper drawing and LXGW typography. A gently moving pencil distinguishes loading from empty results; reduced-motion disables it. Compact inline feedback preserves existing content during profile mode changes and replay pagination. Request lifecycles, errors, and full-screen resource progress are unchanged.</p>
 <h2>标准剧情立绘与表情</h2>
 <p>正式剧情引导已登记西格莉卡、达妮娅、爱弥斯三套标准立绘，爱弥斯素材目录 <code>amis-sprite-expressions</code> 对应运行角色 <code>aemeath</code>。资源独立位于 <code>public/assets/characters/story-sprites/</code>：27 张 832×1216 无损透明 WebP 与 27 张固定裁切的 256×256 表情头像，共约 22.05 MB。原 PNG、身体、透明度与表情包保持不变；导入脚本逐像素核验完整图可见 RGB 和 Alpha，并在 manifest 中记录来源 SHA-256 和头像裁切。</p>
-<p><code>characterStorySprites.js</code> 统一造型、表情白名单与用途解析。StoryScript 节点增加可选 <code>appearanceId/expressionId</code>；后台可选择原立绘／标准立绘及角色合法表情，Excel v1 增加两个可选列并兼容旧表。标准造型固定剧情服装，不继承账号时装构图；堕化西格莉卡与彩虹达妮娅仍优先，未知版本、未支持角色和图片错误回退原肖像体系。默认 900×900 肖像与全站启动预加载入口保持独立。</p>
+<p><code>characterStorySprites.js</code> 统一造型、表情白名单与用途解析。StoryScript 节点增加可选 <code>appearanceId/expressionId</code>；后台可选择原立绘／标准立绘及角色合法表情，Excel v1 增加两个可选列并兼容旧表。所有剧情与引导使用脚本默认造型及指定表情，不继承账号皮肤、构图或特效；堕化／彩虹外观仅在脚本明确指定对应角色时展示。未知版本、未支持角色和图片错误回退角色默认肖像。预加载、缺省NPC头像及全身回退遵循同一规则。全站默认肖像启动预加载入口保持独立。</p>
 <p>现有数据库无需覆盖：<code>authoredGuideExpressionsData.js</code> 按脚本 key、节点 ID、角色和完整原文匹配作者配置，再在响应阶段加入展示字段，先于用户名插值。显式字段（包括空值）优先；修改台词后不误用原配置。225 节点的现有新手引导中，169 段角色对白已逐段配置表情，首页导览另有 22 段；台词、分支、延迟、棋盘动作均保持原内容。爱弥斯当前没有引导台词，素材可在后台选择。剧情窗口预加载实际使用的完整表情图；教学 NPC 和首页导览显示、预加载既有256px表情头像，复用四并发缓存加载器。头像在固定方框内展示，与动态打字正文分开定位。</p>
 <p>复现：<code>node scripts/import-story-sprites.mjs --source-root &lt;素材根目录&gt;</code>。合同与验证入口见 <code>.trellis/spec/backend/story-sprite-contract.md</code>；图库完整性、原文等值、后台/Excel 往返及真实组件竖屏检查均有对应测试。</p>
+<h3>登录后加载页恢复（2026-10-15）</h3>
+<p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、台词、进度与笔刷 Tip 样式。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
 <p>玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。</p>
@@ -5822,6 +5896,9 @@
 <p>---</p>
 <h1>性能、技术债与扩展路线</h1>
 <p>本文记录技术债优先级、后续扩展建议、实时性能和高频交互优化。新增性能优化、技术债清理、扩展路线或架构风险时优先更新本分篇。</p>
+<h2>开发服务器扫描边界</h2>
+<p><code>vite.config.js</code> 的 <code>optimizeDeps.entries</code> 固定为 <code>[&quot;index.html&quot;]</code>，依赖扫描仍会沿应用的静态／动态 import 发现真实依赖，但不会递归寻找工作区内所有 HTML。<code>server.watch.ignored</code> 排除临时工具链、复制构建、测试输出、制作包及 Trellis 元数据目录；这些目录不需要应用热更新，源码 <code>src</code> 和静态资源 <code>public</code> 保持监听。该配置仅约束开发期扫描和监听，不改变生产入口、资源预加载或 Pixi 的 exclude/include 互操作契约。</p>
+<p>2026-10-09 本地排查时，<code>.codex-run</code> 与 <code>.tmp</code> 分别约有 3 万与 7.8 万个文件；新启动的默认监听器阻塞页面，并在 GNU Go 临时文件上触发 Windows <code>UNKNOWN</code> watch 错误。限定扫描边界后，新服务使用独立空依赖缓存约 9 秒显示登录页，已热服务约 1 秒；耗时为本机观察值。<code>scripts/devStartupWatch.integration.test.js</code> 验证输出目录不被监听，同时真实源码仍产生 change 事件；代理集成测试显式分配空闲端口，避免 Vite 把 <code>port: 0</code> 回退为默认 5173 与正在运行的开发服务冲突。</p>
 <h2>当前结论</h2>
 <ul>
 <li>CSS 体积和全局层叠仍是前端维护风险。共享基础、房间、棋盘、弹窗、商业/社交/仓库、响应式、移动对局、HUD、最终移动安全、后台管理和 lobby 样式已经逐步拆成 import-only 入口加领域子目录，低频后台与剧情教学 CSS 由 lazy 路由加载；剧情教学 Excel 导入反馈继续放在既有 <code>story-workbench</code> 子入口内，不新增根入口或超过 6000-byte 单文件合同。Bright School 旧的广域兜底清理结构已合并为 <code>src/styles/themes/bright-school/surface-contracts.css</code> 和 <code>surface-contracts/</code> 显式合同层，根入口保留 <code>base.css</code>、<code>gallery-polish.css</code>、<code>surface-contracts.css</code>、<code>component-repairs.css</code>、<code>qa-guard.css</code>；后续技术债重点不再是保留旧兜底，而是减少剩余高风险 <code>!important</code>、继续拆分未领域化的大文件，并为棋盘/技能/最终移动层建立可用视觉回归基线。Tailwind 长期迁移采用 Phase 1-7 路线，完整执行计划保存在 <code>.trellis/tasks/07-01-tailwind-migration-roadmap/tailwind-full-migration-plan.md</code>：Phase 1 新增 <code>src/styles/tailwind/tokens.css</code> 语义 token scaffold 和静态合同，Phase 2 已从后台审计表外壳开始试点 <code>tw:</code> utility 并删除 <code>.audit-table-wrap</code> 旧 CSS；Phase 3 已从 <code>src/ui/primitives/ScrollArea.jsx</code>、<code>src/ui/primitives/Badge.jsx</code>、<code>src/ui/primitives/EmptyState.jsx</code> 和 <code>src/ui/primitives/Button.jsx</code> 开始，把低风险 overflow、inline badge layout、admin table empty-cell layout 与 admin action alignment utilities 收口到 primitive，且 <code>src/admin/adminComponents.jsx</code> 通过 <code>AdminTableScroll</code> 让所有后台表格壳复用 <code>ScrollArea</code>，并通过 <code>AdminActionButton</code> 让后台动作按钮继续复用既有 <code>.primary-action</code>、<code>.secondary-action</code>、<code>.danger-action</code> 视觉合同。Phase 4 已从 <code>src/modals/modalComponents.jsx</code> 的 <code>ModalActionButton</code> 开始，只把 <code>ConfirmModal</code>、<code>MessageBoardModal</code>、<code>AnnouncementModal</code> 简单 retry/load-more 动作按钮、<code>PersonalizationModal</code> 保存按钮、<code>MailboxModal</code> 附件领取按钮、<code>FriendsOverlays</code> 对局模式取消按钮和 <code>UserProfileCard</code> 举报提交按钮的 alignment utility 迁入 wrapper，继续保留共享 modal/action、mailbox 与 friends/profile CSS 对颜色、间距、边框、阴影、禁用态、位置、字体、列表/详情布局、纸张背景、匹配模式选项、资料确认面板、社交操作和移动表现的视觉所有权。由于 Tailwind 通过单独导入 <code>theme.css</code> 和 <code>utilities.css</code> 来禁用 preflight，<code>src/styles/tailwind.css</code> 的 utilities 导入必须保留 <code>source(&quot;../&quot;)</code>，否则 <code>src/</code> JSX 中的 <code>tw:</code> pilot 类不会生成实际 CSS。后续再按 UI primitives、共享 modal/list/card/form、首页/大厅/商业非对局流程、Bright School token 化、最终移动安全层收缩的顺序推进；棋盘几何、Pixi canvas、技能演出、玩家按钮重设样式和移动对局控制暂不进入 Phase 1-7，Phase 8+ 只有在视觉回归基线和稳定性门禁就绪后才允许启动。</li>
@@ -6020,7 +6097,7 @@
 <li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>; the current single-process fallback still scans current rooms for projection. Active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
 </ul>
 <ul>
-<li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators use <code>game</code> as the canonical black projection and receive only the white difference projection as <code>gameViews.white</code>; the frontend keeps black/white switching compatible without serializing the black view twice.</li>
+<li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Ongoing spectators receive a public projection in <code>game</code> using <code>gameViewForColor(game, null)</code>, with <code>gameViews: null</code>: both owners' unexposed hidden hands are concealed and both owners' color illusions apply in their normal phases. Live watching and historical browsing stay locked until the room finishes. Finished rooms retain the black projection in <code>game</code> and the alternate white projection in <code>gameViews.white</code>; standalone record replays retain perspective switching.</li>
 </ul>
 <ul>
 <li><code>server/serverLifecycle.js</code> guards local development startup and production shutdown: occupied port 3001 gets an explicit <code>EADDRINUSE</code> message, while SIGINT/SIGTERM and managed child shutdown use the drain/Socket.IO/HTTP/persistence/Prisma sequence.</li>
@@ -6097,6 +6174,7 @@
 <p>---</p>
 <h1>工作流、文档规则与历史记录</h1>
 <p><code>npm test</code> 默认使用 <code>--maxWorkers=1</code>，<code>npm run check</code> 顺序执行验证环节。需要提高并发时必须结合用户当前本机使用情况显式调整，避免测试、构建、浏览器和容量验证同时争抢资源。</p>
+<p>单元测试显式排除 <code>.tmp/</code>、<code>.worktrees/</code>、<code>.codex-run/</code> 和 <code>.trellis/</code>：任务归档中可能保留仅供审查的局部代码副本，不能作为应用测试入口。<code>.codex-run/</code> 未跟踪的截图、日志和工具链副本不进入正式 Git 提交；已有跟踪文件继续按普通修改管理。可复用设计样板保留在 <code>docs/design-samples/</code>，按功能随代码提交。</p>
 <p>本文记录 Trellis 工作流、系统设计文档维护方式、编码安全和较难归类的历史更新。修改 Trellis 规则、文档生成方式、AI 协作约定或历史追踪方式时优先更新本分篇。</p>
 <h2>当前文档维护规则</h2>
 <ul>

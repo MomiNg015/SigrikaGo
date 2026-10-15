@@ -19,7 +19,8 @@ describe("ordinary handbook portrait strip CSS", () => {
   it("keeps names background-free, uses verified font fallbacks, and alternates mobile sides", () => {
     expect(entry.trim().split(/\r?\n/)).toEqual(['@import "./handbook-strip-labels.css";', '@import "./handbook-strip-frame.css";', '@import "./handbook-strip-paper.css";']);
     expect(labels).toContain("background: transparent !important;");
-    expect(labels).toContain("font-family: var(--font-display-accent), var(--font-window-title), sans-serif !important;");
+    expect(labels).toContain("font-family: var(--handbook-name-font, var(--font-display-accent)), var(--font-window-title), sans-serif !important;");
+    expect(labels).toContain("--handbook-name-font: var(--font-window-title);");
     expect(labels).toMatch(/\.handbook-strip-name\s*\{[^}]*right: 30px;[^}]*bottom: 18px;[^}]*opacity: 0;/s);
     expect(labels).toContain(".handbook-puzzle-piece.is-expanded .handbook-strip-name { opacity: 1; }");
     expect(labels).toContain('[data-portrait-side="right"] .handbook-strip-name { left: 6px; right: auto; }');

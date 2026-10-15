@@ -217,6 +217,10 @@ export default function AppOverlays({
             onNotice={showToast}
             onStoryScript={storyPlayerScript?.open}
             onClose={() => setShowWarehouse(false)}
+            onOpenRecruitment={() => {
+              setShowWarehouse(false);
+              setShowRecruitment(true);
+            }}
           />
         )}
       </Suspense>

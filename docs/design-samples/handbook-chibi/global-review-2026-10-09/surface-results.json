@@ -1,0 +1,1130 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "match",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "result",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "loading",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "story",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "target",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "friends",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "replay",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "skill",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "leaderboard",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "surface": "watch",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "match",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "result",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "loading",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "story",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "target",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "friends",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "replay",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "skill",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "leaderboard",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "surface": "watch",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "match",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "result",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "loading",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "story",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "target",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "friends",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "replay",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "skill",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "leaderboard",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "surface": "watch",
+    "overflow": false,
+    "images": [
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/lynae-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/qiuyuan-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/mornye-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/changli-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/chisa-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/nabomo-avatar.webp",
+        "loaded": true
+      },
+      {
+        "src": "/assets/characters/handbook-chibi-sprites/denia-avatar.webp",
+        "loaded": true
+      }
+    ]
+  }
+]

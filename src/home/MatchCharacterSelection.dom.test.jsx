@@ -5,8 +5,18 @@ import HomeScreen from "./HomeScreen.jsx";
 import MatchCharacterCardContent from "./MatchCharacterCardContent.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 
+vi.mock("./matchSortieVoice.js", () => ({ playMatchSortieVoice: vi.fn() }));
+
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); });
 const user = { id: "selection-player", selectedCharacter: "sigrika", ownedCharacters: ["sigrika", "aemeath", "nabomo"] };
+it("shows rainbow card borders only for characters whose candy effect is active", () => {
+  const effects = { sigrikaCandyDisabled: true, deniaRainbowGlow: true, aemeathRainbowMove: true, lynaeContraryVoice: true };
+  const { container, rerender } = render(<>{Object.values(CHARACTERS).map(character => <MatchCharacterCardContent key={character.id} character={character} user={{ ...user, itemEffects: effects }} />)}</>);
+  expect(container.querySelectorAll('.character-candy-border')).toHaveLength(4);
+  expect(container.querySelector('img[src="/assets/items/rainbow-bean-candy.webp"]')).toBeNull();
+  rerender(<>{Object.values(CHARACTERS).map(character => <MatchCharacterCardContent key={character.id} character={character} user={{ ...user, itemEffects: {} }} />)}</>);
+  expect(container.querySelectorAll('.character-candy-border')).toHaveLength(0);
+});
 it("uses portrait-first painted cards with character palettes and no emblem header", () => {
   const { container } = render(<>{Object.values(CHARACTERS).map(character => <MatchCharacterCardContent key={character.id} character={character} user={user} />)}</>);
   for (const card of container.querySelectorAll(".match-character-id")) {
@@ -20,6 +30,18 @@ function setup(extra = {}) {
   const props = { user, characters: CHARACTERS, matchModePickerOpen: true, onNotice: vi.fn(), onStartMatch: vi.fn(), onStartPractice: vi.fn(), ...extra };
   return { ...render(<HomeScreen {...props} />), props };
 }
+it("keeps each stamp's random angle within bounds and stable through selection updates", () => {
+  const props = { character: CHARACTERS.sigrika, user };
+  const { container, rerender } = render(<MatchCharacterCardContent {...props} selectionStamp="flag" />);
+  const angle = () => container.querySelector(".match-character-selection-stamp").style.getPropertyValue("--selection-stamp-tilt");
+  const initialAngle = angle();
+  expect(parseFloat(initialAngle)).toBeGreaterThanOrEqual(-15);
+  expect(parseFloat(initialAngle)).toBeLessThanOrEqual(15);
+  rerender(<MatchCharacterCardContent {...props} />);
+  expect(container.querySelector(".match-character-selection-stamp")).toBeNull();
+  rerender(<MatchCharacterCardContent {...props} selectionStamp={3} />);
+  expect(angle()).toBe(initialAngle);
+});
 function select(title, id) {
   const category = title === "标准对弈" ? "标准对弈" : "玩些别的";
   const parent = screen.queryByRole("button", { name: category });
@@ -39,9 +61,10 @@ describe("match card character selection", () => {
     expect(props.onStartPractice).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
     const picker = screen.getByRole("dialog", { name: "选择角色" });
-    expect(within(picker).getByRole("button", { name: "开始准时宝对局" }).disabled).toBe(true);
+    expect(within(picker).queryByRole("button", { name: "开始准时宝对局" })).toBeNull();
     fireEvent.click(within(picker).getByRole("button", { name: CHARACTERS.aemeath.name }));
     fireEvent.click(within(picker).getByRole("button", { name: CHARACTERS.nabomo.name }));
+    expect(within(picker).queryByRole("button", { name: "开始准时宝对局" })).toBeNull();
     expect(screen.getByRole("dialog", { name: "选择角色" })).toBe(picker);
     expect(props.onStartPractice).not.toHaveBeenCalled();
     fireEvent.keyDown(picker, { key: "Escape" });

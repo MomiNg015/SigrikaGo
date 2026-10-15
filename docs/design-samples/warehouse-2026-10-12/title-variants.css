@@ -1,0 +1,21 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school[data-title-style] .warehouse-modal.warehouse-field-guide.warehouse-field-guide .wg-details h3 {
+  width: fit-content;
+  max-width: 100%;
+  border: 0;
+  padding: 0 3px 5px;
+  background-color: transparent;
+  background-image: var(--title-stroke);
+  background-repeat: no-repeat;
+  background-position: left bottom 3px;
+  background-size: 100% 22px;
+}
+.app-shell[data-title-style="marker"] { --title-stroke: url("./title-marker.svg"); }
+.app-shell[data-title-style="pencil"] { --title-stroke: url("./title-pencil.svg"); }
+.app-shell[data-title-style="wave"] { --title-stroke: url("./title-wave.svg"); }
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school[data-title-style] .warehouse-modal.warehouse-field-guide.warehouse-field-guide .wg-details h3 {
+    padding: 0 1px 4px;
+    background-size: 100% 14px;
+    background-position: left bottom 2px;
+  }
+}
