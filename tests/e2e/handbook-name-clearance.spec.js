@@ -4,11 +4,14 @@ for (const viewport of [
   { width: 1440, height: 1024 }, { width: 1280, height: 960 },
   { width: 1024, height: 768 }, { width: 769, height: 1024 }
 ]) {
-  test(`desktop handbook names clear visible portrait pixels at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+  test(`desktop handbook long names clear portraits without a footer at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/tests/e2e/fixtures/handbook-puzzle.html");
     await page.evaluate(() => document.fonts.ready);
-    const tiles = page.locator(".handbook-puzzle-tile");
+    const boardHeight = await page.locator(".handbook-puzzle-board").evaluate(e => parseFloat(getComputedStyle(e).height));
+    expect(boardHeight).toBeCloseTo(Math.min(460, Math.max(330, viewport.height * .45)), 0);
+    const tiles = page.locator(".handbook-puzzle-tile").filter({ has: page.locator(".handbook-strip-name.is-long-name") });
+    await expect(tiles).toHaveCount(1);
     for (const tile of await tiles.all()) {
       await tile.focus();
       await tile.hover();

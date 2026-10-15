@@ -1,5 +1,5 @@
 export const HANDBOOK_STRIP_PAGE_SIZE = 10;
-export const HANDBOOK_STRIP_LAYOUT = { slant: 28, gap: 3, expandedGrow: 6, desktopNameSpace: 64 };
+export const HANDBOOK_STRIP_LAYOUT = { slant: 28, gap: 3, expandedGrow: 6 };
 
 // The catalog has already applied backend sortOrder. Pagination must not
 // replace that order with a portrait- or ownership-dependent order.
@@ -11,8 +11,6 @@ export function handbookStripPage(characters, page) {
 }
 
 export function handbookStripArtStyle(portrait, { width, height }, { mobile, expanded, count, index = 0 }) {
-  // Desktop adds a name footer without enlarging or lowering the portrait.
-  if (!mobile) height = Math.max(1, height - HANDBOOK_STRIP_LAYOUT.desktopNameSpace);
   const compactMascot = mobile && !expanded && portrait.visibleTop === 175;
   const artHeight = mobile
     ? compactMascot ? 120 : portrait.isChibi ? (expanded ? 220 / (portrait.bodyBottom - portrait.bodyTop) : 125 / portrait.headWidth) * portrait.height

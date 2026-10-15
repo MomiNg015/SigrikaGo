@@ -69,7 +69,6 @@ export default function HouseCharacterGrid(props) {
       <div className="handbook-puzzle-board" ref={boardRef}
         style={{ "--handbook-desktop-slant": `${HANDBOOK_STRIP_LAYOUT.slant}px`,
           "--handbook-desktop-gap": `${HANDBOOK_STRIP_LAYOUT.gap}px`,
-          "--handbook-name-space": `${HANDBOOK_STRIP_LAYOUT.desktopNameSpace}px`,
           "--handbook-expanded-grow": HANDBOOK_STRIP_LAYOUT.expandedGrow }}
         onPointerLeave={leavePointerPreview}>
         {roster.map((character, index) => {
@@ -183,7 +182,7 @@ export default function HouseCharacterGrid(props) {
                   maskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")`, WebkitMaskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")` }} />
                 <span className="handbook-puzzle-question">?</span>
               </>}
-              {isOwned && <span className="handbook-strip-name"><span className="handbook-strip-name-text">{character.name}</span></span>}
+              {isOwned && <span className={`handbook-strip-name${character.name.length >= 4 ? " is-long-name" : ""}`}><span className="handbook-strip-name-text">{character.name}</span></span>}
               {effects.length > 0 && <CharacterCandyBorder />}
             </button>
 

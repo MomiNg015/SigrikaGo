@@ -67,6 +67,7 @@
     display: inline-block;
     isolation: isolate;
   }
+  .handbook-strip-name.is-long-name { text-align: right; }
   .handbook-strip-name::after { display: none; }
   .handbook-strip-name-text::after {
     content: "";
