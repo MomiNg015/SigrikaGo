@@ -12,11 +12,14 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-strip-name,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-puzzle-tile > .handbook-missing-label {
   background: transparent !important;
-  font-family: var(--font-display-accent), var(--font-window-title), sans-serif !important;
-  font-size: clamp(24px, 2.1vw, 30px);
-  font-weight: 400 !important;
+  font-family: var(--handbook-name-font, var(--font-display-accent)), var(--font-window-title), sans-serif !important;
+  font-size: var(--handbook-name-size, clamp(24px, 2.1vw, 30px));
+  font-weight: var(--handbook-name-weight, 400) !important;
 }
 .handbook-puzzle-piece.is-expanded .handbook-strip-name { opacity: 1; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .handbook-strip-name-text {
+  font-family: inherit !important;
+}
 .handbook-strip-name::after {
   content: "";
   display: block;
@@ -50,6 +53,39 @@
   white-space: nowrap;
 }
 .handbook-puzzle-piece.is-expanded .handbook-missing-label { writing-mode: horizontal-tb; }
+@media (min-width: 769px) {
+  .handbook-strip-name {
+    --handbook-name-font: var(--font-window-title);
+    --handbook-name-size: clamp(30px, 3.15vw, 45px);
+    --handbook-name-weight: 700;
+    left: 48%;
+    right: 30px;
+    text-align: center;
+  }
+  .handbook-strip-name-text {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+  }
+  .handbook-strip-name::after { display: none; }
+  .handbook-strip-name-text::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -.08em;
+    right: -.08em;
+    bottom: .04em;
+    width: auto;
+    height: .28em;
+    margin: 0;
+    border: 0;
+    border-radius: .16em .2em .14em .18em;
+    background: linear-gradient(178deg, transparent, var(--character-theme-color) 28% 72%, transparent),
+      linear-gradient(92deg, transparent, var(--character-theme-color) 12% 86%, transparent);
+    opacity: .6;
+    rotate: -1deg;
+  }
+}
 @media (max-width: 768px) {
   .handbook-strip-name {
     top: 50%;

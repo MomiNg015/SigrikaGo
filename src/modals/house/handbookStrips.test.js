@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
+import { HANDBOOK_STRIP_LAYOUT, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import { CHARACTERS } from "../../shared/characters.js";
 
@@ -47,7 +47,7 @@ describe("handbook strip portrait framing", () => {
         }
       }
       for (const height of [300, 400, 540]) {
-        const size = { width: 940, height };
+        const size = { width: 940, height: height + HANDBOOK_STRIP_LAYOUT.desktopNameSpace };
         const style = handbookStripArtStyle(chibi, size, { mobile: false, expanded: false, count: 10 });
         const scale = style.height / chibi.height;
         expect(style.top + chibi.bodyTop * scale).toBeCloseTo(height * .07, 8);
@@ -78,7 +78,7 @@ describe("handbook strip portrait framing", () => {
 
   it("restores large desktop busts and applies intentional Qiuyuan/Nabomo head adjustments", () => {
     const state = { mobile: false, expanded: false, count: 10 };
-    const size = { width: 940, height: 400 };
+    const size = { width: 940, height: 400 + HANDBOOK_STRIP_LAYOUT.desktopNameSpace };
     const portraits = Object.values(CHARACTERS).map((character) => resolveHandbookPortrait(character)).filter(({ isStandard }) => isStandard);
     expect(portraits).toHaveLength(9);
     for (const portrait of portraits) {

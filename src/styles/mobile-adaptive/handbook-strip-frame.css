@@ -20,7 +20,7 @@
   position: relative;
   display: flex;
   width: 100%;
-  height: clamp(330px, 45dvh, 460px);
+  height: calc(clamp(330px, 45dvh, 460px) + var(--handbook-name-space, 64px));
   gap: var(--handbook-desktop-gap, 3px);
   isolation: isolate;
   overflow: hidden;
