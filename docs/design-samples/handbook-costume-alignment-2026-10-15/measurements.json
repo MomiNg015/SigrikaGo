@@ -1,0 +1,56 @@
+[
+  {
+    "width": 1440,
+    "height": 768,
+    "resting": {
+      "height": 345.59375,
+      "top": 3.453125,
+      "imageHeight": 345.59375,
+      "scale": "none",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    },
+    "expanded": {
+      "height": 345.59375,
+      "top": 3.453125,
+      "imageHeight": 345.59375,
+      "scale": "none",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1024,
+    "resting": {
+      "height": 459.806640625,
+      "top": 4.591827392578125,
+      "imageHeight": 459.8066101074219,
+      "scale": "none",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    },
+    "expanded": {
+      "height": 460,
+      "top": 4.59375,
+      "imageHeight": 460,
+      "scale": "none",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "resting": {
+      "height": 851.9901733398438,
+      "top": -128.87852096557617,
+      "imageHeight": 316.7963562011719,
+      "scale": "1.2",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    },
+    "expanded": {
+      "height": 1066,
+      "top": -36.8800048828125,
+      "imageHeight": 316.8000183105469,
+      "scale": "1.2",
+      "source": "/assets/costumes/portraits/sigrika-costume-01.webp"
+    }
+  }
+]

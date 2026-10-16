@@ -1,0 +1,15 @@
+#profile-samples.variant-badge {
+  --sample-ink: #46374d; --sample-line: #c9b7ce; --sample-paper: #fffdf8;
+  --sample-hero: #eee3f5; --sample-rank: #ffe9a7; --sample-button: #fffdf8;
+  --sample-active: #ffc3d4; --sample-action: #bfe8dd; --sample-alert: #ffdad6;
+  --sample-table-head: #dfd6ed; --sample-border: 3px; --sample-radius: 14px; --sample-button-radius: 12px;
+  --sample-shadow: 4px 5px 0 #46374d; --sample-button-shadow: 0 4px 0 #46374d;
+  --sample-window-shadow: 7px 8px 0 #46374d;
+}
+#profile-samples.variant-badge .profile-folder-tabs { gap: 12px; margin-bottom: 18px; }
+#profile-samples.variant-badge .profile-folder-tabs button[aria-selected="true"] { box-shadow: inset 0 3px 0 #ffe3eb, 0 4px 0 #46374d !important; }
+#profile-samples.variant-badge .profile-identity-actions button { box-shadow: inset 0 3px 0 #fffdf8, 0 4px 0 #46374d !important; }
+#profile-samples.variant-badge .profile-record-card { background: #e6f2ed !important; }
+#profile-samples.variant-badge .profile-recent-section { background: #f4eafb !important; }
+#profile-samples.variant-badge .profile-character-table-head { font-weight: 800; }
+#profile-samples.variant-badge .rank-progress-name { font-size: 36px !important; }

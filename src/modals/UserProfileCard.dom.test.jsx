@@ -94,7 +94,7 @@ describe("UserProfileCard dossier interactions", () => {
     const onAddBlacklist = vi.fn().mockResolvedValue(undefined);
     renderProfile({}, { onAddBlacklist });
 
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬对弈", "标准对弈", "玩些别的"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "其它"]);
     const actions = screen.getByLabelText("用户互动");
     expect(within(actions).getByRole("button", { name: "点赞 5" })).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "加好友" })).toBeTruthy();
@@ -106,7 +106,11 @@ describe("UserProfileCard dossier interactions", () => {
       "profile-blacklist-button",
       "profile-report-button"
     ]);
-    expect([...actions.children].map((button) => button.textContent)).toEqual(["5", "加好友", "加入黑名单", "举报"]);
+    for (const button of actions.children) {
+      expect(button.textContent).toBe(button.classList.contains("profile-like-button") ? "5" : "");
+      expect(button.getAttribute("title")).toBe(button.getAttribute("aria-label"));
+      expect(button.querySelector("svg[aria-hidden='true']")).toBeTruthy();
+    }
     expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("width"))).toEqual(["18", "18", "18", "18"]);
     expect([...actions.children].map((button) => button.querySelector("svg")?.getAttribute("height"))).toEqual(["18", "18", "18", "18"]);
     expect(within(actions).queryByRole("button", { name: "个性化" })).toBeNull();
@@ -160,6 +164,7 @@ describe("UserProfileCard dossier interactions", () => {
 
     request.resolve({ likeCount: 6, likedToday: true });
     await waitFor(() => expect(screen.getByRole("button", { name: "已点赞 6" }).disabled).toBe(true));
+    expect(screen.getByRole("button", { name: "已点赞 6" }).textContent).toBe("6");
   });
 
   it("keeps the report form submit-only after its textarea and disables empty or pending submission", async () => {
@@ -204,16 +209,16 @@ describe("UserProfileCard dossier interactions", () => {
     api.mockReturnValueOnce(request.promise);
     renderProfile();
 
-    fireEvent.click(screen.getByRole("tab", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("tab", { name: "标准" }));
     expect(screen.getByLabelText("总对局 10局")).toBeTruthy();
     expect(screen.getByText("正在载入标准战绩，当前仍显示星炬。")).toBeTruthy();
     expect(screen.getAllByRole("tab").every((tab) => tab.getAttribute("aria-disabled") === "true")).toBe(true);
-    fireEvent.click(screen.getByRole("tab", { name: "玩些别的" }));
+    fireEvent.click(screen.getByRole("tab", { name: "其它" }));
     expect(api).toHaveBeenCalledTimes(1);
 
     request.reject(new Error("模式资料加载失败"));
     await waitFor(() => expect(screen.getByText("模式资料加载失败")).toBeTruthy());
-    expect(screen.getByRole("tab", { name: "星炬对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByLabelText("总对局 10局")).toBeTruthy();
     expect(screen.getByRole("button", { name: "重新加载" })).toBeTruthy();
   });
@@ -223,7 +228,7 @@ describe("UserProfileCard dossier interactions", () => {
     api.mockReturnValueOnce(request.promise);
     const view = renderProfile();
 
-    fireEvent.click(screen.getByRole("tab", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("tab", { name: "标准" }));
     view.rerender(
       <UserProfileCard
         user={profileUser({ id: "user-3", username: "new-user", rating: 1330 })}
@@ -249,7 +254,7 @@ describe("UserProfileCard dossier interactions", () => {
 
     await waitFor(() => expect(screen.queryByText("stale-user")).toBeNull());
     expect(screen.queryByText("9999分")).toBeNull();
-    expect(screen.getByRole("tab", { name: "星炬对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("ignores an old social mutation after the viewed user changes", async () => {

@@ -53,6 +53,29 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h3>2026-10-15 身份卡片主次调整</h3>
+<p>履历／详情身份卡片加高，以头像和用户名为主体：桌面头像 104px、普通名字 28px，900px 以下头像 84px、普通名字 26px，两者相对整张卡片垂直居中。操作按钮缩为 34px 高、16px 图标和 1px 短阴影，按钮容器通过 absolute 定位在卡片右下角，不占网格行、不参与卡片尺寸或内容居中计算，320px 窄屏也不堆叠。点赞保留数字并从 54px 自适应宽度；手机其它图标按钮隐藏文字、保留无障碍名称，回放维持 44px。履历卡片最小高度收紧至 160px、上下内边距 28px；四按钮详情卡保留最小高度 200px、上下内边距 52px，避免窄屏按钮碰到头像。上下留白对称；身份卡片及头像无阴影，主体滚动和卡片边缘留边保持有效。</p>
+<h3>2026-10-15 资料卡点赞语义与边缘修正</h3>
+<p>点赞恢复显示实时数量，使用薄荷绿，按钮按数量自适应宽度；加好友使用浅蓝，解除好友／加入黑名单使用警示黄，移出黑名单使用绿色，举报保留红色。头像和用户名所在身份卡片、头像照片框及内层裁切框均不设阴影，其它资料区域卡片保留短阴影。主体滚动区预留上下和两侧绘制空间，战绩表由卡片自身承接横向滚动并裁切内部表头底色，避免宽表撑出主体、圆角被遮盖及底部阴影贴边。第一版样板同步右下单排操作区。</p>
+<h3>2026-10-15 履历／详细信息暖纸样式实装</h3>
+<p>已将确认的第一版样板接入正式履历和用户详情：区域卡片为米白实色，棕色短硬阴影；普通玩法按钮白底、选中浅粉，社交、回放、成就和个性化按钮使用对应默认色，禁用状态保持实色。三个模式由共享 <code>WindowBookmarkTabs</code> 移至左侧，显示“星炬／标准／其它”，书签贴合窗口外沿并裁切遮挡部分，完整保留窗口边框。正式窗口沿用有高度上限的主体滚动，手机竖屏保留阴影留边，社交图标保持右下单排。只改变普通校园主题资料窗口；数据请求、错误重试、社交确认、回放与其它主题回退保持原流程。</p>
+<h3>2026-10-15 履历／详细信息卡片三版探索</h3>
+<p>用户选择暖纸手账方向后，先在样板内收敛配色：区域卡片统一米白，按钮白底，粉色仅用于选中状态，阴影统一棕色；去掉橙／绿／黄分区底色，保留胜负和星级语义色，正式窗口尚未替换。</p>
+<p>第一版后续样板将三个模式提到左侧，复用设置窗口的 <code>WindowBookmarkTabs</code>，内部保留具体玩法。点赞、好友／黑名单的增加与移除、举报、回放、成就、个性化分别使用明确的浅色底；禁用时回归灰纸色。桌面横排书签、手机竖排书签沿用现有响应式规则，窄屏为书签预留空间。</p>
+<p>样板书签文案进一步简写为“星炬／标准／其它”，右端贴合窗口左边框，并在窗口外沿裁切书签纸面，避免遮挡边框，保持窗口轮廓连续完整；修改仅限第一版样板。</p>
+<p>新增独立<a href="./design-samples/profile-cards-2026-10-15/README.md">实色卡片样板</a>，复用真实 ResumeModal／UserProfileCard，以“暖纸手账、社团档案、徽章面板”比较实色填充、区域阴影和按钮厚度。保留现有信息布局及外层方格纸，支持履历／详情、玩法、社交按钮和空数据切换；接口由样板页本地模拟。样板样式全部位于 docs，未接入正式入口，待用户选择后再落地。</p>
+<h3>2026-10-15 手册换装立绘对齐</h3>
+<p>桌面部员手册对已登记透明边界的服装立绘，复用 <code>portraitVisibleBounds</code> 按可见人物高度统一缩放：人物占条带高度的 88%，脚底位于 95%，与默认 Q 版一致。修复换装后落入旧头像裁切分支、人物偏小靠上且下半留空的问题。仅桌面条带使用此展示规则，不叠加共享服装缩放／偏移；服装资源、装备数据、手机、角色详情和对局显示保持原行为。悬停展开只改变横向位置。<a href="./design-samples/handbook-costume-alignment-2026-10-15/README.md">验收截图</a>。</p>
+<h3>2026-10-15 普通窗口方格纸统一与用户资料操作区</h3>
+<p>普通校园主题窗口统一使用现有浅纸色与 20px 蓝色方格，由最终 <code>window-paper-surfaces.css</code> 按明确窗口类别负责；履历／用户详情内铺满主体的纸页改为透明，使方格不会被纯色层盖住。商店及其二级窗口保留专用背景，剧情、教学场景、招募演出与黑化演出继续由原场景负责。用户资料卡片的点赞、好友、黑名单、举报改为四个 44px 纯图标按钮，统一位于卡片右下角；头像和用户名垂直居中，手机按钮同排右对齐。操作名称、点赞数、关系和忙碌状态保留在悬停提示及读屏标签中，原确认流程不变。<a href="./design-samples/window-surfaces-2026-10-15/README.md">窗口审查清单与前后截图</a>。</p>
+<h3>2026-10-15 桌面服装详情收紧留白</h3>
+<p>部员手册衣柜的服装详情在 768px 以上使用 660px 双栏窗口，左侧 240px 图框内保留 280px 立绘展示高度，避免随桌面屏高拉长。右侧与立绘框上下对齐，分类、名称与画师位于顶部，介绍框填满剩余高度并贴齐底边；长介绍在框内滚动。沿用手绘边框、方格纸和原有内容，仅作用于衣柜详情，商城及手机布局保持原样。<a href="./design-samples/costume-detail-compact-2026-10-15/README.md">前后截图与尺寸验证</a>。</p>
+<h3>2026-10-15 现有角色详情与衣柜布局修复</h3>
+<p>保留现有手绘窗口、立绘和操作流程，修复电脑端衣柜入口阴影贴边裁切；手机标题区按姓名／CV 和播放器实际宽度换行，避免播放器压住角色名。衣柜清除通用二级弹窗继承的 8px 位移与额外内边距，按遮罩安全留白布局，完整保留右下阴影；长服装名在卡片宽度内省略显示，完整名称仍保留在按钮读屏标签中。</p>
+<p>新增真实 <code>HouseModal</code> 链路浏览器回归，覆盖 1440×768、390×844、360×640、320×568 的姓名与音乐、衣柜按钮悬停、十件服装长列表末端、长介绍滚动以及关闭／焦点返回。样式修正限于三份现有所有者；曲目单在捕获阶段消费 Escape，先关闭曲目单并恢复入口焦点，避免同次按键关闭角色详情。不接入前一轮探索样板。<a href="./design-samples/handbook-window-layout-2026-10-15/README.md">修复依据与前后截图</a>。</p>
+<h3>2026-10-15 部员手册角色详情与衣柜三版样板</h3>
+<p>新增<a href="./design-samples/handbook-detail-2026-10-15/index.html">角色详情与衣柜比较页</a>，包含夹页档案、立绘展台、随身手账三套独立样板及现有组件对照。分别探索技能阅读优先、大图试穿优先、章节浏览优先；电脑与手机竖屏各自布局，衣柜将试穿图、介绍、画师署名与确认集中在同一窗口，并明确显示正在穿戴、已拥有和未拥有。</p>
+<p>角色与服装文案提取自提交的默认配置，立绘展示、技能释义和窗口键盘行为复用共享能力。拥有状态与换装仅为本地示例，不请求账号接口、不写缓存；语音与默认技能音乐只在点击后试听。正式窗口、主题和数据模型未修改，待用户选择方案后另行接入。<a href="./design-samples/handbook-detail-2026-10-15/README.md">审查依据、取舍、边界与验证</a>。</p>
 <h3>2026-10-15 主分支整合与验证边界</h3>
 <p>整合现有角色立绘与头像、选角及队际阵容、仓库、登录加载、公共观战、准时宝角色配置和结果按钮改动及配套样板、资源、测试和规范。开发运行产物目录 <code>.codex-run/</code> 加入 Git 忽略，已跟踪证据文件保留；单元测试排除 <code>.trellis/</code> 历史任务中的代码副本，避免把归档片段当成完整应用运行。CSS 清单按现有样式逐项核对，登记已有 360px 标题断点，并移除已不承担动效的登录提示样式登记；手册字体及糖果 Q 版立绘测试同步到当前设计。</p>
 <h3>2026-10-15 对局结果按钮悬停反馈</h3>
@@ -5335,6 +5358,9 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、台词、进度与笔刷 Tip 样式。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h2>普通窗口的统一底纸</h2>
+<p>正常校园主题下，仓库、履历、用户详情、部员手册与二级详情、成就、个性化、好友、信箱、公告、排行榜、观战、设置、留言、招募界面和普通确认／对局窗口，共用 <code>--theme-bg</code> 底色与 <code>--theme-paper-grid</code>，格距统一 20px。最终背景所有者为 <code>mobile-adaptive/window-paper-surfaces.css</code>，采用明确窗口类清单，不使用名称子串匹配。商店及其内部二级窗口保留专用背景；剧情、教学、招募电影及黑化场景继续独立。履历与用户详情的身份卡、战绩纸页底色透明，让同一张方格纸贯穿窗口。</p>
+<p>用户详情中的点赞、好友、黑名单和举报只显示图标，点击区均为 44px。工具行位于身份卡右下角；窄屏另起一行并靠右，头像与用户名在上方同排垂直居中。动作名称、点赞数量及 pending／关系状态由 <code>title</code> 与 ARIA 标签保留，删除好友、拉黑和举报的确认流程维持原样。个人履历的个性化操作不受此调整影响。</p>
 <p>玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。</p>
 <p>竖屏对弈新增棋钟深度后，最终 <code>mobile-room-shadow-gutters.css</code> 必须覆盖 <code>mobile-player-slot</code> 的旧 <code>overflow: hidden !important</code>，普通房间改为 <code>overflow: visible</code>；动作区锚定的视口在全部竖屏移动断点统一采用 <code>0 5px 6px 0</code> 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 <code>RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo</code> 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。</p>
 <p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 <code>mobile-adaptive/battle-paper-panels.css</code> 与 <code>battle-paper-panels-mobile.css</code> 拆分身份、棋钟和技能面板。<code>PlayerInfo</code> 的 <code>player-clock-panel</code> 包含原计时器和统计，其他主题使用 <code>display: contents</code> 保留原布局；黑化剧情不启用新外观。棋钟常态使用 <code>--bright-sheet</code> 米色，<code>.active-turn</code> 使用既有黄色 <code>#fff0a6</code>、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；<code>battle-paper-panels.css</code> 仅作用于非 mobile-room-screen，手机的 <code>player-clock-panel</code> 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。</p>
@@ -5893,6 +5919,10 @@
 <p>选定方案 1 接入 <code>WatchModal</code>：取消左侧类型选项卡，类型作为独立列，一次加载全部可观战对局；保留原标签标题、边框、方格纸和阴影。桌面延续紧凑名册，手机改为房间／类型／状态、并排黑白方、手数／人数／观战三行，单条约 116px；窗口高度固定并由列表内部滚动。搜索按房间号或玩家昵称本地过滤；明确观战按钮复用原加入并关闭窗口流程，保留装扮快照与暂离灰显。接口新增显式 <code>mode=all</code>，其他值与省略参数保留原过滤规则，练习与特殊剧情局继续由原查询层排除。最终样式由 <code>mobile-adaptive/watch-ledger.css</code> 负责。<a href="./design-samples/watch-2026-10-12/index.html?view=ledger">方案 1 预览</a>已使用正式组件。</p>
 <h2>手机回放卡片</h2>
 <p>手机竖屏回放卡片在顶部显示时间和结果，左侧上下排列黑白双方头像与完整换行名字，右侧复用观战的 70×48 手数牌（含三位／四位数字适配）。原有胜负底色、友谊／队际／特殊对局标识、历史服装及整卡点击和分页保持不变；桌面维持五列表格，手机专属手数牌及黑白标记明确隐藏。布局由现有 <code>bright-school-overrides/replay-dialog.css</code> 负责，采用嵌套选择器复用外层作用域。</p>
+<h3>Approved warm-paper profile cards (2026-10-15)</h3>
+<p>ResumeModal and UserProfileCard opt into WindowBookmarkTabs for 星炬/标准/其它. The final profile-paper-cards/actions/mobile owners apply the approved opaque cream cards, short brown shadows and semantic button fills only to ordinary Bright School dossiers. The three-pixel rail clip ends at the outer window edge, preserving its continuous two-pixel border without a gap. The bounded body keeps scrolling with shadow gutters; social actions remain in one compact bottom-right row at all widths. Rounded 12px cards, 9px controls and asymmetric hero/record corners intentionally reproduce the user-approved sample. Existing profile data and confirmation behavior are unchanged.</p>
+<p>Profile follow-up: the visible like count updates with the existing request state, has an adaptive button width (minimum 54px), and uses mint for positive feedback. Friend addition is blue, removal/blocking amber, unblocking mint and reporting red. Remove the identity card and avatar frame/mask shadows; other semantic region shadows remain. The body reserves 8/10/12/6px top/right/bottom/left paint clearance, and the character section owns horizontal overflow with rounded clipping; its frame and shadow stay outside that clip.</p>
+<p>Identity cards prioritize the portrait and username: desktop uses a 104px portrait and 28px plain name; &lt;=900px uses an 84px portrait and 26px plain name. Center the portrait and name vertically against the entire card. The card is position:relative with one grid row, min-height:160px and symmetric 28px block padding; social cards retain min-height:200px and 52px block padding to keep four actions clear of the portrait on narrow phones. The action group is position:absolute at right:12px and bottom:10px; it occupies no grid row and never changes the card or identity geometry. Keep controls on one line, including at 320px. Identity controls are 34px high with 16px icons and a restrained 1px shadow; the like button grows from 54px to preserve its live count. At &lt;=768px hide other icon labels while retaining ARIA/title names. Replay remains 44px on phones. Identity card and portrait remain shadow-free.</p>
 <p>---</p>
 <h1>性能、技术债与扩展路线</h1>
 <p>本文记录技术债优先级、后续扩展建议、实时性能和高频交互优化。新增性能优化、技术债清理、扩展路线或架构风险时优先更新本分篇。</p>

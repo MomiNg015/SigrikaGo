@@ -1,0 +1,20 @@
+/* Ordinary player windows share notebook paper. Keep storefronts and authored stages independent. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) {
+  :is(.small-modal, .nested-modal, .room-floating-modal, .house-modal,
+    .warehouse-modal, .resume-modal, .user-profile-modal, .settings-modal,
+    .friends-modal, .leaderboard-modal, .message-board-modal, .information-center-modal,
+    .confirm-modal, .result-modal, .recruitment-modal, .team-lineup-picker, .iris-database-modal):not(
+    .shop-modal *, .recruitment-cinematic-playing, .sigrika-corruption-match-modal,
+    .sigrika-duel-confirm-modal, .sigrika-duel-opening-modal, .sigrika-duel-result-modal) {
+    background-color: var(--theme-bg) !important;
+    background-image: var(--theme-paper-grid) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0 !important;
+    background-repeat: repeat !important;
+  }
+
+  /* These full-page sheets previously hid the window's paper. */
+  .profile-folder-modal.profile-folder-modal :is(.profile-resume-hero, .profile-folder-page) {
+    background-color: transparent !important;
+  }
+}

@@ -1,3 +1,5 @@
+import { PORTRAIT_VISIBLE_BOUNDS } from "../../shared/portraitVisibleBounds.js";
+
 export const HANDBOOK_STRIP_PAGE_SIZE = 10;
 export const HANDBOOK_STRIP_LAYOUT = { slant: 28, gap: 3, expandedGrow: 6 };
 
@@ -11,6 +13,16 @@ export function handbookStripPage(characters, page) {
 }
 
 export function handbookStripArtStyle(portrait, { width, height }, { mobile, expanded, count, index = 0 }) {
+  const bounds = !mobile && !portrait.isStandard && portrait.visibleTop !== 175
+    ? PORTRAIT_VISIBLE_BOUNDS[portrait.src] : null;
+  if (bounds) {
+    const [imageWidth, imageHeight, left, top, visibleWidth, visibleHeight] = bounds;
+    // Strip composition owns the full-body baseline. Equipment calibration is
+    // for the shared portrait frame and must not enlarge/offset this fitted body.
+    portrait = { ...portrait, width: imageWidth, height: imageHeight, isChibi: true,
+      bodyTop: top, bodyBottom: top + visibleHeight,
+      focal: [left + visibleWidth / 2, top], style: undefined };
+  }
   const compactMascot = mobile && !expanded && portrait.visibleTop === 175;
   const artHeight = mobile
     ? compactMascot ? 120 : portrait.isChibi ? (expanded ? 220 / (portrait.bodyBottom - portrait.bodyTop) : 125 / portrait.headWidth) * portrait.height

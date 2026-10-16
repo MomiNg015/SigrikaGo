@@ -121,9 +121,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).not.toContain("text-rating-value");
     expect(profileHtml).toContain("点赞 3");
     expect(profileHtml).toContain("background-image:url(/assets/nameplate.png)");
-    expect(profileHtml.indexOf(">星炬对弈</button>")).toBeLessThan(profileHtml.indexOf(">标准对弈</button>"));
-    expect(profileHtml.indexOf(">标准对弈</button>")).toBeLessThan(profileHtml.indexOf(">玩些别的</button>"));
-    expect(profileHtml).toContain(">玩些别的</button>");
+    expect(profileHtml.indexOf(">星炬</button>")).toBeLessThan(profileHtml.indexOf(">标准</button>"));
+    expect(profileHtml.indexOf(">标准</button>")).toBeLessThan(profileHtml.indexOf(">其它</button>"));
+    expect(profileHtml).toContain(">其它</button>");
     expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
     expect(profileHtml).toContain("profile-recent-section");
     expect(profileHtml).toContain("--character-theme-color:#67d9e8");
@@ -518,8 +518,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain('<span class="window-title-sticker-label">履历</span>');
     expect(html).toContain('role="dialog"');
     expect(html).toContain('data-profile-context="self"');
-    expect(html.indexOf(">星炬对弈</button>")).toBeLessThan(html.indexOf(">标准对弈</button>"));
-    expect(html.indexOf(">标准对弈</button>")).toBeLessThan(html.indexOf(">玩些别的</button>"));
+    expect(html.indexOf(">星炬</button>")).toBeLessThan(html.indexOf(">标准</button>"));
+    expect(html.indexOf(">标准</button>")).toBeLessThan(html.indexOf(">其它</button>"));
     expect(html).not.toContain(">来下五子棋吗？</button>");
     expect(html).toContain("profile-personalization-button");
     expect(html).not.toContain("profile-like-button");

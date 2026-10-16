@@ -1,5 +1,11 @@
 # UI 主题、移动端与交互体验
 
+## 普通窗口的统一底纸
+
+正常校园主题下，仓库、履历、用户详情、部员手册与二级详情、成就、个性化、好友、信箱、公告、排行榜、观战、设置、留言、招募界面和普通确认／对局窗口，共用 `--theme-bg` 底色与 `--theme-paper-grid`，格距统一 20px。最终背景所有者为 `mobile-adaptive/window-paper-surfaces.css`，采用明确窗口类清单，不使用名称子串匹配。商店及其内部二级窗口保留专用背景；剧情、教学、招募电影及黑化场景继续独立。履历与用户详情的身份卡、战绩纸页底色透明，让同一张方格纸贯穿窗口。
+
+用户详情中的点赞、好友、黑名单和举报只显示图标，点击区均为 44px。工具行位于身份卡右下角；窄屏另起一行并靠右，头像与用户名在上方同排垂直居中。动作名称、点赞数量及 pending／关系状态由 `title` 与 ARIA 标签保留，删除好友、拉黑和举报的确认流程维持原样。个人履历的个性化操作不受此调整影响。
+
 玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。
 
 竖屏对弈新增棋钟深度后，最终 `mobile-room-shadow-gutters.css` 必须覆盖 `mobile-player-slot` 的旧 `overflow: hidden !important`，普通房间改为 `overflow: visible`；动作区锚定的视口在全部竖屏移动断点统一采用 `0 5px 6px 0` 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 `RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo` 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。
@@ -287,3 +293,11 @@ Bright School 最终手机 shell 为 `.standard-story-sprite` 保留独立舞台
 ## 手机回放卡片
 
 手机竖屏回放卡片在顶部显示时间和结果，左侧上下排列黑白双方头像与完整换行名字，右侧复用观战的 70×48 手数牌（含三位／四位数字适配）。原有胜负底色、友谊／队际／特殊对局标识、历史服装及整卡点击和分页保持不变；桌面维持五列表格，手机专属手数牌及黑白标记明确隐藏。布局由现有 `bright-school-overrides/replay-dialog.css` 负责，采用嵌套选择器复用外层作用域。
+
+### Approved warm-paper profile cards (2026-10-15)
+
+ResumeModal and UserProfileCard opt into WindowBookmarkTabs for 星炬/标准/其它. The final profile-paper-cards/actions/mobile owners apply the approved opaque cream cards, short brown shadows and semantic button fills only to ordinary Bright School dossiers. The three-pixel rail clip ends at the outer window edge, preserving its continuous two-pixel border without a gap. The bounded body keeps scrolling with shadow gutters; social actions remain in one compact bottom-right row at all widths. Rounded 12px cards, 9px controls and asymmetric hero/record corners intentionally reproduce the user-approved sample. Existing profile data and confirmation behavior are unchanged.
+
+Profile follow-up: the visible like count updates with the existing request state, has an adaptive button width (minimum 54px), and uses mint for positive feedback. Friend addition is blue, removal/blocking amber, unblocking mint and reporting red. Remove the identity card and avatar frame/mask shadows; other semantic region shadows remain. The body reserves 8/10/12/6px top/right/bottom/left paint clearance, and the character section owns horizontal overflow with rounded clipping; its frame and shadow stay outside that clip.
+
+Identity cards prioritize the portrait and username: desktop uses a 104px portrait and 28px plain name; <=900px uses an 84px portrait and 26px plain name. Center the portrait and name vertically against the entire card. The card is position:relative with one grid row, min-height:160px and symmetric 28px block padding; social cards retain min-height:200px and 52px block padding to keep four actions clear of the portrait on narrow phones. The action group is position:absolute at right:12px and bottom:10px; it occupies no grid row and never changes the card or identity geometry. Keep controls on one line, including at 320px. Identity controls are 34px high with 16px icons and a restrained 1px shadow; the like button grows from 54px to preserve its live count. At <=768px hide other icon labels while retaining ARIA/title names. Replay remains 44px on phones. Identity card and portrait remain shadow-free.

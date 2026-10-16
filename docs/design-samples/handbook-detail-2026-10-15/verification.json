@@ -1,0 +1,169 @@
+{
+  "results": [
+    {
+      "view": "dossier",
+      "character": "denia",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "dossier",
+      "character": "sigrika",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "dossier",
+      "character": "denia",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "dossier",
+      "character": "sigrika",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "dossier",
+      "character": "denia",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "dossier",
+      "character": "sigrika",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "denia",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "sigrika",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "denia",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "sigrika",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "denia",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "stage",
+      "character": "sigrika",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "denia",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "sigrika",
+      "viewport": "1440x900",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "denia",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "sigrika",
+      "viewport": "390x844",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "denia",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    },
+    {
+      "view": "notebook",
+      "character": "sigrika",
+      "viewport": "320x568",
+      "detail": true,
+      "wardrobe": true,
+      "equip": true,
+      "keyboard": true
+    }
+  ],
+  "errors": [],
+  "apiRequests": [],
+  "lint": "passed"
+}

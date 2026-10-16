@@ -233,7 +233,7 @@ export function UserProfileCard({
 
   return (
     <ModalDialog
-      className={`room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
+      className={`room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal window-bookmark-host user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
       ariaLabelledBy="user-profile-modal-title"
       onClose={onClose}
       onClick={(event) => event.stopPropagation()}
@@ -262,44 +262,45 @@ export function UserProfileCard({
               className="profile-like-button"
               type="button"
               aria-label={likeLabel}
+              title={likeLabel}
               disabled={!canLikeProfile}
               onClick={likeProfile}
             >
-              <ThumbsUp size={18} />
+              <ThumbsUp size={18} aria-hidden="true" />
               <span className="profile-like-count" aria-hidden="true">{likeCount}</span>
             </button>
-            <button data-button-role="primary"
+            <button data-button-role="tool"
               className="profile-friend-button"
               type="button"
               aria-label={friendLabel}
+              title={friendLabel}
               disabled={!canActOnProfile || friendPending || !(isFriend ? onRemoveFriend : onAddFriend)}
               onClick={isFriend ? () => setShowFriendRemoval(true) : addFriend}
             >
-              <UserPlus size={18} />
-              <span>{friendLabel}</span>
+              <UserPlus size={18} aria-hidden="true" />
             </button>
-            <button data-button-role="danger"
+            <button data-button-role="tool"
               className="profile-blacklist-button"
               type="button"
               aria-label={blacklistLabel}
+              title={blacklistLabel}
               disabled={!canActOnProfile || blacklistPending || !(isBlacklisted ? onRemoveBlacklist : onAddBlacklist) || Boolean(onRemoveFriend && isFriend)}
               onClick={isBlacklisted ? addBlacklist : openBlacklistConfirm}
             >
-              <UserRoundX size={18} />
-              <span>{blacklistLabel}</span>
+              <UserRoundX size={18} aria-hidden="true" />
             </button>
-            <button data-button-role="danger"
+            <button data-button-role="tool"
               className="profile-report-button"
               type="button"
               aria-label="举报"
+              title="举报"
               disabled={!canActOnProfile || reportPending}
               onClick={() => {
                 setReportError("");
                 setShowReportDialog(true);
               }}
             >
-              <CircleAlert size={18} />
-              <span>举报</span>
+              <CircleAlert size={18} aria-hidden="true" />
             </button>
           </>
         )}

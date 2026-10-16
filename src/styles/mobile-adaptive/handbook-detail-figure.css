@@ -86,7 +86,8 @@
 
   & .character-costume-open-button {
     top: 4px;
-    right: 0;
+    /* The art clips its figure; keep the button's hard shadow inside too. */
+    right: 6px;
   }
 
   & .character-detail-fullbody > .close-button svg {
@@ -124,6 +125,29 @@
       max-height: calc(100dvh - min(260px, 32dvh) - 136px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       padding: 10px;
       align-content: start;
+    }
+
+    & .character-detail-heading {
+      display: flex !important;
+      flex-wrap: wrap;
+      align-items: center !important;
+    }
+
+    & .character-detail-title-line {
+      flex: 1 0 auto;
+      max-width: 100%;
+    }
+
+    & .character-detail-heading h3,
+    & .character-cv-label {
+      max-width: 100%;
+      white-space: normal !important;
+      overflow-wrap: anywhere;
+    }
+
+    & .character-music-player {
+      flex: 0 0 auto;
+      margin-left: auto;
     }
 
     & .character-costume-open-button {

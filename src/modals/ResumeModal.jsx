@@ -116,7 +116,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <ModalDialog
-        className="house-modal resume-modal profile-dossier-modal profile-folder-modal window-sticker-host"
+        className="house-modal resume-modal profile-dossier-modal profile-folder-modal window-bookmark-host window-sticker-host"
         ariaLabelledBy="resume-modal-title"
         onClose={onClose}
         onClick={(event) => event.stopPropagation()}

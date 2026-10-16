@@ -1,0 +1,56 @@
+/* Approved warm-paper dossier; the window keeps its grid and bounded body scroller. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .profile-folder-modal.profile-folder-modal.window-bookmark-host {
+  --folder-paper: #fffaf0;
+  --profile-paper-shadow: color-mix(in srgb, var(--folder-ink) 35%, var(--folder-paper));
+  --profile-paper-active: color-mix(in srgb, var(--bright-pink) 35%, white);
+  width: min(100%, 960px) !important;
+  max-width: 100% !important;
+  box-shadow: 6px 7px 0 var(--profile-paper-shadow) !important;
+  > .window-bookmark-rail {
+    left: calc(1px - var(--window-bookmark-width)) !important;
+    /* The rail overlaps by 3px; trim its paper at the outer window edge. */
+    clip-path: inset(0 3px 0 0);
+  }
+  .profile-folder { padding: 8px 10px 12px 6px !important; scroll-padding-block: 8px 12px; }
+  .profile-folder-page { background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+  :is(.profile-resume-hero, .profile-summary-item, .profile-recent-section, .profile-character-section, .profile-capture-record) {
+    background: var(--folder-paper) !important;
+    border: 2px solid var(--folder-ink) !important;
+    border-radius: 12px !important;
+    box-shadow: 3px 4px 0 var(--profile-paper-shadow) !important;
+  }
+  .profile-resume-hero { box-shadow: none !important; margin-bottom: 20px !important; padding: 16px 20px !important; border-radius: 14px 8px 13px 9px !important; }
+  .profile-hero-portrait { background: var(--folder-paper) !important; box-shadow: none !important; }
+  .profile-hero-portrait > .profile-portrait-mask { box-shadow: none !important; }
+  .profile-resume-view {
+    .profile-resume-hero { position: relative; min-height: 160px !important; padding: 28px 20px !important; grid-template: auto / 104px minmax(0, 1fr) !important; align-items: center !important; gap: 24px !important; }
+    .profile-hero-portrait { width: 104px !important; height: 104px !important; grid-area: 1 / 1 !important; align-self: center !important; }
+    .profile-identity-block { grid-area: 1 / 2 !important; align-self: center !important; }
+    .profile-identity-block h3 { font-size: 28px !important; }
+    .profile-identity-block .user-identity:not(.has-nameplate) { font-size: inherit !important; }
+    .profile-identity-actions { position: absolute !important; inset: auto 12px 10px auto !important; display: flex !important; grid-area: auto !important; justify-content: flex-end !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 8px !important; padding-bottom: 1px; }
+  }
+  .profile-resume-view-social .profile-resume-hero { min-height: 200px !important; padding-block: 52px !important; }
+  .profile-summary-grid { grid-template-columns: minmax(180px, 1fr) minmax(0, 2.5fr) !important; gap: 16px !important; }
+  .profile-summary-item { padding: 14px 16px !important; }
+  .profile-summary-item .profile-summary-label { font-size: 19px !important; }
+  .profile-summary-item .profile-summary-label > svg { display: inline-block; }
+  .profile-summary-item.is-primary > strong { margin-top: 4px; }
+  .profile-record-card { border-radius: 8px 12px 9px 14px !important; }
+  .profile-record-metrics { margin: 10px 0 2px; }
+  .profile-record-metric dd { font-size: 26px !important; }
+  .profile-recent-section { padding: 12px 16px !important; margin: 18px 0 !important; }
+  /* Clip table paint inside the rounded frame; its own border/shadow remain outside. */
+  .profile-character-section { padding: 0 14px 8px !important; overflow-x: auto !important; overflow-y: hidden !important; }
+  .profile-character-table-head {
+    background: color-mix(in srgb, var(--folder-ink) 5%, var(--folder-paper)) !important;
+    margin: 0 !important; padding: 12px 0 !important;
+    border-bottom: 1px solid var(--folder-line);
+  }
+  .profile-character-table tbody tr:last-child :is(th, td) { border-bottom: 0 !important; }
+  .profile-character-table tbody tr { height: 58px !important; }
+  .profile-character-table .profile-chain-portrait.small { background: var(--folder-paper) !important; border: 1px solid var(--folder-line) !important; }
+  .profile-character-empty { min-height: 160px; }
+  .profile-capture-record { padding: 20px !important; }
+  .profile-inline-notice { background: var(--folder-paper); padding: 10px; border: 1px solid var(--folder-ink); }
+}

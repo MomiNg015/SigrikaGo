@@ -1,0 +1,386 @@
+[
+  {
+    "width": 1440,
+    "v": 1,
+    "context": "social",
+    "measured": [
+      {
+        "selector": ".profile-resume-hero",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 215,
+          "width": 908,
+          "height": 132,
+          "top": 215,
+          "right": 1227,
+          "bottom": 347,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-summary-item.is-primary",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 432,
+          "width": 254.84375,
+          "height": 139.984375,
+          "top": 432,
+          "right": 573.84375,
+          "bottom": 571.984375,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-record-card",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 589.84375,
+          "y": 432,
+          "width": 637.15625,
+          "height": 139.984375,
+          "top": 432,
+          "right": 1227,
+          "bottom": 571.984375,
+          "left": 589.84375
+        }
+      },
+      {
+        "selector": ".profile-recent-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 589.984375,
+          "width": 908,
+          "height": 60,
+          "top": 589.984375,
+          "right": 1227,
+          "bottom": 649.984375,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-character-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 677.984375,
+          "width": 908,
+          "height": 257.59375,
+          "top": 677.984375,
+          "right": 1227,
+          "bottom": 935.578125,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-identity-actions button",
+        "background": "color(srgb 1 0.855451 0.898667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 1011,
+          "y": 282,
+          "width": 44,
+          "height": 44,
+          "top": 282,
+          "right": 1055,
+          "bottom": 326,
+          "left": 1011
+        }
+      },
+      {
+        "selector": ".profile-folder-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "selector": ".profile-play-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 367,
+          "width": 88,
+          "height": 44,
+          "top": 367,
+          "right": 407,
+          "bottom": 411,
+          "left": 319
+        }
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "v": 1,
+    "context": "self",
+    "measured": [
+      {
+        "selector": ".profile-resume-hero",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 221,
+          "width": 908,
+          "height": 132,
+          "top": 221,
+          "right": 1227,
+          "bottom": 353,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-summary-item.is-primary",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 438,
+          "width": 254.84375,
+          "height": 139.984375,
+          "top": 438,
+          "right": 573.84375,
+          "bottom": 577.984375,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-record-card",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 589.84375,
+          "y": 438,
+          "width": 637.15625,
+          "height": 139.984375,
+          "top": 438,
+          "right": 1227,
+          "bottom": 577.984375,
+          "left": 589.84375
+        }
+      },
+      {
+        "selector": ".profile-recent-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 595.984375,
+          "width": 908,
+          "height": 60,
+          "top": 595.984375,
+          "right": 1227,
+          "bottom": 655.984375,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-character-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 683.984375,
+          "width": 908,
+          "height": 257.59375,
+          "top": 683.984375,
+          "right": 1227,
+          "bottom": 941.578125,
+          "left": 319
+        }
+      },
+      {
+        "selector": ".profile-identity-actions button",
+        "background": "rgb(255, 240, 166)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 1040.375,
+          "y": 263.5,
+          "width": 72.25,
+          "height": 44,
+          "top": 263.5,
+          "right": 1112.625,
+          "bottom": 307.5,
+          "left": 1040.375
+        }
+      },
+      {
+        "selector": ".profile-folder-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "selector": ".profile-play-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 319,
+          "y": 373,
+          "width": 88,
+          "height": 44,
+          "top": 373,
+          "right": 407,
+          "bottom": 417,
+          "left": 319
+        }
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "v": 1,
+    "context": "social",
+    "measured": [
+      {
+        "selector": ".profile-resume-hero",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 281,
+          "width": 270,
+          "height": 159,
+          "top": 281,
+          "right": 357,
+          "bottom": 440,
+          "left": 87
+        }
+      },
+      {
+        "selector": ".profile-summary-item.is-primary",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 523,
+          "width": 270,
+          "height": 64,
+          "top": 523,
+          "right": 357,
+          "bottom": 587,
+          "left": 87
+        }
+      },
+      {
+        "selector": ".profile-record-card",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 601,
+          "width": 270,
+          "height": 122.796875,
+          "top": 601,
+          "right": 357,
+          "bottom": 723.796875,
+          "left": 87
+        }
+      },
+      {
+        "selector": ".profile-recent-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 743.796875,
+          "width": 270,
+          "height": 77,
+          "top": 743.796875,
+          "right": 357,
+          "bottom": 820.796875,
+          "left": 87
+        }
+      },
+      {
+        "selector": ".profile-character-section",
+        "background": "rgb(255, 250, 240)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 3px 4px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 844.796875,
+          "width": 270,
+          "height": 246.78125,
+          "top": 844.796875,
+          "right": 357,
+          "bottom": 1091.578125,
+          "left": 87
+        }
+      },
+      {
+        "selector": ".profile-identity-actions button",
+        "background": "color(srgb 1 0.855451 0.898667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 149,
+          "y": 379,
+          "width": 44,
+          "height": 44,
+          "top": 379,
+          "right": 193,
+          "bottom": 423,
+          "left": 149
+        }
+      },
+      {
+        "selector": ".profile-folder-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "selector": ".profile-play-tabs button",
+        "background": "color(srgb 1 0.866863 0.906667)",
+        "shadow": "color(srgb 0.733725 0.696275 0.662549) 2px 3px 0px 0px",
+        "rect": {
+          "x": 87,
+          "y": 460,
+          "width": 64,
+          "height": 44,
+          "top": 460,
+          "right": 151,
+          "bottom": 504,
+          "left": 87
+        }
+      }
+    ],
+    "errors": []
+  }
+]

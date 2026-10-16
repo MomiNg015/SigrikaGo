@@ -1,0 +1,46 @@
+/* Semantic fills for dossier actions, including inverse relationship actions. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .profile-folder-modal.profile-folder-modal.window-bookmark-host {
+  .profile-play-tabs { border: 0; gap: 8px; padding: 0 0 3px; margin-bottom: 14px; }
+  :is(.profile-play-tabs, .profile-identity-actions) button, .profile-record-header > .profile-replay-button {
+    background: var(--profile-action-fill, white) !important;
+    color: var(--folder-ink) !important;
+    border: 2px solid var(--folder-ink) !important;
+    border-radius: 9px !important;
+    box-shadow: 2px 3px 0 var(--profile-paper-shadow) !important;
+    transform: none !important;
+    transition: transform 120ms ease-out, box-shadow 120ms ease-out !important;
+  }
+  .profile-play-tabs button[aria-pressed="true"] { background: var(--profile-paper-active) !important; }
+  .profile-identity-actions { padding-bottom: 3px; }
+  .profile-identity-actions > .profile-like-button, .profile-identity-actions > .profile-blacklist-button[aria-label="移出黑名单"] { --profile-action-fill: var(--bright-mint); }
+  .profile-identity-actions > .profile-friend-button { --profile-action-fill: color-mix(in srgb, var(--bright-blue) 60%, white); }
+  .profile-identity-actions > .personalization-entry-action { --profile-action-fill: color-mix(in srgb, var(--bright-pink) 38%, white); }
+  .profile-identity-actions > .profile-friend-button[aria-label="解除好友"], .profile-identity-actions > .profile-blacklist-button, .profile-identity-actions > .achievement-entry-action { --profile-action-fill: #fff0a6; }
+  .profile-resume-view-social .profile-identity-actions { flex-wrap: wrap !important; max-width: 100%; }
+  .profile-resume-view-social .profile-identity-actions > .profile-like-button {
+    flex: 0 0 auto !important; width: auto !important; min-width: 54px !important;
+    padding-inline: 7px !important; gap: 5px !important;
+  }
+  .profile-resume-view .profile-identity-actions > button {
+    height: 34px !important; min-height: 34px !important; padding: 0 10px !important;
+    box-shadow: 1px 1px 0 var(--profile-paper-shadow) !important;
+  }
+  .profile-resume-view-social .profile-identity-actions > button:not(.profile-like-button) { width: 34px !important; min-width: 34px !important; flex: 0 0 34px !important; padding: 0 !important; }
+  .profile-identity-actions > button > svg { width: 16px !important; height: 16px !important; }
+  .profile-resume-view-social .profile-identity-actions > button:is(:hover, :focus-visible, :active):not(:disabled) { background: var(--profile-action-fill, white) !important; }
+  .profile-like-count { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .profile-identity-actions > .profile-report-button { --profile-action-fill: color-mix(in srgb, #c0182d 24%, white); }
+  .profile-record-header > .profile-replay-button { background: color-mix(in srgb, var(--bright-blue) 60%, white) !important; }
+  :is(.profile-play-tabs, .profile-identity-actions) button:hover:not(:disabled), .profile-record-header > .profile-replay-button:hover:not(:disabled) { filter: brightness(1.04); }
+  :is(.profile-play-tabs, .profile-identity-actions) button:active:not(:disabled), .profile-record-header > .profile-replay-button:active:not(:disabled) { transform: translate(2px, 2px) !important; box-shadow: none !important; }
+  :is(.profile-play-tabs, .profile-identity-actions) button:focus-visible, .profile-record-header > .profile-replay-button:focus-visible { outline: 3px solid var(--folder-ink) !important; outline-offset: 4px; }
+  :is(.profile-play-tabs, .profile-identity-actions) button:disabled, .profile-record-header > .profile-replay-button:disabled {
+    opacity: 1 !important;
+    background: color-mix(in srgb, var(--folder-ink) 12%, var(--folder-paper)) !important;
+    color: color-mix(in srgb, var(--folder-ink) 75%, var(--folder-paper)) !important;
+    box-shadow: inset 0 2px 0 var(--profile-paper-shadow) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :is(.profile-play-tabs, .profile-identity-actions) button, .profile-record-header > .profile-replay-button { transition: none !important; }
+  }
+}

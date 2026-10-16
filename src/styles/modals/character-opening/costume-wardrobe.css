@@ -107,6 +107,7 @@
 }
 
 .character-costume-detail-trigger {
+  min-width: 0;
   width: 100%;
   height: 100%;
   min-height: 240px;
@@ -133,6 +134,7 @@
 
 .character-costume-detail-trigger strong {
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -194,4 +196,35 @@
   max-width: 100%;
   justify-self: start;
   text-align: left;
+}
+
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item-detail-modal.character-costume-detail {
+    width: min(660px, calc(100vw - 36px)) !important;
+    grid-template-columns: 240px minmax(0, 1fr) !important;
+    padding: 20px !important;
+
+    & .character-costume-detail-art {
+      min-height: 0 !important;
+      align-self: center;
+    }
+
+    & .character-costume-detail-art > .portrait-showcase {
+      height: 280px;
+    }
+
+    & .character-costume-detail-copy {
+      align-self: stretch;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      min-height: 0;
+      max-height: min(420px, calc(100dvh - 160px));
+      overflow-y: auto;
+      overflow-wrap: anywhere;
+    }
+
+    & .character-costume-detail-copy p {
+      min-height: 0 !important;
+      overflow-y: auto;
+    }
+  }
 }

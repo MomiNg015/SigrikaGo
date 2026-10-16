@@ -72,6 +72,12 @@
 
 ## 4. Validation & Error Matrix
 
+### Wardrobe geometry
+
+The phone wardrobe is a padded-backdrop grid child. Clear the generic nested-modal `inset: 8px` and padding on its scoped owner; use the backdrop's available width and the same 24px total vertical safe-area gutter for height/max-height. Otherwise a relative inset displaces the complete window and clips its outer shadow. Keep wardrobe header and scrolling grid as the two rows. Costume names are constrained to their trigger width before ellipsis, including the mobile centered-grid alignment. Verify the last equip control and its shadow at the end of a long list, and nested costume-detail return/focus, at 320x568 and desktop.
+
+Above 768px, Bright School wardrobe details use a 660px dialog with a 240px art column and 280px portrait reservation. Stretch the copy to the art frame's top and bottom edges: category and heading take their natural heights, while the description fills the remaining grid row and scrolls internally for long text. Keep the copy viewport-bounded and clear the shop's 132px description minimum. This scoped modifier must not change the shop detail or phone layout. Preserve optional artist credit and the independent close button.
+
 | Condition | Result |
 |---|---|
 | Costume id is not 2-64 lowercase letters, numbers, or hyphens | Admin `400` validation error |

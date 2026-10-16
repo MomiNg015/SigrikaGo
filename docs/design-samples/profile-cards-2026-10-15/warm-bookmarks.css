@@ -1,0 +1,50 @@
+#profile-samples.variant-warm .profile-folder-tabs { display: none !important; }
+#profile-samples.variant-warm .window-bookmark-host > .window-bookmark-rail {
+  left: calc(1px - var(--window-bookmark-width)) !important;
+  /* End the paper at the window's outer edge, leaving its 2px border visible. */
+  clip-path: inset(0 3px 0 0);
+}
+#profile-samples.variant-warm .preview-stage > .modal-backdrop:has(> .window-bookmark-host) { padding-left: 128px !important; padding-right: 18px !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-like-button { background: var(--bright-mint) !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-friend-button { background: color-mix(in srgb, var(--bright-blue) 60%, white) !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-friend-button[aria-label="解除好友"] { background: #fff0a6 !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-blacklist-button { background: #fff0a6 !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-blacklist-button[aria-label="移出黑名单"] { background: #bfe8dd !important; }
+#profile-samples.variant-warm .profile-identity-actions > .profile-report-button { background: color-mix(in srgb, #c0182d 24%, #ffffff) !important; }
+#profile-samples.variant-warm .profile-identity-actions > .achievement-entry-action { background: #fff0a6 !important; }
+#profile-samples.variant-warm .profile-identity-actions > .personalization-entry-action { background: color-mix(in srgb, #ff9ebb 38%, #ffffff) !important; }
+#profile-samples.variant-warm .profile-replay-button { background: color-mix(in srgb, #9ad3de 60%, #ffffff) !important; }
+#profile-samples.variant-warm .profile-identity-actions > button:disabled { background: color-mix(in srgb, var(--sample-ink) 12%, var(--sample-paper)) !important; color: #6a554d !important; }
+@media(max-width:768px) {
+  #profile-samples.variant-warm .preview-stage > .modal-backdrop:has(> .window-bookmark-host) { padding-left: 64px !important; padding-right: 6px !important; }
+  #profile-samples.variant-warm .profile-play-tabs { flex-wrap: wrap; }
+  #profile-samples.variant-warm .profile-summary-item .profile-summary-label { font-size: 15px !important; }
+  #profile-samples.variant-warm .profile-record-metric dd { font-size: 19px !important; }
+  #profile-samples.variant-warm .profile-record-header { flex-wrap: wrap; gap: 5px; }
+  #profile-samples.variant-warm .profile-record-header .profile-replay-button { margin-left: auto; }
+  #profile-samples.variant-warm .profile-summary-item.is-primary { flex-wrap: wrap; }
+  #profile-samples.variant-warm .profile-character-section { overflow-x: auto; }
+  #profile-samples.variant-warm .profile-character-table-head,
+  #profile-samples.variant-warm .profile-character-table { min-width: 260px !important; }
+}
+@media(max-width:360px) {
+  #profile-samples.variant-warm .profile-resume-hero { column-gap: 10px !important; padding-inline: 10px !important; }
+  #profile-samples.variant-warm .profile-record-metric dd { font-size: 17px !important; }
+  #profile-samples.variant-warm .profile-record-metrics { column-gap: 2px !important; }
+  #profile-samples.variant-warm .profile-recent-section .recent-result-marker { font-size: 10px !important; }
+}
+
+/* Keep the selected preview aligned with the production corrections. */
+#profile-samples.variant-warm .profile-folder { padding: 8px 10px 12px 6px !important; }
+#profile-samples.variant-warm .profile-hero-portrait,
+#profile-samples.variant-warm .profile-hero-portrait > .profile-portrait-mask { box-shadow: none !important; }
+#profile-samples.variant-warm .profile-character-section { overflow-x: auto !important; overflow-y: hidden !important; }
+#profile-samples.variant-warm .profile-character-table-head { margin: 0 !important; padding-inline: 0 !important; }
+
+#profile-samples.variant-warm .profile-resume-hero { box-shadow: none !important; padding-block: 28px !important; }
+#profile-samples.variant-warm .profile-resume-view-social .profile-resume-hero { padding-block: 52px !important; }
+#profile-samples.variant-warm .profile-identity-actions > button { box-shadow: 1px 1px 0 var(--profile-paper-shadow) !important; }
+
+@media(min-width:361px) and (max-width:900px) {
+  #profile-samples.variant-warm .profile-resume-hero { padding-inline: 12px !important; }
+}

@@ -1,0 +1,16 @@
+#profile-samples.variant-warm {
+  --sample-ink: #3d2b25; --sample-paper: #fffaf0;
+  --sample-line: color-mix(in srgb, var(--sample-ink) 22%, var(--sample-paper));
+  --sample-hero: var(--sample-paper); --sample-rank: var(--sample-paper); --sample-button: #ffffff;
+  --sample-active: color-mix(in srgb, #ff9ebb 35%, #ffffff);
+  --sample-action: var(--sample-button); --sample-alert: var(--sample-button);
+  --sample-table-head: color-mix(in srgb, var(--sample-ink) 5%, var(--sample-paper));
+  --sample-border: 2px; --sample-radius: 12px; --sample-button-radius: 9px;
+  --sample-shadow-ink: color-mix(in srgb, var(--sample-ink) 35%, var(--sample-paper));
+  --sample-shadow: 3px 4px 0 var(--sample-shadow-ink); --sample-button-shadow: 2px 3px 0 var(--sample-shadow-ink);
+  --sample-window-shadow: 6px 7px 0 var(--sample-shadow-ink);
+}
+#profile-samples.variant-warm .profile-resume-hero { border-radius: 14px 8px 13px 9px !important; }
+#profile-samples.variant-warm .profile-recent-section { background: var(--sample-paper) !important; }
+#profile-samples.variant-warm .profile-play-tabs button[aria-pressed="true"] { background: var(--sample-active) !important; }
+#profile-samples.variant-warm .profile-record-card { border-radius: 8px 12px 9px 14px !important; }

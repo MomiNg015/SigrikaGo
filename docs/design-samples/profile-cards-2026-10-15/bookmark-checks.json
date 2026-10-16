@@ -1,0 +1,23 @@
+[
+  {
+    "width": 1440,
+    "friendBefore": "rgb(191, 232, 221)",
+    "friendAfter": "rgb(255, 240, 166)",
+    "blacklistBefore": "color(srgb 0.962941 0.864118 0.876471)",
+    "blacklistAfter": "rgb(191, 232, 221)"
+  },
+  {
+    "width": 390,
+    "friendBefore": "rgb(191, 232, 221)",
+    "friendAfter": "rgb(255, 240, 166)",
+    "blacklistBefore": "color(srgb 0.962941 0.864118 0.876471)",
+    "blacklistAfter": "rgb(191, 232, 221)"
+  },
+  {
+    "width": 320,
+    "friendBefore": "rgb(191, 232, 221)",
+    "friendAfter": "rgb(255, 240, 166)",
+    "blacklistBefore": "color(srgb 0.962941 0.864118 0.876471)",
+    "blacklistAfter": "rgb(191, 232, 221)"
+  }
+]

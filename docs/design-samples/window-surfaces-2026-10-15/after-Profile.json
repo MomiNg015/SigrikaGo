@@ -1,0 +1,84 @@
+[
+  {
+    "width": 1440,
+    "surface": "Profile",
+    "class": "room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 251, 242)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 238,
+      "y": 54,
+      "width": 960,
+      "height": 693.390625,
+      "top": 54,
+      "right": 1198,
+      "bottom": 747.390625,
+      "left": 238
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-social profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-record-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Profile",
+    "class": "room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 251, 242)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 362,
+      "height": 766.984375,
+      "top": 46,
+      "right": 384,
+      "bottom": 812.984375,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-social profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-record-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  }
+]

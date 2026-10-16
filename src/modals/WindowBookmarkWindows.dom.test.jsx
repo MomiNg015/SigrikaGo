@@ -70,13 +70,13 @@ describe("player window bookmark rollout", () => {
     expect(screen.getByRole("button", { name: "使用", exact: true }).disabled).toBe(false);
   });
 
-  it.each([true, false])("keeps profile family tabs inside the folder with title stickers=%s", async (titleStickers) => {
+  it.each([true, false])("moves profile family tabs onto the window edge with title stickers=%s", async (titleStickers) => {
     const { container } = render(<div className="app-shell player-theme-enabled theme-bright-school">
       <UserProfileCard {...shared} titleStickers={titleStickers} />
     </div>);
-    expect(container.querySelector(".window-bookmark-rail")).toBeNull();
-    expect(screen.getByRole("tablist").className).toContain("profile-folder-tabs");
-    const standard = screen.getByRole("tab", { name: "标准对弈" });
+    expect(container.querySelector(".window-bookmark-rail")).not.toBeNull();
+    expect(screen.getByRole("tablist").parentElement.classList.contains("window-bookmark-host")).toBe(true);
+    const standard = screen.getByRole("tab", { name: "标准" });
     fireEvent.click(standard);
     await waitFor(() => expect(standard.getAttribute("aria-selected")).toBe("true"));
   });

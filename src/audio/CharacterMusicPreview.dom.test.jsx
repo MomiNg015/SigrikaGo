@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CharacterMusicPreview, MarqueeText } from "./CharacterMusicPreview.jsx";
+import { ModalDialog } from "../modals/modalComponents.jsx";
 
 const baseTrack = track("base", "普通技能曲");
 const derivedTrack = track("derived-default", "远航星默认曲");
@@ -42,6 +43,21 @@ describe("CharacterMusicPreview interaction", () => {
 
     expect(screen.getByRole("region", { name: "角色技能曲目单" })).toBeTruthy();
     expect(screen.getByRole("button", { name: new RegExp(`当前曲目 ${derivedAltTrack.name}`) })).toBeTruthy();
+  });
+
+  it.each(["trigger", "option"])("dismisses the sheet before its parent dialog from %s", async (target) => {
+    const onClose = vi.fn();
+    render(<ModalDialog ariaLabel="角色详情" onClose={onClose}>{playerMarkup(vi.fn())}</ModalDialog>);
+    const trigger = screen.getByRole("button", { name: /打开曲目单/ });
+    fireEvent.click(trigger);
+    const focused = target === "trigger" ? trigger : await screen.findByRole("option", { name: /普通技能曲/ });
+    focused.focus();
+    fireEvent.keyDown(focused, { key: "Escape" });
+    expect(screen.queryByRole("region", { name: "角色技能曲目单" })).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(trigger);
+    fireEvent.keyDown(trigger, { key: "Escape" });
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("rolls a rejected selection back and exposes an in-sheet retry", async () => {

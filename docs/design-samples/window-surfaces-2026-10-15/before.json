@@ -1,0 +1,1264 @@
+[
+  {
+    "width": 1440,
+    "surface": "Warehouse",
+    "class": "warehouse-modal warehouse-field-guide window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 188,
+      "y": 123,
+      "width": 1060,
+      "height": 680,
+      "top": 123,
+      "right": 1248,
+      "bottom": 803,
+      "left": 188
+    },
+    "largeChildren": [
+      {
+        "class": "wg-book",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-directory",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-inspector",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Resume",
+    "class": "house-modal resume-modal profile-dossier-modal profile-folder-modal window-sticker-host",
+    "background": "none",
+    "color": "color(srgb 0.939137 0.919059 0.884706)",
+    "size": "auto",
+    "rect": {
+      "x": 238,
+      "y": 54,
+      "width": 960,
+      "height": 685.796875,
+      "top": 54,
+      "right": 1198,
+      "bottom": 739.796875,
+      "left": 238
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-self profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgb(255, 251, 242)"
+      },
+      {
+        "class": "profile-record-panel is-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Profile",
+    "class": "room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card window-sticker-host",
+    "background": "none",
+    "color": "color(srgb 0.939137 0.919059 0.884706)",
+    "size": "auto",
+    "rect": {
+      "x": 238,
+      "y": 54,
+      "width": 960,
+      "height": 693.390625,
+      "top": 54,
+      "right": 1198,
+      "bottom": 747.390625,
+      "left": 238
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-social profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgb(255, 251, 242)"
+      },
+      {
+        "class": "profile-record-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "House",
+    "class": "house-modal window-sticker-host window-bookmark-host handbook-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 215,
+      "y": 54,
+      "width": 1120,
+      "height": 535,
+      "top": 54,
+      "right": 1335,
+      "bottom": 589,
+      "left": 215
+    },
+    "largeChildren": [
+      {
+        "class": "handbook-puzzle-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-board",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Achievements",
+    "class": "house-modal achievement-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 215,
+      "y": 54,
+      "width": 1120,
+      "height": 340,
+      "top": 54,
+      "right": 1335,
+      "bottom": 394,
+      "left": 215
+    },
+    "largeChildren": [
+      {
+        "class": "achievement-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state achievement-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Personalization",
+    "class": "house-modal personalization-modal window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 158,
+      "y": 54,
+      "width": 1120,
+      "height": 408.390625,
+      "top": 54,
+      "right": 1278,
+      "bottom": 462.390625,
+      "left": 158
+    },
+    "largeChildren": [
+      {
+        "class": "personalization-sticker-scroll",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "personalization-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Recruitment",
+    "class": "recruitment-modal window-sticker-host recruitment-phase-idle  ",
+    "background": "none",
+    "color": "rgb(255, 250, 240)",
+    "size": "auto",
+    "rect": {
+      "x": 258,
+      "y": 54,
+      "width": 920,
+      "height": 520,
+      "top": 54,
+      "right": 1178,
+      "bottom": 574,
+      "left": 258
+    },
+    "largeChildren": [
+      {
+        "class": "recruitment-board recruitment-board-idle",
+        "background": "url(\"http://127.0.0.1:5173/assets/recruitment/notice-board-flat-candidate.webp\")",
+        "color": "rgb(255, 243, 213)"
+      },
+      {
+        "class": "recruitment-empty-board",
+        "background": "linear-gradient(135deg, rgba(255, 223, 235, 0.5), rgba(255, 253, 246, 0.62)), url(\"http://127.0.0.1:5173/assets/recruitment/recruitment-letter-paper-flat.webp\")",
+        "color": "rgb(255, 253, 246)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Shop",
+    "class": "shop-modal shop-window",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 160,
+      "y": 28,
+      "width": 1120,
+      "height": 760,
+      "top": 28,
+      "right": 1280,
+      "bottom": 788,
+      "left": 160
+    },
+    "largeChildren": [
+      {
+        "class": "shop-store-viewport is-zahira",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-track",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-page zahira-store-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-layout shop-window-body",
+        "background": "linear-gradient(rgba(255, 250, 232, 0.03), rgba(41, 30, 49, 0.08)), url(\"http://127.0.0.1:5173/assets/shop/zahira-shop-background-crayon-v1.webp\")",
+        "color": "oklch(0.76 0.035 285)"
+      },
+      {
+        "class": "shop-product-stage shop-product-count-0",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-batch-layer",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-slot",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-image shop-mascot-image-default is-active",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-image shop-mascot-image-thanks",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-page costume-store-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-store-panel",
+        "background": "linear-gradient(rgba(18, 2, 9, 0.04), rgba(5, 1, 3, 0.12)), url(\"http://127.0.0.1:5173/assets/shop/fractsidus-costume-store-stage-desktop-v1.webp\")",
+        "color": "rgb(36, 7, 15)"
+      },
+      {
+        "class": "costume-shop-host",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot-slot",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-greeting",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-thanks",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-empty is-active",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-stage costume-shop-count-0",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-batch-layer costume-shop-batch-layer",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state costume-shop-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Leaderboard",
+    "class": "leaderboard-modal leaderboard-podium-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 255,
+      "y": 54,
+      "width": 1040,
+      "height": 730,
+      "top": 54,
+      "right": 1295,
+      "bottom": 784,
+      "left": 255
+    },
+    "largeChildren": [
+      {
+        "class": "window-empty-state",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Friends",
+    "class": "friends-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 395,
+      "y": 54,
+      "width": 760,
+      "height": 340,
+      "top": 54,
+      "right": 1155,
+      "bottom": 394,
+      "left": 395
+    },
+    "largeChildren": [
+      {
+        "class": "friends-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Mailbox",
+    "class": "modal-panel information-center-modal window-sticker-host mailbox-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 208,
+      "y": 83,
+      "width": 1020,
+      "height": 760,
+      "top": 83,
+      "right": 1228,
+      "bottom": 843,
+      "left": 208
+    },
+    "largeChildren": [
+      {
+        "class": "information-center-layout",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-master",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "mailbox-list-region",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Announcements",
+    "class": "modal-panel information-center-modal window-sticker-host announcement-modal window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 251, 242)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 265,
+      "y": 54,
+      "width": 1020,
+      "height": 760,
+      "top": 54,
+      "right": 1285,
+      "bottom": 814,
+      "left": 265
+    },
+    "largeChildren": [
+      {
+        "class": "information-center-layout",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-master",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "announcement-list-region",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state information-center-empty-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "MessageBoard",
+    "class": "message-board-modal window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 488,
+      "y": 54,
+      "width": 460,
+      "height": 666,
+      "top": 54,
+      "right": 948,
+      "bottom": 720,
+      "left": 488
+    },
+    "largeChildren": [
+      {
+        "class": "message-board-input",
+        "background": "none",
+        "color": "rgb(255, 250, 240)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Settings",
+    "class": "settings-modal settings-modal-content window-sticker-host window-bookmark-host settings-tab-audio",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 375,
+      "y": 54,
+      "width": 800,
+      "height": 456,
+      "top": 54,
+      "right": 1175,
+      "bottom": 510,
+      "left": 375
+    },
+    "largeChildren": [
+      {
+        "class": "settings-panel settings-modal-content",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Watch",
+    "class": "small-modal watch-list-modal window-sticker-host watch-ledger wl-ledger",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 158,
+      "y": 113,
+      "width": 1120,
+      "height": 700,
+      "top": 113,
+      "right": 1278,
+      "bottom": 813,
+      "left": 158
+    },
+    "largeChildren": [
+      {
+        "class": "wl-scroll",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "surface": "Confirm",
+    "class": "confirm-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 160,
+      "y": 28,
+      "width": 1120,
+      "height": 188.90625,
+      "top": 28,
+      "right": 1280,
+      "bottom": 216.90625,
+      "left": 160
+    },
+    "largeChildren": [
+      {
+        "class": "inline-actions confirm-actions",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Warehouse",
+    "class": "warehouse-modal warehouse-field-guide window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 68,
+      "width": 356,
+      "height": 740,
+      "top": 68,
+      "right": 378,
+      "bottom": 808,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "wg-book",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-directory",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "wg-inspector",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Resume",
+    "class": "house-modal resume-modal profile-dossier-modal profile-folder-modal window-sticker-host",
+    "background": "none",
+    "color": "color(srgb 0.939137 0.919059 0.884706)",
+    "size": "auto",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 362,
+      "height": 748.203125,
+      "top": 46,
+      "right": 384,
+      "bottom": 794.203125,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-self profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgb(255, 251, 242)"
+      },
+      {
+        "class": "profile-record-panel is-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Profile",
+    "class": "room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal user-profile-card window-sticker-host",
+    "background": "none",
+    "color": "color(srgb 0.939137 0.919059 0.884706)",
+    "size": "auto",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 362,
+      "height": 768,
+      "top": 46,
+      "right": 384,
+      "bottom": 814,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "profile-resume-view profile-resume-view-social profile-folder",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-resume-hero",
+        "background": "none",
+        "color": "rgb(255, 251, 242)"
+      },
+      {
+        "class": "profile-folder-page",
+        "background": "none",
+        "color": "rgb(255, 251, 242)"
+      },
+      {
+        "class": "profile-record-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "profile-overview-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "House",
+    "class": "house-modal window-sticker-host window-bookmark-host handbook-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 768,
+      "top": 46,
+      "right": 378,
+      "bottom": 814,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "handbook-puzzle-panel",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-board",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-portrait",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-portrait",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-portrait",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-portrait",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "handbook-puzzle-portrait",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Achievements",
+    "class": "house-modal achievement-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 340,
+      "top": 46,
+      "right": 378,
+      "bottom": 386,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "achievement-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state achievement-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Personalization",
+    "class": "house-modal personalization-modal window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 356,
+      "height": 737,
+      "top": 46,
+      "right": 378,
+      "bottom": 783,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "personalization-sticker-scroll",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "personalization-grid",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Recruitment",
+    "class": "recruitment-modal window-sticker-host recruitment-phase-idle  ",
+    "background": "none",
+    "color": "rgb(255, 250, 240)",
+    "size": "auto",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 356,
+      "height": 520,
+      "top": 46,
+      "right": 378,
+      "bottom": 566,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "recruitment-board recruitment-board-idle",
+        "background": "url(\"http://127.0.0.1:5173/assets/recruitment/notice-board-flat-candidate.webp\")",
+        "color": "rgb(255, 243, 213)"
+      },
+      {
+        "class": "recruitment-empty-board",
+        "background": "linear-gradient(135deg, rgba(255, 223, 235, 0.5), rgba(255, 253, 246, 0.62)), url(\"http://127.0.0.1:5173/assets/recruitment/recruitment-letter-paper-flat.webp\")",
+        "color": "rgb(255, 253, 246)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Shop",
+    "class": "shop-modal shop-window",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 10,
+      "y": 10,
+      "width": 368,
+      "height": 820,
+      "top": 10,
+      "right": 378,
+      "bottom": 830,
+      "left": 10
+    },
+    "largeChildren": [
+      {
+        "class": "shop-store-viewport is-zahira",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-track",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-page zahira-store-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-layout shop-window-body",
+        "background": "linear-gradient(rgba(255, 250, 232, 0.03), rgba(41, 30, 49, 0.08)), url(\"http://127.0.0.1:5173/assets/shop/zahira-shop-background-crayon-mobile-v1.webp\")",
+        "color": "oklch(0.76 0.035 285)"
+      },
+      {
+        "class": "shop-product-stage shop-product-count-0",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-batch-layer",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-slot",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-image shop-mascot-image-default is-active",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-mascot-image shop-mascot-image-thanks",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-store-page costume-store-page",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-store-panel",
+        "background": "linear-gradient(rgba(18, 2, 9, 0.03), rgba(5, 1, 3, 0.1)), url(\"http://127.0.0.1:5173/assets/shop/fractsidus-costume-store-stage-mobile-v1.webp\")",
+        "color": "rgb(36, 7, 15)"
+      },
+      {
+        "class": "costume-shop-host",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot-slot",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-greeting",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-thanks",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-mascot costume-shop-mascot-empty is-active",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "costume-shop-stage costume-shop-count-0",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "shop-batch-layer costume-shop-batch-layer",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state costume-shop-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Leaderboard",
+    "class": "leaderboard-modal leaderboard-podium-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 440,
+      "top": 46,
+      "right": 378,
+      "bottom": 486,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "window-empty-state",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Friends",
+    "class": "friends-modal window-sticker-host window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 347,
+      "top": 46,
+      "right": 378,
+      "bottom": 393,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "friends-list",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Mailbox",
+    "class": "modal-panel information-center-modal window-sticker-host mailbox-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 356,
+      "height": 768,
+      "top": 46,
+      "right": 378,
+      "bottom": 814,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "information-center-layout",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-master",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "mailbox-list-region",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Announcements",
+    "class": "modal-panel information-center-modal window-sticker-host announcement-modal window-bookmark-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 251, 242)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 340,
+      "top": 46,
+      "right": 378,
+      "bottom": 386,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "information-center-layout",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-master",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "announcement-list-region",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state window-empty-compact announcement-empty",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "information-center-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "class": "window-empty-state information-center-empty-reader",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "MessageBoard",
+    "class": "message-board-modal window-sticker-host",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 46,
+      "width": 356,
+      "height": 574,
+      "top": 46,
+      "right": 378,
+      "bottom": 620,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "message-board-input",
+        "background": "none",
+        "color": "rgb(255, 250, 240)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Settings",
+    "class": "settings-modal settings-modal-content window-sticker-host window-bookmark-host settings-tab-audio",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 64,
+      "y": 46,
+      "width": 314,
+      "height": 594.40625,
+      "top": 46,
+      "right": 378,
+      "bottom": 640.40625,
+      "left": 64
+    },
+    "largeChildren": [
+      {
+        "class": "settings-panel settings-modal-content",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Watch",
+    "class": "small-modal watch-list-modal window-sticker-host watch-ledger wl-ledger",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 22,
+      "y": 68,
+      "width": 356,
+      "height": 740,
+      "top": 68,
+      "right": 378,
+      "bottom": 808,
+      "left": 22
+    },
+    "largeChildren": [
+      {
+        "class": "wl-scroll",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "surface": "Confirm",
+    "class": "confirm-modal",
+    "background": "linear-gradient(rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(154, 211, 222, 0.18) 1px, rgba(0, 0, 0, 0) 1px)",
+    "color": "rgb(255, 250, 240)",
+    "size": "20px 20px, 20px 20px",
+    "rect": {
+      "x": 10,
+      "y": 10,
+      "width": 368,
+      "height": 166.90625,
+      "top": 10,
+      "right": 378,
+      "bottom": 176.90625,
+      "left": 10
+    },
+    "largeChildren": [
+      {
+        "class": "inline-actions confirm-actions",
+        "background": "none",
+        "color": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": []
+  }
+]

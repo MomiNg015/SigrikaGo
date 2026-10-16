@@ -5,6 +5,10 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "tests/e2e/window-surfaces*.js",
+  "tests/e2e/fixtures/window-surfaces.jsx",
+  "tests/e2e/handbook-window-layout*.js",
+  "tests/e2e/fixtures/handbook-puzzle.jsx",
   "src/modals/leaderboard/LeaderboardStandings.jsx",
   "src/modals/LeaderboardRanking.dom.test.jsx",
   "src/modals/CaptureChallenge.dom.test.jsx",

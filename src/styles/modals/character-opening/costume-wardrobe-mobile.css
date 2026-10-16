@@ -9,10 +9,14 @@
     min-height: 44px !important;
   }
 
-  .character-costume-dialog {
-    width: calc(100vw - 14px) !important;
-    height: calc(100dvh - 14px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    max-height: none !important;
+  .character-costume-dialog,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-costume-dialog {
+    /* Generic nested-dialog insets shift this grid past its backdrop gutters. */
+    inset: auto !important;
+    width: 100% !important;
+    height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    padding: 0 !important;
   }
 
   .character-costume-header {

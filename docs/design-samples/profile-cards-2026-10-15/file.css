@@ -1,0 +1,16 @@
+#profile-samples.variant-file {
+  --sample-ink: #354b58; --sample-line: #b5c6ca; --sample-paper: #ffffff;
+  --sample-hero: #f4f8f6; --sample-rank: #e5f0ef; --sample-button: #f3f5f4;
+  --sample-active: #c9e4e5; --sample-action: #dce9f6; --sample-alert: #f7e2dc;
+  --sample-table-head: #e9eef0; --sample-border: 2px; --sample-radius: 4px; --sample-button-radius: 4px;
+  --sample-shadow: 2px 3px 0 #ffffff, 4px 5px 0 #8c9fa6;
+  --sample-button-shadow: 0 3px 0 #8c9fa6; --sample-window-shadow: 4px 6px 0 #8c9fa6;
+}
+#profile-samples.variant-file .profile-resume-hero { border-left-width: 8px !important; }
+#profile-samples.variant-file .profile-summary-item.is-primary { border-top: 6px solid #6d9999 !important; }
+#profile-samples.variant-file .profile-record-card { border-top: 6px solid #bda46a !important; }
+#profile-samples.variant-file .profile-recent-section { border-left: 6px solid #bda46a !important; }
+#profile-samples.variant-file .profile-folder-tabs { gap: 8px; }
+#profile-samples.variant-file .profile-folder-tabs button { border-radius: 8px 8px 2px 2px !important; }
+#profile-samples.variant-file .profile-hero-portrait { transform: none !important; border-radius: 3px !important; }
+#profile-samples.variant-file .profile-character-table tbody tr:nth-child(even) :is(th,td) { background: #f4f7f7 !important; }

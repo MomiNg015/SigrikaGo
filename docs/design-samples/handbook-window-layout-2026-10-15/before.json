@@ -1,0 +1,1402 @@
+[
+  {
+    "width": 1440,
+    "height": 768,
+    "stage": "detail",
+    "elements": [
+      {
+        "selector": ".character-detail-fullbody > .close-button",
+        "text": "",
+        "rect": {
+          "x": 1181,
+          "y": 167,
+          "width": 44,
+          "height": 44,
+          "top": 167,
+          "right": 1225,
+          "bottom": 211,
+          "left": 1181
+        },
+        "clips": [],
+        "hit": "close-button",
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 547.875,
+          "y": 179,
+          "width": 46,
+          "height": 46,
+          "top": 179,
+          "right": 593.875,
+          "bottom": 225,
+          "left": 547.875
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "40px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-detail-heading h3",
+        "text": "西格莉卡",
+        "rect": {
+          "x": 628.875,
+          "y": 236.8125,
+          "width": 113.125,
+          "height": 28,
+          "top": 236.8125,
+          "right": 742,
+          "bottom": 264.8125,
+          "left": 628.875
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "auto",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-music-player",
+        "text": "Sigrika Skill BGM",
+        "rect": {
+          "x": 914,
+          "y": 225.8125,
+          "width": 230,
+          "height": 50,
+          "top": 225.8125,
+          "right": 1144,
+          "bottom": 275.8125,
+          "left": 914
+        },
+        "clips": [],
+        "hit": "character-music-marquee-content",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "50px",
+        "padding": "1px 0px"
+      },
+      {
+        "selector": ".character-detail-copy",
+        "text": "西格莉卡Sigrika Skill BGM星辉符文超频：3【疾走】抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。获",
+        "rect": {
+          "x": 611.875,
+          "y": 208.8125,
+          "width": 605.125,
+          "height": 346.375,
+          "top": 208.8125,
+          "right": 1217,
+          "bottom": 555.1875,
+          "left": 611.875
+        },
+        "clips": [],
+        "hit": "character-detail-copy",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "571.125px",
+        "minHeight": "0px",
+        "padding": "14px"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 768,
+    "stage": "detail-hover",
+    "elements": [
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 547.875,
+          "y": 179,
+          "width": 46,
+          "height": 46,
+          "top": 179,
+          "right": 593.875,
+          "bottom": 225,
+          "left": 547.875
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "40px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 768,
+    "stage": "wardrobe",
+    "elements": [
+      {
+        "selector": ".character-costume-backdrop",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 768,
+          "top": 0,
+          "right": 1440,
+          "bottom": 768,
+          "left": 0
+        },
+        "clips": [],
+        "hit": "character-costume-grid",
+        "reachable": true,
+        "z": "161",
+        "overflow": "hidden auto",
+        "shadow": "none",
+        "grid": "1384px",
+        "minHeight": "0px",
+        "padding": "28px"
+      },
+      {
+        "selector": ".character-costume-header .close-button",
+        "text": "",
+        "rect": {
+          "x": 1221,
+          "y": 43,
+          "width": 44,
+          "height": 44,
+          "top": 43,
+          "right": 1265,
+          "bottom": 87,
+          "left": 1221
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-dialog",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 160,
+          "y": 28,
+          "width": 1120,
+          "height": 675.828125,
+          "top": 28,
+          "right": 1280,
+          "bottom": 703.828125,
+          "left": 160
+        },
+        "clips": [],
+        "hit": "character-costume-grid",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "1114px",
+        "minHeight": "auto",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-card:first-child",
+        "text": "默认服装",
+        "rect": {
+          "x": 181,
+          "y": 131,
+          "width": 259,
+          "height": 240,
+          "top": 131,
+          "right": 440,
+          "bottom": 371,
+          "left": 181
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "rgba(73, 57, 80, 0.34) 4px 5px 0px 0px",
+        "grid": "none",
+        "minHeight": "240px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-card:first-child .character-costume-equip-button",
+        "text": "",
+        "rect": {
+          "x": 385,
+          "y": 314,
+          "width": 42,
+          "height": 44,
+          "top": 314,
+          "right": 427,
+          "bottom": 358,
+          "left": 385
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "3",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "36px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 768,
+    "stage": "costume-detail",
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 340,
+          "y": 184.046875,
+          "width": 760,
+          "height": 399.90625,
+          "top": 184.046875,
+          "right": 1100,
+          "bottom": 583.953125,
+          "left": 340
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgba(61, 43, 37, 0.86) 8px 9px 0px 0px, rgba(61, 43, 37, 0.16) 0px 18px 34px 0px",
+        "grid": "294.5px 387.5px",
+        "minHeight": "auto",
+        "padding": "24px"
+      },
+      {
+        "selector": ".character-costume-detail > .close-button",
+        "text": "",
+        "rect": {
+          "x": 1040,
+          "y": 200.046875,
+          "width": 44,
+          "height": 44,
+          "top": 200.046875,
+          "right": 1084,
+          "bottom": 244.046875,
+          "left": 1040
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 684.5,
+          "y": 212.046875,
+          "width": 387.5,
+          "height": 343.90625,
+          "top": 212.046875,
+          "right": 1072,
+          "bottom": 555.953125,
+          "left": 684.5
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "1",
+        "overflow": "visible",
+        "shadow": "none",
+        "grid": "387.5px",
+        "minHeight": "auto",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": "detail",
+    "elements": [
+      {
+        "selector": ".character-detail-fullbody > .close-button",
+        "text": "",
+        "rect": {
+          "x": 319,
+          "y": 120.734375,
+          "width": 44,
+          "height": 44,
+          "top": 120.734375,
+          "right": 363,
+          "bottom": 164.734375,
+          "left": 319
+        },
+        "clips": [],
+        "hit": "close-button",
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 128.734375,
+          "width": 44,
+          "height": 44,
+          "top": 128.734375,
+          "right": 77,
+          "bottom": 172.734375,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-detail-heading h3",
+        "text": "西格莉卡",
+        "rect": {
+          "x": 38,
+          "y": 411.734375,
+          "width": 88.890625,
+          "height": 23.09375,
+          "top": 411.734375,
+          "right": 126.890625,
+          "bottom": 434.828125,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "auto",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-music-player",
+        "text": "Sigrika Skill BGM",
+        "rect": {
+          "x": 140,
+          "y": 411.734375,
+          "width": 210,
+          "height": 50,
+          "top": 411.734375,
+          "right": 350,
+          "bottom": 461.734375,
+          "left": 140
+        },
+        "clips": [],
+        "hit": "character-music-marquee-content",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "50px",
+        "padding": "1px 0px"
+      },
+      {
+        "selector": ".character-detail-copy",
+        "text": "西格莉卡Sigrika Skill BGM星辉符文超频：3【疾走】抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。获",
+        "rect": {
+          "x": 25,
+          "y": 398.734375,
+          "width": 338,
+          "height": 352.515625,
+          "top": 398.734375,
+          "right": 363,
+          "bottom": 751.25,
+          "left": 25
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "312px",
+        "minHeight": "0px",
+        "padding": "10px"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": "detail-hover",
+    "elements": [
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 128.734375,
+          "width": 44,
+          "height": 44,
+          "top": 128.734375,
+          "right": 77,
+          "bottom": 172.734375,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": "wardrobe",
+    "elements": [
+      {
+        "selector": ".character-costume-backdrop",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "clips": [],
+        "hit": "character-costume-card",
+        "reachable": true,
+        "z": "161",
+        "overflow": "hidden auto",
+        "shadow": "none",
+        "grid": "368px",
+        "minHeight": "0px",
+        "padding": "10px 12px 14px 10px"
+      },
+      {
+        "selector": ".character-costume-header .close-button",
+        "text": "",
+        "rect": {
+          "x": 313,
+          "y": 47,
+          "width": 44,
+          "height": 44,
+          "top": 47,
+          "right": 357,
+          "bottom": 91,
+          "left": 313
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-dialog",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 18,
+          "y": 18,
+          "width": 368,
+          "height": 820,
+          "top": 18,
+          "right": 386,
+          "bottom": 838,
+          "left": 18
+        },
+        "clips": [],
+        "hit": "character-costume-grid",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "334px",
+        "minHeight": "auto",
+        "padding": "14px"
+      },
+      {
+        "selector": ".character-costume-card:first-child",
+        "text": "默认服装",
+        "rect": {
+          "x": 45,
+          "y": 115,
+          "width": 152.5,
+          "height": 280,
+          "top": 115,
+          "right": 197.5,
+          "bottom": 395,
+          "left": 45
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "rgba(73, 57, 80, 0.34) 4px 5px 0px 0px",
+        "grid": "146.5px",
+        "minHeight": "280px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-card:first-child .character-costume-equip-button",
+        "text": "",
+        "rect": {
+          "x": 100.25,
+          "y": 338,
+          "width": 42,
+          "height": 44,
+          "top": 338,
+          "right": 142.25,
+          "bottom": 382,
+          "left": 100.25
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "3",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "36px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": "costume-detail",
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 10,
+          "y": 10,
+          "width": 368,
+          "height": 613.546875,
+          "top": 10,
+          "right": 378,
+          "bottom": 623.546875,
+          "left": 10
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgba(61, 43, 37, 0.86) 8px 9px 0px 0px, rgba(61, 43, 37, 0.16) 0px 18px 34px 0px",
+        "grid": "312px",
+        "minHeight": "auto",
+        "padding": "24px"
+      },
+      {
+        "selector": ".character-costume-detail > .close-button",
+        "text": "",
+        "rect": {
+          "x": 318,
+          "y": 26,
+          "width": 44,
+          "height": 44,
+          "top": 26,
+          "right": 362,
+          "bottom": 70,
+          "left": 318
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 38,
+          "y": 352.953125,
+          "width": 312,
+          "height": 242.59375,
+          "top": 352.953125,
+          "right": 350,
+          "bottom": 595.546875,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "1",
+        "overflow": "visible",
+        "shadow": "none",
+        "grid": "312px",
+        "minHeight": "auto",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": "detail",
+    "elements": [
+      {
+        "selector": ".character-detail-fullbody > .close-button",
+        "text": "",
+        "rect": {
+          "x": 289,
+          "y": 73,
+          "width": 44,
+          "height": 44,
+          "top": 73,
+          "right": 333,
+          "bottom": 117,
+          "left": 289
+        },
+        "clips": [],
+        "hit": "close-button",
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 81,
+          "width": 44,
+          "height": 44,
+          "top": 81,
+          "right": 77,
+          "bottom": 125,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-detail-heading h3",
+        "text": "西格莉卡",
+        "rect": {
+          "x": 38,
+          "y": 308.796875,
+          "width": 88.890625,
+          "height": 23.09375,
+          "top": 308.796875,
+          "right": 126.890625,
+          "bottom": 331.890625,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "auto",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-music-player",
+        "text": "Sigrika Skill BGM",
+        "rect": {
+          "x": 111.203125,
+          "y": 308.796875,
+          "width": 208.796875,
+          "height": 50,
+          "top": 308.796875,
+          "right": 320,
+          "bottom": 358.796875,
+          "left": 111.203125
+        },
+        "clips": [],
+        "hit": "character-music-marquee-content",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "50px",
+        "padding": "1px 0px"
+      },
+      {
+        "selector": ".character-detail-copy",
+        "text": "西格莉卡Sigrika Skill BGM星辉符文超频：3【疾走】抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。获",
+        "rect": {
+          "x": 25,
+          "y": 295.796875,
+          "width": 308,
+          "height": 299.1875,
+          "top": 295.796875,
+          "right": 333,
+          "bottom": 594.984375,
+          "left": 25
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "282px",
+        "minHeight": "0px",
+        "padding": "10px"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": "detail-hover",
+    "elements": [
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 81,
+          "width": 44,
+          "height": 44,
+          "top": 81,
+          "right": 77,
+          "bottom": 125,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": "wardrobe",
+    "elements": [
+      {
+        "selector": ".character-costume-backdrop",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 640,
+          "top": 0,
+          "right": 360,
+          "bottom": 640,
+          "left": 0
+        },
+        "clips": [],
+        "hit": "character-costume-card is-equipped",
+        "reachable": true,
+        "z": "161",
+        "overflow": "hidden auto",
+        "shadow": "none",
+        "grid": "338px",
+        "minHeight": "0px",
+        "padding": "10px 12px 14px 10px"
+      },
+      {
+        "selector": ".character-costume-header .close-button",
+        "text": "",
+        "rect": {
+          "x": 283,
+          "y": 47,
+          "width": 44,
+          "height": 44,
+          "top": 47,
+          "right": 327,
+          "bottom": 91,
+          "left": 283
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-dialog",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 18,
+          "y": 18,
+          "width": 338,
+          "height": 616,
+          "top": 18,
+          "right": 356,
+          "bottom": 634,
+          "left": 18
+        },
+        "clips": [],
+        "hit": "character-costume-grid",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "304px",
+        "minHeight": "auto",
+        "padding": "14px"
+      },
+      {
+        "selector": ".character-costume-card:first-child",
+        "text": "默认服装",
+        "rect": {
+          "x": 45,
+          "y": 115,
+          "width": 137.5,
+          "height": 280,
+          "top": 115,
+          "right": 182.5,
+          "bottom": 395,
+          "left": 45
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "rgba(73, 57, 80, 0.34) 4px 5px 0px 0px",
+        "grid": "131.5px",
+        "minHeight": "280px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-card:first-child .character-costume-equip-button",
+        "text": "",
+        "rect": {
+          "x": 92.75,
+          "y": 338,
+          "width": 42,
+          "height": 44,
+          "top": 338,
+          "right": 134.75,
+          "bottom": 382,
+          "left": 92.75
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "3",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "36px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": "costume-detail",
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 10,
+          "y": 10,
+          "width": 338,
+          "height": 580.59375,
+          "top": 10,
+          "right": 348,
+          "bottom": 590.59375,
+          "left": 10
+        },
+        "clips": [],
+        "hit": "nested-modal shop-item-detail-modal character-costume-detail",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgba(61, 43, 37, 0.86) 8px 9px 0px 0px, rgba(61, 43, 37, 0.16) 0px 18px 34px 0px",
+        "grid": "282px",
+        "minHeight": "auto",
+        "padding": "24px"
+      },
+      {
+        "selector": ".character-costume-detail > .close-button",
+        "text": "",
+        "rect": {
+          "x": 288,
+          "y": 26,
+          "width": 44,
+          "height": 44,
+          "top": 26,
+          "right": 332,
+          "bottom": 70,
+          "left": 288
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 38,
+          "y": 320,
+          "width": 282,
+          "height": 242.59375,
+          "top": 320,
+          "right": 320,
+          "bottom": 562.59375,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "1",
+        "overflow": "visible",
+        "shadow": "none",
+        "grid": "282px",
+        "minHeight": "auto",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "stage": "detail",
+    "elements": [
+      {
+        "selector": ".character-detail-fullbody > .close-button",
+        "text": "",
+        "rect": {
+          "x": 249,
+          "y": 73,
+          "width": 44,
+          "height": 44,
+          "top": 73,
+          "right": 293,
+          "bottom": 117,
+          "left": 249
+        },
+        "clips": [],
+        "hit": "close-button",
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 81,
+          "width": 44,
+          "height": 44,
+          "top": 81,
+          "right": 77,
+          "bottom": 125,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-detail-heading h3",
+        "text": "西格莉卡",
+        "rect": {
+          "x": 38,
+          "y": 285.75,
+          "width": 88.890625,
+          "height": 23.09375,
+          "top": 285.75,
+          "right": 126.890625,
+          "bottom": 308.84375,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "auto",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-music-player",
+        "text": "Sigrika Skill BGM",
+        "rect": {
+          "x": 94.40625,
+          "y": 285.75,
+          "width": 185.59375,
+          "height": 50,
+          "top": 285.75,
+          "right": 280,
+          "bottom": 335.75,
+          "left": 94.40625
+        },
+        "clips": [],
+        "hit": "character-music-marquee-content",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "none",
+        "grid": "none",
+        "minHeight": "50px",
+        "padding": "1px 0px"
+      },
+      {
+        "selector": ".character-detail-copy",
+        "text": "西格莉卡Sigrika Skill BGM星辉符文超频：3【疾走】抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。获",
+        "rect": {
+          "x": 25,
+          "y": 272.75,
+          "width": 268,
+          "height": 250.234375,
+          "top": 272.75,
+          "right": 293,
+          "bottom": 522.984375,
+          "left": 25
+        },
+        "clips": [],
+        "hit": "character-detail-copy",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden auto",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "242px",
+        "minHeight": "0px",
+        "padding": "10px"
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "stage": "detail-hover",
+    "elements": [
+      {
+        "selector": ".character-costume-open-button",
+        "text": "",
+        "rect": {
+          "x": 33,
+          "y": 81,
+          "width": 44,
+          "height": 44,
+          "top": 81,
+          "right": 77,
+          "bottom": 125,
+          "left": 33
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "8",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "stage": "wardrobe",
+    "elements": [
+      {
+        "selector": ".character-costume-backdrop",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 568,
+          "top": 0,
+          "right": 320,
+          "bottom": 568,
+          "left": 0
+        },
+        "clips": [],
+        "hit": "character-costume-card is-equipped",
+        "reachable": true,
+        "z": "161",
+        "overflow": "hidden auto",
+        "shadow": "none",
+        "grid": "298px",
+        "minHeight": "0px",
+        "padding": "10px 12px 14px 10px"
+      },
+      {
+        "selector": ".character-costume-header .close-button",
+        "text": "",
+        "rect": {
+          "x": 243,
+          "y": 47,
+          "width": 44,
+          "height": 44,
+          "top": 47,
+          "right": 287,
+          "bottom": 91,
+          "left": 243
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-dialog",
+        "text": "西格莉卡的衣柜默认服装长服装名称的裁切回归样例 1长服装名称的裁切回归样例 2长服装名称的裁切回归样例 3长服装名称的裁",
+        "rect": {
+          "x": 18,
+          "y": 18,
+          "width": 298,
+          "height": 544,
+          "top": 18,
+          "right": 316,
+          "bottom": 562,
+          "left": 18
+        },
+        "clips": [],
+        "hit": "character-costume-grid",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "264px",
+        "minHeight": "auto",
+        "padding": "14px"
+      },
+      {
+        "selector": ".character-costume-card:first-child",
+        "text": "默认服装",
+        "rect": {
+          "x": 45,
+          "y": 115,
+          "width": 117.5,
+          "height": 280,
+          "top": 115,
+          "right": 162.5,
+          "bottom": 395,
+          "left": 45
+        },
+        "clips": [],
+        "hit": "",
+        "reachable": true,
+        "z": "auto",
+        "overflow": "hidden",
+        "shadow": "rgba(73, 57, 80, 0.34) 4px 5px 0px 0px",
+        "grid": "111.5px",
+        "minHeight": "280px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-card:first-child .character-costume-equip-button",
+        "text": "",
+        "rect": {
+          "x": 82.75,
+          "y": 338,
+          "width": 42,
+          "height": 44,
+          "top": 338,
+          "right": 124.75,
+          "bottom": 382,
+          "left": 82.75
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "3",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 3px 3px 0px 0px",
+        "grid": "36px",
+        "minHeight": "44px",
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "stage": "costume-detail",
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 10,
+          "y": 10,
+          "width": 298,
+          "height": 544,
+          "top": 10,
+          "right": 308,
+          "bottom": 554,
+          "left": 10
+        },
+        "clips": [],
+        "hit": "shop-detail-art character-costume-detail-art",
+        "reachable": true,
+        "z": "2",
+        "overflow": "hidden",
+        "shadow": "rgba(61, 43, 37, 0.86) 8px 9px 0px 0px, rgba(61, 43, 37, 0.16) 0px 18px 34px 0px",
+        "grid": "242px",
+        "minHeight": "auto",
+        "padding": "24px"
+      },
+      {
+        "selector": ".character-costume-detail > .close-button",
+        "text": "",
+        "rect": {
+          "x": 248,
+          "y": 26,
+          "width": 44,
+          "height": 44,
+          "top": 26,
+          "right": 292,
+          "bottom": 70,
+          "left": 248
+        },
+        "clips": [],
+        "hit": {},
+        "reachable": true,
+        "z": "20",
+        "overflow": "visible",
+        "shadow": "rgb(61, 43, 37) 4px 4px 0px 0px",
+        "grid": "38px",
+        "minHeight": "44px",
+        "padding": "0px"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "text": "西格莉卡服装HelloHelloillust：赤鬼今天也要元气满满哟~",
+        "rect": {
+          "x": 38,
+          "y": 320,
+          "width": 242,
+          "height": 206,
+          "top": 320,
+          "right": 280,
+          "bottom": 526,
+          "left": 38
+        },
+        "clips": [],
+        "hit": "shop-detail-copy character-costume-detail-copy",
+        "reachable": true,
+        "z": "1",
+        "overflow": "visible",
+        "shadow": "none",
+        "grid": "242px",
+        "minHeight": "auto",
+        "padding": "0px"
+      }
+    ]
+  }
+]

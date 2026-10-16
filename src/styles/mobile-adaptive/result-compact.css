@@ -14,7 +14,6 @@
   gap: 16px !important;
   overflow: visible !important;
   text-align: left !important;
-  background: var(--bright-sheet) !important;
   border: 1px solid var(--bright-border) !important;
   border-radius: 10px !important;
   box-shadow: 5px 6px 0 color-mix(in srgb, var(--bright-ink) 25%, transparent) !important;

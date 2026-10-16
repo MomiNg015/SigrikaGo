@@ -82,7 +82,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.queryByText("点赞", { exact: false })).toBeNull();
     expect(screen.queryByText("加好友")).toBeNull();
     expect(screen.queryByText("举报")).toBeNull();
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬对弈", "标准对弈", "玩些别的"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "其它"]);
     expect([...document.querySelector(".resume-header-actions").children].map((element) => {
       if (element.matches(".achievement-entry-action")) return "成就";
       if (element.matches(".personalization-entry-action")) return "个性化";
@@ -127,12 +127,12 @@ describe("ResumeModal authoritative record stats", () => {
     );
 
     await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
-    fireEvent.click(screen.getByRole("tab", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("tab", { name: "标准" }));
     expect(screen.getByText("4段")).toBeTruthy();
     expect(screen.getByText("正在载入标准战绩，当前仍显示星炬。")).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "星炬对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getAllByRole("tab").every((tab) => tab.getAttribute("aria-disabled") === "true")).toBe(true);
-    fireEvent.click(screen.getByRole("tab", { name: "玩些别的" }));
+    fireEvent.click(screen.getByRole("tab", { name: "其它" }));
     expect(api).toHaveBeenCalledTimes(2);
 
     nextModeRequest.resolve({
@@ -146,7 +146,7 @@ describe("ResumeModal authoritative record stats", () => {
       }
     });
     await waitFor(() => expect(screen.getByText("5段")).toBeTruthy());
-    expect(screen.getByRole("tab", { name: "标准对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "标准" }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("keeps the selected mode and data aligned after failure, then retries explicitly", async () => {
@@ -179,11 +179,11 @@ describe("ResumeModal authoritative record stats", () => {
     );
 
     await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
-    fireEvent.click(screen.getByRole("tab", { name: "标准对弈" }));
+    fireEvent.click(screen.getByRole("tab", { name: "标准" }));
     failedRequest.reject(new Error("标准模式加载失败"));
 
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("标准模式加载失败"));
-    expect(screen.getByRole("tab", { name: "星炬对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "星炬" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText("4段")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "重新加载" }));
@@ -200,7 +200,7 @@ describe("ResumeModal authoritative record stats", () => {
     });
 
     await waitFor(() => expect(screen.getByText("6段")).toBeTruthy());
-    expect(screen.getByRole("tab", { name: "标准对弈" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "标准" }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("connects tabs to one panel and supports arrow-key mode selection", async () => {
@@ -228,11 +228,11 @@ describe("ResumeModal authoritative record stats", () => {
     );
 
     await waitFor(() => expect(screen.getByText("4段")).toBeTruthy());
-    const sparkTab = screen.getByRole("tab", { name: "星炬对弈" });
+    const sparkTab = screen.getByRole("tab", { name: "星炬" });
     const panel = screen.getByRole("tabpanel");
     expect(sparkTab.getAttribute("aria-controls")).toBe(panel.id);
     fireEvent.keyDown(sparkTab, { key: "ArrowRight" });
-    await waitFor(() => expect(screen.getByRole("tab", { name: "标准对弈" }).getAttribute("aria-selected")).toBe("true"));
+    await waitFor(() => expect(screen.getByRole("tab", { name: "标准" }).getAttribute("aria-selected")).toBe("true"));
   });
 });
 

@@ -111,14 +111,15 @@ export function CharacterMusicPreview({
     function dismissOnEscape(event) {
       if (event.key !== "Escape") return;
       event.preventDefault();
+      event.stopPropagation();
       setSheetOpen(false);
       titleTriggerRef.current?.focus();
     }
     document.addEventListener("pointerdown", dismissOnPointerDown, true);
-    document.addEventListener("keydown", dismissOnEscape);
+    document.addEventListener("keydown", dismissOnEscape, true);
     return () => {
       document.removeEventListener("pointerdown", dismissOnPointerDown, true);
-      document.removeEventListener("keydown", dismissOnEscape);
+      document.removeEventListener("keydown", dismissOnEscape, true);
     };
   }, [sheetOpen]);
 

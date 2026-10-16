@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import { CHARACTERS } from "../../shared/characters.js";
+import { PORTRAIT_VISIBLE_BOUNDS } from "../../shared/portraitVisibleBounds.js";
 
 describe("handbook strip pagination", () => {
   it("keeps rainbow Denia the same size and anchor as her default chibi on desktop and portrait phones", () => {
@@ -29,6 +30,26 @@ describe("handbook strip pagination", () => {
 });
 
 describe("handbook strip portrait framing", () => {
+  it("fits authored costume bodies to the same desktop baseline as defaults without equipment crop offsets", () => {
+    for (const [src, [width, height, , top, , visibleHeight]] of Object.entries(PORTRAIT_VISIBLE_BOUNDS)) {
+      if (!src.startsWith("/assets/costumes/")) continue;
+      const portrait = { src, isStandard: false, width: 900, height: 900, focal: [450, 450],
+        style: { scale: "1.2", translate: "8% -7%" } };
+      for (const frameHeight of [300, 460, 600]) {
+        const size = { width: 1100, height: frameHeight };
+        const style = handbookStripArtStyle(portrait, size, { mobile: false, count: 10 });
+        const scale = style.height / height;
+        expect(style.width / style.height).toBeCloseTo(width / height);
+        expect(style.top + top * scale).toBeCloseTo(frameHeight * .07);
+        expect(style.top + (top + visibleHeight) * scale).toBeCloseTo(frameHeight * .95);
+        expect(style.scale).toBeUndefined();
+        expect(style.translate).toBeUndefined();
+        expect(handbookStripArtStyle(portrait, size, { mobile: false, count: 10, expanded: true })).toEqual(style);
+      }
+      expect(handbookStripArtStyle(portrait, { width: 390, height: 844 }, { mobile: true, count: 10 }))
+        .toMatchObject(portrait.style);
+    }
+  });
   it("normalizes mobile chibi heads and fits desktop bodies on a common baseline without preview rescaling", () => {
     for (const character of Object.values(CHARACTERS)) {
       const chibi = resolveHandbookPortrait(character, { chibi: true });

@@ -1,0 +1,346 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "rect": {
+          "x": 390,
+          "y": 283,
+          "width": 660,
+          "height": 334,
+          "top": 283,
+          "right": 1050,
+          "bottom": 617,
+          "left": 390
+        },
+        "minHeight": "auto",
+        "height": "334px",
+        "overflow": "hidden auto"
+      },
+      {
+        "selector": ".character-costume-detail-art",
+        "rect": {
+          "x": 414,
+          "y": 307,
+          "width": 240,
+          "height": 286,
+          "top": 307,
+          "right": 654,
+          "bottom": 593,
+          "left": 414
+        },
+        "minHeight": "0px",
+        "height": "286px",
+        "overflow": "visible"
+      },
+      {
+        "selector": ".character-costume-detail-art > .portrait-showcase",
+        "rect": {
+          "x": 417,
+          "y": 310,
+          "width": 234,
+          "height": 280,
+          "top": 310,
+          "right": 651,
+          "bottom": 590,
+          "left": 417
+        },
+        "minHeight": "0px",
+        "height": "280px",
+        "overflow": "hidden"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "rect": {
+          "x": 676,
+          "y": 367.59375,
+          "width": 350,
+          "height": 164.796875,
+          "top": 367.59375,
+          "right": 1026,
+          "bottom": 532.390625,
+          "left": 676
+        },
+        "minHeight": "auto",
+        "height": "164.797px",
+        "overflow": "auto"
+      },
+      {
+        "selector": ".character-costume-detail-copy p",
+        "rect": {
+          "x": 676,
+          "y": 472.59375,
+          "width": 350,
+          "height": 59.796875,
+          "top": 472.59375,
+          "right": 1026,
+          "bottom": 532.390625,
+          "left": 676
+        },
+        "minHeight": "0px",
+        "height": "59.7969px",
+        "overflow": "visible"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 768,
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "rect": {
+          "x": 390,
+          "y": 217,
+          "width": 660,
+          "height": 334,
+          "top": 217,
+          "right": 1050,
+          "bottom": 551,
+          "left": 390
+        },
+        "minHeight": "auto",
+        "height": "334px",
+        "overflow": "hidden auto"
+      },
+      {
+        "selector": ".character-costume-detail-art",
+        "rect": {
+          "x": 414,
+          "y": 241,
+          "width": 240,
+          "height": 286,
+          "top": 241,
+          "right": 654,
+          "bottom": 527,
+          "left": 414
+        },
+        "minHeight": "0px",
+        "height": "286px",
+        "overflow": "visible"
+      },
+      {
+        "selector": ".character-costume-detail-art > .portrait-showcase",
+        "rect": {
+          "x": 417,
+          "y": 244,
+          "width": 234,
+          "height": 280,
+          "top": 244,
+          "right": 651,
+          "bottom": 524,
+          "left": 417
+        },
+        "minHeight": "0px",
+        "height": "280px",
+        "overflow": "hidden"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "rect": {
+          "x": 676,
+          "y": 301.59375,
+          "width": 350,
+          "height": 164.796875,
+          "top": 301.59375,
+          "right": 1026,
+          "bottom": 466.390625,
+          "left": 676
+        },
+        "minHeight": "auto",
+        "height": "164.797px",
+        "overflow": "auto"
+      },
+      {
+        "selector": ".character-costume-detail-copy p",
+        "rect": {
+          "x": 676,
+          "y": 406.59375,
+          "width": 350,
+          "height": 59.796875,
+          "top": 406.59375,
+          "right": 1026,
+          "bottom": 466.390625,
+          "left": 676
+        },
+        "minHeight": "0px",
+        "height": "59.7969px",
+        "overflow": "visible"
+      }
+    ]
+  },
+  {
+    "width": 1024,
+    "height": 600,
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "rect": {
+          "x": 182,
+          "y": 133,
+          "width": 660,
+          "height": 334,
+          "top": 133,
+          "right": 842,
+          "bottom": 467,
+          "left": 182
+        },
+        "minHeight": "auto",
+        "height": "334px",
+        "overflow": "hidden auto"
+      },
+      {
+        "selector": ".character-costume-detail-art",
+        "rect": {
+          "x": 206,
+          "y": 157,
+          "width": 240,
+          "height": 286,
+          "top": 157,
+          "right": 446,
+          "bottom": 443,
+          "left": 206
+        },
+        "minHeight": "0px",
+        "height": "286px",
+        "overflow": "visible"
+      },
+      {
+        "selector": ".character-costume-detail-art > .portrait-showcase",
+        "rect": {
+          "x": 209,
+          "y": 160,
+          "width": 234,
+          "height": 280,
+          "top": 160,
+          "right": 443,
+          "bottom": 440,
+          "left": 209
+        },
+        "minHeight": "0px",
+        "height": "280px",
+        "overflow": "hidden"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "rect": {
+          "x": 468,
+          "y": 220.09375,
+          "width": 350,
+          "height": 159.796875,
+          "top": 220.09375,
+          "right": 818,
+          "bottom": 379.890625,
+          "left": 468
+        },
+        "minHeight": "auto",
+        "height": "159.797px",
+        "overflow": "auto"
+      },
+      {
+        "selector": ".character-costume-detail-copy p",
+        "rect": {
+          "x": 468,
+          "y": 320.09375,
+          "width": 350,
+          "height": 59.796875,
+          "top": 320.09375,
+          "right": 818,
+          "bottom": 379.890625,
+          "left": 468
+        },
+        "minHeight": "0px",
+        "height": "59.7969px",
+        "overflow": "visible"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "elements": [
+      {
+        "selector": ".character-costume-detail",
+        "rect": {
+          "x": 10,
+          "y": 10,
+          "width": 368,
+          "height": 593.953125,
+          "top": 10,
+          "right": 378,
+          "bottom": 603.953125,
+          "left": 10
+        },
+        "minHeight": "auto",
+        "height": "593.953px",
+        "overflow": "hidden"
+      },
+      {
+        "selector": ".character-costume-detail-art",
+        "rect": {
+          "x": 38,
+          "y": 38,
+          "width": 312,
+          "height": 292.953125,
+          "top": 38,
+          "right": 350,
+          "bottom": 330.953125,
+          "left": 38
+        },
+        "minHeight": "260px",
+        "height": "292.953px",
+        "overflow": "visible"
+      },
+      {
+        "selector": ".character-costume-detail-art > .portrait-showcase",
+        "rect": {
+          "x": 41,
+          "y": 41,
+          "width": 306,
+          "height": 286.953125,
+          "top": 41,
+          "right": 347,
+          "bottom": 327.953125,
+          "left": 41
+        },
+        "minHeight": "0px",
+        "height": "286.953px",
+        "overflow": "hidden"
+      },
+      {
+        "selector": ".character-costume-detail-copy",
+        "rect": {
+          "x": 38,
+          "y": 352.953125,
+          "width": 312,
+          "height": 223,
+          "top": 352.953125,
+          "right": 350,
+          "bottom": 575.953125,
+          "left": 38
+        },
+        "minHeight": "auto",
+        "height": "223px",
+        "overflow": "visible"
+      },
+      {
+        "selector": ".character-costume-detail-copy p",
+        "rect": {
+          "x": 38,
+          "y": 443.953125,
+          "width": 312,
+          "height": 132,
+          "top": 443.953125,
+          "right": 350,
+          "bottom": 575.953125,
+          "left": 38
+        },
+        "minHeight": "132px",
+        "height": "132px",
+        "overflow": "visible"
+      }
+    ]
+  }
+]

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../../../src/styles.css";
 import HouseModal from "../../../src/modals/HouseModal.jsx";
@@ -7,6 +7,11 @@ const params = new URLSearchParams(location.search);
 const characters = characterListFromCatalog(CHARACTERS);
 const ownership = params.get("owned");
 const initialUser = { id: "handbook-fixture", selectedCharacter: "sigrika",
+  equippedCostumes: params.has("equipped") ? { sigrika: {
+    id: "sigrika-costume-01", portraitUrl: "/assets/costumes/portraits/sigrika-costume-01.webp",
+    portraitScalePercent: 120, portraitOffsetXPercent: 8, portraitOffsetYPercent: -7
+  } } : {},
+  ownedMusicIds: params.has("music") ? ["sigrika-skill-dream"] : [],
   ownedCharacters: ownership === "none" ? [] : ownership === "partial" ? ["sigrika", "denia", "aemeath", "lynae"] : characters.map(({ id }) => id),
   ownedDecorations: [], itemEffects: params.has("allCandy") ? { deniaRainbowGlow: true, sigrikaCandyDisabled: true, aemeathRainbowMove: true, lynaeContraryVoice: true } : params.has("candy") ? { deniaRainbowGlow: true } : {},
   sigrikaCandyArc: { corrupted: params.has("corrupt") } };
@@ -15,7 +20,7 @@ function Fixture() {
   const [open, setOpen] = useState(true);
   return <div className="app-shell player-theme-enabled theme-bright-school">
     {!open && <button type="button" onClick={() => setOpen(true)}>打开部员手册</button>}
-    {open && <HouseModal user={user} token={params.has("costumes") ? "fixture-token" : undefined} characterListView={characters} audioSettings={{ muted: true }} musicTracks={[]}
+    {open && <HouseModal user={user} token={params.has("costumes") ? "fixture-token" : undefined} characterListView={characters} audioSettings={{ muted: true }} musicTracks={params.has("music") ? undefined : []}
       onClose={() => setOpen(false)} onUserChange={setUser} onApplyDecoration={async () => {}} />}
   </div>;
 }

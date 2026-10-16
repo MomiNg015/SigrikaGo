@@ -1,3 +1,4 @@
+import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useRef, useState } from "react";
@@ -241,7 +242,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   }
 
   return (
-    <div className="profile-folder-tabs" role="tablist" aria-label="玩法分类">
+    <WindowBookmarkTabs className="profile-folder-tabs" aria-label="玩法分类">
       {tabs.map((entry, index) => (
         <button
           key={entry.id}
@@ -257,10 +258,10 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
           onClick={() => { if (!pending) onModeChange?.(entry.id); }}
           onKeyDown={(event) => handleKeyDown(event, index)}
         >
-          {entry.id === "gomoku" ? "玩些别的" : entry.title}
+          {entry.id === "spark" ? "星炬" : entry.id === "standard" ? "标准" : "其它"}
         </button>
       ))}
-    </div>
+    </WindowBookmarkTabs>
   );
 }
 

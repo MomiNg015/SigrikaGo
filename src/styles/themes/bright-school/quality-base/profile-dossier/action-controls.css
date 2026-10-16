@@ -2,7 +2,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-dossier-modal :is(
   .resume-header-actions,
   .profile-modal-header,
-  .profile-identity-actions,
+  .profile-resume-view-self .profile-identity-actions,
   .profile-section-heading,
   .profile-secondary-actions,
   .profile-mode-feedback
