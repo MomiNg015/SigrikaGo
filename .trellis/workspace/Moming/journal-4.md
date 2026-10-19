@@ -666,3 +666,36 @@ Centered mobile identity with desktop spacing, improved profile readability, and
 ### Next Steps
 
 - None - task complete
+
+
+## Session 201: Aemeath voyage lightblade and music sample
+
+**Date**: 2026-10-19
+**Task**: Aemeath voyage lightblade and music sample
+**Branch**: `master`
+
+### Summary
+
+Added isolated Canvas impact sample with abstract colossal lightblade, fractures, rubble and dust. Reuses original SkillBanner, transformation, voyage BGM and voice; AudioContext sync with timing controls. Exported voiced MP4 and desktop/mobile screenshots. Lint, 118 focused tests, desktop/320/390 browser checks passed; full suite interrupted by worker IPC error. System design and skill-cut-in spec updated.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `34e96007` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
