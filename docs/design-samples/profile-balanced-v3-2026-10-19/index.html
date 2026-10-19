@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>履历窗口 · 三版折中设计</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./studio.css"></head>
+<body>
+<header class="studio-header"><div><p>SigrikaGo · 履历 / 详细资料</p><h1>保留布局，回到校园。</h1><p>三版使用相同的现有内容，以配色比例、身份位置和战绩排列作比较。</p></div><a href="./README.md" target="_blank" rel="noopener">设计说明 ↗</a></header>
+<nav class="design-picker" aria-label="设计方案">
+  <button data-design="mint" aria-pressed="true"><small>角色优先</small><strong>薄荷档案</strong><span>浅薄荷立绘区 + 暖纸战绩</span></button>
+  <button data-design="ink" aria-pressed="false"><small>主次分明</small><strong>墨纸分栏</strong><span>小面积深墨身份 + 大面积暖纸</span></button>
+  <button data-design="blue" aria-pressed="false"><small>紧凑易读</small><strong>晴蓝名片</strong><span>浅蓝身份横栏 + 紧凑角色记录</span></button>
+</nav>
+<div class="preview-toolbar"><p id="description">保留左侧角色、右侧资料的构图，用薄荷方格与暖纸承接现有 Q 版形象。</p><div class="preview-actions"><div class="viewport-picker" aria-label="预览尺寸"><button data-viewport="desktop" aria-pressed="true">桌面</button><button data-viewport="mobile" aria-pressed="false">手机 390</button><button data-viewport="narrow" aria-pressed="false">窄屏 320</button></div><a id="open-sample" href="./mint.html" target="_blank" rel="noopener">单独打开 ↗</a></div></div>
+<main class="preview-stage"><div class="frame-wrap" data-viewport="desktop"><iframe title="薄荷档案交互样板" src="./mint.html"></iframe></div></main>
+<footer><span>原有左侧书签 · 当前角色资源 · 可切换本人 / 他人及空战绩 / 长用户名</span><span>本地示例数据，正式窗口尚未替换。</span></footer>
+<script type="module" src="./studio.js"></script>
+</body></html>

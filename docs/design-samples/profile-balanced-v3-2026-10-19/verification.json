@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-19",
+  "checks": [
+    {
+      "design": "mint",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 43,
+        "right": 155,
+        "canvas": 158,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "mint",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "mint",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "mint",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "ink",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 43,
+        "right": 155,
+        "canvas": 158,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "ink",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "ink",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "ink",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "blue",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 43,
+        "right": 155,
+        "canvas": 158,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "blue",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "blue",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "blue",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    }
+  ],
+  "errors": [],
+  "comparison": "passed"
+}

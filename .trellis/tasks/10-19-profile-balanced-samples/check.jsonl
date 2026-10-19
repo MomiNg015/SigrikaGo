@@ -1,0 +1,4 @@
+{"file": "DESIGN.md", "reason": "Use current school materials and semantic colors, not literal reference palette."}
+{"file": ".trellis/spec/frontend/identity-bust-contract.md", "reason": "Production appearance resolver and current Q sources only."}
+{"file": ".trellis/spec/backend/profile-folder-contract.md", "reason": "Existing profile fields/play branches only."}
+{"file": ".trellis/spec/frontend/button-colors.md", "reason": "Retain semantic action and state colors."}
