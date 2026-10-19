@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-19",
+  "checks": [
+    {
+      "design": "arknights",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 36,
+        "right": 148,
+        "canvas": 151,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "arknights",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "arknights",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "arknights",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "endfield",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 36,
+        "right": 148,
+        "canvas": 151,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "endfield",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "endfield",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "endfield",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "hybrid",
+      "viewport": "1440x900",
+      "result": "passed",
+      "bookmarks": {
+        "left": 36,
+        "right": 148,
+        "canvas": 151,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "horizontal-tb",
+        "cards": 4
+      }
+    },
+    {
+      "design": "hybrid",
+      "viewport": "768x1024",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "hybrid",
+      "viewport": "390x844",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    },
+    {
+      "design": "hybrid",
+      "viewport": "320x568",
+      "result": "passed",
+      "bookmarks": {
+        "left": 3,
+        "right": 61,
+        "canvas": 64,
+        "labels": [
+          "星炬",
+          "标准",
+          "其它"
+        ],
+        "vertical": true,
+        "writing": "vertical-rl",
+        "cards": 4
+      }
+    }
+  ],
+  "errors": [],
+  "comparison": "passed"
+}

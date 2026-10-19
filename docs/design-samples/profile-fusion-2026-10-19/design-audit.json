@@ -1,0 +1,921 @@
+[
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7e1d5 is outside DESIGN.md colors",
+    "ignoreValue": "#e7e1d5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #9c948114 is outside DESIGN.md colors",
+    "ignoreValue": "#9c948114"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #edeedf is outside DESIGN.md colors",
+    "ignoreValue": "#edeedf"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #b9bdac is outside DESIGN.md colors",
+    "ignoreValue": "#b9bdac"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7c4bdbf is outside DESIGN.md colors",
+    "ignoreValue": "#e7c4bdbf"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #bcc1ac is outside DESIGN.md colors",
+    "ignoreValue": "#bcc1ac"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #aaa990 is outside DESIGN.md colors",
+    "ignoreValue": "#aaa990"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7ebdc88 is outside DESIGN.md colors",
+    "ignoreValue": "#e7ebdc88"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #8e7940 is outside DESIGN.md colors",
+    "ignoreValue": "#8e7940"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #a77c3d is outside DESIGN.md colors",
+    "ignoreValue": "#a77c3d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #cfb5ae is outside DESIGN.md colors",
+    "ignoreValue": "#cfb5ae"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "Undocumented color #5e7350 is outside DESIGN.md colors",
+    "ignoreValue": "#5e7350"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/archive.css",
+    "line": 1,
+    "snippet": "border-radius: 3px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "3px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #e4e1d9 is outside DESIGN.md colors",
+    "ignoreValue": "#e4e1d9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #c9c4ba is outside DESIGN.md colors",
+    "ignoreValue": "#c9c4ba"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #5c5852 is outside DESIGN.md colors",
+    "ignoreValue": "#5c5852"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #b9b4a9 is outside DESIGN.md colors",
+    "ignoreValue": "#b9b4a9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #51433312 is outside DESIGN.md colors",
+    "ignoreValue": "#51433312"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #cdddc7 is outside DESIGN.md colors",
+    "ignoreValue": "#cdddc7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #a2aa9533 is outside DESIGN.md colors",
+    "ignoreValue": "#a2aa9533"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #b4b0a5 is outside DESIGN.md colors",
+    "ignoreValue": "#b4b0a5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #cec9b9 is outside DESIGN.md colors",
+    "ignoreValue": "#cec9b9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #a77c3d is outside DESIGN.md colors",
+    "ignoreValue": "#a77c3d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #fff8e9 is outside DESIGN.md colors",
+    "ignoreValue": "#fff8e9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #82786b is outside DESIGN.md colors",
+    "ignoreValue": "#82786b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 4,
+    "snippet": "Undocumented color #dce8d4 is outside DESIGN.md colors",
+    "ignoreValue": "#dce8d4"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 5,
+    "snippet": "Undocumented color #1b231f8c is outside DESIGN.md colors",
+    "ignoreValue": "#1b231f8c"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 5,
+    "snippet": "Undocumented color #303d32 is outside DESIGN.md colors",
+    "ignoreValue": "#303d32"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/common.css",
+    "line": 7,
+    "snippet": "Undocumented color #51433312 is outside DESIGN.md colors",
+    "ignoreValue": "#51433312"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/data.js",
+    "line": 3,
+    "snippet": "Undocumented color #c9e3c8 is outside DESIGN.md colors",
+    "ignoreValue": "#c9e3c8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/data.js",
+    "line": 4,
+    "snippet": "Undocumented color #f4c4d6 is outside DESIGN.md colors",
+    "ignoreValue": "#f4c4d6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/data.js",
+    "line": 5,
+    "snippet": "Undocumented color #c6d9df is outside DESIGN.md colors",
+    "ignoreValue": "#c6d9df"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/data.js",
+    "line": 6,
+    "snippet": "Undocumented color #ddcdf0 is outside DESIGN.md colors",
+    "ignoreValue": "#ddcdf0"
+  },
+  {
+    "antipattern": "numbered-section-markers",
+    "name": "Numbered section markers (01 / 02 / 03)",
+    "description": "Numbered display markers as section labels (01, 02, 03) are the AI editorial scaffold one tier deeper than tracked eyebrow chips. If you find yourself reaching for them, choose a different section cadence.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/index.html",
+    "line": 0,
+    "snippet": "Sequence: 01, 02, 03"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e6d9d0 is outside DESIGN.md colors",
+    "ignoreValue": "#e6d9d0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #816b63 is outside DESIGN.md colors",
+    "ignoreValue": "#816b63"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #674d40 is outside DESIGN.md colors",
+    "ignoreValue": "#674d40"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #6e4c3b33 is outside DESIGN.md colors",
+    "ignoreValue": "#6e4c3b33"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #faeedf is outside DESIGN.md colors",
+    "ignoreValue": "#faeedf"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7b7ae is outside DESIGN.md colors",
+    "ignoreValue": "#e7b7ae"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #ead8b742 is outside DESIGN.md colors",
+    "ignoreValue": "#ead8b742"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #dba4a04d is outside DESIGN.md colors",
+    "ignoreValue": "#dba4a04d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #f5e6cb88 is outside DESIGN.md colors",
+    "ignoreValue": "#f5e6cb88"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #fff6dc7d is outside DESIGN.md colors",
+    "ignoreValue": "#fff6dc7d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #6e4c3b is outside DESIGN.md colors",
+    "ignoreValue": "#6e4c3b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #fff7e9 is outside DESIGN.md colors",
+    "ignoreValue": "#fff7e9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #a98470 is outside DESIGN.md colors",
+    "ignoreValue": "#a98470"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e3edce is outside DESIGN.md colors",
+    "ignoreValue": "#e3edce"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7f0ee is outside DESIGN.md colors",
+    "ignoreValue": "#e7f0ee"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #a8876c19 is outside DESIGN.md colors",
+    "ignoreValue": "#a8876c19"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #ac8c6b44 is outside DESIGN.md colors",
+    "ignoreValue": "#ac8c6b44"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #baa48744 is outside DESIGN.md colors",
+    "ignoreValue": "#baa48744"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #d58d84 is outside DESIGN.md colors",
+    "ignoreValue": "#d58d84"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e1b4a9 is outside DESIGN.md colors",
+    "ignoreValue": "#e1b4a9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #b48a48 is outside DESIGN.md colors",
+    "ignoreValue": "#b48a48"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #dce8d8 is outside DESIGN.md colors",
+    "ignoreValue": "#dce8d8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #e7e2d8 is outside DESIGN.md colors",
+    "ignoreValue": "#e7e2d8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #dfd5c7 is outside DESIGN.md colors",
+    "ignoreValue": "#dfd5c7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #b57a68 is outside DESIGN.md colors",
+    "ignoreValue": "#b57a68"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "Undocumented color #876d61 is outside DESIGN.md colors",
+    "ignoreValue": "#876d61"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "border-radius: 9px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 1,
+    "snippet": "border-radius: 3px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "3px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/portrait.css",
+    "line": 3,
+    "snippet": "border-radius: 5px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "5px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #22372c12 is outside DESIGN.md colors",
+    "ignoreValue": "#22372c12"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #252e29 is outside DESIGN.md colors",
+    "ignoreValue": "#252e29"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #eef0e6 is outside DESIGN.md colors",
+    "ignoreValue": "#eef0e6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #bdc5b6 is outside DESIGN.md colors",
+    "ignoreValue": "#bdc5b6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #303c33 is outside DESIGN.md colors",
+    "ignoreValue": "#303c33"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #f3f4e8 is outside DESIGN.md colors",
+    "ignoreValue": "#f3f4e8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #d4e796 is outside DESIGN.md colors",
+    "ignoreValue": "#d4e796"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #dce3d0 is outside DESIGN.md colors",
+    "ignoreValue": "#dce3d0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #b6c3a0 is outside DESIGN.md colors",
+    "ignoreValue": "#b6c3a0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #d5dfc9 is outside DESIGN.md colors",
+    "ignoreValue": "#d5dfc9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #aebea8 is outside DESIGN.md colors",
+    "ignoreValue": "#aebea8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #293b2b is outside DESIGN.md colors",
+    "ignoreValue": "#293b2b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #7c857b is outside DESIGN.md colors",
+    "ignoreValue": "#7c857b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #253d2b is outside DESIGN.md colors",
+    "ignoreValue": "#253d2b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #f5f5ef is outside DESIGN.md colors",
+    "ignoreValue": "#f5f5ef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #c1c9bc is outside DESIGN.md colors",
+    "ignoreValue": "#c1c9bc"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #657c3b22 is outside DESIGN.md colors",
+    "ignoreValue": "#657c3b22"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #9aab75 is outside DESIGN.md colors",
+    "ignoreValue": "#9aab75"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #344b2c is outside DESIGN.md colors",
+    "ignoreValue": "#344b2c"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #dde4d8 is outside DESIGN.md colors",
+    "ignoreValue": "#dde4d8"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #355e49 is outside DESIGN.md colors",
+    "ignoreValue": "#355e49"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #eadbd6 is outside DESIGN.md colors",
+    "ignoreValue": "#eadbd6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #8d5951 is outside DESIGN.md colors",
+    "ignoreValue": "#8d5951"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #dfdfd5 is outside DESIGN.md colors",
+    "ignoreValue": "#dfdfd5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #b9c4b6 is outside DESIGN.md colors",
+    "ignoreValue": "#b9c4b6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #f1f3ec is outside DESIGN.md colors",
+    "ignoreValue": "#f1f3ec"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #c5cebd is outside DESIGN.md colors",
+    "ignoreValue": "#c5cebd"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 1,
+    "snippet": "Undocumented color #f4f5ee is outside DESIGN.md colors",
+    "ignoreValue": "#f4f5ee"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "docs/design-samples/profile-fusion-2026-10-19/terminal.css",
+    "line": 3,
+    "snippet": "Undocumented color #638848 is outside DESIGN.md colors",
+    "ignoreValue": "#638848"
+  }
+]

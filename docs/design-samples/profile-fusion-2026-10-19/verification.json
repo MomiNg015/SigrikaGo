@@ -1,0 +1,307 @@
+{
+  "checks": [
+    {
+      "direction": "archive",
+      "width": 1440,
+      "height": 900,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 188,
+          "y": 223.5,
+          "width": 246,
+          "height": 306,
+          "top": 223.5,
+          "right": 434,
+          "bottom": 529.5,
+          "left": 188
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "archive",
+      "width": 768,
+      "height": 1024,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 41,
+          "y": 211.5,
+          "width": 213,
+          "height": 270,
+          "top": 211.5,
+          "right": 254,
+          "bottom": 481.5,
+          "left": 41
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "archive",
+      "width": 390,
+      "height": 844,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 35,
+          "y": 231.75,
+          "width": 104,
+          "height": 126,
+          "top": 231.75,
+          "right": 139,
+          "bottom": 357.75,
+          "left": 35
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "archive",
+      "width": 320,
+      "height": 568,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 25,
+          "y": 225.75,
+          "width": 89,
+          "height": 126,
+          "top": 225.75,
+          "right": 114,
+          "bottom": 351.75,
+          "left": 25
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "terminal",
+      "width": 1440,
+      "height": 900,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 169,
+          "y": 156,
+          "width": 80,
+          "height": 80,
+          "top": 156,
+          "right": 249,
+          "bottom": 236,
+          "left": 169
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "terminal",
+      "width": 768,
+      "height": 1024,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 41,
+          "y": 144,
+          "width": 80,
+          "height": 80,
+          "top": 144,
+          "right": 121,
+          "bottom": 224,
+          "left": 41
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "terminal",
+      "width": 390,
+      "height": 844,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 26,
+          "y": 164,
+          "width": 68,
+          "height": 70,
+          "top": 164,
+          "right": 94,
+          "bottom": 234,
+          "left": 26
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "terminal",
+      "width": 320,
+      "height": 568,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 26,
+          "y": 164,
+          "width": 68,
+          "height": 70,
+          "top": 164,
+          "right": 94,
+          "bottom": 234,
+          "left": 26
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "portrait",
+      "width": 1440,
+      "height": 900,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 136,
+          "y": 185,
+          "width": 490.546875,
+          "height": 408,
+          "top": 185,
+          "right": 626.546875,
+          "bottom": 593,
+          "left": 136
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "portrait",
+      "width": 768,
+      "height": 1024,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 9,
+          "y": 191,
+          "width": 268.1875,
+          "height": 460,
+          "top": 191,
+          "right": 277.1875,
+          "bottom": 651,
+          "left": 9
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "portrait",
+      "width": 390,
+      "height": 844,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 150.59375,
+          "y": 179,
+          "width": 235.40625,
+          "height": 282.59375,
+          "top": 179,
+          "right": 386,
+          "bottom": 461.59375,
+          "left": 150.59375
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    },
+    {
+      "direction": "portrait",
+      "width": 320,
+      "height": 568,
+      "geometry": {
+        "overflow": false,
+        "images": true,
+        "rows": 4,
+        "hero": {
+          "x": 115,
+          "y": 193,
+          "width": 209,
+          "height": 270,
+          "top": 193,
+          "right": 324,
+          "bottom": 463,
+          "left": 115
+        }
+      },
+      "longGeometry": {
+        "overflow": false,
+        "intersects": false
+      },
+      "interactions": "passed"
+    }
+  ],
+  "errors": [],
+  "picker": "passed",
+  "reducedMotion": "passed"
+}

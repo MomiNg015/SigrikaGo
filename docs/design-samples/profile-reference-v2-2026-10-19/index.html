@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>履历窗口 · 参考图重设计</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./studio.css"></head>
+<body><header class="studio-header"><div><p>SIGRIKA GO / PROFILE STUDIES</p><h1>依照参考图，重新设计。</h1></div><a href="./README.md" target="_blank">设计说明 ↗</a></header>
+<nav class="design-picker" aria-label="设计方案"><button data-design="arknights" aria-pressed="true"><small>01 / ARKNIGHTS</small><strong>方舟档案</strong><span>大立绘 · 青色标记 · 深色资料块</span></button><button data-design="endfield" aria-pressed="false"><small>02 / ENDFIELD</small><strong>终末地名片</strong><span>上深下浅 · 成就陈列 · 横排角色</span></button><button data-design="hybrid" aria-pressed="false"><small>03 / FUSION</small><strong>融合档案</strong><span>贯穿立绘 · 明暗分界 · 双层资料</span></button></nav>
+<div class="preview-toolbar"><p id="description">对应第一张参考：左侧贯穿大立绘，右侧身份卡、签名和角色资料。</p><div class="preview-actions"><div class="viewport-picker" aria-label="预览尺寸"><button data-viewport="desktop" aria-pressed="true">桌面</button><button data-viewport="mobile" aria-pressed="false">手机 390</button><button data-viewport="narrow" aria-pressed="false">窄屏 320</button></div><button id="show-reference" aria-expanded="false" aria-controls="reference-panel">对照原图</button><a id="open-sample" href="./arknights.html" target="_blank">单独打开 ↗</a></div></div>
+<section id="reference-panel" hidden aria-label="用户提供的参考图"><figure><img src="./references/arknights.png" alt="用户提供的明日方舟个人信息参考：左侧大立绘，右侧黑色身份和助战模块"><figcaption>参考 1 · 明日方舟 / 用户提供</figcaption></figure><figure><img src="./references/endfield.png" alt="用户提供的终末地个人信息参考：上深下浅，左侧身份，右侧成就和干员展示"><figcaption>参考 2 · 明日方舟：终末地 / 用户提供</figcaption></figure></section>
+<main class="preview-stage"><div class="frame-wrap" data-viewport="desktop"><iframe title="方舟档案交互样板" src="./arknights.html"></iframe></div></main>
+<footer class="studio-footer"><span>三版共用项目原有左侧书签；手机仍保留左侧竖排。</span><span>本地交互样板 · 示例数据 · 尚未替换正式窗口</span></footer>
+<script type="module" src="./studio.js"></script></body></html>
