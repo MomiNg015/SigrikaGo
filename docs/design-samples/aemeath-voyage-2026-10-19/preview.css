@@ -1,0 +1,47 @@
+/* Isolated sample chrome. Production cut-in owners stay untouched. */
+html,body,#root { margin:0; min-height:100%; }
+body { background:#17151e; }
+.voyage-lab { --ink:#eee8e5; --muted:#aaa3b2; --line:#403947; --accent:#d6bddf; color:var(--ink); min-height:100dvh; padding:30px 36px; font-family:"Microsoft YaHei",sans-serif; background:#17151e; box-sizing:border-box; }
+.voyage-lab * { box-sizing:border-box; }
+.lab-header { max-width:1600px; margin:0 auto 26px; display:flex; justify-content:space-between; align-items:end; gap:20px; }
+.eyebrow { font-size:10px; letter-spacing:.24em; color:#b1a7ba; }
+.lab-header h1 { margin:9px 0 0; font-size:34px; line-height:1.2; font-weight:500; letter-spacing:.06em; color:var(--ink); }
+.lab-header h1 span { display:inline-block; margin-left:20px; font-size:16px; color:var(--muted); letter-spacing:.1em; }
+.lab-header a { color:var(--muted); font-size:12px; text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:4px; }
+.lab-layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:32px; max-width:1600px; margin:auto; align-items:start; }
+.stage-column { min-width:0; position:sticky; top:22px; }
+.scene-wrap { position:relative; background:#12121c; border:1px solid #3e3745; overflow:hidden; }
+.scene-wrap canvas { display:block; width:100%; height:min(65vh,760px); min-height:380px; }
+.stage-top,.stage-bottom { position:absolute; left:24px; right:24px; display:flex; justify-content:space-between; gap:12px; pointer-events:none; font-size:11px; letter-spacing:.08em; color:#c6bdcf; }
+.stage-top { top:21px; }.stage-bottom { bottom:20px; color:#a59cb4; }
+.playback { display:flex; flex-wrap:wrap; gap:10px; margin-top:17px; }
+.voyage-lab button { border:1px solid #53465b; border-radius:3px; min-height:40px; padding:9px 13px; background:#24202c; color:#ddd4e5; font:inherit; font-size:12px; cursor:pointer; box-shadow:none; transform:none; }
+.voyage-lab button:hover:not(:disabled) { background:#37303e; border-color:#9b83a7; }
+.voyage-lab button:focus-visible,.voyage-lab input:focus-visible,.voyage-lab select:focus-visible { outline:2px solid #e1c5f1; outline-offset:4px; }
+.voyage-lab button:disabled { cursor:default; opacity:.4; }
+.voyage-lab button.play-primary { background:#d8c4dd; color:#241c2c; border-color:#d8c4dd; font-weight:700; }
+.voyage-lab button.play-primary:hover:not(:disabled){background:#e9d8ec;}
+.timeline { display:flex; align-items:center; gap:14px; font-size:11px; color:var(--muted); margin-top:15px; }
+.timeline label,.timeline span { white-space:nowrap; }
+.voyage-lab input[type=range] { appearance:auto; width:100%; height:24px; padding:0; margin:3px 0 8px; accent-color:#bba2d0; background:transparent; border:0; }
+.transport-status { font-size:11px; color:var(--muted); line-height:1.7; min-height:36px; margin:8px 0 0; }
+.director-controls h2 { color:var(--ink); font-size:20px; font-weight:500; margin:2px 0 12px; }
+.intro { color:var(--muted); font-size:12px; line-height:1.9; margin:0 0 24px; }
+.director-controls fieldset { border:0; border-top:1px solid var(--line); margin:0 0 23px; padding:16px 0 0; min-width:0; }
+.director-controls legend { font-size:11px; letter-spacing:.1em; padding:0 10px 0 0; color:#b5a5be; }
+.presets { display:grid; gap:7px; }.voyage-lab .presets button { text-align:left; border-color:transparent; background:#211d28; padding:12px; }
+.presets strong { display:block; font-size:13px; font-weight:500; }.presets small { display:block; font-size:10px; color:#a99bb3; margin-top:6px; }
+.voyage-lab .presets button[aria-pressed=true] { border-color:#baa1c5; background:#342a3e; }
+.range-label { display:flex; justify-content:space-between; font-size:12px; color:#c6bacf; }.range-label output { font-variant-numeric:tabular-nums; color:#f2e2fc; }
+.nudge { display:flex; gap:8px; margin:0 0 19px; }.voyage-lab .nudge button { flex:1; min-height:32px; padding:6px; font-size:11px; }
+.field-note,.footnote { font-size:10px; line-height:1.9; color:#9d91a6; margin:5px 0 13px; }
+.select-row { display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; margin-top:12px; color:#c6bacf; }
+.voyage-lab select { min-height:34px; border:1px solid #55485e; border-radius:3px; background:#24202c; color:#d8cadf; padding:4px 8px; width:auto; font:inherit; }
+.checks { display:grid; grid-template-columns:1fr 1fr; gap:12px 8px; margin:10px 0 19px; }
+.checks label { display:flex; align-items:center; gap:5px; color:#c6bacf; font-size:11px; }
+.checks input { appearance:auto; width:14px; height:14px; accent-color:#b8a0c7; margin:0; }
+.voyage-lab > .app-shell { min-height:0; }
+.voyage-lab[data-reduced=true] .skill-cutin-scene * { animation:none; }
+.voyage-lab[data-reduced=true] .skill-cutin-sweep { display:none; }
+@media (max-width:900px) { .voyage-lab { padding:22px 18px; }.lab-layout {grid-template-columns:1fr;gap:25px;}.stage-column {position:static;}.director-controls {display:grid;grid-template-columns:1fr 1fr;gap:0 22px;}.director-controls h2,.director-controls .intro,.director-controls .footnote {grid-column:1/-1;}.lab-header h1{font-size:28px;} }
+@media (max-width:520px) { .voyage-lab{padding:20px 12px;}.lab-header{align-items:start;margin-bottom:18px;gap:8px;}.lab-header h1{font-size:27px;}.lab-header h1 span{display:block;margin:8px 0 0;font-size:12px;}.lab-header a{font-size:10px;}.scene-wrap canvas{aspect-ratio:1000 / 1000;height:auto;min-height:0;}.stage-top,.stage-bottom{left:14px;right:14px;font-size:9px;}.stage-top{top:14px;}.stage-bottom{bottom:14px;}.playback{gap:8px;}.voyage-lab button{min-height:44px;}.playback .play-primary{width:100%;}.playback >button:not(.play-primary){flex:1;}.director-controls{display:block;}.checks label{min-height:32px;}.transport-status{font-size:10px;} }

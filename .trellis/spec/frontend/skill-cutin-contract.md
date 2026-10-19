@@ -43,3 +43,8 @@ SSR covers nine current full-body sprites, authored/costume/candy precedence, sn
 - Good: enabled Aemeath + voyage-star -> banner 3200, board 1800, resolution 4136. Disabled -> banner/resolution 2000. Hidden-hand -> ordinary timing. Denia remains unchanged.
 - Bad: extending CSS alone lets the server or tutorial remove the scene early; omitting effectType extends the wrong skill or misses the transformation.
 - Tests: cover server lifecycle resolution, tutorial first/second skill metadata, same-ID preservation, cancellation, reduced motion, visible scene pixels without a blackout at swap, desktop/portrait continuous playback. Inspect real recorded frames; paused CSS keyframes can hide compositor bugs.
+
+### Isolated skill audio/impact prototypes
+- Retained design samples live in `docs/design-samples/` and must explicitly distinguish exploratory timing from the authoritative contract above. Reuse `SkillBanner`, shared duration constants, music-library track IDs and system-voice resolvers rather than copying assets or maintaining duplicate mappings.
+- When a sample owns a shared AudioContext timeline, mute the banner's internal audio to avoid duplicate voice. Stop old sources on replay/seek/unmount and invalidate pending decode/resume work on cancellation. The voyage track is `aemeath-voyage-star-default` (intro then loop), not the ordinary Aemeath track.
+- Keep the original banner at 1x if it still uses wall-clock timers; seeking/slow playback starts at the board segment. Check repeated playback, paused seeking, original transformation, portrait overflow and reduced motion. A longer sample must not silently extend live server/tutorial timing.
