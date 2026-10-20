@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 202
-- **Last Active**: 2026-10-19
+- **Total Sessions**: 203
+- **Last Active**: 2026-10-20
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~734 | Active |
+| `journal-4.md` | ~767 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 203 | 2026-10-20 | Balanced profile samples | `6e16d6b2` | `master` |
 | 202 | 2026-10-19 | Reference-based profile samples with current artwork | `d2602a13` | `master` |
 | 201 | 2026-10-19 | Aemeath voyage lightblade and music sample | `34e96007` | `master` |
 | 200 | 2026-10-15 | 整合界面与对局修复到 master | `dbd7e6af` | `master` |
