@@ -1,0 +1,24 @@
+[
+  {
+    "width": 1440,
+    "titleCount": 0,
+    "text": "设置已保存，可以继续对弈啦。",
+    "bodyMargin": "0px",
+    "font": "\"Sigrika Window Title\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"PingFang SC\", system-ui, sans-serif",
+    "left": 12,
+    "right": 372,
+    "height": 70,
+    "viewport": 1440
+  },
+  {
+    "width": 320,
+    "titleCount": 0,
+    "text": "本机陪练引擎加载失败，请检查网络后重试，或使用新版浏览器。",
+    "bodyMargin": "0px",
+    "font": "\"Sigrika Window Title\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"PingFang SC\", system-ui, sans-serif",
+    "left": 12,
+    "right": 308,
+    "height": 108,
+    "viewport": 320
+  }
+]
