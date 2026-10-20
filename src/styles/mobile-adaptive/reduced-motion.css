@@ -1,8 +1,8 @@
 /* Reduced-motion mobile safety rules. */
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *:not(.toast):not(.toast-lifetime > span),
+  *:not(.toast):not(.toast-lifetime > span)::before,
+  *:not(.toast):not(.toast-lifetime > span)::after {
     scroll-behavior: auto !important;
     transition-duration: 1ms !important;
     animation-duration: 1ms !important;

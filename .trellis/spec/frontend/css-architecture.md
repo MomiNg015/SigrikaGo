@@ -184,6 +184,10 @@ Do not migrate or restyle these surfaces unless the task explicitly targets them
 
 ### Lifecycle And Informative Motion Exceptions
 
+The selected global toast is the upper-left paper drawer owned by `commerce/warehouse-toast/toast-stack.css`. Both its title and body use `--font-window-title` (existing LXGW Marker Gothic). Component-specific rules must beat the repeated Bright School generic text and button selectors; verify the computed font, semantic icon color and transparent borderless close control with the complete stylesheet. Keep `showToast(message, tone)` and the five-item newest-first queue intact. The default hold is 2600ms, then a 400ms leftward exit. Hover and keyboard focus preserve the remaining hold time; manual dismiss and unmount must not duplicate or leak callbacks. `FeedbackModals.dom.test.jsx` covers callback replacement, Strict Mode, overlapping pause reasons, manual dismissal and removal cleanup. Portrait 320/390px must wrap long copy without horizontal page overflow.
+
+Exclude `.toast-lifetime > span` as well as `.toast` from the blanket reduced-motion selectors in the shared theme effect owner, the Bright School mobile motion owner and final `mobile-adaptive/reduced-motion.css`. Desktop coverage alone misses both portrait resets. Its linear `scaleX()` animation remains an informative duration indicator; translation is removed from the toast itself. Do not add a fade-to-zero lifetime keyframe that hides the message before React starts its exit phase.
+
 The Bright School blanket reduced-motion owner must not force lifecycle-managed feedback or informative countdown progress to its final state after 1ms. Exclude the exact element from the blanket selector, then give the component a scoped fallback: toasts keep their authored lifetime and use an opacity-only exit transition, while timed request progress keeps its server-derived linear duration and uses left-origin `scaleX()` instead of width.
 
 ```css

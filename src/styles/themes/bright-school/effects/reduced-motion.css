@@ -1,7 +1,7 @@
 @media (prefers-reduced-motion: reduce) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.room-request-toast-progress span),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.room-request-toast-progress span)::before,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.room-request-toast-progress span)::after {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.toast-lifetime > span):not(.room-request-toast-progress span),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.toast-lifetime > span):not(.room-request-toast-progress span)::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *:not(.toast):not(.toast-lifetime > span):not(.room-request-toast-progress span)::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;

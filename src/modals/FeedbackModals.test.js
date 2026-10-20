@@ -57,32 +57,32 @@ describe("FeedbackModals helpers", () => {
     expect(ordinaryMarkup).not.toContain("sigrika-duel-modal-atmosphere");
   });
 
-  it("keeps toast styling focused on general notices and success feedback", () => {
+  it("uses the selected paper drawer, LXGW font and horizontal motion for every tone", () => {
     const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const source = readFileSync(new URL("./FeedbackModals.jsx", import.meta.url), "utf8");
     const reducedMotionCss = readFileSync(
       new URL("../styles/themes/bright-school/effects/reduced-motion.css", import.meta.url),
       "utf8"
     );
-    const successBlock = css.match(/\.toast\.success\s*\{[^}]+\}/)?.[0] ?? "";
-    const mailBlock = css.match(/\.toast\.mail\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(successBlock).toContain("background: linear-gradient(135deg, #48b978, #23985f)");
-    expect(mailBlock).toContain("background: linear-gradient(135deg, #e8f9e8, #ccefd5)");
-    expect(mailBlock).toContain("color: #28573b");
+    expect(css).toContain(".toast.success,");
+    expect(css).toContain(".toast.mail");
+    expect(css).toContain("font-family: var(--font-window-title), var(--font-ui-default)");
+    expect(css).toContain("left: max(12px, env(safe-area-inset-left))");
     expect(css).not.toContain(".toast.reward");
     expect(css).not.toContain(".toast.penalty");
     expect(css).toContain('.toast[data-exiting="true"]');
     expect(css).toContain("opacity 400ms ease");
-    expect(css).toContain('.toast.achievement[data-exiting="true"]');
     expect(css).toContain("@starting-style");
-    expect(css).toContain("translateY(-8px) scale(0.97)");
+    expect(css).toContain("translateX(calc(-100% - max(12px, env(safe-area-inset-left))))");
+    expect(css).toContain("overflow-wrap: anywhere");
     expect(css).not.toContain("@keyframes toast-fade");
-    expect(source).toContain("setTimeout(() => setExiting(true), 2600)");
-    expect(source).toContain("setTimeout(() => onCloseRef.current(), 3000)");
     expect(source).toContain("data-exiting={exiting || undefined}");
+    expect(reducedMotionCss).toContain(":not(.toast-lifetime > span)");
     expect(reducedMotionCss).toContain("transition: opacity 400ms ease");
     expect(reducedMotionCss).toContain("transform: none");
+    for (const path of ["../styles/mobile-adaptive/reduced-motion.css", "../styles/themes/bright-school/mobile/motion.css"]) {
+      expect(readFileSync(new URL(path, import.meta.url), "utf8")).toContain(":not(.toast):not(.toast-lifetime > span)");
+    }
   });
 });
 

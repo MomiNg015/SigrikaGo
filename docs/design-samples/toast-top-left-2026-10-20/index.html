@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>左上角的小消息 · SigrikaGo</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./preview.css">
+</head>
+<body>
+  <!-- Design assumptions: isolated Bright School preview, existing art and fonts,
+       full-size notifications, representative background, no account requests. -->
+  <header class="page-header">
+    <a href="#" class="wordmark" aria-label="重新展示当前方案">SigrikaGo <span>DESIGN STUDY / 03</span></a>
+    <span class="draft-label">交互样板</span>
+  </header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">小消息，也可以很有性格。</p><h1>从左上角，轻轻递进来。</h1></div><p class="intro-note">推进 → 停留 → 原路收回<br>三种表达，同一套消息。</p></div>
+    <div class="variant-picker" role="group" aria-label="选择设计方案">
+      <button type="button" data-variant="drawer" aria-pressed="true"><span>01</span><div><strong>清爽抽屉条</strong><small>轻量 · 克制 · 日常反馈</small></div></button>
+      <button type="button" data-variant="memo" aria-pressed="false"><span>02</span><div><strong>社团便签</strong><small>纸张 · 印章 · 校园气质</small></div></button>
+      <button type="button" data-variant="character" aria-pressed="false"><span>03</span><div><strong>角色传讯</strong><small>陪伴 · 对话 · 游戏感</small></div></button>
+    </div>
+    <div class="workspace">
+      <section class="preview-panel" aria-label="交互预览">
+        <div class="preview-toolbar"><span><i></i> 实际尺寸预览</span><div role="group" aria-label="预览宽度"><button data-size="desktop" aria-pressed="true">桌面</button><button data-size="390" aria-pressed="false">390</button><button data-size="320" aria-pressed="false">320</button></div></div>
+        <div class="stage-surround"><div id="stage" class="stage" data-variant="drawer">
+          <div class="scene" aria-hidden="true"><div class="scene-heading"><small>放学后，来一局吧。</small><strong>星炬围棋社</strong></div><div class="scene-board"><div class="stone s1"></div><div class="stone s2"></div><div class="stone s3"></div><div class="stone s4"></div><div class="stone s5"></div></div><div class="scene-links"><span>部员手册</span><span>开始对弈</span><span>社团活动</span></div><span class="scene-note">课堂背景 / 场景示意</span></div>
+          <div id="toast-stack" class="toast-stack" aria-live="polite" aria-relevant="additions" aria-label="消息预览"></div>
+          <div id="empty-hint" class="empty-hint" hidden>已收回，点「播放进出」再看一次。</div>
+        </div></div>
+        <div class="stage-footer"><span id="motion-status">停留展示</span><span>左上锚定 · 向左收回</span></div>
+      </section>
+      <aside class="controls">
+        <div class="direction-copy"><span id="direction-tag" class="eyebrow">01 / EVERYDAY</span><h2 id="direction-title">轻一点，就很舒服。</h2><p id="direction-description">暖白纸条、细描边、小状态章。把注意力留给消息，适合保存、复制等高频反馈。</p><p id="direction-tradeoff" class="tradeoff">最省空间，也最不打扰对局。</p></div>
+        <div class="control-group"><h3>换一条消息</h3><div class="message-picker" role="group" aria-label="消息类型">
+          <button data-message="success" aria-pressed="true">成功</button><button data-message="warning" aria-pressed="false">提醒</button><button data-message="danger" aria-pressed="false">失败</button><button data-message="info" aria-pressed="false">信息</button><button data-message="mail" aria-pressed="false">来信</button><button data-message="achievement" aria-pressed="false">成就</button><button data-message="long" aria-pressed="false" class="wide">试试长文案</button>
+        </div></div>
+        <div class="control-group motion-controls"><h3>看它如何出现</h3><label><input id="hold" type="checkbox" checked> 停留查看细节</label><label><input id="reduce-motion" type="checkbox"> 减少动态效果</label><button id="replay" class="primary">播放进出 <span aria-hidden="true">↗</span></button><div class="secondary-actions"><button id="burst">连续三条</button><button id="dismiss">全部收回</button></div><p class="control-hint">悬停或键盘聚焦可暂停计时。<br>按 1 / 2 / 3 切换方案，空格重播。</p></div>
+      </aside>
+    </div>
+    <footer class="page-footer"><span>沿用校园暖纸、棕墨与现有角色素材</span><a href="./production.html">第一版已接入 · 查看霞鹜字体正式效果</a></footer>
+  </main>
+  <script src="./preview.js"></script>
+</body>
+</html>
