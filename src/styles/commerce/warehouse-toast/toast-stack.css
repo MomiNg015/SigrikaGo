@@ -43,17 +43,8 @@
 .toast.info { --toast-accent: #476f88; }
 .toast-copy { min-width: 0; }
 
-.toast .toast-title {
-  display: block;
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--toast-accent);
-}
-
 .toast .toast-message {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 15px;
   font-weight: 400;
   line-height: 1.6;
@@ -130,10 +121,10 @@
 
 /* Keep the authored font and semantic colors above the theme's generic text reset. */
 .app-shell.player-theme-enabled .toast-stack .toast,
-.app-shell.player-theme-enabled .toast-stack .toast :is(.toast-title, .toast-message, .toast-close) {
+.app-shell.player-theme-enabled .toast-stack .toast :is(.toast-message, .toast-close) {
   font-family: var(--font-window-title), var(--font-ui-default) !important;
 }
-.app-shell.player-theme-enabled .toast-stack .toast :is(.toast-title, .toast-icon, .toast-icon svg, .toast-icon path) {
+.app-shell.player-theme-enabled .toast-stack .toast :is(.toast-icon, .toast-icon svg, .toast-icon path) {
   color: var(--toast-accent) !important;
 }
 

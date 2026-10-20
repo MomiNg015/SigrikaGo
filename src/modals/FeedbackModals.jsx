@@ -76,7 +76,6 @@ export function Toast({ text, tone = "danger", onClose }) {
         </svg>
       </span>
       <div className="toast-copy">
-        <strong className="toast-title">{appearance.title}</strong>
         <p className="toast-message">{text}</p>
       </div>
       <button className="toast-close" type="button" aria-label="关闭提示" data-ui-sound="none" disabled={exiting} onClick={() => setExiting(true)}>
@@ -88,13 +87,13 @@ export function Toast({ text, tone = "danger", onClose }) {
 }
 
 const TOAST_APPEARANCES = {
-  success: { tone: "success", title: "操作成功", icon: "m5 12 4 4L19 6" },
-  warning: { tone: "warning", title: "温馨提醒", icon: "M12 8v5m0 3h.01M10.3 4.5 2.5 18a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5L13.7 4.5a2 2 0 0 0-3.4 0Z" },
-  danger: { tone: "danger", title: "操作未完成", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-4 5 8 8m0-8-8 8" },
-  error: { tone: "danger", title: "操作未完成", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-4 5 8 8m0-8-8 8" },
-  info: { tone: "info", title: "消息提示", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 8v6m0-10h.01" },
-  mail: { tone: "mail", title: "收到来信", icon: "M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm-2 1 9 7 9-7" },
-  achievement: { tone: "achievement", title: "成就达成", icon: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" }
+  success: { tone: "success", icon: "m5 12 4 4L19 6" },
+  warning: { tone: "warning", icon: "M12 8v5m0 3h.01M10.3 4.5 2.5 18a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5L13.7 4.5a2 2 0 0 0-3.4 0Z" },
+  danger: { tone: "danger", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-4 5 8 8m0-8-8 8" },
+  error: { tone: "danger", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-4 5 8 8m0-8-8 8" },
+  info: { tone: "info", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 8v6m0-10h.01" },
+  mail: { tone: "mail", icon: "M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm-2 1 9 7 9-7" },
+  achievement: { tone: "achievement", icon: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" }
 };
 
 export function ToastStack({ toasts, onClose }) {
