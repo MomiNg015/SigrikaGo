@@ -74,6 +74,10 @@ describe("admin default config seed", () => {
     ));
 
     expect(homeVersion?.value).toBe("v0.1.0");
+    expect(ADMIN_DEFAULT_CONFIG.siteSettings).toEqual(expect.arrayContaining([
+      { key: "topAnnouncementEnabled", value: "false" },
+      { key: "topAnnouncementText", value: "" }
+    ]));
     expect(JSON.parse(shopMascotDialogues?.value).zahira.greetingLines).toContain(
       "你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？"
     );

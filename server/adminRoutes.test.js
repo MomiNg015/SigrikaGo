@@ -491,6 +491,8 @@ describe("admin site settings routes", () => {
         homeTitle: "棋境大厅",
         homeSubtitle: "SigrikaGo 测试服",
         homeVersion: "v2.4.1",
+        topAnnouncementEnabled: true,
+        topAnnouncementText: "周日\n维护",
         aboutText: "关于测试文本",
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
         preloadTips: "第一句提示\n第二句提示",
@@ -516,6 +518,8 @@ describe("admin site settings routes", () => {
       homeTitle: "棋境大厅",
       homeSubtitle: "SigrikaGo 测试服",
       homeVersion: "v2.4.1",
+      topAnnouncementEnabled: true,
+      topAnnouncementText: "周日 维护",
       aboutText: "关于测试文本",
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
       preloadTips: "第一句提示\n第二句提示",
@@ -526,6 +530,8 @@ describe("admin site settings routes", () => {
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
     expect(readResponse.body.settings.homeVersion).toBe("v2.4.1");
+    expect(readResponse.body.settings.topAnnouncementEnabled).toBe(true);
+    expect(readResponse.body.settings.topAnnouncementText).toBe("周日 维护");
     expect(auditWrites[0].action).toBe("site-settings.update");
   });
 });

@@ -53,9 +53,10 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
-<h3>2026-10-20 顶部公告三版交互样板</h3>
+<h3>2026-10-20 深墨校园播报正式接入</h3>
 <p>新增独立<a href="./design-samples/top-announcement-2026-10-20/index.html">顶部公告比较页</a>，提供薄荷播报条、暖黄公告签、深墨维护栏三版。每版直接搭配现有 <code>HomeHeader</code> 与完整主题，公告位于 header 上方、满宽、最多一行，沿用霞鹜漫黑；仅文本溢出时从右向左匀速循环，支持暂停按钮、悬停／聚焦暂停，减少动态效果时改为手动横向阅读。短文本静止，关闭或空内容时移除整条占位。</p>
-<p>比较页附本地后台模拟，支持启用开关、编辑并应用文字、短／长公告示例、三版同屏及桌面／390／320px 竖屏。所有交互仅在样板内生效，真实站点配置、后台接口、默认快照及正式玩家页面尚未接入；选型后再实现持久配置与发布链路。<a href="./design-samples/top-announcement-2026-10-20/README.md">设计与验证说明</a>。</p>
+<p>用户选定第三版，左侧标签统一为「校园播报」。正式 <code>TopAnnouncement</code> 位于大厅 main 之前，保留原 header 与主区网格；固定 40px 单行栏加顶部安全区，只在启用且内容非空时占位。<code>SiteSetting.topAnnouncementEnabled</code>／<code>topAnnouncementText</code> 复用既有管理员保存、事务审计和公开配置接口，默认关闭／空文本；文本最多 500 个 UTF-16 单位、空白折叠、按纯文本展示。后台「大厅文案 → 校园播报」可开启／关闭和编辑，关闭保留内容。</p>
+<p>保存后当前客户端立即使用返回配置；在线大厅在进入、切回页面与可见时每 30 秒刷新。网络失败保留最近配置，保存前在途读取不会覆盖新保存结果。启动默认种子只补缺失键，保留已编辑数据；无需新增表或迁移。样板保留本地编辑比较，另有使用正式 <code>HomeScreen</code> 和完整主题的<a href="./design-samples/top-announcement-2026-10-20/production.html">正式组件预览</a>。<a href="./design-samples/top-announcement-2026-10-20/README.md">设计与验证说明</a>。</p>
 <h3>2026-10-20 Toast 清爽抽屉条正式接入</h3>
 <p>新增独立 <a href="./design-samples/toast-top-left-2026-10-20/index.html">Toast 动态比较页</a>，提供清爽抽屉条、社团便签、角色传讯三种视觉方案。使用现有校园纸色、棕墨、课堂背景与西格莉卡 Q 版头像；消息均从预览区域左上向右推进，停留后向左原路收回。比较页支持七类示例消息、长文案、三条连续消息、手动收回、悬停／聚焦暂停、减少动态效果及桌面／390／320px 竖屏检查。</p>
 <p>用户选择第一版，并指定霞鹜字体。正式 <code>Toast</code> 已改为左上暖白纸条，标题与正文统一复用 <code>LXGWMarkerGothic-Regular.ttf</code>（<code>--font-window-title</code>），配语义图标、关闭按钮和底部剩余时间线。默认保留 2600ms 停留与 400ms 退出；悬停或键盘聚焦暂停剩余停留时间，移开后继续，手动关闭走同一退出路径。<code>showToast(message, tone)</code>、最新消息优先及最多五条保持不变；<code>error</code> 与 <code>danger</code> 使用同一失败样式。</p>
@@ -3543,6 +3544,7 @@
 <p><code>useAuthSession</code> / <code>useStartupPreload</code> 向 App 报告可重试的 <code>startupError</code>，临时失败保留认证和房间状态；<code>ConnectionNotice</code> 显示启动重试或 Socket 重连状态，使用主题变量及现有反馈样式。<code>startMatchTransition</code> 使用连接检查、ACK、8 秒超时与 <code>match:found</code> 权威成功信号，<code>cancelMatchStart</code> 清理等待监听和计时器；不在无连接时显示虚假的排队状态。共享密码规则和引擎贴目转换分别位于 <code>src/shared/passwordValidation.js</code> 与 <code>engineKomi.js</code>。</p>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
+<p>大厅顶部校园播报复用 <code>/api/admin/site-settings</code> 的权限、PATCH 事务和审计，以及 <code>/api/site-settings</code> 的公开投影。<code>topAnnouncementEnabled</code> 为布尔值，<code>topAnnouncementText</code> 经共享规范化器处理为最多 500 个 UTF-16 单位的单行纯文本。部分 PATCH 保留其它配置；关闭保留已编辑文字，空文字可被保存。客户端仅在大厅可见时每 30 秒刷新，并在进入大厅、窗口聚焦或页面恢复可见时检查；后台保存回调立即更新当前客户端。刷新失败保留上次成功值，管理员保存递增本地版本并使旧请求失效，防止旧响应覆盖新公告。</p>
 <p>封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。</p>
 <p>opening 阶段房间快照增加 <code>openingServerNow</code>（发送时服务端毫秒时间），与原 <code>openingEndsAt</code> 共同表示剩余时长。<code>normalizeRoomSnapshot</code> 在接收时生成仅客户端使用的 <code>__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)</code>；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。</p>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
@@ -4590,6 +4592,12 @@
 <h3>SiteSetting</h3>
 <p>站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。</p>
 <ul>
+<li><code>topAnnouncementEnabled</code>：校园播报开关，公开接口为布尔值，存储为 <code>&quot;true&quot;</code>／<code>&quot;false&quot;</code>，代码默认 <code>false</code>。</li>
+</ul>
+<ul>
+<li><code>topAnnouncementText</code>：默认空字符串，最多 500 个 UTF-16 单位，折叠换行和其它空白为单个空格；以纯文本展示。禁用不清空内容，启用但空内容也不显示。提交的非用户配置快照同步包含关闭／空文本两项，既有 create-only 默认种子补齐新键，不覆盖后台保存值；本功能无需 schema 迁移。后续管理员编辑如需成为部署默认，沿用非用户配置快照导出流程。</li>
+</ul>
+<ul>
 <li><code>key</code>: 主键。当前使用 <code>homeTitle</code>、<code>homeVersion</code>、兼容保留的 <code>homeSubtitle</code>、<code>aboutText</code>、<code>footerText</code>、<code>preloadTips</code>、<code>characterLoadingLines</code>、<code>shopMascotDialogues</code>、<code>irisGreeting</code>、<code>irisLinks</code>、<code>skillEffectsEnabled</code> 与 <code>ratingRules</code>；<code>homeVersion</code> 最长 24 个字符并显示在首页标题旁，<code>preloadTips</code> 以换行文本存储加载页提示语集合。</li>
 </ul>
 <ul>
@@ -5374,6 +5382,9 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、台词、进度与笔刷 Tip 样式。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h2>大厅顶部校园播报</h2>
+<p><code>home/components/TopAnnouncement.jsx</code> 位于 <code>HomeScreen</code> 的 main 前，与 header、主体网格保持独立。用户选定深墨第三版，固定标签「校园播报」，全宽 40px 单行加 safe-area，霞鹜漫黑正文，薄荷状态点和下边线。专属 <code>home-terminal/campus-broadcast.css</code> 处理完整主题下的文字、按钮颜色与字体覆盖；存在公告时扣除 main 对应的最小视口高度，关闭／空内容完全移除占位，桌面与竖屏均保留现有 header 外边距。</p>
+<p><code>ResizeObserver</code> 按实际字体与容器宽度检测溢出；短文字静止，长文字在初始 1.6 秒后以 36px/s 向左循环。悬停／聚焦及手动暂停均可停止；更换文本重新从头读取。减少动态效果时改为单份文本的原生横向阅读，支持触摸、键盘和触控板；辅助技术仅朗读一份完整公告。此功能不改变登录或对局页面，不附加维护锁或自动排期。</p>
 <h2>普通窗口的统一底纸</h2>
 <p>正常校园主题下，仓库、履历、用户详情、部员手册与二级详情、成就、个性化、好友、信箱、公告、排行榜、观战、设置、留言、招募界面和普通确认／对局窗口，共用 <code>--theme-bg</code> 底色与 <code>--theme-paper-grid</code>，格距统一 20px。最终背景所有者为 <code>mobile-adaptive/window-paper-surfaces.css</code>，采用明确窗口类清单，不使用名称子串匹配。商店及其内部二级窗口保留专用背景；剧情、教学、招募电影及黑化场景继续独立。履历与用户详情的身份卡、战绩纸页底色透明，让同一张方格纸贯穿窗口。</p>
 <p>用户详情中的点赞、好友、黑名单和举报只显示图标，点击区均为 44px。工具行位于身份卡右下角；窄屏另起一行并靠右，头像与用户名在上方同排垂直居中。动作名称、点赞数量及 pending／关系状态由 <code>title</code> 与 ARIA 标签保留，删除好友、拉黑和举报的确认流程维持原样。个人履历的个性化操作不受此调整影响。</p>

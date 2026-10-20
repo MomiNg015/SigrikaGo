@@ -54,6 +54,14 @@ export const ADMIN_DEFAULT_CONFIG = {
     {
       "key": "skillEffectsEnabled",
       "value": "true"
+    },
+    {
+      "key": "topAnnouncementEnabled",
+      "value": "false"
+    },
+    {
+      "key": "topAnnouncementText",
+      "value": ""
     }
   ],
   "skillTraits": [

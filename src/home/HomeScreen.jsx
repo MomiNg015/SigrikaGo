@@ -16,6 +16,7 @@ import { Info } from "lucide-react";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
+import TopAnnouncement from "./components/TopAnnouncement.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 import PlayerPlaque from "./components/PlayerPlaque.jsx";
 import { HomeActionButton } from "./homeComponents.jsx";
@@ -68,6 +69,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
 
   return (
     <>
+      <TopAnnouncement enabled={siteSettings.topAnnouncementEnabled} text={siteSettings.topAnnouncementText} />
       <main className={`home-screen home-terminal-screen${sigrikaCorrupted ? " is-sigrika-corrupted-home" : ""}`}>
         <HomeHeader
           isAdmin={user.role === "admin"}

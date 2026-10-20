@@ -1677,7 +1677,8 @@ describe("root CSS entry contract", () => {
       "./home-terminal/utility-footer-motion.css",
       "./home-terminal/recruitment-alert.css",
       "./home-terminal/iris-database-entry.css",
-      "./home-terminal/mobile.css"
+      "./home-terminal/mobile.css",
+      "./home-terminal/campus-broadcast.css"
     ]);
     expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");
     expect(homeTerminalEntry).not.toContain(".home-player-zone");

@@ -1,5 +1,7 @@
 # 后端、HTTP API 与实时房间
 
+大厅顶部校园播报复用 `/api/admin/site-settings` 的权限、PATCH 事务和审计，以及 `/api/site-settings` 的公开投影。`topAnnouncementEnabled` 为布尔值，`topAnnouncementText` 经共享规范化器处理为最多 500 个 UTF-16 单位的单行纯文本。部分 PATCH 保留其它配置；关闭保留已编辑文字，空文字可被保存。客户端仅在大厅可见时每 30 秒刷新，并在进入大厅、窗口聚焦或页面恢复可见时检查；后台保存回调立即更新当前客户端。刷新失败保留上次成功值，管理员保存递增本地版本并使旧请求失效，防止旧响应覆盖新公告。
+
 封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。
 
 opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒时间），与原 `openingEndsAt` 共同表示剩余时长。`normalizeRoomSnapshot` 在接收时生成仅客户端使用的 `__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)`；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。

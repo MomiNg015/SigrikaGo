@@ -294,7 +294,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     view
   });
   const { handleRecruitmentStatusChange, recruitmentReady } = useRecruitmentReadyState({ token, user });
-  const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState({ initialSettings: initialSiteSettings });
+  const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState({ initialSettings: initialSiteSettings, refreshWhileVisible: view === "home" });
   const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
     incomingDuel,

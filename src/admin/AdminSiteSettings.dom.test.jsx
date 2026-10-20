@@ -16,6 +16,22 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 
 describe("AdminSiteSettings loading and editing", () => {
+  it("loads and saves the broadcast switch and text through the existing settings form", async () => {
+    adminApi.mockResolvedValueOnce({ settings: { topAnnouncementEnabled: false, topAnnouncementText: "之前的公告" } });
+    adminApi.mockImplementationOnce(async (_path, _token, options) => ({ settings: options.body }));
+    const onSaved = vi.fn();
+    render(<AdminSiteSettings token="admin" onSaved={onSaved} />);
+    const toggle = await screen.findByRole("checkbox", { name: "开启顶部公告" });
+    const text = screen.getByLabelText(/公告内容/);
+    expect(toggle.checked).toBe(false);
+    expect(text.value).toBe("之前的公告");
+    fireEvent.click(toggle);
+    fireEvent.change(text, { target: { value: "本周日维护" } });
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "保存", exact: true })));
+    expect(adminApi).toHaveBeenLastCalledWith("/site-settings", "admin", expect.objectContaining({ method: "PATCH", body: expect.objectContaining({ topAnnouncementEnabled: true, topAnnouncementText: "本周日维护" }) }));
+    expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ topAnnouncementEnabled: true, topAnnouncementText: "本周日维护" }));
+  });
+
   it("waits for the real settings before exposing edits and saves the edited server draft", async () => {
     const initial = deferred(), save = deferred();
     adminApi.mockReturnValueOnce(initial.promise).mockReturnValueOnce(save.promise);

@@ -1,5 +1,6 @@
 export { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
+import { normalizeTopAnnouncementText } from "../src/shared/topAnnouncement.js";
 import {
   irisGreetingsSettingJson,
   MAX_IRIS_GREETING_LENGTH,
@@ -27,7 +28,7 @@ const SITE_SETTING_LIMITS = {
   irisLinks: 20000,
   ratingRules: 8000
 };
-const BOOLEAN_SITE_SETTING_KEYS = new Set(["skillEffectsEnabled"]);
+const BOOLEAN_SITE_SETTING_KEYS = new Set(["skillEffectsEnabled", "topAnnouncementEnabled"]);
 
 export async function getPublicSiteSettings(prisma) {
   const rows = await prisma.siteSetting.findMany({
@@ -85,6 +86,9 @@ export function sanitizeSiteSettings(body = {}) {
       if (BOOLEAN_SITE_SETTING_KEYS.has(key)) {
         return [key, normalizeBooleanSiteSetting(body?.[key], fallback) ? "true" : "false"];
       }
+      if (key === "topAnnouncementText") {
+        return [key, normalizeTopAnnouncementText(body?.[key])];
+      }
       if (key === RATING_RULES_SETTING_KEY) {
         return [key, JSON.stringify(normalizeRatingRules(body?.[key] ?? fallback), null, 2)];
       }
@@ -109,6 +113,10 @@ function rowsToSettings(rows) {
     if (!Object.hasOwn(settings, row.key)) continue;
     const value = String(row.value ?? "").trim();
     if (!value) continue;
+    if (row.key === "topAnnouncementText") {
+      settings[row.key] = normalizeTopAnnouncementText(value);
+      continue;
+    }
     settings[row.key] = BOOLEAN_SITE_SETTING_KEYS.has(row.key)
       ? normalizeBooleanSiteSetting(value, DEFAULT_SITE_SETTINGS[row.key])
       : value;

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
 import {
   ensureDefaultSiteSettings,
+  getPublicSiteSettings,
   sanitizeSiteSettings,
   updateSiteSettings
 } from "./siteSettings.js";
@@ -82,6 +83,8 @@ describe("site settings defaults", () => {
       create: { key: "ratingRules", value: DEFAULT_SITE_SETTINGS.ratingRules },
       update: {}
     });
+    expect(upsert).toHaveBeenCalledWith({ where: { key: "topAnnouncementEnabled" }, create: { key: "topAnnouncementEnabled", value: "false" }, update: {} });
+    expect(upsert).toHaveBeenCalledWith({ where: { key: "topAnnouncementText" }, create: { key: "topAnnouncementText", value: "" }, update: {} });
   });
 
   it("normalizes rating rules from admin settings input", () => {
@@ -106,6 +109,36 @@ describe("site settings defaults", () => {
     expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: false }).skillEffectsEnabled).toBe("false");
     expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: "off" }).skillEffectsEnabled).toBe("false");
     expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: "on" }).skillEffectsEnabled).toBe("true");
+  });
+
+  it("normalizes and bounds the public broadcast as plain one-line text", () => {
+    expect(sanitizeSiteSettings({ topAnnouncementEnabled: "on", topAnnouncementText: "  维护\n通知\t<script>纯文本</script>  " })).toMatchObject({ topAnnouncementEnabled: "true", topAnnouncementText: "维护 通知 <script>纯文本</script>" });
+    expect(sanitizeSiteSettings({ topAnnouncementText: "字".repeat(600) }).topAnnouncementText).toHaveLength(500);
+    expect(sanitizeSiteSettings({ topAnnouncementText: " \n " }).topAnnouncementText).toBe("");
+    expect(sanitizeSiteSettings({ topAnnouncementText: {} }).topAnnouncementText).toBe("");
+    expect(sanitizeSiteSettings().topAnnouncementEnabled).toBe("false");
+  });
+
+  it("publishes saved notices and preserves text across disable and startup seeding", async () => {
+    const store = new Map();
+    const tx = {
+      siteSetting: {
+        findMany: async () => [...store].map(([key, value]) => ({ key, value })),
+        upsert: async ({ where, create, update }) => {
+          if (!store.has(where.key)) store.set(where.key, create.value);
+          else if (Object.hasOwn(update, "value")) store.set(where.key, update.value);
+        }
+      },
+      adminAuditLog: { create: vi.fn() }
+    };
+    const prisma = { ...tx, $transaction: async (callback) => callback(tx) };
+    const save = (body) => updateSiteSettings({ prisma, adminUser: { id: "admin" }, body });
+    expect((await save({ topAnnouncementEnabled: true, topAnnouncementText: "  周日\n维护  " })).settings).toMatchObject({ topAnnouncementEnabled: true, topAnnouncementText: "周日 维护" });
+    await ensureDefaultSiteSettings(prisma);
+    expect(await getPublicSiteSettings(prisma)).toMatchObject({ topAnnouncementEnabled: true, topAnnouncementText: "周日 维护" });
+    expect((await save({ topAnnouncementEnabled: false })).settings).toMatchObject({ topAnnouncementEnabled: false, topAnnouncementText: "周日 维护" });
+    expect((await save({ topAnnouncementText: "" })).settings.topAnnouncementText).toBe("");
+    expect(tx.adminAuditLog.create).toHaveBeenCalledTimes(3);
   });
 
   it("preserves admin-configured character loading lines", () => {

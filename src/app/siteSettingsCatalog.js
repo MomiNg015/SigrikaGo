@@ -3,12 +3,14 @@ import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 
 export async function loadPublicSiteSettings({
   apiClient = api,
-  defaults = DEFAULT_SITE_SETTINGS
+  defaults = DEFAULT_SITE_SETTINGS,
+  throwOnError = false
 } = {}) {
   try {
     const data = await apiClient("/api/site-settings");
     return { ...defaults, ...(data.settings ?? {}) };
-  } catch {
+  } catch (error) {
+    if (throwOnError) throw error;
     return defaults;
   }
 }

@@ -43,6 +43,13 @@ function renderHome(overrides = {}) {
   }));
 }
 
+it("places the enabled campus broadcast before the home layout and omits it by default", () => {
+  expect(renderHome()).not.toContain('class="campus-broadcast"');
+  const html = renderHome({ siteSettings: { homeTitle: "星炬学院", topAnnouncementEnabled: true, topAnnouncementText: "周日维护" } });
+  expect(html).toContain("校园播报");
+  expect(html.indexOf('class="campus-broadcast"')).toBeLessThan(html.indexOf('<main class="home-screen'));
+});
+
 function isWebp(path) {
   const bytes = readFileSync(new URL(path, import.meta.url));
   return bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP";

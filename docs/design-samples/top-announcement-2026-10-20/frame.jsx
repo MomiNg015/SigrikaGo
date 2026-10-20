@@ -6,7 +6,7 @@ import { LONG_NOTICE } from "./samples.js";
 import "../../../src/styles.css";
 import "./frame.css";
 
-const variants = { mint: { label: "校园播报", Icon: Bell }, ribbon: { label: "特别公告", Icon: Megaphone }, ink: { label: "维护通知", Icon: Radio } };
+const variants = { mint: { label: "校园播报", Icon: Bell }, ribbon: { label: "特别公告", Icon: Megaphone }, ink: { label: "校园播报", Icon: Radio } };
 const requestedVariant = new URLSearchParams(location.search).get("variant");
 const variant = Object.hasOwn(variants, requestedVariant) ? requestedVariant : "mint";
 

@@ -1,0 +1,139 @@
+/* Selected full-width ink notice. Explicit owner rules beat the shared player theme. */
+.app-shell .campus-broadcast {
+  --broadcast-bg: #333c40;
+  --broadcast-ink: #f4f3eb;
+  --broadcast-accent: #bfe8dd;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-top: env(safe-area-inset-top);
+  background: var(--broadcast-bg);
+  border-bottom: 2px solid var(--broadcast-accent);
+}
+
+.app-shell.player-theme-enabled .campus-broadcast.campus-broadcast :is(.campus-broadcast-label, .campus-broadcast-accessible, .campus-broadcast-pause, .campus-broadcast-track > :where(span)) {
+  color: var(--broadcast-ink) !important;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  text-shadow: none !important;
+}
+
+.campus-broadcast-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 38px;
+  padding-inline: max(18px, env(safe-area-inset-left)) max(18px, env(safe-area-inset-right));
+}
+
+.app-shell.player-theme-enabled .campus-broadcast.campus-broadcast .campus-broadcast-label {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  padding-right: 16px;
+  border-right: 1px solid color-mix(in srgb, var(--broadcast-accent) 40%, transparent);
+  color: var(--broadcast-accent) !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+  letter-spacing: .06em;
+}
+
+.campus-broadcast-label::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--broadcast-accent);
+}
+
+.campus-broadcast-window {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 22px;
+}
+
+.campus-broadcast-track {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  width: max-content;
+}
+
+.campus-broadcast-track > span {
+  display: block;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.campus-broadcast-track.is-scrolling {
+  animation: campus-broadcast-scroll var(--broadcast-duration) linear 1.6s infinite;
+}
+
+.campus-broadcast:is([data-paused="true"], :hover, :focus-within) .campus-broadcast-track {
+  animation-play-state: paused;
+}
+
+.app-shell.player-theme-enabled .campus-broadcast.campus-broadcast button.campus-broadcast-pause {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled .campus-broadcast.campus-broadcast .campus-broadcast-pause :is(svg, path, polygon, rect) {
+  color: var(--broadcast-accent) !important;
+}
+
+.campus-broadcast-window:focus-visible,
+.campus-broadcast-pause:focus-visible {
+  outline: 2px solid var(--broadcast-accent);
+  outline-offset: 1px;
+}
+
+.campus-broadcast-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.campus-broadcast[data-reduced="true"] .campus-broadcast-window {
+  overflow-x: auto;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.app-shell.player-theme-enabled .campus-broadcast + main.home-screen.home-terminal-screen {
+  min-height: calc(100dvh - 40px - env(safe-area-inset-top)) !important;
+}
+
+@keyframes campus-broadcast-scroll {
+  to { transform: translateX(var(--broadcast-travel)); }
+}
+
+@media (max-width: 768px) {
+  .campus-broadcast-inner { gap: 10px; padding-inline: max(12px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right)); }
+  .app-shell.player-theme-enabled .campus-broadcast.campus-broadcast .campus-broadcast-label { gap: 5px; padding-right: 10px; font-size: 11px !important; }
+  .app-shell.player-theme-enabled .campus-broadcast.campus-broadcast .campus-broadcast-track > span { font-size: 13px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-broadcast-track.is-scrolling { animation: none; }
+}

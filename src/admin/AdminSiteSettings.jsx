@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { TOP_ANNOUNCEMENT_MAX_LENGTH } from "../shared/topAnnouncement.js";
 import { normalizeRatingRules } from "../shared/ratingRules.js";
 import WindowLoadingState from "../modals/WindowLoadingState.jsx";
 import { AdminActionButton, AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
@@ -59,7 +60,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、项目版本号、关于文本和页脚信息" />
+      <AdminSectionHeader title="大厅文案" meta="修改校园播报、大厅标题、项目版本号、关于文本和页脚信息" />
       {loading ? <WindowLoadingState compact>正在加载系统设置…</WindowLoadingState> : !ready ? (
         <div>
           <p className="admin-error" role="alert">系统设置加载失败：{loadState.error}</p>
@@ -67,6 +68,27 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
         </div>
       ) : (
       <form className="admin-form admin-settings-form" onSubmit={saveSettings}>
+        <fieldset className="admin-settings-fieldset">
+          <legend>校园播报</legend>
+          <label className="admin-toggle-row">
+            <input
+              type="checkbox"
+              checked={draft.topAnnouncementEnabled === true}
+              onChange={(event) => setDraft((current) => ({ ...current, topAnnouncementEnabled: event.target.checked }))}
+            />
+            <span>开启顶部公告</span>
+          </label>
+          <label>
+            <AdminFieldLabel text="公告内容" tip="显示在大厅 header 上方，最多一行，长文字自动横向滚动。留空时隐藏；关闭后保留文案。保存后，在线大厅将在 30 秒内或切回页面时更新。" />
+            <textarea
+              maxLength={TOP_ANNOUNCEMENT_MAX_LENGTH}
+              rows={3}
+              placeholder="例如：10 月 23 日 02:00—04:00 进行服务器维护，请提前安排对局。"
+              value={draft.topAnnouncementText}
+              onChange={(event) => setDraft((current) => ({ ...current, topAnnouncementText: event.target.value }))}
+            />
+          </label>
+        </fieldset>
         <label>
           <AdminFieldLabel text="大厅标题" tip="显示在大厅顶部的主标题。" />
           <input
