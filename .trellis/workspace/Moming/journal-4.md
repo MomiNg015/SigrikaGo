@@ -864,3 +864,36 @@ Implemented selected dark ink full-width single-line campus broadcast with LXGW 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 207: 移除 Toast 分类小字
+
+**Date**: 2026-10-20
+**Task**: 移除 Toast 分类小字
+**Branch**: `master`
+
+### Summary
+
+移除正式 Toast 分类标题和专属样式，正文清除顶部留白；保留霞鹜字体与原生命周期。72 项相关测试及 ESLint 通过；桌面 1440px、竖屏 320px 视觉验证通过。系统设计文档已同步，其他任务修改保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e9b70410` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
