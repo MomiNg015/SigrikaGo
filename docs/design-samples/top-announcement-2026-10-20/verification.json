@@ -1,0 +1,11 @@
+{
+  "checks": 85,
+  "errors": [],
+  "viewports": [
+    1344,
+    390,
+    320
+  ],
+  "browser": "Headless Microsoft Edge",
+  "scope": "Local samples only"
+}

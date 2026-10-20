@@ -5,6 +5,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "docs/design-samples/top-announcement-2026-10-20/*.js",
+  "docs/design-samples/top-announcement-2026-10-20/*.jsx",
   "src/modals/FeedbackModals.jsx",
   "src/modals/FeedbackModals.dom.test.jsx",
   "docs/design-samples/toast-top-left-2026-10-20/production.jsx",
