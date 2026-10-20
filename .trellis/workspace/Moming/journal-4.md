@@ -831,3 +831,36 @@ Delivered mint, warm ribbon and dark ink single-line top announcement prototypes
 ### Next Steps
 
 - None - task complete
+
+
+## Session 206: Ship configurable ink campus broadcast
+
+**Date**: 2026-10-20
+**Task**: Ship configurable ink campus broadcast
+**Branch**: `master`
+
+### Summary
+
+Implemented selected dark ink full-width single-line campus broadcast with LXGW and fixed label 校园播报. Added authorized SiteSetting save/read, disabled/blank defaults and scoped deployment snapshot rows, admin switch/editor, visible-home refresh with stale-read protection. 37 real-component browser checks plus minified CSS checks passed; full tests 3295 passed and two final-version issues passed a 73-test rerun. Lint, portraits, build and config passed. Existing characters snapshot drift and unrelated WIP preserved. Development API offline; component preview uses local samples.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dae73a40` | feat(home): add configurable ink campus broadcast |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
