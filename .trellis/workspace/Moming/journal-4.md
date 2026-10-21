@@ -897,3 +897,36 @@ Implemented selected dark ink full-width single-line campus broadcast with LXGW 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 208: Auth feedback and mobile shadow corrections
+
+**Date**: 2026-10-21
+**Task**: Auth feedback and mobile shadow corrections
+**Branch**: `master`
+
+### Summary
+
+Unified compact field feedback across login and registration; duplicate usernames stay beside the field until edited; stale errors clear on credential edits. Two-line form feedback supports keyboard scrolling for longer explanations. Fixed mobile card shadow clearance and reduced-motion hover specificity. 174 related tests, 8 browser cases plus the final 390px follow-up, ESLint, build, built CSS and docs render passed. Full repository gate remains limited by an unrelated proxy integration timeout and earlier test IPC failure. Preserved unrelated profile and design WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3aa664fa` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

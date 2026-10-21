@@ -1,0 +1,3 @@
+{"file":"DESIGN.md","reason":"Palette, material and legible text contrast."}
+{"file":".trellis/spec/backend/profile-folder-contract.md","reason":"Compare baseline geometry on desktop and mobile."}
+{"file":".trellis/spec/frontend/identity-bust-contract.md","reason":"Reject retired image requests."}
