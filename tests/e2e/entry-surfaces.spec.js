@@ -16,6 +16,9 @@ for (const width of [1440, 390, 360, 320]) {
       await expect(page.locator(".auth-go-mark")).toHaveCount(0);
       await page.screenshot({ path: testInfo.outputPath(`${mode}-${width}.png`), fullPage: true });
       const initial = await card.boundingBox();
+      for (const label of await page.locator(".auth-label-row").all()) {
+        await expect(label).toHaveCSS("align-items", "baseline");
+      }
       const submit = page.getByRole("button", { name: mode === "register" ? "登记入部信息" : "开门！" });
       await submit.hover();
       await expect(submit).toHaveCSS("transform", "none");
@@ -34,8 +37,9 @@ for (const width of [1440, 390, 360, 320]) {
         for (const error of await page.locator(".auth-label-row .auth-field-error").all()) {
           const label = await error.locator("..").boundingBox();
           const bounds = await error.boundingBox();
-          expect(bounds.y).toBe(label.y);
-          expect(bounds.y + bounds.height).toBeLessThanOrEqual(label.y + label.height + 1);
+          const input = await error.locator("xpath=../..").locator("input").boundingBox();
+          expect(bounds.y).toBeGreaterThan(label.y);
+          expect(bounds.y + bounds.height).toBeLessThanOrEqual(input.y - 1);
           expect(Math.abs(bounds.x + bounds.width - label.x - label.width)).toBeLessThan(1);
         }
       };

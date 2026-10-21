@@ -41,7 +41,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-label-row {
-    align-items: flex-start !important;
+    align-items: baseline !important;
     gap: 8px !important;
   }
 

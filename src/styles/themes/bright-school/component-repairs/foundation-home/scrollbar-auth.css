@@ -144,7 +144,7 @@
   .auth-form { gap: 10px; }
   .auth-label-row {
     height: 24px;
-    align-items: flex-start;
+    align-items: baseline;
     &[for="auth-username"] { height: 30px; }
     > span { flex-shrink: 0; }
     small { min-width: 0; font-size: 12px; line-height: 1.25; opacity: 1; }
