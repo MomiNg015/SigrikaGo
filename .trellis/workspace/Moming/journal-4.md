@@ -1095,3 +1095,36 @@ Matched mobile exit and menu geometry, ink, border and press feedback while pres
 ### Next Steps
 
 - None - task complete
+
+
+## Session 214: Empty warehouse and direct team matchmaking
+
+**Date**: 2026-10-21
+**Task**: Empty warehouse and direct team matchmaking
+**Branch**: `master`
+
+### Summary
+
+Retained empty warehouse book layout and disabled controls, made team picker start validated matchmaking directly, and tinted ordinary match success green. Desktop/mobile browser checks, component and matchmaking tests, battle gate, Pixi stability, lint/build/CSS checks passed. Updated docs/specs and preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `531d0197` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
