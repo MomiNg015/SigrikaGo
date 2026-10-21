@@ -996,3 +996,36 @@ Reproduced and fixed a 41px mobile IRIS entry jump caused by the generic active 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 211: Subtle mobile IRIS press feedback
+
+**Date**: 2026-10-21
+**Task**: Subtle mobile IRIS press feedback
+**Branch**: `master`
+
+### Summary
+
+Restored a bounded 5px-left/1px-down mobile IRIS press effect while preserving centered rest placement and release restoration. Updated existing browser regressions and design contracts. Five browser checks, 123 targeted tests, lint, build, built CSS and docs rendering passed; unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ef21c54c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
