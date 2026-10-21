@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 for (const width of [390, 320]) {
   for (const reducedMotion of ["no-preference", "reduce"]) {
-    test(`IRIS touch target stays anchored at ${width} with ${reducedMotion}`, async ({ browser }, testInfo) => {
+    test(`IRIS touch feedback stays near its anchor at ${width} with ${reducedMotion}`, async ({ browser }, testInfo) => {
       const context = await browser.newContext({ viewport: { width, height: 844 }, isMobile: true, hasTouch: true, reducedMotion });
       const page = await context.newPage();
       try {
@@ -20,22 +20,28 @@ for (const width of [390, 320]) {
           await touch.send("CSS.forcePseudoState", { nodeId, forcedPseudoClasses });
           await page.waitForTimeout(180);
           const current = await entry.boundingBox();
-          for (const dimension of ["x", "y", "width", "height"]) {
+          const active = forcedPseudoClasses.includes("active");
+          expect(current.x).toBeCloseTo(initial.x - (active ? 5 : 0), 0);
+          expect(current.y).toBeCloseTo(initial.y + (active ? 1 : 0), 0);
+          for (const dimension of ["width", "height"]) {
             expect(Math.abs(current[dimension] - initial[dimension])).toBeLessThan(1);
+          }
+          if (forcedPseudoClasses.length === 2) {
+            await page.screenshot({ path: testInfo.outputPath(`iris-pressed-${width}-${reducedMotion}.png`) });
           }
         }
         await touch.send("CSS.forcePseudoState", { nodeId, forcedPseudoClasses: [] });
         await touch.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: initial.x + initial.width * 0.65, y: initial.y + 8 }] });
         await page.waitForTimeout(350);
         const pressed = await entry.boundingBox();
-        await page.screenshot({ path: testInfo.outputPath(`iris-pressed-${width}-${reducedMotion}.png`) });
-        expect(Math.abs(pressed.y - initial.y)).toBeLessThan(1);
-        expect(Math.abs(pressed.x - initial.x)).toBeLessThan(1);
+        expect(Math.abs(pressed.y - initial.y)).toBeLessThanOrEqual(1.1);
+        expect(Math.abs(pressed.x - initial.x)).toBeLessThanOrEqual(5.1);
         await touch.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
         await expect(page.getByRole("dialog")).toBeVisible();
         await page.getByRole("button", { name: "关闭 IRIS 数据库" }).tap();
         await expect(page.getByRole("dialog")).toHaveCount(0);
         await expect.poll(async () => (await entry.boundingBox()).y).toBeCloseTo(initial.y, 0);
+        await expect.poll(async () => (await entry.boundingBox()).x).toBeCloseTo(initial.x, 0);
         await entry.tap();
         await expect(page.getByRole("dialog")).toBeVisible();
       } finally {

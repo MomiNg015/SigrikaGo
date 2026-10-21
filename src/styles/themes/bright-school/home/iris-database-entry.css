@@ -79,5 +79,9 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.iris-database-entry:is(button, :hover, :focus-visible, :active) {
     filter: drop-shadow(-4px 5px 0 rgba(2, 20, 32, 0.28)) !important;
     transform: translateY(-50%) !important;
+
+    &:active:not(:disabled) {
+      transform: translate(-5px, calc(-50% + 1px)) !important;
+    }
   }
 }
