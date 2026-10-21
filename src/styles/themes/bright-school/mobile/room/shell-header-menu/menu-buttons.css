@@ -7,19 +7,14 @@
     z-index: var(--room-floating-z, 120) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-exit {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :is(.room-mobile-exit, .room-mobile-menu-toggle) {
+    --campus-control-ink: var(--bright-ink);
+    --campus-control-border: var(--bright-border);
+    --campus-control-shadow: none;
+    --campus-control-hover-shadow: none;
+    --campus-control-active-shadow: none;
     display: inline-grid !important;
     place-items: center !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 !important;
-    border-width: 2px !important;
-    border-radius: 14px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-toggle {
     width: 44px !important;
     min-width: 44px !important;
     height: 44px !important;

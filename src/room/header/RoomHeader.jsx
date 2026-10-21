@@ -89,6 +89,7 @@ export default function RoomHeader({
       {showUtilityControls && <div className={`room-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <button
           className="toggle room-mobile-menu-toggle"
+          data-button-role="secondary"
           type="button"
           aria-expanded={mobileMenuOpen}
           aria-controls="room-mobile-menu-panel"

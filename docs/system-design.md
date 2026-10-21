@@ -200,7 +200,7 @@
 
 ### 2026-10-12 紧凑手数计分牌正式接入
 
-牌面依据当前展示局面的 `room.game.turn` 切换：黑方行棋黑底白字，白方行棋白底黑字，手数与“手”字同时反色；不按手数奇偶推断，因此兼容技能连续回合与回放。对弈 Header 采用选定的左侧计分牌：只显示“大数字＋手”，不带“第”；牌面桌面 54px、手机 46px，普通双位数状态整体 Header 约 71px／59px。房间模式、号码和组队局数保留原位置，双方信息在桌面与手机均上下两行排列；`roomGameInfo.players` 提供独立用户名与段位，黑／白、用户名、段位共享三列并左对齐。右上退出房间使用浅红 danger 配色，坐标切换和手机菜单沿用现有组件。普通结算窗口按当前玩家结果采用浅绿胜利底色、浅红失败底色，和棋与观战保持原纸色，方格纹理不变；`window-paper-surfaces.css` 通过局部 `--window-paper-color` 接收结果配色。`RoomHeader` 直接消费当前展示局面的 `roomGameInfo`，回放、教学及真人对局共用；双方尚未就绪或特殊污染对局保留原呈现。最终样式由 `mobile-adaptive/room-header-scoreboard.css` 局部接管，位于观战者最终层之前。[预览方案 1](./design-samples/battle-header-2026-10-12/index.html?view=score)已切换到正式组件。
+牌面依据当前展示局面的 `room.game.turn` 切换：黑方行棋黑底白字，白方行棋白底黑字，手数与“手”字同时反色；不按手数奇偶推断，因此兼容技能连续回合与回放。对弈 Header 采用选定的左侧计分牌：只显示“大数字＋手”，不带“第”；牌面桌面 54px、手机 46px，普通双位数状态整体 Header 约 71px／59px。房间模式、号码和组队局数保留原位置，双方信息在桌面与手机均上下两行排列；`roomGameInfo.players` 提供独立用户名与段位，黑／白、用户名、段位共享三列并左对齐。右上退出房间使用浅红 danger 配色；手机端退出与菜单共用 44px 扁平按钮外观、深棕描边和图标及轻微按压反馈，分别保留浅红和纸色底色。坐标切换沿用现有组件。普通结算窗口按当前玩家结果采用浅绿胜利底色、浅红失败底色，和棋与观战保持原纸色，方格纹理不变；`window-paper-surfaces.css` 通过局部 `--window-paper-color` 接收结果配色。`RoomHeader` 直接消费当前展示局面的 `roomGameInfo`，回放、教学及真人对局共用；双方尚未就绪或特殊污染对局保留原呈现。最终样式由 `mobile-adaptive/room-header-scoreboard.css` 局部接管，位于观战者最终层之前。[预览方案 1](./design-samples/battle-header-2026-10-12/index.html?view=score)已切换到正式组件。
 
 ### 2026-10-12 对弈 Header 手数视觉样板
 

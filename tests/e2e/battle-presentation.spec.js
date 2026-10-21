@@ -50,7 +50,26 @@ for (const width of [1440, 1024, 390, 320]) {
         expect(await name.evaluate(e => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
       }
       await expect(page.locator(".replay-step-indicator")).toHaveCSS("font-family", /Sigrika Window Title/);
+      const menu = page.getByRole("button", { name: "选项", exact: true });
+      const exitBox = await exit.boundingBox();
+      const menuBox = await menu.boundingBox();
+      expect([exitBox.width, exitBox.height, exitBox.y]).toEqual([menuBox.width, menuBox.height, menuBox.y]);
+      for (const property of ["border-top", "border-radius", "color", "box-shadow"]) {
+        await expect(exit).toHaveCSS(property, await menu.evaluate((element, name) => getComputedStyle(element).getPropertyValue(name), property));
+      }
+      await expect(exit).toHaveCSS("box-shadow", "none");
+      await expect(exit).toHaveCSS("background-color", await tokenColor(exit, "--campus-button-danger"));
       await page.screenshot({ path: testInfo.outputPath(`battle-spectator-${width}.png`), fullPage: true });
+      for (const button of [exit, menu]) {
+        await button.hover();
+        await expect(button).toHaveCSS("box-shadow", "none");
+        await page.mouse.down();
+        await expect(button).toHaveCSS("transform", "matrix(1, 0, 0, 1, 2, 2)");
+        await expect(button).toHaveCSS("box-shadow", "none");
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
+        await expect(button).toHaveCSS("transform", "none");
+      }
     }
   });
 }
