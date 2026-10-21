@@ -81,3 +81,7 @@
 @import "./mobile-adaptive/profile-paper-actions.css";
 @import "./mobile-adaptive/profile-paper-mobile.css";
 @import "./mobile-adaptive/text-readability.css";
+@import "./mobile-adaptive/readable-type-windows.css";
+@import "./mobile-adaptive/readable-type-profile.css";
+@import "./mobile-adaptive/readable-type-battle.css";
+@import "./mobile-adaptive/readable-type-admin.css";

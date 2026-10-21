@@ -40,11 +40,12 @@
 .skill-trait-popover p,
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(
   .character-detail-copy .skill-description-body,
+  .character-description,
   .skill-trait-popover p,
   .wg-details > p,
   .shop-detail-copy > p,
   .mailbox-item-detail-copy > p,
   .information-center-prose :is(p, li, blockquote, td)
 ) {
-  font-size: max(15px, 1em) !important;
+  font-size: max(16px, 1em) !important;
 }

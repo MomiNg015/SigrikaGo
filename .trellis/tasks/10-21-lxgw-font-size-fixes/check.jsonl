@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Final owner precedence, bounded CSS and effective font-size checks"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Desktop and portrait browser regression gates"}
+{"file": ".trellis/spec/backend/authentication-contract.md", "reason": "Compact baseline-aligned feedback geometry"}
+{"file": "docs/ui-reviews/2026-10-21-lxgw-font-size.md", "reason": "Approved audit scope and before/after evidence"}

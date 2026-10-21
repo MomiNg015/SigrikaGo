@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-21T06:40:18.660057+00:00",
+  "generatedAt": "2026-10-21T09:23:13.345657+00:00",
   "title": "Design System: SigrikaGo Bright School",
   "extensions": {
     "colorMeta": {
@@ -67,7 +67,7 @@
     "typographyMeta": {
       "display": { "displayName": "Identity Accent", "purpose": "Short Latin identity marks only." },
       "title": { "displayName": "Window Title", "purpose": "Player-facing window and feature titles." },
-      "body": { "displayName": "UI Body", "purpose": "LXGW reading content uses regular 400 without synthetic bold, 0.025em tracking and 1.65 leading; scrollable detail prose has a 15px floor. Preserve compact controls, existing WuWa and all IRIS typography." },
+      "body": { "displayName": "UI Body", "purpose": "LXGW reading content uses regular 400 without synthetic bold, 0.025em tracking and 1.65 leading; detail prose has a 16px floor. Functional labels use 14px, metadata 13px and constrained battle tags 12px. Validate effective sizes after transforms; preserve existing WuWa, all IRIS typography and pre-remediation shop product-card layout, dimensions, scaling and type sizes." },
       "label": { "displayName": "UI Label", "purpose": "Tabs, fields, states, and compact controls." }
     },
     "shadows": [

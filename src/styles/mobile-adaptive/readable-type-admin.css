@@ -1,0 +1,13 @@
+/* Desktop administration: enlarge auxiliary copy without changing controls. */
+.app-shell .admin-main {
+  & :is(small, .admin-kicker, .admin-status-pill, .admin-section-title-block > span,
+    .admin-answer-card > span, .admin-segment-grid span, .admin-health-list span,
+    .admin-mode-card span, .admin-stat-card > small, .admin-story-workbench label > span,
+    .admin-story-workbench-library-group > h4, .admin-story-workbench-issue-group > h4,
+    .admin-story-workbench-issue-group button span, .admin-story-workbench-preview-summary > span) {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-synthesis-weight: none;
+  }
+  & :is(p, textarea) { font-size: max(16px, 1em); }
+}

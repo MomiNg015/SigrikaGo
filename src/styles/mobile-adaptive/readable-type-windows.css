@@ -1,0 +1,58 @@
+/* Explicit reading roles: no global zoom, numeric typography or IRIS overrides. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  & :is(.mailbox-list-meta, .mailbox-list-meta time, .mailbox-detail-meta,
+    .announcement-list-item time, .announcement-detail-header time, .replay-table-row .replay-time-cell > span:last-child,
+    .wl-total, .wl-code, .wl-status > span, .wl-offline, .friends-row .online-status,
+    .result-match-note, .result-reward-limit-note, .result-rank-caption,
+    .skill-overclock-badge, .character-music-marquee-content) { font-size: 13px !important; }
+  & :is(.nested-modal.replay-dialog .replay-table-row > .replay-result-cell:nth-child(4), .result-actions button, .friend-action-row button,
+    .acquisition-method, .practice-difficulty-copy small,
+    .auth-label-row small, .auth-form-feedback, .preload-progress-note, .shop-switch-button) {
+    font-size: 14px !important;
+  }
+  & :is(.auth-label-row small, .auth-form-feedback, .acquisition-method,
+    .friends-row .online-status, .friend-action-row button) {
+    font-weight: 400 !important;
+    font-synthesis-weight: none;
+  }
+  & :is(.login-loading-tip, .login-loading-tip-copy, .preload-tip) { font-size: 15px !important; }
+  & :is(.shop-mascot-bubble, .costume-shop-bubble) { font-size: 15px !important; font-weight: 400 !important; line-height: 1.45 !important; }
+  & .friend-action-row { flex-wrap: wrap; }
+  & .friend-action-row button { padding-inline: 8px !important; }
+  & .practice-sheet-character .match-character-slot .match-slot-add > span { font-size: 12px !important; }
+  & .friends-row .online-status { padding-inline: 2px !important; }
+  & :is(.wl-table th, .wl-search input) { font-size: 13px !important; }
+  & .leaderboard-podium-modal :is(.lp-record small, .lp-medal small, .lp-winner .lp-rate small) { font-size: 13px; }
+  & :is(.wg-directory-footer, .wg-page-turn) { font-size: 13px !important; }
+  & :is(.wg-type, .wg-quantity, .team-lineup-round span) { font-size: 12px !important; font-weight: 400 !important; }
+  & .login-card-container .auth-label-row[for="auth-username"] { height: 38px; gap: 4px !important; }
+  & .login-card-container .auth-label-row small { max-width: none !important; text-wrap: balance; }
+  & .login-card-container .auth-form { gap: 8px !important; }
+  & .auth-form-feedback { max-height: 35px; }
+  & .auth-form-feedback .form-error { font-size: 14px !important; font-weight: 400 !important; line-height: 1.25 !important; }
+}
+
+@media (max-width: 900px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+    & .leaderboard-podium-modal :is(.lp-winner .user-identity-name, .lp-row .user-identity-name) { font-size: 14px; line-height: 1.4; }
+    & .leaderboard-podium-modal .lp-winner .lp-name { min-height: 40px; }
+    & .leaderboard-podium-modal :is(.lp-winner .lp-wins b, .lp-winner .lp-wins small, .lp-wins small, .lp-compact-rank, .rank-progress-points, .lp-captures small) { font-size: 13px; }
+    & .practice-sheet-character { font-size: 12px !important; }
+    & .practice-sheet-bubble { font-size: 16px !important; }
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble { padding-bottom: 40px !important; }
+}
+
+@media (max-width: 600px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+    & .practice-difficulty-backdrop .practice-dialog-sheet {
+      & .practice-sheet-dialogue { height: 206px; }
+      & .practice-sheet-bubble { width: calc(100% - 128px); padding: 10px 12px; top: 12px; }
+      & .practice-sheet-bust { width: 138px; }
+      & .practice-sheet-bust img { width: 148px; }
+    }
+  }
+}

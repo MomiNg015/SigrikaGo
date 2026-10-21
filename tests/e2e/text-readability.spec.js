@@ -11,7 +11,7 @@ async function expectReadable(locator) {
   });
   expect(styles.weight).toBe("400");
   expect(styles.synthesis).toBe("none");
-  expect(styles.size).toBeGreaterThanOrEqual(15);
+  expect(styles.size).toBeGreaterThanOrEqual(16);
   expect(styles.leading / styles.size).toBeCloseTo(1.65, 2);
   expect(styles.tracking / styles.size).toBeCloseTo(0.025, 3);
 }

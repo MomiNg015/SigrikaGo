@@ -1,0 +1,12 @@
+/* Match the paper-folder owner without changing the identity card geometry. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .profile-folder-modal.profile-folder-modal.window-bookmark-host {
+  & .profile-record-metric dt { font-size: 13px !important; font-weight: 400 !important; }
+  & .profile-play-tabs button { font-size: 14px !important; }
+  & .profile-summary-item .profile-record-header > .profile-replay-button { font-size: 14px !important; }
+  & .profile-rank-results .recent-result-marker { font-size: 12px !important; }
+  & .profile-character-table-head { font-size: 13px !important; }
+  @media (max-width: 900px) {
+    & .profile-character-table .profile-character-name { font-size: 14px !important; }
+    & .profile-record-metrics { column-gap: 3px !important; grid-template-columns: 1.3fr .7fr .7fr .7fr 1.3fr !important; }
+  }
+}
