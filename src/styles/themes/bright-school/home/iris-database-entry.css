@@ -1,7 +1,4 @@
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:focus-visible,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:active {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry:is(button, :hover, :focus-visible, :active) {
   color: #f8fdff !important;
   background: transparent !important;
   background-image: none !important;
@@ -46,14 +43,13 @@
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.iris-entry-portrait-slot, .iris-entry-data) {
   transform: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-data {
-  color: #e0feff !important;
-  transform: none !important;
-}
-
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-data,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-entry-data strong {
   color: #e0feff !important;
 }
@@ -79,7 +75,9 @@
 }
 
 @media (max-width: 768px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .iris-database-entry {
+  /* Preserve the viewport anchor over generic touch feedback, including sticky hover. */
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.iris-database-entry:is(button, :hover, :focus-visible, :active) {
     filter: drop-shadow(-4px 5px 0 rgba(2, 20, 32, 0.28)) !important;
+    transform: translateY(-50%) !important;
   }
 }
