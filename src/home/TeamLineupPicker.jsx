@@ -26,7 +26,7 @@ export function candyBlockedCharacters(user, characters, available) {
     && activeCharacterItemEffects(character.id, user.itemEffects).length);
 }
 
-export default function TeamLineupPicker({ user, characters, audioSettings, onClose, onStart, initialLineup, onChange, onConfirm, cancellation }) {
+export default function TeamLineupPicker({ user, characters, audioSettings, onClose, onStart, initialLineup, onChange, cancellation }) {
   const available = availableTeamCharacters(user, characters);
   const availableIds = new Set(available.map((character) => character.id));
   const storageKey = `sigrika-team-lineup:${user.id}`;
@@ -66,7 +66,7 @@ export default function TeamLineupPicker({ user, characters, audioSettings, onCl
         }} />)}
       </div>
       </div>
-      <ModalActionButton disabled={!lineup.every(Boolean)} onClick={() => onConfirm ? onConfirm(lineup) : onStart("team", lineup)}>{onConfirm ? "完成选人" : "开始匹配"}</ModalActionButton>
+      <ModalActionButton disabled={!lineup.every(Boolean)} onClick={() => { if (lineup.every(Boolean)) onStart("team", lineup); }}>开始队际赛匹配</ModalActionButton>
     </ModalDialog>
   </div>;
 }

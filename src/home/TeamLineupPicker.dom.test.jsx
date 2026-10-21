@@ -32,12 +32,12 @@ describe("fixed lineup positions and selection voice", () => {
     expect(screen.getByRole("button", { name: "娜波摩", exact: true }).querySelector(".match-character-selection-stamp").getAttribute("alt")).toBe("第3位");
     expect(screen.getByRole("button", { name: "取消第3位：娜波摩" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "第2位待选" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "开始匹配" }).disabled).toBe(true);
+    expect(screen.getByRole("button", { name: "开始队际赛匹配" }).disabled).toBe(true);
     expect(JSON.parse(localStorage.getItem("sigrika-team-lineup:lineup-test"))).toEqual(["sigrika", "", "nabomo"]);
     expect(playSystemVoice).toHaveBeenCalledTimes(3);
     fireEvent.click(screen.getByRole("button", { name: "达妮娅", exact: true }));
     expect(screen.getByRole("button", { name: "达妮娅", exact: true }).querySelector(".match-character-selection-stamp").getAttribute("src")).toBe("/assets/home/selection-stamp-2-v2.png");
-    fireEvent.click(screen.getByRole("button", { name: "开始匹配" }));
+    fireEvent.click(screen.getByRole("button", { name: "开始队际赛匹配" }));
     expect(onStart).toHaveBeenCalledWith("team", ["sigrika", "denia", "nabomo"]);
   });
   it("interrupts voice before each single-mode selection and passes audio settings", () => {
@@ -54,5 +54,17 @@ describe("fixed lineup positions and selection voice", () => {
   });
   it("retains position when a saved member becomes unavailable", () => {
     expect(teamLineupSlots(["sigrika", "denia", "nabomo"], new Set(["sigrika", "nabomo"]))).toEqual(["sigrika", "", "nabomo"]);
+  });
+  it("blocks duplicates, unowned members and newly unavailable members before starting", () => {
+    const onStart = vi.fn();
+    const { rerender } = render(<TeamLineupPicker user={user} characters={CHARACTERS} initialLineup={["sigrika", "sigrika", "unknown"]} onStart={onStart} onClose={vi.fn()}/>);
+    const start = screen.getByRole("button", { name: "开始队际赛匹配" });
+    expect(start.disabled).toBe(true);
+    for (const name of ["爱弥斯", "娜波摩"]) fireEvent.click(screen.getByRole("button", { name, exact: true }));
+    expect(start.disabled).toBe(false);
+    rerender(<TeamLineupPicker user={{ ...user, itemEffects: { sigrikaCandyDisabled: true } }} characters={CHARACTERS} onStart={onStart} onClose={vi.fn()}/>);
+    expect(start.disabled).toBe(true);
+    fireEvent.click(start);
+    expect(onStart).not.toHaveBeenCalled();
   });
 });

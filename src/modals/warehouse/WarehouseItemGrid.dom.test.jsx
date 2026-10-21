@@ -57,14 +57,28 @@ describe("warehouse field guide", () => {
     fireEvent.click(action);
     expect(onUseItem).not.toHaveBeenCalled();
   });
-  it("handles empty inventory and empty categories without showing a stale action", () => {
-    const { rerender } = setup([candy]);
+  it("keeps the book layout for empty inventory and categories without allowing a stale action", () => {
+    const { rerender, onUseItem, onSelectTargetItem } = setup([candy]);
     fireEvent.click(screen.getByRole("button", { name: "招募", exact: true }));
     expect(screen.getByText("暂无这类道具")).toBeTruthy();
     expect(screen.queryByLabelText("所选道具详情")).toBeNull();
+    expect(screen.getByRole("region", { name: "道具详情" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "使用", exact: true }).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "全部", exact: true }));
     expect(screen.getByRole("button", { name: "下一件道具" }).disabled).toBe(true);
-    rerender(<WarehouseItemGrid items={[]} usingItemId=""/>);
+    rerender(<WarehouseItemGrid items={[]} usingItemId="" onUseItem={onUseItem} onSelectTargetItem={onSelectTargetItem}/>);
     expect(screen.getByText("暂无道具")).toBeTruthy();
+    expect(screen.getByRole("navigation", { name: "道具分类" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "道具目录" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "道具详情" })).toBeTruthy();
+    expect(screen.getByText("0 种道具")).toBeTruthy();
+    expect(screen.getByText("0 / 0")).toBeTruthy();
+    for (const name of ["使用", "上一件道具", "下一件道具"]) {
+      const button = screen.getByRole("button", { name, exact: true });
+      expect(button.disabled).toBe(true);
+      fireEvent.click(button);
+    }
+    expect(onUseItem).not.toHaveBeenCalled();
+    expect(onSelectTargetItem).not.toHaveBeenCalled();
   });
 });

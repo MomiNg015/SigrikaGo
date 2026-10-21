@@ -15,7 +15,6 @@
   .wg-page-turn { display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 12px; }
   .wg-page-turn button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; }
   .wg-page-turn button:hover:not(:disabled) { background: var(--wg-pink) !important; }
-  > .warehouse-empty { flex: 1; margin: 18px 32px 32px; }
 }
 
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .character-target-modal.match-character-picker {

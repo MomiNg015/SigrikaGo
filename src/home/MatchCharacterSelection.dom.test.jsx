@@ -119,19 +119,24 @@ describe("match card character selection", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
     expect(screen.getByRole("button", { name: "常规匹配选择角色" })).toBeTruthy();
   });
-  it("saves team order without queuing and reuses it from the card", () => {
-    const { props, unmount } = setup();
+  it("starts team matchmaking directly from the picker and preserves the lineup for card quick starts", () => {
+    const onMatchModePickerOpenChange = vi.fn();
+    const { props, unmount } = setup({ onMatchModePickerOpenChange });
     fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
     fireEvent.click(screen.getByRole("button", { name: "队际赛选择角色2" }));
+    expect(screen.getByRole("button", { name: "开始队际赛匹配" }).disabled).toBe(true);
     for (const id of ["nabomo", "sigrika", "aemeath"]) fireEvent.click(screen.getByRole("button", { name: CHARACTERS[id].name }));
     expect(props.onStartMatch).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "完成选人" }));
-    fireEvent.click(screen.getByRole("button", { name: "队际赛" }));
-    expect(props.onStartMatch).toHaveBeenCalledWith("team", ["nabomo", "sigrika", "aemeath"]);
+    fireEvent.click(screen.getByRole("button", { name: "开始队际赛匹配" }));
+    expect(props.onStartMatch).toHaveBeenCalledExactlyOnceWith("team", ["nabomo", "sigrika", "aemeath"]);
+    expect(onMatchModePickerOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.queryByRole("dialog", { name: "队际赛阵容" })).toBeNull();
     unmount();
-    setup();
+    const reopened = setup();
     fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
     expect(screen.getByRole("button", { name: `队际赛选择角色1：${CHARACTERS.nabomo.name}` })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "队际赛", exact: true }));
+    expect(reopened.props.onStartMatch).toHaveBeenCalledExactlyOnceWith("team", ["nabomo", "sigrika", "aemeath"]);
   });
   it("filters stale identities and isolates account changes", () => {
     localStorage.setItem(`sigrika-match-characters:${user.id}`, JSON.stringify({ standard: ["aemeath"], team: ["sigrika", "sigrika", "aemeath"] }));

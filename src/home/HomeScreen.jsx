@@ -5,6 +5,7 @@ import MatchCharacterPicker from "./MatchCharacterPicker.jsx";
 import MatchCharacterSlots from "./MatchCharacterSlots.jsx";
 import { MATCH_CHARACTER_NOTICE, useMatchCharacterSelection } from "./useMatchCharacterSelection.js";
 import { TEAM_MINIMUM_NOTICE } from "../shared/teamMatch.js";
+import { teamLineupSlots } from "./teamLineupSlots.js";
 import { useEffect, useRef, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { studentIdentityCharacterId } from "../shared/studentIdentity.js";
@@ -67,6 +68,14 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   });
 
 
+  function startTeamMatch(lineup) {
+    const validLineup = teamLineupSlots(lineup, new Set(available.map(character => character.id)));
+    if (!validLineup.every(Boolean)) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
+    setCharacterEntry(null);
+    onMatchModePickerOpenChange?.(false);
+    onStartMatch("team", validLineup);
+  }
+
   return (
     <>
       <TopAnnouncement enabled={siteSettings.topAnnouncementEnabled} text={siteSettings.topAnnouncementText} />
@@ -126,11 +135,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
             }}
             onNotice={onNotice}
             characterPickerOpen={Boolean(characterEntry)}
-            onTeamSelect={() => {
-              if (!selections.team.every(Boolean)) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
-              onMatchModePickerOpenChange?.(false);
-              onStartMatch("team", selections.team);
-            }}
+            onTeamSelect={() => startTeamMatch(selections.team)}
             onClose={() => onMatchModePickerOpenChange?.(false)}
             onPreloadPlayableReady={onPreloadPlayableReady}
             onPracticeStart={(options) => {
@@ -159,7 +164,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
           />
         )}
 
-        {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker cancellation={cancellation} user={user} characters={characters} audioSettings={audioSettings} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onConfirm={() => setCharacterEntry(null)} />}
+        {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker cancellation={cancellation} user={user} characters={characters} audioSettings={audioSettings} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onStart={(_mode, lineup) => startTeamMatch(lineup)} />}
         {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker cancellation={cancellation} blocked={blocked} audioSettings={audioSettings} available={available} selected={selections[characterEntry][0]} user={user}
           onClose={() => setCharacterEntry(null)} onSelect={(id) => select(characterEntry, [id])}
           startLabel={characterEntry === "capture" ? "开始吃子挑战赛" : `开始${characterEntry === "regular" ? "星炬对弈" : characterEntry === "standard" ? "标准对弈" : "五子棋"}匹配`}

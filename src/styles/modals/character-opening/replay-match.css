@@ -17,6 +17,11 @@
   justify-items: center;
 }
 
+.match-success-modal:not(.sigrika-corruption-match-modal) {
+  --window-paper-color: var(--campus-button-success);
+  background-color: var(--window-paper-color);
+}
+
 .match-success-modal svg {
   color: #3a8f75;
   filter: drop-shadow(0 10px 16px rgba(58, 143, 117, 0.18));

@@ -241,14 +241,14 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await expect(page.getByRole("button", { name: /前移|后移/ })).toHaveCount(0);
     await toggleMember("爱弥斯");
     await toggleMember("爱弥斯");
-    await page.getByRole("button", { name: "开始匹配" }).click();
+    await page.getByRole("button", { name: "开始队际赛匹配" }).click();
     expect(await page.evaluate(() => window.teamSelection)).toEqual({ mode: "team", lineup: ["sigrika", "aemeath", "nabomo"] });
     for (const card of await page.locator('.team-character-option[aria-pressed="true"]').all()) {
       await expect(card).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       await expect(card).toHaveCSS("outline-style", "none");
       await expect(card).toHaveCSS("box-shadow", "none");
       await expect(card).toHaveCSS("transform", "none");
-      await expect(card.locator('.team-order-badge')).toHaveCSS('border-radius', '50%');
+      await expect(card.locator('.match-character-selection-stamp')).toHaveAttribute('src', /selection-stamp-[123]-v2\.png$/);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath("team-lineup.png"), fullPage: true });
@@ -447,6 +447,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     expect(await picker.locator(".match-character-id-frame").evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
     await picker.screenshot({ path: testInfo.outputPath("owned-bust-picker.png"), animations: "disabled" });
     await picker.getByRole("button", { name: "爱弥斯", exact: true }).click();
+    await picker.getByRole("button", { name: "关闭选择角色", exact: true }).click();
     await modes.getByRole("button", { name: "常规匹配", exact: true }).click();
     expect(await page.evaluate(() => window.matchSelection)).toEqual({ mode: "standard", characterId: "aemeath" });
     await page.reload();
@@ -457,8 +458,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await modes.getByRole("button", { name: "队际赛选择角色1", exact: true }).click();
     const team = page.getByRole("dialog", { name: "队际赛阵容" });
     for (const name of ["娜波摩", "西格莉卡", "爱弥斯"]) await team.getByRole("button", { name, exact: true }).click();
-    await team.getByRole("button", { name: "完成选人", exact: true }).click();
-    await modes.getByRole("button", { name: "队际赛", exact: true }).click({ position: { x: 20, y: 30 } });
+    await team.getByRole("button", { name: "开始队际赛匹配", exact: true }).click();
     expect(await page.evaluate(() => window.matchSelection)).toEqual({ mode: "team", lineup: ["nabomo", "sigrika", "aemeath"] });
     await expect(modes.locator(".match-mode-count")).toHaveCount(0);
     if (viewport.width <= 768) {
