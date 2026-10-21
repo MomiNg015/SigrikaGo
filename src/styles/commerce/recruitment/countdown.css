@@ -5,7 +5,7 @@
   background: transparent;
   box-shadow: none;
   color: #55f2b8;
-  font-family: "Courier New", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: clamp(2.1rem, 5.2vw, 3.6rem);
   font-weight: 900;
   letter-spacing: 0.04em;

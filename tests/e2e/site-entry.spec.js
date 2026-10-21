@@ -63,6 +63,7 @@ test("first HTML paint is usable before the application scripts download", async
   await page.goto("/", { waitUntil: "commit" });
   await expect(page.getByRole("progressbar", { name: "进站资源加载进度" })).toBeVisible();
   await expect(page.locator("[data-entry-percent]")).toHaveText("0%");
+  await expect(page.locator("[data-entry-percent]")).toHaveCSS("font-family", /Sigrika Window Title/);
   expect(await page.locator("[data-site-entry]").evaluate(el => getComputedStyle(el).backgroundColor)).toBe("rgb(255, 251, 242)");
   release();
 });

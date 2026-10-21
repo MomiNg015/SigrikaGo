@@ -28,7 +28,7 @@
     min-height: 16px !important;
     box-sizing: border-box !important;
     padding: 0 !important;
-    font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+    font-family: var(--font-ui-default) !important;
     font-size: 0 !important;
     font-weight: 900 !important;
     line-height: 1 !important;

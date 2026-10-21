@@ -51,7 +51,7 @@
   border-collapse: separate !important;
   border-spacing: 0 8px !important;
   color: var(--bright-ink) !important;
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif !important;
+  font-family: var(--font-ui-default) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-character-table thead th {

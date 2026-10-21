@@ -142,7 +142,7 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".top-stats-bar .stat > span");
     expect(hudCss).toContain("font-size: 11px !important");
     expect(hudCss).toContain(".top-stats-bar .stat strong");
-    expect(hudCss).toContain('font-family: "Chakra Petch", "Courier New", monospace !important');
+    expect(hudCss).toContain('font-family: var(--font-ui-default) !important');
     expect(hudCss).toContain("font-size: 22px !important");
     expect(hudCss).toContain("text-shadow: 0 0 8px rgba(0, 255, 190, 0.4)");
     expect(hudCss).toContain(".character-grid-container");
@@ -380,7 +380,7 @@ describe("component-level HUD refinements", () => {
 
   it("unifies Bright School cute typography and repairs warehouse/profile text blocks", () => {
     expect(themesCss).toContain("Bright School cute typography and warehouse/profile repair layer.");
-    expect(themesCss).toContain('"Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
+    expect(themesCss).toContain('var(--font-ui-default) !important');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-summary-item");
     expect(themesCss).toContain("clip-path: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header {");

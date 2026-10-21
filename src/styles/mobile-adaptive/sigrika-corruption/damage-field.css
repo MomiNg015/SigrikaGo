@@ -4,7 +4,7 @@
   z-index: var(--sigrika-corruption-overlay-z);
   overflow: hidden;
   pointer-events: none;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-ui-default);
   contain: strict;
 }
 

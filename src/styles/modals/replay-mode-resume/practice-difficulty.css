@@ -85,7 +85,7 @@
 
 .practice-difficulty-index {
   color: var(--practice-difficulty-accent);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 1.05rem;
   font-weight: 900;
 }

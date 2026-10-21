@@ -44,7 +44,7 @@
 .room-scoreboard-identity .room-move-placard[data-turn="black"] { background: #171717; color: #ffffff; }
 .room-scoreboard-identity .room-move-placard[data-turn="white"] { background: #ffffff; color: #171717; }
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-header-scoreboard .room-move-placard > :is(strong, span) { color: inherit !important; }
-.room-move-placard strong { font: 700 42px/1 Arial, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
+.room-move-placard strong { font: 700 42px/1 var(--font-ui-default); font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
 .room-move-placard > span { font: 12px/1 var(--font-window-title); }
 .room-move-placard.is-long-count strong { font-size: 36px; }
 .room-scoreboard-details { flex: 1; min-width: 0; display: grid; gap: 5px; }

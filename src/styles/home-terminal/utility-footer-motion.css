@@ -129,7 +129,7 @@
   background: transparent;
   box-shadow: none;
   color: var(--home-terminal-cyan);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-ui-default);
   font-size: 10px;
   font-weight: 700;
   line-height: 1.35;

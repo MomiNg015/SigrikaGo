@@ -38,7 +38,7 @@ for (const width of [1440, 1024, 390, 320]) {
     expect(numbers.length).toBeGreaterThan(6);
     expect(numbers.filter(e => !e.font.includes("Sigrika Window Title"))).toEqual([]);
     for (const coordinate of await page.locator(".coord-col span").all()) {
-      expect(await coordinate.evaluate(e => getComputedStyle(e).fontFamily)).not.toContain("Sigrika Window Title");
+      expect(await coordinate.evaluate(e => getComputedStyle(e).fontFamily)).toContain("Sigrika Window Title");
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await page.screenshot({ path: testInfo.outputPath(`battle-${width}.png`), fullPage: true });

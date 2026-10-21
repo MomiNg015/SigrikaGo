@@ -20,7 +20,7 @@
   position: relative;
   overflow: hidden;
   color: #2d2430;
-  font-family: "Microsoft YaHei", "PingFang SC", serif;
+  font-family: var(--font-ui-default);
   font-size: clamp(12px, 1.2vw, 15px);
   font-weight: 900;
   letter-spacing: 0;

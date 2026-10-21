@@ -6,7 +6,7 @@
   & :where(.result-rank-trail, .result-rank-trail span) { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: inherit; }
   & .result-rank-caption { font-size: 11px; color: var(--bright-muted); font-weight: 400; }
   & .result-rank-number { display: inline-flex; align-items: baseline; gap: 3px; white-space: nowrap; }
-  & .result-rank-number b { font: 700 27px/1 Arial, sans-serif; }
+  & .result-rank-number b { font: 700 27px/1 var(--font-ui-default); }
   & .result-rank-number small { font-size: 11px; }
   & .result-rank-route { display: flex; align-items: center; gap: 12px; }
   & .result-rank-route > svg { width: 21px; height: 21px; color: var(--rank-gold); flex-shrink: 0; }

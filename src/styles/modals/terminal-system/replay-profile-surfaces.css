@@ -26,7 +26,7 @@
 .replay-table-row,
 .profile-character-table,
 .result-rewards span {
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
 }
 
 .nested-modal-backdrop {

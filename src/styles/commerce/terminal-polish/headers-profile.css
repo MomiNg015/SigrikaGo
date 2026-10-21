@@ -43,5 +43,5 @@
 .shop-wallet,
 .watch-code-cell,
 .watch-status {
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
 }

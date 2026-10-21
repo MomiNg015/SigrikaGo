@@ -6,7 +6,7 @@
     linear-gradient(100deg, rgba(255, 255, 255, 0.18), transparent 36%, rgba(255, 255, 255, 0.18) 62%, transparent 82%) padding-box,
     linear-gradient(105deg, var(--side-glow, var(--battle-cyan)), var(--side-glow-2, var(--battle-blue)), #ffffff) border-box;
   color: #ffffff;
-  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: var(--font-ui-default);
   text-shadow: 0 0 10px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 58%, transparent);
   box-shadow:
     inset 0 0 18px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 18%, transparent),

@@ -13,7 +13,7 @@
 
 .top-stats-bar .stat strong {
   color: #00ffbe !important;
-  font-family: "Chakra Petch", "Courier New", monospace !important;
+  font-family: var(--font-ui-default) !important;
   font-size: 22px !important;
   font-weight: 900 !important;
   line-height: 1.05;

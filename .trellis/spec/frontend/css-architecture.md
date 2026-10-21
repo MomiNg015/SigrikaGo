@@ -1,5 +1,9 @@
 # CSS Architecture
 
+## Global typography contract
+
+Production UI uses the bundled LXGW Marker Gothic face (`Sigrika Window Title`) through `--font-ui-default` or `--font-window-title`, including admin, controls, ordinary numeric text and board coordinates. Local font-family declarations and font shorthands must use shared tokens instead of system/monospace overrides. Preserve current sizes, weights, line heights and numeric features. Keep all existing WuWa semantic selectors, faces and unicode ranges unchanged. IRIS entry and window are excluded as a whole: preserve the original Dotted Songti / WuWa mixed tokens, owner rules and fallbacks. Check computed fonts under full theme imports; verify actual custom font loading and IRIS independence from the global default. Raster lettering and historical standalone design samples are outside the runtime font contract.
+
 > Project-specific contracts for SigrikaGo stylesheet work.
 
 ## Scope

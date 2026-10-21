@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-29T11:40:00+08:00",
+  "generatedAt": "2026-10-21T05:31:00.324774+00:00",
   "title": "Design System: SigrikaGo Bright School",
   "extensions": {
     "colorMeta": {
@@ -67,7 +67,7 @@
     "typographyMeta": {
       "display": { "displayName": "Identity Accent", "purpose": "Short Latin identity marks only." },
       "title": { "displayName": "Window Title", "purpose": "Player-facing window and feature titles." },
-      "body": { "displayName": "UI Body", "purpose": "Controls, forms, messages, and gameplay copy." },
+      "body": { "displayName": "UI Body", "purpose": "LXGW for player/admin controls, forms, messages, numbers and gameplay copy; preserve existing WuWa and all IRIS typography." },
       "label": { "displayName": "UI Label", "purpose": "Tabs, fields, states, and compact controls." }
     },
     "shadows": [
@@ -139,7 +139,7 @@
     ],
     "rules": [
       { "name": "The Ink-First Rule", "body": "A surface is not complete until its text, border, and active state remain readable without relying on color alone.", "section": "colors" },
-      { "name": "The Familiar-Control Rule", "body": "Buttons, labels, form values, and dense operational text always use the UI sans; display faces are reserved for identity and titles.", "section": "typography" },
+      { "name": "The Shared-Font Rule", "body": "Use `--font-ui-default` for ordinary text instead of component-local system or monospace families. Preserve the existing WuWa semantic classes and every IRIS typography owner. System fallbacks remain for unavailable glyphs or fonts; image lettering and historical design samples are separate assets.", "section": "typography" },
       { "name": "The Short-Shadow Rule", "body": "Bright School depth uses crisp paper offsets; broad blur is not the default visual language.", "section": "elevation" }
     ],
     "dos": [

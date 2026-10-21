@@ -190,3 +190,9 @@
 @media (prefers-reduced-motion: reduce) {
   .iris-database-edge-stream::before { animation: none; }
 }
+
+.iris-database-entry,
+.iris-database-modal {
+  /* Preserve IRIS labels that intentionally use the original UI fallback. */
+  --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+}

@@ -18,7 +18,7 @@
   dt,
   dd
 ) {
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--font-ui-default) !important;
   color: #3d2b25 !important;
   text-shadow: none !important;
   letter-spacing: 0.01em !important;
@@ -48,6 +48,6 @@
   .timer-value,
   .score-chip
 ) {
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--font-ui-default) !important;
   font-variant-numeric: tabular-nums !important;
 }

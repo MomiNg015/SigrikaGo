@@ -14,27 +14,33 @@ colors:
   active-clock: "#fff0a6"
 typography:
   battle-clock:
-    fontFamily: "Arial, sans-serif"
+    fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontWeight: 700
     lineHeight: 1.15
   display:
-    fontFamily: "Sigrika Accent Latin, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
+    fontFamily: "Sigrika Accent Latin, Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontWeight: 400
     lineHeight: 1.1
     letterSpacing: "normal"
+  iris:
+    fontFamily: "IRIS Dotted Songti Circle, Microsoft YaHei UI, Microsoft YaHei, serif"
+    fontWeight: 400
+  iris-mixed:
+    fontFamily: "Sigrika Accent Latin, IRIS Dotted Songti Circle, Microsoft YaHei UI, Microsoft YaHei, serif"
+    fontWeight: 400
   title:
     fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontWeight: 400
     lineHeight: 1.2
     letterSpacing: "normal"
   body:
-    fontFamily: "Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
+    fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "0"
   label:
-    fontFamily: "Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
+    fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.35
@@ -123,11 +129,11 @@ The palette reads like a clean school notebook annotated with bright stationery,
 
 ## Typography
 
-**Display Font:** Sigrika Accent Latin with the default Chinese UI sans fallback
-**Body Font:** Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif
-**Title Font:** Sigrika Window Title with the default Chinese UI sans fallback
+**Display Font:** Existing WuWa accents (`Sigrika Accent Latin`), with LXGW fallback outside IRIS.
+**Body / Title Font:** Bundled LXGW Marker Gothic (`Sigrika Window Title`) through `--font-ui-default` / `--font-window-title`.
+**IRIS Exception:** Keep the entry and link list in Dotted Songti Circle; keep the window mixed WuWa / Dotted Songti stack and its original system fallbacks.
 
-**Character:** Titles feel handwritten and club-specific, while labels, forms, and gameplay copy stay familiar and highly legible. Accent faces never replace the UI sans for controls or dense information.
+**Character:** LXGW unifies production player and admin text, including labels, forms, numbers, board coordinates and all themes. Keep existing sizes, weights and spacing. Existing WuWa use sites and unicode ranges remain unchanged; IRIS typography is independently preserved.
 
 ### Hierarchy
 
@@ -136,7 +142,7 @@ The palette reads like a clean school notebook annotated with bright stationery,
 - **Body** (400, 1rem, 1.5): Instructions, messages, and form content; prose stays within 65–75ch.
 - **Label** (700, 0.875rem, 1.35): Form labels, tabs, status text, and control copy.
 
-**The Familiar-Control Rule.** Buttons, labels, form values, and dense operational text always use the UI sans; display faces are reserved for identity and titles.
+**The Shared-Font Rule.** Use `--font-ui-default` for ordinary text instead of component-local system or monospace families. Preserve the existing WuWa semantic classes and every IRIS typography owner. System fallbacks remain for unavailable glyphs or fonts; image lettering and historical design samples are separate assets.
 
 ## Elevation
 

@@ -10,7 +10,7 @@
 
 .theme-choice-heading {
   color: var(--theme-muted, rgba(224, 247, 244, 0.72));
-  font-family: "Chakra Petch", "Courier New", monospace;
+  font-family: var(--font-ui-default);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;

@@ -39,7 +39,7 @@
   border: 1px solid rgba(0, 255, 190, 0.7);
   background: rgba(0, 255, 190, 0.13);
   color: var(--terminal-cyan);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
@@ -60,12 +60,12 @@
   border-radius: 0;
   background: transparent;
   color: var(--terminal-cyan);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 18px;
 }
 
 .character-card.locked small {
   color: var(--terminal-dim);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 10px;
 }

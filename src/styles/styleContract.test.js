@@ -134,7 +134,7 @@ describe("root CSS entry contract", () => {
     expect(tailwindTokens).not.toContain("preflight");
   });
 
-  it("keeps art font usage semantic and opt-in", () => {
+  it("defaults to LXGW while keeping WuWa semantic and opt-in", () => {
     const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
     const fontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf", import.meta.url));
     const windowTitleFontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/LXGWMarkerGothic-Regular.ttf", import.meta.url));
@@ -152,6 +152,7 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain('font-family: "Sigrika Window Title";');
     expect(baseCss).toContain('src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype")');
     expect(baseCss).toContain('--font-window-title: "Sigrika Window Title";');
+    expect(baseCss).toContain('--font-ui-default: "Sigrika Window Title",');
     expect(baseCss).toContain(".text-display-accent");
     expect(baseCss).toContain(".text-window-title");
     expect(baseCss).toContain(':where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2');
@@ -161,6 +162,16 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain("text-transform: uppercase");
     expect(finalTypographyCss).toContain("font-family: var(--font-window-title), var(--font-ui-default)");
     expect(finalTypographyCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .text-window-title");
+  });
+
+  it("routes production font families through shared tokens or preserved accent faces", () => {
+    const unexpected = cssFilesUnder(stylesDir).flatMap(path => {
+      const source = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/@font-face\s*\{[^}]*\}/g, "");
+      return [...source.matchAll(/font-family\s*:\s*([^;}]+)/g)]
+        .filter(([, value]) => !/^(?:var\(--|inherit\b|"Sigrika Window Title"|"Battle WuWa Digits")/.test(value))
+        .map(([, value]) => `${relative(stylesDir, path)}: ${value}`);
+    });
+    expect(unexpected).toEqual([]);
   });
 
   it("keeps top-level style files either imported or intentionally non-CSS tests", () => {
@@ -1303,7 +1314,7 @@ describe("root CSS entry contract", () => {
     expect(recruitmentCountdown).toContain("box-shadow: none;");
     expect(recruitmentCountdown).not.toContain("repeating-linear-gradient");
     expect(recruitmentCountdown).not.toContain("border: 3px solid #3d2b25;");
-    expect(recruitmentCountdown).toContain("font-family: \"Courier New\", Consolas, monospace;");
+    expect(recruitmentCountdown).toContain("font-family: var(--font-ui-default);");
     expect(recruitmentCountdown).toContain("text-shadow:");
     expect(recruitmentCountdown).toContain(".recruitment-fast-forward-button");
     expect(phoneRecruitment).toContain(".recruitment-empty-board::before");

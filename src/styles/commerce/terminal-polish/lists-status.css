@@ -84,7 +84,7 @@
   display: inline-grid;
   place-items: center;
   color: var(--terminal-blue);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 16px;
 }
 

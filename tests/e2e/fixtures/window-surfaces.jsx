@@ -9,6 +9,7 @@ import AuthScreen from "../../../src/auth/AuthScreen.jsx";
 import LoginAssetPreloadScreen from "../../../src/app/LoginAssetPreloadScreen.jsx";
 import IrisDatabase from "../../../src/home/IrisDatabase.jsx";
 import MatchSuccessModal from "../../../src/modals/gameLifecycle/MatchSuccessModal.jsx";
+import AdminConsole from "../../../src/admin/AdminConsole.jsx";
 
 const query = new URLSearchParams(location.search);
 const surface = query.get("surface") || "Warehouse";
@@ -25,8 +26,9 @@ const user = {
 const overlayNames = ["House", "Resume", "Achievements", "Personalization", "Recruitment", "Shop", "Warehouse", "Leaderboard", "Friends", "Mailbox", "Announcements", "MessageBoard", "Settings", "Watch"];
 const flags = Object.fromEntries(overlayNames.flatMap(name => [[`show${name}`, surface === name], [`setShow${name}`, noop]]));
 createRoot(document.getElementById("root")).render(
-  <div className={`app-shell player-theme-enabled theme-bright-school${query.has("corrupt") ? " is-sigrika-corrupted" : ""}`}>
-    {surface === "Auth" ? <AuthScreen initialMode={query.get("mode") || "login"} onAuth={noop} />
+  <div className={surface === "Admin" ? "app-shell" : `app-shell player-theme-enabled theme-bright-school${query.has("corrupt") ? " is-sigrika-corrupted" : ""}`}>
+    {surface === "Admin" ? <AdminConsole user={user} token="surface-fixture" tab="users" setTab={noop} musicTracks={[]} onNotice={noop} onBack={noop} />
+      : surface === "Auth" ? <AuthScreen initialMode={query.get("mode") || "login"} onAuth={noop} />
       : surface === "Loading" ? <LoginAssetPreloadScreen progress={0.45} tipsText="落子前，先确认棋子的气。" />
       : surface === "MatchSuccess" ? <MatchSuccessModal startedAt={Date.now()} audioSettings={{ muted: true }} onComplete={noop} specialDuel={query.has("special")} />
       : surface === "Iris" ? <main className="home-screen home-terminal-screen"><IrisDatabase audioSettings={{ muted: true }} links={DEFAULT_SITE_SETTINGS.irisLinks} greeting={DEFAULT_SITE_SETTINGS.irisGreeting} /></main>

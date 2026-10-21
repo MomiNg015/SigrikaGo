@@ -93,7 +93,7 @@
   top: 26%;
   transform: translate(-50%, -50%) !important;
   color: #fff !important;
-  font: 800 36px / 1 sans-serif;
+  font: 800 36px / 1 var(--font-ui-default);
   pointer-events: none;
 }
 .handbook-puzzle-tile:focus-visible { outline: 3px solid #544a3d; outline-offset: -6px; }

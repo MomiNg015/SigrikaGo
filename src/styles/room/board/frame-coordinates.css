@@ -80,7 +80,7 @@
 .coord-row,
 .coord-col {
   color: #090708;
-  font-family: "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-ui-default);
   font-weight: 600;
   font-size: clamp(13px, 1.45vw, 18px);
   line-height: 1;

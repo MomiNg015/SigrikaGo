@@ -31,7 +31,7 @@
 :root {
   color: #2d2430;
   background: #fff8fb;
-  --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-ui-default: "Sigrika Window Title", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   --font-display-accent: "Sigrika Accent Latin";
   --font-numeric-accent: "Sigrika Accent Latin";
   --font-window-title: "Sigrika Window Title";

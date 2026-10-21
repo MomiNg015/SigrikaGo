@@ -2,7 +2,7 @@
 .login-loading-tip {
   width: min(440px, 100%);
   text-align: center;
-  font: 14px/1.7 "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  font: 14px/1.7 var(--font-ui-default);
   color: #4a3736;
 }
 

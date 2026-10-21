@@ -142,6 +142,7 @@
 
 .login-card-container {
   .auth-form { gap: 10px; }
+  .auth-form :is(input, button) { line-height: 1.25; }
   .auth-label-row {
     height: 24px;
     align-items: baseline;

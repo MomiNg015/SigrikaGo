@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SigrikaGo</title>
     <style>
-      /* Critical first-paint shell: intentionally independent of downloaded UI assets. */
-      [data-site-entry] { --entry-paper: #fffbf2; --entry-ink: #3d2b25; --entry-blue: #9ad3de; box-sizing: border-box; position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--entry-paper); color: var(--entry-ink); font: 16px/1.5 "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif; }
+      /* First paint uses an immediate fallback while the shared LXGW face loads. */
+      @font-face { font-family: "Sigrika Window Title"; src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+      [data-site-entry] { --entry-paper: #fffbf2; --entry-ink: #3d2b25; --entry-blue: #9ad3de; box-sizing: border-box; position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--entry-paper); color: var(--entry-ink); font: 16px/1.5 "Sigrika Window Title", "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif; }
       [data-entry-panel] { width: min(320px, 100%); text-align: center; }
       [data-entry-status] { margin: 0 0 22px; font-weight: 700; }
       [data-entry-track] { height: 12px; overflow: hidden; border: 2px solid var(--entry-ink); border-radius: 8px; }

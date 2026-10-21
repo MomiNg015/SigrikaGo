@@ -48,7 +48,7 @@
   .wg-thumbnail img, .wg-thumbnail svg { width: 100% !important; height: 49px !important; max-height: none; object-fit: contain; }
   .wg-name { font: 18px/1.4 var(--font-window-title); white-space: normal; overflow-wrap: anywhere; }
   .wg-name, .wg-filters button, button.wg-use { font-family: var(--font-window-title) !important; font-weight: 400 !important; }
-  .wg-quantity, .wg-hero-count { display: inline-flex; justify-content: center; align-items: center; font-family: Arial, sans-serif !important; font-style: normal !important; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; color: color-mix(in srgb, var(--wg-ink) 76%, var(--wg-pink)) !important; }
+  .wg-quantity, .wg-hero-count { display: inline-flex; justify-content: center; align-items: center; font-family: var(--font-ui-default) !important; font-style: normal !important; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; color: color-mix(in srgb, var(--wg-ink) 76%, var(--wg-pink)) !important; }
   .wg-quantity { min-width: 32px; min-height: 24px; padding: 2px 4px; font-size: 13px; border-bottom: 2px solid currentColor; }
   .wg-directory-footer { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-top: 10px; font-size: 11px; }
   button:disabled { opacity: .5 !important; cursor: not-allowed !important; }

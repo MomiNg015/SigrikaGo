@@ -13,7 +13,7 @@
 
 .timer-label {
   color: color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 76%, #ffffff);
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font-ui-default);
   letter-spacing: 0.08em;
 }
 

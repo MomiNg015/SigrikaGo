@@ -21,7 +21,7 @@
   .lp-columns > span:not(:nth-child(2)) { text-align: center; }
   .lp-row { padding: 8px 16px; min-height: 72px; border: 0; border-bottom: 1px solid var(--lp-rule); border-radius: 0; background: transparent; }
   .lp-row[data-current="true"] { background: var(--lp-mine); }
-  .lp-position { font: 500 25px Arial, sans-serif; text-align: center; font-variant-numeric: tabular-nums; }
+  .lp-position { font: 500 25px var(--font-ui-default); text-align: center; font-variant-numeric: tabular-nums; }
   .lp-player { display: flex; align-items: center; gap: 13px; min-width: 0; }
   .lp-avatar { flex: none; position: relative; display: grid; place-items: center; width: 57px; }
   .lp-avatar > img { display: block; width: 57px !important; height: 51px !important; object-fit: contain; }

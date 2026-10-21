@@ -23,7 +23,7 @@
   left: 18px;
   z-index: 2;
   color: rgba(0, 255, 190, 0.72);
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font-ui-default);
   font-size: 10px;
   letter-spacing: 0.08em;
   pointer-events: none;

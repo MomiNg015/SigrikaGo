@@ -8,7 +8,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
   color: var(--bright-ink) !important;
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif !important;
+  font-family: var(--font-ui-default) !important;
   font-size: var(--home-brand-title-size) !important;
   font-weight: 900 !important;
   letter-spacing: 0 !important;
@@ -35,7 +35,7 @@
   box-shadow: 2px 2px 0 var(--bright-border) !important;
   clip-path: none !important;
   padding: 8px 14px !important;
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif !important;
+  font-family: var(--font-ui-default) !important;
   font-weight: 900 !important;
 }
 

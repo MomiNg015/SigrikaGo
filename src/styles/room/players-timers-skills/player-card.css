@@ -125,7 +125,7 @@
   place-items: center;
   border: 3px solid currentColor;
   background: rgba(255, 255, 255, 0.36);
-  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: var(--font-ui-default);
   font-size: clamp(20px, 2.2vw, 28px);
   font-weight: 900;
   line-height: 1;

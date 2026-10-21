@@ -7,7 +7,7 @@
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 118, 163, 0.16), rgba(0, 255, 190, 0.08));
   color: #fff8fc;
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 11px;
   font-weight: 900;
   white-space: nowrap;
@@ -24,7 +24,7 @@
   display: block;
   padding-top: 0;
   color: transparent;
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-ui-default);
   font-size: 0;
   font-weight: 900;
   letter-spacing: 0;

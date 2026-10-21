@@ -21,7 +21,7 @@
   .wl-table td { min-width: 0; border: 0; padding: 0; text-align: left; }
   .wl-row { position: relative; min-height: 67px; padding: 7px 4px; border-bottom: 1px solid var(--wl-rule); }
   .wl-row[data-selected="true"] { background: color-mix(in srgb, var(--wl-pink) 23%, var(--wl-paper)); }
-  .wl-code { font: 700 15px Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  .wl-code { font: 700 15px var(--font-ui-default); font-variant-numeric: tabular-nums; }
   .wl-mode { --mode-tint: var(--wl-pink); }
   .mode-standard { --mode-tint: var(--wl-blue); }
   .mode-gomoku { --mode-tint: var(--wl-mint); }
@@ -35,8 +35,8 @@
   .wl-player .user-identity-name { display: block; max-width: 100%; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .wl-offline { font-size: 10px; flex: none; }
   .offline > img { filter: grayscale(1); opacity: .5; }
-  .wl-moves { font: 700 19px Arial, sans-serif; font-variant-numeric: tabular-nums; }
-  .wl-people { display: flex; align-items: center; gap: 5px; font: 14px Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  .wl-moves { font: 700 19px var(--font-ui-default); font-variant-numeric: tabular-nums; }
+  .wl-people { display: flex; align-items: center; gap: 5px; font: 14px var(--font-ui-default); font-variant-numeric: tabular-nums; }
   .wl-placard { display: flex; justify-content: center; padding: 5px 3px 3px; }
   .room-scoreboard-identity { width: 100%; justify-content: center; }
   .room-scoreboard-identity .room-move-placard { flex: none; width: 70px; height: 48px; min-width: 0; padding: 9px 3px 3px; gap: 3px; background: var(--wl-paper); color: var(--wl-ink); transform: rotate(-2deg); }

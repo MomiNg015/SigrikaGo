@@ -392,7 +392,7 @@ describe("HomeScreen", () => {
     const html = renderHome();
     const css = readCssFixture("../styles/home-terminal.css");
     const plaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/g)?.find((block) => block.includes("background: rgba(10, 22, 30, 0.75)")) ?? "";
-    const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/g)?.find((block) => block.includes("font-family: ui-monospace")) ?? "";
+    const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/g)?.find((block) => block.includes("font-family: var(--font-ui-default)")) ?? "";
     const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("repeat(3, minmax(0, 1fr))")) ?? "";
     const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
@@ -492,7 +492,7 @@ describe("HomeScreen", () => {
     expect(plaqueBlock).toContain("border: 1px solid var(--home-terminal-blue)");
     expect(plaqueBlock).toContain("clip-path: polygon");
     expect(plaqueBlock).toContain("box-shadow");
-    expect(statsBlock).toContain("font-family: ui-monospace");
+    expect(statsBlock).toContain("font-family: var(--font-ui-default)");
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
     expect(brightPlaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
@@ -887,7 +887,7 @@ describe("HomeScreen", () => {
     expect(footerBlock).toContain("position: fixed");
     expect(footerBlock).toContain("right: clamp(12px, 2vw, 24px)");
     expect(footerBlock).toContain("bottom: clamp(8px, 1.4vw, 16px)");
-    expect(footerBlock).toContain("font-family: ui-monospace");
+    expect(footerBlock).toContain("font-family: var(--font-ui-default)");
     expect(footerBlock).toContain("opacity: 0.4");
     expect(footerSpanBlock).toContain("white-space: nowrap");
     expect(mobileMedia).toContain(".home-grid-featured");
