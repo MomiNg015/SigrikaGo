@@ -32,10 +32,10 @@
 }
 
 .room-mobile-exit {
-  background: linear-gradient(135deg, #eaf8ff, #d5efff);
-  border-color: #8bc8ec;
-  color: #225a78;
-  box-shadow: 0 6px 16px rgba(83, 173, 221, 0.16);
+  background: var(--campus-button-danger, #ffe4e6);
+  border-color: var(--campus-button-danger-ink, #9f343e);
+  color: var(--campus-button-danger-ink, #9f343e);
+  box-shadow: 0 6px 16px rgba(153, 59, 59, 0.16);
 }
 
 .test-tools {

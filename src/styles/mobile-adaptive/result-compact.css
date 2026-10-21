@@ -18,6 +18,8 @@
   border-radius: 10px !important;
   box-shadow: 5px 6px 0 color-mix(in srgb, var(--bright-ink) 25%, transparent) !important;
 
+  &.result-outcome-win { --window-paper-color: var(--campus-button-success); }
+  &.result-outcome-loss { --window-paper-color: var(--campus-button-danger); }
   &.no-result-portrait { grid-template-columns: minmax(0, 1fr) !important; }
   &::before, &::after { display: none !important; }
   & .result-winner { padding: 0 !important; margin: 0 !important; gap: 0 !important; align-self: center !important; }

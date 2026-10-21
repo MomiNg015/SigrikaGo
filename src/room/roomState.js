@@ -25,6 +25,11 @@ export function roomGameInfoForPlayers(blackPlayer, whitePlayer, moveNumber) {
   return {
     black: `${blackPlayer.user.username} ${blackPlayer.user.rank}`,
     white: `${whitePlayer.user.username} ${whitePlayer.user.rank}`,
+    players: [blackPlayer, whitePlayer].map((player, index) => ({
+      color: index === 0 ? "black" : "white",
+      username: player.user.username,
+      rank: player.user.rank
+    })),
     moves: `${moveNumber}手`
   };
 }

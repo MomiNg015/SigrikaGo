@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../../../src/styles.css";
 import RoomScreen from "../../../src/room/RoomScreen.jsx";
+import ResultModal from "../../../src/modals/gameLifecycle/ResultModal.jsx";
 import { CHARACTERS } from "../../../src/shared/characters.js";
 import { createGameState } from "../../../src/shared/game.js";
 
@@ -16,7 +17,7 @@ const users = Array.from({ length: 20 }, (_, index) => ({
 }));
 const players = ["sigrika", "denia"].map((id, index) => ({
   color: index ? "white" : "black", characterId: id, character: CHARACTERS[id],
-  user: { id: `player-${index}`, username: index ? "午后的一杯茶" : "星炬棋手", rank: "3段", rating: 1200, selectedCharacter: id },
+  user: { id: `player-${index}`, username: index ? "午后的一杯茶" : "星炬棋手", rank: index ? "12级" : "9段", rating: 1200, selectedCharacter: id },
   captures: index ? 1 : 3, skillRemovals: 0, connected: true,
   time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
 }));
@@ -40,6 +41,9 @@ function Fixture() {
       onOpenSettings={noop} onOpenMessageBoard={noop} onBack={noop} onGameAction={noop}
       onCountingRequest={noop} onCountingRespond={noop} onDrawRequest={noop} onDrawRespond={noop}
       onScoringAction={noop} onOpenReplay={noop} setReplayStep={noop} />
+    {query.has("result") && <ResultModal
+      room={{ ...room, game: { ...game, phase: "finished", winner: { winnerColor: query.get("result") === "draw" ? null : query.get("result") === "loss" ? "white" : "black", text: "对局结束，14手" } } }}
+      user={players[0].user} characters={CHARACTERS} audioSettings={{ muted: true }} onClose={noop} onLeaveRoom={noop} />}
     {query.has("controls") && <div style={{ position: "fixed", right: 4, top: 4, zIndex: 5000, background: "white" }}>
       <button onClick={() => setCount((value) => Math.min(20, value + 1))}>增加观战者</button>
       <button onClick={() => setCount((value) => Math.max(0, value - 1))}>减少观战者</button>

@@ -4,7 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import RoomHeader from "./RoomHeader.jsx";
 
 const room = { code: "AB123", rated: false, game: { mode: "spark" } };
-const info = { black: "黑方部员 3段", white: "白方部员 2段", moves: "0手" };
+const info = { black: "黑方部员 3段", white: "白方部员 2段", moves: "0手", players: [
+  { color: "black", username: "黑方部员", rank: "3段" },
+  { color: "white", username: "白方部员", rank: "2段" }
+] };
 afterEach(cleanup);
 
 describe("RoomHeader compact scoreboard", () => {
@@ -21,10 +24,8 @@ describe("RoomHeader compact scoreboard", () => {
     const { container, rerender } = render(<RoomHeader room={room} roomGameInfo={info}/>);
     expect(container.querySelector(".room-move-placard").textContent).toBe("0手");
     expect(screen.getByLabelText("友谊对局 星炬 AB123")).toBeTruthy();
-    expect(screen.getByText("黑方部员 3段")).toBeTruthy();
-    expect(screen.getByText("白方部员 2段")).toBeTruthy();
-    expect(screen.getByLabelText("黑方：黑方部员 3段").textContent).toBe("黑方部员 3段");
-    expect(screen.getByLabelText("白方：白方部员 2段").textContent).toBe("白方部员 2段");
+    expect([...screen.getByLabelText("黑方：黑方部员 3段").children].map(e => e.textContent)).toEqual(["黑", "黑方部员", "3段"]);
+    expect([...screen.getByLabelText("白方：白方部员 2段").children].map(e => e.textContent)).toEqual(["白", "白方部员", "2段"]);
     rerender(<RoomHeader room={{ ...room, team: { round: 2 } }} roomGameInfo={{ ...info, moves: "123手" }}/>);
     expect(screen.getByText("Round 2")).toBeTruthy();
     expect(container.querySelector(".room-move-placard").textContent).toBe("123手");

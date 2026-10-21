@@ -47,8 +47,13 @@ export default function RoomHeader({
               {room.team && <span>Round {room.team.round}</span>}
             </div>
             <div className="room-scoreboard-players">
-              <span className="room-scoreboard-player black-side" title={`黑方：${roomGameInfo.black}`} aria-label={`黑方：${roomGameInfo.black}`}><i aria-hidden="true"/><span>{roomGameInfo.black}</span></span>
-              <span className="room-scoreboard-player white-side" title={`白方：${roomGameInfo.white}`} aria-label={`白方：${roomGameInfo.white}`}><i aria-hidden="true"/><span>{roomGameInfo.white}</span></span>
+              {roomGameInfo.players?.map(({ color, username, rank }) => (
+                <span key={color} className={`room-scoreboard-player ${color}-side`} title={`${color === "black" ? "黑" : "白"}方：${roomGameInfo[color]}`} aria-label={`${color === "black" ? "黑" : "白"}方：${roomGameInfo[color]}`}>
+                  <span aria-hidden="true">{color === "black" ? "黑" : "白"}</span>
+                  <span className="room-scoreboard-name">{username}</span>
+                  <span className="room-scoreboard-rank">{rank}</span>
+                </span>
+              ))}
             </div>
           </div>
         </div> : <p className="room-title-line">
@@ -72,6 +77,7 @@ export default function RoomHeader({
       {onBack && (
         <button
           className="toggle room-mobile-exit"
+          data-button-role="danger"
           type="button"
           aria-label={exitLabel}
           title={exitLabel}

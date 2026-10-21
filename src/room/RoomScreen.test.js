@@ -196,6 +196,10 @@ describe("RoomScreen helpers", () => {
     expect(roomGameInfoForPlayers(blackPlayer, whitePlayer, 42)).toEqual({
       black: "moming 9段",
       white: "露露米 2段",
+      players: [
+        { color: "black", username: "moming", rank: "9段" },
+        { color: "white", username: "露露米", rank: "2段" }
+      ],
       moves: "42手"
     });
   });
@@ -922,7 +926,7 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto");
     expect(roomCss).toContain(".desktop-room-screen .room-toggles");
     expect(roomCss).toContain("justify-self: end");
-    expect(roomCss).toContain(".room-mobile-exit {\n  background: linear-gradient(135deg, #eaf8ff, #d5efff)");
+    expect(roomCss).toContain(".room-mobile-exit {\n  background: var(--campus-button-danger, #ffe4e6)");
     expect(roomCss).toContain("min-height: 34px");
     expect(roomCss).toContain(".skill-chip-wrap {\n  position: relative;\n  overflow: visible;\n  z-index: var(--room-floating-z, 60);");
     expect(roomCss).toContain(".skill-detail-panel");
@@ -935,7 +939,7 @@ describe("RoomScreen helpers", () => {
     expect(brightRoomCss).toContain(".desktop-room-screen .room-header");
     expect(brightRoomCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
     expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !important");
-    expect(brightRoomCss).toContain("background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important");
+    expect(brightRoomCss).not.toContain("background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important");
     expect(brightRoomCss).toContain("min-height: 36px !important");
     expect(brightRoomCss).toContain(".replay-step-indicator");
     expect(brightRoomCss).toContain("place-items: center !important");

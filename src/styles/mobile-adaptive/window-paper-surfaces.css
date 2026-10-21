@@ -6,7 +6,7 @@
     .confirm-modal, .result-modal, .recruitment-modal, .team-lineup-picker, .iris-database-modal):not(
     .shop-modal *, .recruitment-cinematic-playing, .sigrika-corruption-match-modal,
     .sigrika-duel-confirm-modal, .sigrika-duel-opening-modal, .sigrika-duel-result-modal) {
-    background-color: var(--theme-bg) !important;
+    background-color: var(--window-paper-color, var(--theme-bg)) !important;
     background-image: var(--theme-paper-grid) !important;
     background-size: 20px 20px !important;
     background-position: 0 0 !important;
