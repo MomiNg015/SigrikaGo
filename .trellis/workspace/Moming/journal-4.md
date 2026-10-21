@@ -930,3 +930,36 @@ Unified compact field feedback across login and registration; duplicate username
 ### Next Steps
 
 - None - task complete
+
+
+## Session 209: Auth label baseline alignment
+
+**Date**: 2026-10-21
+**Task**: Auth label baseline alignment
+**Branch**: `master`
+
+### Summary
+
+Corrected desktop and mobile auth label rows from top alignment to first-baseline alignment. Preserved field heights and compact spacing. Four browser cases verify both modes at 1440/390/360/320px, wrapped feedback clearance and stable geometry; screenshots inspected. 160 focused auth/CSS tests, ESLint, build, built-CSS and docs rendering passed. Preserved unrelated profile and design work.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2a777e79` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
