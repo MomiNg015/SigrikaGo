@@ -1128,3 +1128,36 @@ Retained empty warehouse book layout and disabled controls, made team picker sta
 ### Next Steps
 
 - None - task complete
+
+
+## Session 215: Unify LXGW fonts while preserving WuWa and IRIS
+
+**Date**: 2026-10-21
+**Task**: Unify LXGW fonts while preserving WuWa and IRIS
+**Branch**: `master`
+
+### Summary
+
+Unified production typography including first-entry/admin and all non-WuWa owner rules; preserved complete IRIS stacks with local original-default isolation. Restored compact auth line heights. Scoped docs/spec/design updates; focused tests, 30 browser cases, build, lint and 4 stability cases passed. Full npm test interrupted by proxy timeout/worker-channel failure; isolated proxy passed with CLI-only timeout extension. Unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a41e9127` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
