@@ -1,11 +1,7 @@
 /* Login reuses the shared character stage and progress bar; only tips differ. */
 .login-loading-tip {
   width: min(440px, 100%);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: .4em;
-  align-items: start;
-  text-align: left;
+  text-align: center;
   font: 14px/1.7 "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
   color: #4a3736;
 }
@@ -16,6 +12,7 @@
   white-space: nowrap;
   font: 1.25em/1.6 "Sigrika Window Title", "Microsoft YaHei", sans-serif;
   isolation: isolate;
+  margin-right: .4em;
 }
 
 .login-loading-tip-label::before {
@@ -34,6 +31,8 @@
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
+
+.asset-preload-panel .preload-progress-note { margin-top: -12px; font-size: 12px; font-weight: 400; line-height: 1.5; color: inherit; }
 
 @media (max-width: 640px) {
   .login-loading-tip { font-size: 13px; }

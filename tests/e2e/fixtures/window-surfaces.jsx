@@ -5,6 +5,8 @@ import { UserProfileCard } from "../../../src/modals/UserProfileCard.jsx";
 import { ConfirmModal } from "../../../src/modals/FeedbackModals.jsx";
 import { CHARACTERS, characterListFromCatalog } from "../../../src/shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../../../src/shared/siteSettings.js";
+import AuthScreen from "../../../src/auth/AuthScreen.jsx";
+import LoginAssetPreloadScreen from "../../../src/app/LoginAssetPreloadScreen.jsx";
 
 const query = new URLSearchParams(location.search);
 const surface = query.get("surface") || "Warehouse";
@@ -22,7 +24,9 @@ const overlayNames = ["House", "Resume", "Achievements", "Personalization", "Rec
 const flags = Object.fromEntries(overlayNames.flatMap(name => [[`show${name}`, surface === name], [`setShow${name}`, noop]]));
 createRoot(document.getElementById("root")).render(
   <div className={`app-shell player-theme-enabled theme-bright-school${query.has("corrupt") ? " is-sigrika-corrupted" : ""}`}>
-    {surface === "Profile" ? <div className="modal-backdrop profile-modal-backdrop"><UserProfileCard titleStickers user={user} characters={CHARACTERS} token="surface-fixture" onClose={noop} onAddFriend={noop} onAddBlacklist={noop} onOpenReplay={noop} /></div>
+    {surface === "Auth" ? <AuthScreen initialMode={query.get("mode") || "login"} onAuth={noop} />
+      : surface === "Loading" ? <LoginAssetPreloadScreen progress={0.45} tipsText="落子前，先确认棋子的气。" />
+      : surface === "Profile" ? <div className="modal-backdrop profile-modal-backdrop"><UserProfileCard titleStickers user={user} characters={CHARACTERS} token="surface-fixture" onClose={noop} onAddFriend={noop} onAddBlacklist={noop} onOpenReplay={noop} /></div>
       : surface === "Confirm" ? <ConfirmModal title="确认操作" message="窗口背景检查" confirmText="确认" onConfirm={noop} onCancel={noop} />
       : <AppOverlays {...flags} user={user} token="surface-fixture" characters={CHARACTERS} characterListView={characterListFromCatalog(CHARACTERS)}
         audioSettings={{ muted: true }} musicTracks={[]} toasts={[]} siteSettings={DEFAULT_SITE_SETTINGS} visualTheme="bright-school"

@@ -15,6 +15,9 @@ test("restores the character and progress bar with brush tips below it", () => {
   expect(screen.getByText("测试角色正在加载")).toBeTruthy();
   expect(container.querySelector(".preload-progress-track")).not.toBeNull();
   const tip = container.querySelector(".login-loading-tip");
+  const note = screen.getByText("（第一次加载需要2-3分钟，请耐心等待）");
+  expect(bar.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(note.compareDocumentPosition(tip) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   expect(bar.compareDocumentPosition(tip) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   expect(tip.textContent).toBe("Tip：保留文字");
   expect(container.querySelector(".login-loading-art")).toBeNull();

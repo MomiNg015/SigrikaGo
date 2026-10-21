@@ -44,8 +44,16 @@ describe("AuthScreen DOM interaction", () => {
 
     expect(document.activeElement).toBe(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }));
     expect(screen.getByText("\u8bf7\u8f93\u5165\u7528\u6237\u540d")).not.toBeNull();
+    expect(container.querySelector(".auth-label-row #auth-username-error")).not.toBeNull();
+    expect(container.querySelector(".auth-label-row #auth-password-error")).not.toBeNull();
+    expect(container.querySelector(".auth-label-row #auth-confirm-password-error")).not.toBeNull();
+    expect(screen.queryByText("最多 4 个中日韩文字 / 8 个半角字符")).toBeNull();
+    expect(screen.queryByText("8-64 位")).toBeNull();
     expect(container.querySelector(".form-error")).toBeNull();
     expect(api).not.toHaveBeenCalled();
+    await user.type(screen.getByRole("textbox", { name: /用户名/ }), "星炬");
+    expect(container.querySelector("#auth-username-error")).toBeNull();
+    expect(screen.getByText("最多 4 个中日韩文字 / 8 个半角字符")).not.toBeNull();
   });
 
   it("preserves username, clears passwords on mode change, and exposes selected semantics", async () => {

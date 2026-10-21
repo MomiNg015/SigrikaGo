@@ -1,4 +1,4 @@
-import { validateLoginPassword, validateNewPassword, PASSWORD_MIN_LENGTH as LOGIN_PASSWORD_MIN_LENGTH, NEW_PASSWORD_MIN_LENGTH as REGISTER_PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from "../shared/passwordValidation.js";
+import { validateLoginPassword, validateNewPassword, PASSWORD_MIN_LENGTH as LOGIN_PASSWORD_MIN_LENGTH, NEW_PASSWORD_MIN_LENGTH as REGISTER_PASSWORD_MIN_LENGTH } from "../shared/passwordValidation.js";
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { version as packageVersion } from "../../package.json";
@@ -147,6 +147,13 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       <main className="auth-screen">
         <div className="auth-composition">
           <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
+            <svg className="auth-go-mark" viewBox="0 0 96 64" aria-hidden="true" focusable="false">
+              <path d="M4 20h48M28 0v44M44 44h48M68 20v44" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="28" cy="20" r="16" fill="black" />
+              <circle cx="68" cy="44" r="16" fill="white" stroke="black" strokeWidth="1.5" />
+              <path d="M12 20h32M28 4v32" fill="none" stroke="white" strokeWidth="1" />
+              <path d="M52 44h32M68 28v32" fill="none" stroke="black" strokeWidth="1" />
+            </svg>
             <header className="auth-panel-header">
               <div className="brand-lockup">
                 <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
@@ -178,7 +185,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
             <div className={authFieldClassName("username", fieldErrors, touchedFields)}>
               <label className="auth-label-row" htmlFor="auth-username">
                 <span>用户名</span>
-                {mode === "register" && <small>{AUTH_REGISTER_LABEL_NOTES.username}</small>}
+                {mode === "register" && <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} note={AUTH_REGISTER_LABEL_NOTES.username} />}
               </label>
               <input
                 ref={usernameRef}
@@ -195,13 +202,13 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                 onBlur={() => markFieldTouched("username")}
                 onChange={(event) => updateField("username", event.target.value)}
               />
-              <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} />
+              {mode === "login" && <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} />}
             </div>
 
             <div className={authFieldClassName("password", fieldErrors, touchedFields)}>
               <label className="auth-label-row" htmlFor="auth-password">
                 <span>密码</span>
-                {mode === "register" && <small>{AUTH_REGISTER_LABEL_NOTES.password}</small>}
+                {mode === "register" && <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} note={AUTH_REGISTER_LABEL_NOTES.password} />}
               </label>
               <div className="auth-input-shell">
                 <input
@@ -227,12 +234,15 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                   onToggle={() => setShowPassword((current) => !current)}
                 />
               </div>
-              <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} />
+              {mode === "login" && <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} />}
             </div>
 
             {mode === "register" && (
               <div className={authFieldClassName("confirmPassword", fieldErrors, touchedFields)}>
-                <label className="auth-label-row" htmlFor="auth-confirm-password"><span>确认密码</span></label>
+                <label className="auth-label-row" htmlFor="auth-confirm-password">
+                  <span>确认密码</span>
+                  <AuthFieldFeedback id="auth-confirm-password-error" error={fieldErrors.confirmPassword} touched={touchedFields.confirmPassword} />
+                </label>
                 <div className="auth-input-shell">
                   <input
                     ref={confirmPasswordRef}
@@ -257,11 +267,12 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                     onToggle={() => setShowConfirmPassword((current) => !current)}
                   />
                 </div>
-                <AuthFieldFeedback id="auth-confirm-password-error" error={fieldErrors.confirmPassword} touched={touchedFields.confirmPassword} />
               </div>
             )}
 
-            {error && <p className="form-error" role="alert">{error}</p>}
+            {(mode === "register" || error) && <div className={mode === "register" ? "auth-form-feedback" : undefined}>
+              {error && <p className="form-error" role="alert">{error}</p>}
+            </div>}
             <p className="auth-live-region" aria-live="polite" aria-atomic="true">
               {submitting ? authPendingText(mode) : ""}
             </p>
@@ -322,8 +333,8 @@ function PasswordVisibilityButton({ visible, inputRef, controls, disabled, onTog
   );
 }
 
-function AuthFieldFeedback({ id, error, touched }) {
-  return touched && error ? <small id={id} className="auth-field-error" role="alert">{error}</small> : null;
+function AuthFieldFeedback({ id, error, touched, note }) {
+  return touched && error ? <small id={id} className="auth-field-error" role="alert">{error}</small> : note ? <small>{note}</small> : null;
 }
 
 function authFieldClassName(field, fieldErrors, touchedFields) {
