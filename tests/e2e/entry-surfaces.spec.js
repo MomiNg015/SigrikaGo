@@ -10,11 +10,15 @@ for (const width of [1440, 390, 360, 320]) {
     const card = page.locator(".auth-panel");
     await expect(card).toHaveCSS("background-image", "none");
     expect(await card.evaluate(e => getComputedStyle(e).backgroundColor)).toMatch(/^rgb\(/);
-    await expect(page.locator(".auth-go-mark")).toHaveCSS("opacity", "0.5");
+    await expect(page.locator(".auth-go-mark")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath(`login-${width}.png`), fullPage: true });
     await page.getByRole("button", { name: "注册", exact: true }).click();
     const initial = await card.boundingBox();
     const submit = page.getByRole("button", { name: "登记入部信息" });
+    const confirmInput = await page.locator("#auth-confirm-password").boundingBox();
+    const submitBounds = await submit.boundingBox();
+    expect(submitBounds.y - confirmInput.y - confirmInput.height).toBeLessThanOrEqual(12);
+    expect(initial.height).toBeLessThan(width > 900 ? 600 : 555);
     const expectStableCard = async () => {
       const current = await card.boundingBox();
       expect(current.width).toBe(initial.width);
@@ -43,6 +47,12 @@ for (const width of [1440, 390, 360, 320]) {
     await submit.click();
     await expect(page.locator(".form-error")).toHaveText("用户名已存在");
     await expectStableCard();
+    const serverError = await page.locator(".form-error").boundingBox();
+    const finalSubmit = await submit.boundingBox();
+    const finalCard = await card.boundingBox();
+    expect(serverError.y).toBeGreaterThanOrEqual(finalSubmit.y + finalSubmit.height + 6);
+    expect(serverError.y + serverError.height).toBeLessThan(finalCard.y + finalCard.height);
+    await page.screenshot({ path: testInfo.outputPath(`register-server-error-${width}.png`), fullPage: true });
   });
 
   test(`entry loading tip and first-load note stay centered at ${width}`, async ({ page }, testInfo) => {

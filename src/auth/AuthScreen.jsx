@@ -147,13 +147,6 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       <main className="auth-screen">
         <div className="auth-composition">
           <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
-            <svg className="auth-go-mark" viewBox="0 0 96 64" aria-hidden="true" focusable="false">
-              <path d="M4 20h48M28 0v44M44 44h48M68 20v44" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <circle cx="28" cy="20" r="16" fill="black" />
-              <circle cx="68" cy="44" r="16" fill="white" stroke="black" strokeWidth="1.5" />
-              <path d="M12 20h32M28 4v32" fill="none" stroke="white" strokeWidth="1" />
-              <path d="M52 44h32M68 28v32" fill="none" stroke="black" strokeWidth="1" />
-            </svg>
             <header className="auth-panel-header">
               <div className="brand-lockup">
                 <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />

@@ -10,17 +10,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
   background: var(--theme-bg) !important;
   box-shadow: 6px 6px 0 var(--bright-border) !important;
-}
-
-.auth-panel .auth-go-mark {
-  position: absolute;
-  top: -26px;
-  right: 12px;
-  width: 84px;
-  height: 56px;
-  color: var(--bright-ink);
-  opacity: 0.5;
-  pointer-events: none;
+  &.register-card-container { padding-bottom: calc(var(--auth-panel-padding) + 10px) !important; }
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
@@ -98,10 +88,6 @@
     inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-label-row small:not(.auth-field-error) {
-  color: var(--bright-muted) !important;
-  opacity: 1 !important;
-}
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle {
   position: absolute !important;
@@ -121,6 +107,10 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form {
+  .auth-label-row small:not(.auth-field-error) {
+    color: var(--bright-muted) !important;
+    opacity: 1 !important;
+  }
   .auth-password-toggle:hover,
   .auth-password-toggle:focus-visible {
     background: transparent !important;
@@ -150,12 +140,15 @@
   }
 }
 
-.register-card-container .auth-label-row {
-  height: 30px;
-  align-items: flex-start;
+.register-card-container {
+  .auth-form { gap: 10px; }
+  .auth-label-row {
+    height: 24px;
+    align-items: flex-start;
+    &[for="auth-username"] { height: 30px; }
+    > span { flex-shrink: 0; }
+    small { min-width: 0; font-size: 12px; line-height: 1.25; opacity: 1; }
+  }
 }
-
-.register-card-container .auth-label-row > span { flex-shrink: 0; }
-.register-card-container .auth-label-row small { min-width: 0; font-size: 12px; line-height: 1.25; opacity: 1; }
-.auth-form-feedback { height: 2.8em; overflow-y: auto; font-size: 13px; }
+.auth-form-feedback { position: absolute; inset: auto var(--auth-panel-padding) 4px; height: 1.4em; overflow-y: auto; font-size: 12px; }
 .auth-form-feedback .form-error { margin: 0; }
