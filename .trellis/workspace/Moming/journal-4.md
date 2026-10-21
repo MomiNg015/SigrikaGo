@@ -1227,3 +1227,36 @@ Read-only runtime audit after LXGW migration. Scanned 749 CSS files, captured 97
 ### Next Steps
 
 - None - task complete
+
+
+## Session 218: LXGW size improvements and shop card restoration
+
+**Date**: 2026-10-21
+**Task**: LXGW size improvements and shop card restoration
+**Branch**: `master`
+
+### Summary
+
+Implemented window, profile, battle and desktop-admin readability tiers; preserved WuWa and IRIS. Restored all shop product-card layout, size, scale and typography changes at user request. Verified baseline card metrics, browser regressions, style contracts, battle/stability checks, lint and build; synchronized design documentation while preserving unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `02599796` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
