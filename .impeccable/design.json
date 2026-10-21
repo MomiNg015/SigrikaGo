@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-21T05:31:00.324774+00:00",
+  "generatedAt": "2026-10-21T06:40:18.660057+00:00",
   "title": "Design System: SigrikaGo Bright School",
   "extensions": {
     "colorMeta": {
@@ -67,7 +67,7 @@
     "typographyMeta": {
       "display": { "displayName": "Identity Accent", "purpose": "Short Latin identity marks only." },
       "title": { "displayName": "Window Title", "purpose": "Player-facing window and feature titles." },
-      "body": { "displayName": "UI Body", "purpose": "LXGW for player/admin controls, forms, messages, numbers and gameplay copy; preserve existing WuWa and all IRIS typography." },
+      "body": { "displayName": "UI Body", "purpose": "LXGW reading content uses regular 400 without synthetic bold, 0.025em tracking and 1.65 leading; scrollable detail prose has a 15px floor. Preserve compact controls, existing WuWa and all IRIS typography." },
       "label": { "displayName": "UI Label", "purpose": "Tabs, fields, states, and compact controls." }
     },
     "shadows": [
@@ -124,7 +124,7 @@
       "refersTo": "panel",
       "description": "Notebook-paper surface for player-facing task regions.",
       "html": "<section class=\"ds-paper-panel\"><h2>星炬学院围棋部</h2><p>清晰、可靠、带有校园手账质感。</p></section>",
-      "css": ".ds-paper-panel { max-width: 420px; padding: 26px; border: 3px solid var(--bright-border, #3d2b25); border-radius: 16px; background-color: var(--bright-paper, #fffbf2); background-image: linear-gradient(rgba(154, 211, 222, .18) 1px, transparent 1px), linear-gradient(90deg, rgba(154, 211, 222, .18) 1px, transparent 1px); background-size: 20px 20px; color: var(--bright-ink, #3d2b25); box-shadow: 5px 5px 0 var(--bright-border, #3d2b25); font-family: var(--font-ui-default, system-ui, sans-serif); } .ds-paper-panel h2 { margin: 0 0 10px; font: 400 24px/1.2 var(--font-window-title, var(--font-ui-default, system-ui, sans-serif)); } .ds-paper-panel p { margin: 0; max-width: 38ch; line-height: 1.5; } .ds-paper-panel:focus-within { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 4px; }"
+      "css": ".ds-paper-panel { max-width: 420px; padding: 26px; border: 3px solid var(--bright-border, #3d2b25); border-radius: 16px; background-color: var(--bright-paper, #fffbf2); background-image: linear-gradient(rgba(154, 211, 222, .18) 1px, transparent 1px), linear-gradient(90deg, rgba(154, 211, 222, .18) 1px, transparent 1px); background-size: 20px 20px; color: var(--bright-ink, #3d2b25); box-shadow: 5px 5px 0 var(--bright-border, #3d2b25); font-family: var(--font-ui-default, system-ui, sans-serif); } .ds-paper-panel h2 { margin: 0 0 10px; font: 400 24px/1.2 var(--font-window-title, var(--font-ui-default, system-ui, sans-serif)); } .ds-paper-panel p { margin: 0; max-width: 38ch; font-weight: 400; font-synthesis-weight: none; letter-spacing: var(--font-reading-tracking, .025em); line-height: var(--font-reading-leading, 1.65); } .ds-paper-panel:focus-within { outline: 3px solid var(--bright-blue, #9ad3de); outline-offset: 4px; }"
     }
   ],
   "narrative": {

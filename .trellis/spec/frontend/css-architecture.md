@@ -4,6 +4,8 @@
 
 Production UI uses the bundled LXGW Marker Gothic face (`Sigrika Window Title`) through `--font-ui-default` or `--font-window-title`, including admin, controls, ordinary numeric text and board coordinates. Local font-family declarations and font shorthands must use shared tokens instead of system/monospace overrides. Preserve current sizes, weights, line heights and numeric features. Keep all existing WuWa semantic selectors, faces and unicode ranges unchanged. IRIS entry and window are excluded as a whole: preserve the original Dotted Songti / WuWa mixed tokens, owner rules and fallbacks. Check computed fonts under full theme imports; verify actual custom font loading and IRIS independence from the global default. Raster lettering and historical standalone design samples are outside the runtime font contract.
 
+Ordinary reading content is the explicit exception to preserved weight/spacing: `mobile-adaptive/text-readability.css` loads last and owns skill descriptions, trait explanations, character/item copy, information-center prose, mode rules, practice help, chat, story dialogue and ordinary admin prose. Use weight 400, `font-synthesis-weight: none`, `--font-reading-tracking: 0.025em` and `--font-reading-leading: 1.65`; scrollable detail prose has a 15px floor. Inline spans, emphasis and trait buttons inherit the paragraph typography despite theme resets. Do not broaden this to headings, compact labels/actions, WuWa or IRIS. Browser checks must cover dense Chinese wrapping, reachable final text/actions and trait interaction at desktop and portrait 320/390px.
+
 > Project-specific contracts for SigrikaGo stylesheet work.
 
 ## Scope

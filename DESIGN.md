@@ -37,8 +37,8 @@ typography:
     fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
-    lineHeight: 1.5
-    letterSpacing: "0"
+    lineHeight: 1.65
+    letterSpacing: "0.025em"
   label:
     fontFamily: "Sigrika Window Title, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, system-ui, sans-serif"
     fontSize: "0.875rem"
@@ -133,13 +133,13 @@ The palette reads like a clean school notebook annotated with bright stationery,
 **Body / Title Font:** Bundled LXGW Marker Gothic (`Sigrika Window Title`) through `--font-ui-default` / `--font-window-title`.
 **IRIS Exception:** Keep the entry and link list in Dotted Songti Circle; keep the window mixed WuWa / Dotted Songti stack and its original system fallbacks.
 
-**Character:** LXGW unifies production player and admin text, including labels, forms, numbers, board coordinates and all themes. Keep existing sizes, weights and spacing. Existing WuWa use sites and unicode ranges remain unchanged; IRIS typography is independently preserved.
+**Character:** LXGW unifies production player and admin text, including labels, forms, numbers, board coordinates and all themes. Keep headings and compact controls at their existing sizes, weights and spacing. Ordinary prose uses regular 400 without synthetic bold, subtle 0.025em tracking and 1.65 leading; scrollable detail prose has a 15px floor. Existing WuWa use sites and unicode ranges remain unchanged; IRIS typography is independently preserved.
 
 ### Hierarchy
 
 - **Display** (400, contextual fixed size, 1.1): Latin identity marks and short accent text only.
 - **Title** (400, contextual fixed size, 1.2): Window and feature titles with balanced wrapping.
-- **Body** (400, 1rem, 1.5): Instructions, messages, and form content; prose stays within 65–75ch.
+- **Body** (400, 1rem, 1.65, 0.025em tracking): Reading content, descriptions and messages; prose stays within 65–75ch. Compact fields and controls retain their own metrics.
 - **Label** (700, 0.875rem, 1.35): Form labels, tabs, status text, and control copy.
 
 **The Shared-Font Rule.** Use `--font-ui-default` for ordinary text instead of component-local system or monospace families. Preserve the existing WuWa semantic classes and every IRIS typography owner. System fallbacks remain for unavailable glyphs or fonts; image lettering and historical design samples are separate assets.

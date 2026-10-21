@@ -1,0 +1,50 @@
+/* Reading content only: keep compact controls, headings, WuWa and IRIS intact. */
+.match-mode-rules-tooltip .match-mode-rules,
+.skill-trait-popover p,
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(
+  .skill-description-body,
+  .skill-overclock-line,
+  .skill-trait-popover p,
+  .character-description,
+  .shop-detail-copy > p,
+  .mailbox-item-detail-copy > p,
+  .wg-details > p,
+  .information-center-prose :is(p, li, blockquote, td),
+  .match-mode-rules,
+  .match-mode-rules-tooltip p,
+  .practice-difficulty-copy small,
+  .practice-sheet-bubble,
+  .chat-log > p,
+  .message-board-input,
+  .onboarding-story-text-button span,
+  .confirm-modal > p,
+  .settings-section p,
+  .admin-main :is(p, textarea)
+) {
+  font-weight: 400 !important;
+  font-synthesis-weight: none;
+  letter-spacing: var(--font-reading-tracking) !important;
+  line-height: var(--font-reading-leading) !important;
+
+  /* Theme resets also target inline text, so inheriting from the paragraph is insufficient. */
+  & :where(span, strong, em, a, code),
+  & > button.skill-trait-token {
+    font-weight: inherit !important;
+    font-synthesis-weight: none;
+    letter-spacing: inherit !important;
+    line-height: inherit !important;
+  }
+}
+
+/* Small descriptions in scrollable readers need a readable floor. */
+.skill-trait-popover p,
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) :is(
+  .character-detail-copy .skill-description-body,
+  .skill-trait-popover p,
+  .wg-details > p,
+  .shop-detail-copy > p,
+  .mailbox-item-detail-copy > p,
+  .information-center-prose :is(p, li, blockquote, td)
+) {
+  font-size: max(15px, 1em) !important;
+}

@@ -8,6 +8,12 @@ WuWa 的 `Sigrika Accent Latin` face、字母/数字 unicode-range、语义 clas
 
 样式契约限制新增硬编码字体；真实组件浏览器检查覆盖桌面和手机窗口、桌面后台、IRIS 全部文本节点以及实际加载的 LXGW/WuWa 字体文件。变更默认字体时必须核对最终 owner，而非只检查根 token。
 
+### 普通正文的可读性
+
+霞鹜资产仅提供 Regular 字重，旧主题给说明文字施加 700／800 会产生合成粗体。最终导入的 `mobile-adaptive/text-readability.css` 仅接管阅读内容：技能与特性词释义、角色／道具详情、公告／邮件正文、模式规则、人机提示、聊天、剧情对白、普通确认说明及后台段落。正文采用 400 并关闭合成加粗，复用 `--font-reading-tracking: 0.025em` 与 `--font-reading-leading: 1.65`；详情滚动区的小正文以 15px 为下限，不统一放大既有大字号。
+
+旧主题会单独重置 span／strong／em 等内联文字，故最终 owner 显式令这些子节点和特性词按钮继承正文排版；既有强调色、链接、斜体及特性词交互继续保留。标题、紧凑表单／按钮和数值展示维持原有层级；全部 WuWa 与 IRIS 排版不进入此规则。浏览器回归覆盖桌面与 390／320px 竖屏的复杂汉字、内联特性词、长道具说明和 Markdown 公告，检查换行、横向溢出及末尾内容／操作可达；对比确认 WuWa／IRIS 的字体、字重、字号、字距与行高不变。
+
 ## 大厅顶部校园播报
 
 `home/components/TopAnnouncement.jsx` 位于 `HomeScreen` 的 main 前，与 header、主体网格保持独立。用户选定深墨第三版，固定标签「校园播报」，全宽 40px 单行加 safe-area，霞鹜漫黑正文，薄荷状态点和下边线。专属 `home-terminal/campus-broadcast.css` 处理完整主题下的文字、按钮颜色与字体覆盖；存在公告时扣除 main 对应的最小视口高度，关闭／空内容完全移除占位，桌面与竖屏均保留现有 header 外边距。

@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 
 export default defineConfig({
-  testDir: ".", testMatch: ["window-surfaces.spec.js", "profile-paper.spec.js", "entry-surfaces.spec.js", "battle-presentation.spec.js", "warehouse-team-match.spec.js", "typography.spec.js"], workers: 1, timeout: 45000,
+  testDir: ".", testMatch: ["window-surfaces.spec.js", "profile-paper.spec.js", "entry-surfaces.spec.js", "battle-presentation.spec.js", "warehouse-team-match.spec.js", "typography.spec.js", "text-readability.spec.js"], workers: 1, timeout: 45000,
   use: { baseURL: "http://127.0.0.1:5297", channel: "msedge" },
   webServer: {
     cwd: fileURLToPath(new URL("../../", import.meta.url)),

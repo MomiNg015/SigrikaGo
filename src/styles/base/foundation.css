@@ -35,6 +35,8 @@
   --font-display-accent: "Sigrika Accent Latin";
   --font-numeric-accent: "Sigrika Accent Latin";
   --font-window-title: "Sigrika Window Title";
+  --font-reading-tracking: 0.025em;
+  --font-reading-leading: 1.65;
   --font-iris-dotted: "IRIS Dotted Songti Circle", "Microsoft YaHei UI", "Microsoft YaHei", serif;
   --font-iris-mixed: var(--font-display-accent), var(--font-iris-dotted);
   font-family: var(--font-ui-default);
