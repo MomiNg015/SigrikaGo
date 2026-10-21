@@ -21,6 +21,54 @@ afterEach(() => {
 });
 
 describe("AuthScreen DOM interaction", () => {
+  it("keeps a duplicate username error beside its field until that username changes", async () => {
+    api.mockRejectedValue(Object.assign(new Error("用户名已存在"), { status: 409 }));
+    const user = userEvent.setup();
+    const { container } = render(<AuthScreen initialMode="register" onAuth={() => {}} />);
+    const username = document.getElementById("auth-username");
+    await user.type(username, "TestUser");
+    await user.type(document.getElementById("auth-password"), "password123");
+    await user.type(document.getElementById("auth-confirm-password"), "password123");
+    await user.click(screen.getByRole("button", { name: "登记入部信息" }));
+
+    expect(await screen.findByText("用户名已存在")).not.toBeNull();
+    expect(container.querySelector(".auth-label-row #auth-username-error")?.textContent).toBe("用户名已存在");
+    expect(username.getAttribute("aria-invalid")).toBe("true");
+    expect(container.querySelector(".form-error")).toBeNull();
+    await user.click(username);
+    await user.tab();
+    expect(screen.getByText("用户名已存在")).not.toBeNull();
+    await user.type(document.getElementById("auth-password"), "x");
+    expect(screen.getByText("用户名已存在")).not.toBeNull();
+    await user.clear(username);
+    await user.type(username, "NewUser");
+    expect(screen.queryByText("用户名已存在")).toBeNull();
+    expect(username.getAttribute("aria-invalid")).toBeNull();
+    expect(screen.getByText("最多 4 个中日韩文字 / 8 个半角字符")).not.toBeNull();
+  });
+
+  it.each(["login", "register"])("clears stale form errors when editing %s credentials", async (mode) => {
+    api.mockRejectedValue(new TypeError("Failed to fetch"));
+    const user = userEvent.setup();
+    const { container } = render(<AuthScreen initialMode={mode} onAuth={() => {}} />);
+    await user.type(document.getElementById("auth-username"), "TestUser");
+    await user.type(document.getElementById("auth-password"), "password123");
+    if (mode === "register") await user.type(document.getElementById("auth-confirm-password"), "password123");
+    await user.click(screen.getByRole("button", { name: mode === "login" ? "开门！" : "登记入部信息" }));
+    expect(await screen.findByText("网络连接失败，请检查网络后重试")).not.toBeNull();
+    await user.type(document.getElementById("auth-password"), "x");
+    expect(container.querySelector(".form-error")).toBeNull();
+  });
+
+  it("uses label feedback for login validation too", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<AuthScreen onAuth={() => {}} />);
+    await user.click(screen.getByRole("button", { name: "开门！" }));
+    expect(container.querySelector(".auth-label-row #auth-username-error")?.textContent).toBe("请输入用户名");
+    expect(container.querySelector(".auth-label-row #auth-password-error")?.textContent).toBe("请输入密码");
+    expect(container.querySelector(".form-error")).toBeNull();
+  });
+
   it("starts portrait prewarming without making authentication wait for it", async () => {
     prewarmAuthPortraitsMock.mockReturnValue(new Promise(() => {}));
     api.mockResolvedValue({ token: "token", user: { id: "user-1" } });

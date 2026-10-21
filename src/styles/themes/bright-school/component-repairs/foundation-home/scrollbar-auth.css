@@ -10,7 +10,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
   background: var(--theme-bg) !important;
   box-shadow: 6px 6px 0 var(--bright-border) !important;
-  &.register-card-container { padding-bottom: calc(var(--auth-panel-padding) + 10px) !important; }
+  padding-bottom: 48px !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
@@ -140,7 +140,7 @@
   }
 }
 
-.register-card-container {
+.login-card-container {
   .auth-form { gap: 10px; }
   .auth-label-row {
     height: 24px;
@@ -150,5 +150,5 @@
     small { min-width: 0; font-size: 12px; line-height: 1.25; opacity: 1; }
   }
 }
-.auth-form-feedback { position: absolute; inset: auto var(--auth-panel-padding) 4px; height: 1.4em; overflow-y: auto; font-size: 12px; }
+.auth-form-feedback { position: absolute; inset: auto var(--auth-panel-padding) 4px; max-height: 2.8em; overflow-y: auto; overflow-wrap: anywhere; scrollbar-width: thin; font-size: 12px; }
 .auth-form-feedback .form-error { margin: 0; }

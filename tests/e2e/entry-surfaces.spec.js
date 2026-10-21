@@ -1,58 +1,89 @@
 import { expect, test } from "@playwright/test";
 
 for (const width of [1440, 390, 360, 320]) {
-  test(`auth cards keep their geometry through registration errors at ${width}`, async ({ page }, testInfo) => {
-    await page.setViewportSize({ width, height: 900 });
+  test(`auth cards preserve compact geometry and readable feedback at ${width}`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: width === 1440 ? 900 : 640 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.route("**/api/auth/register", route => route.fulfill({ status: 409, json: { error: "用户名已存在" } }));
-    await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Auth");
-    await page.evaluate(() => document.fonts.ready);
-    const card = page.locator(".auth-panel");
-    await expect(card).toHaveCSS("background-image", "none");
-    expect(await card.evaluate(e => getComputedStyle(e).backgroundColor)).toMatch(/^rgb\(/);
-    await expect(page.locator(".auth-go-mark")).toHaveCount(0);
-    await page.screenshot({ path: testInfo.outputPath(`login-${width}.png`), fullPage: true });
-    await page.getByRole("button", { name: "注册", exact: true }).click();
-    const initial = await card.boundingBox();
-    const submit = page.getByRole("button", { name: "登记入部信息" });
-    const confirmInput = await page.locator("#auth-confirm-password").boundingBox();
-    const submitBounds = await submit.boundingBox();
-    expect(submitBounds.y - confirmInput.y - confirmInput.height).toBeLessThanOrEqual(12);
-    expect(initial.height).toBeLessThan(width > 900 ? 600 : 555);
-    const expectStableCard = async () => {
-      const current = await card.boundingBox();
-      expect(current.width).toBe(initial.width);
-      expect(current.height).toBe(initial.height);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
-      for (const error of await page.locator(".auth-label-row .auth-field-error").all()) {
-        const label = await error.locator("..").boundingBox();
-        const bounds = await error.boundingBox();
-        expect(bounds.y).toBe(label.y);
-        expect(bounds.y + bounds.height).toBeLessThanOrEqual(label.y + label.height + 1);
-        expect(Math.abs(bounds.x + bounds.width - label.x - label.width)).toBeLessThan(1);
+    let response;
+    await page.route("**/api/auth/**", route => route.fulfill(response));
+    for (const mode of ["login", "register"]) {
+      response = mode === "register" ? { status: 409, json: { error: "用户名已存在" } } : { status: 401, json: { error: "用户名或密码错误" } };
+      await page.goto(`/tests/e2e/fixtures/window-surfaces.html?surface=Auth&mode=${mode}`);
+      await page.evaluate(() => document.fonts.ready);
+      const card = page.locator(".auth-panel");
+      await expect(card).toHaveCSS("background-image", "none");
+      expect(await card.evaluate(e => getComputedStyle(e).backgroundColor)).toMatch(/^rgb\(/);
+      await expect(page.locator(".auth-go-mark")).toHaveCount(0);
+      await page.screenshot({ path: testInfo.outputPath(`${mode}-${width}.png`), fullPage: true });
+      const initial = await card.boundingBox();
+      const submit = page.getByRole("button", { name: mode === "register" ? "登记入部信息" : "开门！" });
+      await submit.hover();
+      await expect(submit).toHaveCSS("transform", "none");
+      const confirmInput = await page.locator(mode === "register" ? "#auth-confirm-password" : "#auth-password").boundingBox();
+      const submitBounds = await submit.boundingBox();
+      expect(submitBounds.y - confirmInput.y - confirmInput.height).toBeLessThanOrEqual(12);
+      expect(initial.height).toBeLessThan(width > 900 ? 600 : 575);
+      const expectStableCard = async () => {
+        const current = await card.boundingBox();
+        expect(current.width).toBe(initial.width);
+        expect(current.height).toBe(initial.height);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+        const scroller = await page.locator(".auth-screen").boundingBox();
+        expect(current.x).toBeGreaterThanOrEqual(scroller.x);
+        expect(current.x + current.width + 6).toBeLessThanOrEqual(scroller.x + scroller.width + 0.5);
+        for (const error of await page.locator(".auth-label-row .auth-field-error").all()) {
+          const label = await error.locator("..").boundingBox();
+          const bounds = await error.boundingBox();
+          expect(bounds.y).toBe(label.y);
+          expect(bounds.y + bounds.height).toBeLessThanOrEqual(label.y + label.height + 1);
+          expect(Math.abs(bounds.x + bounds.width - label.x - label.width)).toBeLessThan(1);
+        }
+      };
+      await submit.click();
+      await expect(page.locator(".auth-label-row .auth-field-error")).toHaveCount(mode === "register" ? 3 : 2);
+      await expectStableCard();
+      await page.locator("#auth-username").fill("a!!!");
+      await page.locator("#auth-password").fill("x");
+      if (mode === "register") await page.locator("#auth-confirm-password").fill("y");
+      await submit.click();
+      await expectStableCard();
+      await page.screenshot({ path: testInfo.outputPath(`${mode}-errors-${width}.png`), fullPage: true });
+      await page.locator("#auth-username").fill("TestUser");
+      await page.locator("#auth-password").fill("password123");
+      if (mode === "register") await page.locator("#auth-confirm-password").fill("password123");
+      await submit.click();
+      if (mode === "register") {
+        await expect(page.locator(".auth-label-row #auth-username-error")).toHaveText("用户名已存在");
+        await expect(page.locator(".form-error")).toHaveCount(0);
+      } else {
+        await expect(page.locator(".form-error")).toHaveText("用户名或密码错误");
       }
-    };
-    await submit.click();
-    await expect(page.locator(".auth-label-row .auth-field-error")).toHaveCount(3);
-    await expectStableCard();
-    await page.locator("#auth-username").fill("a!!!");
-    await page.locator("#auth-password").fill("x");
-    await page.locator("#auth-confirm-password").fill("y");
-    await submit.click();
-    await expectStableCard();
-    await page.screenshot({ path: testInfo.outputPath(`register-errors-${width}.png`), fullPage: true });
-    await page.locator("#auth-username").fill("TestUser");
-    await page.locator("#auth-password").fill("password123");
-    await page.locator("#auth-confirm-password").fill("password123");
-    await submit.click();
-    await expect(page.locator(".form-error")).toHaveText("用户名已存在");
-    await expectStableCard();
-    const serverError = await page.locator(".form-error").boundingBox();
-    const finalSubmit = await submit.boundingBox();
-    const finalCard = await card.boundingBox();
-    expect(serverError.y).toBeGreaterThanOrEqual(finalSubmit.y + finalSubmit.height + 6);
-    expect(serverError.y + serverError.height).toBeLessThan(finalCard.y + finalCard.height);
-    await page.screenshot({ path: testInfo.outputPath(`register-server-error-${width}.png`), fullPage: true });
+      await expectStableCard();
+      await page.locator("#auth-username").fill("NewUser");
+      await expect(page.locator(".form-error, #auth-username-error")).toHaveCount(0);
+
+      response = { status: 502, contentType: "text/html", body: "<!DOCTYPE html><title>Gateway unavailable</title>" };
+      await submit.click();
+      await expect(page.locator(".form-error")).toContainText("并确认后端服务已启动");
+      await expectStableCard();
+      const feedback = page.getByRole("region", { name: "请求错误" });
+      expect(await feedback.evaluate(e => e.scrollHeight <= e.clientHeight + 1)).toBe(true);
+      const serverError = await page.locator(".form-error").boundingBox();
+      const finalSubmit = await submit.boundingBox();
+      const finalCard = await card.boundingBox();
+      expect(serverError.y).toBeGreaterThanOrEqual(finalSubmit.y + finalSubmit.height + 6);
+      expect(serverError.y + serverError.height).toBeLessThan(finalCard.y + finalCard.height);
+      await page.locator(".auth-screen").evaluate(e => { e.scrollTop = e.scrollHeight; });
+      await page.screenshot({ path: testInfo.outputPath(`${mode}-server-error-${width}.png`), fullPage: true });
+
+      response = { status: 403, json: { error: `账号已封禁：${"这是需要完整保留的服务端说明。".repeat(10)}` } };
+      await submit.click();
+      await expect(page.locator(".form-error")).toContainText("账号已封禁");
+      await expectStableCard();
+      await feedback.focus();
+      await page.keyboard.press("End");
+      await expect.poll(() => feedback.evaluate(e => e.scrollTop)).toBeGreaterThan(0);
+    }
   });
 
   test(`entry loading tip and first-load note stay centered at ${width}`, async ({ page }, testInfo) => {

@@ -16,7 +16,9 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [validationErrors, setValidationErrors] = useState({});
+  const [serverFieldErrors, setServerFieldErrors] = useState({});
+  const fieldErrors = { ...validationErrors, ...serverFieldErrors };
   const [touchedFields, setTouchedFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [showSessionConflict, setShowSessionConflict] = useState(false);
@@ -48,25 +50,32 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
     setShowPassword(false);
     setShowConfirmPassword(false);
     setError("");
-    setFieldErrors({});
+    setValidationErrors({});
+    setServerFieldErrors({});
     setTouchedFields({});
     setShowSessionConflict(false);
   }
 
   function updateField(field, value) {
+    setError("");
+    setServerFieldErrors((current) => {
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
     if (field === "username") setUsername(value);
     if (field === "password") setPassword(value);
     if (field === "confirmPassword") setConfirmPassword(value);
 
     if (touchedFields[field]) {
       const nextPassword = field === "password" ? value : password;
-      setFieldErrors((current) => ({
+      setValidationErrors((current) => ({
         ...current,
         [field]: validateAuthField(field, value, { mode, password: nextPassword })
       }));
     }
     if (field === "password" && touchedFields.confirmPassword) {
-      setFieldErrors((current) => ({
+      setValidationErrors((current) => ({
         ...current,
         confirmPassword: validateAuthField("confirmPassword", confirmPassword, { mode, password: value })
       }));
@@ -76,7 +85,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
   function markFieldTouched(field) {
     const value = field === "username" ? username : field === "password" ? password : confirmPassword;
     setTouchedFields((current) => ({ ...current, [field]: true }));
-    setFieldErrors((current) => ({
+    setValidationErrors((current) => ({
       ...current,
       [field]: validateAuthField(field, value, { mode, password })
     }));
@@ -90,13 +99,14 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
   async function performSubmit(forceLogin) {
     if (submitLockRef.current) return;
     setError("");
+    setServerFieldErrors({});
     const snapshot = { mode, username, password, confirmPassword };
     const validation = validateAuthSubmit(snapshot);
     if (!validation.ok) {
       const invalidFields = Object.fromEntries(
         Object.entries(validation.fieldErrors).map(([field, fieldError]) => [field, Boolean(fieldError)])
       );
-      setFieldErrors(validation.fieldErrors);
+      setValidationErrors(validation.fieldErrors);
       setTouchedFields(invalidFields);
       focusFirstInvalidField(validation.fieldErrors, { usernameRef, passwordRef, confirmPasswordRef });
       return;
@@ -124,6 +134,9 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       if (!mountedRef.current || requestVersionRef.current !== requestVersion || isAbortError(caught)) return;
       if (mode === "login" && !forceLogin && isAlreadyLoggedInError(caught)) {
         setShowSessionConflict(true);
+      } else if (mode === "register" && caught?.status === 409 && caught.message === "用户名已存在") {
+        setServerFieldErrors({ username: caught.message });
+        setTouchedFields((current) => ({ ...current, username: true }));
       } else {
         setError(authErrorMessage(caught));
       }
@@ -178,7 +191,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
             <div className={authFieldClassName("username", fieldErrors, touchedFields)}>
               <label className="auth-label-row" htmlFor="auth-username">
                 <span>用户名</span>
-                {mode === "register" && <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} note={AUTH_REGISTER_LABEL_NOTES.username} />}
+                <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} note={mode === "register" ? AUTH_REGISTER_LABEL_NOTES.username : undefined} />
               </label>
               <input
                 ref={usernameRef}
@@ -195,13 +208,12 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                 onBlur={() => markFieldTouched("username")}
                 onChange={(event) => updateField("username", event.target.value)}
               />
-              {mode === "login" && <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} />}
             </div>
 
             <div className={authFieldClassName("password", fieldErrors, touchedFields)}>
               <label className="auth-label-row" htmlFor="auth-password">
                 <span>密码</span>
-                {mode === "register" && <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} note={AUTH_REGISTER_LABEL_NOTES.password} />}
+                <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} note={mode === "register" ? AUTH_REGISTER_LABEL_NOTES.password : undefined} />
               </label>
               <div className="auth-input-shell">
                 <input
@@ -227,7 +239,6 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
                   onToggle={() => setShowPassword((current) => !current)}
                 />
               </div>
-              {mode === "login" && <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} />}
             </div>
 
             {mode === "register" && (
@@ -263,9 +274,9 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
               </div>
             )}
 
-            {(mode === "register" || error) && <div className={mode === "register" ? "auth-form-feedback" : undefined}>
+            <div className="auth-form-feedback" role={error ? "region" : undefined} aria-label={error ? "请求错误" : undefined} tabIndex={error ? 0 : undefined}>
               {error && <p className="form-error" role="alert">{error}</p>}
-            </div>}
+            </div>
             <p className="auth-live-region" aria-live="polite" aria-atomic="true">
               {submitting ? authPendingText(mode) : ""}
             </p>

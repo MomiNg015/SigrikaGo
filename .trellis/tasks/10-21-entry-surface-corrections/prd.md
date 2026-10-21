@@ -26,3 +26,14 @@ Apply the user's three screenshot corrections to the entry loader and login/regi
 - Browser regression checks enforce compact submit spacing, no decoration, unchanged card geometry through errors, and unobstructed server feedback at 1440/390/360/320px.
 - Design-hook findings for #6b5d5a, #d8507a and the existing 10px password-toggle radius are unchanged intentional owner styles, not introduced by this correction; no suppression added.
 - Follow-up verification: 4 browser cases at desktop/390/360/320px passed, along with 108 relevant auth/CSS/document tests across targeted runs and changed-file ESLint. Registration height falls by about 68px desktop and 48px phone; errors preserve those dimensions.
+
+## Approved audit corrections
+- Apply the same compact label feedback and stable card geometry to login and registration.
+- Place duplicate-username server errors beside the username, preserve them through blur, and clear them on username edits. Clear stale form errors when credentials change.
+- Reserve two readable lines in the card's bottom padding, preserving full longer server explanations in a named keyboard-scrollable region.
+- Give the mobile scroll shell enough width and safe-area-aware inline clearance for the full card and its 6px shadow, preserving the title composition.
+- Extend regression coverage to both modes, common two-line API errors, unusually long server explanations, and painted shadow bounds.
+- Browser verification also exposed a reduced-motion specificity failure: the semantic button-color hover owner overrode auth's no-transform rule and oscillated by 1px at a scrolled button edge. Strengthened the existing auth owner and nested its two reduced-motion declarations without increasing CSS debt limits.
+- Verification: 174 related unit/DOM/CSS tests, 8 entry-surface browser cases, changed-file ESLint, production build, built-CSS contracts and system-design rendering passed. Desktop and 320px idle/error screenshots were inspected. The prior 390px instability is covered by computed hover transforms and the short-viewport flow.
+- Full `npm run check` reached tests after lint passed, but encountered proxy/leaderboard test timeouts and an IPC channel closure. Isolated rerun passed leaderboard coverage; the unrelated `scripts/devApiProxy.integration.test.js` first-case 5s timeout persists. No unrelated proxy code or timeout limit was changed.
+- Design-hook radius/color findings are existing password-toggle and theme-owner values, including the 10px toggle radius; this correction leaves them intact and adds no suppression.
