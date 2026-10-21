@@ -1062,3 +1062,36 @@ Aligned black/white player header rows in three shared columns; switched non-boa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 213: Mobile room header button parity
+
+**Date**: 2026-10-21
+**Task**: Mobile room header button parity
+**Branch**: `master`
+
+### Summary
+
+Matched mobile exit and menu geometry, ink, border and press feedback while preserving pale-red exit fill. Shared state tokens suppress all mobile hard shadows. Browser, battle, Pixi stability, CSS, lint and build checks passed; scoped docs and specs updated; unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2c10cc09` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
