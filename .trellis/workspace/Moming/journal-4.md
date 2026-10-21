@@ -1029,3 +1029,36 @@ Restored a bounded 5px-left/1px-down mobile IRIS press effect while preserving c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 212: Battle header typography and outcome colors
+
+**Date**: 2026-10-21
+**Task**: Battle header typography and outcome colors
+**Branch**: `master`
+
+### Summary
+
+Aligned black/white player header rows in three shared columns; switched non-board numeric UI to LXGW; applied pale-green win/pale-red loss paper and danger exit button. Six browser layout cases, 442 battle tests plus four docs tests, focused DOM/HUD/button checks, four real skill-effect stability cases, lint/build/built-CSS passed. Updated scoped system-design/spec facts and preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e64ee343` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
