@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 209
+- **Total Sessions**: 210
 - **Last Active**: 2026-10-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~965 | Active |
+| `journal-4.md` | ~998 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 210 | 2026-10-21 | Stable mobile IRIS entry | `ae236d48` | `master` |
 | 209 | 2026-10-21 | Auth label baseline alignment | `2a777e79` | `master` |
 | 208 | 2026-10-21 | Auth feedback and mobile shadow corrections | `3aa664fa` | `master` |
 | 207 | 2026-10-20 | 移除 Toast 分类小字 | `e9b70410` | `master` |

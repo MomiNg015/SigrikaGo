@@ -963,3 +963,36 @@ Corrected desktop and mobile auth label rows from top alignment to first-baselin
 ### Next Steps
 
 - None - task complete
+
+
+## Session 210: Stable mobile IRIS entry
+
+**Date**: 2026-10-21
+**Task**: Stable mobile IRIS entry
+**Branch**: `master`
+
+### Summary
+
+Reproduced and fixed a 41px mobile IRIS entry jump caused by the generic active transform overriding viewport centering. Kept all phone interaction states anchored and preserved desktop hover. Added five browser regressions; 123 targeted tests, changed-file lint, build, built CSS and docs rendering passed. Existing unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ae236d48` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
