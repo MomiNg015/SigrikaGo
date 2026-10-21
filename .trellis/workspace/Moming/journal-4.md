@@ -1194,3 +1194,36 @@ Applied targeted regular-weight prose with no synthetic bold, 0.025em tracking, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 217: Audit LXGW font sizes across production UI
+
+**Date**: 2026-10-21
+**Task**: Audit LXGW font sizes across production UI
+**Branch**: `master`
+
+### Summary
+
+Read-only runtime audit after LXGW migration. Scanned 749 CSS files, captured 97 distinct successful style states across 36 player surface/state types and 21 admin pages, plus 320px screenshot checks. Found severe shop-card scale shrinking labels to 5.9-10.8px and mobile battle labels at 9-12px; documented targeted sizes for profile, leaderboard, practice, auth, details, social, mailbox, replay and admin. Saved six screenshots and report; synchronized system design and passed 4 document tests. No production code changed; unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c591b0f7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
