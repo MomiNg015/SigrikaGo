@@ -1161,3 +1161,36 @@ Unified production typography including first-entry/admin and all non-WuWa owner
 ### Next Steps
 
 - None - task complete
+
+
+## Session 216: Improve LXGW prose readability
+
+**Date**: 2026-10-21
+**Task**: Improve LXGW prose readability
+**Branch**: `master`
+
+### Summary
+
+Applied targeted regular-weight prose with no synthetic bold, 0.025em tracking, 1.65 leading and 15px reader floor; preserved WuWa and IRIS computed typography. Dense Chinese browser cases passed at 1440/390/320px; 121 focused tests, 443 battle tests, 4 docs tests, 4 desktop/mobile skill-effect cases, lint, build and built-CSS passed. Updated design docs and generated HTML; scoped commit preserves unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `891600da` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

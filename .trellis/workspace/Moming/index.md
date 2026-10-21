@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 215
+- **Total Sessions**: 216
 - **Last Active**: 2026-10-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1163 | Active |
+| `journal-4.md` | ~1196 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 216 | 2026-10-21 | Improve LXGW prose readability | `891600da` | `master` |
 | 215 | 2026-10-21 | Unify LXGW fonts while preserving WuWa and IRIS | `a41e9127` | `master` |
 | 214 | 2026-10-21 | Empty warehouse and direct team matchmaking | `531d0197` | `master` |
 | 213 | 2026-10-21 | Mobile room header button parity | `2c10cc09` | `master` |
