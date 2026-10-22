@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowRight, Check, Package, RotateCcw, X } from 'lucide-react';
 import WindowTitleSticker from '../../../src/modals/WindowTitleSticker.jsx';
@@ -18,6 +18,28 @@ const params=new URLSearchParams(location.search);
 function initialItems(){return params.has('empty')?[]:catalog.map((item,index)=>({...item,quantity:params.has('large')?[9999,128,99,1,1000,12][index]:item.quantity,name:params.has('long')?`${item.name}特别珍藏纪念版`:item.name}));}
 function Art({item}){const [failed,setFailed]=useState('');return item?.art&&failed!==item.art?<img src={`/assets/items/${item.art}`} alt="" onError={()=>setFailed(item.art)}/>:<Package aria-hidden="true"/>;}
 function Quantity({value}){return <span className="wt-quantity" aria-label={`持有 ${value}`}><span>持有</span><strong>{value}</strong></span>;}
+function useWholeCardRows(open){
+  const ref=useRef(null);
+  useLayoutEffect(()=>{
+    const list=ref.current;
+    if(!open||!list)return;
+    // Snap alone aligns only one edge; fit whole rows so the other edge also clears.
+    const fit=()=>{
+      const style=getComputedStyle(list);
+      const gap=parseFloat(style.rowGap);
+      const height=list.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
+      const minimum=parseFloat(style.getPropertyValue('--wt-row-min'));
+      if(height<=0)return;
+      const rows=Math.max(1,Math.floor((height+gap)/(minimum+gap)));
+      list.style.setProperty('--wt-row-height',`${(height-gap*(rows-1))/rows}px`);
+    };
+    fit();
+    const observer=new ResizeObserver(fit);
+    observer.observe(list);
+    return ()=>observer.disconnect();
+  },[open]);
+  return ref;
+}
 function Confirm({item,onClose,onConfirm}){
   const ref=useRef(null);
   useEffect(()=>{ref.current.showModal();},[]);
@@ -29,6 +51,7 @@ function Confirm({item,onClose,onConfirm}){
 function Sample(){
   const [items,setItems]=useState(initialItems),[selected,setSelected]=useState('candy');
   const [open,setOpen]=useState(true),[confirm,setConfirm]=useState(null),[notice,setNotice]=useState('');
+  const listRef=useWholeCardRows(open);
   const item=items.find(entry=>entry.id===selected)??items[0];
   const reset=()=>{setItems(initialItems());setSelected('candy');setNotice('');setOpen(true);};
   function use(){if(!item||item.quantity<=0)return;if(item.category==='招募'){setNotice('招募入口预览 · 当前数量保持不变');return;}setConfirm(item);}
@@ -38,7 +61,7 @@ function Sample(){
     {open?<div className="modal-backdrop warehouse-guide-backdrop"><section className="warehouse-modal warehouse-field-guide warehouse-template window-sticker-host" role="dialog" aria-modal="true" aria-label="仓库模板">
       <button className="close-button" type="button" aria-label="关闭仓库" onClick={()=>setOpen(false)}><X size={20}/></button>
       <header className="warehouse-header window-sticker-header"><WindowTitleSticker titleKey="warehouse"/></header>
-      <div className="wt-body"><section className="wt-list" aria-label="道具目录">
+      <div className="wt-body"><section ref={listRef} className="wt-list" aria-label="道具目录">
         {items.map(entry=><button type="button" key={entry.id} className="wt-card" aria-label={`选择${entry.name}，持有 ${entry.quantity}`} aria-pressed={entry.id===item?.id} onClick={()=>{setSelected(entry.id);setNotice('');}}>
           <span className="wt-art"><Art item={entry}/></span><span className="wt-card-name">{entry.name}</span><Quantity value={entry.quantity}/><Check className="wt-selected-mark" size={15} aria-hidden="true"/>
         </button>)}

@@ -50,6 +50,7 @@
     }
   ],
   "interactions": "pass",
+  "wholeCardScrolling": "wheel, touch, endpoints, resize and reopen passed",
   "errors": [],
   "apiRequests": []
 }

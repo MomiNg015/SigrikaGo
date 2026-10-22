@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Check full-theme responsive geometry and shadow bounds after actual scrolling."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Preserve artifact isolation and verify actual browser results."}
