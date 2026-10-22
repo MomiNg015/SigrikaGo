@@ -1293,3 +1293,36 @@ Restored single-row identity/statistics/header layout, padded statistics, lighte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 220: 好友伙伴侧栏与纸卡交互
+
+**Date**: 2026-10-22
+**Task**: 好友伙伴侧栏与纸卡交互
+**Branch**: `master`
+
+### Summary
+
+交付三版样例并接入用户选择的第三版，保留左侧好友/黑名单书签；增加纸卡硬阴影、悬停抬起及按下下沉。7项浏览器回归、lint、构建、立绘及CSS检查通过。代理集成测试延长超时后通过；后台默认快照的siteSettings/characters存在既有差异，未导出覆盖。无关WIP保持原样。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ba18a86f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
