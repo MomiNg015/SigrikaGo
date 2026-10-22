@@ -36,8 +36,11 @@ async function layout(view, width, height, extra = '') {
     const labelStyles = names.map(q => { const el = document.querySelector(q); if (!el) return null; const s = getComputedStyle(el); return { q, radius: s.borderRadius, border: s.borderTopWidth, fill: s.backgroundColor }; }).filter(Boolean);
     const img = document.querySelector('.character-detail-figure img');
     const buttons = ['.character-costume-open-button', '.character-detail-fullbody > .close-button'].map(q => document.querySelector(q).getBoundingClientRect().toJSON());
+    const music = document.querySelector('.character-music-player')?.getBoundingClientRect().toJSON();
+    const name = document.querySelector('.character-detail-heading h3').getBoundingClientRect().toJSON();
+    const art = document.querySelector('.character-detail-art').getBoundingClientRect().toJSON();
     return { rect: rect.toJSON(), overflow: [modal.scrollWidth, modal.clientWidth, document.documentElement.scrollWidth], labels: labelStyles, imageLoaded: img.complete && img.naturalWidth > 0,
-      font: parseFloat(getComputedStyle(document.querySelector('.character-skill-description')).fontSize), copy: [copy.clientWidth, copy.scrollWidth], buttons };
+      font: parseFloat(getComputedStyle(document.querySelector('.character-skill-description')).fontSize), copy: [copy.clientWidth, copy.scrollWidth], buttons, music, name, art };
   });
   assert(state.rect.left >= 0 && state.rect.right + 7 <= width + 1, `${view}/${width}: shell/shadow horizontal bounds`);
   assert(state.rect.top >= 0 && state.rect.bottom + 8 <= height + 1, `${view}/${width}: shell/shadow vertical bounds`);
@@ -45,6 +48,12 @@ async function layout(view, width, height, extra = '') {
   assert(state.imageLoaded && state.font >= 16, `${view}/${width}: loaded art and readable prose`);
   for (const label of state.labels) assert(label.radius === '0px' && label.border === '0px' && label.fill === 'rgba(0, 0, 0, 0)', `${view}/${width}: no tag ${JSON.stringify(label)}`);
   const [wardrobe, close] = state.buttons;
+  if (state.music) {
+    const m = state.music;
+    assert(Math.min(wardrobe.right, m.right) <= Math.max(wardrobe.left, m.left) || Math.min(wardrobe.bottom, m.bottom) <= Math.max(wardrobe.top, m.top), `${view}/${width}: music/wardrobe overlap`);
+    assert(state.name.bottom <= m.top + 1 || state.name.right <= m.left + 1, `${view}/${width}: name/music overlap`);
+    if (width <= 768 && view !== 'reading') assert(m.bottom <= state.art.bottom + 1, `${view}/${width}: identity stays in hero`);
+  }
   assert(Math.min(wardrobe.right, close.right) <= Math.max(wardrobe.left, close.left) || Math.min(wardrobe.bottom, close.bottom) <= Math.max(wardrobe.top, close.top), `${view}/${width}: controls overlap`);
   const end = page.locator('.character-description');
   await end.scrollIntoViewIfNeeded();
@@ -93,7 +102,7 @@ try {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
   }
   await page.goto(`${base}${route}`);
-  await page.getByRole('button', { name: '3　连续阅读页', exact: true }).click();
+  await page.getByRole('button', { name: '3　漫画分镜', exact: true }).click();
   await page.getByRole('button', { name: '手机竖屏', exact: true }).click();
   assert((await page.locator('#preview').getAttribute('src')).includes('view=reading'));
   assert((await page.locator('#preview').getAttribute('class')).includes('phone'));

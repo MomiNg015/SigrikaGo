@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { CharacterDetailDialog } from '../../../src/modals/house/HouseNestedDialogs.jsx';
 import CharacterCostumeDialog from '../../../src/modals/house/CharacterCostumeDialog.jsx';
 import { mergeCharacters } from '../../../src/shared/characters.js';
+import { CHARACTER_FACTIONS, FACTION_EMBLEMS } from '../../../src/shared/characterFactions.js';
 import { loadCachedPublicSkillTraitCatalog } from '../../../src/app/skillTraitCatalog.js';
 import { DEFAULT_AUDIO_SETTINGS, stopVoicePlayback } from '../../../src/audio/playback.jsx';
 import { playSystemVoice } from '../../../src/audio/systemVoicePlayback.js';
@@ -31,6 +32,10 @@ const audioSettings = DEFAULT_AUDIO_SETTINGS;
 const root = document.getElementById('root');
 root.className = 'app-shell player-theme-enabled theme-bright-school hp-scene';
 root.dataset.design = design;
+root.dataset.longName = String(character.name.length > 8);
+const faction = FACTION_EMBLEMS[CHARACTER_FACTIONS[original.id]];
+root.style.setProperty('--hp-emblem', faction ? `url("${faction.src}")` : 'none');
+root.style.setProperty('--hp-emblem-strength', faction?.strength ?? 1);
 
 function Sample() {
   const [open, setOpen] = useState(true);
