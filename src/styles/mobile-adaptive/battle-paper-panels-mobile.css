@@ -3,6 +3,25 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
     --mobile-room-player-strip-height: 94px !important;
     --mobile-room-board-size: min(calc(100vw - 24px), 480px) !important;
+    --battle-control-shadow: 1px 2px 0 color-mix(in srgb, var(--bright-border) 55%, var(--bright-paper));
+
+    & .mobile-room-dock { box-shadow: var(--battle-control-shadow) !important; }
+
+    & :is(.room-header-test-tools > .toggle, .room-mobile-coordinate, .room-mobile-exit, .room-mobile-menu-toggle, .mobile-tab-panel .action-bar:not(.tutorial-choice-actions) > button) {
+      --campus-control-shadow: var(--battle-control-shadow);
+      --campus-control-hover-shadow: var(--battle-control-shadow);
+      --campus-control-active-shadow: none;
+      box-shadow: var(--battle-control-shadow) !important;
+
+      &:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):is(:active, .active, .coordinate-toggle[aria-pressed="true"]) {
+        transform: var(--battle-control-press, translate(1px, 2px)) !important;
+        box-shadow: none !important;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        &, &:hover, &:active { --battle-control-press: none; transform: none !important; transition: none !important; }
+      }
+    }
 
     & .mobile-room-viewport[data-action-anchored] {
       flex: 0 0 auto !important;

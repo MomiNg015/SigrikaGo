@@ -74,18 +74,29 @@ export default function RoomHeader({
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
         <button className="toggle coordinate-toggle" aria-pressed={showCoords} onClick={onToggleCoords} title="显示坐标"><PanelRight size={16} /></button>
       </div>}
-      {onBack && (
-        <button
-          className="toggle room-mobile-exit"
-          data-button-role="danger"
+      {(showUtilityControls || onBack) && <div className="room-header-quick-actions">
+        {showUtilityControls && <button
+          className="toggle coordinate-toggle room-mobile-coordinate"
+          data-button-role="secondary"
           type="button"
-          aria-label={exitLabel}
-          title={exitLabel}
-          onClick={onBack}
-        >
-          <DoorOpen size={18} />
-        </button>
-      )}
+          aria-label="显示坐标"
+          aria-pressed={showCoords}
+          title="显示坐标"
+          onClick={onToggleCoords}
+        ><PanelRight size={18} /></button>}
+        {onBack && (
+          <button
+            className="toggle room-mobile-exit"
+            data-button-role="danger"
+            type="button"
+            aria-label={exitLabel}
+            title={exitLabel}
+            onClick={onBack}
+          >
+            <DoorOpen size={18} />
+          </button>
+        )}
+      </div>}
       {showUtilityControls && <div className={`room-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <button
           className="toggle room-mobile-menu-toggle"
@@ -107,10 +118,6 @@ export default function RoomHeader({
           <button type="button" onClick={closeMobileMenu(onOpenSettings)}>
             <Settings size={17} />
             <span>设置</span>
-          </button>
-          <button className="coordinate-toggle" aria-pressed={showCoords} type="button" onClick={closeMobileMenu(onToggleCoords)}>
-            <PanelRight size={17} />
-            <span>坐标</span>
           </button>
         </div>
       </div>}

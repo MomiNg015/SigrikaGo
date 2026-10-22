@@ -21,6 +21,13 @@ const players = ["sigrika", "denia"].map((id, index) => ({
   captures: index ? 1 : 3, skillRemovals: 0, connected: true,
   time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
 }));
+if (query.has("dense")) {
+  players[0].user.username = "准时宝";
+  players[0].user.rank = "中级陪练";
+  players[1].user.username = "抱着棋盘认真看星星的moming";
+  players[0].captures = 361;
+  players[0].skillRemovals = 128;
+}
 const game = createGameState(players);
 game.phase = "playing";
 game.moveNumber = 14;

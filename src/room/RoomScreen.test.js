@@ -394,7 +394,8 @@ describe("RoomScreen helpers", () => {
     expect(headerSource).toContain("room-mobile-menu-toggle");
     expect(headerSource).toContain("room-mobile-menu-panel");
     expect(headerSource).toContain("<span>留言</span>");
-    expect(headerSource).toContain("<span>坐标</span>");
+    expect(headerSource).toContain("room-mobile-coordinate");
+    expect(headerSource).not.toContain("<span>坐标</span>");
     expect(battleSource).toContain("className=\"mobile-room-viewport mobile-battle-layout\"");
     expect(battleSource).toContain("className=\"mobile-board-viewport mobile-board-slot board-column\"");
     expect(battleSource).toContain("className=\"mobile-room-dock room-direct-actions\"");
@@ -580,7 +581,6 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps audited mobile room controls visible and avoids tiny landscape boards", () => {
-    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
     const actionSource = readText(new URL("./ActionBar.jsx", import.meta.url), "utf8");
     const mobileRoomCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
@@ -923,7 +923,7 @@ describe("RoomScreen helpers", () => {
     expect(firstFloatingLayerZ).toBeLessThan(modalBackdropZ);
     expect(modalBackdropZ).toBeGreaterThan(140);
     expect(roomCss).toContain(".desktop-room-screen .room-header");
-    expect(roomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto");
+    expect(roomCss).toContain(".room-header-quick-actions { display: contents; }");
     expect(roomCss).toContain(".desktop-room-screen .room-toggles");
     expect(roomCss).toContain("justify-self: end");
     expect(roomCss).toContain(".room-mobile-exit {\n  background: var(--campus-button-danger, #ffe4e6)");

@@ -7,7 +7,7 @@
     z-index: var(--room-floating-z, 120) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :is(.room-mobile-exit, .room-mobile-menu-toggle) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :is(.room-mobile-coordinate, .room-mobile-exit, .room-mobile-menu-toggle) {
     --campus-control-ink: var(--bright-ink);
     --campus-control-border: var(--bright-border);
     --campus-control-shadow: none;

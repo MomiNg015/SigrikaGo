@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   testDir: ".",
-  testMatch: "spectator-presence.spec.js",
+  testMatch: ["spectator-presence.spec.js", "battle-presentation.spec.js"],
   outputDir: "../../.codex-run/battle-presence/playwright",
   workers: 1,
   timeout: 30000,

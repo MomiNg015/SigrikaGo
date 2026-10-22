@@ -36,9 +36,17 @@ describe("RoomHeader compact scoreboard", () => {
   it("preserves utility callbacks, coordinate state, and mobile-menu dismissal", () => {
     const settings = vi.fn(); const coords = vi.fn(); const back = vi.fn();
     const { container } = render(<RoomHeader room={room} roomGameInfo={info} showCoords onOpenSettings={settings} onToggleCoords={coords} onBack={back}/>);
-    fireEvent.click(screen.getByTitle("显示坐标"));
+    const desktopCoords = container.querySelector(".room-toggles .coordinate-toggle");
+    const mobileCoords = container.querySelector(".room-mobile-coordinate");
+    fireEvent.click(desktopCoords);
     expect(coords).toHaveBeenCalledTimes(1);
-    expect(screen.getByTitle("显示坐标").getAttribute("aria-pressed")).toBe("true");
+    expect(desktopCoords.getAttribute("aria-pressed")).toBe("true");
+    expect(mobileCoords.getAttribute("aria-pressed")).toBe("true");
+    expect(mobileCoords.textContent).toBe("");
+    expect(mobileCoords.nextElementSibling.classList.contains("room-mobile-exit")).toBe(true);
+    fireEvent.click(mobileCoords);
+    expect(coords).toHaveBeenCalledTimes(2);
+    expect(container.querySelector(".room-mobile-menu-panel .coordinate-toggle")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "选项" }));
     fireEvent.click(within(container.querySelector(".room-mobile-menu-panel")).getByRole("button", { name: "设置" }));
     expect(settings).toHaveBeenCalledTimes(1);

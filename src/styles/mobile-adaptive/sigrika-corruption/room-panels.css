@@ -29,7 +29,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.room-toggles, .room-mobile-menu) .toggle,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .toggle.room-mobile-exit,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .toggle:is(.room-mobile-coordinate, .room-mobile-exit),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .room-mobile-menu-panel,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .room-mobile-menu-panel button {
   --sigrika-duel-utility-border: color-mix(in srgb, var(--sigrika-duel-line) 72%, transparent);
@@ -41,7 +41,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.room-toggles, .room-mobile-menu) .toggle > :is(svg, span),
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .toggle.room-mobile-exit > :is(svg, span) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .toggle:is(.room-mobile-coordinate, .room-mobile-exit) > :is(svg, span) {
   color: inherit !important;
 }
 

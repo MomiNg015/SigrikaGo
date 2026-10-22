@@ -70,8 +70,9 @@
   .room-move-placard strong { font-size: 34px; }
   .room-move-placard > span { font-size: 10px; }
   .room-move-placard.is-long-count strong { font-size: 27px; }
-  .room-scoreboard-details { gap: 3px; }
+  .room-scoreboard-details { grid-template-columns: minmax(0, 1fr); gap: 3px; }
   .room-scoreboard-meta { gap: 4px; font-size: 9px; }
-  .room-scoreboard-players { column-gap: 4px; }
+  .room-scoreboard-meta > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .room-scoreboard-players { column-gap: 4px; grid-template-columns: 1em minmax(0, max-content) minmax(0, max-content); }
   .room-scoreboard-player { font-size: 10px; }
 }

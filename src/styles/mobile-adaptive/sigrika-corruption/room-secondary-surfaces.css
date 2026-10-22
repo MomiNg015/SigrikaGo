@@ -11,7 +11,7 @@
   background: var(--sigrika-duel-ink) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.room-toggles .toggle, .toggle.room-mobile-exit, .room-mobile-menu .toggle, .room-mobile-menu-panel button):is(:hover, :focus-visible, .active) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.room-toggles .toggle, .toggle:is(.room-mobile-coordinate, .room-mobile-exit), .room-mobile-menu .toggle, .room-mobile-menu-panel button):is(:hover, :focus-visible, .active) {
   --sigrika-duel-utility-border: var(--sigrika-duel-hot);
   --sigrika-duel-utility-surface: var(--sigrika-duel-interactive);
 }
