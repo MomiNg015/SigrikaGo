@@ -10,7 +10,7 @@ const base = process.env.SAMPLE_ORIGIN || 'http://127.0.0.1:5173';
 const route = '/docs/design-samples/watch-paper-2026-10-22/';
 const out = fileURLToPath(new URL('.', import.meta.url));
 const lint = new ESLint({ overrideConfigFile: true, overrideConfig: [{ ...eslintConfig[1], files: ['**/*.{js,jsx,mjs}'] }] });
-const lintResults = await lint.lintFiles(['sample.jsx', 'usePreviewRows.js', 'gallery.js', 'verify.mjs'].map(name => out + name));
+const lintResults = await lint.lintFiles(['sample.jsx', 'gallery.js', 'verify.mjs'].map(name => out + name));
 assert.deepEqual(lintResults.flatMap(result => result.messages), [], 'Scoped ESLint');
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const page = await browser.newPage();
@@ -53,7 +53,7 @@ async function wholeCards(target = page) {
   }, {}, { timeout: 4000 }).catch(async error => {
     const detail = JSON.stringify(await target.evaluate(() => {
       const list = document.querySelector('.wl-scroll');
-      return { url:location.href, viewport:[innerWidth,innerHeight], list:list.getBoundingClientRect().toJSON(), scrollTop:list.scrollTop, rowHeight:list.style.getPropertyValue('--wp-row-height'), rows:[...list.querySelectorAll('.wl-row')].map(row => row.getBoundingClientRect().toJSON()) };
+      return { url:location.href, viewport:[innerWidth,innerHeight], list:list.getBoundingClientRect().toJSON(), scrollTop:list.scrollTop, rowHeight:list.style.getPropertyValue('--wl-row-height'), rows:[...list.querySelectorAll('.wl-row')].map(row => row.getBoundingClientRect().toJSON()) };
     }));
     throw new Error(`${error.message}\n${detail}`);
   });
@@ -103,8 +103,8 @@ try {
     assert(!result.horizontalOverflow && result.modalInsideViewport && !result.brokenImages, JSON.stringify(result));
     results.push({ query, ...result });
     await scrollCheck();
-    if (!query && [1440,390,320].includes(width)) await page.screenshot({ path: `${out}template-${width}${height === 600 ? '-short' : ''}.png` });
-    if (query === '?long') await page.screenshot({ path: `${out}template-long.png` });
+    if (!query && [1440,390,320].includes(width)) await page.screenshot({ path: `${out}production-${width}${height === 600 ? '-short' : ''}.png` });
+    if (query === '?long') await page.screenshot({ path: `${out}production-long.png` });
   }
   await open(390,844);
   const input = page.getByRole('textbox', { name: '搜索房间或玩家' });
@@ -155,9 +155,33 @@ try {
   await open(390,844,'?error');
   assert(await page.getByRole('alert').isVisible());
   assert(await page.getByText('加载失败', { exact:true }).isVisible());
-  await open(1440,900,'?current');
-  assert.equal(await page.locator('.wp-preview').count(), 0);
-  await page.screenshot({ path:`${out}current-1440.png` });
+  await open(1440,900,'?finished');
+  const ended = page.locator('.wl-row.finished').first();
+  const endedFill = () => ended.evaluate(element => getComputedStyle(element, '::before').backgroundColor);
+  const gray = await endedFill();
+  const [red,green,blue] = await ended.evaluate(element => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext('2d');
+    context.fillStyle = getComputedStyle(element, '::before').backgroundColor;
+    context.fillRect(0,0,1,1);
+    return [...context.getImageData(0,0,1,1).data];
+  });
+  assert(red === green && green === blue && red < 240 && red > 180, 'Finished card uses a light neutral gray');
+  const statusChannels = await ended.locator('.wl-status > span').evaluate(element => getComputedStyle(element).color.match(/[\d.]+/g).slice(0,3).map(Number));
+  const luminance = channels => channels.map(value => value / 255).map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4).reduce((total,value,index) => total + value * [.2126,.7152,.0722][index],0);
+  assert((luminance([red,green,blue]) + .05) / (luminance(statusChannels) + .05) >= 4.5, 'Ended status text stays readable against gray');
+  await ended.hover(); await settleWindow(page);
+  assert.equal(await endedFill(), gray, 'Finished card stays gray on hover');
+  await page.mouse.down(); await settleWindow(page);
+  assert.equal(await endedFill(), gray, 'Finished card stays gray when pressed');
+  await page.mouse.up();
+  assert(await page.getByText('观战入口预览 · 房间 750129').isVisible(), 'Finished room remains actionable');
+  for (const width of [1440,390]) {
+    await open(width, width === 390 ? 844 : 900, '?finished');
+    await wholeCards();
+    await page.screenshot({ path:`${out}production-finished-${width}.png` });
+  }
 
   const phone = await browser.newContext({ viewport:{width:390,height:844}, isMobile:true, hasTouch:true });
   const touch = await phone.newPage();
@@ -177,17 +201,17 @@ try {
   await client.send('Input.dispatchTouchEvent', { type:'touchEnd', touchPoints:[] });
   await touch.waitForFunction(() => document.querySelector('.wl-scroll').scrollTop > 0);
   await wholeCards(touch);
-  await touch.screenshot({ path:`${out}template-touch-scrolled.png` });
+  await touch.screenshot({ path:`${out}production-touch-scrolled.png` });
   await phone.close();
   await page.goto(`${base}${route}`);
   await page.locator('#phone').click();
   assert(await page.locator('#preview').evaluate(element => element.classList.contains('phone')));
-  await page.getByRole('button', { name:'现有效果', exact:true }).click();
-  assert((await page.locator('#preview').getAttribute('src')).includes('?current'));
-  await page.getByRole('button', { name:'优化样板', exact:true }).click();
+  await page.getByRole('button', { name:'结束状态', exact:true }).click();
+  assert((await page.locator('#preview').getAttribute('src')).includes('?finished'));
+  await page.getByRole('button', { name:'全部对局', exact:true }).click();
   await page.getByRole('button', { name:'重置', exact:true }).click();
   assert.deepEqual(errors, []);
   assert.deepEqual(api, [], 'No real API requests');
-  await writeFile(`${out}verification.json`, JSON.stringify({ results, liveSearch:'pass', focus:'unchanged', interactions:'refresh, join preview, reopen, Escape, hover, press, reduced motion passed', scrolling:'whole cards at rest, wheel, touch, last row and resize passed', errors, apiRequests:api }, null, 2)+'\n');
+  await writeFile(`${out}verification.json`, JSON.stringify({ results, liveSearch:'pass', focus:'unchanged', finishedBackground:'neutral gray on idle, hover and press; room remains actionable', interactions:'refresh, join preview, reopen, Escape, hover, press, reduced motion passed', scrolling:'whole cards at rest, wheel, touch, last row and resize passed', errors, apiRequests:api }, null, 2)+'\n');
   console.log(`${results.length} viewport/state checks passed; live search, whole-card scrolling and interactions passed; no API requests.`);
 } finally { await browser.close(); }

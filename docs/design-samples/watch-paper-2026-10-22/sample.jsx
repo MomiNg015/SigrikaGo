@@ -1,9 +1,8 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import WatchModal from '../../../src/modals/WatchModal.jsx';
 import { CHARACTERS } from '../../../src/shared/characters.js';
 import { rooms } from '../watch-mobile-2026-10-13/fixtures.js';
-import { usePreviewRows } from './usePreviewRows.js';
 import '../../../src/styles.css';
 import './sample.css';
 
@@ -21,7 +20,7 @@ window.fetch = async (input, options) => {
     throw new Error('样板不连接真实接口');
   }
   await new Promise(resolve => setTimeout(resolve, 280));
-  return Response.json(params.has('error') ? { error: '示例：列表暂时无法刷新，请稍后重试。' } : { rooms }, {
+  return Response.json(params.has('error') ? { error: '示例：列表暂时无法刷新，请稍后重试。' } : { rooms: params.has('finished') ? rooms.filter(room => room.status === 'finished') : rooms }, {
     status: params.has('error') ? 503 : 200
   });
 };
@@ -29,9 +28,7 @@ window.fetch = async (input, options) => {
 function Sample() {
   const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState('');
-  const rootRef = useRef(null);
-  usePreviewRows(rootRef, open && !params.has('current'));
-  return <div ref={rootRef} className={`app-shell player-theme-enabled theme-bright-school wp-scene${params.has('current') ? '' : ' wp-preview'}`}>
+  return <div className="app-shell player-theme-enabled theme-bright-school wp-scene">
     {open ? <WatchModal token={previewToken} characters={CHARACTERS}
       onJoinRoom={setSelected} onClose={() => setOpen(false)}/>
       : <div className="wp-demo-result">

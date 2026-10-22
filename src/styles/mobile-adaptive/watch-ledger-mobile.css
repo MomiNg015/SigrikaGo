@@ -1,29 +1,44 @@
 @media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-ledger { width: 100% !important; height: min(740px, var(--window-sticker-available-height)); padding-inline: 12px !important; }
+}
+@media (max-width: 900px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-ledger {
-    width: 100% !important; height: min(740px, var(--window-sticker-available-height)); padding-inline: 12px !important;
-    .wl-toolbar { gap: 10px; padding: 0 3px 8px; }
-    .wl-search { width: 78%; gap: 5px; }
-    .wl-total { font-size: 12px; }
-    .wl-scroll { padding: 0 3px 6px; }
+    --wl-row-min: 148px;
+    .wl-scroll { padding: 3px 9px 10px 4px; scroll-padding-block: var(--wl-scroll-start, 3px) 10px; }
     .wl-table thead { display: none; }
-    &.wl-ledger .wl-table .wl-row { grid-template-columns: auto auto minmax(0, 1fr) 78px; grid-template-areas: "type code people state" "black black black moves" "white white white moves"; padding: 8px 0; gap: 5px 7px; }
-    .wl-code { grid-area: code; font: 12px/1.4 var(--font-ui-default); }
-    .wl-mode { grid-area: type; padding-bottom: 2px; }
-    .wl-mode > span { font: 15px/1.35 var(--font-window-title); padding: 2px 7px; border: 0; background: color-mix(in srgb, var(--mode-tint) 48%, var(--wl-paper)); clip-path: polygon(3% 0,100% 3%,97% 100%,0 96%); }
-    .wl-people { grid-area: people; white-space: nowrap; font-size: 14px; }
+    .wl-table tbody { gap: 11px; padding-top: 0; }
+    &.wl-ledger .wl-table .wl-row {
+      grid-template-columns: auto auto minmax(0, 1fr) 66px;
+      grid-template-areas: "type code people state" "black black black moves" "white white white moves";
+      padding: 10px; gap: 7px 7px; align-content: center;
+    }
+    .wl-code { grid-area: code; font-size: 14px; }
+    .wl-mode { grid-area: type; padding: 0; }
+    .wl-mode > span { font: 16px/1.35 var(--font-window-title); padding: 2px 6px; border: 0; background: color-mix(in srgb, var(--mode-tint) 48%, var(--wl-paper)); clip-path: polygon(3% 0,100% 3%,97% 100%,0 96%); }
+    .wl-people { grid-area: people; gap: 4px; font-size: 14px; white-space: nowrap; }
+    .wl-people > svg { width: 15px; }
     .wl-status { grid-area: state; justify-self: end; }
-    .wl-status > span { display: flex; align-items: center; gap: 4px; border: 0; padding: 0; font-size: 12px; }
-    .wl-status > span::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-    .wl-black { grid-area: black; }.wl-white { grid-area: white; }
-    .wl-player { position: relative; gap: 7px; }
-    .wl-player > img { width: 34px !important; height: 36px !important; }
-    .wl-stone { position: absolute; top: 25px; left: 24px; width: 10px; height: 10px; }
+    .wl-black { grid-area: black; }
+    .wl-white { grid-area: white; }
+    .wl-player { position: relative; gap: 8px; }
+    .wl-player > img { width: 38px !important; height: 40px !important; }
+    .wl-stone { position: absolute; top: 28px; left: 28px; width: 10px; height: 10px; }
     .wl-player .user-identity { flex: 1; }
     .wl-player .user-identity:not(.has-nameplate), .wl-player .user-identity:not(.has-nameplate) .user-identity-name-tag { padding: 0; }
     .wl-player .user-identity-main { justify-content: flex-start; }
-    .wl-player .user-identity-name { font: 14px/1.4 var(--font-ui-default); white-space: normal !important; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
-    .wl-offline { font-size: 12px; }
+    .wl-player .user-identity-name { white-space: normal !important; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
     .wl-moves { grid-area: moves; }
+    .room-scoreboard-identity .room-move-placard { width: 58px; height: 48px; }
+    .room-move-placard strong { font-size: 28px; }
+    .room-move-placard.is-medium-count strong { font-size: 24px; }
+    .room-move-placard.is-long-count strong { font-size: 19px; }
+  }
+}
 
+@media (max-width: 360px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-ledger {
+    &.wl-ledger .wl-table .wl-row { padding: 9px 8px; gap: 7px 5px; grid-template-columns: auto auto minmax(0, 1fr) 59px; }
+    .wl-mode > span { padding-inline: 4px; }
+    .wl-status > span { gap: 3px; }
   }
 }

@@ -39,6 +39,8 @@ describe("WatchModal ledger", () => {
     expect(screen.queryByRole("tab")).toBeNull();
     for (const label of ["星炬", "标准", "五子棋", "队际赛"]) expect(screen.getByText(label)).toBeTruthy();
     const search = screen.getByRole("textbox", { name: "搜索房间或玩家" });
+    expect(screen.queryByRole("button", { name: "搜索", exact: true })).toBeNull();
+    expect(screen.getByRole("button", { name: "观战房间 500003" }).closest("tr").classList.contains("finished")).toBe(true);
     fireEvent.change(search, { target: { value: "橘子" } });
     expect(screen.getAllByRole("row")).toHaveLength(2);
     fireEvent.change(search, { target: { value: "nothing" } });

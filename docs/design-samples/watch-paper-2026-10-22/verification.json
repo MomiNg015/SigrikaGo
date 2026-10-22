@@ -93,6 +93,7 @@
   ],
   "liveSearch": "pass",
   "focus": "unchanged",
+  "finishedBackground": "neutral gray on idle, hover and press; room remains actionable",
   "interactions": "refresh, join preview, reopen, Escape, hover, press, reduced motion passed",
   "scrolling": "whole cards at rest, wheel, touch, last row and resize passed",
   "errors": [],

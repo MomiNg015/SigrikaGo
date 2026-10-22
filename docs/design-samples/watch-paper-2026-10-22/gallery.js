@@ -1,6 +1,6 @@
 const frame = document.querySelector('#preview');
-let current = 'template';
-function show() { frame.src = current === 'template' ? './preview.html' : './preview.html?current'; }
+let current = 'all';
+function show() { frame.src = current === 'all' ? './preview.html' : './preview.html?finished'; }
 document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => {
   current = button.dataset.view;
   document.querySelectorAll('[data-view]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));

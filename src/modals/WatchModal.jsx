@@ -10,6 +10,7 @@ import WatchRoomRow, {
   watchRoomRowKey
 } from "./watch/WatchRoomRow.jsx";
 import { ModalDialog } from "./modalComponents.jsx";
+import { useWatchListRows } from "./watch/useWatchListRows.js";
 
 export default function WatchModal({ token, characters, onJoinRoom, onNotice, onClose }) {
   const [query, setQuery] = useState("");
@@ -17,6 +18,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(Boolean(token));
   const [error, setError] = useState("");
+  const listRef = useWatchListRows();
 
   const loadRooms = useCallback(async () => {
     if (!token) return;
@@ -64,7 +66,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
           <label className="wl-search"><Search size={17} aria-hidden="true"/><input aria-label="搜索房间或玩家" placeholder="房间号 / 玩家名称" value={query} onChange={(event) => setQuery(event.target.value)}/></label>
           <span className="wl-total" role="status">{loading ? "刷新中…" : error ? "加载失败" : `${visibleRooms.length} 场对局`}</span>
         </div>
-        <div className="wl-scroll" aria-busy={loading}>
+        <div ref={listRef} className="wl-scroll" aria-busy={loading}>
           {visibleRooms.length > 0 && <table className="wl-table" aria-label="全部类型对局">
             <thead><tr><th scope="col">房间</th><th scope="col">类型</th><th scope="col" title="房间人数">人数</th><th scope="col">黑方</th><th scope="col">白方</th><th scope="col">手数</th><th scope="col">状态</th><th scope="col" className="wl-sr-only">进入观战</th></tr></thead>
             <tbody>{visibleRooms.map((room) => <WatchRoomRow key={watchRoomRowKey(room)} room={room} characters={characters} onJoinRoom={onJoinRoom} onClose={onClose}/>)}</tbody>

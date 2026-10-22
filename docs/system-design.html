@@ -53,8 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
-<h3>2026-10-22 观战纸卡与实时搜索样板</h3>
-<p>新增<a href="./design-samples/watch-paper-2026-10-22/index.html">观战窗口纸卡样板</a>，提供现有效果对照与手机预览，尚未接入正式主题。样板沿用好友搜索框的一体纸框、厚阴影及无额外聚焦边框，保留输入即时筛选，不增加搜索按钮；对局改为具有悬停／按下反馈的纸卡，保留真实头像、身份、人数、状态和手数吊牌。手机每场一张卡，列表按可用高度停靠完整卡片并保留阴影余量。直接复用 <code>WatchModal</code> 与本地虚构房间，刷新、搜索和空态保持原逻辑，观战入口仅显示预览反馈，不连接真实房间。验证范围与截图见<a href="./design-samples/watch-paper-2026-10-22/README.md">样板说明</a>。</p>
+<h3>2026-10-22 观战纸卡正式接入</h3>
+<p>已将确认的<a href="./design-samples/watch-paper-2026-10-22/index.html">观战纸卡方案</a>接入正式 <code>WatchModal</code>。搜索框与好友一体纸框保持一致，无额外聚焦边框，继续输入即时筛选且不增加搜索按钮；卡片保留厚阴影及悬停／按下反馈。已结束对局使用浅灰背景，悬停与按下仍保持灰色，保留原观战入口、头像、身份、人数及手数吊牌。手机每场一张卡，<code>useWatchListRows</code> 按可用高度与名称自然高度安排完整行，保留滚动吸附和阴影余量。查询、刷新、错误恢复与入场流程不变；独立预览已改用生产样式与 hook，仍仅提供本地示例房间。桌面／竖屏与结束状态验证见<a href="./design-samples/watch-paper-2026-10-22/README.md">说明及截图</a>，布局契约见 <a href="./system-design/06-ui-theme-mobile.md">UI 主题分篇</a>。</p>
 <h3>2026-10-22 仓库纸卡布局正式接入</h3>
 <p>已将确认的<a href="./design-samples/warehouse-paper-2026-10-22/index.html">仓库纸卡方案</a>接入正式 <code>WarehouseItemGrid</code>，沿用标题、外框、墨色硬阴影和悬停／按下反馈。目录与详情数量统一为「持有 + 数字」，移除分类、种类计数及详情翻页。手机每行一种物品，下方为约 196–226px 的紧凑图文详情，保留圆形底纹、虚线圆环与图片倾斜。目录由 <code>useWarehouseListRows</code> 按可用空间分配完整行，配合原生滚动吸附及阴影余量，保证停靠与末行完整可见。生产与样板复用行高计算；真实库存刷新、使用中防重、角色选择、剧情及招募入口保持原流程。浏览器验证覆盖桌面、800px、390／360／320px、短竖屏和触摸滑动；<a href="./design-samples/warehouse-paper-2026-10-22/production.html">正式组件预览</a>仍使用隔离示例库存。</p>
 <h3>2026-10-22 好友搜索栏视觉统一</h3>
@@ -5676,7 +5676,7 @@
 <li>Modal and sheet behavior is normalized for mobile: shop, house, warehouse, leaderboard, friends, settings, message-board, profile, result, replay, and detail dialogs fit within <code>100dvh</code>, keep their outer frame inside the viewport, and assign scrolling to internal content regions. Leaderboard, friend rows, watch rows, and replay tables use mobile cards where compact reading matters; only views that truly need table comparison keep local horizontal scrolling instead of causing page overflow. Bright School player-facing internal scroll owners hide scrollbar chrome with <code>scrollbar-width: none</code> / WebKit scrollbar suppression while keeping <code>overflow-y: auto</code>, touch momentum, and containment. The final <code>mobile-adaptive.css</code> safety layer explicitly keeps friend and watch lists on card-width rows with <code>overflow-x: hidden</code>, so later theme repairs cannot accidentally restore the old wide-table scroll behavior.</li>
 </ul>
 <ul>
-<li>Desktop watch-mode tabs keep their three equal columns and use an explicit inline-flex content owner, so the mode subtitle and room count preserve a real <code>1em</code> gap instead of relying on an inactive <code>gap</code> declaration. The room count uses an equal <code>1.75em</code> width and height, centered content, zero padding, and a 50% radius so single- and double-digit values remain circular rather than pill-shaped.</li>
+<li>Watch has no mode tabs. Its live-search paper frame, complete match cards and gray finished state follow the “观战赛事名册” contract below; mode remains a field on every match.</li>
 </ul>
 <ul>
 <li><code>src/styles/mobile-adaptive/mobile-window-headers.css</code> is the final Bright School mobile owner for the dashed utility-window title family: Watch, warehouse, leaderboard, friends, and every resume/achievement/personalization surface that reuses <code>.house-header</code>. At widths up to 768px it restores the shared <code>clamp(20px, 6vw, 28px)</code> title scale, centers the header on the 44px control row, and reserves 12px before the 2px dashed divider. Watch refresh/close controls stay static inside their action group, so the older 560px responsive rule cannot shrink “对局列表” to 18px or top-align it against the buttons. Information center, shop, recruitment, settings, and IRIS retain their dedicated header owners because their grid, divider, or terminal geometry differs and already provides its own control clearance.</li>
@@ -5976,7 +5976,10 @@
 <p><code>GET /api/users/:id/capture-record</code> 使用既有认证中间件。用户不存在返回 404，没有成绩返回 <code>{ record: null }</code>；有成绩返回最佳提子、当前排名、最佳角色与服装快照。排名为严格更高提子人数加一，与排行榜同分名次一致；不会为单人摘要读取整张排行榜。数据库、结算、奖励和普通段位不变。</p>
 <p>最终样式位于四个有界的 <code>mobile-adaptive/profile-folder*.css</code> owner。桌面左右分栏，900px 以下叠放身份和记录；身份区头像与右侧用户名垂直居中，间距为 24px，操作按钮另起一排。手机纸页左右内边距为 18px，统一玩法、段位和最近十盘的留白；角色战绩头像为 44×48px，名称 14px、数据 13px、表头 12px，长角色名换行，列宽为 40%/17%/8%/8%/8%/19%。320px 短竖屏仍由内容区承接滚动，标题及关闭控件留在窗口头部。页签保留方向键／Home／End 与请求期间锁定，所有玩法保持加载、空、错误重试状态，账号切换丢弃旧请求结果。新 owner 替代旧档案卡片的几何与外部书签样式；CSS 债务只计入本次四个文件及入口导入增量，既有特殊主题滤镜和资料弹窗入口继续沿用。</p>
 <h2>观战赛事名册</h2>
-<p>选定方案 1 接入 <code>WatchModal</code>：取消左侧类型选项卡，类型作为独立列，一次加载全部可观战对局；保留原标签标题、边框、方格纸和阴影。桌面延续紧凑名册，手机改为房间／类型／状态、并排黑白方、手数／人数／观战三行，单条约 116px；窗口高度固定并由列表内部滚动。搜索按房间号或玩家昵称本地过滤；明确观战按钮复用原加入并关闭窗口流程，保留装扮快照与暂离灰显。接口新增显式 <code>mode=all</code>，其他值与省略参数保留原过滤规则，练习与特殊剧情局继续由原查询层排除。最终样式由 <code>mobile-adaptive/watch-ledger.css</code> 负责。<a href="./design-samples/watch-2026-10-12/index.html?view=ledger">方案 1 预览</a>已使用正式组件。</p>
+<p>正式 <code>WatchModal</code> 一次加载全部可观战对局，不保留类型选项卡；沿用窗口标题、边框、方格纸与刷新／关闭按钮。桌面按房间、类型、人数、黑方、白方、手数、状态对齐；900px 以下每场一张纸卡，上方为类型／房号／人数／状态，下方左侧上下排列双方头像与可换行的 16px 名称，右侧保留手数吊牌（桌面 70×48、手机 58×48，并适配三／四位数）。</p>
+<p>卡片使用 2px 墨边、8px 圆角与 3px／4px 硬阴影；悬停抬起并扩展阴影，按下下沉并缩短阴影。进行中纸卡悬停浅染薄荷色；已结束纸卡底色恒为浅灰，悬停／按下也不改为薄荷色，保留可点击的原观战入口及完整头像／身份和手数牌。状态同时以文字和圆点标识。纸张伪元素与内容共同位移，行本身作为稳定的滚动吸附目标。</p>
+<p>搜索采用好友同款一体式纸框，无额外聚焦边框／发光，不加搜索按钮；按房间号和双方昵称即时本地过滤，保持 trim 与大小写归一。整卡原生按钮继续调用加入并关闭流程，装扮快照、暂离、加载／空态／失败重试均保持原逻辑。接口仍显式传 <code>mode=all</code>，省略和其他值保留原过滤规则，练习与特殊剧情局仍由查询层排除。</p>
+<p><code>useWatchListRows</code> 直接绑定列表，按内边距、表头及所有行的自然高度计算完整行高；字体、内容与尺寸变化后重算，空态清理变量，卸载时移除观察与延迟任务。<code>--wl-row-min</code> 将测量限定于该主题，支持无 ResizeObserver 的窗口 resize 回退。原生滚动停靠完整卡片，右下留出阴影余量。三个有界 owner 为 <code>watch-ledger.css</code>、<code>watch-ledger-mobile.css</code>、<code>watch-ledger-paper.css</code>。<a href="./design-samples/watch-paper-2026-10-22/index.html">正式组件预览</a>使用隔离示例房间，不连接真实对局。</p>
 <h2>手机回放卡片</h2>
 <p>手机竖屏回放卡片在顶部显示时间和结果，左侧上下排列黑白双方头像与完整换行名字，右侧复用观战的 70×48 手数牌（含三位／四位数字适配）。原有胜负底色、友谊／队际／特殊对局标识、历史服装及整卡点击和分页保持不变；桌面维持五列表格，手机专属手数牌及黑白标记明确隐藏。布局由现有 <code>bright-school-overrides/replay-dialog.css</code> 负责，采用嵌套选择器复用外层作用域。</p>
 <h3>Approved warm-paper profile cards (2026-10-15)</h3>
