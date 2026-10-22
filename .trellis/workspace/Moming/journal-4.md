@@ -1920,3 +1920,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 239: 技能卡声痕标识
+
+**Date**: 2026-10-22
+**Task**: 技能卡声痕标识
+**Branch**: `master`
+
+### Summary
+
+联网查找鸣潮声痕参考，内置imagegen重建为2079x756透明PNG；来源原图与完整提示词入库。普通/派生技能标题左上使用淡墨色alpha mask，简介保留黑白棋；更新正式截图和系统设计。23项样式测试、15项浏览器检查及lint/build/built-css通过；其中一项临时导航中断后独立重跑通过。1440/390/320px长标题与素材路径验证通过，保留其它工作区修改。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9a0f8f76` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
