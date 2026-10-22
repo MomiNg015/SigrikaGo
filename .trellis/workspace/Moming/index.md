@@ -7,8 +7,8 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-4.md`
-- **Total Sessions**: 240
+- **Active File**: `journal-5.md`
+- **Total Sessions**: 241
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1988 | Active |
+| `journal-5.md` | ~40 | Active |
+| `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 241 | 2026-10-22 | Card corner geometric texture samples | `92dfe3a1` | `master` |
 | 240 | 2026-10-22 | 角色详情技能名加粗 | `0c71440b` | `master` |
 | 239 | 2026-10-22 | 技能卡声痕标识 | `9a0f8f76` | `master` |
 | 238 | 2026-10-22 | 角色详情展示台正式接入 | `ca5d478` | `master` |
