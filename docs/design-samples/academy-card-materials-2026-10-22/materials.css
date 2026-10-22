@@ -1,0 +1,40 @@
+/* Exploration only: explicit content-card owners, not a global theme. */
+[data-material="imprint"] { --m-image:url('./imprint.svg'); --m-veil:transparent; }
+[data-material="relief"] { --m-image:url('./relief.png'); --m-veil:rgba(255,250,240,.54); }
+[data-material="screenprint"] { --m-image:url('./screenprint.svg'); --m-veil:transparent; }
+#material-preview[data-material]:not([data-material="baseline"]) :is(
+.profile-resume-hero,.profile-summary-item,.profile-character-section,.profile-capture-record,
+.fc-detail,.fc-person,.wg-inspector,.wg-entry,
+.character-skill-description,.character-description,
+.achievement-row:not(.achievement-heading),.announcement-list-item,.announcement-detail),
+#material-preview[data-material]:not([data-material="baseline"]) .wl-row::before,
+.material-card {
+  background-image:linear-gradient(var(--m-veil),var(--m-veil)),var(--m-image) !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100%,var(--m-size,320px 320px) !important;
+  background-position:center,var(--m-position,right bottom) !important;
+  background-origin:padding-box !important;
+}
+#material-preview .profile-resume-hero { --m-size:460px 460px; --m-position:right -28px center; }
+#material-preview .profile-summary-item { --m-size:170px 170px; }
+#material-preview .profile-record-card { --m-size:220px 220px; }
+#material-preview .profile-character-section { --m-size:240px 240px; }
+#material-preview :is(.fc-person,.wg-entry) { --m-size:170px 170px; --m-position:right -20px center; }
+#material-preview :is(.fc-detail,.wg-inspector) { --m-size:420px 420px; --m-position:right -50px bottom -25px; }
+#material-preview .wl-row { --m-size:240px 240px; --m-position:right -40px center; }
+#material-preview :is(.character-skill-description,.character-description) { --m-size:200px 200px; --m-position:right -12px bottom -20px; }
+#material-preview .achievement-row { --m-size:150px 150px; --m-position:right -20px center; }
+#material-preview .announcement-list-item { --m-size:140px 140px; --m-position:right -22px center; }
+#material-preview .announcement-detail { --m-size:360px 360px; --m-position:right bottom; }
+#material-preview[data-material="relief"] :is(.fc-person,.wg-entry,.achievement-row,.announcement-list-item) { --m-veil:rgba(255,250,240,.72); }
+#material-preview[data-material="relief"] :is(.character-skill-description,.character-description) { --m-veil:rgba(255,250,240,.77); }
+#material-preview[data-material="relief"] .wl-row { --m-veil:rgba(255,250,240,.72); }
+#material-preview[data-material="relief"] .wl-row.finished { --m-veil:rgba(218,218,216,.75); }
+#material-preview[data-material="relief"] :is(.fc-person,.wg-entry)[aria-pressed="true"] { --m-veil:rgba(214,235,219,.65); }
+@media(max-width:768px){
+#material-preview .profile-resume-hero { --m-size:260px 260px; --m-position:right -50px center; }
+#material-preview .profile-record-card { --m-size:170px 170px; }
+#material-preview :is(.fc-detail,.wg-inspector) { --m-size:240px 240px; --m-position:right -30px bottom -25px; }
+#material-preview :is(.character-skill-description,.character-description) { --m-size:150px 150px; }
+#material-preview .wl-row { --m-size:200px 200px; --m-position:right -60px bottom; }
+}

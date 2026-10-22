@@ -1,0 +1,46 @@
+{
+  "desktopCases": 24,
+  "mobileCases": 48,
+  "mobileWidths": [
+    390,
+    320
+  ],
+  "horizontalOverflows": 0,
+  "brokenImages": 0,
+  "pageErrors": [],
+  "geometryComparisons": {
+    "count": 48,
+    "widths": [
+      1440,
+      320
+    ],
+    "differences": 0,
+    "scope": "target card rectangles only"
+  },
+  "stateCases": {
+    "count": 16,
+    "width": 320,
+    "variants": [
+      "relief"
+    ],
+    "fixtures": [
+      "empty",
+      "long"
+    ],
+    "horizontalOverflows": 0,
+    "note": "handbook has no empty state; keeps selected character"
+  },
+  "interactions": [
+    "friend selection",
+    "warehouse selection",
+    "watch search",
+    "profile capture mode",
+    "achievement filter",
+    "notice selection",
+    "mobile notice read",
+    "mobile notice back",
+    "gallery variant/window/baseline",
+    "gallery narrow width",
+    "gallery fixture"
+  ]
+}
