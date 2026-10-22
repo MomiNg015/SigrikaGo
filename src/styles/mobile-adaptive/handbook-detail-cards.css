@@ -1,5 +1,20 @@
 .character-detail-figure-backdrop,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  .skill-title-row { position: relative; isolation: isolate; }
+  .skill-title-row::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -14px;
+    left: -9px;
+    width: 180px;
+    height: 72px;
+    background: var(--detail-ink);
+    mask: url('/assets/ui/handbook-tacet-mark.png') center / contain no-repeat;
+    opacity: .2;
+    transform: rotate(-9deg);
+    pointer-events: none;
+  }
   .skill-title-row { display: flex !important; align-items: baseline !important; flex-wrap: wrap !important; justify-content: space-between !important; gap: 6px 18px !important; border-radius: 0 !important; box-shadow: none !important; padding: 9px 12px !important; margin: 0 !important; border: 2px solid var(--detail-ink) !important; border-bottom: 0 !important; background: var(--detail-tint) !important; }
   .skill-title-row strong { display: inline !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; font: 400 23px/1.4 var(--font-window-title) !important; text-decoration-color: color-mix(in srgb, var(--character-theme-color) 48%, transparent); text-decoration-thickness: 5px; text-underline-offset: -2px; text-decoration-skip-ink: none; font-size: 25px !important; text-decoration: none !important; }
   .skill-overclock-badge { display: inline !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: var(--detail-ink) !important; font: 400 14px/1.5 var(--font-ui-default) !important; }

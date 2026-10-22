@@ -42,6 +42,8 @@
 
 第1版已按上述最终修订接入正式 `CharacterDetailDialog`。正式样式由 `handbook-detail-figure.css` 入口及 layout/art/heading/cards/controls 五个 owner 承担，棋子装饰使用 `/assets/ui/handbook-go-stones.svg`；此比较页保留设计过程，方向2/3没有接入正式窗口。
 
+技能标题现加入高清透明声痕底纹（普通技和派生技共用），放在左上、技能名背后；简介继续使用黑白棋，帮助区分两种卡片。参考来源、高清化提示词和渲染方式见[声痕素材记录](./tacet-mark-source.md)。
+
 正式检查覆盖桌面和800/390/360/320px视口、长姓名、派生技、无音乐、未拥有、换装，以及衣柜和音乐曲目单的焦点返回。正式窗口可通过 `tests/e2e/fixtures/handbook-puzzle.html?costumes&music` 在本地无账号环境验证。
 
 正式样式截图（`preview.html?view=current`，沿用公开角色快照、不加载样板覆盖）：[桌面](./production-1440.png)、[手机派生技能](./production-390.png)、[320px小屏](./production-320.png)。浏览器回归命令为 `npx playwright test --config tests/e2e/handbook-window-layout.config.js`，覆盖15项布局和既有操作检查。
