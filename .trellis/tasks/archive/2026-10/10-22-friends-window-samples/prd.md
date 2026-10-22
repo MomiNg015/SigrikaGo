@@ -15,7 +15,7 @@ The user further requested substantial hard shadows and hover/press feedback con
 - [x] Six desktop/portrait dimensions plus hover/press/reduced-motion browser tests pass (7 tests).
 - [x] System design and frontend contracts describe the approved behavior; CSS expansion is measured and registered.
 - [x] Run repository checks and record limits: lint, portrait checks, build, built CSS and deployment configuration passed; 7 browser regressions passed. Full tests initially had 3 failures (3308 passed); regenerated docs passed their 4-test rerun and all 4 proxy integration tests passed with a 15-second timeout. Admin snapshot remains stale in siteSettings/characters; no unrelated data was exported.
-- [ ] Stage and commit only this task without absorbing existing WIP.
+- [x] Staged and committed only this task in ba18a86f, preserving unrelated WIP and shared-file edits.
 
 ## Requirements
 - Keep production source unchanged. Add an isolated design sample under docs/design-samples/friends-window-2026-10-22.
