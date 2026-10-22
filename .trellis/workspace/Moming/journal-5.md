@@ -104,3 +104,36 @@ Expanded accepted C into seven finite geometric prints assigned by semantic card
 ### Next Steps
 
 - None - task complete
+
+
+## Session 244: Production functional card screenprints
+
+**Date**: 2026-10-22
+**Task**: Production functional card screenprints
+**Branch**: `master`
+
+### Summary
+
+Integrated seven approved semantic corner motifs into eight Bright School window contexts; rank uses an exact horizontal mirror at the lower left. Added production-only preview, desktop/mobile evidence and bounded paint contract. 26 browser checks, 78 style tests, lint, build, built CSS, asset hashes, portraits and production config passed. Full-check limitations: two dev proxy tests exceed default timeout but pass with diagnostic CLI timeout; local admin snapshot differs in siteSettings/characters. Preserved all unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c150f54a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
