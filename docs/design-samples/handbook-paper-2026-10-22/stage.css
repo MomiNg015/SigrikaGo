@@ -35,9 +35,14 @@
   .character-music-title-trigger, .character-music-title-static { margin-left: 34px !important; margin-right: 62px !important; }
 
   .character-detail-fullbody > .close-button {
-    width: 44px !important; height: 44px !important; min-height: 44px !important;
-    top: -24px !important; right: -24px !important; z-index: 8;
+    width: 36px !important; height: 36px !important; min-width: 36px !important; min-height: 36px !important;
+    top: -20px !important; right: -20px !important; padding: 4px !important; z-index: 8;
+    border: 3px solid var(--bright-border) !important; border-radius: 14px !important;
+    background: var(--campus-button-paper) !important; box-shadow: 3px 3px 0 var(--bright-border) !important;
+    transition: background-color 160ms ease-out, transform 160ms ease-out, box-shadow 160ms ease-out !important;
   }
+  .character-detail-fullbody > .close-button:hover { background: var(--campus-button-paper-hover) !important; transform: translateY(-1px) !important; box-shadow: 3px 4px 0 var(--bright-border) !important; }
+  .character-detail-fullbody > .close-button:active { transform: translate(2px, 2px) !important; box-shadow: 1px 1px 0 var(--bright-border) !important; }
   .character-detail-copy:has(.derived-skill-detail) > .skill-title-row,
   .character-detail-copy:has(.derived-skill-detail) > .character-skill-description {
     position: relative; z-index: 2; width: auto !important; margin-right: 22px !important;
@@ -53,9 +58,21 @@
     border-bottom: 1px solid var(--hp-rule) !important; background: transparent !important;
   }
   .derived-skill-detail > .character-skill-description {
-    padding: 13px 14px 22px !important; border: 0 !important; box-shadow: none !important; background: transparent !important;
+    padding: 13px 14px 22px !important; border: 0 !important; box-shadow: none !important; background: var(--hp-paper) !important;
   }
-  .character-description { margin-top: 30px !important; }
+  .character-description { position: relative; margin-top: 32px !important; padding-top: 22px !important; text-decoration: none !important; }
+  .character-description:hover { text-decoration: none !important; }
+  .character-description::before {
+    content: ""; position: absolute; top: -27px; left: 10px; width: 80px; height: 52px;
+    background: url('./go-stones-sketch.svg') center / contain no-repeat; pointer-events: none;
+    transform: rotate(-8deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root.hp-scene[data-design="spread"] .character-detail-fullbody > .close-button,
+  #root.hp-scene[data-design="spread"] .character-detail-fullbody > .close-button:hover,
+  #root.hp-scene[data-design="spread"] .character-detail-fullbody > .close-button:active { transition: none !important; transform: none !important; }
 }
 
 @media (min-width: 769px) {
