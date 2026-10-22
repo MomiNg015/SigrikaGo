@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C · 按功能分配的丝印卡片</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./role-studio.css"></head>
+<body>
+  <header><div><p>星炬学院围棋部 / C 方案深化</p><h1>同一套丝印，七种功能纹理。</h1></div><a href="./index.html">返回三版比较 ↗</a></header>
+  <p class="scope-note">身份、记录、伙伴、物品、战术、阅读与荣誉各用自己的构图。同一窗口可以组合多种纹理。</p>
+  <section class="motif-board" aria-label="七类功能纹理"></section>
+  <section class="mixed-proof" aria-labelledby="mix-title"><h2 id="mix-title">一张履历，三种分工</h2><div>
+    <figure><figcaption>身份卡 · 档案切角</figcaption><img src="./roles-identity-crop.png" alt="真实履历身份卡采用右上档案切角"></figure>
+    <figure><figcaption>段位卡 · 授章菱片</figcaption><img src="./roles-honor-crop.png" alt="真实段位卡采用右下授章菱片"></figure>
+    <figure><figcaption>战绩卡 · 棋局矩阵</figcaption><img src="./roles-record-crop.png" alt="真实战绩卡采用左下棋局矩阵"></figure>
+  </div></section>
+  <section id="live" aria-labelledby="live-title"><div class="live-heading"><h2 id="live-title">在完整窗口中看搭配</h2><p id="description">我的履历</p></div>
+    <nav class="window-tabs" aria-label="窗口"><button data-window="self" aria-pressed="true">我的履历</button><button data-window="social" aria-pressed="false">他人详情</button><button data-window="friends" aria-pressed="false">好友</button><button data-window="warehouse" aria-pressed="false">仓库</button><button data-window="watch" aria-pressed="false">观战</button><button data-window="handbook" aria-pressed="false">角色详情</button><button data-window="achievement" aria-pressed="false">成就</button><button data-window="announcement" aria-pressed="false">公告</button></nav>
+    <p class="assignment" id="assignment" aria-live="polite">身份用切角，段位用授章，战绩和挑战用矩阵。</p>
+    <div class="toolbar"><div class="version-controls" aria-label="设计对照"><button data-version="roles" aria-pressed="true">按功能分配</button><button data-version="original" aria-pressed="false">原 C 同纹</button><button data-version="baseline" aria-pressed="false">纯色原版</button><select id="fixture" aria-label="示例数据"><option value="normal">正常内容</option><option value="long">长名字 / 长正文</option><option value="empty">空数据</option></select></div><div class="sizes" aria-label="视口尺寸"><button data-size="desktop" aria-pressed="true">桌面</button><button data-size="mobile" aria-pressed="false">390px</button><button data-size="narrow" aria-pressed="false">320px</button><a id="standalone" href="./sample.html?v=screenprint-roles&window=self" target="_blank" rel="noopener">单独打开 ↗</a></div></div>
+    <div class="preview-stage"><div class="frame-wrap" data-size="desktop"><iframe src="./sample.html?v=screenprint-roles&window=self" title="功能丝印 · 我的履历"></iframe></div></div>
+  </section>
+  <footer>独立样板，尚未接入正式主题。点击上方纹理可跳到对应窗口；纹理按功能固定分配，文字、布局与状态色沿用现有界面。<a href="./functional-screenprint.md">查看分配表与验证说明</a></footer>
+  <script type="module" src="./role-studio.js"></script>
+</body></html>

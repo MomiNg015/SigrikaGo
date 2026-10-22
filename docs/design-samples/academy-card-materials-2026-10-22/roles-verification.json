@@ -1,0 +1,928 @@
+{
+  "reports": [
+    {
+      "width": 1440,
+      "window": "self",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "social",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "friends",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-detail",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "warehouse",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-inspector",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "watch",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "handbook",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "character-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "achievement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "window": "announcement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "announcement-list-item  active",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "announcement-list-item  ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "announcement-detail",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "self",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "social",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "friends",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-detail",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "warehouse",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-inspector",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "watch",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "handbook",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "character-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "achievement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "window": "announcement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "announcement-list-item is-unread ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "announcement-list-item  ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "self",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "social",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "profile-resume-hero",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-identity.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item is-primary",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-summary-item profile-record-card",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "profile-recent-section",
+          "image": "url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat"
+        },
+        {
+          "className": "profile-character-section",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-record.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "friends",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-person",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "fc-detail",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-social.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "warehouse",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-entry",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wg-inspector",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-inventory.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "watch",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "wl-row finished",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "handbook",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "skill-description character-skill-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-tactics.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "character-description",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "achievement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "achievement-row unachieved",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-honor.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "window": "announcement",
+      "geometryAndTextUnchanged": true,
+      "overflow": false,
+      "brokenImages": [],
+      "textures": [
+        {
+          "className": "announcement-list-item is-unread ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        },
+        {
+          "className": "announcement-list-item  ",
+          "image": "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:5173/docs/design-samples/academy-card-materials-2026-10-22/role-reading.svg\")",
+          "repeat": "no-repeat, no-repeat"
+        }
+      ]
+    }
+  ],
+  "states": [
+    {
+      "fixture": "empty",
+      "window": "self",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "social",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "friends",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "warehouse",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "watch",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "handbook",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "achievement",
+      "overflow": false
+    },
+    {
+      "fixture": "empty",
+      "window": "announcement",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "self",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "social",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "friends",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "warehouse",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "watch",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "handbook",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "achievement",
+      "overflow": false
+    },
+    {
+      "fixture": "long",
+      "window": "announcement",
+      "overflow": false
+    }
+  ],
+  "interactions": [
+    "motif links to assigned window",
+    "original C comparison",
+    "pure baseline comparison",
+    "window assignment note",
+    "320px preview",
+    "long-content switch"
+  ],
+  "gallery": [
+    {
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "captureUsesRecord": true,
+  "allPatternsNoRepeat": true
+}

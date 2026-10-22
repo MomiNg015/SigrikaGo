@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import '../../../src/styles.css';
 import './harness.css';
 import './materials.css';
+import './screenprint-roles.css';
 import { profile, user as initialUser } from './fixtures.js';
 import { CHARACTERS, characterListFromCatalog, mergeCharacters } from '../../../src/shared/characters.js';
 import ResumeModal from '../../../src/modals/ResumeModal.jsx';
@@ -20,7 +21,7 @@ import traits from '../handbook-paper-2026-10-22/traits.json';
 
 await loadCachedPublicSkillTraitCatalog({apiClient:async()=>traits});
 const params=new URLSearchParams(location.search);
-const variants=['imprint','relief','screenprint'];
+const variants=['imprint','relief','screenprint','screenprint-roles'];
 const variant=variants.includes(params.get('v'))?params.get('v'):'imprint';
 document.documentElement.id='material-preview';
 document.documentElement.dataset.material=params.get('off')==='1'?'baseline':variant;

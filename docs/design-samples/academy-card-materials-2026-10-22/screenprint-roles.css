@@ -1,0 +1,36 @@
+/* Isolated functional extension of C. Every role is a finite, single-corner print. */
+[data-material="screenprint-roles"] { --m-veil:transparent; }
+#material-preview[data-material="screenprint-roles"] {
+  .profile-resume-hero { --m-image:url('./role-identity.svg'); --m-size:390px 390px; --m-position:right top; }
+  .profile-summary-item.is-primary { --m-image:url('./role-honor.svg'); --m-size:170px 170px; --m-position:right -28px bottom -10px; }
+  :is(.profile-record-card,.profile-capture-record) { --m-image:url('./role-record.svg'); --m-size:210px 210px; --m-position:left bottom; }
+  .profile-character-section { --m-image:url('./role-record.svg'); --m-size:280px 280px; --m-position:left bottom; }
+  .profile-recent-section {
+    --m-image:url('./role-record.svg');
+    background-image:var(--m-image) !important;
+    background-repeat:no-repeat !important;
+    background-size:140px 140px !important;
+    background-position:left bottom !important;
+  }
+  .fc-person { --m-image:url('./role-social.svg'); --m-size:160px 160px; --m-position:right -4px bottom -10px; }
+  .fc-detail { --m-image:url('./role-social.svg'); --m-size:430px 430px; --m-position:right -28px bottom -20px; }
+  .wg-entry { --m-image:url('./role-inventory.svg'); --m-size:160px 160px; --m-position:right -20px center; }
+  .wg-inspector { --m-image:url('./role-inventory.svg'); --m-size:420px 420px; --m-position:right -50px bottom -25px; }
+  .wl-row { --m-image:url('./role-tactics.svg'); --m-size:250px 250px; --m-position:right -5px bottom -25px; }
+  .character-skill-description { --m-image:url('./role-tactics.svg'); --m-size:205px 205px; --m-position:right -20px bottom -20px; }
+  .derived-skill-detail > .character-skill-description { --m-size:170px 170px; --m-position:right -10px bottom -20px; }
+  .character-description { --m-image:url('./role-reading.svg'); --m-size:220px 220px; --m-position:right bottom; }
+  .achievement-row { --m-image:url('./role-honor.svg'); --m-size:160px 160px; --m-position:right -18px bottom -16px; }
+  .announcement-list-item { --m-image:url('./role-reading.svg'); --m-size:150px 150px; --m-position:right bottom; }
+  .announcement-detail { --m-image:url('./role-reading.svg'); --m-size:350px 350px; --m-position:right bottom; }
+}
+@media(max-width:768px) {
+  #material-preview[data-material="screenprint-roles"] {
+    .profile-resume-hero { --m-size:260px 260px; }
+    .profile-character-section { --m-size:210px 210px; }
+    :is(.fc-detail,.wg-inspector) { --m-size:270px 270px; }
+    :is(.character-skill-description,.derived-skill-detail > .character-skill-description) { --m-size:155px 155px; }
+    .character-description { --m-size:170px 170px; }
+    .wl-row { --m-size:200px 200px; --m-position:right -15px bottom -12px; }
+  }
+}
