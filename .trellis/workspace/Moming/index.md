@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 221
+- **Total Sessions**: 222
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1361 | Active |
+| `journal-4.md` | ~1394 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 222 | 2026-10-22 | 取消好友搜索焦点外框 | `95c61d54` | `master` |
 | 221 | 2026-10-22 | 好友搜索栏视觉统一 | `0f27ea1f` | `master` |
 | 220 | 2026-10-22 | 好友伙伴侧栏与纸卡交互 | `ba18a86f` | `master` |
 | 219 | 2026-10-22 | Mobile battle inline layout and compact controls | `8c8f1fd0` | `master` |

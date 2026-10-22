@@ -1359,3 +1359,36 @@ Restored single-row identity/statistics/header layout, padded statistics, lighte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 222: 取消好友搜索焦点外框
+
+**Date**: 2026-10-22
+**Task**: 取消好友搜索焦点外框
+**Branch**: `master`
+
+### Summary
+
+按用户要求移除搜索栏focus-within外框，保留常态边框、阴影、输入和回车提交。桌面1440px与390/320px手机聚焦前后计算样式一致；24项CSS库存和文档生成检查通过。仅提交本次局部修改，保留其他WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `95c61d54` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
