@@ -1,0 +1,95 @@
+/* Selected direction: a character stage with objects crossing the paper edge. */
+#root.hp-scene[data-design="spread"] {
+  .character-detail-figure-backdrop { padding: 48px 48px 56px 32px !important; }
+  .character-details-modal.character-detail-fullbody {
+    overflow: visible !important;
+    background-image: var(--theme-paper-grid) !important;
+    background-size: 20px 20px !important;
+    height: min(590px, calc(100dvh - 108px)) !important;
+    max-height: calc(100dvh - 108px) !important;
+  }
+  .character-detail-art { border-radius: 0 !important; }
+  .character-detail-art::after {
+    width: 390px; height: 390px; top: -85px; left: -95px; bottom: auto;
+    opacity: calc(.24 * var(--hp-emblem-strength));
+  }
+  .character-detail-copy {
+    position: static !important; overflow-x: hidden !important; overflow-y: auto !important;
+    padding: 36px 30px 24px !important; border-radius: 0 !important;
+    background: transparent !important;
+  }
+  .character-detail-copy:has(.character-music-player) { align-self: start !important; height: calc(100% - 54px) !important; max-height: calc(100% - 54px) !important; }
+  .character-detail-heading { position: static !important; padding: 0 !important; margin: 0 0 25px !important; }
+  .character-cv-label, a.character-cv-label { text-decoration: none !important; }
+  .character-cv-label:focus-visible { outline: 2px solid var(--hp-ink); outline-offset: 4px; }
+  .acquisition-method { display: none !important; }
+
+  .character-music-player {
+    position: absolute !important; right: -18px !important; bottom: -23px !important; top: auto !important; left: auto !important;
+    width: 230px !important; max-width: none !important; height: 50px !important; min-height: 50px !important;
+    margin: 0 !important; transform: rotate(-4deg) scale(1.48) !important; transform-origin: right bottom;
+    filter: drop-shadow(3px 5px 0 color-mix(in srgb, var(--hp-ink) 50%, transparent)) !important;
+    z-index: 6;
+  }
+  .character-music-toggle { margin-left: 5px !important; }
+  .character-music-title-trigger, .character-music-title-static { margin-left: 34px !important; margin-right: 62px !important; }
+
+  .character-detail-fullbody > .close-button {
+    width: 44px !important; height: 44px !important; min-height: 44px !important;
+    top: -24px !important; right: -24px !important; z-index: 8;
+  }
+  .character-detail-copy:has(.derived-skill-detail) > .skill-title-row,
+  .character-detail-copy:has(.derived-skill-detail) > .character-skill-description {
+    position: relative; z-index: 2; width: auto !important; margin-right: 22px !important;
+  }
+  .character-detail-copy:has(.derived-skill-detail) > .character-skill-description { padding-bottom: 27px !important; }
+  .derived-skill-detail {
+    position: relative; z-index: 1; margin: -13px 5px 0 24px !important; padding: 25px 0 0 !important;
+    border: 2px solid var(--hp-ink) !important; border-radius: 0 !important; background: var(--hp-tint) !important;
+    box-shadow: 4px 6px 0 var(--hp-ink) !important; transform: rotate(1.2deg); transform-origin: top left;
+  }
+  .derived-skill-detail > .skill-title-row {
+    width: auto !important; padding: 6px 13px 11px !important; border: 0 !important;
+    border-bottom: 1px solid var(--hp-rule) !important; background: transparent !important;
+  }
+  .derived-skill-detail > .character-skill-description {
+    padding: 13px 14px 22px !important; border: 0 !important; box-shadow: none !important; background: transparent !important;
+  }
+  .character-description { margin-top: 30px !important; }
+}
+
+@media (min-width: 769px) {
+  #root.hp-scene[data-design="spread"] .character-details-modal.character-detail-fullbody:has(.derived-skill-detail) { height: min(650px, calc(100dvh - 108px)) !important; }
+}
+@media (max-width: 768px) {
+  #root.hp-scene[data-design="spread"] {
+    --hp-stage-height: min(210px, 30dvh);
+    .character-detail-figure-backdrop { padding: 32px 28px 48px 18px !important; }
+    .character-details-modal.character-detail-fullbody {
+      grid-template-rows: var(--hp-stage-height) minmax(0, 1fr) !important;
+      height: min(640px, calc(100dvh - 92px)) !important; max-height: calc(100dvh - 92px) !important;
+    }
+    .character-detail-art { border-radius: 0 !important; }
+    .character-detail-art::before { width: 190px; top: 52%; left: 25%; }
+    .character-detail-art::after { width: 280px; height: 280px; top: -80px; left: auto; right: -70px; bottom: auto; opacity: calc(.2 * var(--hp-emblem-strength)); }
+    .character-detail-figure { width: 53% !important; height: 98% !important; left: 26% !important; top: 51% !important; }
+    .character-costume-open-button { left: auto !important; right: 12px !important; top: 30px !important; bottom: auto !important; }
+    .character-detail-copy { padding: 22px 18px 24px !important; }
+    .character-detail-copy:has(.character-music-player) { height: calc(100% - 40px) !important; max-height: calc(100% - 40px) !important; }
+    .character-detail-heading { width: auto !important; height: 0 !important; padding: 0 !important; margin: 0 !important; }
+    .character-detail-title-line {
+      position: absolute; top: auto; right: 15px; bottom: calc(100% - var(--hp-stage-height) + 18px);
+      width: 43%; max-width: none !important; gap: 8px !important; z-index: 3; text-align: right;
+    }
+    .character-detail-heading h3 { font-size: clamp(24px, 7.4vw, 30px) !important; text-align: right !important; }
+    .character-cv-label { justify-self: end; text-align: right; }
+    .character-music-player { right: -13px !important; bottom: -24px !important; transform: rotate(-4deg) scale(1.16) !important; }
+    .character-detail-copy:has(.derived-skill-detail) > .skill-title-row,
+    .character-detail-copy:has(.derived-skill-detail) > .character-skill-description { margin-right: 16px !important; }
+    .derived-skill-detail { margin-left: 15px !important; margin-right: 5px !important; transform: rotate(1deg); }
+  }
+  #root[data-design="spread"][data-long-name="true"] {
+    --hp-stage-height: min(240px, 42dvh);
+    .character-detail-heading h3 { font-size: 22px !important; }
+  }
+}

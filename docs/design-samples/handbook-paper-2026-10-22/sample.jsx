@@ -14,6 +14,7 @@ import wardrobeCatalog from '../handbook-detail-2026-10-15/catalog.json';
 import '../../../src/styles.css';
 import './common.css';
 import './variants.css';
+import './stage.css';
 
 // Public content snapshot only. Sample controls never write to a real account.
 await loadCachedPublicSkillTraitCatalog({ apiClient: async () => traits });

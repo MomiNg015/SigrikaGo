@@ -7,7 +7,8 @@
       "extra": "",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -16,7 +17,8 @@
       "extra": "",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -25,7 +27,8 @@
       "extra": "",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -34,7 +37,8 @@
       "extra": "",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -43,7 +47,8 @@
       "extra": "",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -52,7 +57,8 @@
       "extra": "&character=aemeath",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -61,7 +67,8 @@
       "extra": "&long",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -70,7 +77,8 @@
       "extra": "&noMusic",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "spread",
@@ -79,7 +87,8 @@
       "extra": "&unowned",
       "labels": "no tag backgrounds/borders/radii",
       "overflow": false,
-      "finalText": "reachable"
+      "finalText": "reachable",
+      "stage": "large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance"
     },
     {
       "view": "banner",

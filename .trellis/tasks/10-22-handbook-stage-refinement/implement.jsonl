@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/handbook-puzzle-contract.md","reason":"Preserve artwork mappings and actual dialog interactions"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Scope sample styles and verify actual owner overrides"}
+{"file":"docs/design-samples/handbook-paper-2026-10-22/README.md","reason":"Existing isolated sample and verification"}

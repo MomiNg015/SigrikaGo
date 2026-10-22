@@ -39,12 +39,18 @@ async function layout(view, width, height, extra = '') {
     const music = document.querySelector('.character-music-player')?.getBoundingClientRect().toJSON();
     const name = document.querySelector('.character-detail-heading h3').getBoundingClientRect().toJSON();
     const art = document.querySelector('.character-detail-art').getBoundingClientRect().toJSON();
+    const cv = document.querySelector('.character-cv-label');
+    const derived = document.querySelector('.derived-skill-detail');
+    const parentSkill = document.querySelector('.character-detail-copy > .character-skill-description');
+    const stage = { grid: getComputedStyle(modal).backgroundImage, acquisition: getComputedStyle(document.querySelector('.acquisition-method')).display,
+      cvUnderline: cv && getComputedStyle(cv).textDecorationLine, emblemWidth: parseFloat(getComputedStyle(document.querySelector('.character-detail-art'), '::after').width),
+      derived: derived?.getBoundingClientRect().toJSON(), parentSkill: parentSkill.getBoundingClientRect().toJSON() };
     return { rect: rect.toJSON(), overflow: [modal.scrollWidth, modal.clientWidth, document.documentElement.scrollWidth], labels: labelStyles, imageLoaded: img.complete && img.naturalWidth > 0,
-      font: parseFloat(getComputedStyle(document.querySelector('.character-skill-description')).fontSize), copy: [copy.clientWidth, copy.scrollWidth], buttons, music, name, art };
+      font: parseFloat(getComputedStyle(document.querySelector('.character-skill-description')).fontSize), copy: [copy.clientWidth, copy.scrollWidth], buttons, music, name, art, stage };
   });
   assert(state.rect.left >= 0 && state.rect.right + 7 <= width + 1, `${view}/${width}: shell/shadow horizontal bounds`);
   assert(state.rect.top >= 0 && state.rect.bottom + 8 <= height + 1, `${view}/${width}: shell/shadow vertical bounds`);
-  assert(state.overflow[0] <= state.overflow[1] + 1 && state.overflow[2] <= width, `${view}/${width}: overflow ${JSON.stringify(state)}`);
+  assert((view === 'spread' || state.overflow[0] <= state.overflow[1] + 1) && state.overflow[2] <= width, `${view}/${width}: overflow ${JSON.stringify(state)}`);
   assert(state.imageLoaded && state.font >= 16, `${view}/${width}: loaded art and readable prose`);
   for (const label of state.labels) assert(label.radius === '0px' && label.border === '0px' && label.fill === 'rgba(0, 0, 0, 0)', `${view}/${width}: no tag ${JSON.stringify(label)}`);
   const [wardrobe, close] = state.buttons;
@@ -52,14 +58,37 @@ async function layout(view, width, height, extra = '') {
     const m = state.music;
     assert(Math.min(wardrobe.right, m.right) <= Math.max(wardrobe.left, m.left) || Math.min(wardrobe.bottom, m.bottom) <= Math.max(wardrobe.top, m.top), `${view}/${width}: music/wardrobe overlap`);
     assert(state.name.bottom <= m.top + 1 || state.name.right <= m.left + 1, `${view}/${width}: name/music overlap`);
-    if (width <= 768 && view !== 'reading') assert(m.bottom <= state.art.bottom + 1, `${view}/${width}: identity stays in hero`);
+    if (width <= 768 && view === 'banner') assert(m.bottom <= state.art.bottom + 1, `${view}/${width}: identity stays in hero`);
+  }
+  if (view === 'spread') {
+    assert.equal(state.stage.acquisition, 'none', 'Stage removes acquisition');
+    assert.equal(state.stage.cvUnderline, 'none', 'Stage CV has no underline');
+    assert(state.stage.grid.includes('gradient') && state.stage.emblemWidth >= 280, 'Stage grid and large emblem');
+    assert(Math.abs((close.left + close.right) / 2 - state.rect.right) <= 1 && Math.abs((close.top + close.bottom) / 2 - state.rect.top) <= 1, 'Close centered on paper corner');
+    assert(close.left >= 0 && close.right + 5 <= width && close.top >= 0, 'Protruding close fits viewport');
+    if (state.music) {
+      assert(state.music.width >= 260 && state.music.bottom > state.rect.bottom && state.music.right > state.rect.right, 'Large radio crosses lower right corner');
+      assert(state.music.left >= 0 && state.music.right + 5 <= width && state.music.bottom + 6 <= height, 'Protruding radio fits viewport');
+    }
+    if (width <= 768) {
+      assert(state.name.left > state.art.left + state.art.width * .45 && state.name.bottom < state.art.bottom, 'Mobile name at lower right');
+      const figure = await page.locator('.character-detail-figure').boundingBox();
+      assert(figure.x + figure.width / 2 < state.art.left + state.art.width * .4, 'Mobile figure left');
+      assert(state.name.top >= wardrobe.bottom, 'Identity clears wardrobe');
+    }
+    if (state.stage.derived) assert(state.stage.derived.top < state.stage.parentSkill.bottom && state.stage.derived.left > state.stage.parentSkill.left, 'Derived card overlaps under parent');
   }
   assert(Math.min(wardrobe.right, close.right) <= Math.max(wardrobe.left, close.left) || Math.min(wardrobe.bottom, close.bottom) <= Math.max(wardrobe.top, close.top), `${view}/${width}: controls overlap`);
   const end = page.locator('.character-description');
   await end.scrollIntoViewIfNeeded();
+  if (view === 'spread') {
+    await page.locator('.character-detail-copy').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const quote = await end.boundingBox();
+    if (state.music) assert(quote.y + quote.height < state.music.top, 'Final text clears radio');
+  }
   const reachable = await end.evaluate(el => { const r = el.getBoundingClientRect(); const m = el.closest('.character-details-modal').getBoundingClientRect(); return r.bottom <= m.bottom + 1 && r.top >= m.top - 1; });
   assert(reachable, `${view}/${width}: final text reachable`);
-  checks.push({ view, width, height, extra, labels: 'no tag backgrounds/borders/radii', overflow: false, finalText: 'reachable' });
+  checks.push({ view, width, height, extra, labels: 'no tag backgrounds/borders/radii', overflow: false, finalText: 'reachable', ...(view === 'spread' ? { stage: 'large cropped emblem, grid, corner close, larger floating radio, no acquisition/underline, left mobile figure, derived overlap, footer clearance' } : {}) });
   return state;
 }
 try {
@@ -72,6 +101,10 @@ try {
     for (const extra of ['&character=aemeath', '&long', '&noMusic', '&unowned']) await layout(view, 320, 568, extra);
     await open(view, 1440, 900, '&character=aemeath');
     await page.screenshot({ path: `${out}${view}-aemeath.png` });
+    if (view === 'spread') {
+      await open(view, 390, 844, '&character=aemeath');
+      await page.screenshot({ path: `${out}spread-aemeath-390.png` });
+    }
     for (const width of [1440, 390]) {
       await open(view, width, width === 1440 ? 900 : 844);
       const token = page.locator('.skill-trait-token').first();
