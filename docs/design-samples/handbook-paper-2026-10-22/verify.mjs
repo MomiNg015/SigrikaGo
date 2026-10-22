@@ -107,6 +107,18 @@ try {
     }
     for (const width of [1440, 390]) {
       await open(view, width, width === 1440 ? 900 : 844);
+      if (view === 'spread') {
+        const toggle = page.locator('.character-music-toggle');
+        const colors = () => toggle.evaluate(el => ({ glyph: getComputedStyle(el.querySelector('.character-music-glyph')).color,
+          fill: getComputedStyle(el).backgroundColor, ring: getComputedStyle(el, '::before').borderColor, ringShadow: getComputedStyle(el, '::before').boxShadow }));
+        await page.mouse.move(0, 0);
+        await settle();
+        const restingColors = await colors();
+        await toggle.hover();
+        await settle();
+        assert.deepEqual(await colors(), restingColors, 'Radio hover retains glyph and ring colors');
+        await page.mouse.move(0, 0);
+      }
       const token = page.locator('.skill-trait-token').first();
       await token.click();
       await page.locator('.skill-trait-popover').waitFor();

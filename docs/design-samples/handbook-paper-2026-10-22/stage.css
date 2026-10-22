@@ -8,7 +8,13 @@
     height: min(590px, calc(100dvh - 108px)) !important;
     max-height: calc(100dvh - 108px) !important;
   }
-  .character-detail-art { border-radius: 0 !important; }
+  .character-detail-art {
+    --hp-stage-color: color-mix(in srgb, var(--character-theme-color) 70%, var(--hp-paper));
+    --hp-stage-light: color-mix(in srgb, var(--character-theme-color) 30%, var(--hp-paper));
+    border-radius: 0 !important;
+    background: linear-gradient(145deg, transparent calc(50% - 1px), color-mix(in srgb, var(--hp-ink) 20%, transparent) 50%, transparent calc(50% + 12px)),
+      linear-gradient(145deg, var(--hp-stage-color) 50%, var(--hp-stage-light) 50%) !important;
+  }
   .character-detail-art::after {
     width: 390px; height: 390px; top: -85px; left: -95px; bottom: auto;
     opacity: calc(.24 * var(--hp-emblem-strength));
@@ -25,6 +31,7 @@
   .acquisition-method { display: none !important; }
 
   .character-music-player {
+    --hp-radio-glyph: var(--bright-blue);
     position: absolute !important; right: -18px !important; bottom: -23px !important; top: auto !important; left: auto !important;
     width: 230px !important; max-width: none !important; height: 50px !important; min-height: 50px !important;
     margin: 0 !important; transform: rotate(-4deg) scale(1.48) !important; transform-origin: right bottom;
@@ -32,6 +39,15 @@
     z-index: 6;
   }
   .character-music-toggle { margin-left: 5px !important; }
+  .character-music-player.is-playing { --hp-radio-glyph: var(--bright-pink); }
+  .character-music-player.is-loading { --hp-radio-glyph: var(--bright-mint); }
+  .character-music-player.is-error { --hp-radio-glyph: var(--bright-pink); }
+  .character-music-toggle, .character-music-toggle:hover { color: var(--hp-radio-glyph) !important; }
+  .character-music-toggle::before {
+    border: 1px solid color-mix(in srgb, var(--bright-paper) 50%, transparent) !important;
+    background: transparent !important;
+    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--bright-border) 28%, transparent) !important;
+  }
   .character-music-title-trigger, .character-music-title-static { margin-left: 34px !important; margin-right: 62px !important; }
 
   .character-detail-fullbody > .close-button {
