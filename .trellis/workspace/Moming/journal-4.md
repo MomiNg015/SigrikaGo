@@ -1260,3 +1260,36 @@ Implemented window, profile, battle and desktop-admin readability tiers; preserv
 ### Next Steps
 
 - None - task complete
+
+
+## Session 219: Mobile battle inline layout and compact controls
+
+**Date**: 2026-10-22
+**Task**: Mobile battle inline layout and compact controls
+**Branch**: `master`
+
+### Summary
+
+Restored single-row identity/statistics/header layout, padded statistics, lighter control shadows, compact centered menu and coordinate shortcut before exit. Scoped commit preserves unrelated profile/server/artwork WIP. 12 browser cases and 167 focused tests passed; full unit run had 3307 passes and two proxy timeouts, both passing on 15-second rerun. Build and built-CSS checks passed. Existing local admin snapshot differences remain outside scope.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c8f1fd0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
