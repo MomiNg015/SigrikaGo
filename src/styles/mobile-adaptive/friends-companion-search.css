@@ -5,7 +5,6 @@
   .friend-search-symbol { flex: none; margin-left: 13px; color: var(--fc-ink); opacity: .6; pointer-events: none; }
   .friend-search input[type="text"] { flex: 1; width: 0; min-width: 0; height: 44px; min-height: 44px; padding: 10px !important; border: 0 !important; border-radius: 0 !important; outline: none !important; background: transparent !important; box-shadow: none !important; color: var(--fc-ink) !important; font: 400 16px/1.4 var(--font-ui-default) !important; }
   .friend-search input[type="text"]::placeholder { font: inherit !important; color: var(--fc-ink) !important; opacity: .55; }
-  .friend-search:focus-within { outline: 2px solid var(--fc-mint); outline-offset: 3px; }
   .friend-search button { flex: 0 0 72px; width: 72px; min-width: 0; height: 44px; min-height: 44px; padding: 0 12px !important; border: 0 !important; border-left: 2px solid var(--fc-ink) !important; border-radius: 0 4px 4px 0 !important; box-shadow: none !important; font: 400 15px/1.4 var(--font-ui-default) !important; transform: none !important; translate: none !important; transition: background-color 140ms ease-out !important; }
   .friend-search button:is(:hover, :active):not(:disabled):not([aria-busy="true"]) { transform: none !important; box-shadow: none !important; }
   .friend-search button:active:not(:disabled):not([aria-busy="true"]) { box-shadow: inset 2px 2px 0 var(--fc-line) !important; }
