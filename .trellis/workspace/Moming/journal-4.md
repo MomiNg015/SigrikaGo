@@ -1458,3 +1458,36 @@ Refined only the warehouse template: compact 196-226px mobile detail, original c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 225: 仓库纸卡布局正式接入
+
+**Date**: 2026-10-22
+**Task**: 仓库纸卡布局正式接入
+**Branch**: `master`
+
+### Summary
+
+Installed the approved paper-card warehouse into production, retaining live inventory, target/self-use, recruitment, busy and hidden-action guards. Compact mobile detail and whole-card wheel/touch snapping reuse a shared measured-row hook. Removed categories and paging. Preserved target-dialog styles and unrelated WIP. Passed 24 warehouse tests, 20 CSS inventory tests, 58 style contracts, 4 docs tests, 18 browser checks, 8 sample viewport/state checks, full lint, production build and built-CSS checks. Recorded production contract and isolated preview/screenshots; generated system-design HTML.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cc354532` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
