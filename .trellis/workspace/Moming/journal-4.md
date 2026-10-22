@@ -1821,3 +1821,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 236: 展示台手机服装按钮移至左下
+
+**Date**: 2026-10-22
+**Task**: 展示台手机服装按钮移至左下
+**Branch**: `master`
+
+### Summary
+
+第1版手机服装按钮移至立绘区左下角，固定44px方形触控区，保留纸色与硬阴影；320/390px视觉核验和按钮位置/宽高断言通过。样板ESLint/27组布局/6组交互（含衣柜焦点返回）、4项文档测试通过；文档与手机截图同步，桌面截图及无关WIP保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9af8b0a8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
