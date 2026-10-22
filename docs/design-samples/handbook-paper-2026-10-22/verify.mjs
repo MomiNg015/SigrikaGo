@@ -1,0 +1,109 @@
+import assert from 'node:assert/strict';
+import { writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { chromium } from '@playwright/test';
+import { ESLint } from 'eslint';
+import eslintConfig from '../../../eslint.config.js';
+
+const out = fileURLToPath(new URL('.', import.meta.url));
+const base = process.env.SAMPLE_ORIGIN || 'http://127.0.0.1:5173';
+const route = '/docs/design-samples/handbook-paper-2026-10-22/';
+const lint = new ESLint({ overrideConfigFile: true, overrideConfig: [{ ...eslintConfig[1], files: ['**/*.{js,jsx,mjs}'] }] });
+const lintResults = await lint.lintFiles(['sample.jsx', 'gallery.js', 'verify.mjs'].map(name => out + name));
+assert.deepEqual(lintResults.flatMap(result => result.messages), [], 'Sample ESLint');
+const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const page = await browser.newPage();
+const errors = [], requests = [], checks = [];
+page.on('pageerror', error => errors.push(error.message));
+page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) requests.push(request.url()); });
+async function settle() {
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect?.getComputedTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
+}
+async function open(view, width, height, extra = '') {
+  await page.setViewportSize({ width, height });
+  await page.goto(`${base}${route}preview.html?view=${view}${extra}`);
+  await page.locator('.character-details-modal').waitFor();
+  await settle();
+}
+async function layout(view, width, height, extra = '') {
+  await open(view, width, height, extra);
+  const state = await page.evaluate(() => {
+    const modal = document.querySelector('.character-details-modal');
+    const copy = document.querySelector('.character-detail-copy');
+    const rect = modal.getBoundingClientRect();
+    const names = ['.skill-title-row strong', '.skill-overclock-badge', '.character-cv-label', '.acquisition-method strong'];
+    const labelStyles = names.map(q => { const el = document.querySelector(q); if (!el) return null; const s = getComputedStyle(el); return { q, radius: s.borderRadius, border: s.borderTopWidth, fill: s.backgroundColor }; }).filter(Boolean);
+    const img = document.querySelector('.character-detail-figure img');
+    const buttons = ['.character-costume-open-button', '.character-detail-fullbody > .close-button'].map(q => document.querySelector(q).getBoundingClientRect().toJSON());
+    return { rect: rect.toJSON(), overflow: [modal.scrollWidth, modal.clientWidth, document.documentElement.scrollWidth], labels: labelStyles, imageLoaded: img.complete && img.naturalWidth > 0,
+      font: parseFloat(getComputedStyle(document.querySelector('.character-skill-description')).fontSize), copy: [copy.clientWidth, copy.scrollWidth], buttons };
+  });
+  assert(state.rect.left >= 0 && state.rect.right + 7 <= width + 1, `${view}/${width}: shell/shadow horizontal bounds`);
+  assert(state.rect.top >= 0 && state.rect.bottom + 8 <= height + 1, `${view}/${width}: shell/shadow vertical bounds`);
+  assert(state.overflow[0] <= state.overflow[1] + 1 && state.overflow[2] <= width, `${view}/${width}: overflow ${JSON.stringify(state)}`);
+  assert(state.imageLoaded && state.font >= 16, `${view}/${width}: loaded art and readable prose`);
+  for (const label of state.labels) assert(label.radius === '0px' && label.border === '0px' && label.fill === 'rgba(0, 0, 0, 0)', `${view}/${width}: no tag ${JSON.stringify(label)}`);
+  const [wardrobe, close] = state.buttons;
+  assert(Math.min(wardrobe.right, close.right) <= Math.max(wardrobe.left, close.left) || Math.min(wardrobe.bottom, close.bottom) <= Math.max(wardrobe.top, close.top), `${view}/${width}: controls overlap`);
+  const end = page.locator('.character-description');
+  await end.scrollIntoViewIfNeeded();
+  const reachable = await end.evaluate(el => { const r = el.getBoundingClientRect(); const m = el.closest('.character-details-modal').getBoundingClientRect(); return r.bottom <= m.bottom + 1 && r.top >= m.top - 1; });
+  assert(reachable, `${view}/${width}: final text reachable`);
+  checks.push({ view, width, height, extra, labels: 'no tag backgrounds/borders/radii', overflow: false, finalText: 'reachable' });
+  return state;
+}
+try {
+  for (const view of ['spread', 'banner', 'reading']) {
+    for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 640], [320, 568]]) {
+      await layout(view, width, height);
+      await open(view, width, height);
+      if ([1440, 390, 320].includes(width)) await page.screenshot({ path: `${out}${view}-${width}.png` });
+    }
+    for (const extra of ['&character=aemeath', '&long', '&noMusic', '&unowned']) await layout(view, 320, 568, extra);
+    await open(view, 1440, 900, '&character=aemeath');
+    await page.screenshot({ path: `${out}${view}-aemeath.png` });
+    for (const width of [1440, 390]) {
+      await open(view, width, width === 1440 ? 900 : 844);
+      const token = page.locator('.skill-trait-token').first();
+      await token.click();
+      await page.locator('.skill-trait-popover').waitFor();
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('.skill-trait-popover').count(), 0);
+      assert.equal(await page.locator('.character-details-modal').count(), 1);
+      await page.locator('.character-music-title-trigger').click();
+      await page.locator('.character-music-sheet').waitFor();
+      const music = await page.locator('.character-music-sheet').boundingBox();
+      assert(music.x >= 0 && music.x + music.width <= width + 1, `${view}: music sheet fits`);
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('.character-details-modal').count(), 1);
+      await page.locator('.character-costume-open-button').click();
+      await page.locator('.character-costume-dialog').waitFor();
+      await settle();
+      await page.getByRole('button', { name: '关闭服装列表', exact: true }).click();
+      await page.locator('.character-costume-dialog').waitFor({ state: 'detached' });
+      assert(await page.locator('.character-costume-open-button').evaluate(el => el === document.activeElement), 'Wardrobe restores focus');
+      await page.getByRole('button', { name: '关闭角色详情', exact: true }).click();
+      await page.getByRole('button', { name: '重新打开角色详情' }).click();
+      await page.locator('.character-details-modal').waitFor();
+    }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(view, 390, 844);
+    assert.equal(await page.locator('.character-description').evaluate(el => getComputedStyle(el).transform), 'none');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+  }
+  await page.goto(`${base}${route}`);
+  await page.getByRole('button', { name: '3　连续阅读页', exact: true }).click();
+  await page.getByRole('button', { name: '手机竖屏', exact: true }).click();
+  assert((await page.locator('#preview').getAttribute('src')).includes('view=reading'));
+  assert((await page.locator('#preview').getAttribute('class')).includes('phone'));
+  await page.locator('#character').selectOption('aemeath');
+  assert((await page.locator('#preview').getAttribute('src')).includes('character=aemeath'));
+  assert.deepEqual(errors, []);
+  assert.deepEqual(requests, []);
+  await writeFile(`${out}verification.json`, JSON.stringify({ checks, interactions: 'trait, music sheet, wardrobe focus return, close/reopen, gallery controls passed', errors, apiRequests: requests }, null, 2) + '\n');
+  console.log(`${checks.length} layout cases and 6 desktop/mobile interaction flows passed; no API requests.`);
+} catch (error) {
+  console.error(JSON.stringify({ url: page.url(), errors, apiRequests: requests }));
+  throw error;
+} finally { await browser.close(); }

@@ -1,0 +1,52 @@
+{
+  "traits": [
+    {
+      "id": "skill-trait-sprint",
+      "name": "疾走",
+      "definition": "发动该技能不消耗当前自己回合的落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-2f453c6a-552e-482e-b639-62d26683ab17",
+      "name": "飞刀",
+      "definition": "可以连续两次落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-ee355be9-2ba9-4ab3-97d9-625466cbf2eb",
+      "name": "喷涂棋子",
+      "definition": "一种中立棋子。中立棋子不属于黑白双方，但其在棋盘上符合围棋基本规则。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-c0c803bf-5514-4a39-9e40-71eb26e5bb87",
+      "name": "禁地",
+      "definition": "一种特殊的禁入点。指定方无法指定该禁入点施放技能或落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-no-first",
+      "name": "禁先",
+      "definition": "对手在本局成功发动过主动技能之前，该技能无法发动。",
+      "sortOrder": 1
+    },
+    {
+      "id": "skill-trait-passive",
+      "name": "被动",
+      "definition": "无需玩家主动发动，满足其技能条件时自动生效。",
+      "sortOrder": 2
+    },
+    {
+      "id": "skill-trait-derived",
+      "name": "派生",
+      "definition": "该技能不是角色初始持有的常驻技能，需要由其他技能或对局状态生成后才能使用。",
+      "sortOrder": 3
+    },
+    {
+      "id": "skill-trait-50497b66-da70-4931-9c6b-8c2123cce3de",
+      "name": "隐藏手",
+      "definition": "该落子不会被对方看见。若该落子参与提子、被提子，或被对方落子选中时，则暴露。",
+      "sortOrder": 3
+    }
+  ]
+}

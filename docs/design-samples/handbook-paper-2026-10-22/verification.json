@@ -1,0 +1,250 @@
+{
+  "checks": [
+    {
+      "view": "spread",
+      "width": 1440,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 800,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 390,
+      "height": 844,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 360,
+      "height": 640,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 320,
+      "height": 568,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 320,
+      "height": 568,
+      "extra": "&character=aemeath",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 320,
+      "height": 568,
+      "extra": "&long",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 320,
+      "height": 568,
+      "extra": "&noMusic",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "spread",
+      "width": 320,
+      "height": 568,
+      "extra": "&unowned",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 1440,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 800,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 390,
+      "height": 844,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 360,
+      "height": 640,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 320,
+      "height": 568,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 320,
+      "height": 568,
+      "extra": "&character=aemeath",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 320,
+      "height": 568,
+      "extra": "&long",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 320,
+      "height": 568,
+      "extra": "&noMusic",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "banner",
+      "width": 320,
+      "height": 568,
+      "extra": "&unowned",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 1440,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 800,
+      "height": 900,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 390,
+      "height": 844,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 360,
+      "height": 640,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 320,
+      "height": 568,
+      "extra": "",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 320,
+      "height": 568,
+      "extra": "&character=aemeath",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 320,
+      "height": 568,
+      "extra": "&long",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 320,
+      "height": 568,
+      "extra": "&noMusic",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    },
+    {
+      "view": "reading",
+      "width": 320,
+      "height": 568,
+      "extra": "&unowned",
+      "labels": "no tag backgrounds/borders/radii",
+      "overflow": false,
+      "finalText": "reachable"
+    }
+  ],
+  "interactions": "trait, music sheet, wardrobe focus return, close/reopen, gallery controls passed",
+  "errors": [],
+  "apiRequests": []
+}

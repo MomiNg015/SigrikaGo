@@ -1,0 +1,71 @@
+/* A: a bound spread, art on the left and one quiet reading page on the right. */
+#root.hp-scene[data-design="spread"] {
+  .character-details-modal.character-detail-fullbody { grid-template-columns: minmax(0, .38fr) minmax(0, .62fr) !important; align-items: stretch !important; }
+  .character-detail-art { background: var(--hp-tint) !important; border-radius: 0 !important; }
+  .character-detail-art::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 1px; background: var(--hp-rule); }
+  .character-detail-figure { width: 94% !important; height: 85% !important; top: 54% !important; }
+  .character-detail-copy { padding: 28px 12px 12px 0 !important; }
+}
+/* B: the character and identity share a low, wide header; the prose spans below. */
+#root.hp-scene[data-design="banner"] {
+  .character-details-modal.character-detail-fullbody { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: 220px minmax(0, 1fr) !important; padding: 0 !important; gap: 0 !important; }
+  .character-detail-art { width: 100% !important; height: 220px !important; background: var(--hp-tint) !important; border-bottom: 1px solid var(--hp-rule) !important; }
+  .character-detail-figure { left: 22% !important; top: 52% !important; width: 38% !important; height: 92% !important; }
+  .character-costume-open-button { left: 18px !important; right: auto !important; top: 18px !important; }
+  .character-detail-copy { position: static !important; max-height: none !important; margin: 0 !important; padding: 26px 38px !important; }
+  .character-detail-heading { position: absolute !important; top: 42px; left: 42%; right: 54px; display: grid !important; grid-template-columns: 1fr !important; gap: 16px !important; padding: 0 !important; margin: 0 !important; border: 0 !important; }
+  .character-detail-heading h3 { font-size: 38px !important; }
+  .character-music-player { margin: 0 !important; }
+  .skill-title-row { padding-bottom: 10px !important; border-bottom: 1px solid var(--hp-rule) !important; }
+  .skill-title-row strong { text-decoration: none !important; }
+  .character-skill-description { max-width: 68ch; }
+}
+/* C: one uninterrupted page, a smaller portrait alongside the opening. */
+#root.hp-scene[data-design="reading"] {
+  .character-details-modal.character-detail-fullbody { display: grid !important; grid-template-columns: minmax(0, 1fr) 190px !important; grid-template-rows: 205px !important; grid-auto-rows: auto; align-content: start !important; align-items: start !important; width: min(850px, 100%) !important; overflow-y: auto !important; padding: 32px 40px !important; gap: 16px 28px !important; scrollbar-gutter: stable; }
+  .character-detail-art { grid-column: 2; grid-row: 1; width: 100% !important; height: 205px !important; margin: 0; overflow: visible !important; }
+  .character-detail-figure { width: 95% !important; height: 95% !important; }
+  .character-costume-open-button { top: auto !important; bottom: 0; right: 0 !important; }
+  .character-detail-copy { display: contents !important; }
+  .character-details-modal.character-detail-fullbody { height: auto !important; }
+  .character-detail-copy > * { grid-column: 1 / -1; min-width: 0; }
+  .character-detail-heading { grid-column: 1; grid-row: 1; display: flex !important; flex-direction: column; align-content: start !important; justify-content: flex-start !important; padding: 18px 0 0 !important; margin: 0 !important; gap: 14px !important; border: 0 !important; }
+  .character-detail-title-line { flex: none !important; }
+  .character-music-player { margin-left: 0 !important; }
+  .skill-title-row { margin-bottom: 0 !important; }
+  .acquisition-method { margin-top: 10px !important; }
+  .character-description { margin-top: 0 !important; }
+  .character-detail-fullbody > .close-button { position: sticky !important; grid-column: 2; grid-row: 1; align-self: start; justify-self: end; top: 0 !important; right: 0 !important; margin: -20px -24px 0 0 !important; }
+}
+@media (max-width: 768px) {
+  #root.hp-scene[data-design="spread"] {
+    .character-details-modal.character-detail-fullbody { grid-template-columns: 1fr !important; grid-template-rows: min(175px, 24dvh) minmax(0, 1fr) !important; }
+    .character-detail-art { height: 100% !important; }
+    .character-costume-open-button { left: 8px !important; right: auto !important; }
+    .character-detail-figure { height: 96% !important; width: 100% !important; top: 50% !important; }
+    .character-detail-art::after { inset: auto 0 0; width: 100%; height: 1px; }
+    .character-detail-copy { padding-top: 0 !important; }
+    .character-detail-heading { padding-right: 0 !important; }
+  }
+  #root.hp-scene[data-design="banner"] {
+    .character-details-modal.character-detail-fullbody { grid-template-rows: 182px minmax(0, 1fr) !important; padding: 0 !important; gap: 0 !important; }
+    .character-detail-art { height: 182px !important; }
+    .character-detail-figure { left: 80% !important; top: 60% !important; width: 36% !important; height: 78% !important; }
+    .character-detail-heading { top: 32px; left: 18px; right: 38%; gap: 10px !important; }
+    .character-detail-heading h3 { font-size: 27px !important; }
+    .character-cv-label { font-size: 13px !important; }
+    .character-music-player { width: 175px !important; max-width: 100% !important; }
+    .character-costume-open-button { left: auto !important; right: 13px !important; top: 126px !important; }
+    .character-detail-copy { padding: 23px 17px !important; }
+  }
+  #root.hp-scene[data-design="reading"] {
+    .character-details-modal.character-detail-fullbody { padding: 30px 18px 20px !important; grid-template-columns: minmax(0, 1fr) 95px !important; grid-template-rows: minmax(185px, auto) !important; gap: 16px 8px !important; }
+    .character-detail-art { height: 185px !important; margin: 0 !important; }
+    .character-detail-figure { height: 90% !important; }
+    .character-costume-open-button { right: 4px !important; width: 36px !important; height: 36px !important; min-height: 36px !important; }
+    .character-detail-heading { gap: 12px !important; padding-top: 0 !important; margin: 0 !important; }
+    .character-detail-heading h3 { font-size: 27px !important; }
+    .character-music-player { width: 170px !important; max-width: 100% !important; }
+    .character-detail-fullbody > .close-button { margin: -19px -6px 0 0 !important; }
+  }
+}

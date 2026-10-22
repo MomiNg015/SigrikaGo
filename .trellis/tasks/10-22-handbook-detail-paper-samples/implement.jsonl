@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/handbook-puzzle-contract.md","reason":"Preserve portraits, detail portal and existing actions"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Isolate sample styles from production and reserve shadow gutters"}
+{"file":".trellis/spec/backend/skill-description-contract.md","reason":"Reuse authored skill content, cost formatting and trait popovers"}
+{"file":"DESIGN.md","reason":"Existing paper, ink, typography and interaction language"}
