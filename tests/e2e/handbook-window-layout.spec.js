@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const viewports = [{ width: 1440, height: 768 }, { width: 390, height: 844 }, { width: 360, height: 640 }, { width: 320, height: 568 }];
+const viewports = [{ width: 1440, height: 768 }, { width: 800, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 640 }, { width: 320, height: 568 }];
 const costumes = Array.from({ length: 9 }, (_, index) => ({
   id: `layout-costume-${index}`, characterSlug: "sigrika", enabled: true, owned: true, sortOrder: index,
   name: index === 0 ? "HelloHello" : `很长的服装名称用于检查省略和裁切${index}`,
@@ -34,6 +34,46 @@ async function expectContained(locator, parent, shadow = 0) {
 }
 
 for (const viewport of viewports) {
+  test(`stage variants keep text and controls reachable at ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.route('**/api/skill-traits', route => route.fulfill({ json: { traits: [] } }));
+    for (const query of ['character=aemeath', 'long', 'noMusic', 'unowned', 'costume']) {
+      await page.goto(`/tests/e2e/fixtures/handbook-stage.html?${query}`);
+      await page.locator('.character-detail-fullbody').waitFor();
+      await page.evaluate(() => document.fonts.ready);
+      await settle(page);
+      const modal = page.locator('.character-detail-fullbody');
+      const box = await modal.boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width + 7).toBeLessThanOrEqual(viewport.width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+      const image = page.locator('.character-detail-figure img');
+      expect(await image.evaluate(e => e.complete && e.naturalWidth > 0)).toBe(true);
+      if (query === 'noMusic') {
+        await expect(page.locator('.character-music-toggle')).toBeDisabled();
+        await expect(page.locator('.character-music-name')).toHaveText('无可用曲目');
+      }
+      if (query === 'unowned') expect(await modal.evaluate(e => e.style.getPropertyValue('--detail-emblem'))).toBe('none');
+      if (query === 'character=aemeath') {
+        const derived = page.locator('.derived-skill-detail').first();
+        await expect(derived).toBeVisible();
+        const child = await derived.boundingBox();
+        const parent = await page.locator('.character-detail-copy > .character-skill-description').boundingBox();
+        expect(child.y).toBeLessThan(parent.y + parent.height);
+        expect(child.x).toBeGreaterThan(parent.x);
+      }
+      await page.locator('.character-detail-copy').evaluate(e => { e.scrollTop = e.scrollHeight; });
+      const end = await page.locator('.character-description').evaluate(e => {
+        const range = document.createRange(); range.selectNodeContents(e); range.setStart(e.firstChild, e.firstChild.length - 1);
+        return range.getBoundingClientRect().toJSON();
+      });
+      const radio = await page.locator('.character-music-player').boundingBox();
+      expect(end.bottom).toBeLessThanOrEqual(radio ? radio.y : box.y + box.height);
+      expect(await page.locator('.character-cv-label').evaluate(e => getComputedStyle(e).textDecorationLine)).toBe('none');
+      await page.keyboard.press('Escape');
+      await expect(modal).toHaveCount(0);
+    }
+  });
   test(`detail controls clear portrait and heading at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     await openDetail(page, viewport);
     const name = await page.locator(".character-detail-heading h3").boundingBox();
@@ -42,6 +82,32 @@ for (const viewport of viewports) {
     const overlapY = Math.min(name.y + name.height, music.y + music.height) - Math.max(name.y, music.y);
     expect(overlapX <= 0 || overlapY <= 0, "name and radio must not overlap").toBe(true);
     const wardrobe = page.getByRole("button", { name: "查看西格莉卡的服装" });
+    const frame = await page.locator('.character-detail-fullbody').boundingBox();
+    const close = page.getByRole('button', { name: '关闭角色详情', exact: true });
+    const closeBox = await close.boundingBox();
+    expect(Math.abs(closeBox.x + closeBox.width / 2 - frame.x - frame.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(closeBox.y + closeBox.height / 2 - frame.y)).toBeLessThanOrEqual(1);
+    expect(music.x + music.width).toBeGreaterThan(frame.x + frame.width);
+    expect(music.y + music.height).toBeGreaterThan(frame.y + frame.height);
+    expect(music.x + music.width + 5).toBeLessThanOrEqual(viewport.width);
+    expect(music.y + music.height + 6).toBeLessThanOrEqual(viewport.height);
+    await expect(page.locator('.acquisition-method')).toHaveCount(0);
+    if (viewport.width <= 768) {
+      const art = await page.locator('.character-detail-art').boundingBox();
+      const button = await wardrobe.boundingBox();
+      expect(button.width).toBeLessThanOrEqual(34);
+      expect(button.width).toBe(button.height);
+      expect(button.x - art.x).toBeLessThanOrEqual(12);
+      expect(art.y + art.height - button.y - button.height).toBeLessThanOrEqual(16);
+      expect(name.x).toBeGreaterThan(button.x + button.width);
+    }
+    const toggle = page.locator('.character-music-toggle');
+    const glyphColor = await toggle.evaluate(e => getComputedStyle(e).color);
+    await toggle.hover();
+    expect(await toggle.evaluate(e => getComputedStyle(e).color)).toBe(glyphColor);
+    await close.hover();
+    expect(await close.evaluate(e => getComputedStyle(e).outlineStyle)).toBe('none');
+    await page.mouse.move(0, 0);
     await expectContained(wardrobe, page.locator(".character-detail-art"), 3);
     await wardrobe.hover();
     await settle(page);

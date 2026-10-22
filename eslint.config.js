@@ -5,6 +5,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/house/HouseNestedDialogs.jsx",
+  "src/modals/house/CharacterDetailDialog.dom.test.jsx",
+  "tests/e2e/fixtures/handbook-stage.jsx",
   "src/modals/friends/FriendsToolbar.jsx",
   "src/modals/friends/FriendsCompanionView.jsx",
   "tests/e2e/friends-companion.spec.js",

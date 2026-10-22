@@ -1,0 +1,41 @@
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop { position: fixed !important; inset: 0 !important; z-index: 160; display: grid; place-items: center !important; width: auto !important; height: auto !important; min-width: 0; min-height: 0; overflow: hidden !important; }
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+ .character-details-modal.character-detail-fullbody { position: relative !important; inset: auto !important; max-width: 100% !important; display: grid !important; align-items: center !important; margin: 0 !important; clip-path: none !important; }
+ .character-detail-art { position: relative; align-self: stretch; min-width: 0; min-height: 0 !important; box-shadow: none !important; }
+ .character-detail-figure { position: absolute; left: 50%; pointer-events: none; }
+ .character-detail-figure img { display: block; width: 100% !important; height: 100% !important; max-height: none !important; object-fit: contain !important; object-position: center !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+ .unowned .character-detail-figure img { filter: grayscale(1) opacity(.62) !important; }
+ .character-detail-copy { z-index: 2; min-width: 0; min-height: 0; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+}
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  & { --detail-ink: var(--theme-text, #3d2b25); --detail-paper: var(--theme-bg, #fffbf2); --detail-rule: color-mix(in srgb, var(--detail-ink) 24%, transparent); }
+  .character-details-modal { --detail-tint: color-mix(in srgb, var(--character-theme-color) 12%, var(--detail-paper)); }
+  & { padding: calc(48px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom)) calc(32px + env(safe-area-inset-left)) !important; }
+  .character-details-modal.character-detail-fullbody { width: min(1060px, 100%) !important; min-height: 0 !important; border: 2px solid var(--detail-ink) !important; border-radius: 4px !important; background: var(--detail-paper) !important; box-shadow: 7px 8px 0 var(--detail-ink) !important; grid-template-columns: minmax(0,.45fr) minmax(0,.55fr) !important; padding: 0 !important; gap: 0 !important; overflow: visible !important; background-image: var(--theme-paper-grid) !important; background-size: 20px 20px !important; height: min(590px, calc(100dvh - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important; max-height: calc(100dvh - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; }
+  .character-detail-copy { display: block !important; max-height: 100% !important; border: 0 !important; box-shadow: none !important; scrollbar-gutter: stable; width: auto !important; align-self: stretch !important; justify-self: stretch !important; align-content: start !important; position: static !important; overflow-x: hidden !important; overflow-y: auto !important; padding: 36px 30px 24px !important; border-radius: 0 !important; background: transparent !important; }
+}
+@media (max-width: 768px) {
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  & { --detail-stage-height: min(210px, 30dvh); }
+  & { padding: calc(32px + env(safe-area-inset-top)) calc(28px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left)) !important; }
+  .character-details-modal.character-detail-fullbody { grid-template-columns: 1fr !important; grid-template-rows: var(--detail-stage-height) minmax(0, 1fr) !important; height: min(640px, calc(100dvh - 92px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important; max-height: calc(100dvh - 92px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; }
+  .character-detail-copy { padding-right: 6px !important; padding: 22px 18px 24px !important; }
+}
+}
+@media (max-width: 768px) {
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+ .character-details-modal[data-long-name="true"] { --detail-stage-height: min(240px, 42dvh); }
+ .character-details-modal[data-long-name="true"] .character-detail-heading h3 { font-size: 22px !important; }
+}
+}
+@media (min-width: 769px) {
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+ .character-details-modal.character-detail-fullbody:has(.derived-skill-detail) { height: min(650px, calc(100dvh - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important; }
+}
+}

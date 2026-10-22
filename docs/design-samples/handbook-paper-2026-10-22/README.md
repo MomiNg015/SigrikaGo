@@ -40,15 +40,19 @@
 - 关闭按钮对齐项目常用的36px圆角方形、纸色背景、3px墨边和硬阴影，中心仍与纸面右上角重合；悬停不显示额外外圈，键盘焦点仍可见。外层预留空隙，收音机和按钮连同阴影仍处于视口内。
 - 简介悬停仅保留位移和阴影反馈，取消下划线。左上角用本目录 `go-stones-sketch.svg` 放置透明手绘黑白围棋装饰，保留棋子自身笔触并去掉外侧三根短线；非交互伪元素不遮挡文字，SVG原生缩放，无额外运行依赖。
 
-上述改动只由 `stage.css` 门控到第1版，方向2/3和生产界面不变。
+第1版已按上述最终修订接入正式 `CharacterDetailDialog`。正式样式由 `handbook-detail-figure.css` 入口及 layout/art/heading/cards/controls 五个 owner 承担，棋子装饰使用 `/assets/ui/handbook-go-stones.svg`；此比较页保留设计过程，方向2/3没有接入正式窗口。
+
+正式检查覆盖桌面和800/390/360/320px视口、长姓名、派生技、无音乐、未拥有、换装，以及衣柜和音乐曲目单的焦点返回。正式窗口可通过 `tests/e2e/fixtures/handbook-puzzle.html?costumes&music` 在本地无账号环境验证。
+
+正式样式截图（`preview.html?view=current`，沿用公开角色快照、不加载样板覆盖）：[桌面](./production-1440.png)、[手机派生技能](./production-390.png)、[320px小屏](./production-320.png)。浏览器回归命令为 `npx playwright test --config tests/e2e/handbook-window-layout.config.js`，覆盖15项布局和既有操作检查。
 
 ## 复用与隔离
 
-- 直接挂载正式 `CharacterDetailDialog`、`CharacterCostumeDialog`、共享立绘解析、技能描述及音乐组件。布局变化仅位于本目录 CSS，并由 `#root[data-design]` 门控。
+- 比较页直接挂载正式 `CharacterDetailDialog`、`CharacterCostumeDialog`、共享立绘解析、技能描述及音乐组件；各方向的样板覆盖仍由 `#root[data-design]` 门控。正式入口采用已确认的第1版。
 - `catalog.json`、`traits.json` 来自本机公开 `/api/characters`、`/api/skill-traits` 的只读快照，不含账号数据。衣柜素材复用既有 2026-10-15 样板的公开服装目录，非实时衣柜快照。
 - 假设用户可预览所有角色，服装默认未拥有；音乐选择和默认服装调整只存于当前页面内存。刷新即可复位。页面拒绝真实 API 请求，不写本地存储、账号或数据库。
 - 语音按点击调用现有详情语音播放，关闭／卸载时停止；保留正式父手册出战语音的生命周期，不修改 `HouseModal`。
-- 选版后才考虑生产 owner 的拆分和接入；本轮不增加生产 CSS debt，也不改正式交互契约。
+- 生产样式分为五个有界 owner，由原入口统一导入；CSS 清单仅按此次迁移的净增量更新。原有业务交互保持不变，无曲目时收音机仍显示禁用状态。
 
 ## 验证
 

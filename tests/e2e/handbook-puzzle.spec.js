@@ -106,8 +106,13 @@ for (const viewport of [{ width: 1440, height: 1024 }, { width: 1440, height: 76
         await expect(page.locator(".character-detail-figure img")).toBeVisible();
         expect(await page.locator('.character-detail-fullbody').evaluate((modal) => {
           const window = modal.getBoundingClientRect();
-          const art = modal.querySelector('.character-detail-figure img').getBoundingClientRect();
-          return art.top >= window.top && art.bottom <= window.bottom && art.left >= window.left && art.right <= window.right;
+          // The stage rotates the figure; its clipped art reservation owns the visible bounds.
+          const frame = modal.querySelector('.character-detail-art');
+          const art = frame.getBoundingClientRect();
+          const style = getComputedStyle(frame);
+          return style.overflowX === 'hidden' && style.overflowY === 'hidden'
+            && art.top >= window.top && art.bottom <= window.bottom
+            && art.left >= window.left && art.right <= window.right;
         })).toBeTruthy();
         if (index === 0) {
           await page.getByRole('button', { name: '查看西格莉卡的服装', exact: true }).click();

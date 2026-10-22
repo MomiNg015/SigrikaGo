@@ -36,7 +36,8 @@ describe("character detail full-body portrait", () => {
     expect(image.getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
     expect(image.parentElement.classList.contains("is-standard-figure")).toBe(true);
     expect(screen.getByText(CHARACTERS.sigrika.skill.name)).toBeTruthy();
-    expect(screen.getByText("获得途径")).toBeTruthy();
+    expect(screen.queryByText("获得途径")).toBeNull();
+    expect(dialog.style.getPropertyValue("--detail-emblem")).toContain("/assets/factions/roya.webp");
   });
 
   it("keeps the wardrobe and detail-voice actions on the existing character", async () => {
@@ -48,6 +49,11 @@ describe("character detail full-body portrait", () => {
     expect(onOpenCostumes).toHaveBeenCalledOnce();
     await interaction.click(screen.getByRole("button", { name: CHARACTERS.sigrika.description }));
     expect(onPlayDetailVoice).toHaveBeenCalledOnce();
+  });
+
+  it.each([[false, CHARACTERS.sigrika], [true, { ...CHARACTERS.sigrika, id: "unknown" }]])("omits faction art without an owned mapped character", (detailOwned, character) => {
+    render(<CharacterDetailDialog {...detailProps({ detailOwned, character })} />);
+    expect(screen.getByRole("dialog").style.getPropertyValue("--detail-emblem")).toBe("none");
   });
 
   it.each([

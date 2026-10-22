@@ -11,6 +11,7 @@ import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
 import SkillDescription from "../../shared/SkillDescription.jsx";
 import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { formatSkillOverclock } from "../../shared/skillTraits.js";
+import { CHARACTER_FACTIONS, FACTION_EMBLEMS } from "../../shared/characterFactions.js";
 
 export function CharacterDetailDialog({
   character,
@@ -30,16 +31,7 @@ export function CharacterDetailDialog({
   const cvName = normalizeCharacterCvName(character.cvName);
   const cvUrl = normalizeCharacterCvUrl(character.cvUrl);
   const cvLabel = cvName ? `CV：${cvName}` : "";
-  const skillLabelStyle = {
-    "--detail-label-color": "#111111",
-    "--detail-label-bg": "color-mix(in srgb, var(--character-theme-color) 24%, #ffffff)"
-  };
-  const acquisitionLabelStyle = {
-    "--detail-label-color": "#111111",
-    "--detail-label-bg": "#e5e7eb",
-    "--detail-label-border": "2px solid #6b7280",
-    "--detail-label-radius": "0"
-  };
+  const faction = detailOwned ? FACTION_EMBLEMS[CHARACTER_FACTIONS[character.id]] : null;
   const portrait = resolveHandbookPortrait(character, { itemEffects, user, chibi: true });
   const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
     characterId: character.id,
@@ -52,7 +44,10 @@ export function CharacterDetailDialog({
         ariaLabel={`${character.name}角色详情`}
         onClose={onClose}
         className={`nested-modal character-detail character-details-modal character-detail-fullbody ${detailOwned ? "" : "unowned"}`}
-        style={characterThemeStyle(character)}
+        data-long-name={character.name.length > 8 || undefined}
+        style={{ ...characterThemeStyle(character),
+          "--detail-emblem": faction ? `url("${faction.src}")` : "none",
+          "--detail-emblem-strength": faction?.strength ?? 0 }}
         onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" type="button" aria-label="关闭角色详情" onClick={onClose}><X size={18} /></button>
@@ -82,7 +77,7 @@ export function CharacterDetailDialog({
             />
           </div>
           <div className="skill-title-row">
-            <strong style={skillLabelStyle}>{character.skill.name}</strong>
+            <strong>{character.skill.name}</strong>
             <span className="skill-overclock-badge">{formatSkillOverclock(character.skill)}</span>
           </div>
           <SkillDescription
@@ -92,7 +87,7 @@ export function CharacterDetailDialog({
           {derivedSkills.map((skill) => (
             <div className="derived-skill-detail" key={skill.effectType}>
               <div className="skill-title-row">
-                <strong style={skillLabelStyle}>{skill.name}</strong>
+                <strong>{skill.name}</strong>
                 <span className="skill-overclock-badge">{formatSkillOverclock(skill)}</span>
               </div>
               <SkillDescription
@@ -101,8 +96,7 @@ export function CharacterDetailDialog({
               />
             </div>
           ))}
-          <p className="acquisition-method"><strong style={acquisitionLabelStyle}>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
-          <p
+          <div
             className="character-description"
             role={onPlayDetailVoice ? "button" : undefined}
             tabIndex={onPlayDetailVoice ? 0 : undefined}
@@ -114,7 +108,7 @@ export function CharacterDetailDialog({
             }}
           >
             {character.description || "暂无角色描述"}
-          </p>
+          </div>
         </div>
       </ModalDialog>
     </div>

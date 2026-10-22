@@ -1,0 +1,19 @@
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  .character-detail-heading { align-items: flex-start !important; flex-wrap: wrap !important; border-bottom: 1px solid var(--detail-rule) !important; display: grid !important; gap: 17px !important; margin-bottom: 25px !important; border: 0 !important; grid-template-columns: minmax(0,1fr) !important; position: static !important; padding: 0 !important; margin: 0 0 25px !important; }
+  .character-detail-title-line { display: grid !important; gap: 8px !important; min-width: 0 !important; max-width: 100% !important; flex: 1 1 170px !important; }
+  .character-detail-heading h3 { font: 400 34px/1.25 var(--font-window-title) !important; margin: 0 !important; white-space: normal !important; overflow: visible !important; overflow-wrap: anywhere !important; text-align: left !important; font-size: 48px !important; text-shadow: 3px 3px 0 color-mix(in srgb,var(--character-theme-color) 55%,transparent); }
+  .character-cv-label { font: 400 14px/1.5 var(--font-ui-default) !important; padding: 0 !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; color: var(--detail-ink) !important; width: auto !important; max-width: 100% !important; overflow: visible !important; white-space: normal !important; }
+  a.character-cv-label { text-decoration: underline !important; text-underline-offset: 4px; }
+  .character-cv-label, a.character-cv-label { text-decoration: none !important; }
+  .character-cv-label:focus-visible { outline: 2px solid var(--detail-ink); outline-offset: 4px; }
+}
+@media (max-width: 768px) {
+.character-detail-figure-backdrop,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  .character-detail-heading { gap: 12px !important; width: auto !important; height: 0 !important; padding: 0 !important; margin: 0 !important; }
+  .character-detail-title-line { position: absolute; top: auto; right: 15px; bottom: calc(100% - var(--detail-stage-height) + 18px); width: 43%; max-width: none !important; z-index: 3; text-align: right; }
+  .character-detail-heading h3 { text-shadow: 2px 2px 0 var(--detail-paper); font-size: clamp(24px, 7.4vw, 30px) !important; text-align: right !important; }
+  .character-cv-label { justify-self: end; text-align: right; }
+}
+}

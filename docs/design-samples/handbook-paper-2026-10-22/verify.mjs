@@ -42,7 +42,7 @@ async function layout(view, width, height, extra = '') {
     const cv = document.querySelector('.character-cv-label');
     const derived = document.querySelector('.derived-skill-detail');
     const parentSkill = document.querySelector('.character-detail-copy > .character-skill-description');
-    const stage = { grid: getComputedStyle(modal).backgroundImage, acquisition: getComputedStyle(document.querySelector('.acquisition-method')).display,
+    const stage = { grid: getComputedStyle(modal).backgroundImage, acquisition: document.querySelector('.acquisition-method') ? getComputedStyle(document.querySelector('.acquisition-method')).display : 'none',
       cvUnderline: cv && getComputedStyle(cv).textDecorationLine, emblemWidth: parseFloat(getComputedStyle(document.querySelector('.character-detail-art'), '::after').width),
       derived: derived?.getBoundingClientRect().toJSON(), parentSkill: parentSkill.getBoundingClientRect().toJSON() };
     return { rect: rect.toJSON(), overflow: [modal.scrollWidth, modal.clientWidth, document.documentElement.scrollWidth], labels: labelStyles, imageLoaded: img.complete && img.naturalWidth > 0,

@@ -655,11 +655,8 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("character-description");
     expect(html).toContain("--character-theme-color:#67d9e8");
-    expect(html).toContain("--detail-label-bg:color-mix(in srgb, var(--character-theme-color) 24%, #ffffff)");
-    expect(html).toContain("--detail-label-color:#111111");
-    expect(html).toContain("--detail-label-bg:#e5e7eb");
-    expect(html).toContain("--detail-label-border:2px solid #6b7280");
-    expect(html).toContain("--detail-label-radius:0");
+    expect(html).not.toContain("--detail-label-bg");
+    expect(html).not.toContain("acquisition-method");
     expect(html).not.toContain("skill-cost-badge");
     expect(html).toContain("skill-overclock-badge");
     expect(html).toContain("超频：3");
