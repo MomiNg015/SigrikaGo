@@ -1,4 +1,0 @@
-{"reason":"Reuse the established paper, ink and type system","file":"DESIGN.md"}
-{"reason":"Scope preview CSS and preserve scroll shadow gutters","file":".trellis/spec/frontend/css-architecture.md"}
-{"reason":"Preserve toolbar action colors","file":".trellis/spec/frontend/button-colors.md"}
-{"reason":"Reuse production watch behavior and friend search styling","file":".trellis/tasks/10-22-watch-paper-template/research.md"}
