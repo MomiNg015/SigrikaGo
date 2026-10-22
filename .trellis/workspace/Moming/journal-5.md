@@ -38,3 +38,36 @@ Reviewed content-card families and delivered three isolated geometry texture sam
 ### Next Steps
 
 - None - task complete
+
+
+## Session 242: Arknights-informed card materials across eight windows
+
+**Date**: 2026-10-22
+**Task**: Arknights-informed card materials across eight windows
+**Branch**: `master`
+
+### Summary
+
+Replaced rejected thin-line direction with three isolated material samples: Academy imprint, industrial relief, tactical screenprint. Eight real player windows, 72 desktop/mobile previews, 48 baseline card-rectangle comparisons, 16 content states and 11 controls verified. Generated relief source and reference rationale documented. Scoped lint and system-design generation passed. Production code and unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `60dc1a88` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
