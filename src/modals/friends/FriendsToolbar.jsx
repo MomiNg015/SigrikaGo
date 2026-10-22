@@ -19,14 +19,16 @@ export default function FriendsToolbar({
         event.preventDefault();
         onSearchSubmit();
       }}>
+        <Search className="friend-search-symbol" size={18} aria-hidden="true" />
         <input
+          type="text"
           value={searchUsername}
           maxLength={SEARCH_USERNAME_MAX_LENGTH}
           placeholder="输入用户名"
           aria-label="搜索用户名"
           onChange={(event) => onSearchInput(event.target.value)}
         />
-        <button type="submit" title="搜索用户" aria-label="搜索用户"><Search size={18} /></button>
+        <button type="submit" title="搜索用户" aria-label="搜索用户" data-button-role="tool"><span>搜索</span></button>
       </form>
     </div>
   );

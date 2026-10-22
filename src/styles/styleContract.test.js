@@ -685,6 +685,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/friends-companion.css",
       "./mobile-adaptive/friends-companion-mobile.css",
       "./mobile-adaptive/friends-companion-feedback.css",
+      "./mobile-adaptive/friends-companion-search.css",
       "./mobile-adaptive/profile-identity-tools.css",
       "./mobile-adaptive/profile-paper-cards.css",
       "./mobile-adaptive/profile-paper-actions.css",

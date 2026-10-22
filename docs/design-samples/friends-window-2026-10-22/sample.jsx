@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Search, X, MoreHorizontal, ChevronRight, Swords, Check, UserRound } from 'lucide-react';
 import FriendsList from '../../../src/modals/friends/FriendsList.jsx';
-import FriendsToolbar from '../../../src/modals/friends/FriendsToolbar.jsx';
+import FriendsToolbar from './baseline-toolbar.jsx';
 import WindowTitleSticker from '../../../src/modals/WindowTitleSticker.jsx';
 import { CHARACTERS } from '../../../src/shared/characters.js';
 import { modeOrderedEntries } from '../../../src/shared/gameModes.js';

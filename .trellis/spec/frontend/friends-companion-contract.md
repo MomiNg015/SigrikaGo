@@ -12,7 +12,9 @@
 - Capture the focused invoking control before every nested operation. Key the companion panel by selected ID so deleting its user removes the old action nodes; close-control focus is the fallback when the opener disappears.
 
 ## Layout and feedback
-Final owners are `friends-companion.css`, `friends-companion-mobile.css` and `friends-companion-feedback.css`, imported after ordinary window-paper ownership. Do not reposition or restyle the exterior bookmark rail.
+Final owners are `friends-companion.css`, `friends-companion-mobile.css`, `friends-companion-feedback.css` and `friends-companion-search.css`, imported after ordinary window-paper ownership. Do not reposition or restyle the exterior bookmark rail.
+
+The search form uses one paper frame and hard shadow, a decorative leading icon, an unboxed input and a labelled tool-color submit button separated by an ink rule. Keep the input's 16px font, the submit target's 44px height, a visible focus-within ring and full-width portrait layout. Hover and press preserve the shared tool palette; reduced motion removes transitions. The form still submits on Enter and looks up a global username, never filters the current roster.
 
 Desktop uses a scrolling list beside a companion panel. At 768px and below stack the list above the action panel. The list owns scrolling; both list ends reserve room for hard shadows. Short phones may scroll the companion panel internally, but every action stays reachable. At 360px and below hide only the decorative duel icon to preserve its text width.
 

@@ -4,6 +4,10 @@
 
 正式实现保留原接口及真实关系操作：桌面左右分栏，手机名单在上、操作在下；好友／黑名单仍为原左侧书签。名单卡片使用 3px／4px 硬阴影，细指针悬停轻抬，按下下沉；禁用按钮静止，减少动态效果时取消过渡。完整实现契约见 `.trellis/spec/frontend/friends-companion-contract.md`。
 
+后续搜索区调整：输入框和按钮合为一体式纸张搜索栏，左侧图标、右侧「搜索」文字按钮，统一 8px 外框与硬阴影。输入区域取消重复边框，保持 16px 常规字重；搜索按钮沿用工具配色，悬停变色、按下内凹，支持回车和可见焦点。最新 `production-*.png` 已更新；历史比较页使用冻结的 `baseline-toolbar.jsx` 保留改造前搜索控件。
+
+搜索栏复核：97 项相关单测、7 项好友窗口浏览器回归、ESLint、构建与产物 CSS 检查通过；额外检查回车／点击提交、真实计算样式、悬停／按下、减少动态效果及 320px 控件边界。仅复核本次局部改动，未重复运行全仓检查。
+
 正式效果：[桌面](./production-1440x900.png) · [390px 手机](./production-390x844.png) · [320px 手机](./production-320x740.png)。浏览器回归：`npx playwright test --config tests/e2e/window-surfaces.config.js friends-companion.spec.js`。
 
 正式实现验证：7 项浏览器回归通过；全量 ESLint、立绘及可视边界检查、构建、产物 CSS 契约和部署配置检查通过。全量单测初次为 3308 通过／3 失败：系统设计 HTML 重新生成后，其 4 项测试通过；开发代理启动用例受默认 5 秒上限影响，独立复测仍有 1 项超时，将本次运行上限设为 15 秒后 4 项全通过，未修改测试默认配置。`check:admin-snapshot` 仍报告本地 `siteSettings`、`characters` 与已提交默认快照不同，本任务未导出或覆盖后台配置。因此不能将本次 `npm run check` 记录为整体通过。
