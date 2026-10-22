@@ -1755,3 +1755,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 234: 角色展示台参考叠卡的清晰压边
+
+**Date**: 2026-10-22
+**Task**: 角色展示台参考叠卡的清晰压边
+**Branch**: `master`
+
+### Summary
+
+按用户父技能卡压住派生卡截图调整样板1：双色背景交界采用2px细墨边和4px实色硬阴影，无白色装饰条或柔化过渡，保留手机30度切口。桌面与320/390px截图核验、样板ESLint/27组布局/6组交互及4项文档测试通过；首次页面加载超时后复跑通过。文档和截图同步，无关WIP保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7123b874` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
