@@ -75,8 +75,8 @@ async function layout(view, width, height, extra = '') {
       const figure = await page.locator('.character-detail-figure').boundingBox();
       assert(figure.x + figure.width / 2 < state.art.left + state.art.width * .4, 'Mobile figure left');
       assert(wardrobe.right < state.name.left, 'Identity clears wardrobe');
-      assert(Math.abs(wardrobe.width - wardrobe.height) < 1 && wardrobe.width >= 44, 'Mobile wardrobe is a square touch target');
-      assert(wardrobe.left >= state.art.left + 8 && wardrobe.left <= state.art.left + 20 && wardrobe.bottom <= state.art.bottom - 8 && wardrobe.bottom >= state.art.bottom - 24, 'Mobile wardrobe sits inside art lower left');
+      assert(Math.abs(wardrobe.width - wardrobe.height) < 1 && wardrobe.width >= 28 && wardrobe.width <= 34, 'Mobile wardrobe stays compact and square');
+      assert(wardrobe.left >= state.art.left + 4 && wardrobe.left <= state.art.left + 12 && wardrobe.bottom <= state.art.bottom - 4 && wardrobe.bottom >= state.art.bottom - 16, 'Mobile wardrobe sits near art lower left edge');
     }
     if (state.stage.derived) assert(state.stage.derived.top < state.stage.parentSkill.bottom && state.stage.derived.left > state.stage.parentSkill.left, 'Derived card overlaps under parent');
   }
