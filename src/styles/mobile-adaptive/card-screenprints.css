@@ -1,0 +1,44 @@
+/* Approved semantic corner prints. Paint only; card geometry and state fills stay with their owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) {
+  :is(
+    .profile-folder-modal.profile-folder-modal.window-bookmark-host :is(.profile-resume-hero, .profile-summary-item, .profile-recent-section, .profile-character-section, .profile-capture-record),
+    .friends-modal.friends-companion-window :is(.fc-person, .fc-detail),
+    .warehouse-modal.warehouse-field-guide :is(.wg-entry, .wg-inspector),
+    .character-detail-figure-backdrop :is(.character-skill-description, .character-description),
+    .achievement-modal .achievement-row:not(.achievement-heading),
+    .announcement-modal :is(.announcement-list-item, .announcement-detail)
+  ),
+  .watch-ledger .wl-row::before {
+    background-image: var(--card-print-image) !important;
+    background-repeat: no-repeat !important;
+    background-size: var(--card-print-size) !important;
+    background-position: var(--card-print-position, right bottom) !important;
+    background-origin: padding-box !important;
+  }
+
+  .profile-resume-hero { --card-print-image: url('/assets/ui/card-prints/identity.svg'); --card-print-size: 390px 390px; --card-print-position: right top; }
+  .profile-summary-item.is-primary { --card-print-image: url('/assets/ui/card-prints/rank.svg'); --card-print-size: 170px 170px; --card-print-position: left -28px bottom -10px; }
+  :is(.profile-record-card, .profile-capture-record) { --card-print-image: url('/assets/ui/card-prints/record.svg'); --card-print-size: 210px 210px; --card-print-position: left bottom; }
+  .profile-character-section { --card-print-image: url('/assets/ui/card-prints/record.svg'); --card-print-size: 280px 280px; --card-print-position: left bottom; }
+  .profile-recent-section { --card-print-image: url('/assets/ui/card-prints/record.svg'); --card-print-size: 140px 140px; --card-print-position: left bottom; }
+  .fc-person { --card-print-image: url('/assets/ui/card-prints/social.svg'); --card-print-size: 160px 160px; --card-print-position: right -4px bottom -10px; }
+  .fc-detail { --card-print-image: url('/assets/ui/card-prints/social.svg'); --card-print-size: 430px 430px; --card-print-position: right -28px bottom -20px; }
+  .wg-entry { --card-print-image: url('/assets/ui/card-prints/inventory.svg'); --card-print-size: 160px 160px; --card-print-position: right -20px center; }
+  .wg-inspector { --card-print-image: url('/assets/ui/card-prints/inventory.svg'); --card-print-size: 420px 420px; --card-print-position: right -50px bottom -25px; }
+  .wl-row { --card-print-image: url('/assets/ui/card-prints/tactics.svg'); --card-print-size: 250px 250px; --card-print-position: right -5px bottom -25px; }
+  .character-skill-description { --card-print-image: url('/assets/ui/card-prints/tactics.svg'); --card-print-size: 205px 205px; --card-print-position: right -20px bottom -20px; }
+  .derived-skill-detail > .character-skill-description { --card-print-size: 170px 170px; --card-print-position: right -10px bottom -20px; }
+  .character-description { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 220px 220px; --card-print-position: right bottom; }
+  .achievement-row { --card-print-image: url('/assets/ui/card-prints/honor.svg'); --card-print-size: 160px 160px; --card-print-position: right -18px bottom -16px; }
+  .announcement-list-item { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 150px 150px; --card-print-position: right bottom; }
+  .announcement-detail { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 350px 350px; --card-print-position: right bottom; }
+
+  @media (max-width: 768px) {
+    .profile-resume-hero { --card-print-size: 260px 260px; }
+    .profile-character-section { --card-print-size: 210px 210px; }
+    :is(.fc-detail, .wg-inspector) { --card-print-size: 270px 270px; }
+    :is(.character-skill-description, .derived-skill-detail > .character-skill-description) { --card-print-size: 155px 155px; }
+    .character-description { --card-print-size: 170px 170px; }
+    .wl-row { --card-print-size: 200px 200px; --card-print-position: right -15px bottom -12px; }
+  }
+}

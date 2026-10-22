@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h3>2026-10-22 功能卡片丝印正式接入</h3>
+<p>已将用户确认的<a href="./design-samples/academy-card-materials-2026-10-22/screenprint.html">七种功能纹理</a>接入普通 Bright School 的履历、他人详情、好友、仓库、观战、角色详情、成就和公告。独立最终样式 owner 按卡片语义分配静态 SVG，只覆盖单次背景绘制；保留原尺寸、文字、边框、阴影、状态色及角色美术，黑化主题和其它主题不参与。按后续要求，段位使用授章图形的左右镜像并放在左下角，成就继续使用右下原图。桌面与竖屏采用已确认的不同尺度；观战纹理随原纸卡底层移动。比较页新增<a href="./design-samples/academy-card-materials-2026-10-22/production.html">正式样式预览</a>，历史样板保留独立覆盖以便对照；详情预览先挂载主题壳再打开 Portal，与正式应用生命周期一致。资源、作用域与验证合同见 <a href="./system-design/06-ui-theme-mobile.md">UI 主题分篇</a>及<a href="./design-samples/academy-card-materials-2026-10-22/production-integration.md">实装记录</a>。</p>
 <h3>2026-10-22 按卡片功能分配丝印纹理</h3>
 <p>用户认可 C 战术丝印后，新增<a href="./design-samples/academy-card-materials-2026-10-22/screenprint.html">七类功能纹理样板</a>：档案切角用于身份，棋局矩阵用于战绩与挑战，交叠联结用于好友，封装折带用于物品，对向楔阵用于技能与观战，页角印层用于简介与公告，授章菱片用于段位和成就。同一履历组合身份／荣誉／记录三种背景，角色详情区分战术正文与阅读简介；列表和详情使用不同尺度与角部留白。保留原 A/B/C 比较和生产布局、字体、状态色及专属角色美术，新增样板根标记只在独立页面启用；正式主题未接入。八类窗口在桌面及 390／320px 共 24 组验证中卡片位置、尺寸和文字与原版一致，无横向溢出或加载错误。映射表、生成脚本、截图与验证见<a href="./design-samples/academy-card-materials-2026-10-22/functional-screenprint.md">功能丝印说明</a>。</p>
 <h3>2026-10-22 学院卡片材质三版跨窗口样板</h3>
@@ -5411,6 +5413,10 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、台词、进度与笔刷 Tip 样式。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h2>按功能分配的卡片丝印（2026-10-22）</h2>
+<p>普通 Bright School 的八类内容窗口采用七种角部丝印：身份切角、记录矩阵、社交联结、物品折带、战术楔阵、阅读页角和荣誉菱片。资源位于 <code>public/assets/ui/card-prints/</code>；另有 <code>rank.svg</code> 将荣誉图形左右镜像，仅段位卡放在左下，成就仍保持右下。映射覆盖履历与他人详情、好友、仓库、观战、角色详情、成就和公告，不以卡片数组顺序随机分配。同一履历组合身份／荣誉／记录，角色技能和简介区分战术／阅读。</p>
+<p><code>mobile-adaptive/card-screenprints.css</code> 作为最终主题 owner 通过明确窗口与卡片选择器设置背景图、大小、位置、单次绘制和 padding-box 绘制原点；不修改背景色、尺寸、字形、边框、阴影或滚动。仅匹配启用 Bright School 且非黑化的应用壳；后台、IRIS、其它主题、输入和按钮不参与。观战使用 <code>.wl-row::before</code>，保留已结束灰色及纸卡位移；角色详情沿用应用壳 Portal，声痕、棋子、阵营与角色立绘保持原有 owner。768px 以下缩小大面板和正文角纹。静态 SVG 随构建复制，按实际卡片绘制加载，不新增首页预加载或运行时动效。</p>
+<p><code>tests/e2e/card-screenprints.spec.js</code> 对照已选样板与仅加载正式样式的预览，覆盖 1440／390／320px 的八类窗口、语义映射、文字与填色、卡片几何、主题隔离以及选中／按下／观战结束态。原版样板通过独立预览覆盖保持纯色对照；生产预览没有样板根标记或材质样式。样板详情先挂载 <code>.app-shell</code> 再打开弹层，避免初始化时 Portal 找不到主题壳而脱离正式样式。</p>
 <h2>全局字体与保留区域</h2>
 <p><code>base/foundation.css</code> 的 <code>--font-ui-default</code> 首选 <code>Sigrika Window Title</code>，复用已有 <code>LXGWMarkerGothic-Regular.ttf</code>（霞鹜漫黑），不新增字体资产。最初的 HTML 进站页也声明相同 face 与 URL，采用 font-display: swap，字体加载期间立即显示系统回退，不阻塞首屏。玩家界面、后台、普通与特殊主题、表单、普通数字和棋盘坐标共用此默认值；原本直接指定雅黑、Arial、Consolas、宋体等字体的组件 owner 及 font 简写同步改用该 token，避免主题最终覆盖使默认值失效。保留现有字号、字重、tabular-nums 和缺字系统回退；登录/注册输入与按钮显式设置 1.25 行高，消除换字体后每行 1px 的累计增高，保持原有紧凑高度。</p>
 <p>WuWa 的 <code>Sigrika Accent Latin</code> face、字母/数字 unicode-range、语义 class 与全部使用位置保持原样。IRIS 是整块例外：入口和友情链接列表仍为 Dotted Songti Circle，窗口其他文字保留原有 WuWa / Dotted Songti Circle 混合栈及原系统回退，在 IRIS 根节点固定原 UI 回退栈，确保桌面 RECORDS / STATUS 等小字也不受全局切换影响。图片内已有文字与历史设计样板不重新绘制。生产代码没有独立指定字体的 Canvas/Pixi 文本。</p>

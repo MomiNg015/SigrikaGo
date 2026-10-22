@@ -1,0 +1,3 @@
+/* Preserve historical pure/other-material samples after the runtime theme adopts C. */
+#material-preview :is(.profile-resume-hero,.profile-summary-item,.profile-recent-section,.profile-character-section,.profile-capture-record,.fc-person,.fc-detail,.wg-entry,.wg-inspector,.character-skill-description,.character-description,.achievement-row:not(.achievement-heading),.announcement-list-item,.announcement-detail),
+#material-preview .wl-row::before { background-image:none !important; }

@@ -2,7 +2,7 @@
 [data-material="screenprint-roles"] { --m-veil:transparent; }
 #material-preview[data-material="screenprint-roles"] {
   .profile-resume-hero { --m-image:url('./role-identity.svg'); --m-size:390px 390px; --m-position:right top; }
-  .profile-summary-item.is-primary { --m-image:url('./role-honor.svg'); --m-size:170px 170px; --m-position:right -28px bottom -10px; }
+  .profile-summary-item.is-primary { --m-image:url('./role-rank.svg'); --m-size:170px 170px; --m-position:left -28px bottom -10px; }
   :is(.profile-record-card,.profile-capture-record) { --m-image:url('./role-record.svg'); --m-size:210px 210px; --m-position:left bottom; }
   .profile-character-section { --m-image:url('./role-record.svg'); --m-size:280px 280px; --m-position:left bottom; }
   .profile-recent-section {

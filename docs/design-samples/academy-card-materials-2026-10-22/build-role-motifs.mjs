@@ -24,5 +24,6 @@ const motifs = {
   honor: wrap(`<path fill-rule="evenodd" d="m525 220 195 195-195 195-195-195Zm0 76L406 415l119 119 119-119Z" fill="${ink}" opacity=".12"/><path d="m525 354 61 61-61 61-61-61Z" fill="${ink}" opacity=".2"/><path d="m376 491 37 37-71 72h-74Zm54 54 31 31-24 24h-62Z" fill="${ink}" opacity=".14"/>${dots({x:290,y:270,columns:20,rows:23,accept:(x,y)=>x+y>800&&x+y<970})}`),
 };
 for (const [role,svg] of Object.entries(motifs)) fs.writeFileSync(path.join(directory,`role-${role}.svg`),svg);
+fs.writeFileSync(path.join(directory,'role-rank.svg'),motifs.honor.replace('viewBox="0 0 600 600">','viewBox="0 0 600 600"><g transform="translate(600 0) scale(-1 1)">').replace('</svg>','</g></svg>'));
 // Preserve the exact solid bands and localized print that the user selected in C.
 fs.copyFileSync(path.join(directory,'screenprint.svg'),path.join(directory,'role-inventory.svg'));

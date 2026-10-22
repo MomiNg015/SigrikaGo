@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "tests/e2e/card-screenprints*.js",
   "src/modals/house/HouseNestedDialogs.jsx",
   "src/modals/house/CharacterDetailDialog.dom.test.jsx",
   "tests/e2e/fixtures/handbook-stage.jsx",

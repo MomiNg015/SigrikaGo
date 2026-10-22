@@ -1,5 +1,9 @@
 # SigrikaGo 系统设计
 
+### 2026-10-22 功能卡片丝印正式接入
+
+已将用户确认的[七种功能纹理](./design-samples/academy-card-materials-2026-10-22/screenprint.html)接入普通 Bright School 的履历、他人详情、好友、仓库、观战、角色详情、成就和公告。独立最终样式 owner 按卡片语义分配静态 SVG，只覆盖单次背景绘制；保留原尺寸、文字、边框、阴影、状态色及角色美术，黑化主题和其它主题不参与。按后续要求，段位使用授章图形的左右镜像并放在左下角，成就继续使用右下原图。桌面与竖屏采用已确认的不同尺度；观战纹理随原纸卡底层移动。比较页新增[正式样式预览](./design-samples/academy-card-materials-2026-10-22/production.html)，历史样板保留独立覆盖以便对照；详情预览先挂载主题壳再打开 Portal，与正式应用生命周期一致。资源、作用域与验证合同见 [UI 主题分篇](./system-design/06-ui-theme-mobile.md)及[实装记录](./design-samples/academy-card-materials-2026-10-22/production-integration.md)。
+
 ### 2026-10-22 按卡片功能分配丝印纹理
 
 用户认可 C 战术丝印后，新增[七类功能纹理样板](./design-samples/academy-card-materials-2026-10-22/screenprint.html)：档案切角用于身份，棋局矩阵用于战绩与挑战，交叠联结用于好友，封装折带用于物品，对向楔阵用于技能与观战，页角印层用于简介与公告，授章菱片用于段位和成就。同一履历组合身份／荣誉／记录三种背景，角色详情区分战术正文与阅读简介；列表和详情使用不同尺度与角部留白。保留原 A/B/C 比较和生产布局、字体、状态色及专属角色美术，新增样板根标记只在独立页面启用；正式主题未接入。八类窗口在桌面及 390／320px 共 24 组验证中卡片位置、尺寸和文字与原版一致，无横向溢出或加载错误。映射表、生成脚本、截图与验证见[功能丝印说明](./design-samples/academy-card-materials-2026-10-22/functional-screenprint.md)。
