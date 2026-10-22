@@ -108,6 +108,14 @@ try {
     for (const width of [1440, 390]) {
       await open(view, width, width === 1440 ? 900 : 844);
       if (view === 'spread') {
+        const closeButton = page.getByRole('button', { name: '关闭角色详情', exact: true });
+        await page.mouse.move(0, 0);
+        await closeButton.focus();
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('Shift+Tab');
+        assert(await closeButton.evaluate(el => el === document.activeElement && el.matches(':focus-visible') && getComputedStyle(el).outlineStyle !== 'none'), 'Close retains keyboard focus feedback');
+        await closeButton.hover();
+        assert.equal(await closeButton.evaluate(el => getComputedStyle(el).outlineStyle), 'none', 'Close hover has no additional outer ring');
         const toggle = page.locator('.character-music-toggle');
         const colors = () => toggle.evaluate(el => ({ glyph: getComputedStyle(el.querySelector('.character-music-glyph')).color,
           fill: getComputedStyle(el).backgroundColor, ring: getComputedStyle(el, '::before').borderColor, ringShadow: getComputedStyle(el, '::before').boxShadow }));
