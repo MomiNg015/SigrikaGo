@@ -1,0 +1,100 @@
+{
+  "results": [
+    {
+      "query": "",
+      "width": 1440,
+      "height": 900,
+      "cardHeight": 86.390625,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 1024,
+      "height": 768,
+      "cardHeight": 109.25,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 800,
+      "height": 900,
+      "cardHeight": 167.328125,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 390,
+      "height": 844,
+      "cardHeight": 183.328125,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 360,
+      "height": 800,
+      "cardHeight": 168.65625,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 320,
+      "height": 740,
+      "cardHeight": 148.65625,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "",
+      "width": 390,
+      "height": 600,
+      "cardHeight": 172.5,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "?long",
+      "width": 320,
+      "height": 740,
+      "cardHeight": 228.5,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    },
+    {
+      "query": "?many",
+      "width": 390,
+      "height": 844,
+      "cardHeight": 183.328125,
+      "horizontalOverflow": false,
+      "modalInsideViewport": true,
+      "brokenImages": 0,
+      "problems": []
+    }
+  ],
+  "liveSearch": "pass",
+  "focus": "unchanged",
+  "interactions": "refresh, join preview, reopen, Escape, hover, press, reduced motion passed",
+  "scrolling": "whole cards at rest, wheel, touch, last row and resize passed",
+  "errors": [],
+  "apiRequests": []
+}

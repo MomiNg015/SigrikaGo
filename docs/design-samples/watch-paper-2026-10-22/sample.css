@@ -1,0 +1,118 @@
+.wp-scene { min-height: 100dvh; background: #fffbf2; }
+.wp-demo-result { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 24px; }
+.wp-demo-result p { font: 16px/1.6 var(--font-ui-default); color: #3d2b25; }
+
+/* Opt-in preview only: the unmodified WatchModal supplies all interaction. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.wp-preview .watch-ledger {
+  .wl-toolbar { gap: 20px; padding: 2px 12px 16px 5px; }
+  .wl-search {
+    flex: 1; width: auto; min-width: 0; min-height: 48px; gap: 0;
+    padding: 0 !important; border: 2px solid var(--wl-ink); border-radius: 8px;
+    background: var(--theme-bg, var(--wl-paper)); box-shadow: 3px 4px 0 var(--wl-ink);
+  }
+  .wl-search > svg { flex: none; margin-left: 13px; color: var(--wl-ink); opacity: .6; pointer-events: none; }
+  .wl-search:focus-within { outline: none; }
+  .wl-search input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]) {
+    flex: 1; width: 0; min-width: 0; height: 44px; min-height: 44px;
+    padding: 10px !important; border: 0 !important; border-radius: 0 !important;
+    outline: none !important; background: transparent !important; box-shadow: none !important;
+    color: var(--wl-ink); font: 400 16px/1.4 var(--font-ui-default);
+  }
+  .wl-search input::placeholder { font: inherit; color: var(--wl-ink); opacity: .55; }
+  .wl-total { flex: none; font: 14px/1.4 var(--font-ui-default); color: #6a554d; }
+
+  .wl-scroll { padding: 3px 12px 10px 5px; scrollbar-gutter: stable; scroll-snap-type: y mandatory; scroll-padding-block: var(--wp-scroll-start, 44px) 10px; }
+  .wl-table { border-collapse: separate; border-spacing: 0; }
+  &.wl-ledger .wl-table thead { border: 0; padding-bottom: 6px; }
+  &.wl-ledger .wl-table tr { grid-template-columns: 76px 62px 48px minmax(0, 1fr) minmax(0, 1fr) 82px 64px; gap: 12px; }
+  .wl-table thead tr { padding: 0 14px; }
+  .wl-table th { font-size: 14px; color: #6a554d; min-height: 30px; }
+  .wl-table tbody { display: grid; gap: 13px; padding-top: 3px; }
+  .wl-row {
+    --wp-shift-x: 0px; --wp-shift-y: 0px; --wp-shadow: 3px 4px 0 var(--wl-ink); --wp-card-paper: var(--wl-paper);
+    min-height: var(--wp-row-height, 86px); padding: 12px; border: 2px solid transparent; border-radius: 8px;
+    background: transparent;
+    scroll-snap-align: start;
+  }
+  /* Keep the snap target stationary while its paper and contents lift together. */
+  .wl-row::before {
+    content: ''; position: absolute; inset: -2px; border: 2px solid var(--wl-ink); border-radius: 8px;
+    background: var(--wp-card-paper); box-shadow: var(--wp-shadow); pointer-events: none;
+  }
+  .wl-row::before, .wl-row > td:not(.wl-action) {
+    transform: translate(var(--wp-shift-x), var(--wp-shift-y));
+    transition: transform 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
+  }
+  .wl-code { font: 400 16px/1.4 var(--font-ui-default); font-variant-numeric: tabular-nums; }
+  .wl-mode > span { font-size: 17px; }
+  .wl-player { gap: 8px; }
+  .wl-player > img { width: 44px !important; height: 46px !important; }
+  .wl-player .user-identity-name { font: 400 16px/1.4 var(--font-ui-default); }
+  .wl-offline { color: #6a554d; font-size: 13px; }
+  .wl-status > span { font-size: 13px; border: 0; display: flex; align-items: center; gap: 5px; padding: 0; }
+  .wl-status > span::before { content: ''; width: 5px; height: 5px; flex: none; border-radius: 50%; background: currentColor; }
+  .wl-placard { padding: 5px 3px 3px; }
+  .wl-action button { border-radius: 8px !important; }
+  .wl-action button:focus-visible { outline-offset: -4px; }
+  .wl-row:has(.wl-action button:hover) { background: transparent; }
+  .wl-row:has(.wl-action button:active) { --wp-shift-x: 2px; --wp-shift-y: 3px; --wp-shadow: 1px 1px 0 var(--wl-ink); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.wp-preview .watch-ledger .wl-row:has(.wl-action button:hover):not(:has(.wl-action button:active)) {
+    --wp-shift-x: -1px; --wp-shift-y: -2px; --wp-shadow: 4px 6px 0 var(--wl-ink);
+    --wp-card-paper: color-mix(in srgb, var(--wl-mint) 20%, var(--wl-paper));
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.wp-preview .watch-ledger {
+    .wl-toolbar { gap: 14px; padding: 0 9px 17px 4px; }
+    .wl-scroll { padding: 3px 9px 10px 4px; scroll-padding-block: var(--wp-scroll-start, 3px) 10px; }
+    .wl-table thead { display: none; }
+    .wl-table tbody { gap: 11px; padding-top: 0; }
+    &.wl-ledger .wl-table .wl-row {
+      grid-template-columns: auto auto minmax(0, 1fr) 66px;
+      grid-template-areas: "type code people state" "black black black moves" "white white white moves";
+      padding: 10px; gap: 7px 7px; min-height: var(--wp-row-height, 148px); align-content: center;
+    }
+    .wl-code { grid-area: code; font-size: 14px; }
+    .wl-mode { grid-area: type; padding: 0; }
+    .wl-mode > span { font: 16px/1.35 var(--font-window-title); padding: 2px 6px; border: 0; background: color-mix(in srgb, var(--mode-tint) 48%, var(--wl-paper)); clip-path: polygon(3% 0,100% 3%,97% 100%,0 96%); }
+    .wl-people { grid-area: people; gap: 4px; font-size: 14px; white-space: nowrap; }
+    .wl-people > svg { width: 15px; }
+    .wl-status { grid-area: state; justify-self: end; }
+    .wl-black { grid-area: black; }
+    .wl-white { grid-area: white; }
+    .wl-player { position: relative; gap: 8px; }
+    .wl-player > img { width: 38px !important; height: 40px !important; }
+    .wl-stone { position: absolute; top: 28px; left: 28px; width: 10px; height: 10px; }
+    .wl-player .user-identity { flex: 1; }
+    .wl-player .user-identity:not(.has-nameplate), .wl-player .user-identity:not(.has-nameplate) .user-identity-name-tag { padding: 0; }
+    .wl-player .user-identity-main { justify-content: flex-start; }
+    .wl-player .user-identity-name { white-space: normal !important; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
+    .wl-moves { grid-area: moves; }
+    .room-scoreboard-identity .room-move-placard { width: 58px; height: 48px; }
+    .room-move-placard strong { font-size: 28px; }
+    .room-move-placard.is-medium-count strong { font-size: 24px; }
+    .room-move-placard.is-long-count strong { font-size: 19px; }
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.wp-preview .watch-ledger {
+    .wl-toolbar { flex-wrap: wrap; gap: 10px; }
+    .wl-search { flex-basis: 100%; }
+    .wl-search > svg { margin-left: 9px; width: 16px; }
+    .wl-total { margin-left: auto; font-size: 13px; }
+    &.wl-ledger .wl-table .wl-row { padding: 9px 8px; gap: 7px 5px; grid-template-columns: auto auto minmax(0, 1fr) 59px; }
+    .wl-mode > span { padding-inline: 4px; }
+    .wl-status > span { gap: 3px; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.wp-preview .watch-ledger {
+    .wl-row::before, .wl-row > td:not(.wl-action) { transition: none !important; }
+  }
+}
