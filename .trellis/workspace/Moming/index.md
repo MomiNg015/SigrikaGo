@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 230
+- **Total Sessions**: 231
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1658 | Active |
+| `journal-4.md` | ~1691 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 231 | 2026-10-22 | 角色展示台按钮与简介装饰完善 | `6a0d1f00` | `master` |
 | 230 | 2026-10-22 | 角色展示台八项细化 | `14357896` | `master` |
 | 229 | 2026-10-22 | 角色详情游戏展示三版样板重做 | `295b7c01` | `master` |
 | 228 | 2026-10-22 | 角色详情审查与三版无标签样板 | `57cdd113` | `master` |

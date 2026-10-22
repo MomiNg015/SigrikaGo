@@ -1656,3 +1656,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 231: 角色展示台按钮与简介装饰完善
+
+**Date**: 2026-10-22
+**Task**: 角色展示台按钮与简介装饰完善
+**Branch**: `master`
+
+### Summary
+
+第1版关闭按钮对齐项目常用样式，派生技能正文与标题分色，简介悬停取消下划线并加入手绘黑白棋SVG。桌面手机实图和27组布局、6组交互、4项文档检查通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6a0d1f00` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
