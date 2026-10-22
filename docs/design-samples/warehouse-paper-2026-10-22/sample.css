@@ -5,7 +5,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-modal.warehouse-template {
   --wt-ink: var(--theme-text, #3d2b25); --wt-paper: var(--theme-bg, #fffaf0); --wt-mint: #bfe8dd; --wt-pink: #ff9ebb; --wt-line: color-mix(in srgb,var(--wt-ink) 24%,transparent);
   .wt-body { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 22px; flex: 1; min-height: 0; padding: 3px 10px 10px 4px; }
-  .wt-list { --wt-row-min: 88px; display: grid; grid-auto-rows: var(--wt-row-height,88px); align-content: start; gap: 13px; overflow: auto; min-height: 0; min-width: 0; padding: 3px 9px 9px 3px; scroll-padding: 3px 9px 9px 3px; scroll-snap-type: y mandatory; overscroll-behavior: contain; }
+  .wt-list { --warehouse-row-min: 88px; display: grid; grid-auto-rows: var(--warehouse-row-height,88px); align-content: start; gap: 13px; overflow: auto; min-height: 0; min-width: 0; padding: 3px 9px 9px 3px; scroll-padding: 3px 9px 9px 3px; scroll-snap-type: y mandatory; overscroll-behavior: contain; }
   button.wt-card { position: relative; display: grid; grid-template-columns: 64px minmax(0,1fr) auto; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 12px; text-align: left; border: 2px solid var(--wt-ink) !important; border-radius: 8px !important; background: var(--wt-paper) !important; box-shadow: 3px 4px 0 var(--wt-ink) !important; color: var(--wt-ink) !important; transform: none !important; translate: none !important; text-shadow: none !important; transition: translate 150ms ease-out,box-shadow 150ms ease-out !important; }
   button.wt-card[aria-pressed=true] { background: color-mix(in srgb,var(--wt-mint) 35%,var(--wt-paper)) !important; }
   button.wt-card { scroll-snap-align: start; }
@@ -42,7 +42,7 @@
   .wt-scene > .wt-demo-note { display: none; }
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-modal.warehouse-template {
     .wt-body { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(108px,1fr) clamp(196px,28dvh,226px); gap: 12px; padding: 2px 8px 8px 1px; }
-    .wt-list { --wt-row-min: 82px; min-height: 0; grid-template-columns: minmax(0,1fr); gap: 12px; padding: 3px 8px 8px 3px; scroll-padding: 3px 8px 8px 3px; }
+    .wt-list { --warehouse-row-min: 82px; min-height: 0; grid-template-columns: minmax(0,1fr); gap: 12px; padding: 3px 8px 8px 3px; scroll-padding: 3px 8px 8px 3px; }
     button.wt-card { grid-template-columns: 44px minmax(0,1fr) auto; gap: 10px; padding: 10px; min-height: 82px; }
     .wt-art,.wt-art img,.wt-art svg { width: 44px !important; height: 48px !important; }.wt-card-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 15px !important; }
     .wt-card .wt-quantity { gap: 4px; min-width: 42px; }.wt-quantity strong { font-size: 22px !important; }.wt-quantity > span { font-size: 12px !important; }

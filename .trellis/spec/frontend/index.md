@@ -32,6 +32,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Button Colors](./button-colors.md) | Ordinary player action colors and protected visual boundaries | Filled |
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
 | [Friends Companion Window](./friends-companion-contract.md) | Selected-user companion pane, retained left bookmarks, relationship actions and paper feedback | Filled |
+| [Warehouse Paper Layout](./warehouse-paper-contract.md) | Whole-card scrolling, compact portrait inspector, quantities and retained item-use flow | Filled |
 | [Costume System Contract](../backend/costume-system-contract.md) | Shared backend/frontend catalog, shop, wardrobe, portrait, and snapshot contract | Filled |
 | [Recruitment Cinematic](./recruitment-cinematic-contract.md) | Aemeath payload, timing, interruption recovery, sprite assets, and CSS ownership | Filled |
 | [Story Guide Layout](./story-guide-layout-contract.md) | Fixed story crop, layered paper, original NPC geometry and home measurement | Filled |

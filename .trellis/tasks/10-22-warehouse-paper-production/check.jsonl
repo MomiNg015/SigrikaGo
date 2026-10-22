@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Verify full-theme layout, exact CSS debt delta and scroll endpoints."}
+{"file":".trellis/spec/frontend/button-colors.md","reason":"Verify hover, pressed, disabled and reduced motion."}

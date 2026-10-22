@@ -25,19 +25,20 @@ describe("warehouse field guide", () => {
     fireEvent.click(screen.getByRole("button", { name: "使用：糖果" }));
     expect(onSelectTargetItem).toHaveBeenCalledWith(candy);
   });
-  it("filters and wraps pages within the current category, retaining server restrictions", () => {
+  it("selects recruitment and hidden-action items from the directory without categories or paging", () => {
     const { onUseItem, onSelectTargetItem, onOpenRecruitment } = setup();
-    fireEvent.click(screen.getByRole("button", { name: "招募", exact: true }));
-    expect(screen.queryByRole("button", { name: "糖果，数量 2" })).toBeNull();
+    expect(screen.queryByRole("navigation")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "招募海报，数量 3" }));
+    expect(screen.getByRole("button", { name: "糖果，数量 2" })).toBeTruthy();
     const action = screen.getByRole("button", { name: "前去招募：招募海报" });
     expect(action.disabled).toBe(false);
     fireEvent.click(action);
     expect(onOpenRecruitment).toHaveBeenCalledOnce();
     expect(onSelectTargetItem).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "下一件道具" }));
+    fireEvent.click(screen.getByRole("button", { name: "魔法时钟，数量 1" }));
     expect(screen.getByRole("heading", { name: "魔法时钟" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /前去招募：/ })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "下一件道具" }));
+    fireEvent.click(screen.getByRole("button", { name: "招募海报，数量 3" }));
     expect(screen.getByRole("heading", { name: "招募海报" })).toBeTruthy();
     expect(onUseItem).not.toHaveBeenCalled();
   });
@@ -57,28 +58,30 @@ describe("warehouse field guide", () => {
     fireEvent.click(action);
     expect(onUseItem).not.toHaveBeenCalled();
   });
-  it("keeps the book layout for empty inventory and categories without allowing a stale action", () => {
+  it("keeps empty directory and detail without allowing a stale action", () => {
     const { rerender, onUseItem, onSelectTargetItem } = setup([candy]);
-    fireEvent.click(screen.getByRole("button", { name: "招募", exact: true }));
-    expect(screen.getByText("暂无这类道具")).toBeTruthy();
-    expect(screen.queryByLabelText("所选道具详情")).toBeNull();
-    expect(screen.getByRole("region", { name: "道具详情" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "使用", exact: true }).disabled).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "全部", exact: true }));
-    expect(screen.getByRole("button", { name: "下一件道具" }).disabled).toBe(true);
     rerender(<WarehouseItemGrid items={[]} usingItemId="" onUseItem={onUseItem} onSelectTargetItem={onSelectTargetItem}/>);
     expect(screen.getByText("暂无道具")).toBeTruthy();
-    expect(screen.getByRole("navigation", { name: "道具分类" })).toBeTruthy();
+    expect(screen.queryByRole("navigation")).toBeNull();
     expect(screen.getByRole("region", { name: "道具目录" })).toBeTruthy();
     expect(screen.getByRole("region", { name: "道具详情" })).toBeTruthy();
-    expect(screen.getByText("0 种道具")).toBeTruthy();
-    expect(screen.getByText("0 / 0")).toBeTruthy();
-    for (const name of ["使用", "上一件道具", "下一件道具"]) {
-      const button = screen.getByRole("button", { name, exact: true });
-      expect(button.disabled).toBe(true);
-      fireEvent.click(button);
-    }
+    expect(screen.getByLabelText("持有 0")).toBeTruthy();
+    expect(screen.queryByText("0 种道具")).toBeNull();
+    expect(screen.queryByText("0 / 0")).toBeNull();
+    const button = screen.getByRole("button", { name: "使用", exact: true });
+    expect(button.disabled).toBe(true);
+    fireEvent.click(button);
     expect(onUseItem).not.toHaveBeenCalled();
     expect(onSelectTargetItem).not.toHaveBeenCalled();
+  });
+  it("keeps selection and renders the latest quantity after an inventory refresh", () => {
+    const { rerender, onUseItem } = setup();
+    fireEvent.click(screen.getByRole("button", { name: "金币袋，数量 1" }));
+    const updated = { ...bag, quantity: 9999 };
+    rerender(<WarehouseItemGrid items={[updated, candy]} usingItemId="" onUseItem={onUseItem}/>);
+    expect(screen.getByRole("button", { name: "金币袋，数量 9999" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getAllByLabelText("持有 9999")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "使用：金币袋" }));
+    expect(onUseItem).toHaveBeenCalledWith(updated);
   });
 });

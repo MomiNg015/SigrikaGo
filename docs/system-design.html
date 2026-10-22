@@ -53,8 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
-<h3>2026-10-22 仓库纸卡与数量模板</h3>
-<p>新增<a href="./design-samples/warehouse-paper-2026-10-22/index.html">仓库内容模板</a>，延续已确认的纸卡硬阴影、悬停抬起和按下下沉，保留原窗口标题、外框及目录／详情结构。数量从列表下划线与倾斜印章收敛为固定对齐的「持有 + 数字」，详情数量靠近使用按钮；手机每行一种物品，详情改为约 196–226px 的紧凑图文并排布局，保留圆形底纹、虚线圆环及原有倾斜角度。目录按可用高度分配完整行并原生滚动吸附，滑动停止、到达首尾及改变窗口尺寸后均显示完整卡片，保留阴影余量。移除分类标签、顶部分类选项卡与种类计数，以及详情页码和左右翻页按钮。模板使用项目道具素材与本地示例库存，可切换当前窗口对比；尚未接入生产仓库，不改变实际道具、招募或使用流程。</p>
+<h3>2026-10-22 仓库纸卡布局正式接入</h3>
+<p>已将确认的<a href="./design-samples/warehouse-paper-2026-10-22/index.html">仓库纸卡方案</a>接入正式 <code>WarehouseItemGrid</code>，沿用标题、外框、墨色硬阴影和悬停／按下反馈。目录与详情数量统一为「持有 + 数字」，移除分类、种类计数及详情翻页。手机每行一种物品，下方为约 196–226px 的紧凑图文详情，保留圆形底纹、虚线圆环与图片倾斜。目录由 <code>useWarehouseListRows</code> 按可用空间分配完整行，配合原生滚动吸附及阴影余量，保证停靠与末行完整可见。生产与样板复用行高计算；真实库存刷新、使用中防重、角色选择、剧情及招募入口保持原流程。浏览器验证覆盖桌面、800px、390／360／320px、短竖屏和触摸滑动；<a href="./design-samples/warehouse-paper-2026-10-22/production.html">正式组件预览</a>仍使用隔离示例库存。</p>
 <h3>2026-10-22 好友搜索栏视觉统一</h3>
 <p>好友窗口搜索区改为一体式纸张外框，左侧搜索图标、无独立边框的输入区域与右侧「搜索」文字按钮形成一行；统一圆角与墨色硬阴影，保留工具按钮配色及悬停／按下反馈；按用户要求，输入聚焦不再增加外框或发光，保留常态边框与阴影。桌面与手机均铺满内容宽度，窄屏收紧按钮宽度；原左侧好友／黑名单标签、全局用户名查询和回车提交不变。样式由 <code>friends-companion-search.css</code> 局部接管，最新效果保存在<a href="./design-samples/friends-window-2026-10-22/README.md">好友窗口样例目录</a>。</p>
 <h3>2026-10-22 好友伙伴侧栏与左侧标签</h3>
@@ -5947,7 +5947,7 @@
 </ul>
 <h2>玩家窗口空状态</h2>
 <p><code>WindowEmptyState</code> 保留调用方原有文案与语义容器，以 <code>aria-hidden</code> 的手绘纸页替代重复的粗虚线卡片。普通校园主题使用透明无边框容器、深墨色常规霞鹜文字与静态纸页；其他主题隐藏插画，保留文字。<code>window-empty-states.css</code> 在书签样式后、黑化样式前加载，显式覆盖旧空状态容器、伪元素和 SVG 的强规则。</p>
-<p>仓库空库存及空分类继续显示完整图鉴布局：分类、目录、详情和翻页区均保留，空提示仅放在目录内，详情无旧道具内容，使用及翻页按钮禁用。队际赛选人页底部“开始队际赛匹配”在三名不同且可出战的已拥有角色全部有效时，直接复用模式卡片的 team 匹配流程并关闭两层窗口。</p>
+<p>仓库采用确认的纸卡目录与详情布局：数量以「持有 + 数字」右侧对齐，保留硬阴影、悬停／按下反馈及详情圆纹与图片倾斜；分类、种类计数及详情翻页均移除。手机每行一种物品，详情为约 196–226px 的紧凑图文布局。<code>useWarehouseListRows</code> 观察列表高度并分配整数行，配合原生纵向吸附让滑动停止、首尾及尺寸变化后上下边缘均为完整卡片；滚动内边距保留阴影。空库存保留目录和详情，空提示仅在目录内，详情无旧数据，使用按钮禁用。选中项从最新库存解析，移除后就近回退；角色道具、自用道具、招募入口及请求中禁用仍走原流程。队际赛选人页底部“开始队际赛匹配”在三名不同且可出战的已拥有角色全部有效时，直接复用模式卡片的 team 匹配流程并关闭两层窗口。</p>
 <p>普通空状态最小高度 154px，紧凑版为 88px；后者用于履历战绩、装饰区及公告/邮件列表。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历战绩、装饰与服装商店。加载提示与错误状态不复用空结果插画；观战只有存在房间时渲染表格，空结果不留空表头，也不会在加载失败时同时显示暂无房间。接入书签的观战窗口移除旧选项卡网格轨道，使正文/空状态在剩余内容区布局。</p>
 <h2>Star rank presentation (2026-09-30)</h2>
 <p><code>RankProgress</code> owns rank plus progress on player/profile/leaderboard/result/invitation/admin surfaces. Four slots form one row, six form two rows of three, and eight form two rows of four. Empty slots remain outlined and earned slots filled using the existing school palette. Ninth dan renders points inline instead of stars. The former separate rating field/column is removed. The final <code>mobile-adaptive/rank-progress.css</code> owner preserves this geometry under the theme cascade; current and pinned leaderboard rows share the same component. Profile summaries now contain rank, total games and win rate.</p>

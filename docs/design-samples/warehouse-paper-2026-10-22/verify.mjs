@@ -111,8 +111,8 @@ try{
     await touch.screenshot({path:`${out}template-mobile-scrolled.png`});await phone.close();
     await open(390,844,'?empty');assert(await page.getByRole('button',{name:'使用',exact:true}).isDisabled());
     await page.goto(`${base}${route}`);await page.locator('#phone').click();assert(await page.locator('#preview').evaluate(el=>el.classList.contains('phone')));
-    await page.getByRole('button',{name:'现有窗口',exact:true}).click();assert((await page.locator('#preview').getAttribute('src')).includes('warehouse-2026-10-12'));
-    await page.getByRole('button',{name:'新模板',exact:true}).click();await page.getByRole('button',{name:'重置',exact:true}).click();
+    await page.getByRole('button',{name:'正式效果',exact:true}).click();assert((await page.locator('#preview').getAttribute('src')).includes('production.html'));
+    await page.getByRole('button',{name:'设计模板',exact:true}).click();await page.getByRole('button',{name:'重置',exact:true}).click();
     assert.deepEqual(errors,[]);assert.deepEqual(api,[]);
     await writeFile(`${out}verification.json`,JSON.stringify({results,interactions:'pass',wholeCardScrolling:'wheel, touch, endpoints, resize and reopen passed',errors,apiRequests:api},null,2)+'\n');console.log(`${results.length} viewport/state checks and interactions passed; whole-card wheel/touch scrolling passed; zero API requests.`);
   }

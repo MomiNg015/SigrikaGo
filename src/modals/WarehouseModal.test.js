@@ -233,8 +233,8 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain('class="wg-thumbnail"');
     expect(html).toContain('class="wg-details"');
     expect(html).toContain('class="wg-quantity"');
-    expect(html).toContain("×2");
-    expect(html).toContain('aria-label="数量 2"');
+    expect(html).toContain("<strong>2</strong>");
+    expect(html).toContain('aria-label="持有 2"');
     expect(html).toContain('aria-label="前去招募：招新贴报"');
     expect(html).toContain("disabled=\"\"");
     expect(html).toContain("前去招募");
@@ -286,9 +286,9 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html).toContain("神奇小钟表");
     expect(html).toContain("只要一拨指针就能加速现实时间流逝，很方便吧~");
-    expect(html).toContain("×2");
+    expect(html).toContain('aria-label="持有 2"');
     expect(html).toContain('/assets/items/magic-clock.svg');
-    expect(html).not.toContain('class="primary-action"');
+    expect(html).not.toContain('class="wg-use"');
   });
 
   it("disables character targets that are already affected or have no item effect", () => {

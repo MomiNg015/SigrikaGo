@@ -1,34 +1,22 @@
-@media (max-width: 768px) {
+@media (max-width: 768px){
   :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: min(740px, var(--window-sticker-available-height, calc(100dvh - 76px))) !important;
-    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    .wg-book { grid-template-columns: 1fr; grid-template-rows: minmax(156px, .9fr) minmax(220px, 1.1fr); }
-    .wg-directory { grid-template-rows: auto minmax(0, 1fr); padding: 0 3px 12px; }
-    .wg-filters { gap: 10px; }
-    .wg-filters button { font-size: 17px; padding: 8px; }
-    .wg-list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(66px, 1fr)); grid-auto-rows: 66px; gap: 0 12px; margin-top: 6px; }
-    button.wg-entry { grid-template-columns: 37px minmax(0, 1fr); gap: 7px; min-height: 66px; padding: 5px 3px 13px; }
-    .wg-directory-footer { display: none; }
-    .wg-thumbnail, .wg-thumbnail img, .wg-thumbnail svg { height: 45px !important; }
-    .wg-name { font-size: 14px; line-height: 1.4; }
-    .wg-quantity { position: absolute; right: 3px; bottom: 1px; min-width: 30px; min-height: 18px; padding: 3px 5px; font-size: 10px; }
-    .wg-inspector { grid-template-columns: 88px minmax(0, 1fr); grid-template-rows: minmax(96px, 1fr) 48px 44px; padding: 12px 3px 4px; border-left: 0; border-top: 1px solid var(--wg-line); gap: 8px 12px; }
-    .wg-hero > img { width: 110% !important; height: 95% !important; max-height: 210px; }
-    .wg-orbit { width: 76px; height: 76px; }
-    .wg-hero-count { min-width: 56px; min-height: 30px; padding: 6px 9px; font-size: 19px; right: 0; bottom: 2px; border-width: 2px; outline-offset: -5px; }
-    .wg-details { align-self: center; max-height: 100%; }
-    .wg-details h3 { padding: 0 1px 4px; background-size: 100% 14px; background-position: left bottom 2px; font-size: clamp(16px, 4.5vw, 22px) !important; margin: 6px 0 !important; }
-    .wg-details p { min-height: 0; font-size: 11px; }
-    .wg-type { font-size: 9px; }
-    .wg-action-row { grid-column: 1 / -1; padding-right: 3px; }
-    button.wg-use { width: 100%; padding: 8px 10px; gap: 8px; font-size: 16px; }
-    .wg-page-turn { grid-column: 1 / -1; gap: 25px; }
+    width: 100% !important; max-width: 100% !important; height: min(740px, var(--window-sticker-available-height, calc(100dvh - 76px))) !important; max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    .wg-book { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(108px,1fr) clamp(196px,28dvh,226px); gap: 12px; padding: 2px 8px 8px 1px; }
+    .wg-list { --warehouse-row-min: 82px; min-height: 0; grid-template-columns: minmax(0,1fr); gap: 12px; padding: 3px 8px 8px 3px; scroll-padding: 3px 8px 8px 3px; }
+    button.wg-entry { grid-template-columns: 44px minmax(0,1fr) auto; gap: 10px; padding: 10px; min-height: 82px; }
+    .wg-thumbnail,.wg-thumbnail img,.wg-thumbnail svg { width: 44px !important; height: 48px !important; }.wg-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 15px !important; }
+    .wg-entry .wg-quantity { gap: 4px; min-width: 42px; }.wg-quantity strong { font-size: 22px !important; }.wg-quantity > span { font-size: 12px !important; }
+    .wg-inspector { display: grid; grid-template-columns: minmax(76px,.85fr) minmax(0,1.4fr); grid-template-rows: minmax(0,1fr) auto; gap: 8px 12px; padding: 12px 14px 6px; }
+    .wg-hero { min-height: 0; }.wg-hero img,.wg-hero svg { width: 100% !important; height: 100% !important; max-height: 145px; }.wg-orbit { width: min(90%,110px); height: auto; }.wg-details { align-self: center; max-height: 100%; padding: 0 0 3px; }.wg-details h3 { font-size: 19px !important; margin: 2px 0 6px !important; background-size: 100% 10px; }.wg-details p { font-size: 14px !important; line-height: 1.55 !important; }
+    .wg-action-row { grid-column: 1/-1; min-height: 58px; padding: 9px 2px 6px 0; }.wg-action-row .wg-quantity strong { font-size: 26px !important; }button.wg-use { padding: 7px 12px; gap: 8px; }
+    .wg-list-empty { grid-column: 1/-1; }
   }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-target-modal.match-character-picker .team-character-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px 20px;
-    padding: 24px 16px 16px 6px;
-  }
+}
+@media (max-width: 360px){
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide .wg-inspector { grid-template-columns: minmax(64px,.7fr) minmax(0,1.55fr); }
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide .wg-details h3 { font-size: 18px !important; }
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-target-modal.match-character-picker .team-character-options { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 20px; padding: 24px 16px 16px 6px; }
 }
