@@ -1,0 +1,51 @@
+/* Final layout owner; existing title and exterior bookmark rail stay intact. */
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .friends-modal.friends-companion-window {
+  --fc-ink: var(--text-primary, #3d2b25);
+  --fc-paper: var(--surface, #fffaf0);
+  --fc-mint: var(--accent, #bfe8dd);
+  --fc-line: color-mix(in srgb, var(--fc-ink) 24%, transparent);
+  display: flex !important;
+  flex-direction: column;
+  height: min(620px, var(--window-sticker-available-height, calc(100dvh - 80px)));
+  min-height: 0 !important;
+  overflow: visible !important;
+  gap: 0 !important;
+
+  > .friends-modal-header, > .friends-modal-toolbar { flex: none; }
+  .fc-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, .78fr); gap: 22px; flex: 1; min-height: 0; min-width: 0; padding: 2px 4px 5px; }
+  .fc-roster { overflow: auto; min-height: 0; min-width: 0; padding: 3px 5px 5px 3px; overscroll-behavior: contain; }
+  button.fc-person { display: flex; align-items: center; width: 100%; min-width: 0; min-height: 76px; gap: 12px; padding: 9px 10px; text-align: left; color: var(--fc-ink) !important; border: 1px solid transparent !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; transform: none !important; translate: none !important; filter: none !important; text-shadow: none !important; }
+  button.fc-person + button.fc-person { margin-top: 5px; }
+  button.fc-person:hover { background: color-mix(in srgb, var(--fc-mint) 14%, var(--fc-paper)) !important; }
+  button.fc-person[aria-pressed="true"] { background: color-mix(in srgb, var(--fc-mint) 40%, var(--fc-paper)) !important; border-color: var(--fc-line) !important; }
+  .fc-avatar { flex: none; width: 54px; height: 54px; object-fit: contain; }
+  .fc-identity { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; align-items: flex-start; }
+  .fc-chevron { flex: none; color: var(--fc-ink); opacity: .55; }
+  .fc-status { display: inline-flex; align-items: center; gap: 6px; font: 400 13px/1.4 var(--font-ui-default); color: var(--fc-ink) !important; white-space: nowrap; }
+  .fc-status i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .fc-status-offline { opacity: .7; }
+  .fc-detail { display: flex; flex-direction: column; align-items: center; min-width: 0; min-height: 0; overflow: auto; padding: 18px 20px 14px; border: 1px solid var(--fc-line); border-radius: 8px; background: color-mix(in srgb, var(--fc-mint) 16%, var(--fc-paper)); }
+  .fc-art { display: grid; place-items: center; width: 100%; min-height: 60px; flex: 1; border-bottom: 1px solid var(--fc-line); margin-bottom: 13px; }
+  .fc-portrait-full { width: 100%; height: 100%; min-height: 0; max-height: 210px; object-fit: contain; }
+  .fc-caption { display: flex; flex-direction: column; align-items: center; gap: 9px; width: 100%; min-width: 0; flex: none; }
+  .fc-actions { display: flex; flex-direction: column; gap: 9px; width: 100%; margin-top: 20px; flex: none; }
+  .fc-actions button { display: flex; justify-content: center; align-items: center; gap: 7px; min-width: 0; min-height: 44px; padding: 8px 10px !important; font: 400 14px/1.4 var(--font-ui-default) !important; white-space: normal; box-shadow: none !important; text-shadow: none !important; border: 1px solid var(--fc-line) !important; border-radius: 8px !important; transform: none !important; }
+  .fc-actions .fc-remove { min-height: 36px; border-color: transparent !important; background: transparent !important; }
+  .fc-actions button:disabled { color: var(--fc-ink) !important; background: color-mix(in srgb, var(--fc-ink) 9%, var(--fc-paper)) !important; opacity: .55 !important; cursor: not-allowed !important; }
+  :is(.fc-person, .fc-actions button):focus-visible { outline: 2px solid var(--fc-ink) !important; outline-offset: 2px; }
+  .fc-empty { display: grid; place-items: center; flex: 1; min-height: 0; overflow: auto; }
+  :is(.fc-identity, .fc-caption) .user-identity { min-width: 0; max-width: 100%; }
+  .fc-identity .user-identity { justify-items: start; text-align: left; }
+  .fc-identity .user-identity-main { justify-content: flex-start; }
+  :is(.fc-identity, .fc-caption) .user-identity:not(.has-nameplate) .user-identity-name { font: 400 17px/1.4 var(--font-ui-default) !important; white-space: normal; overflow-wrap: anywhere; }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .friends-modal.friends-companion-window {
+  --fc-ink: var(--theme-text);
+  --fc-paper: var(--theme-bg);
+  --fc-mint: var(--theme-mint, #bfe8dd);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friends-companion-window :is(.fc-person, .fc-actions button) { transition: none !important; }
+}

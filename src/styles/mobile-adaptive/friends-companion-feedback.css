@@ -1,0 +1,25 @@
+/* Campus paper depth: selectable friend cards and their action buttons. */
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .friends-modal.friends-companion-window {
+  .fc-layout { padding-right: 9px; padding-bottom: 9px; }
+  .fc-roster { padding: 5px 9px 9px 4px; }
+  button.fc-person { border: 2px solid var(--fc-ink) !important; background: var(--fc-paper) !important; box-shadow: 3px 4px 0 var(--fc-ink) !important; transition: translate 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out !important; }
+  button.fc-person + button.fc-person { margin-top: 12px; }
+  button.fc-person[aria-pressed="true"] { border-color: var(--fc-ink) !important; }
+  .fc-detail { border: 2px solid var(--fc-ink); border-radius: 8px; box-shadow: 3px 4px 0 var(--fc-ink); }
+  .fc-actions button { box-shadow: 3px 4px 0 var(--fc-ink) !important; transition: translate 160ms ease-out, box-shadow 160ms ease-out !important; }
+  .fc-actions .fc-remove { box-shadow: 2px 3px 0 var(--fc-ink) !important; }
+  :is(button.fc-person, .fc-actions button):active:not(:disabled) { translate: 2px 3px !important; box-shadow: 1px 1px 0 var(--fc-ink) !important; }
+  .fc-actions button:disabled { box-shadow: 1px 2px 0 var(--fc-line) !important; translate: none !important; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .friends-modal.friends-companion-window {
+    :is(button.fc-person, .fc-actions button):hover:not(:disabled):not(:active) { translate: -1px -2px !important; box-shadow: 4px 6px 0 var(--fc-ink) !important; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .friends-modal.friends-companion-window {
+    :is(button.fc-person, .fc-actions button) { transition: none !important; }
+  }
+}

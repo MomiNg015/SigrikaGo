@@ -1,0 +1,147 @@
+{
+  "passed": true,
+  "errors": [],
+  "apiCalls": [],
+  "results": [
+    {
+      "variant": "roster",
+      "width": 1200,
+      "height": 760,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "roster",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "roster",
+      "width": 360,
+      "height": 800,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "roster",
+      "width": 320,
+      "height": 740,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "roster",
+      "interactions": "lookup, add, error, duel modes, escape, disabled state, profile, blacklist, cancel, remove, empty, reopen: passed"
+    },
+    {
+      "variant": "cards",
+      "width": 1200,
+      "height": 760,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "cards",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "cards",
+      "width": 360,
+      "height": 800,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "cards",
+      "width": 320,
+      "height": 740,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "cards",
+      "interactions": "lookup, add, error, duel modes, escape, disabled state, profile, blacklist, cancel, remove, empty, reopen: passed"
+    },
+    {
+      "variant": "companion",
+      "width": 1200,
+      "height": 760,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "companion",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "companion",
+      "width": 360,
+      "height": 800,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "companion",
+      "width": 320,
+      "height": 740,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "companion",
+      "interactions": "lookup, add, error, duel modes, escape, disabled state, profile, blacklist, cancel, remove, empty, reopen: passed"
+    },
+    {
+      "variant": "current",
+      "width": 1200,
+      "height": 760,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "current",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "current",
+      "width": 360,
+      "height": 800,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    },
+    {
+      "variant": "current",
+      "width": 320,
+      "height": 740,
+      "horizontalOverflow": false,
+      "verticalOverflow": false,
+      "brokenAssets": []
+    }
+  ]
+}

@@ -4,10 +4,20 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import FriendsModal from "./FriendsModal.jsx";
 import FriendsList from "./friends/FriendsList.jsx";
+import FriendsCompanionView from "./friends/FriendsCompanionView.jsx";
 import FriendsOverlays from "./friends/FriendsOverlays.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
+  it("retains equipped appearance and identity assets in both companion panes", () => {
+    const row = { id: "costume-friend", username: "Alice", characterId: "sigrika", status: "playing", equippedCostumes: { sigrika: { portraitUrl: "/custom-costume.webp" } }, achievementEquipmentAssets: { nameplate: { id: "plate", imageUrl: "/custom-nameplate.webp" } } };
+    const html = renderToStaticMarkup(createElement(FriendsCompanionView, { activeTab: "friends", characters: {}, rows: [row], selectedRow: row }));
+    expect(html.match(/src="\/custom-costume.webp"/g)).toHaveLength(2);
+    expect(html.match(/data-nameplate-id="plate"/g)).toHaveLength(2);
+    expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('disabled=""');
+    expect(html).not.toContain("friend-gear-button");
+  });
   it("reserves mobile action height and moves narrow status badges below plain identities", () => {
     const css = readText(new URL("../styles/themes/bright-school/mobile/lists-settings/friends-rows.css", import.meta.url));
     expect(css).toContain("min-height: 56px");

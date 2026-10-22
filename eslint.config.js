@@ -5,6 +5,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/friends/FriendsCompanionView.jsx",
+  "tests/e2e/friends-companion.spec.js",
   "src/home/components/TopAnnouncement*.jsx",
   "src/app/useSiteSettingsState*.jsx",
   "docs/design-samples/top-announcement-2026-10-20/production.jsx",

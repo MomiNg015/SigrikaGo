@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>好友窗口 · 三版设计比较</title>
+  <link rel="stylesheet" href="./gallery.css" />
+</head>
+<body>
+  <!-- Existing Bright School assets and capabilities; all people and interactions are fictional local demonstrations. -->
+  <header class="gallery-header">
+    <div><h1>好友窗口</h1><p>三种布局方向 · 使用示例用户，操作仅在本页演示</p></div>
+    <div class="devices" aria-label="预览尺寸"><button data-size="desktop" aria-pressed="true">桌面</button><button data-size="390" aria-pressed="false">手机 390</button><button data-size="320" aria-pressed="false">窄屏 320</button></div>
+  </header>
+  <nav class="directions" aria-label="设计方案">
+    <button data-variant="roster" aria-pressed="true"><b>01 清爽名册</b><span>轻列表 · 操作直达</span></button>
+    <button data-variant="cards" aria-pressed="false"><b>02 社团名片</b><span>双列卡片 · 角色优先</span></button>
+    <button data-variant="companion" aria-pressed="false"><b>03 伙伴侧栏</b><span>名单选择 · 独立操作区</span></button>
+    <button data-variant="current" aria-pressed="false"><b>现有窗口</b><span>当前组件 · 相同示例数据</span></button>
+  </nav>
+  <div class="gallery-note"><p id="direction-note">把头像、名字与状态合成一组；常用操作直接可见，名单更容易扫读。</p><button id="reset">重置演示</button></div>
+  <main class="preview-wrap"><iframe id="preview" title="好友窗口设计预览" src="./preview.html?variant=roster"></iframe></main>
+  <footer>键盘 1 / 2 / 3 切换方案，0 查看现状。搜索示例：小满、晚风、长离。<a href="./README.md">查看审查记录</a></footer>
+  <script type="module" src="./gallery.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
-import FriendsList from "./friends/FriendsList.jsx";
+import FriendsCompanionView from "./friends/FriendsCompanionView.jsx";
 import FriendsOverlays from "./friends/FriendsOverlays.jsx";
 import FriendsToolbar from "./friends/FriendsToolbar.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
@@ -11,7 +11,7 @@ import { ModalDialog } from "./modalComponents.jsx";
 
 export default function FriendsModal({ token, socket, characters, onNotice, onClose, onOpenReplay }) {
   const [activeTab, setActiveTab] = useState("friends");
-  const [actionTarget, setActionTarget] = useState(null);
+  const [selectedIds, setSelectedIds] = useState({ friends: null, blacklist: null });
   const [profileUser, setProfileUser] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [duelModeTarget, setDuelModeTarget] = useState(null);
@@ -37,7 +37,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     onError: (error) => notify(error.message, "danger")
   });
   const rows = activeTab === "friends" ? friends : blacklist;
-  const actionRow = actionTarget?.row;
+  const selectedRow = rows.find((row) => row.id === selectedIds[activeTab]) ?? rows[0] ?? null;
 
   useEffect(() => {
     let alive = true;
@@ -67,7 +67,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   }, [notify, socket]);
 
   async function openProfile(row) {
-    setActionTarget(null);
+    overlayReturnFocusRef.current = document.activeElement;
     setConfirmTarget(null);
     try {
       setProfileUser(await loadProfile(row.id));
@@ -84,7 +84,6 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
       return;
     }
     overlayReturnFocusRef.current = document.activeElement;
-    setActionTarget(null);
     setConfirmTarget(null);
     try {
       const data = await api(`/api/users/search/profile?username=${encodeURIComponent(username)}`, { token });
@@ -130,7 +129,6 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
       if (target.type === "friend") await updateFriend(target.user.id, "DELETE");
       else await updateBlacklist(target.user.id, "DELETE");
       setConfirmTarget((current) => current === target ? null : current);
-      setActionTarget((current) => current?.row?.id === target.user.id ? null : current);
     } catch (error) {
       notify(error.message, "danger");
     } finally {
@@ -141,8 +139,8 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
 
   function requestMatch(row) {
     if (row.status !== "online") return;
+    overlayReturnFocusRef.current = document.activeElement;
     setDuelModeTarget(row);
-    setActionTarget(null);
   }
 
   function requestMatchMode(mode) {
@@ -152,7 +150,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   }
 
   function openConfirm(type, user) {
-    setActionTarget(null);
+    overlayReturnFocusRef.current = document.activeElement;
     setProfileUser(null);
     setConfirmTarget({ type, user });
   }
@@ -160,7 +158,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   return (
     <>
       <div className="modal-backdrop" onClick={onClose}>
-        <ModalDialog className="friends-modal window-sticker-host window-bookmark-host" ariaLabelledBy="friends-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+        <ModalDialog className="friends-modal friends-companion-window window-sticker-host window-bookmark-host" ariaLabelledBy="friends-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
           <button ref={closeButtonRef} className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
             <X size={20} />
           </button>
@@ -174,8 +172,8 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
             onSearchSubmit={searchProfile}
             onTabChange={setActiveTab}
           />
-          <FriendsList
-            actionRow={actionRow}
+          <FriendsCompanionView
+            selectedRow={selectedRow}
             activeTab={activeTab}
             characters={characters}
             loading={loading}
@@ -183,10 +181,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
             onOpenConfirm={openConfirm}
             onOpenProfile={openProfile}
             onRequestMatch={requestMatch}
-            onToggleAction={(row) => {
-              overlayReturnFocusRef.current = document.activeElement;
-              setActionTarget((current) => current?.row?.id === row.id ? null : { row });
-            }}
+            onSelect={(row) => setSelectedIds((current) => ({ ...current, [activeTab]: row.id }))}
           />
         </ModalDialog>
       </div>

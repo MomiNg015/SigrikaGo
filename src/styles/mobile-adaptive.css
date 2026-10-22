@@ -76,6 +76,9 @@
 @import "./mobile-adaptive/leaderboard-podium-winners.css";
 @import "./mobile-adaptive/leaderboard-podium-mobile.css";
 @import "./mobile-adaptive/window-paper-surfaces.css";
+@import "./mobile-adaptive/friends-companion.css";
+@import "./mobile-adaptive/friends-companion-mobile.css";
+@import "./mobile-adaptive/friends-companion-feedback.css";
 @import "./mobile-adaptive/profile-identity-tools.css";
 @import "./mobile-adaptive/profile-paper-cards.css";
 @import "./mobile-adaptive/profile-paper-actions.css";
