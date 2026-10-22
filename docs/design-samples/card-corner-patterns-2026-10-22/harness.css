@@ -1,0 +1,9 @@
+/* Only the page outside the real production modal is a preview harness. */
+body { margin:0; }
+#surface-root { min-height:100svh; padding:0; max-width:none; background:var(--theme-bg); }
+#surface-root::before,#surface-root::after { display:none; }
+#surface-root>.modal-backdrop { background:color-mix(in srgb,#3d2b25 12%,#fffbf2); backdrop-filter:none; }
+.sample-reopen { position:fixed; inset:45% auto auto 40%; min-height:44px; padding:10px 20px; }
+.sample-aux { padding:24px; }
+.sample-aux p { margin:18px 0; line-height:1.7; }
+.sample-aux button { min-height:44px; padding:8px 16px; }

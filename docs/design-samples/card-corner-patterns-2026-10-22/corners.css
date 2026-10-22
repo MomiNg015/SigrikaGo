@@ -1,0 +1,24 @@
+/* Sample-only paint layer. Never imported by the game. */
+[data-corner="orbit"] { --corner-image:url('./orbit.svg'); --corner-lower:url('./orbit-lower.svg'); }
+[data-corner="facets"] { --corner-image:url('./facets.svg'); --corner-lower:url('./facets-lower.svg'); }
+[data-corner="coordinate"] { --corner-image:url('./coordinate.svg'); --corner-lower:url('./coordinate-lower.svg'); }
+#surface-root[data-corner]:not([data-corner="baseline"])[data-texture="on"] :is(.profile-resume-hero,.profile-summary-item,.profile-character-section,.profile-capture-record),
+[data-corner] .study-card {
+  background-image:var(--card-image,var(--corner-image)) !important;
+  background-repeat:no-repeat !important;
+  background-position:var(--card-position,right top) !important;
+  background-size:var(--card-size,240px 160px) !important;
+  background-origin:padding-box !important;
+}
+#surface-root[data-corner] .profile-resume-hero { --card-size:360px 240px; }
+#surface-root[data-corner] .profile-summary-item.is-primary { --card-image:var(--corner-lower); --card-position:right bottom; --card-size:150px 100px; }
+#surface-root[data-corner] .profile-record-card { --card-size:180px 120px; }
+#surface-root[data-corner] .profile-character-section { --card-image:var(--corner-lower); --card-position:right bottom; --card-size:170px 113px; }
+#surface-root[data-corner="baseline"] :is(.profile-resume-hero,.profile-summary-item,.profile-character-section,.profile-capture-record),
+#surface-root[data-texture="off"] :is(.profile-resume-hero,.profile-summary-item,.profile-character-section,.profile-capture-record) { background-image:none !important; }
+[data-corner] .study-card.compact { --card-image:var(--corner-lower); --card-position:right bottom; --card-size:150px 100px; }
+@media(max-width:600px) {
+  #surface-root[data-corner] .profile-resume-hero { --card-size:240px 160px; }
+  #surface-root[data-corner] .profile-record-card { --card-size:150px 100px; }
+  #surface-root[data-corner] .profile-character-section { --card-size:150px 100px; }
+}

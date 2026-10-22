@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>星炬学院 · 卡片角部纹理三版</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./studio.css"><link rel="stylesheet" href="./corners.css"></head>
+<body>
+<header class="intro"><div><p class="project">星炬学院围棋部 · 界面纹理研究</p><h1>让卡片的角落，有一点星炬。</h1><p>同一张暖纸，三种几何语言。保留内容、布局与配色，只给角落一点结构。</p></div><a class="notes-link" href="./README.md">审查与设计说明 ↗</a></header>
+<section class="directions" aria-label="三版纹理样板">
+<article data-corner="orbit"><button class="direction" data-variant="orbit" aria-pressed="true"><span class="letter">A</span><span><strong>星轨切片</strong><small>弧线 / 星点 / 局部圆环</small></span><span class="choice">查看此版 ↗</span></button><div class="study-card hero"><span class="study-label">身份卡片</span><h2>莫名</h2><p>星炬学院围棋部</p></div><div class="study-card compact"><span>段位</span><strong>4段 <i>✧ ✧ ✧</i></strong></div><div class="study-card prose"><h3>对弈记录</h3><p>每赢1局加1星，每输一局减1星；满星后再赢1局升段。</p></div><p class="direction-note">安静、有留白。大圆弧裁在右上，小星点拉开疏密，适合履历与人物资料。</p></article>
+<article data-corner="facets"><button class="direction" data-variant="facets" aria-pressed="false"><span class="letter">B</span><span><strong>光束折面</strong><small>斜切 / 色块 / 错位轮廓</small></span><span class="choice">查看此版 ↗</span></button><div class="study-card hero"><span class="study-label">身份卡片</span><h2>莫名</h2><p>星炬学院围棋部</p></div><div class="study-card compact"><span>段位</span><strong>4段 <i>✧ ✧ ✧</i></strong></div><div class="study-card prose"><h3>对弈记录</h3><p>每赢1局加1星，每输一局减1星；满星后再赢1局升段。</p></div><p class="direction-note">更鲜明、有方向感。用几块半透明斜面交叠，适合仓库详情、成就与重点卡片。</p></article>
+<article data-corner="coordinate"><button class="direction" data-variant="coordinate" aria-pressed="false"><span class="letter">C</span><span><strong>棋阵坐标</strong><small>菱框 / 棋点 / 有限线阵</small></span><span class="choice">查看此版 ↗</span></button><div class="study-card hero"><span class="study-label">身份卡片</span><h2>莫名</h2><p>星炬学院围棋部</p></div><div class="study-card compact"><span>段位</span><strong>4段 <i>✧ ✧ ✧</i></strong></div><div class="study-card prose"><h3>对弈记录</h3><p>每赢1局加1星，每输一局减1星；满星后再赢1局升段。</p></div><p class="direction-note">更克制、偏战术。把棋盘交点压缩成角部小阵列，适合战绩、挑战与资料阅读。</p></article>
+</section>
+<section class="live-preview" aria-labelledby="live-heading">
+<div class="preview-heading"><h2 id="live-heading">放进当前窗口看</h2><p id="description">A · 星轨切片：大卡片用圆弧，小卡片只露一段轨迹。</p></div>
+<div class="toolbar"><div class="controls"><select id="context" aria-label="窗口类型"><option value="self">我的履历</option><option value="social">他人详细信息</option></select><select id="fixture" aria-label="示例数据"><option value="normal">正常数据</option><option value="empty">空战绩</option><option value="long">长名字</option></select><label><input type="checkbox" id="texture" checked>显示纹理</label><button id="baseline" aria-pressed="false">原版对照</button></div><div class="controls"><div class="viewport-picker" aria-label="预览尺寸"><button data-viewport="desktop" aria-pressed="true">桌面</button><button data-viewport="mobile" aria-pressed="false">390px</button><button data-viewport="narrow" aria-pressed="false">320px</button></div><a id="open-sample" href="./sample.html?v=orbit" target="_blank" rel="noopener">单独打开 ↗</a></div></div>
+<div class="preview-stage"><div class="frame-wrap" data-viewport="desktop"><iframe src="./sample.html?v=orbit" title="星轨切片真实窗口"></iframe></div></div>
+</section>
+<footer><span>上方为跨尺寸卡片研究；下方直接加载当前履历与详情组件。</span><span>几何图形均为单次角部绘制，正文、按钮和密集列表行保持原有样式。</span></footer>
+<script type="module" src="./studio.js"></script>
+</body></html>
