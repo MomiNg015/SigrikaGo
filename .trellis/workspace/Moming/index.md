@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 239
+- **Total Sessions**: 240
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1955 | Active |
+| `journal-4.md` | ~1988 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 240 | 2026-10-22 | 角色详情技能名加粗 | `0c71440b` | `master` |
 | 239 | 2026-10-22 | 技能卡声痕标识 | `9a0f8f76` | `master` |
 | 238 | 2026-10-22 | 角色详情展示台正式接入 | `ca5d478` | `master` |
 | 237 | 2026-10-22 | 缩小手机服装按钮减少立绘遮挡 | `ea5d9b08` | `master` |

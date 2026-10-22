@@ -1953,3 +1953,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 240: 角色详情技能名加粗
+
+**Date**: 2026-10-22
+**Task**: 角色详情技能名加粗
+**Branch**: `master`
+
+### Summary
+
+普通技和派生技名称统一为700粗体，正文保持400；1440/390/320px浏览器检查字重、字体合成及横向溢出，正式主题截图通过。20项CSS清单检查通过，debt指标不变；系统设计同步，保留其它WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0c71440b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
