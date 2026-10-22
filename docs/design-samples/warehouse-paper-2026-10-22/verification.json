@@ -1,0 +1,55 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "query": "",
+      "layout": "pass"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "query": "",
+      "layout": "pass"
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "query": "",
+      "layout": "pass"
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "query": "",
+      "layout": "pass"
+    },
+    {
+      "width": 390,
+      "height": 600,
+      "query": "",
+      "layout": "pass"
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "query": "?large",
+      "layout": "pass"
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "query": "?long",
+      "layout": "pass"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "query": "?empty",
+      "layout": "pass"
+    }
+  ],
+  "interactions": "pass",
+  "errors": [],
+  "apiRequests": []
+}
