@@ -1887,3 +1887,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 238: 角色详情展示台正式接入
+
+**Date**: 2026-10-22
+**Task**: 角色详情展示台正式接入
+**Branch**: `master`
+
+### Summary
+
+已实装用户确认的角色详情展示台：双色叠层背景、超大阵营徽记、网格纸卡、派生技叠放、外伸收音机和关闭按钮、移动端32px服装按钮；保留换装/语音/曲目选择/焦点返回。3317项单元测试及19项浏览器检查通过；最终38项关联回归、lint、build、built-css、production配置检查通过。全量check因既有siteSettings/characters后台快照差异停止，未混入后台配置；系统设计、对应spec、截图同步，保留其它WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ca5d478` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

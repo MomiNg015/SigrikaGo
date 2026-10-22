@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 237
+- **Total Sessions**: 238
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1889 | Active |
+| `journal-4.md` | ~1922 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 238 | 2026-10-22 | 角色详情展示台正式接入 | `ca5d478` | `master` |
 | 237 | 2026-10-22 | 缩小手机服装按钮减少立绘遮挡 | `ea5d9b08` | `master` |
 | 236 | 2026-10-22 | 展示台手机服装按钮移至左下 | `9af8b0a8` | `master` |
 | 235 | 2026-10-22 | 角色展示台交界调浅与抗锯齿 | `77d34c1f` | `master` |
