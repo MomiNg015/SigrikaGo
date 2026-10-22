@@ -1425,3 +1425,36 @@ Added an isolated warehouse paper-card template with aligned quantities, retaine
 ### Next Steps
 
 - None - task complete
+
+
+## Session 224: 仓库手机紧凑详情与整卡滑动
+
+**Date**: 2026-10-22
+**Task**: 仓库手机紧凑详情与整卡滑动
+**Branch**: `master`
+
+### Summary
+
+Refined only the warehouse template: compact 196-226px mobile detail, original circular artwork and rotation retained, more room for single-column cards. Measured integer rows plus native snapping keep both viewport edges complete after wheel/touch, endpoints, resize and reopen. Eight viewport/state checks, interactions, scoped ESLint and four docs tests passed; screenshots and system-design regenerated. Unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `021e9581` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
