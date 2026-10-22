@@ -1557,3 +1557,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 228: 角色详情审查与三版无标签样板
+
+**Date**: 2026-10-22
+**Task**: 角色详情审查与三版无标签样板
+**Branch**: `master`
+
+### Summary
+
+审查正式 CharacterDetailDialog，提供并页手册、横幅档案、连续阅读页和现有效果比较；去掉技能、超频、CV、获得方式的小标签框，保留厚阴影、全身立绘、音乐、衣柜和语音。使用公开目录快照，生产组件与样式不变。27 组浏览器布局、6 组交互、scoped lint、文档 4 项测试通过，保存桌面手机及派生技能截图。设计扫描唯一导航下划线误报已说明；只提交新样板及系统设计对应段落，保留无关修改。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `57cdd113` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
