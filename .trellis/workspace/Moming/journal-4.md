@@ -1326,3 +1326,36 @@ Restored single-row identity/statistics/header layout, padded statistics, lighte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 221: 好友搜索栏视觉统一
+
+**Date**: 2026-10-22
+**Task**: 好友搜索栏视觉统一
+**Branch**: `master`
+
+### Summary
+
+把好友搜索输入框和按钮合成纸张搜索栏，明确搜索文字、保留左侧标签与原查询行为。修正全局输入框和按钮状态对局部样式的覆盖；97项相关测试、7项浏览器回归、lint、构建和产物CSS检查通过。保存最新截图，冻结历史基准工具栏，未纳入无关WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0f27ea1f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
