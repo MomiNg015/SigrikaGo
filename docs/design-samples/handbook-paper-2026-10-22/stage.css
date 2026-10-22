@@ -113,7 +113,11 @@
     .character-detail-art::before { width: 190px; top: 52%; left: 25%; }
     .character-detail-art::after { width: 280px; height: 280px; top: -80px; left: auto; right: -70px; bottom: auto; opacity: calc(.2 * var(--hp-emblem-strength)); }
     .character-detail-figure { width: 53% !important; height: 98% !important; left: 26% !important; top: 51% !important; }
-    .character-costume-open-button { left: auto !important; right: 12px !important; top: 30px !important; bottom: auto !important; }
+    .character-costume-open-button {
+      left: 12px !important; right: auto !important; top: auto !important; bottom: 12px !important;
+      width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important;
+      padding: 0 !important; aspect-ratio: 1;
+    }
     .character-detail-copy { padding: 22px 18px 24px !important; }
     .character-detail-copy:has(.character-music-player) { height: calc(100% - 40px) !important; max-height: calc(100% - 40px) !important; }
     .character-detail-heading { width: auto !important; height: 0 !important; padding: 0 !important; margin: 0 !important; }
