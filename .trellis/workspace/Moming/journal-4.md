@@ -1854,3 +1854,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 237: 缩小手机服装按钮减少立绘遮挡
+
+**Date**: 2026-10-22
+**Task**: 缩小手机服装按钮减少立绘遮挡
+**Branch**: `master`
+
+### Summary
+
+按用户反馈取消44px固定下限，第1版手机服装按钮改为32px、18px图标及2px墨边，贴左下6px，减少人物遮挡。320/390px视觉检查、样板ESLint/27组布局/6组交互和4项文档测试通过；文档与手机截图同步，桌面及无关WIP保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ea5d9b08` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
