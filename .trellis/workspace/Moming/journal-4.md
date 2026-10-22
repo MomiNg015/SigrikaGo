@@ -1392,3 +1392,36 @@ Restored single-row identity/statistics/header layout, padded statistics, lighte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 223: 仓库纸卡模板与手机单列调整
+
+**Date**: 2026-10-22
+**Task**: 仓库纸卡模板与手机单列调整
+**Branch**: `master`
+
+### Summary
+
+Added an isolated warehouse paper-card template with aligned quantities, retained hard shadows and hover/press feedback. Applied five user revisions: single-column mobile list, larger rotated artwork with original circular backdrop, no category UI or counters, and no detail paging. Eight viewport/state and interaction checks plus scoped ESLint passed with zero API requests; system-design HTML regenerated and four document tests passed. Production and unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `25bc9295` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
