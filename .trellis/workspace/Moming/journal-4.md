@@ -1524,3 +1524,36 @@ Created isolated WatchModal comparison sample with friend-style paper search, li
 ### Next Steps
 
 - None - task complete
+
+
+## Session 227: 观战纸卡正式接入与结束灰底
+
+**Date**: 2026-10-22
+**Task**: 观战纸卡正式接入与结束灰底
+**Branch**: `master`
+
+### Summary
+
+按确认样板正式接入观战纸卡；结束对局常态、悬停和按下保持浅灰，好友同款搜索框保留即时筛选与无额外聚焦边框，手机整卡滚动。11 个观战定向测试、2 个入口 E2E、9 组预览验证、82 个样式文档测试、lint、构建及产物检查通过。完整检查另有后台默认快照 siteSettings/characters 过期，未扩大修改；代理超时隔离重跑 4 项通过。同步设计文档、契约和截图，仅范围提交，保留其他未完成工作。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b39c0216` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

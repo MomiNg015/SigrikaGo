@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 226
+- **Total Sessions**: 227
 - **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1526 | Active |
+| `journal-4.md` | ~1559 | Active |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
 | `journal-1.md` | ~1993 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 227 | 2026-10-22 | 观战纸卡正式接入与结束灰底 | `b39c0216` | `master` |
 | 226 | 2026-10-22 | 观战纸卡与实时搜索样板 | `ac550b63` | `master` |
 | 225 | 2026-10-22 | 仓库纸卡布局正式接入 | `cc354532` | `master` |
 | 224 | 2026-10-22 | 仓库手机紧凑详情与整卡滑动 | `021e9581` | `master` |
