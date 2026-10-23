@@ -1,0 +1,95 @@
+[
+  {
+    "skin": "velvet",
+    "values": [
+      {
+        "selector": ".shop-item > .primary-action:not(:disabled)",
+        "color": "rgb(255, 242, 213)",
+        "background": "rgb(87, 68, 95)",
+        "ratio": 7.89
+      },
+      {
+        "selector": ".shop-mascot-bubble",
+        "color": "rgb(73, 54, 79)",
+        "background": "rgb(244, 232, 205)",
+        "ratio": 8.98
+      },
+      {
+        "selector": ".shop-header h2",
+        "color": "rgb(255, 242, 213)",
+        "background": "rgb(87, 68, 95)",
+        "ratio": 7.89
+      }
+    ]
+  },
+  {
+    "skin": "ticket",
+    "values": [
+      {
+        "selector": ".shop-item > .primary-action:not(:disabled)",
+        "color": "rgb(77, 52, 46)",
+        "background": "rgb(228, 177, 158)",
+        "ratio": 6
+      },
+      {
+        "selector": ".shop-mascot-bubble",
+        "color": "rgb(89, 68, 56)",
+        "background": "rgb(246, 230, 200)",
+        "ratio": 7.39
+      },
+      {
+        "selector": ".shop-header h2",
+        "color": "rgb(73, 59, 68)",
+        "background": "rgb(237, 221, 199)",
+        "ratio": 7.91
+      }
+    ]
+  },
+  {
+    "skin": "enamel",
+    "values": [
+      {
+        "selector": ".shop-item > .primary-action:not(:disabled)",
+        "color": "rgb(56, 44, 62)",
+        "background": "rgb(183, 154, 186)",
+        "ratio": 5.22
+      },
+      {
+        "selector": ".shop-mascot-bubble",
+        "color": "rgb(255, 244, 223)",
+        "background": "rgb(97, 81, 109)",
+        "ratio": 6.63
+      },
+      {
+        "selector": ".shop-header h2",
+        "color": "rgb(255, 240, 220)",
+        "background": "rgba(0, 0, 0, 0)",
+        "ratio": "gradient; check manually"
+      }
+    ]
+  },
+  {
+    "skin": "velvet",
+    "store": "costume",
+    "values": [
+      {
+        "selector": ".costume-shop-price strong",
+        "color": "rgb(243, 237, 239)",
+        "background": "rgb(76, 23, 36)",
+        "ratio": 12.49
+      },
+      {
+        "selector": ".shop-header-balance-value",
+        "color": "rgb(243, 237, 239)",
+        "background": "rgb(37, 33, 40)",
+        "ratio": 13.69
+      },
+      {
+        "selector": ".costume-shop-bubble",
+        "color": "rgb(243, 237, 239)",
+        "background": "rgb(56, 24, 32)",
+        "ratio": 13.77
+      }
+    ]
+  }
+]

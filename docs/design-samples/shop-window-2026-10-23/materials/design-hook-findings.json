@@ -1,0 +1,922 @@
+[
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 45,
+    "snippet": "border-radius: 12px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "12px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 54,
+    "snippet": "border-radius: 6px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "6px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 64,
+    "snippet": "Undocumented color #e9c886 is outside DESIGN.md colors",
+    "ignoreValue": "#e9c886"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 72,
+    "snippet": "border-radius: 7px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "7px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 89,
+    "snippet": "border-radius: 12px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "12px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 117,
+    "snippet": "Undocumented color #e9dcc0 is outside DESIGN.md colors",
+    "ignoreValue": "#e9dcc0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 117,
+    "snippet": "Undocumented color #f4e8cd is outside DESIGN.md colors",
+    "ignoreValue": "#f4e8cd"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 122,
+    "snippet": "Undocumented color #57445f is outside DESIGN.md colors",
+    "ignoreValue": "#57445f"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 122,
+    "snippet": "Undocumented color #fff2d5 is outside DESIGN.md colors",
+    "ignoreValue": "#fff2d5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 143,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 146,
+    "snippet": "Undocumented color #4c1724 is outside DESIGN.md colors",
+    "ignoreValue": "#4c1724"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 148,
+    "snippet": "Undocumented color #85505b is outside DESIGN.md colors",
+    "ignoreValue": "#85505b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 150,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 151,
+    "snippet": "Undocumented color #25131a is outside DESIGN.md colors",
+    "ignoreValue": "#25131a"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 153,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 155,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 157,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 157,
+    "snippet": "Undocumented color #554951 is outside DESIGN.md colors",
+    "ignoreValue": "#554951"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 159,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 163,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 164,
+    "snippet": "Undocumented color #4c1724 is outside DESIGN.md colors",
+    "ignoreValue": "#4c1724"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 167,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 167,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 169,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 172,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 172,
+    "snippet": "Undocumented color #85505b is outside DESIGN.md colors",
+    "ignoreValue": "#85505b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 187,
+    "snippet": "Undocumented color #edddc7 is outside DESIGN.md colors",
+    "ignoreValue": "#edddc7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 187,
+    "snippet": "Undocumented color #8d746b is outside DESIGN.md colors",
+    "ignoreValue": "#8d746b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 187,
+    "snippet": "Undocumented color #dbbca0 is outside DESIGN.md colors",
+    "ignoreValue": "#dbbca0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 187,
+    "snippet": "Undocumented color #fff3df is outside DESIGN.md colors",
+    "ignoreValue": "#fff3df"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 189,
+    "snippet": "Undocumented color #fff8e7 is outside DESIGN.md colors",
+    "ignoreValue": "#fff8e7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 190,
+    "snippet": "Undocumented color #fff0d7 is outside DESIGN.md colors",
+    "ignoreValue": "#fff0d7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 190,
+    "snippet": "Undocumented color #99785b is outside DESIGN.md colors",
+    "ignoreValue": "#99785b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 190,
+    "snippet": "Undocumented color #bca68a is outside DESIGN.md colors",
+    "ignoreValue": "#bca68a"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 191,
+    "snippet": "Undocumented color #f3dca7 is outside DESIGN.md colors",
+    "ignoreValue": "#f3dca7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 192,
+    "snippet": "Undocumented color #f0d4ad is outside DESIGN.md colors",
+    "ignoreValue": "#f0d4ad"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 192,
+    "snippet": "border-radius: 5px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "5px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 192,
+    "snippet": "border-radius: 13px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 192,
+    "snippet": "border-radius: 6px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "6px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 192,
+    "snippet": "border-radius: 12px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "12px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 193,
+    "snippet": "Undocumented color #b29572 is outside DESIGN.md colors",
+    "ignoreValue": "#b29572"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 193,
+    "snippet": "border-radius: 2px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "2px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 194,
+    "snippet": "Undocumented color #99785b is outside DESIGN.md colors",
+    "ignoreValue": "#99785b"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 194,
+    "snippet": "border-radius: 3px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "3px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 195,
+    "snippet": "Undocumented color #e4bca9 is outside DESIGN.md colors",
+    "ignoreValue": "#e4bca9"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 196,
+    "snippet": "Undocumented color #eee0bd is outside DESIGN.md colors",
+    "ignoreValue": "#eee0bd"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 197,
+    "snippet": "Undocumented color #4d342e is outside DESIGN.md colors",
+    "ignoreValue": "#4d342e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 197,
+    "snippet": "Undocumented color #e4b19e is outside DESIGN.md colors",
+    "ignoreValue": "#e4b19e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 197,
+    "snippet": "Undocumented color #99715d is outside DESIGN.md colors",
+    "ignoreValue": "#99715d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 197,
+    "snippet": "Undocumented color #ad8268 is outside DESIGN.md colors",
+    "ignoreValue": "#ad8268"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 197,
+    "snippet": "border-radius: 5px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "5px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 198,
+    "snippet": "Undocumented color #efc8b4 is outside DESIGN.md colors",
+    "ignoreValue": "#efc8b4"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 199,
+    "snippet": "Undocumented color #8e716655 is outside DESIGN.md colors",
+    "ignoreValue": "#8e716655"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 199,
+    "snippet": "Undocumented color #fff1d7 is outside DESIGN.md colors",
+    "ignoreValue": "#fff1d7"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 199,
+    "snippet": "Undocumented color #b29572 is outside DESIGN.md colors",
+    "ignoreValue": "#b29572"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 199,
+    "snippet": "border-radius: 13px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 199,
+    "snippet": "border-radius: 10px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 200,
+    "snippet": "Undocumented color #f2d9ae is outside DESIGN.md colors",
+    "ignoreValue": "#f2d9ae"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 200,
+    "snippet": "border-radius: 3px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "3px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 214,
+    "snippet": "Undocumented color #77617a is outside DESIGN.md colors",
+    "ignoreValue": "#77617a"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 214,
+    "snippet": "Undocumented color #9e8190 is outside DESIGN.md colors",
+    "ignoreValue": "#9e8190"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 214,
+    "snippet": "Undocumented color #514257 is outside DESIGN.md colors",
+    "ignoreValue": "#514257"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 214,
+    "snippet": "Undocumented color #c5aebc is outside DESIGN.md colors",
+    "ignoreValue": "#c5aebc"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 214,
+    "snippet": "Undocumented color #68546c is outside DESIGN.md colors",
+    "ignoreValue": "#68546c"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 215,
+    "snippet": "Undocumented color #6b3b4e is outside DESIGN.md colors",
+    "ignoreValue": "#6b3b4e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 215,
+    "snippet": "Undocumented color #9a6873 is outside DESIGN.md colors",
+    "ignoreValue": "#9a6873"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 216,
+    "snippet": "Undocumented color #e9d4df is outside DESIGN.md colors",
+    "ignoreValue": "#e9d4df"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 217,
+    "snippet": "Undocumented color #514257 is outside DESIGN.md colors",
+    "ignoreValue": "#514257"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 217,
+    "snippet": "Undocumented color #f4dfb5 is outside DESIGN.md colors",
+    "ignoreValue": "#f4dfb5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 218,
+    "snippet": "Undocumented color #f5ebdf is outside DESIGN.md colors",
+    "ignoreValue": "#f5ebdf"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 218,
+    "snippet": "Undocumented color #67526e is outside DESIGN.md colors",
+    "ignoreValue": "#67526e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 218,
+    "snippet": "Undocumented color #493c4e is outside DESIGN.md colors",
+    "ignoreValue": "#493c4e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 218,
+    "snippet": "Undocumented color #d3b5cc is outside DESIGN.md colors",
+    "ignoreValue": "#d3b5cc"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 218,
+    "snippet": "border-radius: 15px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "15px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 219,
+    "snippet": "Undocumented color #e8d4e3 is outside DESIGN.md colors",
+    "ignoreValue": "#e8d4e3"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 219,
+    "snippet": "Undocumented color #d6bcd1 is outside DESIGN.md colors",
+    "ignoreValue": "#d6bcd1"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 220,
+    "snippet": "Undocumented color #e7daca is outside DESIGN.md colors",
+    "ignoreValue": "#e7daca"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 221,
+    "snippet": "Undocumented color #67526e is outside DESIGN.md colors",
+    "ignoreValue": "#67526e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 221,
+    "snippet": "Undocumented color #d8c4d6 is outside DESIGN.md colors",
+    "ignoreValue": "#d8c4d6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 221,
+    "snippet": "Undocumented color #514257 is outside DESIGN.md colors",
+    "ignoreValue": "#514257"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 221,
+    "snippet": "Undocumented color #8b718d is outside DESIGN.md colors",
+    "ignoreValue": "#8b718d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 222,
+    "snippet": "Undocumented color #e9d2a5 is outside DESIGN.md colors",
+    "ignoreValue": "#e9d2a5"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 223,
+    "snippet": "Undocumented color #b79aba is outside DESIGN.md colors",
+    "ignoreValue": "#b79aba"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 223,
+    "snippet": "Undocumented color #382c3e is outside DESIGN.md colors",
+    "ignoreValue": "#382c3e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 223,
+    "snippet": "Undocumented color #6d5773 is outside DESIGN.md colors",
+    "ignoreValue": "#6d5773"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 224,
+    "snippet": "Undocumented color #c8b0cb is outside DESIGN.md colors",
+    "ignoreValue": "#c8b0cb"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 225,
+    "snippet": "Undocumented color #33283f55 is outside DESIGN.md colors",
+    "ignoreValue": "#33283f55"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 225,
+    "snippet": "Undocumented color #8d7697 is outside DESIGN.md colors",
+    "ignoreValue": "#8d7697"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 226,
+    "snippet": "Undocumented color #d8c4d6 is outside DESIGN.md colors",
+    "ignoreValue": "#d8c4d6"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 226,
+    "snippet": "Undocumented color #67526e is outside DESIGN.md colors",
+    "ignoreValue": "#67526e"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 226,
+    "snippet": "Undocumented color #33283f88 is outside DESIGN.md colors",
+    "ignoreValue": "#33283f88"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\docs\\design-samples\\shop-window-2026-10-23\\materials\\materials.css",
+    "line": 233,
+    "snippet": "Undocumented color #f0d4ad is outside DESIGN.md colors",
+    "ignoreValue": "#f0d4ad"
+  }
+]

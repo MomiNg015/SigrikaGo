@@ -1,0 +1,173 @@
+{
+  "geometry": [
+    {
+      "skin": "velvet",
+      "store": "zahira",
+      "viewport": "1440x900",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "zahira",
+      "viewport": "1440x900",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "zahira",
+      "viewport": "1440x900",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "velvet",
+      "store": "costume",
+      "viewport": "1440x900",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "costume",
+      "viewport": "1440x900",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "costume",
+      "viewport": "1440x900",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "velvet",
+      "store": "zahira",
+      "viewport": "390x844",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "zahira",
+      "viewport": "390x844",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "zahira",
+      "viewport": "390x844",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "velvet",
+      "store": "costume",
+      "viewport": "390x844",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "costume",
+      "viewport": "390x844",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "costume",
+      "viewport": "390x844",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "velvet",
+      "store": "zahira",
+      "viewport": "320x568",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "zahira",
+      "viewport": "320x568",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "zahira",
+      "viewport": "320x568",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "velvet",
+      "store": "costume",
+      "viewport": "320x568",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "ticket",
+      "store": "costume",
+      "viewport": "320x568",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    },
+    {
+      "skin": "enamel",
+      "store": "costume",
+      "viewport": "320x568",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true
+    }
+  ],
+  "interactions": [
+    {
+      "skin": "velvet",
+      "passed": [
+        "item details",
+        "purchase wallet update",
+        "costume purchase and equip",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "long dialogue",
+        "empty both stores"
+      ]
+    },
+    {
+      "skin": "ticket",
+      "passed": [
+        "item details",
+        "purchase wallet update",
+        "costume purchase and equip",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "long dialogue",
+        "empty both stores"
+      ]
+    },
+    {
+      "skin": "enamel",
+      "passed": [
+        "item details",
+        "purchase wallet update",
+        "costume purchase and equip",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "long dialogue",
+        "empty both stores"
+      ]
+    }
+  ],
+  "harness": "skin/original/device preserve current store; reset works",
+  "errors": []
+}

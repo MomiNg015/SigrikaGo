@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>商店样板</title><link rel="stylesheet" href="./shop.css"><link rel="stylesheet" href="./states.css"></head>
+<body>
+  <main class="shop" id="shop" aria-labelledby="shop-title">
+    <header class="shop-header"><h1 id="shop-title">扎希拉商铺</h1><span class="wallet" aria-label="金币余额"><span aria-hidden="true">◎</span> <b id="balance">1280</b></span><button class="close icon-button" aria-label="关闭商店">×</button></header>
+    <nav class="shop-navigation" aria-label="商铺"><div class="store-tabs"><button data-store="goods" aria-pressed="true">扎希拉商铺</button><button data-store="costumes" aria-pressed="false">残星会</button></div><button class="refresh" data-action="refresh"><span aria-hidden="true">↻</span> 换一批</button></nav>
+    <section id="content" class="content"></section>
+    <div id="toast" class="toast" role="status"></div>
+  </main>
+  <div id="closed" hidden><button id="reopen" class="primary">重新打开商店</button></div>
+  <dialog id="detail" aria-labelledby="detail-title"><div id="detail-content"></div></dialog>
+  <script type="module" src="./shop.js"></script>
+</body>
+</html>

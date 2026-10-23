@@ -1,0 +1,335 @@
+{
+  "layouts": [
+    {
+      "variant": "a",
+      "width": 1440,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "16px",
+        "16px",
+        "16px",
+        "16px",
+        "16px"
+      ]
+    },
+    {
+      "variant": "a",
+      "width": 1440,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "16px",
+        "16px",
+        "16px",
+        "16px",
+        "16px"
+      ]
+    },
+    {
+      "variant": "a",
+      "width": 390,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "15px",
+        "15px",
+        "15px",
+        "15px",
+        "15px"
+      ]
+    },
+    {
+      "variant": "a",
+      "width": 390,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "15px",
+        "15px",
+        "15px",
+        "15px",
+        "15px"
+      ]
+    },
+    {
+      "variant": "a",
+      "width": 320,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "15px",
+        "15px",
+        "15px",
+        "15px",
+        "15px"
+      ]
+    },
+    {
+      "variant": "a",
+      "width": 320,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "buttonFonts": [
+        "15px",
+        "15px",
+        "15px",
+        "15px",
+        "15px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 1440,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "16px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 1440,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "16px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 390,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 390,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 320,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "b",
+      "width": 320,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 1440,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        46.4366455078125
+      ],
+      "buttonFonts": [
+        "16px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 1440,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        46.4366455078125
+      ],
+      "buttonFonts": [
+        "16px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 390,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 390,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 320,
+      "store": "goods",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    },
+    {
+      "variant": "c",
+      "width": 320,
+      "store": "costumes",
+      "overflow": false,
+      "broken": 0,
+      "buttonHeights": [
+        44
+      ],
+      "buttonFonts": [
+        "15px"
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "variant": "a",
+      "checks": [
+        "wallet",
+        "detail",
+        "escape",
+        "costume purchase",
+        "owned",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "sold-out",
+        "empty both stores"
+      ]
+    },
+    {
+      "variant": "b",
+      "checks": [
+        "wallet",
+        "detail",
+        "escape",
+        "costume purchase",
+        "owned",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "sold-out",
+        "empty both stores"
+      ]
+    },
+    {
+      "variant": "c",
+      "checks": [
+        "wallet",
+        "detail",
+        "escape",
+        "costume purchase",
+        "owned",
+        "refresh cooldown",
+        "close/reopen",
+        "insufficient funds",
+        "sold-out",
+        "empty both stores"
+      ]
+    }
+  ],
+  "harness": "variant/device/scenario controls passed",
+  "errors": []
+}

@@ -1,0 +1,131 @@
+{
+  "goods": [
+    {
+      "id": "rainbow-bean-candy",
+      "name": "彩虹豆豆跳跳糖",
+      "category": "道具",
+      "image": "/assets/items/rainbow-bean-candy.webp",
+      "description": "产地不明的糖果，据说有神秘的效果",
+      "price": 10,
+      "stock": 99,
+      "repeatable": true
+    },
+    {
+      "id": "radio-recruitment-ticket",
+      "name": "先约电台广播券",
+      "category": "道具",
+      "image": "/assets/items/radio-recruitment-ticket.webp",
+      "description": "可以使用一次先行公约的广播，似乎可以把消息发送到千里之外...",
+      "price": 180,
+      "stock": -1,
+      "repeatable": true
+    },
+    {
+      "id": "campus-recruitment-poster",
+      "name": "招新贴报",
+      "category": "道具",
+      "image": "/assets/items/recruitment-poster.webp",
+      "description": "“老大，我们贴报画成这样，真的会有人来吗？”",
+      "price": 120,
+      "stock": -1,
+      "repeatable": true
+    },
+    {
+      "id": "aemeath-flight-snow-memorial-ticket",
+      "name": "飞行雪绒纪念券",
+      "category": "道具",
+      "image": "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
+      "description": "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？",
+      "price": 0,
+      "stock": -1,
+      "repeatable": true
+    },
+    {
+      "id": "paw-stone",
+      "name": "爪印棋子",
+      "category": "棋子",
+      "image": "/assets/decorations/paw-stone-preview.png",
+      "description": "曾经风靡一时，但现在过气了的猫爪棋子。",
+      "price": 500,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "papagan-peach-stone",
+      "name": "耙耙柑和水蜜桃",
+      "category": "棋子",
+      "image": "/assets/decorations/papagan-peach-stone-preview.png",
+      "description": "吃过的人都说好！",
+      "price": 1000,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "qiuyuan-skill-zhouwo",
+      "name": "肘我",
+      "category": "音乐",
+      "image": "/assets/items/qiuyuan-zhouwo.webp",
+      "description": "仇远的第二版技能 BGM",
+      "price": 800,
+      "stock": -1,
+      "repeatable": false
+    }
+  ],
+  "costumes": [
+    {
+      "id": "sigrika-costume-01",
+      "name": "HelloHello",
+      "category": "服装",
+      "character": "西格莉卡",
+      "image": "/assets/costumes/portraits/sigrika-costume-01.webp",
+      "description": "“今天也要元气满满哟~”",
+      "price": 600,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "denia-costume-01",
+      "name": "睡眠不足",
+      "category": "服装",
+      "character": "达妮娅",
+      "image": "/assets/costumes/portraits/denia-costume-01.webp",
+      "description": "”今天怎么是满课！？”",
+      "price": 600,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "denia-costume-02",
+      "name": "黯影形态",
+      "category": "服装",
+      "character": "达妮娅",
+      "image": "/assets/costumes/portraits/denia-costume-02.webp",
+      "description": "“看我轰飞你！”",
+      "price": 600,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "nabomo-costume-01",
+      "name": "飞行卡戎",
+      "category": "服装",
+      "character": "娜波摩",
+      "image": "/assets/costumes/portraits/nabomo-costume-01.webp",
+      "description": "“呵呵呵，老夫来送你过河吧。”",
+      "price": 600,
+      "stock": -1,
+      "repeatable": false
+    },
+    {
+      "id": "nabomo-costume-02",
+      "name": "招募中",
+      "category": "服装",
+      "character": "娜波摩",
+      "image": "/assets/costumes/portraits/nabomo-costume-02.webp",
+      "description": "“残星会招人啦！入部即送自选cos服一套！”",
+      "price": 600,
+      "stock": -1,
+      "repeatable": false
+    }
+  ]
+}

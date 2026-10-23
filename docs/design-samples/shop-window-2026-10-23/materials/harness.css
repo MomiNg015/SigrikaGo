@@ -1,0 +1,6 @@
+body { margin: 0; }
+#shop-materials.app-shell { min-height: 100dvh; max-width: none; padding: 0; }
+#shop-materials::before, #shop-materials::after { display: none; }
+#shop-materials > .modal-backdrop { background: rgb(61 43 37 / 18%); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.sample-reopen { position: fixed; inset: 0; display: grid; place-content: center; }
+.sample-notice { position: fixed; z-index: 190; bottom: 26px; left: 50%; transform: translateX(-50%); padding: 12px 22px; border: 2px solid #3d2b25; border-radius: 8px; background: #fffaf0; box-shadow: 3px 3px 0 #3d2b25; pointer-events: none; max-width: calc(100% - 32px); }

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>商店窗口 · 三种设计样板</title>
+  <link rel="stylesheet" href="./shell.css">
+</head>
+<body>
+  <header class="review-header"><div><p>SigrikaGo / 设计研究</p><h1>让商品更清楚，让商铺更有趣。</h1></div><a href="./README.md">审查说明 ↗</a></header>
+  <nav class="variant-picker" aria-label="设计方案">
+    <button data-variant="a" aria-pressed="true"><b>A · 纸卡货架</b><span>一眼比较，轻松选购</span></button>
+    <button data-variant="b" aria-pressed="false"><b>B · 选物图鉴</b><span>清单与大图联动</span></button>
+    <button data-variant="c" aria-pressed="false"><b>C · 店主柜台</b><span>保留场景，逐件发现</span></button>
+  </nav>
+  <div class="controls"><div class="device-picker" aria-label="预览尺寸"><button data-width="desktop" aria-pressed="true">桌面</button><button data-width="390" aria-pressed="false">手机 390</button><button data-width="320" aria-pressed="false">窄屏 320</button></div><label>模拟状态 <select id="scenario"><option value="normal">正常商品</option><option value="poor">金币不足</option><option value="mixed">已拥有 / 售罄 / 未解锁</option><option value="empty">空货架</option></select></label><button id="reset">重置演示</button></div>
+  <p class="direction-note" id="direction-note">推荐从这一版开始：稳定的商品尺寸、整齐的价格与购买区，店主仍然陪伴在旁。</p>
+  <div class="preview-wrap"><iframe id="preview" title="商店交互样板" src="./preview.html?variant=a"></iframe></div>
+  <footer>独立交互样板 · 商品来自项目默认目录，余额与库存状态为演示数据 · 购买只影响此页面</footer>
+  <script type="module" src="./shell.js"></script>
+</body>
+</html>

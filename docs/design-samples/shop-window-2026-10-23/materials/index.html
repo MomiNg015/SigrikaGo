@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><link rel="stylesheet" href="../shell.css"><link rel="stylesheet" href="./studio.css"><title>商店 · 保留布局的三套局部改良</title></head>
+<body>
+  <header class="review-header"><div><p>SigrikaGo / A 方案细化</p><h1>两家商铺，各有自己的性格。</h1></div><a href="./README.md">改良说明 ↗</a></header>
+  <nav class="variant-picker" aria-label="材质方案">
+    <button data-skin="velvet" aria-pressed="true"><b>A · 本轮改良</b><span>扎希拉紫金 · 残星会赤黑银</span></button>
+    <button data-skin="ticket" aria-pressed="false"><b>B · 手绘货签</b><span>纸质店招 · 盖印货签 · 便笺对白</span></button>
+    <button data-skin="enamel" aria-pressed="false"><b>C · 彩边珐琅</b><span>拼色店招 · 彩框商品 · 绒色对白</span></button>
+  </nav>
+  <div class="controls"><button id="original" aria-pressed="false">查看原版</button><div class="device-picker"><button data-width="desktop" aria-pressed="true">桌面</button><button data-width="390" aria-pressed="false">手机 390</button><button data-width="320" aria-pressed="false">窄屏 320</button></div><label>内容 <select id="state"><option value="normal">正常商品</option><option value="long">长对白</option><option value="poor">金币不足</option><option value="empty">空货架</option></select></label><button id="reset">重置演示</button><a id="standalone" href="./preview.html?skin=velvet" target="_blank" rel="noopener">单独打开 ↗</a></div>
+  <p class="direction-note" id="direction-note">扎希拉保留紫绒金签，棋子直接展示；点击店内路牌，查看残星会独立的赤黑银舞台风格。</p>
+  <div class="preview-wrap"><iframe id="preview" title="原商店局部改良样板" src="./preview.html?skin=velvet"></iframe></div>
+  <footer>沿用现有商店布局 · 材质切换保留当前商铺与商品 · 购买仅在此页模拟</footer>
+  <script type="module" src="./studio.js"></script>
+</body></html>

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "fixtures.js",
+    "errors": 0,
+    "warnings": 0,
+    "messages": []
+  },
+  {
+    "file": "sample.jsx",
+    "errors": 0,
+    "warnings": 0,
+    "messages": []
+  },
+  {
+    "file": "studio.js",
+    "errors": 0,
+    "warnings": 0,
+    "messages": []
+  },
+  {
+    "file": "verify.mjs",
+    "errors": 0,
+    "warnings": 0,
+    "messages": []
+  }
+]

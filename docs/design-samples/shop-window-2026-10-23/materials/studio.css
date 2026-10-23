@@ -1,0 +1,6 @@
+iframe { height: 820px; }
+iframe.phone { height: 844px; }
+iframe.narrow { height: 568px; }
+#original[aria-pressed=true] { background: #3d2b25; color: #fffaf0; }
+.controls a { color: #6a554d; font-size: 14px; white-space: nowrap; }
+@media (max-width: 650px) { .controls a { display: none; } iframe { height: 844px; } }

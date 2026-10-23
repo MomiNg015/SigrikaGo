@@ -1,0 +1,236 @@
+/* Sample-only paint treatments. Geometry and animation owners remain production CSS. */
+#shop-materials:not([data-skin="original"]) {
+  --shop-ink: #49364f;
+  --shop-cloth: #57445f;
+  --shop-gold: #d8b978;
+  --shop-paper: #f4e8cd;
+  --shop-pale: #e9dcc0;
+  --shop-header-ink: #fff2d5;
+  --shop-chat-ink: #49364f;
+  --shop-chat-fill: #f4e8cd;
+  --shop-chat-edge: #b59665;
+
+  .shop-header[data-store="costume"] {
+    --shop-cloth: #532b3a;
+    --shop-header-ink: #fff0cf;
+  }
+  .shop-header {
+    background: var(--shop-cloth) !important;
+    border-bottom-color: var(--shop-gold) !important;
+    box-shadow: inset 0 3px 0 rgb(255 242 213 / 10%), inset 0 -5px 0 rgb(28 13 32 / 20%) !important;
+  }
+  .shop-header h2 {
+    color: var(--shop-header-ink) !important;
+    letter-spacing: .025em !important;
+    text-shadow: 0 2px 0 rgb(35 20 39 / 30%);
+  }
+  .shop-header :is(.shop-refresh-button, .shop-close-button) {
+    color: var(--shop-header-ink) !important;
+    background: rgb(255 242 213 / 9%) !important;
+    border-color: color-mix(in srgb, var(--shop-gold) 70%, var(--shop-cloth)) !important;
+    box-shadow: 2px 3px 0 rgb(30 15 30 / 25%), inset 0 0 0 1px rgb(255 242 213 / 12%) !important;
+  }
+  .shop-header .shop-header-balance {
+    background: var(--shop-paper) !important;
+    color: var(--shop-ink) !important;
+    border-color: var(--shop-gold) !important;
+    box-shadow: 2px 3px 0 rgb(30 15 30 / 25%), inset 0 0 0 2px rgb(255 255 255 / 28%) !important;
+  }
+  .shop-header-balance svg { color: var(--shop-ink) !important; }
+  .shop-header :is(.shop-refresh-button, .shop-close-button) :is(svg, svg *) { color: inherit !important; stroke: currentColor !important; }
+  .shop-card-position .shop-item {
+    background: var(--shop-paper) !important;
+    border-color: var(--shop-ink) !important;
+    box-shadow: 4px 5px 0 rgb(48 28 53 / 68%), inset 0 0 0 2px var(--shop-gold) !important;
+    border-radius: 12px !important;
+  }
+  .shop-item-detail-trigger, .shop-item > .primary-action { position: relative; z-index: 1; }
+  .shop-card-position .shop-item::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    inset: 7px;
+    border: 1px solid color-mix(in srgb, var(--shop-gold) 70%, transparent) !important;
+    border-radius: 6px !important;
+    pointer-events: none;
+  }
+  .shop-card-position .shop-corner-badge {
+    color: var(--shop-ink) !important;
+    background: var(--shop-pale) !important;
+    border-color: var(--shop-gold) !important;
+    box-shadow: 1px 2px 0 rgb(73 54 79 / 20%) !important;
+    border-radius: 4px !important;
+  }
+  .shop-card-position .shop-quantity-badge { background: #e9c886 !important; }
+  .shop-card-position .shop-item strong { color: var(--shop-ink) !important; }
+  .shop-card-position .shop-price { color: var(--shop-ink) !important; }
+  .shop-item > .primary-action:not(:disabled) {
+    background: var(--shop-cloth) !important;
+    color: var(--shop-header-ink) !important;
+    border-color: var(--shop-ink) !important;
+    box-shadow: 2px 3px 0 rgb(48 28 53 / 40%), inset 0 1px 0 rgb(255 242 213 / 24%) !important;
+    border-radius: 7px !important;
+  }
+  .shop-item > .primary-action:not(:disabled):hover { background: color-mix(in srgb, var(--shop-cloth) 83%, white) !important; }
+  :is(.shop-mascot-bubble, .costume-shop-bubble) {
+    background: none !important;
+    color: var(--shop-chat-ink) !important;
+    isolation: isolate;
+    text-shadow: none !important;
+  }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    z-index: -1;
+    inset: 12px 2px 30px;
+    background: var(--shop-chat-fill) !important;
+    border: 2px solid var(--shop-chat-edge) !important;
+    border-radius: 12px !important;
+    box-shadow: 3px 4px 0 rgb(44 27 46 / 26%), inset 0 0 0 4px rgb(255 250 235 / 22%) !important;
+    pointer-events: none;
+  }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    z-index: -1;
+    width: 18px;
+    height: 18px;
+    bottom: 22px;
+    right: 34px;
+    background: var(--shop-chat-fill) !important;
+    border: 0 !important;
+    border-right: 2px solid var(--shop-chat-edge) !important;
+    border-bottom: 2px solid var(--shop-chat-edge) !important;
+    transform: skewY(34deg) !important;
+    pointer-events: none;
+  }
+  .costume-shop-bubble::after { right: auto; left: 34px; transform: skewY(-34deg) !important; border-right: 0 !important; border-left: 2px solid var(--shop-chat-edge) !important; }
+  .costume-shop-price { background: var(--shop-paper) !important; color: var(--shop-ink) !important; border-color: var(--shop-gold) !important; box-shadow: 2px 3px 0 rgb(48 28 53 / 50%) !important; }
+}
+
+/* A — velvet shop sign, metallic corner inlay, muted parchment chat. */
+#shop-materials[data-skin="velvet"] {
+  .shop-header::after { content: ""; position: absolute; bottom: 6px; left: 80px; right: 180px; height: 1px; background: color-mix(in srgb, var(--shop-gold) 42%, transparent); pointer-events: none; }
+  .shop-card-position .shop-item {
+    background-image: url('/assets/ui/card-prints/inventory.svg'), linear-gradient(180deg, #f6ecd7 0 57%, #e9dcc0 57% 58%, #f4e8cd 58% 100%) !important;
+    background-size: 90px 90px, 100% 100% !important;
+    background-position: right -14px top 18px, center !important;
+    background-repeat: no-repeat !important;
+  }
+  .shop-card-position .shop-category-badge { background: #57445f !important; color: #fff2d5 !important; }
+  .shop-category-decoration .stone-decoration-preview {
+    background: transparent !important;
+    border-color: transparent !important;
+    border-style: solid !important;
+    box-shadow: none !important;
+  }
+
+  /* Fractsidus: red stage velvet, charcoal hardware and silver ticket edges. */
+  .shop-header[data-store="costume"], .costume-store-page {
+    --shop-ink: #e9e4e6;
+    --shop-cloth: #4c1724;
+    --shop-gold: #a69ba0;
+    --shop-paper: #252128;
+    --shop-header-ink: #f3edef;
+    --shop-chat-ink: #f3edef;
+    --shop-chat-fill: #381820;
+    --shop-chat-edge: #a69ba0;
+  }
+  .shop-window:has(.shop-header[data-store="costume"]) {
+    border-color: #252128 !important;
+    box-shadow: 9px 11px 0 #19171d !important;
+  }
+  .shop-header[data-store="costume"] {
+    background: #4c1724 !important;
+    border-bottom-color: #252128 !important;
+    box-shadow: inset 0 3px 0 #85505b, inset 0 -6px 0 #252128 !important;
+  }
+  .shop-header[data-store="costume"]::after { background: #a69ba0; opacity: .65; }
+  .shop-header[data-store="costume"] h2 { text-shadow: 0 2px 0 #25131a; }
+  .shop-header[data-store="costume"] :is(.shop-refresh-button, .shop-close-button, .shop-header-balance) {
+    color: #f3edef !important;
+    background: #252128 !important;
+    border-color: #a69ba0 !important;
+    border-radius: 8px !important;
+    box-shadow: 2px 3px 0 #19171d, inset 0 0 0 1px #554951 !important;
+  }
+  .shop-header[data-store="costume"] .shop-header-balance :is(svg, svg *) { color: #f3edef !important; stroke: currentColor !important; }
+  .shop-header[data-store="costume"] .shop-header-balance-value { color: #f3edef !important; }
+  .costume-shop-art { filter: drop-shadow(0 3px 1px rgb(25 23 29 / 70%)); }
+  .costume-store-page .costume-shop-price {
+    color: #f3edef !important;
+    background: #4c1724 !important;
+    border-color: #252128 !important;
+    border-radius: 4px !important;
+    box-shadow: 3px 4px 0 #19171d, inset 0 0 0 1px #a69ba0 !important;
+  }
+  .costume-store-page .costume-shop-price :is(strong, b, small, span) { color: #f3edef !important; }
+  .costume-store-page .costume-shop-bubble::before {
+    border-radius: 4px !important;
+    box-shadow: 4px 5px 0 #19171d, inset 0 0 0 4px #612b38, inset 0 0 0 5px #85505b !important;
+  }
+}
+
+/* B — stationery headers and merchant tickets, with stamped borders. */
+#shop-materials[data-skin="ticket"] {
+  --shop-ink: #594438;
+  --shop-cloth: #bb7a63;
+  --shop-gold: #b29572;
+  --shop-paper: #fff0d7;
+  --shop-pale: #f2d9ae;
+  --shop-header-ink: #493b44;
+  --shop-chat-ink: #594438;
+  --shop-chat-fill: #f6e6c8;
+  --shop-chat-edge: #99785b;
+  .shop-header { background: #edddc7 !important; border-bottom-color: #8d746b !important; box-shadow: inset 0 -6px 0 #dbbca0, inset 0 3px 0 #fff3df !important; }
+  .shop-header[data-store="costume"] { --shop-header-ink: #573039; }
+  .shop-header h2 { text-shadow: 1px 1px 0 #fff8e7; }
+  .shop-header :is(.shop-refresh-button, .shop-close-button) { color: #594438 !important; background: #fff0d7 !important; border-color: #99785b !important; box-shadow: 2px 3px 0 #bca68a !important; }
+  .shop-header .shop-header-balance { background: #f3dca7 !important; border-color: #99785b !important; box-shadow: 2px 3px 0 #bca68a !important; }
+  .shop-card-position .shop-item { border-radius: 5px 13px 6px 12px !important; border-color: #785f50 !important; background: #fff0d7 !important; box-shadow: 4px 5px 0 #60483e, inset 0 -63px 0 #f0d4ad !important; }
+  .shop-card-position .shop-item::before { inset: 8px 8px 57px; border: 1px dashed #b29572 !important; border-radius: 2px !important; background: url('/assets/ui/card-prints/inventory.svg') right -18px top 0 / 100px 100px no-repeat !important; }
+  .shop-card-position .shop-corner-badge { border-color: #99785b !important; border-radius: 3px !important; box-shadow: none !important; }
+  .shop-card-position .shop-category-badge { background: #e4bca9 !important; }
+  .shop-card-position .shop-quantity-badge { background: #eee0bd !important; }
+  .shop-item > .primary-action:not(:disabled) { color: #4d342e !important; background: #e4b19e !important; border-color: #99715d !important; border-radius: 5px !important; box-shadow: 2px 3px 0 #ad8268 !important; }
+  .shop-item > .primary-action:not(:disabled):hover { background: #efc8b4 !important; }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::before { border-radius: 4px 13px 5px 10px !important; box-shadow: 3px 4px 0 #8e716655, inset 0 0 0 5px #fff1d7 !important; outline: 1px dashed #b29572; outline-offset: -8px; }
+  .costume-shop-price { border-radius: 3px 8px 3px 8px !important; background: #f2d9ae !important; }
+}
+
+/* C — two-tone enamel frames, soft oval product mount, dyed-cloth dialogue. */
+#shop-materials[data-skin="enamel"] {
+  --shop-ink: #514257;
+  --shop-cloth: #71617b;
+  --shop-gold: #c7aebe;
+  --shop-paper: #f5ebdf;
+  --shop-pale: #d8c4d6;
+  --shop-header-ink: #fff0dc;
+  --shop-chat-ink: #fff4df;
+  --shop-chat-fill: #61516d;
+  --shop-chat-edge: #cbb6c8;
+  .shop-header { background: linear-gradient(105deg, #77617a 0 57%, #9e8190 57% 100%) !important; border-bottom-color: #514257 !important; box-shadow: inset 0 3px 0 #c5aebc, inset 0 -5px 0 #68546c !important; }
+  .shop-header[data-store="costume"] { background: linear-gradient(105deg, #6b3b4e 0 57%, #9a6873 57% 100%) !important; }
+  .shop-header :is(.shop-refresh-button, .shop-close-button) { background: #e9d4df !important; color: #514257 !important; border-color: #514257 !important; box-shadow: 2px 3px 0 #514257 !important; }
+  .shop-header .shop-header-balance { border-color: #514257 !important; background: #f4dfb5 !important; box-shadow: 2px 3px 0 #514257 !important; }
+  .shop-card-position .shop-item { background: #f5ebdf !important; border-color: #67526e !important; border-radius: 15px !important; box-shadow: 4px 5px 0 #493c4e, inset 0 0 0 5px #d3b5cc !important; }
+  .shop-card-position .shop-item::before { inset: 19px 14px 43%; border: 0 !important; border-radius: 50% !important; background: #e8d4e3 !important; box-shadow: inset 0 -4px 0 #d6bcd1 !important; }
+  .shop-card-position .shop-item::after { content: "" !important; display: block !important; position: absolute; left: 15px; right: 15px; bottom: 51px; height: 27px; background: #e7daca !important; border-radius: 4px; pointer-events: none; }
+  .shop-card-position .shop-corner-badge { border-color: #67526e !important; background: #d8c4d6 !important; color: #514257 !important; box-shadow: 1px 2px 0 #8b718d !important; }
+  .shop-card-position .shop-quantity-badge { background: #e9d2a5 !important; }
+  .shop-item > .primary-action:not(:disabled) { background: #b79aba !important; color: #382c3e !important; border-color: #67526e !important; box-shadow: 2px 3px 0 #6d5773 !important; }
+  .shop-item > .primary-action:not(:disabled):hover { background: #c8b0cb !important; }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::before { border-radius: 14px !important; box-shadow: 3px 4px 0 #33283f55, inset 0 0 0 3px #8d7697 !important; }
+  .costume-shop-price { background: #d8c4d6 !important; border-color: #67526e !important; box-shadow: 2px 3px 0 #33283f88 !important; }
+}
+
+@media (max-width: 768px) {
+  #shop-materials:not([data-skin="original"]) :is(.shop-mascot-bubble, .costume-shop-bubble)::before { inset: 4px 1px 24px; }
+  #shop-materials:not([data-skin="original"]) :is(.shop-mascot-bubble, .costume-shop-bubble)::after { bottom: 16px; }
+  #shop-materials[data-skin="velvet"] .shop-header::after { left: 68px; right: 136px; }
+  #shop-materials[data-skin="ticket"] .shop-card-position .shop-item { box-shadow: 4px 5px 0 #60483e, inset 0 -56px 0 #f0d4ad !important; }
+  #shop-materials[data-skin="ticket"] .shop-card-position .shop-item::before { bottom: 51px; }
+  #shop-materials[data-skin="enamel"] .shop-card-position .shop-item::after { bottom: 43px; height: 22px; }
+}
