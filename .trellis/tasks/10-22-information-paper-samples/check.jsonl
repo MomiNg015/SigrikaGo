@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Desktop and portrait visual checks"}
+{"file":".trellis/spec/frontend/card-screenprint-contract.md","reason":"Keep motion and state semantics"}
+{"file":".trellis/tasks/10-22-information-paper-samples/prd.md","reason":"Template acceptance"}

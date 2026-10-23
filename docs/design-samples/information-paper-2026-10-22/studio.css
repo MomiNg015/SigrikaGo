@@ -1,0 +1,31 @@
+@font-face { font-family: 'Sigrika Window Title'; src: url('/assets/fonts/LXGWMarkerGothic-Regular.ttf') format('truetype'); font-display: swap; }
+:root { --ink: #3d2b25; --paper: #fffbf2; --sheet: #ffffff; --muted: #6a554d; --pink: #ff9ebb; --mint: #bfe8dd; --font-ui-default: 'Sigrika Window Title', sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 30px clamp(18px, 4vw, 64px); background: var(--paper); color: var(--ink); font-family: var(--font-ui-default); }
+.studio-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; max-width: 1440px; margin: 0 auto 25px; }
+.studio-header p { margin: 0 0 9px; line-height: 1.7; font-size: 15px; }
+h1 { margin: 0; font-size: 38px; font-weight: 700; line-height: 1.25; }
+.intro { color: var(--muted); }
+main { max-width: 1440px; margin: auto; }
+button, select, a { font: inherit; color: inherit; }
+button, select { border: 1px solid var(--ink); background: var(--sheet); border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer; }
+button { transition: transform 150ms ease, box-shadow 150ms ease; }
+button:hover { transform: translateY(-1px); }
+button:active { transform: translate(1px,1px); }
+button[aria-pressed='true'] { background: var(--ink); color: var(--sheet); }
+.window-picker { display: flex; gap: 16px; margin-bottom: 22px; }
+.window-picker button { display: flex; gap: 20px; align-items: baseline; padding: 13px 22px; border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.window-picker strong { font-size: 24px; }
+.window-picker span { font-size: 14px; }
+.window-picker button[aria-pressed='true'] { background: var(--pink); color: var(--ink); }
+.window-picker button[data-window='mailbox'][aria-pressed='true'] { background: var(--mint); }
+.toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.group { display: flex; gap: 6px; }
+.toolbar a { margin-left: auto; font-size: 14px; text-underline-offset: 4px; }
+.preview-stage { background: color-mix(in srgb, var(--ink) 18%, var(--paper)); border: 1px solid color-mix(in srgb, var(--ink) 30%, var(--paper)); border-radius: 8px; padding: 16px; overflow: hidden; }
+.frame-space { position: relative; margin: auto; }
+iframe { display: block; border: 0; transform-origin: left top; }
+.footnote { font-size: 14px; line-height: 1.7; color: var(--muted); margin: 14px 0 0; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (max-width: 700px) { body { padding: 22px 14px; } .studio-header { display: block; } .intro { margin-top: 14px !important; } h1 { font-size: 32px; } .window-picker { gap: 12px; } .window-picker button { flex: 1; padding: 11px 14px; } .window-picker span { display: none; } .preview-stage { padding: 6px; } .toolbar { gap: 8px; } .toolbar a { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { button { transition: none; } }

@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><link rel="stylesheet" href="./studio.css"><title>公告 & 邮箱 · 阴影纸卡样板</title></head>
+<body>
+  <header class="studio-header"><div><p>星炬学院围棋部 · 窗口设计</p><h1>公告 & 邮箱</h1></div><p class="intro">厚阴影、叠纸层次，保留熟悉的动效。<br>点击卡片，试一试阅读、返回与领取附件。</p></header>
+  <main>
+    <nav class="window-picker" aria-label="选择窗口"><button data-window="announcement" aria-pressed="true"><strong>公告</strong><span>布告纸卡 · 粉色题头</span></button><button data-window="mailbox" aria-pressed="false"><strong>邮箱</strong><span>信件纸卡 · 薄荷附件托盘</span></button></nav>
+    <div class="toolbar"><div class="group" aria-label="设计对照"><button data-view="paper" aria-pressed="true">新样板</button><button data-view="original" aria-pressed="false">现有窗口</button></div><div class="group" aria-label="屏幕尺寸"><button data-size="desktop" aria-pressed="true">桌面</button><button data-size="mobile" aria-pressed="false">手机 390</button><button data-size="narrow" aria-pressed="false">窄屏 320</button></div><select id="fixture" aria-label="样例内容"><option value="normal">正常内容</option><option value="long">长标题 / 长正文</option><option value="empty">空列表</option></select><button id="replay">重播动效</button><a id="standalone" href="./preview.html?window=announcement" target="_blank" rel="noopener">单独打开 ↗</a></div>
+    <section class="preview-stage" aria-label="交互预览"><div class="frame-space"><iframe title="公告纸卡交互样板" src="./preview.html?window=announcement"></iframe></div></section>
+    <p class="footnote">这是可交互模板，尚未实装。示例领取、删除只改变当前预览，刷新即可恢复。</p>
+  </main>
+  <script type="module" src="./studio.js"></script>
+</body></html>

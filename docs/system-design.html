@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h3>2026-10-22 公告与邮箱阴影纸卡样板</h3>
+<p>新增<a href="./design-samples/information-paper-2026-10-22/index.html">公告与邮箱交互模板</a>：公告使用浅粉题头的布告纸卡，邮箱使用薄荷信头与附件托盘，统一墨色厚阴影、错位底纸、阅读丝印及悬停／按下反馈。保留原标题贴纸、公告左侧书签、窗口开关、公告进入、邮箱分段进入和手机列表／详情滑动；手机单列列表按完整卡片停靠，已完成邮件为浅灰状态。模板复用正式组件，所有 API 仅在页面内存模拟，未改生产功能。比较页提供新旧对照、桌面／390／320px、长内容与空列表；检查与截图见<a href="./design-samples/information-paper-2026-10-22/README.md">说明</a>。</p>
 <h3>2026-10-22 功能卡片丝印正式接入</h3>
 <p>已将用户确认的<a href="./design-samples/academy-card-materials-2026-10-22/screenprint.html">七种功能纹理</a>接入普通 Bright School 的履历、他人详情、好友、仓库、观战、角色详情、成就和公告。独立最终样式 owner 按卡片语义分配静态 SVG，只覆盖单次背景绘制；保留原尺寸、文字、边框、阴影、状态色及角色美术，黑化主题和其它主题不参与。按后续要求，段位使用授章图形的左右镜像并放在左下角，成就继续使用右下原图。桌面与竖屏采用已确认的不同尺度；观战纹理随原纸卡底层移动。比较页新增<a href="./design-samples/academy-card-materials-2026-10-22/production.html">正式样式预览</a>，历史样板保留独立覆盖以便对照；详情预览先挂载主题壳再打开 Portal，与正式应用生命周期一致。资源、作用域与验证合同见 <a href="./system-design/06-ui-theme-mobile.md">UI 主题分篇</a>及<a href="./design-samples/academy-card-materials-2026-10-22/production-integration.md">实装记录</a>。</p>
 <h3>2026-10-22 按卡片功能分配丝印纹理</h3>

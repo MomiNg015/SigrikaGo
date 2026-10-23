@@ -1,0 +1,203 @@
+/* Isolated concept paint. Production motion, focus and modal behavior stay in charge. */
+#information-paper-sample {
+  --paper-ink: var(--bright-border);
+  --paper-white: var(--bright-sheet-clean);
+  --paper-fill: var(--bright-sheet);
+  --paper-pink: color-mix(in srgb, var(--bright-pink) 35%, var(--paper-white));
+  --paper-mint: color-mix(in srgb, var(--bright-mint) 45%, var(--paper-white));
+}
+#information-paper-sample .information-center-modal { gap: 16px !important; }
+#information-paper-sample .information-center-layout {
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.45fr);
+  gap: 22px !important;
+  padding: 4px 9px 10px 3px;
+}
+#information-paper-sample .information-center-master {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#information-paper-sample .information-center-reader {
+  border: 2px solid var(--paper-ink) !important;
+  border-radius: 8px !important;
+  background-color: var(--paper-fill) !important;
+  box-shadow: 4px 4px 0 var(--paper-fill), 6px 6px 0 var(--paper-ink) !important;
+}
+#information-paper-sample :is(.announcement-list, .mailbox-list) {
+  display: flex !important;
+  flex-direction: column;
+  gap: 13px;
+  padding: 3px 9px 10px 3px !important;
+  scroll-padding: 3px 0 10px;
+  scrollbar-width: thin;
+  scroll-snap-type: y mandatory;
+}
+#information-paper-sample :is(.announcement-list, .mailbox-list) > li { flex: 0 0 auto; border: 0 !important; scroll-snap-align: start; }
+#information-paper-sample :is(.announcement-list-item, .mailbox-list-item) {
+  position: relative;
+  min-height: var(--paper-row-height, 108px) !important;
+  height: var(--paper-row-height, auto) !important;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 15px 13px !important;
+  border: 2px solid var(--paper-ink) !important;
+  border-radius: 8px !important;
+  background-color: var(--paper-white) !important;
+  color: var(--bright-ink) !important;
+  box-shadow: 3px 4px 0 var(--paper-ink) !important;
+  transform: translate(0, 0) !important;
+  transition: transform 150ms cubic-bezier(.22, 1, .36, 1), box-shadow 150ms cubic-bezier(.22, 1, .36, 1), background-color 150ms ease !important;
+}
+#information-paper-sample .announcement-list-item.active { background-color: var(--paper-pink) !important; }
+#information-paper-sample .mailbox-list-item.active { background-color: var(--paper-mint) !important; }
+#information-paper-sample :is(.announcement-list-title, .mailbox-list-title) {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+#information-paper-sample :is(.announcement-list-title, .mailbox-list-title) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal !important; }
+#information-paper-sample .announcement-list-title .announcement-unread-dot { display: inline-block; margin-right: 7px; }
+#information-paper-sample .announcement-unread-dot { flex-shrink: 0; box-shadow: none !important; }
+#information-paper-sample .announcement-list-meta { gap: 7px 12px; margin-top: 2px; }
+#information-paper-sample .announcement-list-meta b {
+  padding: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  font-size: 13px !important;
+}
+#information-paper-sample :is(.announcement-list-meta time, .mailbox-list-meta) { font-size: 13px !important; color: var(--theme-muted) !important; }
+#information-paper-sample .announcement-detail { padding: 0 !important; }
+#information-paper-sample .announcement-detail-header {
+  flex: 0 0 auto;
+  padding: 22px 25px 20px !important;
+  background-color: var(--paper-pink);
+  border-bottom: 2px solid var(--paper-ink) !important;
+}
+#information-paper-sample .announcement-detail-kind { margin-bottom: 10px; font-size: 13px !important; color: var(--bright-ink); letter-spacing: .05em; }
+#information-paper-sample :is(.announcement-detail-header h3, .mailbox-detail-header h3) {
+  font-size: clamp(23px, 2.25vw, 29px) !important;
+  line-height: 1.4 !important;
+  font-weight: 700 !important;
+  text-wrap: pretty;
+}
+#information-paper-sample .announcement-detail-header p { margin-top: 12px; font-size: 13px !important; }
+#information-paper-sample .announcement-detail-body { padding: 23px 25px 28px !important; }
+#information-paper-sample .information-center-prose { font-size: 16px !important; line-height: 1.85 !important; font-weight: 400 !important; }
+#information-paper-sample .information-center-prose :is(h4,h5) { font-size: 20px !important; font-weight: 700; }
+#information-paper-sample .mailbox-list-item { padding-bottom: 35px !important; }
+#information-paper-sample .mailbox-list-item::after {
+  content: '未读';
+  position: absolute;
+  right: 15px;
+  bottom: 10px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--theme-muted);
+}
+#information-paper-sample .mailbox-list-item[aria-label*='待领取']::after { content: '附件待领取'; color: var(--bright-ink); }
+#information-paper-sample .mailbox-list-item.state-done::after { content: '✓ 已完成'; }
+#information-paper-sample .mailbox-list-item.state-done:not(.active) { background-color: color-mix(in srgb, var(--theme-muted) 10%, var(--paper-white)) !important; }
+#information-paper-sample .mailbox-list-item.state-done .mailbox-list-title { color: var(--theme-muted); font-weight: 400 !important; }
+#information-paper-sample .mailbox-list-item {
+  background-image: url('/assets/ui/card-prints/reading.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: right -7px bottom -14px !important;
+  background-size: 150px 150px !important;
+}
+#information-paper-sample .mailbox-detail {
+  padding: 0 !important;
+}
+#information-paper-sample .mailbox-body {
+  background-image: url('/assets/ui/card-prints/reading.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: right bottom !important;
+  background-size: 310px 310px !important;
+}
+#information-paper-sample .mailbox-detail-header {
+  flex: 0 0 auto;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  gap: 10px;
+  padding: 24px 24px 20px !important;
+  border-bottom: 2px solid var(--paper-ink) !important;
+  background-color: var(--paper-mint);
+}
+#information-paper-sample .mailbox-detail-meta { gap: 4px 10px; font-size: 13px !important; font-weight: 400; }
+#information-paper-sample .mailbox-detail-meta time::before { margin-right: 10px; }
+#information-paper-sample .mailbox-delete-button {
+  width: 34px !important; height: 34px !important; min-width: 34px !important; min-height: 34px !important;
+  border-radius: 8px !important; border: 1px solid var(--paper-ink) !important;
+  background: var(--paper-white) !important;
+  box-shadow: 2px 2px 0 var(--paper-ink) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease !important;
+}
+#information-paper-sample .mailbox-delete-button:disabled { opacity: .5; box-shadow: none !important; }
+#information-paper-sample .mailbox-body { padding: 23px 25px 26px !important; max-width: none; }
+#information-paper-sample .mailbox-attachment-shelf {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 130px;
+  padding: 16px 24px 17px;
+  align-items: center;
+  border-top: 2px dashed color-mix(in srgb, var(--paper-ink) 35%, transparent);
+  background-color: color-mix(in srgb, var(--bright-mint) 20%, var(--paper-fill));
+}
+#information-paper-sample .mailbox-attachment-icon {
+  border: 2px solid var(--paper-ink) !important;
+  border-radius: 8px !important;
+  background-color: var(--paper-white) !important;
+  box-shadow: 3px 3px 0 var(--paper-ink) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease !important;
+}
+#information-paper-sample .mailbox-attachment-tile { overflow: visible !important; }
+#information-paper-sample .mailbox-attachment-caption { font-size: 14px !important; }
+#information-paper-sample .mailbox-attachment-quantity-badge {
+  top: auto; bottom: -3px; right: -8px; height: auto;
+  padding: 2px 6px; border: 1px solid var(--paper-ink) !important; border-radius: 0;
+  font-size: 14px !important; line-height: 1.3;
+}
+#information-paper-sample .mailbox-claim-button { min-height: 43px !important; padding: 8px 16px !important; }
+@media (hover: hover) and (pointer: fine) {
+  #information-paper-sample :is(.announcement-list-item, .mailbox-list-item):hover { transform: translate(-1px,-2px) !important; box-shadow: 4px 6px 0 var(--paper-ink) !important; }
+  #information-paper-sample .mailbox-attachment-tile:hover .mailbox-attachment-icon { transform: translate(-1px,-2px); box-shadow: 4px 5px 0 var(--paper-ink) !important; }
+  #information-paper-sample .mailbox-delete-button:hover:not(:disabled) { transform: translate(-1px,-1px) !important; box-shadow: 3px 3px 0 var(--paper-ink) !important; }
+}
+#information-paper-sample :is(.announcement-list-item, .mailbox-list-item):active { transform: translate(2px,3px) !important; box-shadow: 1px 1px 0 var(--paper-ink) !important; }
+#information-paper-sample .mailbox-attachment-tile:active .mailbox-attachment-icon { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--paper-ink) !important; }
+#information-paper-sample .mailbox-delete-button:active:not(:disabled) { transform: translate(2px,2px) !important; box-shadow: none !important; }
+@media (max-width: 768px) {
+  #information-paper-sample .announcement-modal { height: calc(100dvh - 76px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; min-height: 0 !important; }
+  #information-paper-sample .information-center-layout { padding: 0; overflow: visible !important; }
+  #information-paper-sample .information-center-back-button[aria-hidden='true'] { visibility: hidden; }
+  #information-paper-sample .information-center-master { padding: 0 0 0 0 !important; }
+  #information-paper-sample .information-center-reader { inset: 3px 7px 8px 1px !important; width: auto !important; height: auto !important; }
+  #information-paper-sample :is(.announcement-list, .mailbox-list) { gap: 12px; padding-top: 3px !important; padding-left: 1px !important; }
+  #information-paper-sample .announcement-detail-header { padding: 18px 17px 16px !important; }
+  #information-paper-sample :is(.announcement-detail-header h3, .mailbox-detail-header h3) { font-size: 23px !important; }
+  #information-paper-sample .announcement-detail-body { padding: 19px 17px 24px !important; }
+  #information-paper-sample .mailbox-detail-header { padding: 18px 17px 16px !important; }
+  #information-paper-sample .mailbox-body { background-size: 200px 200px !important; }
+  #information-paper-sample .mailbox-body { padding: 18px 17px 22px !important; }
+  #information-paper-sample .mailbox-detail-meta { display: grid; gap: 4px; }
+  #information-paper-sample .mailbox-detail-meta time::before { content: none; }
+  #information-paper-sample .mailbox-attachment-shelf { min-height: 120px; padding: 13px 17px 15px; gap: 12px; }
+  #information-paper-sample .mailbox-attachment-icon { width: 66px; height: 66px; }
+  #information-paper-sample .mailbox-attachment-tile { min-height: 90px; }
+  #information-paper-sample .mailbox-claim-button { padding: 8px 12px !important; }
+}
+@media (max-width: 768px) and (max-height: 650px) {
+  #information-paper-sample :is(.mailbox-detail-header h3, .announcement-detail-header h3) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font-size: 21px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #information-paper-sample :is(.announcement-list-item, .mailbox-list-item, .mailbox-attachment-icon, .mailbox-delete-button) { transition: none !important; }
+}

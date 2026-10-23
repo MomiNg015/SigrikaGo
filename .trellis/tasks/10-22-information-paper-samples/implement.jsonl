@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/window-title-stickers.md","reason":"Preserve title stickers and scroll ownership"}
+{"file":".trellis/spec/frontend/card-screenprint-contract.md","reason":"Retain reading print and semantic fills"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Isolate sample CSS from production"}
+{"file":".trellis/tasks/10-22-information-paper-samples/prd.md","reason":"Scope and acceptance"}

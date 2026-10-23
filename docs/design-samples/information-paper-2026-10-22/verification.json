@@ -1,0 +1,41 @@
+{
+  "results": [
+    "announcement/desktop/normal: PASS",
+    "announcement/desktop/long: PASS",
+    "announcement/desktop/empty: PASS",
+    "mailbox/desktop/normal: PASS",
+    "mailbox/desktop/long: PASS",
+    "mailbox/desktop/empty: PASS",
+    "announcement/mobile/normal: PASS",
+    "announcement/mobile/long: PASS",
+    "announcement/mobile/empty: PASS",
+    "mailbox/mobile/normal: PASS",
+    "mailbox/mobile/long: PASS",
+    "mailbox/mobile/empty: PASS",
+    "announcement/narrow/normal: PASS",
+    "announcement/narrow/long: PASS",
+    "announcement/narrow/empty: PASS",
+    "mailbox/narrow/normal: PASS",
+    "mailbox/narrow/long: PASS",
+    "mailbox/narrow/empty: PASS",
+    "hover/press, original mailbox motion, reduced motion, studio controls: PASS"
+  ],
+  "animations": [
+    [
+      "mailbox-detail-content-enter",
+      "0.42s",
+      "0s"
+    ],
+    [
+      "mailbox-detail-content-enter",
+      "0.42s",
+      "0.1s"
+    ],
+    [
+      "mailbox-detail-content-enter",
+      "0.42s",
+      "0.2s"
+    ]
+  ],
+  "errors": []
+}
