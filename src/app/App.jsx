@@ -39,6 +39,7 @@ import { useHomeOnboarding } from "../home/onboarding/useHomeOnboarding.js";
 import HomeOnboarding from "../home/onboarding/HomeOnboarding.jsx";
 import { useMatchSessionState } from "./useMatchSessionState.js";
 import { useOverlayState } from "./useOverlayState.js";
+import { useModalScrollLock } from "./useModalScrollLock.js";
 import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
 import { useRoomSessionState } from "./useRoomSessionState.js";
 import SigrikaCorruptionOverlay from "./SigrikaCorruptionOverlay.jsx";
@@ -63,6 +64,8 @@ const EXIT_CONFIRM_MESSAGE = "\u518d\u6b21\u786e\u8ba4\u540e\u5c06\u79bb\u5f00\u
 const EXIT_CONFIRM_TEXT = "\u9000\u51fa\u6e38\u620f";
 
 export default function App({ initialCharacters = CHARACTERS, initialSiteSettings } = {}) {
+  const shellRef = useRef(null);
+  useModalScrollLock(shellRef);
   const initialSession = initialSessionState();
   const [token, setToken] = useState(initialSession.token);
   const [view, setView] = useState(initialSession.view);
@@ -653,6 +656,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
 
   return (
     <div
+      ref={shellRef}
       aria-busy={sigrikaCorruptionTransitioning || undefined}
       className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}
     >

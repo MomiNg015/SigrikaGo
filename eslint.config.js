@@ -5,6 +5,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/app/useModalScrollLock*",
+  "tests/e2e/modal-scroll*.js",
+  "tests/e2e/fixtures/modal-scroll.jsx",
   "tests/e2e/card-screenprints*.js",
   "src/modals/house/HouseNestedDialogs.jsx",
   "src/modals/house/CharacterDetailDialog.dom.test.jsx",

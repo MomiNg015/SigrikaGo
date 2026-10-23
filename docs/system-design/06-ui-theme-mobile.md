@@ -1,5 +1,17 @@
 # UI 主题、移动端与交互体验
 
+## 移动端窗口滚动隔离（2026-10-22）
+
+2026-10-23 补充排行榜的真实窗口边界：`.lp-scroll` 必须保留 `position: relative`。列表中 `.lp-row .lp-rate small` 使用绝对定位隐藏说明，若最近定位容器在滚动区外，内容即使视觉上被隐藏也会扩大外层 `.lp-standings` 与遮罩的滚动范围。将定位容器限制在名单内后，窗口外壳及底部「我的排名」保持固定，滚动仅发生在名单；不通过裁掉外伸标题、关闭全部遮罩滚动或删除可访问说明掩盖问题。浏览器回归检查遮罩 `scrollHeight - clientHeight <= 1`、隐藏说明的 offsetParent 在名单内，以及真实触点从「我的排名」文字边界内开始后窗口 y 坐标不变。
+
+`App` 给应用壳设置稳定 ref，并挂载唯一的 `useModalScrollLock(shellRef)`。它观察 `.modal-backdrop` / `.nested-modal-backdrop` 的实际挂载与卸载，不依赖仅包含应用级窗口的关闭顺序表，因此局部确认框、房间资料窗口及壳内 Portal 也受保护。仅在 `(hover: none), (pointer: coarse), (max-width: 768px)` 命中且有窗口时启用；监听媒体变化，桌面不锁滚动。
+
+锁定范围为 `html`、`body`、应用壳，以及各遮罩背后的实际祖先滚动容器。临时 `overflow-y: hidden !important` 必须胜过手机主题的 `auto !important`，并逐元素保存及恢复原内联值和优先级。不固定 body，不更改 scrollTop；嵌套层关闭只释放不再受遮挡的容器，最后一层关闭或根组件卸载时完整恢复。
+
+窗口存在期间以非 passive 的捕获监听处理 touchmove / wheel：从触摸目标向最近遮罩查找可消费当前方向滚动的容器，搜索到遮罩即停止；列表到顶／到底、短内容、标题、遮罩和背景上的滑动不传给更外层页面。窗口内部的普通滚动及可滚动遮罩继续可用，横向列表、音量 range 拖动、多指手势及 Ctrl+wheel 缩放保留。现有 overscroll 样式继续负责各窗口内部的滚动链，不逐窗口复制 document 监听。
+
+`useModalScrollLock.dom.test.jsx` 覆盖恢复优先级和位置、滚动边界、短内容、普通及 Portal 嵌套、横向／缩放、媒体切换及 Strict Mode 清理。`npx playwright test --config tests/e2e/modal-scroll.config.js` 用实际 SettingsModal / ConfirmModal 和原生触摸输入验证 320／390px 竖屏的内容滚动、背景不动、关闭一层仍锁定以及最后关闭后的滚动恢复。
+
 ## 按功能分配的卡片丝印（2026-10-22）
 
 普通 Bright School 的八类内容窗口采用七种角部丝印：身份切角、记录矩阵、社交联结、物品折带、战术楔阵、阅读页角和荣誉菱片。资源位于 `public/assets/ui/card-prints/`；另有 `rank.svg` 将荣誉图形左右镜像，仅段位卡放在左下，成就仍保持右下。映射覆盖履历与他人详情、好友、仓库、观战、角色详情、成就和公告，不以卡片数组顺序随机分配。同一履历组合身份／荣誉／记录，角色技能和简介区分战术／阅读。
