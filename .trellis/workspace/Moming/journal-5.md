@@ -203,3 +203,36 @@ Integrated approved paper cards with complete-row scrolling, aligned 36px mobile
 ### Next Steps
 
 - None - task complete
+
+
+## Session 247: Integrate texture-free shop A materials
+
+**Date**: 2026-10-23
+**Task**: Integrate texture-free shop A materials
+**Branch**: `master`
+
+### Summary
+
+Integrated selected shop A with texture-free product cards, transparent stone previews, Zahira purple/gold and independent Fractsidus red/charcoal/silver paint. Preserved geometry and motion in six viewport/store cases; local fixture purchase and equip flow passed. 151 focused tests, lint, build, built-CSS and generated system docs passed. Scoped commit preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0a309cf7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
