@@ -170,3 +170,36 @@ Integrated seven approved semantic corner motifs into eight Bright School window
 ### Next Steps
 
 - None - task complete
+
+
+## Session 246: 公告邮箱纸卡实装与手机按钮对齐
+
+**Date**: 2026-10-23
+**Task**: 公告邮箱纸卡实装与手机按钮对齐
+**Branch**: `master`
+
+### Summary
+
+Integrated approved paper cards with complete-row scrolling, aligned 36px mobile back/close, preserved domain flows and motion. 100 focused tests and 19 browser cases pass, with build/CSS/lint verification; recorded unrelated proxy timeout and admin snapshot gate failures. Preserved other checkout edits.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6582807a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
