@@ -8,6 +8,7 @@ import './harness.css';
 import './materials.css';
 
 const query = new URLSearchParams(location.search);
+const production = location.pathname.endsWith('/production.html');
 const allowed = ['original', 'velvet', 'ticket', 'enamel'];
 const initialSkin = allowed.includes(query.get('skin')) ? query.get('skin') : 'velvet';
 const line = query.get('state') === 'long' ? '你的心声像晨鸟一样热闹……是有什么，悄悄锁住你的目光了吗？不必着急，请慢慢挑选。' : '欢迎。请先随意看看，不必急着开口。';
@@ -32,7 +33,7 @@ function Sample() {
     const timer = setTimeout(() => setNotice(''), 2400);
     return () => clearTimeout(timer);
   }, [notice]);
-  return <main id="shop-materials" data-skin={skin} className="app-shell player-theme-enabled theme-bright-school">
+  return <main id={production ? 'shop-production' : 'shop-materials'} data-skin={skin} className="app-shell player-theme-enabled theme-bright-school">
     {open ? <ShopModal token="local-material-preview" user={user} musicTracks={[]} siteSettings={settings} onPurchased={setUser} onNotice={setNotice} onClose={() => setOpen(false)} /> : <div className="sample-reopen"><button onClick={() => setOpen(true)}>重新打开商店</button></div>}
     {notice && <div className="sample-notice" role="status">{notice}</div>}
   </main>;

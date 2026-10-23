@@ -91,3 +91,7 @@
 @import "./mobile-adaptive/readable-type-battle.css";
 @import "./mobile-adaptive/readable-type-admin.css";
 @import "./mobile-adaptive/card-screenprints.css";
+@import "./themes/bright-school/commerce/shop/material-header.css";
+@import "./themes/bright-school/commerce/shop/material-cards.css";
+@import "./themes/bright-school/commerce/shop/material-dialogue.css";
+@import "./themes/bright-school/commerce/shop/material-fractsidus.css";

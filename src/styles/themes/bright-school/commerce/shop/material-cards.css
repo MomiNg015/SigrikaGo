@@ -1,0 +1,51 @@
+/* Approved shop A paint only; layout, sizing and motion remain with existing owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window {
+  .shop-card-position .shop-item {
+    background: var(--shop-material-paper) !important;
+    border-color: var(--shop-material-ink) !important;
+    box-shadow: 4px 5px 0 rgb(48 28 53 / 68%), inset 0 0 0 2px var(--shop-material-edge) !important;
+    border-radius: 12px !important;
+  }
+  .shop-item-detail-trigger, .shop-item > .primary-action { position: relative; z-index: 1; }
+  .shop-card-position .shop-item::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    inset: 7px;
+    border: 1px solid color-mix(in srgb, var(--shop-material-edge) 70%, transparent) !important;
+    border-radius: 6px !important;
+    pointer-events: none;
+  }
+  .shop-card-position .shop-corner-badge {
+    color: var(--shop-material-ink) !important;
+    background: var(--shop-material-tag) !important;
+    border-color: var(--shop-material-edge) !important;
+    box-shadow: 1px 2px 0 rgb(73 54 79 / 20%) !important;
+    border-radius: 4px !important;
+  }
+  .shop-card-position .shop-quantity-badge { background: #e9c886 !important; }
+  .shop-card-position .shop-item strong { color: var(--shop-material-ink) !important; }
+  .shop-card-position .shop-price { color: var(--shop-material-ink) !important; }
+  .shop-item > .primary-action:not(:disabled) {
+    --campus-control-fill: var(--shop-material-fill);
+    --campus-control-hover: color-mix(in srgb, var(--shop-material-fill) 83%, white);
+    --campus-control-ink: var(--shop-material-title);
+    --campus-control-border: var(--shop-material-ink);
+    --campus-control-shadow: 2px 3px 0 rgb(48 28 53 / 40%), inset 0 1px 0 rgb(255 242 213 / 24%);
+    --campus-control-hover-shadow: var(--campus-control-shadow);
+    background: var(--shop-material-fill) !important;
+    color: var(--shop-material-title) !important;
+    border-color: var(--shop-material-ink) !important;
+    box-shadow: 2px 3px 0 rgb(48 28 53 / 40%), inset 0 1px 0 rgb(255 242 213 / 24%) !important;
+    border-radius: 7px !important;
+  }
+  .shop-item > .primary-action:not(:disabled):hover { background: color-mix(in srgb, var(--shop-material-fill) 83%, white) !important; }
+  .costume-shop-price { background: var(--shop-material-paper) !important; color: var(--shop-material-ink) !important; border-color: var(--shop-material-edge) !important; box-shadow: 2px 3px 0 rgb(48 28 53 / 50%) !important; }
+  .shop-card-position .shop-category-badge { background: #57445f !important; color: #fff2d5 !important; }
+  .shop-category-decoration .stone-decoration-preview {
+    background: transparent !important;
+    border-color: transparent !important;
+    border-style: solid !important;
+    box-shadow: none !important;
+  }
+}

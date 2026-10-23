@@ -1,0 +1,3134 @@
+{
+  "zahira-desktop": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        160,
+        28,
+        1120,
+        760
+      ],
+      "animation": [
+        "modal-window-enter",
+        "0.26s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        163,
+        31,
+        1114,
+        68
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        239,
+        45.5,
+        853.98,
+        36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        175,
+        39.5,
+        48,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        1213,
+        41.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        1104.98,
+        41,
+        96.02,
+        45
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        577.48,
+        129.66,
+        149.16,
+        208.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        322.94,
+        130.17,
+        149.16,
+        208.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        441.36,
+        370.36,
+        149.16,
+        208.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        679.31,
+        372.48,
+        149.16,
+        208.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        211.31,
+        375.16,
+        149.16,
+        208.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        577.48,
+        129.66,
+        149.17,
+        208.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        322.94,
+        130.17,
+        149.17,
+        208.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        441.36,
+        370.36,
+        149.17,
+        208.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        679.31,
+        372.48,
+        149.17,
+        208.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        211.31,
+        375.16,
+        149.17,
+        208.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        576.78,
+        129.15,
+        150.59,
+        209.85
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        321.27,
+        128.99,
+        152.5,
+        211.21
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        439.58,
+        369.1,
+        152.72,
+        211.36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        678.21,
+        371.7,
+        151.38,
+        210.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        210.19,
+        374.36,
+        151.42,
+        210.44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        576.76,
+        127.48,
+        150.59,
+        209.85
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        321.35,
+        133.93,
+        152.5,
+        211.21
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.63s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        439.68,
+        363.79,
+        152.72,
+        211.36
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.1s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        678.17,
+        374.9,
+        151.38,
+        210.41
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.4s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        210.19,
+        374.41,
+        151.42,
+        210.44
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 0,
+      "rect": [
+        576.76,
+        127.48,
+        150.59,
+        209.85
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 1,
+      "rect": [
+        321.35,
+        133.93,
+        152.5,
+        211.21
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 2,
+      "rect": [
+        439.68,
+        363.79,
+        152.72,
+        211.36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 3,
+      "rect": [
+        678.17,
+        374.9,
+        151.38,
+        210.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 4,
+      "rect": [
+        210.19,
+        374.41,
+        151.42,
+        210.44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-product-stage",
+      "index": 0,
+      "rect": [
+        163,
+        99,
+        757.52,
+        535.08
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        820.25,
+        236.2,
+        479.02,
+        562.52
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-bubble",
+      "index": 0,
+      "rect": [
+        869,
+        279.14,
+        340,
+        149.14
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        177,
+        723,
+        184,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ],
+  "costume-desktop": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        160,
+        28,
+        1120,
+        760
+      ],
+      "animation": [
+        "modal-window-enter",
+        "0.26s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        163,
+        31,
+        1114,
+        68
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        239,
+        45.5,
+        853.98,
+        36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        175,
+        39.5,
+        48,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        1213,
+        41.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        1104.98,
+        41,
+        96.02,
+        45
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        897.98,
+        163.95,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        687,
+        164.47,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        791.31,
+        437.58,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        1000.08,
+        439.7,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        583.59,
+        442.39,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        897.98,
+        163.95,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        687,
+        164.47,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        791.31,
+        437.58,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        1000.08,
+        439.7,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        583.59,
+        442.39,
+        172.69,
+        241.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        894,
+        161.14,
+        180.66,
+        247.39
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        685.24,
+        163.22,
+        176.22,
+        244.28
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        791.04,
+        437.38,
+        173.24,
+        242.16
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        999.76,
+        439.48,
+        173.33,
+        242.22
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        581.98,
+        441.24,
+        175.93,
+        244.07
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        893.88,
+        157.3,
+        180.66,
+        247.39
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        685.35,
+        170.68,
+        176.22,
+        244.28
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        791.03,
+        433.58,
+        173.24,
+        242.16
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.31s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        999.77,
+        435.73,
+        173.33,
+        242.22
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.98s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        581.94,
+        444.28,
+        175.93,
+        244.07
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.11s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-stage",
+      "index": 0,
+      "rect": [
+        552.89,
+        133.3,
+        679.56,
+        603.69
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        147.86,
+        304.81,
+        424.2,
+        493.91
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-bubble",
+      "index": 0,
+      "rect": [
+        204.66,
+        153.88,
+        303,
+        134.34
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        1079,
+        723,
+        184,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ],
+  "zahira-mobile": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        10,
+        10,
+        368,
+        820
+      ],
+      "animation": [
+        "bright-mobile-sheet-in",
+        "0.22s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        13,
+        13,
+        362,
+        60
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        71,
+        29.02,
+        162.73,
+        24.95
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        21,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        323,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        239.73,
+        24.5,
+        77.27,
+        34
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        79.8,
+        145.27,
+        109.33,
+        130.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        193.42,
+        145.27,
+        109.33,
+        130.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        23,
+        285.94,
+        109.33,
+        130.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        136.61,
+        285.94,
+        109.33,
+        130.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        250.22,
+        285.94,
+        109.33,
+        130.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        79.8,
+        145.27,
+        109.34,
+        130.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        193.42,
+        145.27,
+        109.34,
+        130.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        23,
+        285.94,
+        109.34,
+        130.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        136.61,
+        285.94,
+        109.34,
+        130.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        250.22,
+        285.94,
+        109.34,
+        130.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        78.75,
+        144.4,
+        111.42,
+        132.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        192.98,
+        144.9,
+        110.22,
+        131.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        22.3,
+        285.35,
+        110.75,
+        131.85
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        135.5,
+        285.01,
+        111.56,
+        132.52
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        249.53,
+        285.36,
+        110.72,
+        131.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        78.8,
+        147.38,
+        111.42,
+        132.41
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.63s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        192.97,
+        143.89,
+        110.22,
+        131.41
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        22.3,
+        285.38,
+        110.74,
+        131.85
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        135.55,
+        281.81,
+        111.56,
+        132.52
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.1s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        249.51,
+        287.29,
+        110.72,
+        131.83
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.4s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 0,
+      "rect": [
+        78.8,
+        147.38,
+        111.42,
+        132.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 1,
+      "rect": [
+        192.97,
+        143.89,
+        110.22,
+        131.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 2,
+      "rect": [
+        22.3,
+        285.38,
+        110.74,
+        131.85
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 3,
+      "rect": [
+        135.55,
+        281.81,
+        111.56,
+        132.52
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 4,
+      "rect": [
+        249.51,
+        287.29,
+        110.72,
+        131.83
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-product-stage",
+      "index": 0,
+      "rect": [
+        13,
+        73,
+        362,
+        422.23
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        34.72,
+        517.86,
+        362,
+        324.22
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-bubble",
+      "index": 0,
+      "rect": [
+        23.86,
+        502.77,
+        224.44,
+        96.5
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        21,
+        771,
+        146,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ],
+  "costume-mobile": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        10,
+        10,
+        368,
+        820
+      ],
+      "animation": [
+        "bright-mobile-sheet-in",
+        "0.22s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        13,
+        13,
+        362,
+        60
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        71,
+        31.94,
+        162.73,
+        19.11
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        21,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        323,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        239.73,
+        24.5,
+        77.27,
+        34
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        89.47,
+        160.13,
+        100.02,
+        119.53
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        193.5,
+        160.13,
+        100.02,
+        119.53
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        37.47,
+        289.66,
+        100.02,
+        119.53
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        141.48,
+        289.66,
+        100.02,
+        119.53
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        245.5,
+        289.66,
+        100.02,
+        119.53
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        89.47,
+        160.13,
+        100.02,
+        119.54
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        193.5,
+        160.13,
+        100.02,
+        119.54
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        37.47,
+        289.66,
+        100.02,
+        119.54
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        141.48,
+        289.66,
+        100.02,
+        119.54
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        245.5,
+        289.66,
+        100.02,
+        119.54
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        88.6,
+        159.4,
+        101.76,
+        120.99
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        191.54,
+        158.49,
+        103.95,
+        122.81
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        36.67,
+        288.99,
+        101.62,
+        120.87
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        141.35,
+        289.54,
+        100.29,
+        119.77
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        245.34,
+        289.53,
+        100.33,
+        119.8
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        88.65,
+        162.95,
+        101.76,
+        120.99
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        191.47,
+        156.66,
+        103.95,
+        122.81
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        36.65,
+        290.44,
+        101.62,
+        120.87
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.11s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        141.34,
+        287.73,
+        100.29,
+        119.77
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.31s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        245.35,
+        287.74,
+        100.33,
+        119.8
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.98s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-stage",
+      "index": 0,
+      "rect": [
+        27.47,
+        73,
+        333.06,
+        429.78
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        -44.91,
+        502.77,
+        282.36,
+        343.69
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-bubble",
+      "index": 0,
+      "rect": [
+        168.67,
+        616.23,
+        195.47,
+        86.66
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        203,
+        771,
+        164,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ],
+  "zahira-narrow": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        10,
+        10,
+        298,
+        544
+      ],
+      "animation": [
+        "bright-mobile-sheet-in",
+        "0.22s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        13,
+        13,
+        292,
+        60
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        71,
+        31.25,
+        102.52,
+        20.48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        21,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        253,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        179.52,
+        26.5,
+        67.48,
+        30
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        68.27,
+        97.39,
+        86.53,
+        103.42
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        158.8,
+        97.39,
+        86.53,
+        103.42
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        23,
+        208.83,
+        86.53,
+        103.42
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        113.53,
+        208.83,
+        86.53,
+        103.42
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        204.08,
+        208.83,
+        86.53,
+        103.42
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        68.27,
+        97.39,
+        86.54,
+        103.43
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        158.8,
+        97.39,
+        86.54,
+        103.43
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        23,
+        208.83,
+        86.54,
+        103.43
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        113.53,
+        208.83,
+        86.54,
+        103.43
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        204.08,
+        208.83,
+        86.54,
+        103.43
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        67.44,
+        96.7,
+        88.19,
+        104.8
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        158.45,
+        97.1,
+        87.24,
+        104.01
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        22.44,
+        208.36,
+        87.65,
+        104.36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        112.65,
+        208.1,
+        88.3,
+        104.89
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        203.53,
+        208.37,
+        87.64,
+        104.34
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        67.48,
+        99.06,
+        88.19,
+        104.8
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.63s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        158.44,
+        96.3,
+        87.24,
+        104.01
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        22.44,
+        208.39,
+        87.65,
+        104.36
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        112.7,
+        205.56,
+        88.3,
+        104.89
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.1s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        203.51,
+        209.9,
+        87.64,
+        104.34
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.4s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 0,
+      "rect": [
+        67.48,
+        99.06,
+        88.19,
+        104.8
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 1,
+      "rect": [
+        158.44,
+        96.3,
+        87.24,
+        104.01
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 2,
+      "rect": [
+        22.44,
+        208.39,
+        87.65,
+        104.36
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 3,
+      "rect": [
+        112.7,
+        205.56,
+        88.3,
+        104.89
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-item",
+      "index": 4,
+      "rect": [
+        203.51,
+        209.9,
+        87.64,
+        104.34
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-product-stage",
+      "index": 0,
+      "rect": [
+        13,
+        73,
+        292,
+        267.67
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        30.52,
+        417.16,
+        292,
+        143.39
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-mascot-bubble",
+      "index": 0,
+      "rect": [
+        21.75,
+        355.02,
+        181.03,
+        96.5
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".zahira-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        21,
+        495,
+        146,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ],
+  "costume-narrow": [
+    {
+      "selector": ".shop-window",
+      "index": 0,
+      "rect": [
+        10,
+        10,
+        298,
+        544
+      ],
+      "animation": [
+        "bright-mobile-sheet-in",
+        "0.22s",
+        "cubic-bezier(0.16, 1, 0.3, 1)",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header",
+      "index": 0,
+      "rect": [
+        13,
+        13,
+        292,
+        60
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header h2",
+      "index": 0,
+      "rect": [
+        71,
+        33,
+        102.52,
+        17
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-refresh-button",
+      "index": 0,
+      "rect": [
+        21,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-close-button",
+      "index": 0,
+      "rect": [
+        253,
+        19.5,
+        44,
+        44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".shop-header-balance",
+      "index": 0,
+      "rect": [
+        179.52,
+        26.5,
+        67.48,
+        30
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 0,
+      "rect": [
+        76.11,
+        108.92,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 1,
+      "rect": [
+        158.98,
+        108.92,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 2,
+      "rect": [
+        34.67,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 3,
+      "rect": [
+        117.55,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-position",
+      "index": 4,
+      "rect": [
+        200.42,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 0,
+      "rect": [
+        76.11,
+        108.92,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 1,
+      "rect": [
+        158.98,
+        108.92,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 2,
+      "rect": [
+        34.67,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 3,
+      "rect": [
+        117.55,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-scale",
+      "index": 4,
+      "rect": [
+        200.42,
+        211.19,
+        78.88,
+        94.27
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 0,
+      "rect": [
+        75.42,
+        108.35,
+        80.25,
+        95.41
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 1,
+      "rect": [
+        157.44,
+        107.63,
+        81.97,
+        96.84
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 2,
+      "rect": [
+        34.04,
+        210.66,
+        80.14,
+        95.32
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 3,
+      "rect": [
+        117.44,
+        211.1,
+        79.09,
+        94.44
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-rotation",
+      "index": 4,
+      "rect": [
+        200.3,
+        211.08,
+        79.12,
+        94.47
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 0,
+      "rect": [
+        75.46,
+        111.15,
+        80.25,
+        95.41
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.89s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 1,
+      "rect": [
+        157.39,
+        106.19,
+        81.97,
+        96.84
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.94s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 2,
+      "rect": [
+        34.03,
+        211.81,
+        80.14,
+        95.32
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.11s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 3,
+      "rect": [
+        117.44,
+        209.67,
+        79.09,
+        94.44
+      ],
+      "animation": [
+        "shop-card-float",
+        "4.31s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-card-float",
+      "index": 4,
+      "rect": [
+        200.3,
+        209.67,
+        79.12,
+        94.47
+      ],
+      "animation": [
+        "shop-card-float",
+        "5.98s",
+        "ease-in-out",
+        "infinite"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-stage",
+      "index": 0,
+      "rect": [
+        24.67,
+        73,
+        268.66,
+        272.47
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-mascot-slot",
+      "index": 0,
+      "rect": [
+        -33.72,
+        345.45,
+        227.75,
+        217.88
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .costume-shop-bubble",
+      "index": 0,
+      "rect": [
+        138.58,
+        417.39,
+        157.67,
+        69.91
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    },
+    {
+      "selector": ".costume-store-page .shop-switch-button",
+      "index": 0,
+      "rect": [
+        133,
+        495,
+        164,
+        48
+      ],
+      "animation": [
+        "none",
+        "0s",
+        "ease",
+        "1"
+      ]
+    }
+  ]
+}

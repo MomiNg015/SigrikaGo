@@ -1,0 +1,68 @@
+{
+  "geometry": [
+    {
+      "key": "zahira-desktop",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    },
+    {
+      "key": "costume-desktop",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    },
+    {
+      "key": "zahira-mobile",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    },
+    {
+      "key": "costume-mobile",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    },
+    {
+      "key": "zahira-narrow",
+      "comparedElements": 35,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    },
+    {
+      "key": "costume-narrow",
+      "comparedElements": 30,
+      "geometryAndAnimationsUnchanged": true,
+      "sampleRoot": false,
+      "texture": "none",
+      "stoneFill": "rgba(0, 0, 0, 0)",
+      "stoneBorder": "rgba(0, 0, 0, 0)",
+      "overflow": false
+    }
+  ],
+  "interactions": [
+    "details, purchase, store switch, costume purchase/equip, close/reopen"
+  ],
+  "errors": []
+}

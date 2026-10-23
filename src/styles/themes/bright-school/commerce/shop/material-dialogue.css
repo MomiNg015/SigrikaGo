@@ -1,0 +1,46 @@
+/* Approved shop A paint only; layout, sizing and motion remain with existing owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window {
+  :is(.shop-mascot-bubble, .costume-shop-bubble) {
+    background: none !important;
+    color: var(--shop-material-dialogue-ink) !important;
+    isolation: isolate;
+    text-shadow: none !important;
+  }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    z-index: -1;
+    inset: 12px 2px 30px;
+    background: var(--shop-material-dialogue-fill) !important;
+    border: 2px solid var(--shop-material-dialogue-edge) !important;
+    border-radius: 12px !important;
+    box-shadow: 3px 4px 0 rgb(44 27 46 / 26%), inset 0 0 0 4px rgb(255 250 235 / 22%) !important;
+    pointer-events: none;
+  }
+  :is(.shop-mascot-bubble, .costume-shop-bubble)::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute;
+    z-index: -1;
+    width: 18px;
+    height: 18px;
+    bottom: 22px;
+    right: 34px;
+    background: var(--shop-material-dialogue-fill) !important;
+    border: 0 !important;
+    border-right: 2px solid var(--shop-material-dialogue-edge) !important;
+    border-bottom: 2px solid var(--shop-material-dialogue-edge) !important;
+    transform: skewY(34deg) !important;
+    pointer-events: none;
+  }
+  .costume-shop-bubble::after { right: auto; left: 34px; transform: skewY(-34deg) !important; border-right: 0 !important; border-left: 2px solid var(--shop-material-dialogue-edge) !important; }
+}
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window :is(.shop-mascot-bubble, .costume-shop-bubble)::before {
+    inset: 4px 1px 24px;
+  }
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window :is(.shop-mascot-bubble, .costume-shop-bubble)::after {
+    bottom: 16px;
+  }
+}

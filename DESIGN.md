@@ -196,6 +196,12 @@ Depth is structural rather than atmospheric. Player surfaces use dark, short-off
 
 ## Do's and Don'ts
 
+### Approved shop-specific materials (2026-10-23)
+
+Bright School storefronts use the approved A design within `.shop-window`. Zahira uses purple `#57445f`, ink `#49364f`, old-gold `#d8b978`, parchment `#f4e8cd` and cream lettering `#fff2d5`. Fractsidus has its own red `#4c1724`, charcoal `#252128`, silver `#a69ba0`, dialogue `#381820` and light lettering `#f3edef`; darker and lighter trim shades remain local to those owners. Product cards have no texture. Stone previews have no visible frame or separate fill.
+
+The approved card/dialogue contour uses 12px corners, 6px inner trim and 7px purchase-button corners; Fractsidus uses 4px price/dialogue corners and 8px header controls. These are bounded shop exceptions, not changes to the global panel scale. Shared button state tokens still own interaction feedback; existing shop layout and motion are preserved.
+
 ### Do:
 
 - **Do** make game state legible before making it decorative.

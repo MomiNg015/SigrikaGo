@@ -1,0 +1,242 @@
+[
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 7,
+    "snippet": "border-radius: 12px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "12px"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 16,
+    "snippet": "border-radius: 6px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "6px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 26,
+    "snippet": "Undocumented color #e9c886 is outside DESIGN.md colors",
+    "ignoreValue": "#e9c886"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 40,
+    "snippet": "border-radius: 7px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "7px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 44,
+    "snippet": "Undocumented color #57445f is outside DESIGN.md colors",
+    "ignoreValue": "#57445f"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-cards.css",
+    "line": 44,
+    "snippet": "Undocumented color #fff2d5 is outside DESIGN.md colors",
+    "ignoreValue": "#fff2d5"
+  },
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-dialogue.css",
+    "line": 17,
+    "snippet": "border-radius: 12px is outside the DESIGN.md rounded scale",
+    "ignoreValue": "12px"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 15,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 18,
+    "snippet": "Undocumented color #4c1724 is outside DESIGN.md colors",
+    "ignoreValue": "#4c1724"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 20,
+    "snippet": "Undocumented color #85505b is outside DESIGN.md colors",
+    "ignoreValue": "#85505b"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 22,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 23,
+    "snippet": "Undocumented color #25131a is outside DESIGN.md colors",
+    "ignoreValue": "#25131a"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 33,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 35,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 37,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 37,
+    "snippet": "Undocumented color #554951 is outside DESIGN.md colors",
+    "ignoreValue": "#554951"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 39,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 43,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 44,
+    "snippet": "Undocumented color #4c1724 is outside DESIGN.md colors",
+    "ignoreValue": "#4c1724"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 47,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 47,
+    "snippet": "Undocumented color #a69ba0 is outside DESIGN.md colors",
+    "ignoreValue": "#a69ba0"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 49,
+    "snippet": "Undocumented color #f3edef is outside DESIGN.md colors",
+    "ignoreValue": "#f3edef"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 52,
+    "snippet": "Undocumented color #19171d is outside DESIGN.md colors",
+    "ignoreValue": "#19171d"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\themes\\bright-school\\commerce\\shop\\material-fractsidus.css",
+    "line": 52,
+    "snippet": "Undocumented color #85505b is outside DESIGN.md colors",
+    "ignoreValue": "#85505b"
+  }
+]

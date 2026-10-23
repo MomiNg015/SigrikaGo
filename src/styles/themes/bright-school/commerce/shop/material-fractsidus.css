@@ -1,0 +1,54 @@
+/* Approved shop A paint only; layout, sizing and motion remain with existing owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window {
+  .shop-header[data-store="costume"], .costume-store-page {
+    --shop-material-ink: #e9e4e6;
+    --shop-material-fill: #4c1724;
+    --shop-material-edge: #a69ba0;
+    --shop-material-paper: #252128;
+    --shop-material-title: #f3edef;
+    --shop-material-dialogue-ink: #f3edef;
+    --shop-material-dialogue-fill: #381820;
+    --shop-material-dialogue-edge: #a69ba0;
+  }
+  &:has(.shop-header[data-store="costume"]) {
+    border-color: #252128 !important;
+    box-shadow: 9px 11px 0 #19171d !important;
+  }
+  .shop-header[data-store="costume"] {
+    background: #4c1724 !important;
+    border-bottom-color: #252128 !important;
+    box-shadow: inset 0 3px 0 #85505b, inset 0 -6px 0 #252128 !important;
+  }
+  .shop-header[data-store="costume"]::after { background: #a69ba0; opacity: .65; }
+  .shop-header[data-store="costume"] h2 { text-shadow: 0 2px 0 #25131a; }
+  .shop-header[data-store="costume"] :is(.shop-refresh-button, .shop-close-button, .shop-header-balance) {
+    --campus-control-ink: #f3edef;
+    --campus-control-fill: #252128;
+    --campus-control-hover: #3c2a33;
+    --campus-control-border: #a69ba0;
+    --campus-control-shadow: 2px 3px 0 #19171d, inset 0 0 0 1px #554951;
+    --campus-control-hover-shadow: var(--campus-control-shadow);
+    --campus-button-disabled: #252128;
+    --campus-button-disabled-ink: #a69ba0;
+    color: #f3edef !important;
+    background: #252128 !important;
+    border-color: #a69ba0 !important;
+    border-radius: 8px !important;
+    box-shadow: 2px 3px 0 #19171d, inset 0 0 0 1px #554951 !important;
+  }
+  .shop-header[data-store="costume"] .shop-header-balance :is(svg, svg *) { color: #f3edef !important; stroke: currentColor !important; }
+  .shop-header[data-store="costume"] .shop-header-balance-value { color: #f3edef !important; }
+  .costume-shop-art { filter: drop-shadow(0 3px 1px rgb(25 23 29 / 70%)); }
+  .costume-store-page .costume-shop-price {
+    color: #f3edef !important;
+    background: #4c1724 !important;
+    border-color: #252128 !important;
+    border-radius: 4px !important;
+    box-shadow: 3px 4px 0 #19171d, inset 0 0 0 1px #a69ba0 !important;
+  }
+  .costume-store-page .costume-shop-price :is(strong, b, small, span) { color: #f3edef !important; }
+  .costume-store-page .costume-shop-bubble::before {
+    border-radius: 4px !important;
+    box-shadow: 4px 5px 0 #19171d, inset 0 0 0 4px #612b38, inset 0 0 0 5px #85505b !important;
+  }
+}

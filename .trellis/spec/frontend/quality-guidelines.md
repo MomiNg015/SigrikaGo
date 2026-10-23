@@ -1653,6 +1653,8 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 
 ### Scenario: Zahira shop offer-card density and corner badges
 
+**2026-10-23 paint override:** [Shop Materials](./shop-material-contract.md) supersedes the earlier header/wallet gradient and raster-dialogue surface requirements below for the normal Bright School shop. Keep those declarations/assets as compatibility fallbacks; current final paint is texture-free purple/gold for Zahira and independent red/charcoal/silver for Fractsidus. Geometry, semantic balance, item state, signpost and motion requirements below remain active. Validate final paint through the real production preview and its saved pre-integration geometry baseline.
+
 #### 1. Scope / Trigger
 - Trigger: changing `ShopItemCard`, `ShopProductStage`, `shopLayout.js`, shop corner badges, or desktop/mobile offer spacing.
 

@@ -10,9 +10,9 @@ function update() {
   const skin = original ? 'original' : selected;
   frame.contentWindow.postMessage({ type: 'shop-material-skin', skin }, location.origin);
   document.querySelector('#original').setAttribute('aria-pressed', String(original));
-  document.querySelector('#original').textContent = original ? '返回改良版' : '查看原版';
+  document.querySelector('#original').textContent = original ? '返回样板' : '查看正式版';
   document.querySelector('#standalone').href = `./preview.html?skin=${skin}&state=${document.querySelector('#state').value}`;
-  document.querySelector('#direction-note').textContent = original ? '当前正式商店，使用完全相同的商品与位置。点击「返回改良版」直接比较。' : notes[selected];
+  document.querySelector('#direction-note').textContent = original ? 'A 已接入正式商店并去掉卡片纹理。当前显示正式样式；B／C 仅保留作历史样板。' : notes[selected];
 }
 document.querySelectorAll('[data-skin]').forEach(button => button.addEventListener('click', () => {
   selected = button.dataset.skin; original = false;
