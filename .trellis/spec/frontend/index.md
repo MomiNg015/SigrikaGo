@@ -33,6 +33,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
 | [Friends Companion Window](./friends-companion-contract.md) | Selected-user companion pane, retained left bookmarks, relationship actions and paper feedback | Filled |
 | [Warehouse Paper Layout](./warehouse-paper-contract.md) | Whole-card scrolling, compact portrait inspector, quantities and retained item-use flow | Filled |
+| [Information Paper Windows](./information-paper-contract.md) | Announcement/mail paper cards, complete-row scrolling, aligned mobile actions and preserved motion | Filled |
 | [Card Screenprints](./card-screenprint-contract.md) | Functional finite corner textures, rank mirroring, state fills and theme isolation | Filled |
 | [Costume System Contract](../backend/costume-system-contract.md) | Shared backend/frontend catalog, shop, wardrobe, portrait, and snapshot contract | Filled |
 | [Recruitment Cinematic](./recruitment-cinematic-contract.md) | Aemeath payload, timing, interruption recovery, sprite assets, and CSS ownership | Filled |

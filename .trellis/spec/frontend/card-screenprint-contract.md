@@ -15,7 +15,7 @@ The approved seven-print family is production Bright School paint. `src/styles/m
 | Social | social.svg | Friend entry and companion detail |
 | Inventory | inventory.svg | Warehouse item entry and inspector |
 | Tactics | tactics.svg | Watch row backing and character skill body, including derived skills |
-| Reading | reading.svg | Character introduction, announcement entry and reader |
+| Reading | reading.svg | Character introduction, announcement entry and reader, mailbox entry and body |
 
 Rank and achievement share a motif but have separate assets/anchors. Rank must use `left -28px bottom -10px`; honor remains `right -18px bottom -16px`. Never flip the rank card with CSS transform: text, stars, buttons and layout must remain unchanged.
 

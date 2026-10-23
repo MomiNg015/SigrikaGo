@@ -64,7 +64,7 @@ export default function InformationCenterLayout({
       onClick={onClose}
     >
       <ModalDialog
-        className={["modal-panel", "information-center-modal", titleStickerKey && "window-sticker-host", modalClassName].filter(Boolean).join(" ")}
+        className={["modal-panel", "information-center-modal", "information-center-paper", titleStickerKey && "window-sticker-host", modalClassName].filter(Boolean).join(" ")}
         ariaLabelledBy={titleId}
         data-mobile-view={mobileView}
         onClose={onClose}

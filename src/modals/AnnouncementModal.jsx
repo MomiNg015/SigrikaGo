@@ -6,6 +6,7 @@ import { Pin, RefreshCw } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
+import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton } from "./modalComponents.jsx";
 
 const KINDS = Object.freeze([
@@ -65,6 +66,7 @@ export default function AnnouncementModal({
   });
   const activeMeta = KINDS.find((kind) => kind.id === activeKind) ?? KINDS[0];
   const activeList = lists[activeKind] ?? emptyListState();
+  const listRef = useInformationListRows(activeList.items);
 
   useEffect(() => {
     if (!token) return;
@@ -250,7 +252,7 @@ export default function AnnouncementModal({
               <WindowEmptyState compact className="announcement-empty">{activeMeta.emptyText}</WindowEmptyState>
             )}
             {activeList.items.length > 0 && (
-              <ul className="announcement-list">
+              <ul ref={listRef} className="announcement-list">
                 {activeList.items.map((item) => (
                   <li key={item.id}>
                     <button

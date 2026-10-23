@@ -7,6 +7,7 @@ import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
+import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
 const EMPTY_TEXT = "暂无邮件";
@@ -22,6 +23,7 @@ export default function MailboxModal({
 }) {
   const isNarrow = useNarrowInformationCenter();
   const [messages, setMessages] = useState(() => sortMailboxMessages(initialMessages));
+  const listRef = useInformationListRows(messages);
   const [loaded, setLoaded] = useState(initialLoaded);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(() => isNarrow ? "" : sortMailboxMessages(initialMessages)[0]?.id ?? "");
@@ -122,7 +124,7 @@ export default function MailboxModal({
         <div className="mailbox-list-region">
           {error && <p className="form-error mailbox-error" role="alert">{error}</p>}
           {messages.length > 0 && (
-            <ul className="mailbox-list">
+            <ul ref={listRef} className="mailbox-list">
               {messages.map((message) => {
                 const sender = displayMailboxSender(message.sender);
                 const listTime = formatMailboxListTime(message.createdAt);
@@ -140,6 +142,9 @@ export default function MailboxModal({
                       <span className="mailbox-list-meta">
                         <span className="mailbox-list-sender">{sender}</span>
                         <time className="mailbox-list-time" dateTime={message.createdAt}>{listTime}</time>
+                      </span>
+                      <span className="mailbox-list-state" aria-hidden="true">
+                        {message.claimable ? "附件待领取" : message.isRead ? "✓ 已完成" : "未读"}
                       </span>
                     </button>
                   </li>

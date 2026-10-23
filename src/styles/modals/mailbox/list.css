@@ -111,6 +111,10 @@
   font-weight: 700;
 }
 
+.mailbox-list-state {
+  display: none;
+}
+
 .mailbox-list-meta {
   min-width: 0;
   display: grid;

@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"DOM and real full-theme desktop/portrait validation"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Scope, imports, final winners and debt verification"}
+{"file":".trellis/tasks/10-23-information-paper-integration/prd.md","reason":"Acceptance including back/close alignment and real API flows"}

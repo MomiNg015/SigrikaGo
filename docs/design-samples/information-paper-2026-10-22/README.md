@@ -2,7 +2,7 @@
 
 [打开交互比较页](./index.html) · [公告单独预览](./preview.html?window=announcement) · [邮箱单独预览](./preview.html?window=mailbox)
 
-本轮仅制作模板，尚未实装。复用正式 `AnnouncementModal`、`MailboxModal` 和 `InformationCenterLayout`，加载完整生产主题，再通过样板根节点限定的 CSS 展示新设计。可以直接点击列表、切换日志、查看附件、领取、删除、返回和关闭；所有接口在本页内存中模拟，刷新恢复，不操作真实账号。
+2026-10-23 已按确认样板实装，比较页默认展示正式效果。原始样板保留供对照。复用正式 `AnnouncementModal`、`MailboxModal` 和 `InformationCenterLayout`，加载完整生产主题，再通过样板根节点限定的 CSS 展示新设计。可以直接点击列表、切换日志、查看附件、领取、删除、返回和关闭；所有接口在本页内存中模拟，刷新恢复，不操作真实账号。
 
 ## 视觉方案
 
@@ -30,6 +30,21 @@
 
 窄屏边界：[公告长标题](./announcement-narrow-long.png)、[邮箱长标题与9999附件](./mailbox-narrow-long.png)。
 
-## 实装时的边界
+## 正式接入与边界
 
-`paper.css` 是隔离样板覆盖，确认后应把最终样式整合进现有信息中心 owner，不应再增加全局覆盖层。`fit-paper-lists.js` 为样板连接真实组件 DOM 的适配器，实装应通过正式 ref/hook 管理列表。`fixtures.js`、比较页和假数据不能进入生产包；真实邮件读／领／删及公告未读摘要继续由现有 API 管理。读取丝印复用已提交资源，不做远程请求。
+`paper.css` 继续作为隔离样板覆盖。正式样式已经整合到原有 `mobile-adaptive/information-center.css` 入口的五个有界子文件；阅读丝印归属原 `card-screenprints.css`。生产列表使用 `useInformationListRows(items)` 和实际 `<ul>` ref，取代样板的 `fit-paper-lists.js` 适配器。`fixtures.js`、比较页和假数据不能进入生产包；真实邮件读／领／删及公告未读摘要继续由现有 API 管理。读取丝印复用已提交资源，不做远程请求。
+
+## 正式界面验证（2026-10-23）
+
+[正式公告](./production.html?window=announcement) · [正式邮箱](./production.html?window=mailbox)。此入口只加载应用 CSS，不加载样板覆盖与样板尺寸适配器。
+
+手机公告的返回和关闭按钮使用同一网格行、相同 36px 尺寸并垂直居中。390×844 详情截图中两者顶部均为 y=58px，高度均为 36px。
+
+`npx playwright test --config tests/e2e/information-paper.config.js` 覆盖 19 组正式界面检查：1440／800／390／360／320px 宽度及短竖屏、完整行滚动、返回焦点、长内容与空数据、公告分类已读、邮件附件详情／领取／删除／关闭和保留动效。共享 hook 的 DOM 测试覆盖异步挂载、重排、清理及主题排除。
+
+| 正式效果 | 桌面 | 手机列表 | 手机详情 |
+| --- | --- | --- | --- |
+| 公告 | [截图](./production-announcement-desktop.png) | [截图](./production-announcement-mobile-list.png) | [截图](./production-announcement-mobile.png) |
+| 邮箱 | [截图](./production-mailbox-desktop.png) | [截图](./production-mailbox-mobile-list.png) | [截图](./production-mailbox-mobile.png) |
+
+按钮对齐实测、预览异常和真实 API／样板尺寸脚本请求检查记录在 [production-verification.json](./production-verification.json)。浏览器回归同时验证未读、选中与普通卡片都保留厚阴影，防止旧公告状态样式盖掉纸卡表面。

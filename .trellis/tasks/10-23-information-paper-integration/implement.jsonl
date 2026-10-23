@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Existing owner boundaries, typography, gutters and precise CSS debt"}
+{"file":".trellis/spec/frontend/card-screenprint-contract.md","reason":"Preserve functional reading artwork and theme isolation"}
+{"file":".trellis/spec/frontend/window-title-stickers.md","reason":"Retain title shell and align mobile header actions"}
+{"file":".trellis/tasks/10-23-information-paper-integration/prd.md","reason":"User approved template and explicit mobile alignment"}

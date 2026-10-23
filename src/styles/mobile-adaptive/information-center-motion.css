@@ -1,0 +1,14 @@
+/* Approved information-center paper motion; ordinary Bright School only. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.information-center-paper {
+@media (hover: hover) and (pointer: fine) {
+  & :is(.announcement-list-item, .mailbox-list-item):hover { transform: translate(-1px,-2px) !important; box-shadow: 4px 6px 0 var(--information-paper-ink) !important; }
+  & .mailbox-attachment-tile:hover .mailbox-attachment-icon { transform: translate(-1px,-2px); box-shadow: 4px 5px 0 var(--information-paper-ink) !important; }
+  & .mailbox-delete-button:hover:not(:disabled) { transform: translate(-1px,-1px) !important; box-shadow: 3px 3px 0 var(--information-paper-ink) !important; }
+}
+& :is(.announcement-list-item, .mailbox-list-item):active { transform: translate(2px,3px) !important; box-shadow: 1px 1px 0 var(--information-paper-ink) !important; }
+& .mailbox-attachment-tile:active .mailbox-attachment-icon { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--information-paper-ink) !important; }
+& .mailbox-delete-button:active:not(:disabled) { transform: translate(2px,2px) !important; box-shadow: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  & :is(.announcement-list-item, .mailbox-list-item, .mailbox-attachment-icon, .mailbox-delete-button) { transition: none !important; }
+}
+}

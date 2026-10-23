@@ -1,0 +1,96 @@
+/* Approved information-center paper surfaces; ordinary Bright School only. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.information-center-paper {
+  --information-paper-ink: var(--bright-border);
+  --information-paper-white: var(--bright-sheet-clean);
+  --information-paper-fill: var(--bright-sheet);
+  --information-paper-pink: color-mix(in srgb, var(--bright-pink) 35%, var(--information-paper-white));
+  --information-paper-mint: color-mix(in srgb, var(--bright-mint) 45%, var(--information-paper-white));
+  --information-paper-fit: 1;
+& { gap: 16px !important; }
+& .information-center-layout {
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.45fr);
+  gap: 22px !important;
+  padding: 4px 9px 10px 3px;
+}
+& .information-center-master {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+& .information-center-reader {
+  border: 2px solid var(--information-paper-ink) !important;
+  border-radius: 8px !important;
+  background-color: var(--information-paper-fill) !important;
+  box-shadow: 4px 4px 0 var(--information-paper-fill), 6px 6px 0 var(--information-paper-ink) !important;
+}
+& :is(.announcement-list, .mailbox-list) {
+  display: flex !important;
+  flex-direction: column;
+  gap: 13px;
+  padding: 3px 9px 10px 3px !important;
+  scroll-padding: 3px 0 10px;
+  scrollbar-width: thin;
+  scroll-snap-type: y mandatory;
+}
+& :is(.announcement-list, .mailbox-list) > li { flex: 0 0 auto; border: 0 !important; scroll-snap-align: start; }
+& :is(.announcement-list-item, .mailbox-list-item) {
+  position: relative;
+  min-height: var(--information-paper-row-height, 108px) !important;
+  height: var(--information-paper-row-height, auto) !important;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 15px 13px !important;
+  border: 2px solid var(--information-paper-ink) !important;
+  border-radius: 8px !important;
+  background-color: var(--information-paper-white) !important;
+  color: var(--bright-ink) !important;
+  box-shadow: 3px 4px 0 var(--information-paper-ink) !important;
+  transform: translate(0, 0) !important;
+  transition: transform 150ms cubic-bezier(.22, 1, .36, 1), box-shadow 150ms cubic-bezier(.22, 1, .36, 1), background-color 150ms ease !important;
+}
+/* Match legacy state paint without raising the motion or sizing selectors. */
+& .announcement-list .announcement-list-item {
+  border-color: var(--information-paper-ink) !important;
+  box-shadow: 3px 4px 0 var(--information-paper-ink) !important;
+}
+& .announcement-list-item.active { background-color: var(--information-paper-pink) !important; }
+& :is(.announcement-list-title, .mailbox-list-title) {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+& :is(.announcement-list-title, .mailbox-list-title) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal !important; }
+& .announcement-list-title .announcement-unread-dot { display: inline-block; margin-right: 7px; }
+& .announcement-unread-dot { flex-shrink: 0; box-shadow: none !important; }
+& .announcement-list-meta { gap: 7px 12px; margin-top: 2px; }
+& .announcement-list-meta b {
+  padding: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  font-size: 13px !important;
+}
+& :is(.announcement-list-meta time, .mailbox-list-meta) { font-size: 13px !important; color: var(--theme-muted) !important; }
+& .announcement-detail { padding: 0 !important; }
+& .announcement-detail-header {
+  flex: 0 0 auto;
+  padding: 22px 25px 20px !important;
+  background-color: var(--information-paper-pink);
+  border-bottom: 2px solid var(--information-paper-ink) !important;
+}
+& .announcement-detail-kind { margin-bottom: 10px; font-size: 13px !important; color: var(--bright-ink); letter-spacing: .05em; }
+& :is(.announcement-detail-header h3, .mailbox-detail-header h3) {
+  font-size: clamp(23px, 2.25vw, 29px) !important;
+  line-height: 1.4 !important;
+  font-weight: 700 !important;
+  text-wrap: pretty;
+}
+& .announcement-detail-header p { margin-top: 12px; font-size: 13px !important; }
+& .announcement-detail-body { padding: 23px 25px 28px !important; }
+& .information-center-prose { font-size: 16px !important; line-height: 1.85 !important; font-weight: 400 !important; }
+& .information-center-prose :is(h4,h5) { font-size: 20px !important; font-weight: 700; }
+}

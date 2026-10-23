@@ -6,7 +6,8 @@
     .warehouse-modal.warehouse-field-guide :is(.wg-entry, .wg-inspector),
     .character-detail-figure-backdrop :is(.character-skill-description, .character-description),
     .achievement-modal .achievement-row:not(.achievement-heading),
-    .announcement-modal :is(.announcement-list-item, .announcement-detail)
+    .announcement-modal :is(.announcement-list-item, .announcement-detail),
+    .mailbox-modal :is(.mailbox-list-item, .mailbox-body)
   ),
   .watch-ledger .wl-row::before {
     background-image: var(--card-print-image) !important;
@@ -32,8 +33,11 @@
   .achievement-row { --card-print-image: url('/assets/ui/card-prints/honor.svg'); --card-print-size: 160px 160px; --card-print-position: right -18px bottom -16px; }
   .announcement-list-item { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 150px 150px; --card-print-position: right bottom; }
   .announcement-detail { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 350px 350px; --card-print-position: right bottom; }
+  .mailbox-list-item { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 150px 150px; --card-print-position: right -7px bottom -14px; }
+  .mailbox-body { --card-print-image: url('/assets/ui/card-prints/reading.svg'); --card-print-size: 310px 310px; --card-print-position: right bottom; }
 
   @media (max-width: 768px) {
+    .mailbox-body { --card-print-size: 200px 200px; }
     .profile-resume-hero { --card-print-size: 260px 260px; }
     .profile-character-section { --card-print-size: 210px 210px; }
     :is(.fc-detail, .wg-inspector) { --card-print-size: 270px 270px; }

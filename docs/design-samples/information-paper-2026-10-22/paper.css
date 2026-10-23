@@ -1,4 +1,5 @@
 /* Isolated concept paint. Production motion, focus and modal behavior stay in charge. */
+#information-paper-sample .mailbox-list-state { display: none; }
 #information-paper-sample {
   --paper-ink: var(--bright-border);
   --paper-white: var(--bright-sheet-clean);
