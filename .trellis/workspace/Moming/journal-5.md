@@ -370,3 +370,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 252: 整合准时宝陪练与吃子挑战赛
+
+**Date**: 2026-10-27
+**Task**: 整合准时宝陪练与吃子挑战赛
+**Branch**: `master`
+
+### Summary
+
+将吃子挑战赛移入准时宝窗口，共用角色并记忆模式与等级；等级采用带内边距的纯色图标和文字；独立吃子赛排行榜、三态对话及惊讶立绘接入。全量单测仅一条旧布局断言已修正复测，其他3390项通过；6项生产CSS浏览器回归、lint、构建和资源/配置检查通过。保留原有设计样稿及系统设计未提交内容，未推送。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a31f271c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
