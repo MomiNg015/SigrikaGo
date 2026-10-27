@@ -236,3 +236,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 248: 开放注册内测第一批安全加固
+
+**Date**: 2026-10-27
+**Task**: 开放注册内测第一批安全加固
+**Branch**: `master`
+
+### Summary
+
+修复聊天越权与退出令牌验证；开放注册加入图片验证、限流和登录退避；依赖审计归零；完整 check 通过 3386 项测试，6 项注册浏览器测试和 20 项稳定性测试通过，容量 smoke 与隔离迁移备份验证通过。保留后台快照差异和全部无关 WIP，未部署云端。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dc94b32d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
