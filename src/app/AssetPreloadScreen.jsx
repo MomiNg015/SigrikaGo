@@ -111,7 +111,6 @@ export default function AssetPreloadScreen({
   character = null,
   characters = CHARACTERS,
   label = "",
-  loadingLinesText = DEFAULT_SITE_SETTINGS.characterLoadingLines,
   progress,
   progressNote = "",
   progressHint = "",
@@ -159,7 +158,7 @@ export default function AssetPreloadScreen({
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
   const displayTip = preloadTipDisplayText(currentTip);
   const characterPresentationHidden = Boolean(user?.sigrikaCandyArc?.corrupted);
-  const title = label || (characterPresentationHidden ? "" : characterLoadingLine(displayCharacter, loadingLinesText));
+  const title = label;
   const portraitSource = characterPresentationHidden
     ? SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
     : displayPortrait.src;

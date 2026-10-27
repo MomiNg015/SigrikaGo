@@ -22,7 +22,8 @@ describe("AssetPreloadScreen", () => {
     }));
 
     expect(html).toContain("asset-preload-screen");
-    expect(html).toContain("西格莉卡正在戳棋盘");
+    expect(html).not.toContain("西格莉卡正在戳棋盘");
+    expect(html).not.toContain("preload-title");
     expect(html).toContain("资源加载 100%");
     expect(html).toContain("--preload-progress:1");
     expect(html).toContain("--preload-mask-size:100%");
@@ -190,7 +191,7 @@ describe("AssetPreloadScreen", () => {
       showTips: false
     }));
 
-    expect(html).toContain("莫宁正在校准协议");
+    expect(html).not.toContain("莫宁正在校准协议");
     expect(html).toContain("/mornye.webp");
     expect(html).not.toContain("猪小仙");
     expect(html).not.toContain("/baconbits.webp");

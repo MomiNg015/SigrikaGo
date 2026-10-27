@@ -12,7 +12,8 @@ test("restores the character and progress bar with brush tips below it", () => {
   const bar = screen.getByRole("progressbar");
   expect(bar.getAttribute("aria-valuenow")).toBe("65");
   expect(screen.getByAltText("测试角色").getAttribute("src")).toBe("/custom.png");
-  expect(screen.getByText("测试角色正在加载")).toBeTruthy();
+  expect(screen.queryByText("测试角色正在加载")).toBeNull();
+  expect(container.querySelector(".preload-title")).toBeNull();
   expect(container.querySelector(".preload-progress-track")).not.toBeNull();
   const tip = container.querySelector(".login-loading-tip");
   const note = screen.getByText("（第一次加载需要2-3分钟，请耐心等待）");
