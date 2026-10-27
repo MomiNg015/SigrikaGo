@@ -37,10 +37,9 @@
     .profile-character-table .profile-character-col-identity { width: 40% !important; }
     .profile-character-table .profile-character-col-total { width: 17% !important; }
     .profile-character-table .profile-character-col-outcome { width: 8% !important; }
-    .profile-rank-results { display: grid !important; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px !important; }
-    .profile-rank-results .recent-result-label { grid-column: 1 / -1; margin-bottom: 4px; font-size: 12px; }
-    .profile-rank-results .recent-result-marker { width: 100% !important; min-width: 0 !important; height: 26px !important; padding: 0 !important; font-size: 12px !important; }
-    .profile-rank-results .recent-result-empty { grid-column: 1 / -1; justify-self: start; }
+    .profile-rank-results { display: flex !important; gap: 4px !important; }
+    .profile-rank-results .recent-result-label { position: static; flex-basis: 100%; margin: 0 0 4px; font-size: 12px; }
+    .profile-rank-results .recent-result-marker { width: min(28px, calc((100% - 36px) / 10)) !important; min-width: 0 !important; height: 26px !important; padding: 0 !important; font-size: 12px !important; }
     .profile-capture-record dd { font-size: 36px; }
   }
 }

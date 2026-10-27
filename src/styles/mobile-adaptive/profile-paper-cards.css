@@ -19,7 +19,7 @@
     border-radius: 12px !important;
     box-shadow: 3px 4px 0 var(--profile-paper-shadow) !important;
   }
-  .profile-resume-hero { box-shadow: none !important; margin-bottom: 20px !important; padding: 16px 20px !important; border-radius: 14px 8px 13px 9px !important; }
+  .profile-resume-hero { margin-bottom: 20px !important; padding: 16px 20px !important; border-radius: 14px 8px 13px 9px !important; }
   .profile-hero-portrait { background: var(--folder-paper) !important; box-shadow: none !important; }
   .profile-hero-portrait > .profile-portrait-mask { box-shadow: none !important; }
   .profile-resume-view {
@@ -30,12 +30,11 @@
     .profile-identity-block .user-identity:not(.has-nameplate) { font-size: inherit !important; }
     .profile-identity-actions { position: absolute !important; inset: auto 12px 10px auto !important; display: flex !important; grid-area: auto !important; justify-content: flex-end !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 8px !important; padding-bottom: 1px; }
   }
-  .profile-resume-view-social .profile-resume-hero { min-height: 200px !important; padding-block: 52px !important; }
   .profile-summary-grid { grid-template-columns: minmax(180px, 1fr) minmax(0, 2.5fr) !important; gap: 16px !important; }
   .profile-summary-item { padding: 14px 16px !important; }
   .profile-summary-item .profile-summary-label { font-size: 19px !important; }
   .profile-summary-item .profile-summary-label > svg { display: inline-block; }
-  .profile-summary-item.is-primary > strong { margin-top: 4px; }
+  .profile-summary-item.is-primary > strong { margin-top: 4px; justify-self: center; }
   .profile-record-card { border-radius: 8px 12px 9px 14px !important; }
   .profile-record-metrics { margin: 10px 0 2px; }
   .profile-record-metric dd { font-size: 26px !important; }

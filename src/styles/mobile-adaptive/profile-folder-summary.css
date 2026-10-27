@@ -13,8 +13,8 @@
   .profile-record-metric dd { font-size: 25px !important; white-space: nowrap; }
   .profile-record-metric dt { font-size: 12px !important; }
   .profile-recent-section { margin: 16px 0 8px !important; padding: 10px 0 !important; border-block: 1px solid var(--folder-line) !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
-  .profile-rank-results { justify-content: flex-start !important; flex-wrap: wrap !important; gap: 6px !important; }
-  .profile-rank-results .recent-result-label { display: inline !important; margin-right: 8px; font-size: 13px; color: var(--folder-ink); }
+  .profile-rank-results { position: relative; justify-content: center !important; flex-wrap: wrap !important; gap: 6px !important; }
+  .profile-rank-results .recent-result-label { display: inline !important; position: absolute; left: 0; margin: 0; text-align: left; font-size: 13px; color: var(--folder-ink); }
   .recent-result-marker-draw { background: color-mix(in srgb, var(--theme-blue) 20%, var(--folder-paper)) !important; }
   .profile-character-section { margin: 0 !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; background: transparent !important; }
   .profile-character-table-scroll { height: auto !important; max-height: none !important; overflow: visible !important; }

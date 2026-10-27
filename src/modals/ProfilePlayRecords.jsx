@@ -21,13 +21,16 @@ export function ProfileCaptureRecord({ user, token, characters }) {
       .catch((error) => { if (active) setState({ key, record: null, loading: false, error: error.message }); });
     return () => { active = false; };
   }, [key, retry, token, user.id]);
-  if (state.key !== key || state.loading) return <WindowLoadingState compact>正在读取挑战成绩…</WindowLoadingState>;
-  if (state.error) return <div role="alert"><p>{state.error}</p><button type="button" onClick={() => setRetry(n => n + 1)}>重新加载</button></div>;
-  if (!state.record) return <WindowEmptyState compact>暂无吃子挑战成绩</WindowEmptyState>;
-  const character = findCharacter(characters, state.record.characterId);
-  return <section className="profile-capture-record" aria-label="吃子挑战成绩">
+  const loading = state.key !== key || state.loading;
+  const character = state.record && findCharacter(characters, state.record.characterId);
+  return <section className="profile-capture-record" aria-label="吃子挑战成绩" aria-busy={loading}>
     <h3>吃子挑战赛</h3>
+    {loading ? <WindowLoadingState compact>正在读取挑战成绩…</WindowLoadingState>
+      : state.error ? <div role="alert"><p>{state.error}</p><button type="button" onClick={() => setRetry(n => n + 1)}>重新加载</button></div>
+      : !state.record ? <WindowEmptyState compact>暂无吃子挑战成绩</WindowEmptyState>
+      : <>
     <dl><div><dt>最高提子</dt><dd>{state.record.captures}<small>子</small></dd></div><div><dt>当前排名</dt><dd>{state.record.ranking}<small>名</small></dd></div></dl>
     <div className="profile-capture-character">{character && <img {...characterPortraitImageProps(character, { variant: "avatar", costumeSnapshot: state.record.costumeSnapshot })} alt="" />}<div><span>最佳成绩使用角色</span><strong>{character?.name ?? state.record.characterId}</strong></div></div>
+      </>}
   </section>;
 }

@@ -17,7 +17,7 @@ describe("profile folder play navigation", () => {
     expect(screen.getByText("段位").closest(".profile-folder-page")).toBeTruthy();
     expect(container.querySelector(".profile-resume-hero .rank-progress")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
-    await screen.findByLabelText("吃子挑战成绩");
+    await screen.findByText("86");
     expect(screen.queryByText("段位", { exact: true })).toBeNull();
     expect(screen.getByText("86")).toBeTruthy();
     expect(container.querySelector(".profile-capture-character img").getAttribute("src")).toBe("/best.webp");
@@ -28,10 +28,23 @@ describe("profile folder play navigation", () => {
     api.mockRejectedValueOnce(new Error("网络不可用")).mockResolvedValueOnce({ record: null });
     render(<ProfileResumeView {...props} />);
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
-    await screen.findByRole("alert");
+    expect((await screen.findByRole("alert")).closest(".profile-capture-record")).toBeTruthy();
     expect(screen.queryByText("暂无吃子挑战成绩")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "重新加载" }));
-    await screen.findByText("暂无吃子挑战成绩");
+    expect((await screen.findByText("暂无吃子挑战成绩")).closest(".profile-capture-record")).toBeTruthy();
+  });
+
+  it.each(["self", "social"])("keeps loading and empty challenge states inside the %s card", async (context) => {
+    let resolveRecord;
+    api.mockReturnValue(new Promise(resolve => { resolveRecord = resolve; }));
+    render(<ProfileResumeView {...props} context={context} />);
+    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
+    const card = screen.getByRole("region", { name: "吃子挑战成绩" });
+    expect(screen.getByText("正在读取挑战成绩…").closest(".profile-capture-record")).toBe(card);
+    expect(card.getAttribute("aria-busy")).toBe("true");
+    resolveRecord({ record: null });
+    expect((await screen.findByText("暂无吃子挑战成绩")).closest(".profile-capture-record")).toBe(card);
+    expect(card.getAttribute("aria-busy")).toBe("false");
   });
 
   it("ignores an old user's challenge response after the profile changes", async () => {
