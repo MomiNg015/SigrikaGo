@@ -6,6 +6,58 @@ import { CHARACTERS } from "../../src/shared/characters.js";
 const characterIds = ["sigrika", "denia", "aemeath", "lynae", "mornye", "chisa", "changli", "qiuyuan", "nabomo", "baconbits"];
 const fixture = "/tests/e2e/fixtures/interface-polish.html";
 
+for (const viewport of [{ width: 1440, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 360, height: 640 }, { width: 320, height: 568 }]) {
+  test(`practice window keeps square close control and desktop bust framing at ${viewport.width}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize(viewport);
+    await page.goto(`${fixture}?surface=practice`);
+    await page.getByRole("button", { name: "准时宝陪练", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "准时宝陪练", exact: true });
+    await page.evaluate(() => document.fonts.ready);
+    for (const mode of [null, "沙包陪练", "吃子挑战赛"]) {
+      if (mode) await dialog.getByRole("button", { name: mode, exact: true }).click();
+      await dialog.locator(".practice-sheet-bust img").evaluate(image => image.decode());
+      const geometry = await dialog.evaluate(dialog => {
+        const rect = selector => dialog.querySelector(selector).getBoundingClientRect().toJSON();
+        const image = dialog.querySelector(".practice-sheet-bust img");
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0);
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        let firstPaint = 0;
+        while (firstPaint < canvas.width * canvas.height && pixels[firstPaint * 4 + 3] < 16) firstPaint++;
+        return { close: rect(".close-button"), bust: rect(".practice-sheet-bust"), image: image.getBoundingClientRect().toJSON(),
+          bubble: rect(".practice-sheet-bubble"), dialog: dialog.getBoundingClientRect().toJSON(),
+          sourceRatio: image.naturalWidth / image.naturalHeight,
+          topPaintRatio: Math.floor(firstPaint / canvas.width) / canvas.height,
+          pageWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth };
+      });
+      expect(geometry.close.width).toBeCloseTo(36, 1);
+      expect(geometry.close.height).toBeCloseTo(geometry.close.width, 1);
+      expect(geometry.bust.width / geometry.bust.height).toBeCloseTo(240 / 218, 2);
+      expect(geometry.image.width).toBeCloseTo(geometry.bust.width, 1);
+      expect(geometry.image.width / geometry.image.height).toBeCloseTo(geometry.sourceRatio, 3);
+      expect(geometry.image.top + geometry.image.height * geometry.topPaintRatio).toBeGreaterThan(geometry.bust.top + 1);
+      const visibleSourceBottom = (geometry.bust.bottom - geometry.image.top) / geometry.image.height;
+      expect(visibleSourceBottom).toBeGreaterThan(0.6);
+      expect(visibleSourceBottom).toBeLessThan(0.7);
+      expect(Math.abs(geometry.bust.bottom - geometry.dialog.bottom)).toBeLessThan(1);
+      expect(geometry.bubble.right + 8).toBeLessThanOrEqual(geometry.bust.left);
+      expect(geometry.bubble.bottom).toBeLessThan(geometry.dialog.bottom);
+      expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.viewportWidth);
+      await dialog.locator(".practice-sheet-bust").scrollIntoViewIfNeeded();
+      await expect(dialog.locator(".practice-sheet-bust")).toBeInViewport({ ratio: 1 });
+    }
+    await dialog.getByRole("button", { name: "关闭准时宝陪练" }).click();
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole("button", { name: "准时宝陪练", exact: true }).click();
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+  });
+}
+
 async function mountPlayingSpecialDuel(page, viewport) {
   const user = { id: "special-interface-player", username: "星炬同学", selectedCharacter: "sigrika", rank: "3段", sigrikaCandyArc: { corrupted: true } };
   const room = createSigrikaCandyDuelRoom({ user, characterId: "sigrika", character: CHARACTERS.sigrika }, { code: "SIG01", random: () => 0, now: () => 1000 });

@@ -45,14 +45,3 @@
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble { padding-bottom: 40px !important; }
 }
-
-@media (max-width: 600px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
-    & .practice-difficulty-backdrop .practice-dialog-sheet {
-      & .practice-sheet-dialogue { height: 206px; }
-      & .practice-sheet-bubble { width: calc(100% - 128px); padding: 10px 12px; top: 12px; }
-      & .practice-sheet-bust { width: 138px; }
-      & .practice-sheet-bust img { width: 148px; }
-    }
-  }
-}
