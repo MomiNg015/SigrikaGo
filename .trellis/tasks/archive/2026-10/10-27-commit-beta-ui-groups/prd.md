@@ -8,8 +8,8 @@ No feature expansion or re-enabling flags. Exclude design sample projects, promo
 
 ## Acceptance
 - [x] Full project check passes.
-- [ ] Three commits are coherent and include only approved source, tests and docs.
-- [ ] Excluded WIP is preserved and staging is empty at completion.
+- [x] Three commits are coherent and include only approved source, tests and docs.
+- [x] Excluded WIP is preserved and staging is empty at completion.
 
 ## Authorization
 The user explicitly said to commit categories 1, 2 and 3; no repeat approval is needed.
