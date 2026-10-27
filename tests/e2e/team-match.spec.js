@@ -5,6 +5,84 @@ async function mountTeamSurface(page, surface) {
   await page.goto(`/tests/e2e/fixtures/team-match.html?surface=${surface}`, { waitUntil: "domcontentloaded" });
 }
 
+for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
+  test(`unified practice selection and capture ranking at ${viewport.width}`, async ({ page }, testInfo) => {
+    await page.setViewportSize(viewport);
+    await page.route("**/api/leaderboard?mode=capture-challenge", route => route.fulfill({ json: { players: Array.from({ length: 40 }, (_, index) => ({ id: index === 4 ? "team-one" : `rank-${index}`, username: `挑战者${index + 1}`, rank: "3段", stars: 2, recordCharacter: "sigrika", captures: 100 - index })) } }));
+    await mountTeamSurface(page, "modes");
+    await page.getByRole("button", { name: "准时宝陪练", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "准时宝陪练" });
+    const start = dialog.getByRole("button", { name: "START！" });
+    await expect(start).toBeDisabled();
+    await expect(dialog).toContainText("今天想找准时宝做什么呢？");
+    await page.evaluate(() => document.fonts.ready);
+    const level = dialog.locator(".practice-level-button");
+    const dimensions = [];
+    const colors = [];
+    for (const label of ["初级", "中级", "高级"]) {
+      await expect(level).toHaveText(label);
+      await page.locator(".match-mode-backdrop").evaluate(element => Promise.all(element.getAnimations({ subtree: true }).filter(animation => animation.effect.getTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))));
+      const metrics = await level.evaluate(element => {
+        const style = getComputedStyle(element), icon = element.querySelector("svg"), text = element.querySelector("span"), shape = icon.querySelector("circle");
+        const rect = element.getBoundingClientRect(), iconRect = icon.getBoundingClientRect(), textRect = text.getBoundingClientRect();
+        return { width: rect.width, height: rect.height, paddingX: parseFloat(style.paddingLeft), paddingY: parseFloat(style.paddingTop), gap: textRect.left - iconRect.right, fill: getComputedStyle(shape).fill, color: getComputedStyle(icon).color, overflow: element.scrollWidth > element.clientWidth };
+      });
+      expect(metrics.height).toBeGreaterThanOrEqual(44);
+      expect(metrics.paddingX).toBeGreaterThanOrEqual(12);
+      expect(metrics.paddingY).toBeGreaterThanOrEqual(8);
+      expect(metrics.gap).toBeGreaterThanOrEqual(6);
+      expect(metrics.fill).toBe(metrics.color);
+      expect(metrics.overflow).toBe(false);
+      dimensions.push([metrics.width, metrics.height]);
+      colors.push(metrics.fill);
+      await level.click();
+    }
+    expect(dimensions[1]).toEqual(dimensions[0]);
+    expect(dimensions[2]).toEqual(dimensions[0]);
+    expect(new Set(colors).size).toBe(3);
+    await expect(level).toHaveText("初级");
+    await dialog.getByRole("button", { name: "准时宝对局选择角色", exact: true }).click();
+    const picker = page.getByRole("dialog", { name: "选择角色" });
+    await picker.getByRole("button", { name: "西格莉卡", exact: true }).click();
+    await picker.getByRole("button", { name: "关闭选择角色" }).click();
+    await dialog.getByRole("button", { name: "吃子挑战赛", exact: true }).click();
+    await expect(dialog.getByAltText("西格莉卡（惊讶）")).toBeVisible();
+    const bubble = dialog.locator(".practice-sheet-bubble");
+    await expect(bubble).toContainText("随机猜先。在100手内尽可能多地提掉准时宝的棋子吧！吃得越多分数越高！");
+    const copyFits = await bubble.evaluate(element => {
+      const range = document.createRange(); range.selectNodeContents(element);
+      const text = range.getBoundingClientRect(), box = element.getBoundingClientRect();
+      return text.left >= box.left && text.right <= box.right && text.bottom <= box.bottom && box.bottom <= element.closest(".practice-dialog-sheet").getBoundingClientRect().bottom;
+    });
+    expect(copyFits).toBe(true);
+    await expect(start).toBeEnabled();
+    await page.locator(".match-mode-backdrop").evaluate(element => Promise.all(element.getAnimations({ subtree: true }).filter(animation => animation.effect.getTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))));
+    await expect(dialog.getByAltText("西格莉卡（惊讶）")).toHaveJSProperty("complete", true);
+    await page.screenshot({ path: testInfo.outputPath("practice-capture.png") });
+    await dialog.getByRole("button", { name: "吃子挑战赛排行榜" }).click();
+    const board = page.getByRole("dialog", { name: "吃子挑战赛排行榜" });
+    await expect(board.getByText("挑战者40", { exact: true })).toHaveCount(1);
+    await expect(board.getByRole("tab")).toHaveCount(0);
+    await expect(board.getByText("我的排名")).toBeVisible();
+    await board.evaluate(element => Promise.all(element.getAnimations({ subtree: true }).filter(animation => animation.effect.getTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))));
+    await page.screenshot({ path: testInfo.outputPath("capture-ranking.png") });
+    await board.locator(".lp-scroll").evaluate(element => { element.scrollTop = element.scrollHeight; });
+    await expect(board.getByText("挑战者40", { exact: true })).toBeInViewport();
+    await expect(board.getByText("我的排名")).toBeInViewport();
+    await page.keyboard.press("Escape");
+    await expect(board).toHaveCount(0);
+    await expect(dialog.getByRole("button", { name: "吃子挑战赛排行榜" })).toBeFocused();
+    await expect(dialog.getByRole("button", { name: "吃子挑战赛", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.reload();
+    await page.getByRole("button", { name: "准时宝陪练", exact: true }).click();
+    await expect(start).toBeEnabled();
+    await expect(level).toHaveText("初级");
+    await start.click();
+    expect(await page.evaluate(() => window.practiceStarted)).toEqual({ difficulty: "advanced", challenge: "capture-challenge", playerColor: "random", characterId: "sigrika" });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
 test("match character slots keep their square depth across mouse, touch and reduced motion", async ({ page, browser }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await mountTeamSurface(page, "modes");
@@ -156,7 +234,6 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await mountTeamSurface(page, "modes");
     await page.locator(".match-mode-modal").getByRole("button", { name: "星炬对弈", exact: true }).click({ position: { x: 20, y: 40 } });
     for (const [name, copy] of [
-      ["吃子挑战赛", "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！"],
       ["队际赛", "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！"]
     ]) {
       const info = page.getByRole("button", { name: `查看${name}规则` });

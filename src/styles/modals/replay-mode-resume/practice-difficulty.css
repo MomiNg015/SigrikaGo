@@ -10,43 +10,46 @@
   text-align: left;
 }
 
-.practice-difficulty-heading {
-  display: grid;
-  gap: 5px;
-  text-align: center;
-}
-
-.practice-difficulty-heading h2,
-.practice-difficulty-heading p {
-  margin: 0;
-}
-
-.practice-difficulty-heading p {
-  color: var(--terminal-muted, #68707a);
-  line-height: 1.45;
-}
-
-.practice-difficulty-eyebrow {
-  color: var(--terminal-cyan, #087f68);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
 .practice-difficulty-options {
   display: grid;
   gap: 9px;
 }
 
-.practice-difficulty-modal .practice-difficulty-option {
+.practice-mode-card {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+}
+
+.practice-mode-card .practice-mode-tool {
+  grid-area: 1 / 2;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  width: 92px;
+  margin-right: 14px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.practice-mode-card .practice-ranking-button { width: 44px; padding: 8px; }
+.practice-level-icon { flex: none; color: var(--practice-level-color); }
+.practice-level-beginner { --practice-level-color: #238956; }
+.practice-level-intermediate { --practice-level-color: #e6b422; }
+.practice-level-advanced { --practice-level-color: #d74747; }
+
+.practice-difficulty-modal .practice-difficulty-option {
+  display: block;
+  grid-area: 1 / 1 / 2 / 3;
   width: 100%;
   min-height: 72px;
-  padding: 12px 15px;
+  padding: 12px 118px 12px 18px;
+  font-size: 18px;
+  font-weight: 700;
   border: 1px solid rgba(0, 191, 255, 0.34);
   border-radius: 2px;
   background: rgba(10, 35, 45, 0.72);
@@ -69,46 +72,6 @@
 .practice-difficulty-modal .practice-difficulty-option:focus-visible {
   outline: 2px solid var(--practice-difficulty-accent, #00bfff);
   outline-offset: 2px;
-}
-
-.practice-difficulty-beginner {
-  --practice-difficulty-accent: #00d9ad;
-}
-
-.practice-difficulty-intermediate {
-  --practice-difficulty-accent: #44a7ff;
-}
-
-.practice-difficulty-advanced {
-  --practice-difficulty-accent: #f2a23a;
-}
-
-.practice-difficulty-index {
-  color: var(--practice-difficulty-accent);
-  font-family: var(--font-ui-default);
-  font-size: 1.05rem;
-  font-weight: 900;
-}
-
-.practice-difficulty-copy {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.practice-difficulty-copy strong {
-  font-size: 1.05rem;
-  line-height: 1.2;
-}
-
-.practice-difficulty-copy small {
-  color: var(--terminal-muted, #68707a);
-  line-height: 1.35;
-}
-
-.practice-difficulty-modal > .secondary-action {
-  justify-self: center;
-  min-width: 112px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -60,17 +60,17 @@ it("shows loading, empty and failure states without retaining a stale list", asy
   const { getByText, getByRole, container } = render(<LeaderboardModal token="token" user={{ id: "b" }} characters={[]} onClose={() => {}} />);
   expect(getByText("加载中...")).toBeTruthy();
   await waitFor(() => expect(getByText("暂无排行")).toBeTruthy());
-  fireEvent.click(getByRole("tab", { name: "吃子赛" }));
+  fireEvent.click(getByRole("tab", { name: "标准" }));
   await waitFor(() => expect(getByText("加载失败")).toBeTruthy());
   expect(container.querySelector(".lp-standings")).toBeNull();
 });
 
 it("ignores an old mode response after the newer mode has loaded", async () => {
   let resolveOld;
-  api.mockImplementationOnce(() => new Promise(resolve => { resolveOld = resolve; })).mockResolvedValueOnce({ players: [player("capture", 1, { captures: 52 })] });
+  api.mockImplementationOnce(() => new Promise(resolve => { resolveOld = resolve; })).mockResolvedValueOnce({ players: [player("current", 1)] });
   const { getByRole, container } = render(<LeaderboardModal token="token" user={{ id: "b" }} characters={[]} onClose={() => {}} />);
-  fireEvent.click(getByRole("tab", { name: "吃子赛" }));
-  await waitFor(() => expect(container.querySelector(".lp-captures")?.textContent).toBe("52子"));
+  fireEvent.click(getByRole("tab", { name: "标准" }));
+  await waitFor(() => expect(container.querySelector(".lp-winner")?.getAttribute("aria-label")).toBe("第1名 current"));
   await act(async () => resolveOld({ players: [player("stale", 1)] }));
-  expect(container.querySelector(".lp-winner").getAttribute("aria-label")).toBe("第1名 capture");
+  expect(container.querySelector(".lp-winner").getAttribute("aria-label")).toBe("第1名 current");
 });

@@ -30,8 +30,8 @@ describe("Spark mode expansion", () => {
     expect(practice.closest("[inert]")).toBeNull();
     fireEvent.click(practice);
     expect(screen.getByRole("dialog")).toBeTruthy();
-    expect(within(screen.getByRole("dialog")).queryByRole("button", { name: /吃子挑战赛/ })).toBeNull();
-    expect(within(screen.getByRole("dialog")).getByRole("button", { name: /高级/ })).toBeTruthy();
+    expect(within(screen.getByRole("dialog")).getByRole("button", { name: "吃子挑战赛", exact: true })).toBeTruthy();
+    expect(within(screen.getByRole("dialog")).getByRole("button", { name: /陪练等级：初级/ })).toBeTruthy();
     // Close the nested dialog without collapsing its parent selection.
     fireEvent.click(screen.getByRole("button", { name: "关闭准时宝陪练" }));
     expect(parent.getAttribute("aria-expanded")).toBe("true");
@@ -45,16 +45,19 @@ describe("Spark mode expansion", () => {
   it("starts the existing capture challenge with its required payload", () => {
     const { parent, onStartMatch, onStartPractice } = setup();
     fireEvent.click(parent);
-    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛选择角色" }));
+    expect(screen.queryByRole("button", { name: "吃子挑战赛", exact: true })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "准时宝陪练" }));
+    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
     fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭选择角色" }));
     expect(onStartPractice).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "开始吃子挑战赛" }));
+    fireEvent.click(screen.getByRole("button", { name: "START！" }));
     expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId: "sigrika" });
     expect(onStartMatch).not.toHaveBeenCalled();
   });
 
   it.each([
-    ["吃子挑战赛", "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！"],
     ["队际赛", "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！"]
   ])("opens the %s rule popover from its card corner", (title, rules) => {
     const { parent } = setup();

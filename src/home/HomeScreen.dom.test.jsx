@@ -60,30 +60,27 @@ describe("HomeScreen practice difficulty picker", () => {
 
     expect(screen.getByRole("dialog", { name: "准时宝陪练" })).toBeTruthy();
     expect(screen.queryByText("选择难度")).toBeNull();
-    expect(screen.getByText("随机猜先。吃掉准时宝22个子或数子胜就算胜利！")).toBeTruthy();
+    expect(screen.getByText("今天想找准时宝做什么呢？")).toBeTruthy();
     expect(within(screen.getByRole("dialog", { name: "准时宝陪练" })).queryByRole("button", { name: "返回" })).toBeNull();
     expect(screen.getByRole("button", { name: "关闭准时宝陪练" })).toBeTruthy();
     expect(within(screen.getByRole("dialog", { name: "准时宝陪练" })).getByAltText("西格莉卡").getAttribute("src")).toBe("/assets/characters/handbook-chibi-sprites/sigrika.webp");
-    expect(screen.getByText("沙包型准时宝")).toBeTruthy();
-    expect(screen.getByText("一般型准时宝")).toBeTruthy();
-    expect(screen.getByText("红温型准时宝")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /入门/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /中级/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /高级/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "沙包陪练" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "吃子挑战赛", exact: true })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /陪练等级：初级/ })).toBeTruthy();
     expect(screen.queryByText("选择执棋颜色")).toBeNull();
     expect(onMatchModePickerOpenChange).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole("button", { name: /中级/ }));
+    await user.click(screen.getByRole("button", { name: /陪练等级：初级/ }));
 
     expect(onStartPractice).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: "开始准时宝对局" }).disabled).toBe(true);
+    expect(screen.getByRole("button", { name: "START！" }).disabled).toBe(true);
     await user.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
     await user.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
     expect(screen.getByRole("dialog", { name: "选择角色" })).toBeTruthy();
     expect(onStartPractice).not.toHaveBeenCalled();
     expect(within(screen.getByRole("dialog", { name: "选择角色" })).queryByRole("button", { name: "开始准时宝对局" })).toBeNull();
     await user.click(screen.getByRole("button", { name: "关闭选择角色" }));
-    await user.click(screen.getByRole("button", { name: "开始准时宝对局" }));
+    await user.click(screen.getByRole("button", { name: "START！" }));
 
     expect(onMatchModePickerOpenChange).toHaveBeenCalledWith(false);
     expect(onStartPractice).toHaveBeenCalledTimes(1);

@@ -810,7 +810,7 @@ Startup network and match ACK behavior follows [Internal Test Release Contract](
 
 ### Match card character cache
 
-- `useMatchCharacterSelection` owns account-local entry selections under `sigrika-match-characters:<userId>`; standard, gomoku, regular, capture and team are independent arrays.
+- `useMatchCharacterSelection` owns account-local entry selections under `sigrika-match-characters:<userId>`; standard, gomoku, regular, practice and team are independent arrays. Both Zhunshibao modes share practice; the historical capture array is no longer read by active entry controls. `usePracticeOptions` stores mode and ordinary difficulty separately, synchronously resets on account changes, validates both fields and tolerates blocked/corrupt storage. Keep it above the dialog lifetime so reopening still retains in-memory choices when storage is blocked.
 - Empty storage must not default to `user.selectedCharacter`. Filter unowned, disabled, item-blocked and duplicate identities before rendering or submitting.
 - Home card actions validate one character or three distinct team members before closing the picker. Missing selections use the exact notice `尚未选择角色，无法匹配`.
 - Character changes persist without starting. Team picker submission and the team mode card share one HomeScreen start function: normalize fixed slots against current availability, reject incomplete/duplicate/unowned/blocked entries, close both picker layers and submit the explicit ordered lineup through onStartMatch. The team footer reads 开始队际赛匹配; closing without submission only preserves the cached selection.

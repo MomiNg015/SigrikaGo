@@ -1269,7 +1269,8 @@ describe("HomeScreen", () => {
     const brightMobileModalBlock = mobileCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.practice-difficulty-backdrop \.practice-difficulty-modal\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(modalBlock).toContain("width: min(520px, calc(100vw - 32px))");
-    expect(optionBlock).toContain("grid-template-columns: 44px minmax(0, 1fr)");
+    expect(optionBlock).toContain("grid-area: 1 / 1 / 2 / 3");
+    expect(optionBlock).toContain("padding: 12px 118px 12px 18px");
     expect(optionBlock).not.toContain("border-left");
     expect(brightModalBlock).toContain("width: min(520px, calc(100vw - 32px)) !important");
     expect(brightOptionBlock).toContain("background: rgba(255, 250, 235, 0.96) !important");

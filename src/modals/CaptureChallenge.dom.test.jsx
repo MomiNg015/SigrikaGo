@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
 import { CAPTURE_CHALLENGE_MODE, captureChallengeResultText } from "../shared/captureChallenge.js";
@@ -32,9 +31,12 @@ describe("capture challenge player flow", () => {
     const onStartPractice = vi.fn();
     render(<HomeScreen user={user} characters={CHARACTERS} matchModePickerOpen onStartPractice={onStartPractice} onStartMatch={vi.fn()} onMatchModePickerOpenChange={vi.fn()} />);
     fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
-    fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛选择角色" }));
+    fireEvent.click(screen.getByRole("button", { name: "准时宝陪练" }));
+    fireEvent.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
     fireEvent.click(screen.getByRole("button", { name: CHARACTERS.sigrika.name }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭选择角色" }));
     fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
+    fireEvent.click(screen.getByRole("button", { name: "START！" }));
     expect(onStartPractice).toHaveBeenCalledWith({ difficulty: "advanced", playerColor: "random", challenge: CAPTURE_CHALLENGE_MODE, characterId: "sigrika" });
   });
 
@@ -45,9 +47,8 @@ describe("capture challenge player flow", () => {
       { id: "c", username: "较晚达成的玩家", rank: "3段", captures: 23, ranking: 3, recordCharacter: "sigrika" },
       { id: "d", username: "第四名", rank: "3段", captures: 0, ranking: 4, recordCharacter: "sigrika" }
     ] : [] }));
-    const events = userEvent.setup();
-    const { container } = render(<LeaderboardModal token="test" user={user} characters={CHARACTERS} onClose={vi.fn()} />);
-    await events.click(screen.getByRole("tab", { name: "吃子赛" }));
+    const { container } = render(<LeaderboardModal captureOnly token="test" user={user} characters={CHARACTERS} onClose={vi.fn()} />);
+    expect(screen.queryByRole("tab")).toBeNull();
     await screen.findByText("第四名");
     expect(api).toHaveBeenLastCalledWith(`/api/leaderboard?mode=${CAPTURE_CHALLENGE_MODE}`, { token: "test" });
     const rows = [...container.querySelectorAll(".lp-scroll .lp-winner, .lp-scroll > .lp-row")];

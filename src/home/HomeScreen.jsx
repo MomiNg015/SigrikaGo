@@ -12,7 +12,7 @@ import { studentIdentityCharacterId } from "../shared/studentIdentity.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
 import PracticeDifficultyDialog from "./PracticeDifficultyDialog.jsx";
-import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
+import { usePracticeOptions } from "./usePracticeOptions.js";
 import { Info } from "lucide-react";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import HomeFooter from "./components/HomeFooter.jsx";
@@ -32,6 +32,7 @@ import { useSigrikaCandyDuelAvailability } from "./useSigrikaCandyDuelAvailabili
 
 export default function HomeScreen({ user, token, onUserChange, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onSelectCharacter, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const { available, selections, select } = useMatchCharacterSelection(user, characters);
+  const practiceOptions = usePracticeOptions(user);
   const cancellation = useCandyEffectCancellation({ token, user, onUserChange, onNotice });
   const blocked = candyBlockedCharacters(user, characters, available);
   const identityId = studentIdentityCharacterId(user, { regularSelection: selections.regular });
@@ -119,6 +120,8 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
 
         {matchModePickerOpen && (
           <MatchModePicker
+            token={token}
+            practiceOptions={practiceOptions}
             sigrikaCorrupted={sigrikaCorrupted}
             sigrikaDuelAvailability={sigrikaDuelAvailability}
             sigrikaDuelWatchPending={sigrikaDuelWatchPending}
@@ -167,14 +170,13 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
         {characterEntry === "team" && !sigrikaCorrupted && <TeamLineupPicker cancellation={cancellation} user={user} characters={characters} audioSettings={audioSettings} initialLineup={selections.team} onChange={(ids) => select("team", ids)} onClose={() => setCharacterEntry(null)} onStart={(_mode, lineup) => startTeamMatch(lineup)} />}
         {characterEntry && characterEntry !== "team" && !sigrikaCorrupted && <MatchCharacterPicker cancellation={cancellation} blocked={blocked} audioSettings={audioSettings} available={available} selected={selections[characterEntry][0]} user={user}
           onClose={() => setCharacterEntry(null)} onSelect={(id) => select(characterEntry, [id])}
-          startLabel={characterEntry === "capture" ? "开始吃子挑战赛" : `开始${characterEntry === "regular" ? "星炬对弈" : characterEntry === "standard" ? "标准对弈" : "五子棋"}匹配`}
+          startLabel={`开始${characterEntry === "regular" ? "星炬对弈" : characterEntry === "standard" ? "标准对弈" : "五子棋"}匹配`}
           onConfirm={() => {
             const characterId = selections[characterEntry][0];
             if (!characterId) return;
             setCharacterEntry(null);
             onMatchModePickerOpenChange?.(false);
-            if (characterEntry === "capture") onStartPractice?.({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId });
-            else onStartMatch(characterEntry === "regular" ? "spark" : characterEntry, undefined, characterId);
+            onStartMatch(characterEntry === "regular" ? "spark" : characterEntry, undefined, characterId);
           }} />}
         {!sigrikaCorrupted && <IrisDatabase
           audioSettings={audioSettings}
@@ -187,7 +189,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   );
 }
 
-function MatchModePicker({ user, characters, selections, practiceCharacterProps, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
+function MatchModePicker({ user, token, characters, selections, practiceOptions, practiceCharacterProps, onCharacterOpen, onNotice, characterPickerOpen, onClose, onPreloadPlayableReady, onPracticeStart, onSelect, onTeamSelect, onStartSigrikaDuel, sigrikaCorrupted = false, sigrikaDuelAvailability = SIGRIKA_CANDY_DUEL_AVAILABILITY.available, sigrikaDuelWatchPending = false }) {
   const [practiceDifficultyOpen, setPracticeDifficultyOpen] = useState(false);
   const [expandedMode, setExpandedMode] = useState(null);
   const categoryButtonRefs = useRef({});
@@ -248,8 +250,7 @@ function MatchModePicker({ user, characters, selections, practiceCharacterProps,
   const startSelected = (entry, mode) => {
     const id = selections[entry][0];
     if (!id) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
-    if (entry === "capture") onPracticeStart({ difficulty: "advanced", challenge: CAPTURE_CHALLENGE_MODE, playerColor: "random", characterId: id });
-    else onSelect(mode, id);
+    onSelect(mode, id);
   };
   const slots = (entry, title) => <MatchCharacterSlots entry={entry} title={title} selections={selections[entry]} characters={characters} user={user} onOpen={onCharacterOpen} />;
   const showRules = (event, mode) => {
@@ -266,7 +267,6 @@ function MatchModePicker({ user, characters, selections, practiceCharacterProps,
       ? [{ id: "gomoku", title: "来下五子棋吗？", rulesText: modeOrderedEntries().find((mode) => mode.id === "gomoku").rulesText, onClick: () => startSelected("gomoku", "gomoku") }]
       : [
         { id: "regular", title: "常规匹配", onClick: () => startSelected("regular", "spark") },
-        { id: "capture", title: "吃子挑战赛", rulesText: "100手内尽可能吃掉准时宝的棋子吧！吃得越多排名越高！", onClick: () => startSelected("capture", "spark") },
         { id: "team", title: "队际赛", rulesText: "挑选3位部员，进行一盘棋接力3个阶段的紧张刺激的队际赛！", onClick: onTeamSelect }
       ];
 
@@ -393,14 +393,13 @@ function MatchModePicker({ user, characters, selections, practiceCharacterProps,
         <HomeActionButton variant="secondary" type="button" onClick={expanded ? returnToModes : onClose}>{expanded ? "返回" : "取消"}</HomeActionButton>
         {practiceDifficultyOpen && (
           <PracticeDifficultyDialog
+            key={user.id ?? user.username}
+            token={token}
+            options={practiceOptions}
             characters={characters}
             characterProps={practiceCharacterProps}
             onClose={() => setPracticeDifficultyOpen(false)}
-            onSelect={(difficulty) => onPracticeStart({
-              difficulty,
-              playerColor: "random",
-              characterId: practiceCharacterProps.selected
-            })}
+            onSelect={onPracticeStart}
           />
         )}
       </section>

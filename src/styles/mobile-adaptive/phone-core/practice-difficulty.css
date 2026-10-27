@@ -15,22 +15,13 @@
     max-width: 100% !important;
   }
 
-  .practice-difficulty-heading p {
-    font-size: 0.86rem;
-  }
-
   .practice-difficulty-options {
     gap: 8px;
   }
 
   .practice-difficulty-modal .practice-difficulty-option {
-    grid-template-columns: 36px minmax(0, 1fr);
-    gap: 10px;
-    min-height: 64px;
-    padding: 10px 12px;
+    min-height: 68px;
+    padding: 10px 112px 10px 14px;
   }
 
-  .practice-difficulty-copy small {
-    font-size: 0.78rem;
-  }
 }

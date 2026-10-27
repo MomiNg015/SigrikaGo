@@ -57,7 +57,8 @@ describe("match card character selection", () => {
     localStorage.setItem(`sigrika-match-characters:${user.id}`, JSON.stringify({ regular: ["sigrika"], capture: ["nabomo"] }));
     const { props, unmount } = setup();
     fireEvent.click(screen.getByRole("button", { name: "准时宝陪练" }));
-    fireEvent.click(screen.getByRole("button", { name: /高级/ }));
+    fireEvent.click(screen.getByRole("button", { name: /陪练等级：初级/ }));
+    fireEvent.click(screen.getByRole("button", { name: /陪练等级：中级/ }));
     expect(props.onStartPractice).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "准时宝对局选择角色" }));
     const picker = screen.getByRole("dialog", { name: "选择角色" });
@@ -69,8 +70,9 @@ describe("match card character selection", () => {
     expect(props.onStartPractice).not.toHaveBeenCalled();
     fireEvent.keyDown(picker, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: "选择角色" })).toBeNull();
-    expect(screen.getByRole("button", { name: /高级/ }).getAttribute("aria-pressed")).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: "开始准时宝对局" }));
+    expect(screen.getByRole("button", { name: "沙包陪练" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /陪练等级：高级/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "START！" }));
     expect(props.onStartPractice).toHaveBeenCalledExactlyOnceWith({ difficulty: "advanced", playerColor: "random", characterId: "nabomo" });
     expect(props.onStartMatch).not.toHaveBeenCalled();
     expect(JSON.parse(localStorage.getItem(`sigrika-match-characters:${user.id}`))).toMatchObject({ regular: ["sigrika"], capture: ["nabomo"], practice: ["nabomo"] });
@@ -89,7 +91,7 @@ describe("match card character selection", () => {
     expect(props.onStartMatch).not.toHaveBeenCalled();
   });
 
-  it.each(["标准对弈", "来下五子棋吗？", "常规匹配", "吃子挑战赛", "队际赛"])("blocks %s without a selection", (title) => {
+  it.each(["标准对弈", "来下五子棋吗？", "常规匹配", "队际赛"])("blocks %s without a selection", (title) => {
     const { props, container } = setup();
     fireEvent.click(screen.getAllByRole("button", { name: title === "标准对弈" ? "标准对弈" : title === "来下五子棋吗？" ? "玩些别的" : "星炬对弈" }).at(-1));
     if (title === "标准对弈") title = "常规匹配";

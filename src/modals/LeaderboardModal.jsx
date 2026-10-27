@@ -10,8 +10,9 @@ import { modeOrderedEntries } from "../shared/gameModes.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 import { ModalDialog } from "./modalComponents.jsx";
 
-export default function LeaderboardModal({ token, user, characters, onClose }) {
-  const [mode, setMode] = useState("spark");
+export default function LeaderboardModal({ token, user, characters, onClose, captureOnly = false }) {
+  const [selectedMode, setMode] = useState("spark");
+  const mode = captureOnly ? CAPTURE_CHALLENGE_MODE : selectedMode;
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,13 +38,13 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
   }, [token, mode]);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog className="leaderboard-modal leaderboard-podium-modal window-sticker-host window-bookmark-host" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+    <div className="modal-backdrop" onClick={(event) => { event.stopPropagation(); if (event.target === event.currentTarget) onClose(); }}>
+      <ModalDialog className="leaderboard-modal leaderboard-podium-modal window-sticker-host window-bookmark-host" ariaLabel={captureOnly ? "吃子挑战赛排行榜" : undefined} ariaLabelledBy={captureOnly ? undefined : "leaderboard-modal-title"} onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" aria-label="关闭排行榜" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header window-sticker-header">
           <WindowTitleSticker titleKey="leaderboard" id="leaderboard-modal-title" />
         </header>
-        <ModeTabs mode={mode} onModeChange={setMode} />
+        {captureOnly ? <p className="capture-leaderboard-label">吃子挑战赛</p> : <ModeTabs mode={mode} onModeChange={setMode} />}
         {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {error && <p className="form-error admin-action-error">{error}</p>}
         {!loading && !error && players.length === 0 && <WindowEmptyState>暂无排行</WindowEmptyState>}
@@ -66,7 +67,7 @@ export function isLeaderboardCurrentUser(player, user) {
 function ModeTabs({ mode, onModeChange }) {
   return (
     <WindowBookmarkTabs className="mode-tabs" role="tablist" aria-label="对弈模式">
-      {[...modeOrderedEntries(), { id: CAPTURE_CHALLENGE_MODE, shortTitle: "吃子赛" }].map((entry) => (
+      {modeOrderedEntries().map((entry) => (
         <button
           key={entry.id}
           type="button"
