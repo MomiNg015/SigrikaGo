@@ -302,3 +302,38 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 250: 分批提交黑化适配与履历整改
+
+**Date**: 2026-10-27
+**Task**: 分批提交黑化适配与履历整改
+**Branch**: `master`
+
+### Summary
+
+按用户指定的三类分别提交生产代码、测试和文档。黑化总开关保持关闭；成就与个性化暂时关闭；履历布局及成绩卡状态整改。完整项目检查通过，样板、PV 和旧任务材料保留未提交。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f3dfcdbb` | (see git log) |
+| `0e873bde` | (see git log) |
+| `00f68b61` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
