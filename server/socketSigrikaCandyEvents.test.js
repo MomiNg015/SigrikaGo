@@ -1,6 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { registerSigrikaCandySocketEvents } from "./socketSigrikaCandyEvents.js";
 
+vi.mock("../src/shared/sigrikaCandyAvailability.js", () => ({ SIGRIKA_CANDY_CORRUPTION_ENABLED: true }));
+
 function setup({
   phase = "awaiting-duel",
   room = null,

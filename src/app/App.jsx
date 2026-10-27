@@ -27,6 +27,7 @@ import {
   useRootBackExitGuard
 } from "./modalDismissal.js";
 import { APP_OVERLAYS, dismissOverlayByKey, overlayPropsFromState } from "./overlayRegistry.js";
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../shared/sigrikaCandyAvailability.js";
 import {
   SIGRIKA_CANDY_PHASES,
   SIGRIKA_CANDY_STORY_NODE_IDS
@@ -202,7 +203,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
   }, [runSigrikaCorruptionTransition, showToast, token, updateUser]);
 
   const handleStoryNodeEnter = useCallback(async (nodeId) => {
-    if (nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
+    if (!SIGRIKA_CANDY_CORRUPTION_ENABLED || nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
       || user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.corruptionStory
       || sigrikaClimaxRequestRef.current) return;
     sigrikaClimaxRequestRef.current = true;
@@ -240,7 +241,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
 
   useEffect(() => {
     const phase = user?.sigrikaCandyArc?.phase;
-    if (!token || overlayState.storyPlayer || activeStoryPlayer.script || sigrikaRecoveryRequestRef.current
+    if (!SIGRIKA_CANDY_CORRUPTION_ENABLED || !token || overlayState.storyPlayer || activeStoryPlayer.script || sigrikaRecoveryRequestRef.current
       || (phase !== SIGRIKA_CANDY_PHASES.corruptionStory && phase !== SIGRIKA_CANDY_PHASES.recoveryStory)) return undefined;
     let alive = true;
     api("/api/items/rainbow-bean-candy/sigrika/story", { token })

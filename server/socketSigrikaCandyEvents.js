@@ -1,4 +1,5 @@
 import { GAME_PHASES } from "../src/shared/game.js";
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../src/shared/sigrikaCandyAvailability.js";
 import {
   SIGRIKA_CANDY_DUEL_AVAILABILITY,
   SIGRIKA_CANDY_PHASES,
@@ -25,6 +26,7 @@ export function registerSigrikaCandySocketEvents(socket, {
   metrics = null
 }) {
   socket.on("sigrika-candy:duel-status", async (_payload = {}, acknowledge) => {
+    if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);
       if (!canAccessSigrikaCandyDuel(socket.user)) {
@@ -41,6 +43,7 @@ export function registerSigrikaCandySocketEvents(socket, {
   });
 
   socket.on("sigrika-candy:duel-watch", async (_payload = {}, acknowledge) => {
+    if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);
       if (!canAccessSigrikaCandyDuel(socket.user)) {
@@ -91,6 +94,7 @@ export function registerSigrikaCandySocketEvents(socket, {
   });
 
   socket.on("sigrika-candy:duel-start", async (_payload = {}, acknowledge) => {
+    if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);
       const phase = socket.user.sigrikaCandyArc?.phase;
@@ -164,6 +168,12 @@ export function registerSigrikaCandySocketEvents(socket, {
       acknowledge?.({ ok: false, error: "登录状态已失效，请重新登录", code: "auth_expired" });
     }
   });
+}
+
+function rejectDisabledCorruption(acknowledge) {
+  if (SIGRIKA_CANDY_CORRUPTION_ENABLED) return false;
+  acknowledge?.({ ok: false, error: "黑化剧情暂未开放", code: "special_branch_disabled" });
+  return true;
 }
 
 function canAccessSigrikaCandyDuel(user) {

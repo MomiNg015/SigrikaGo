@@ -1,5 +1,13 @@
 # 后端、HTTP API 与实时房间
 
+## 西格莉卡黑化分支暂时关闭（2026-10-27）
+
+`src/shared/sigrikaCandyAvailability.js` 的 `SIGRIKA_CANDY_CORRUPTION_ENABLED = false` 是前后端共用开关。仓库不注入黑化测试选项，App 不启动进入演出或异常剧情续播。糖果普通使用推进到 7 次后暂停计数，并继续选择第 7 次普通剧情；已保存的第 8 次或异常阶段不被覆盖。生产环境既有西格莉卡糖果目标限制继续生效。
+
+`publicUser` 通过 `publicSigrikaCandyArc` 将账号投影为 `phase: normal / corrupted: false`，不暴露暂停的房间号和结局；`normalizeSigrikaCandyArc` 仍保留原始语义供状态机使用。剧情读取返回 `storyScript: null`；高潮、测试跳转、开始/修复特殊对局和恢复剧情写接口在任何存储操作之前返回 404“黑化剧情暂未开放”。三个 `sigrika-candy:duel-*` 事件返回 `special_branch_disabled`，通用房间加入也拒绝旧特殊房间。启动恢复跳过特殊房间，不注册、不启动计时、不覆写或删除快照。
+
+关闭无数据迁移；历史剧情、黑化界面、回放及账号进度保留。普通糖果效果和其他角色照常处理。`sigrikaCandyDisabled.test.js` 覆盖关闭状态、全阶段账号投影、无副作用接口拒绝及房间暂停；原状态机测试显式开启开关以保留未来恢复时的回归覆盖。
+
 大厅顶部校园播报复用 `/api/admin/site-settings` 的权限、PATCH 事务和审计，以及 `/api/site-settings` 的公开投影。`topAnnouncementEnabled` 为布尔值，`topAnnouncementText` 经共享规范化器处理为最多 500 个 UTF-16 单位的单行纯文本。部分 PATCH 保留其它配置；关闭保留已编辑文字，空文字可被保存。客户端仅在大厅可见时每 30 秒刷新，并在进入大厅、窗口聚焦或页面恢复可见时检查；后台保存回调立即更新当前客户端。刷新失败保留上次成功值，管理员保存递增本地版本并使旧请求失效，防止旧响应覆盖新公告。
 
 封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。

@@ -1,3 +1,4 @@
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../src/shared/sigrikaCandyAvailability.js";
 import {
   SIGRIKA_CANDY_MAX_USE_COUNT,
   SIGRIKA_CANDY_OUTCOMES,
@@ -40,6 +41,8 @@ export async function ensureSigrikaCandyArcSchema(client) {
 
 export function sigrikaCandyUseProgressData(user = {}) {
   const arc = normalizeSigrikaCandyArc(user);
+  if (!SIGRIKA_CANDY_CORRUPTION_ENABLED
+    && (arc.phase !== SIGRIKA_CANDY_PHASES.normal || arc.useCount >= SIGRIKA_CANDY_MAX_USE_COUNT - 1)) return {};
   if (arc.phase !== SIGRIKA_CANDY_PHASES.normal || arc.useCount >= SIGRIKA_CANDY_MAX_USE_COUNT) {
     throw routeError(409, "西格莉卡的异常剧情尚未结束");
   }
@@ -137,6 +140,7 @@ export function sigrikaCandyRecoveryCompletedData(user = {}) {
 export async function getSigrikaCandyArcStory({ prisma, userId }) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw routeError(404, "用户不存在");
+  if (!SIGRIKA_CANDY_CORRUPTION_ENABLED) return { user: publicUser(user), storyScript: null };
   const arc = normalizeSigrikaCandyArc(user);
   const startNodeId = arc.phase === SIGRIKA_CANDY_PHASES.corruptionStory
     ? "corruption-start"
@@ -163,15 +167,18 @@ export async function getSigrikaCandyArcStory({ prisma, userId }) {
 }
 
 export async function markSigrikaCandyClimax({ prisma, userId }) {
+  assertCorruptionEnabled();
   return updateArcUser(prisma, userId, sigrikaCandyClimaxData);
 }
 
 export async function debugJumpSigrikaCandyToUseEight({ prisma, userId, nodeEnv = process.env.NODE_ENV }) {
   if (!canUseDebugTestActions({ NODE_ENV: nodeEnv })) throw routeError(404, "接口不存在");
+  assertCorruptionEnabled();
   return updateArcUser(prisma, userId, sigrikaCandyDebugJumpData, { includeAssets: true });
 }
 
 export async function markSigrikaCandyDuelStarted({ prisma, userId, roomCode }) {
+  assertCorruptionEnabled();
   const updated = await prisma.user.update({
     where: { id: userId },
     data: sigrikaCandyDuelStartedData(roomCode)
@@ -180,6 +187,7 @@ export async function markSigrikaCandyDuelStarted({ prisma, userId, roomCode }) 
 }
 
 export async function recoverMissingSigrikaCandyDuel({ prisma, userId, roomCode }) {
+  assertCorruptionEnabled();
   return updateArcUser(
     prisma,
     userId,
@@ -188,12 +196,14 @@ export async function recoverMissingSigrikaCandyDuel({ prisma, userId, roomCode 
 }
 
 export async function startSigrikaCandyRecovery({ prisma, userId }) {
+  assertCorruptionEnabled();
   const user = await updateArcUser(prisma, userId, sigrikaCandyRecoveryStartedData);
   const story = await getSigrikaCandyArcStory({ prisma, userId });
   return { ...story, user };
 }
 
 export async function completeSigrikaCandyRecovery({ prisma, userId }) {
+  assertCorruptionEnabled();
   const user = await prisma.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: userId } });
     if (!current) throw routeError(404, "用户不存在");
@@ -218,7 +228,7 @@ export async function cancelRainbowBeanCandyEffect({ prisma, userId, characterId
     });
     if (!user) throw routeError(404, "用户不存在");
     const arc = normalizeSigrikaCandyArc(user);
-    if (canonicalId === "sigrika" && arc.phase !== SIGRIKA_CANDY_PHASES.normal) {
+    if (SIGRIKA_CANDY_CORRUPTION_ENABLED && canonicalId === "sigrika" && arc.phase !== SIGRIKA_CANDY_PHASES.normal) {
       throw routeError(409, "异常剧情期间不能取消西格莉卡的糖果效果");
     }
     const itemEffects = parseItemEffects(user.itemEffects);
@@ -254,6 +264,10 @@ async function updateArcUser(prisma, userId, transition, { includeAssets = false
   });
   if (!updated) throw routeError(404, "用户不存在");
   return publicUser(updated);
+}
+
+function assertCorruptionEnabled() {
+  if (!SIGRIKA_CANDY_CORRUPTION_ENABLED) throw routeError(404, "黑化剧情暂未开放");
 }
 
 function routeError(status, message) {

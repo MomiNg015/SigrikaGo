@@ -1,3 +1,5 @@
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../src/shared/sigrikaCandyAvailability.js";
+
 export function createRoomPersistenceRestoreLifecycle({
   rooms,
   listPersistedRooms,
@@ -17,6 +19,7 @@ export function createRoomPersistenceRestoreLifecycle({
       try {
         const room = hydratePersistedRoom(JSON.parse(row.snapshot));
         if (!room?.code) continue;
+        if (room.sigrikaCandyDuel && !SIGRIKA_CANDY_CORRUPTION_ENABLED) continue;
 
         ensureRestoredDisconnectedNotices(room);
         rooms.set(room.code, room);

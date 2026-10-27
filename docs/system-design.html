@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h3>2026-10-27 暂时关闭西格莉卡黑化分支</h3>
+<p>共享 <code>SIGRIKA_CANDY_CORRUPTION_ENABLED</code> 设为 <code>false</code>，同时关闭开发测试跳转、第 8 次自动触发、异常剧情续播和特殊对局入口。旧黑化账号对外显示普通状态，原始剧情进度和房间快照保留；关闭期间不恢复特殊房间的计时器，不写入清零数据。普通糖果前 7 次流程保留，之后沿用第 7 次普通剧情。已有剧情与界面代码保留待后续启用，生产环境原有西格莉卡糖果限制不变。<a href="./system-design/03-backend-realtime-api.md">关闭边界与验证</a>。</p>
 <h3>2026-10-23 商店无纹理 A 方案正式接入</h3>
 <p>将确认的 A 方案接入正式 Bright School 商店，并移除商品卡片纹理。扎希拉使用纯色暖纸、紫金细边与暖纸对白，棋子预览保持透明底、无可见虚线框；残星会使用独立赤黑银店招、钱包、工具、价格签和方角对白。四个商店专用材质 owner 通过最终样式入口加载，按钮配色复用现有状态变量；五卡排布、缩放、背景、店主、切换路牌和动效保持不变。正式组件不依赖样板代码或模拟 API。<a href="./design-samples/shop-window-2026-10-23/materials/production.html">正式效果预览</a>仅使用本地目录夹具验证交互；桌面、390／320px 双店的几何／动效与实装前基线一致，购买和服装装扮流程已验证。样式归属见 <a href="./system-design/06-ui-theme-mobile.md">UI 主题分篇</a>。</p>
 <h3>2026-10-23 公告与邮箱阴影纸卡实装</h3>
@@ -3585,6 +3587,10 @@
 <p><code>useAuthSession</code> / <code>useStartupPreload</code> 向 App 报告可重试的 <code>startupError</code>，临时失败保留认证和房间状态；<code>ConnectionNotice</code> 显示启动重试或 Socket 重连状态，使用主题变量及现有反馈样式。<code>startMatchTransition</code> 使用连接检查、ACK、8 秒超时与 <code>match:found</code> 权威成功信号，<code>cancelMatchStart</code> 清理等待监听和计时器；不在无连接时显示虚假的排队状态。共享密码规则和引擎贴目转换分别位于 <code>src/shared/passwordValidation.js</code> 与 <code>engineKomi.js</code>。</p>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
+<h2>西格莉卡黑化分支暂时关闭（2026-10-27）</h2>
+<p><code>src/shared/sigrikaCandyAvailability.js</code> 的 <code>SIGRIKA_CANDY_CORRUPTION_ENABLED = false</code> 是前后端共用开关。仓库不注入黑化测试选项，App 不启动进入演出或异常剧情续播。糖果普通使用推进到 7 次后暂停计数，并继续选择第 7 次普通剧情；已保存的第 8 次或异常阶段不被覆盖。生产环境既有西格莉卡糖果目标限制继续生效。</p>
+<p><code>publicUser</code> 通过 <code>publicSigrikaCandyArc</code> 将账号投影为 <code>phase: normal / corrupted: false</code>，不暴露暂停的房间号和结局；<code>normalizeSigrikaCandyArc</code> 仍保留原始语义供状态机使用。剧情读取返回 <code>storyScript: null</code>；高潮、测试跳转、开始/修复特殊对局和恢复剧情写接口在任何存储操作之前返回 404“黑化剧情暂未开放”。三个 <code>sigrika-candy:duel-*</code> 事件返回 <code>special_branch_disabled</code>，通用房间加入也拒绝旧特殊房间。启动恢复跳过特殊房间，不注册、不启动计时、不覆写或删除快照。</p>
+<p>关闭无数据迁移；历史剧情、黑化界面、回放及账号进度保留。普通糖果效果和其他角色照常处理。<code>sigrikaCandyDisabled.test.js</code> 覆盖关闭状态、全阶段账号投影、无副作用接口拒绝及房间暂停；原状态机测试显式开启开关以保留未来恢复时的回归覆盖。</p>
 <p>大厅顶部校园播报复用 <code>/api/admin/site-settings</code> 的权限、PATCH 事务和审计，以及 <code>/api/site-settings</code> 的公开投影。<code>topAnnouncementEnabled</code> 为布尔值，<code>topAnnouncementText</code> 经共享规范化器处理为最多 500 个 UTF-16 单位的单行纯文本。部分 PATCH 保留其它配置；关闭保留已编辑文字，空文字可被保存。客户端仅在大厅可见时每 30 秒刷新，并在进入大厅、窗口聚焦或页面恢复可见时检查；后台保存回调立即更新当前客户端。刷新失败保留上次成功值，管理员保存递增本地版本并使旧请求失效，防止旧响应覆盖新公告。</p>
 <p>封禁账号的 HTTP 管理入口在封禁和审计事务提交成功后，调用在线会话管理器断开该账号全部 Socket，阻断现有连接继续执行房间和聊天操作；事务失败或输入无效时不踢出。HTTP 与后续 Socket 认证仍从数据库读取封禁状态，解除封禁后可重新登录。</p>
 <p>opening 阶段房间快照增加 <code>openingServerNow</code>（发送时服务端毫秒时间），与原 <code>openingEndsAt</code> 共同表示剩余时长。<code>normalizeRoomSnapshot</code> 在接收时生成仅客户端使用的 <code>__openingEndsAt = receivedAt + max(0, openingEndsAt - openingServerNow)</code>；重复归一化保留已有本地期限。开局组件锁定首次期限，刷新快照不重启演出；playing 阶段不再投影该时间字段，并由原阶段切换卸载开局层。旧服务端未提供新字段时保留原截止时间兼容路径。</p>

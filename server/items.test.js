@@ -479,6 +479,35 @@ describe("items", () => {
     expect(updates[0]).toMatchObject({ sigrikaCandyUseCount: 1, sigrikaCandyPhase: "normal" });
   });
 
+  it.each([
+    { sigrikaCandyUseCount: 7, sigrikaCandyPhase: "normal" },
+    { sigrikaCandyUseCount: 8, sigrikaCandyPhase: "awaiting-duel", sigrikaCandyRoomCode: "SIG01" }
+  ])("keeps candy use ordinary while preserving suspended progress: $sigrikaCandyPhase", async (sigrikaProgress) => {
+    const updates = [];
+    const response = await useInventoryItem({
+      userId: "user-1", itemId: "rainbow-bean-candy", characterId: "sigrika",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }), targetId: "rainbow-bean-candy",
+        itemTargetType: "character", sigrikaProgress, updates,
+        storyScripts: [{
+          key: "item.rainbow-bean-candy.sigrika", title: "西格莉卡的彩虹糖", triggerType: "item-character-use",
+          triggerParamsJson: JSON.stringify({ itemId: "rainbow-bean-candy", characterId: "sigrika" }),
+          publishedStartNodeId: "use-1-start",
+          publishedNodesJson: JSON.stringify([
+            { id: "use-1-start", text: "第一次" }, { id: "use-7-start", text: "普通糖果剧情" },
+            { id: "corruption-start", text: "黑化剧情" }
+          ]), publishedAt: new Date("2026-06-28T08:00:00.000Z")
+        }]
+      })
+    });
+    expect(response.storyScript.startNodeId).toBe("use-7-start");
+    expect(response.user.sigrikaCandyArc).toMatchObject({ useCount: 7, phase: "normal", corrupted: false });
+    expect(response.user.itemEffects.sigrikaCandyDisabled).toBe(true);
+    expect(updates).toHaveLength(1);
+    expect(updates[0].ownedItems).toBe("{}");
+    expect(Object.keys(updates[0]).filter((key) => key.startsWith("sigrikaCandy"))).toEqual([]);
+  });
+
   it("rejects repeating an active rainbow candy effect without consuming the item", async () => {
     const updates = [];
     await expect(useInventoryItem({
@@ -518,6 +547,7 @@ describe("items", () => {
 });
 
 function inventoryPrisma({
+  sigrikaProgress = {},
   ownedItems = "{}",
   itemEffects = "{}",
   ownedCharacters = "sigrika",
@@ -550,7 +580,8 @@ function inventoryPrisma({
     userCharacters,
     ownedItems,
     itemEffects,
-    ownedDecorations: ""
+    ownedDecorations: "",
+    ...sigrikaProgress
   };
   const item = {
     id: "shop-1",

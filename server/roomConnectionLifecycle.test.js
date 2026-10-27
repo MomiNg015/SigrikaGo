@@ -2,6 +2,8 @@ import { describe, expect, test, vi } from "vitest";
 import { GAME_PHASES } from "../src/shared/game.js";
 import { createRoomConnectionLifecycle } from "./roomConnectionLifecycle.js";
 
+vi.mock("../src/shared/sigrikaCandyAvailability.js", () => ({ SIGRIKA_CANDY_CORRUPTION_ENABLED: true }));
+
 describe("room connection lifecycle", () => {
   test("reconnects disconnected players and clears empty-room close state", () => {
     const room = testRoom({

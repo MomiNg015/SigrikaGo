@@ -1,4 +1,5 @@
 import { GAME_PHASES } from "../src/shared/game.js";
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../src/shared/sigrikaCandyAvailability.js";
 import { isSigrikaCandyCorruptedPhase } from "../src/shared/sigrikaCandyArc.js";
 
 export function createRoomConnectionLifecycle({
@@ -20,6 +21,7 @@ export function createRoomConnectionLifecycle({
     if (!validatedRoomCode.ok) return null;
     const room = rooms.get(validatedRoomCode.value);
     if (!room) return null;
+    if (room.sigrikaCandyDuel && !SIGRIKA_CANDY_CORRUPTION_ENABLED) return null;
     const player = room.players.find((candidate) => candidate.user.id === user.id);
     if (player) {
       attachPlayerSocket(room, player, socket);

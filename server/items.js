@@ -95,7 +95,7 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     const selectedStoryScript = item.targetId === RAINBOW_BEAN_CANDY_ID
       ? selectRainbowBeanCandyStoryBranch(storyScript, itemUseOutcome, {
         characterId: targetCharacter,
-        useCount: sigrikaProgressData.sigrikaCandyUseCount
+        useCount: sigrikaProgressData.sigrikaCandyUseCount ?? user.sigrikaCandyUseCount
       })
       : storyScript;
 

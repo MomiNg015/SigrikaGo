@@ -1,3 +1,5 @@
+import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "./sigrikaCandyAvailability.js";
+
 export const SIGRIKA_CANDY_MAX_USE_COUNT = 8;
 
 export const SIGRIKA_CANDY_PHASES = Object.freeze({
@@ -57,7 +59,8 @@ const VALID_PHASES = new Set(Object.values(SIGRIKA_CANDY_PHASES));
 const VALID_OUTCOMES = new Set(Object.values(SIGRIKA_CANDY_OUTCOMES));
 
 export function sigrikaCandyUseStartNodeId(useCount) {
-  const count = normalizeSigrikaCandyUseCount(useCount);
+  const count = Math.min(normalizeSigrikaCandyUseCount(useCount), SIGRIKA_CANDY_CORRUPTION_ENABLED
+    ? SIGRIKA_CANDY_MAX_USE_COUNT : SIGRIKA_CANDY_MAX_USE_COUNT - 1);
   return count >= SIGRIKA_CANDY_MAX_USE_COUNT
     ? SIGRIKA_CANDY_STORY_NODE_IDS.corruptionStart
     : `use-${Math.max(1, count)}-start`;
@@ -80,6 +83,14 @@ export function normalizeSigrikaCandyArc(user = {}) {
     corrupted: isSigrikaCandyCorruptedPhase(phase),
     active: phase !== SIGRIKA_CANDY_PHASES.normal || useCount > 0
   };
+}
+
+export function publicSigrikaCandyArc(user = {}) {
+  const arc = normalizeSigrikaCandyArc(user);
+  if (SIGRIKA_CANDY_CORRUPTION_ENABLED) return arc;
+  // Only the public projection is suspended; never reset the stored branch.
+  const useCount = Math.min(arc.useCount, SIGRIKA_CANDY_MAX_USE_COUNT - 1);
+  return { useCount, phase: SIGRIKA_CANDY_PHASES.normal, outcome: "", roomCode: "", corrupted: false, active: useCount > 0 };
 }
 
 export function isSigrikaCandyCorruptedPhase(phase) {

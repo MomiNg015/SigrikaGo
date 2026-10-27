@@ -1,5 +1,28 @@
 # Sigrika Candy Duel Recovery Contract
 
+## Temporary branch shutdown (2026-10-27)
+
+### Scope / Trigger
+The unfinished corruption branch is suspended in every environment. This switch takes precedence over the recovery behavior below; the production item-target restriction still applies independently.
+
+### Signatures
+`src/shared/sigrikaCandyAvailability.js` exports `SIGRIKA_CANDY_CORRUPTION_ENABLED = false`. `publicSigrikaCandyArc(rawUser)` projects effective client state; `normalizeSigrikaCandyArc(rawUser)` retains persisted semantics.
+
+### Contracts
+Hide development jump choices and suppress App entry/resume effects. Normal candy count advances only through seven, then freezes and selects `use-7-start`. Never overwrite a saved exceptional phase/count/outcome/room during ordinary item use. Public users report normal phase, no corruption/outcome/room, and at most seven uses. Story reads return null scripts. Branch mutations reject before storage access. Special room restoration skips registration, timers and persistence; generic joins also reject. Keep scripts, visuals, snapshots, item effects and historical records.
+
+### Validation & Error Matrix
+Mutation HTTP services: 404 `黑化剧情暂未开放`; special socket start/status/watch: `{ ok: false, code: "special_branch_disabled", error: "黑化剧情暂未开放" }`; generic join: existing room-unavailable path. Normal use count 0–6 advances; count 7 or saved exceptional state produces no arc writes. Ordinary rooms still restore normally.
+
+### Good / Base / Bad Cases
+Good: an old corrupted account receives normal navigation while saved progress remains intact. Base: normal candy effects and non-Sigrika branches remain available. Bad: hiding only the debug button, deleting progress, or resuming a hidden room timer on startup.
+
+### Tests Required
+`server/sigrikaCandyDisabled.test.js`, `server/items.test.js`, and `src/modals/warehouse/sigrikaCandyDisabled.dom.test.jsx` exercise the real disabled default, no-write rejection, ordinary story selection, public projection and room suspension. Existing state-machine/socket tests explicitly mock the switch on to keep enabled-path coverage.
+
+### Wrong vs Correct
+Wrong: change normalization to erase stored progress or reset accounts in a migration. Correct: use a separate public projection and gate entry/mutation/restore paths; reopening is an explicit source-controlled switch change.
+
 ## Temporary production item-entry restriction
 
 ### Scope / Trigger

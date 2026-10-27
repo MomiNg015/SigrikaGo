@@ -1,4 +1,7 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
+
+// Retain the original state-machine coverage for when the branch reopens.
+vi.mock("../src/shared/sigrikaCandyAvailability.js", () => ({ SIGRIKA_CANDY_CORRUPTION_ENABLED: true }));
 import {
   SIGRIKA_CANDY_OUTCOMES,
   SIGRIKA_CANDY_PHASES,
