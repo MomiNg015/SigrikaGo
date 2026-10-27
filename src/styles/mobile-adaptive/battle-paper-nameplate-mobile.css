@@ -1,6 +1,6 @@
 .battle-name-fit, .battle-name-content { display: contents; }
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] .player-meta {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen[data-paper-battle] .player-info[data-paper-player] .player-meta {
     & .name-button { height: 32px; }
     & .battle-name-fit { display: flex; align-items: center; width: 100%; height: 32px; min-width: 0; }
     & .battle-name-content { display: inline-flex; flex: none; width: max-content; transform: scale(var(--battle-name-scale, 1)); transform-origin: left center; }

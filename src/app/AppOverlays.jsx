@@ -22,6 +22,7 @@ const WarehouseModal = lazy(() => import("../modals/WarehouseModal.jsx"));
 const WatchModal = lazy(() => import("../modals/WatchModal.jsx"));
 
 export default function AppOverlays({
+  onSigrikaCorruptionEntry,
   applyStoneDecoration,
   audioSettings,
   characterListView,
@@ -216,6 +217,7 @@ export default function AppOverlays({
             onUserChange={updateUser}
             onNotice={showToast}
             onStoryScript={storyPlayerScript?.open}
+            onSigrikaCorruptionEntry={onSigrikaCorruptionEntry}
             onClose={() => setShowWarehouse(false)}
             onOpenRecruitment={() => {
               setShowWarehouse(false);

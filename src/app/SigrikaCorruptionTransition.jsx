@@ -1,3 +1,7 @@
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { ModalDialog } from "../modals/modalComponents.jsx";
+
 const TRANSITION_SLICES = [
   { height: "11%", origin: "left", top: "8%", travel: "7vw" },
   { height: "18%", origin: "right", top: "24%", travel: "-9vw" },
@@ -6,8 +10,9 @@ const TRANSITION_SLICES = [
   { height: "12%", origin: "left", top: "83%", travel: "10vw" }
 ];
 
-export default function SigrikaCorruptionTransition({ transition }) {
+export default function SigrikaCorruptionTransition({ transition, onConfirm }) {
   if (!transition) return null;
+  if (transition.direction === "enter") return <NegativeEntry transition={transition} onConfirm={onConfirm} />;
   const { direction, phase, timings } = transition;
 
   return (
@@ -41,5 +46,29 @@ export default function SigrikaCorruptionTransition({ transition }) {
       <span className="sigrika-theme-transition__fault sigrika-theme-transition__fault--upper" />
       <span className="sigrika-theme-transition__fault sigrika-theme-transition__fault--lower" />
     </div>
+  );
+}
+function NegativeEntry({ transition, onConfirm }) {
+  const layerRef = useRef(null);
+  const buttonRef = useRef(null);
+  useEffect(() => {
+    const root = document.getElementById("root");
+    const previous = root?.inert;
+    if (root) root.inert = true;
+    layerRef.current?.focus({ preventScroll: true });
+    return () => { if (root) root.inert = previous; };
+  }, []);
+  useEffect(() => {
+    if (transition.phase === "choice" && transition.ready) buttonRef.current?.focus({ preventScroll: true });
+  }, [transition.phase, transition.ready]);
+  return createPortal(
+    <div className="sigrika-negative-entry" data-phase={transition.phase} ref={layerRef} tabIndex={-1}
+      onKeyDown={(event) => { if (event.key === "Escape" || event.key === "Tab") { event.preventDefault(); event.stopPropagation(); } }}>
+      <div className="sigrika-negative-entry__film" aria-hidden="true" />
+      {transition.phase === "choice" && <ModalDialog className="sigrika-negative-entry__dialog" ariaLabel="用户对话选项">
+        <button ref={buttonRef} type="button" className="sigrika-negative-entry__choice" disabled={!transition.ready}
+          aria-busy={!transition.ready || undefined} onClick={onConfirm} data-ui-sound="none">......怎么回事？？</button>
+      </ModalDialog>}
+    </div>, document.body
   );
 }

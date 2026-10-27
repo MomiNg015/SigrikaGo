@@ -176,6 +176,6 @@ describe("App startup preload wiring", () => {
     expect(source).toContain("SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.exit");
     expect(source).toContain("commit: (data) => updateUser(data.user)");
     expect(source).toContain("aria-busy={sigrikaCorruptionTransitioning || undefined}");
-    expect(source).toContain("<SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />");
+    expect(source).toContain("<SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} onConfirm={confirmSigrikaCorruptionEntry} />");
   });
 });

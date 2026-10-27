@@ -51,6 +51,22 @@ function renderGrid(overrides = {}) {
 }
 
 describe("HouseCharacterGrid ordered portrait strips", () => {
+  it("uses the current strips for corruption and locks character details", () => {
+    mockViewport(false);
+    const { container, onOpenCharacterDetail } = renderGrid({
+      characters: [CHARACTERS.sigrika, CHARACTERS.denia], owned: new Set(["sigrika", "denia"]),
+      sigrikaCorrupted: true, user: { sigrikaCandyArc: { corrupted: true, phase: "awaiting-duel" } }
+    });
+    expect(container.querySelectorAll(".handbook-puzzle-piece")).toHaveLength(2);
+    expect(container.querySelector(".character-grid-container")).toBeNull();
+    const focus = screen.getByRole("button", { name: "西格莉卡？" });
+    expect(focus.disabled).toBe(true);
+    expect(screen.getByRole("button", { name: /数据已损坏/ }).disabled).toBe(true);
+    pointer(focus, "pointerover"); fireEvent.click(focus);
+    expect(focus.getAttribute("aria-expanded")).toBe("false");
+    expect(onOpenCharacterDetail).not.toHaveBeenCalled();
+    expect(container.querySelector(".is-corruption-focus img").src).toContain("sigrika-corrupted");
+  });
   it("uses a solid alpha mask for unavailable chibi members without exposing portrait images", () => {
     const { container } = renderGrid({ characters: [CHARACTERS.sigrika], owned: new Set(), itemEffects: {} });
     const silhouette = container.querySelector('.handbook-puzzle-silhouette');

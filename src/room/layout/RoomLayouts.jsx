@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 export const MOBILE_ROOM_MEDIA_QUERY = "(max-width: 900px), (pointer: coarse)";
 
 export function DesktopRoomLayout({ children, className = "" }) {
-  return <main className={`room-screen desktop-room-screen ${className}`.trim()}>{children}</main>;
+  return <main data-paper-battle="" className={`room-screen desktop-room-screen ${className}`.trim()}>{children}</main>;
 }
 
 export function MobileRoomLayout({ children, className = "" }) {
-  return <main className={`room-screen mobile-room-screen ${className}`.trim()}>{children}</main>;
+  return <main data-paper-battle="" className={`room-screen mobile-room-screen ${className}`.trim()}>{children}</main>;
 }
 
 export function useMobileRoomLayout() {

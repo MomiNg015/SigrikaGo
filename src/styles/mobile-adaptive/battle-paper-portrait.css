@@ -1,5 +1,5 @@
 /* Breakout character artwork and its paper name label. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen[data-paper-battle] .player-info[data-paper-player] {
   & .portrait-wrap:not(.no-character) {
     height: clamp(180px, 20vw, 250px) !important;
     min-height: 0 !important;
@@ -63,7 +63,7 @@
 
 /* Extend the crop upward so lifted artwork still reaches the original bottom. */
 @media (min-width: 901px) {
-  .room-screen:not(.sigrika-candy-duel-room) .portrait-wrap > .character-bust-portrait[data-variant="battle"] {
+  .room-screen[data-paper-battle] .portrait-wrap > .character-bust-portrait[data-variant="battle"] {
     top: -15%;
     height: 115%;
 

@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
@@ -453,7 +453,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("LOADING... (x_x)");
   });
 
-  it("turns the corrupted house manual into a Sigrika-only readable archive", () => {
+  it("adapts the corrupted archive to current strips with locked details", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -475,20 +475,16 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("sigrika-corruption-house-backdrop");
     expect(html).toContain("is-corruption-focus");
     expect(html).toContain("西格莉卡？");
-    expect(html).toContain('alt="西格莉卡？"');
+    expect(html).toContain('aria-label="西格莉卡？"');
     expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
     expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
     expect(html).not.toContain("档案校验异常");
     expect(html).not.toContain("house-corruption-integrity");
     expect(html).toContain("is-corruption-obscured");
-    expect(html).toContain('data-corruption-seed="house-denia"');
-    expect(html).toContain('data-corruption-seed="house-card-denia"');
-    expect(html).toContain("character-card-corruption-noise");
-    expect(html).toContain("--corruption-card-duration:");
-    expect(html).toContain("--corruption-noise-duration:");
-    expect(html).toContain("character-data-fragments");
-    expect(html).toContain("character-corruption-source");
-    expect(html).not.toContain('data-corruption-seed="house-sigrika"');
+    expect(html).toContain("handbook-puzzle-board");
+    expect(html).toContain('aria-label="丹雅的数据已损坏"');
+    expect(html).toContain("handbook-puzzle-portrait");
+    expect(html).not.toContain("character-card-corruption-noise");
     expect(html).not.toContain("corruption-scribble");
     expect(html).not.toContain("sortie-button");
     expect(html).not.toContain("decorations-section");

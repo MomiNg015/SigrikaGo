@@ -4,10 +4,21 @@ import { assertBuiltCssContracts } from "./check-built-css-contracts.mjs";
 const selector = ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop";
 
 describe("built CSS contracts", () => {
+  it("accepts the minifier's equivalent invert() shorthand", () => {
+    expect(() => assertBuiltCssContracts(
+      `${selector}{backdrop-filter:none!important}.sigrika-negative-entry__film{backdrop-filter:invert()}`
+    )).not.toThrow();
+  });
   it("accepts the standard no-blur declaration in the production owner", () => {
     expect(() => assertBuiltCssContracts(
-      `${selector}{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#3d2b2561!important}`
+      `${selector}{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#3d2b2561!important}.sigrika-negative-entry__film{backdrop-filter:invert(1)}`
     )).not.toThrow();
+  });
+
+  it("rejects a missing or prefixed-only full-window negative", () => {
+    expect(() => assertBuiltCssContracts(
+      `${selector}{backdrop-filter:none!important}.sigrika-negative-entry__film{-webkit-backdrop-filter:invert(1)}`
+    )).toThrow("Built CSS dropped backdrop-filter:invert(1)");
   });
 
   it("rejects a production owner that retains only the prefixed declaration", () => {

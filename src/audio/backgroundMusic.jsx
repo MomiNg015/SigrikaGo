@@ -16,6 +16,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0, window
   const playerRef = useRef({
     context: null,
     active: [],
+    fading: new Set(),
     baseVolume: 0,
     retry: null,
     generation: 0,
@@ -254,11 +255,12 @@ export function resumeBackgroundContextWithFallback(state) {
 }
 
 export function pauseBackgroundPlayback(state) {
+  state.generation = (state.generation ?? 0) + 1;
   const context = state.context;
   stopBackgroundHtmlFallback(state);
   state.active ??= [];
-  if (!context || state.active.length === 0) return;
-  state.offset += Math.max(0, context.currentTime - state.startedAt);
+  if (!context) return;
+  if (state.active.length) state.offset += Math.max(0, context.currentTime - state.startedAt);
   stopBackgroundPlayers(state);
 }
 
@@ -388,11 +390,21 @@ function fadeOutBackgroundPlayers(state) {
   const now = context.currentTime;
   const previous = state.active ?? [];
   state.active = [];
+  state.fading ??= new Set();
   for (const player of previous) {
+    state.fading.add(player);
+    const remaining = new Set(player.sources);
     player.gain.gain.cancelScheduledValues(now);
     player.gain.gain.setValueAtTime(player.gain.gain.value, now);
     player.gain.gain.linearRampToValueAtTime(0, now + BGM_FADE_SECONDS);
     for (const source of player.sources) {
+      source.onended = () => {
+        remaining.delete(source);
+        if (!remaining.size) {
+          state.fading.delete(player);
+          player.gain.disconnect();
+        }
+      };
       try {
         source.stop(now + BGM_FADE_SECONDS + 0.05);
       } catch {
@@ -403,10 +415,12 @@ function fadeOutBackgroundPlayers(state) {
 }
 
 function stopBackgroundPlayers(state) {
-  const previous = state.active ?? [];
+  const previous = [...(state.active ?? []), ...(state.fading ?? [])];
   state.active = [];
+  state.fading?.clear();
   for (const player of previous) {
     for (const source of player.sources) {
+      source.onended = null;
       try {
         source.stop();
       } catch {

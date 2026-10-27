@@ -2,7 +2,7 @@
   border: 1px solid color-mix(in srgb, var(--sigrika-duel-line) 68%, transparent) !important;
   color: var(--sigrika-duel-text) !important;
   background: var(--sigrika-duel-surface) !important;
-  box-shadow: none !important;
+  box-shadow: 1px 2px 0 var(--sigrika-duel-shadow) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .captures > * strong,
@@ -15,9 +15,9 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .board-stage {
-  border: 1px solid var(--sigrika-duel-line) !important;
+  border: 2px solid var(--sigrika-duel-line) !important;
   background: var(--sigrika-duel-ink) !important;
-  box-shadow: 0 4px 8px var(--sigrika-duel-shadow-soft), inset 0 0 0 1px color-mix(in srgb, var(--sigrika-duel-hot) 12%, transparent) !important;
+  box-shadow: 5px 6px 0 var(--sigrika-duel-shadow) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .board-stage::before,
@@ -35,9 +35,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .action-bar {
-  padding: 8px 10px !important;
   border: 1px solid color-mix(in srgb, var(--sigrika-duel-line) 68%, transparent) !important;
-  border-radius: 14px !important;
   background: var(--sigrika-duel-ink) !important;
   box-shadow: 0 4px 8px var(--sigrika-duel-shadow-soft) !important;
 }
@@ -46,7 +44,7 @@
   border: 1px solid var(--sigrika-duel-action-border, color-mix(in srgb, var(--sigrika-duel-line) 76%, transparent)) !important;
   color: var(--sigrika-duel-text) !important;
   background: var(--sigrika-duel-action-surface, var(--sigrika-duel-surface-raised)) !important;
-  box-shadow: 0 2px 4px var(--sigrika-duel-shadow-soft) !important;
+  box-shadow: 2px 3px 0 var(--sigrika-duel-shadow) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .action-bar .resign-action:not(:disabled) {
@@ -87,4 +85,11 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .chat-toggle-button > :is(svg, span, strong) {
   color: inherit !important;
+}
+
+/* Keep all five direct actions in one row when the short desktop board narrows. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .desktop-room-screen.sigrika-candy-duel-room .action-bar:not(.replay-bar) {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  & > button { min-width: 0; padding-inline: 8px; }
 }

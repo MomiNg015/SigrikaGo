@@ -1,6 +1,6 @@
 /* Portrait rows reserve the breakout art and pressed-clock shadow inside their slot. */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen[data-paper-battle] {
     --mobile-room-player-strip-height: 94px !important;
     --mobile-room-board-size: min(calc(100vw - 24px), 480px) !important;
     --battle-control-shadow: 1px 2px 0 color-mix(in srgb, var(--bright-border) 55%, var(--bright-paper));

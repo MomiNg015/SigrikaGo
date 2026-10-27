@@ -1,4 +1,4 @@
-/* Final ordinary handbook owner; corrupted cards use their isolated legacy grid. */
+/* Shared handbook strip geometry; corruption overrides live in sigrika-corruption/. */
 .handbook-puzzle-piece {
   /* Shared candy rim holes follow the piece's desktop and portrait diagonals. */
   --candy-left-slant: var(--handbook-strip-slant);

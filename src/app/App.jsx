@@ -106,6 +106,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
   const [startupRetry, setStartupRetry] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
   const {
+    confirmEntry: confirmSigrikaCorruptionEntry,
     runTransition: runSigrikaCorruptionTransition,
     transition: sigrikaCorruptionTransition,
     transitioning: sigrikaCorruptionTransitioning
@@ -202,33 +203,38 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
     }
   }, [runSigrikaCorruptionTransition, showToast, token, updateUser]);
 
+  const enterSigrikaCorruption = useCallback(({ debug = false } = {}) => {
+    if (!SIGRIKA_CANDY_CORRUPTION_ENABLED) return Promise.resolve();
+    // The handbook player owns independent preview audio; closing it stops that BGM too.
+    overlaySetters.setShowHouse(false);
+    return runSigrikaCorruptionTransition({
+      direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter,
+      request: async () => {
+        if (debug) await api("/api/items/rainbow-bean-candy/sigrika/debug/jump-to-eight", { method: "POST", token });
+        return api("/api/items/rainbow-bean-candy/sigrika/climax", { method: "POST", token });
+      },
+      commit: (data) => {
+        updateUser(data.user);
+        clearStoryPlayer();
+        for (const overlay of APP_OVERLAYS) overlaySetters[overlay.setterProp]?.(false);
+      }
+    });
+  }, [clearStoryPlayer, overlaySetters, runSigrikaCorruptionTransition, token, updateUser]);
+
   const handleStoryNodeEnter = useCallback(async (nodeId) => {
     if (!SIGRIKA_CANDY_CORRUPTION_ENABLED || nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
       || user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.corruptionStory
       || sigrikaClimaxRequestRef.current) return;
     sigrikaClimaxRequestRef.current = true;
-    for (const overlay of APP_OVERLAYS) {
-      if (overlay.key !== "storyPlayer") overlaySetters[overlay.setterProp]?.(false);
-    }
     try {
-      await runSigrikaCorruptionTransition({
-        direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter,
-        request: () => api("/api/items/rainbow-bean-candy/sigrika/climax", {
-          method: "POST",
-          token
-        }),
-        commit: (data) => updateUser(data.user)
-      });
+      await enterSigrikaCorruption();
     } catch (error) {
       sigrikaClimaxRequestRef.current = false;
       showToast(error.message, "danger");
     }
   }, [
-    overlaySetters,
-    runSigrikaCorruptionTransition,
+    enterSigrikaCorruption,
     showToast,
-    token,
-    updateUser,
     user?.sigrikaCandyArc?.phase
   ]);
 
@@ -622,6 +628,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
       onSpecialResultContinue: continueSigrikaCandyResult,
       onStoryPlayerClose: closeStoryPlayerOverlay,
       onStoryNodeEnter: handleStoryNodeEnter,
+      onSigrikaCorruptionEntry: enterSigrikaCorruption,
       openReplay,
       openStoryPlayer,
       selectCharacter,
@@ -693,7 +700,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
         <AppOverlays {...appOverlayProps} />
         {homeOnboarding.active && <HomeOnboarding key={user.id} character={characters.sigrika ?? CHARACTERS.sigrika}
           overlaySetters={overlaySetters} saving={homeOnboarding.saving} error={homeOnboarding.error} onFinish={homeOnboarding.finish} />}
-        <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
+        <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} onConfirm={confirmSigrikaCorruptionEntry} />
       </DesktopViewportGate>
     </div>
   );

@@ -1,6 +1,6 @@
 /* Phone cards */
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen[data-paper-battle] .player-info[data-paper-player] {
     display: grid !important;
     grid-template-columns: clamp(56px, 16vw, 68px) minmax(0, 1fr) !important;
     grid-template-rows: 48px 34px !important;

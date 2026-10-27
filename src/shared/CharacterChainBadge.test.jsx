@@ -24,19 +24,16 @@ describe("CharacterChainBadge", () => {
     expect(chainCountForCharacter({ characterChains: { denia: 2 } }, "denia")).toBe(2);
     const homeSource = readFileSync(new URL("../home/components/PlayerPlaque.jsx", import.meta.url), "utf8");
     const houseSource = readFileSync(new URL("../modals/house/HouseCharacterGrid.jsx", import.meta.url), "utf8");
-    const legacyHouseSource = readFileSync(new URL("../modals/house/LegacyHouseCharacterGrid.jsx", import.meta.url), "utf8");
     const roomSource = readFileSync(new URL("../room/PlayerInfo.jsx", import.meta.url), "utf8");
     const css = readCssWithImports(new URL("../styles/hud-components.css", import.meta.url));
 
     expect(homeSource).not.toContain("CharacterChainBadge");
     expect(houseSource).not.toContain("CharacterChainBadge");
-    expect(houseSource).toContain("LegacyHouseCharacterGrid");
-    expect(legacyHouseSource).toContain("<CharacterChainBadge");
     expect(roomSource).toContain("CharacterChainBadge");
     expect(css).toContain(".character-chain-badge");
   });
 
-  it("hides duplicate-chain badges in both the normal puzzle and the legacy corrupted archive", () => {
+  it("hides duplicate-chain badges in both normal and corrupted handbook strips", () => {
     for (const sigrikaCorrupted of [false, true]) {
       const html = renderToStaticMarkup(createElement(HouseCharacterGrid, {
         characters: [CHARACTERS.sigrika, CHARACTERS.denia],

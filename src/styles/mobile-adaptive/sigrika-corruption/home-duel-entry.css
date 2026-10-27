@@ -1,0 +1,46 @@
+.app-shell.is-sigrika-corrupted .home-corruption-duel-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+}
+
+.app-shell.is-sigrika-corrupted .home-corruption-duel-art::before {
+  position: absolute;
+  inset: 12% 20% 14%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(132 31 50 / 0.22), transparent 70%);
+  content: "";
+}
+
+.app-shell.is-sigrika-corrupted .is-corruption-access-point .home-corruption-duel-art > img {
+  width: 86% !important;
+  height: 78% !important;
+  object-fit: contain;
+  filter: drop-shadow(7px 10px 0 rgb(40 13 20 / 0.2)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .home-corruption-duel-label {
+  position: absolute;
+  z-index: 1;
+  bottom: 2%;
+  left: 50%;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  padding: 12px 24px;
+  color: rgb(255 240 231) !important;
+  border: 2px solid rgb(53 21 28);
+  border-radius: 4px;
+  background: rgb(126 28 47);
+  box-shadow: 4px 5px 0 rgb(53 21 28);
+  font: 400 var(--sigrika-duel-label-size, 22px)/1.35 var(--font-window-title);
+  transform: translateX(-50%) rotate(-2deg);
+}
+
+@media (max-width: 768px) {
+  .app-shell.is-sigrika-corrupted .home-corruption-duel-art { --sigrika-duel-label-size: 18px; }
+}

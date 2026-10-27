@@ -38,11 +38,6 @@
   will-change: opacity;
 }
 
-.sigrika-theme-transition[data-direction="enter"] .sigrika-theme-transition__veil {
-  background:
-    radial-gradient(ellipse at 50% 47%, var(--sigrika-theme-transition-red) 0 9%, var(--sigrika-theme-transition-deep) 44%, var(--sigrika-theme-transition-dark) 100%);
-}
-
 .sigrika-theme-transition[data-direction="exit"] .sigrika-theme-transition__veil {
   background:
     radial-gradient(ellipse at 50% 46%, var(--theme-panel-bg) 0 18%, var(--theme-bg) 52%, color-mix(in srgb, var(--theme-danger) 10%, var(--theme-bg)) 100%);

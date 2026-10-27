@@ -1,8 +1,6 @@
-.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-player-plaque:disabled {
-  opacity: 0.44 !important;
-  filter: grayscale(1) contrast(1.65) brightness(0.58) !important;
-  text-decoration: line-through;
-  text-shadow: 4px 0 0 rgb(255 255 255 / 0.18), -3px 0 0 rgb(0 0 0 / 0.84);
+.app-shell.player-theme-enabled.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-student-id:disabled {
+  opacity: 0.72 !important;
+  filter: grayscale(1) contrast(1.1) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .is-sigrika-corrupted-home .home-player-zone {
@@ -160,7 +158,7 @@
   text-decoration: line-through;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .app-shell.is-sigrika-corrupted .home-terminal-header.is-sigrika-corrupted-header {
     grid-template-areas: "brand actions" !important;
     grid-template-columns: minmax(0, 1fr) 44px !important;

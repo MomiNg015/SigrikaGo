@@ -137,6 +137,7 @@ describe("member handbook pages", () => {
     expect(screen.queryByRole("tablist")).toBeNull();
     expect(screen.queryByText("星炬学院")).toBeNull();
     expect(document.querySelector(".handbook-opening-cover")).toBeNull();
-    expect(screen.getAllByRole("img", { name: "西格莉卡？" }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "西格莉卡？" }).disabled).toBe(true);
+    expect(document.querySelector(".handbook-puzzle-board")).not.toBeNull();
   });
 });

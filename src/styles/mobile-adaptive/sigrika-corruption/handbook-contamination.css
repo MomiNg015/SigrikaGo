@@ -15,15 +15,13 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted::after {
   position: absolute !important;
   inset: 0 !important;
-  z-index: 12 !important;
+  z-index: 0 !important;
   display: block !important;
   content: "" !important;
   border: 0 !important;
   border-radius: inherit !important;
-  background: rgb(63 60 62 / 0.22) !important;
-  box-shadow: inset 0 0 72px rgb(21 19 20 / 0.28) !important;
-  -webkit-backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important;
-  backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important;
+  background: transparent !important;
+  box-shadow: none !important;
   pointer-events: none !important;
 }
 

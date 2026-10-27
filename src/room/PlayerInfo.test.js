@@ -270,7 +270,8 @@ describe("PlayerInfo labels", () => {
     expect(markup).toContain("sigrika-corrupted-skill-chip");
     expect(markup).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.url}"`);
     expect(markup).toContain('alt="西格莉卡？"');
-    expect(markup).toContain("？？？ · ？");
+    expect(markup.replace(/<[^>]+>/g, "")).toContain("？？？ · ？");
+    expect(markup).toContain('data-paper-player=""');
     expect(markup).toContain('aria-label="技能未知，剩余次数未知"');
     expect(markup).toContain("<strong>提子</strong>");
     expect(markup).toContain("<strong>除子</strong>");

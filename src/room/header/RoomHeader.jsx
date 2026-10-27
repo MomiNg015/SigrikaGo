@@ -20,7 +20,8 @@ export default function RoomHeader({
   onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const showScoreboard = Boolean(roomGameInfo) && !room.sigrikaCandyDuel;
+  const showScoreboard = Boolean(roomGameInfo);
+  const roomCode = room.sigrikaCandyDuel ? "ERROR" : room.code;
   const moveCount = String(roomGameInfo?.moves ?? "").replace(/^第\s*/, "").replace(/\s*手$/, "").trim();
   const turnColor = ["black", "white"].includes(room.game?.turn) ? room.game.turn : undefined;
   const matchClassification = roomMatchClassification(room);
@@ -43,7 +44,7 @@ export default function RoomHeader({
           </div>
           <div className="room-scoreboard-details">
             <div className="room-scoreboard-meta">
-              <span title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${room.code}` : undefined}>{modeLabel} {room.code}</span>
+              <span title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${roomCode}` : undefined}>{modeLabel} {roomCode}</span>
               {room.team && <span>Round {room.team.round}</span>}
             </div>
             <div className="room-scoreboard-players">
@@ -51,13 +52,13 @@ export default function RoomHeader({
                 <span key={color} className={`room-scoreboard-player ${color}-side`} title={`${color === "black" ? "黑" : "白"}方：${roomGameInfo[color]}`} aria-label={`${color === "black" ? "黑" : "白"}方：${roomGameInfo[color]}`}>
                   <span aria-hidden="true">{color === "black" ? "黑" : "白"}</span>
                   <span className="room-scoreboard-name">{username}</span>
-                  <span className="room-scoreboard-rank">{rank}</span>
+                  {!room.sigrikaCandyDuel && <span className="room-scoreboard-rank">{rank}</span>}
                 </span>
               ))}
             </div>
           </div>
         </div> : <p className="room-title-line">
-          <span className={`room-code-label${matchClassification ? ` match-classification-tag is-${matchClassification.id}` : ""}`} title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${room.code}` : undefined}>{modeLabel}{" "}{room.sigrikaCandyDuel ? "ERROR" : room.code}</span>
+          <span className={`room-code-label${matchClassification ? ` match-classification-tag is-${matchClassification.id}` : ""}`} title={matchClassification?.label} aria-label={matchClassification ? `${matchClassification.label} ${modeLabel} ${roomCode}` : undefined}>{modeLabel}{" "}{roomCode}</span>
           {room.team && <span className="room-info-tag">Round {room.team.round}</span>}
           {roomGameInfo && (
             <>

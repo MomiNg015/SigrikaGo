@@ -31,7 +31,7 @@ opening 阶段房间快照增加 `openingServerNow`（发送时服务端毫秒�
 
 ## 当前结论
 
-- 西格莉卡彩虹豆豆跳跳糖不再按 `NODE_ENV=production` 禁用；库存返回空 `disabledCharacterReasons`，合法使用仍在同一事务中扣除道具、应用效果并累计次数。仓库不再注入黑化测试跳转选项，正常第八次剧情与生产环境拒绝调试接口保持。
+- 西格莉卡彩虹豆豆跳跳糖不再按 `NODE_ENV=production` 禁用；库存返回空 `disabledCharacterReasons`，合法使用仍在同一事务中扣除道具、应用效果并累计次数。黑化总开关当前关闭；重新启用后，仓库仅在非生产构建的西格莉卡第 1–7 次糖果剧情中注入黑化测试跳转选项，调用既有 `POST /api/items/rainbow-bean-candy/sigrika/debug/jump-to-eight` ，再调用既有 `climax` 接口；前端在两秒负片及用户确认后提交返回用户态。正常第八次剧情与生产环境拒绝调试接口保持。
 
 - `server/index.js` 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 `server/serverStartup.js`，具体 HTTP 领域逻辑已逐步拆到 `*Routes.js` 和领域模块，Socket 连接事件套件已由 `server/socketEvents.js` 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 `server/socket*Events.js` 分组模块维护。
 - `server/socketPracticeEvents.js` owns `practice:start`：参数为 `{ difficulty: "beginner" | "intermediate" | "advanced", playerColor: "black" | "white" | "random", engineVersion: "gnugo-3.8-v1", challenge?: "capture-challenge", characterId?: string }`，ack 为 `{ ok, roomCode?, error?, code? }`。前端先完成本地引擎初始化，服务端刷新认证用户、执行容量与活跃房检查，并校验版本；显式 `characterId` 通过拥有权、禁用和道具限制校验后，同步覆盖对局用户的 `selectedCharacter` 与目录 `characterConfig`，让房间技能及语音快照匹配所选角色，保持账号默认角色不变；旧客户端返回 `local_practice_version`，三档新房均不探测服务器 GNU Go。创建 Spark / unrated / practice / recordPolicy=none 房间，持久化并安全投影 `practice.engineBackend="browser"`，保留难度、执色及提子阈值；虚拟准时宝已 ready、无正式角色／技能／socket／社交身份，内部 bot actor id 不投影。`practice:compute` 与 `practice:computed` 只接受房主当前连接，具体见本地陪练引擎。

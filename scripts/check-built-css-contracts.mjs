@@ -21,6 +21,11 @@ export function assertBuiltCssContracts(css) {
   if (!hasStandardNoBlur) {
     throw new Error("Built CSS dropped backdrop-filter:none!important from the Bright School modal backdrop");
   }
+  const negativeFilm = css.match(/\.sigrika-negative-entry__film\{([^}]*)\}/)?.[1];
+  // Lightning CSS canonicalizes invert(1) to invert(), whose default is 100%.
+  if (!negativeFilm || !/(?:^|;)backdrop-filter:invert\((?:1|100%)?\)(?:;|$)/.test(negativeFilm)) {
+    throw new Error("Built CSS dropped backdrop-filter:invert(1) from the Sigrika negative entrance");
+  }
 }
 
 export async function checkBuiltCssContracts(distDirectory = "dist") {

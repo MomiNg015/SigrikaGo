@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import { characterThemeStyle } from "../../shared/characterDisplay.js";
 import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
-import LegacyHouseCharacterGrid from "./LegacyHouseCharacterGrid.jsx";
 import { activeCharacterItemEffects } from "./houseStats.js";
 import CharacterCandyBorder from "../../shared/CharacterCandyBorder.jsx";
 import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
@@ -47,7 +46,6 @@ export default function HouseCharacterGrid(props) {
     observer.observe(board);
     return () => observer.disconnect();
   }, [sigrikaCorrupted]);
-  if (sigrikaCorrupted) return <LegacyHouseCharacterGrid {...props} />;
   const { pages, currentPage, roster } = handbookStripPage(characters, page);
   const changePage = (next) => { setPage(next); hoveredKey.current = null; focusedKey.current = null; setExpanded(null); };
   const clearPointerPreview = () => {
@@ -74,18 +72,20 @@ export default function HouseCharacterGrid(props) {
         {roster.map((character, index) => {
           const id = canonicalCharacterId(character.id);
           const isOwned = owned.has(id);
+          const canInteract = isOwned && !sigrikaCorrupted;
+          const displayName = sigrikaCorrupted && id === "sigrika" ? "西格莉卡？" : character.name;
           const hideIntel = id === "baconbits" && !isOwned;
-          const isExpanded = isOwned && expanded === character.id;
+          const isExpanded = canInteract && expanded === character.id;
           const portrait = hideIntel ? null : resolveHandbookPortrait(character, { itemEffects, user, chibi: true });
           const catalogIndex = currentPage * HANDBOOK_STRIP_PAGE_SIZE + index;
           const artStyle = portrait && handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length, index: catalogIndex });
-          const effects = isOwned ? activeCharacterItemEffects(id, itemEffects) : [];
+          const effects = canInteract ? activeCharacterItemEffects(id, itemEffects) : [];
           const emblem = isOwned ? FACTION_EMBLEMS[HANDBOOK_FACTIONS[id]] : undefined;
           return <div key={character.id}
-            className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}`}
+            className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}${sigrikaCorrupted ? id === "sigrika" ? " is-corruption-focus" : " is-corruption-obscured" : ""}`}
             style={characterThemeStyle(character)} data-character-id={id} data-portrait-side={catalogIndex % 2 ? "right" : "left"}
             onPointerEnter={(event) => {
-              if (!isOwned) return;
+              if (!canInteract) return;
               if (event.pointerType === "mouse" && !ignoreHoverUntilMove.current
                 && !event.nativeEvent.sourceCapabilities?.firesTouchEvents) {
                 hoveredKey.current = character.id;
@@ -93,7 +93,7 @@ export default function HouseCharacterGrid(props) {
               }
             }}
             onPointerMove={(event) => {
-              if (!isOwned) return;
+              if (!canInteract) return;
               if (event.pointerType !== "mouse" || touchContact.current
                 || event.nativeEvent.sourceCapabilities?.firesTouchEvents) return;
               // Removing a dialog can synthesize mouse enter/move at the last
@@ -105,14 +105,14 @@ export default function HouseCharacterGrid(props) {
             }}
             onPointerLeave={() => { if (hoveredKey.current === character.id) leavePointerPreview(); }}>
             <button type="button" className="handbook-puzzle-tile"
-              disabled={!isOwned}
+              disabled={!canInteract}
               data-character-key={character.id}
-              aria-label={isOwned ? `${character.name}角色详情` : hideIntel ? "暂无情报" : "未拥有角色"}
+              aria-label={sigrikaCorrupted ? id === "sigrika" ? "西格莉卡？" : `${character.name}的数据已损坏` : isOwned ? `${character.name}角色详情` : hideIntel ? "暂无情报" : "未拥有角色"}
               aria-description={effects.length ? effects.map(effect => effect.label).join("，") : undefined}
               aria-expanded={isExpanded} title={isOwned ? character.name : undefined} data-ui-sound="none"
               data-home-guide={isOwned && id === "sigrika" ? "sigrika-card" : undefined}
               onPointerDown={(event) => {
-                if (!isOwned) return;
+                if (!canInteract) return;
                 inputMode.current = "pointer";
                 focusedKey.current = null;
                 // Touch feedback must not change the row geometry under the
@@ -124,7 +124,7 @@ export default function HouseCharacterGrid(props) {
                 }
               }}
               onPointerUp={(event) => {
-                if (!isOwned) return;
+                if (!canInteract) return;
                 // Native click follows pointerup. Preserve an already-expanded
                 // hit target until that click; a non-activating release resets
                 // on the next task rather than leaving a touch preview latched.
@@ -132,12 +132,12 @@ export default function HouseCharacterGrid(props) {
               }}
               onPointerCancel={clearPointerPreview}
               onFocus={() => {
-                if (!isOwned) return;
+                if (!canInteract) return;
                 if (suppressRestorePreview.current === character.id) { suppressRestorePreview.current = null; return; }
                 if (inputMode.current === "keyboard") { focusedKey.current = character.id; setExpanded(character.id); }
               }}
               onKeyDown={(event) => {
-                if (!isOwned) return;
+                if (!canInteract) return;
                 if (event.key !== "Escape") {
                   inputMode.current = "keyboard";
                   suppressRestorePreview.current = null;
@@ -150,7 +150,7 @@ export default function HouseCharacterGrid(props) {
                 if (!touchContact.current) setExpanded(hoveredKey.current);
               }}
               onClick={(event) => {
-                if (!isOwned) return;
+                if (!canInteract) return;
                 const pointerActivation = event.detail > 0 || inputMode.current === "pointer";
                 if (pointerActivation) inputMode.current = "pointer";
                 event.currentTarget.focus({ preventScroll: true });
@@ -182,7 +182,7 @@ export default function HouseCharacterGrid(props) {
                   maskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")`, WebkitMaskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")` }} />
                 <span className="handbook-puzzle-question">?</span>
               </>}
-              {isOwned && <span className={`handbook-strip-name${character.name.length >= 4 ? " is-long-name" : ""}`}><span className="handbook-strip-name-text">{character.name}</span></span>}
+              {isOwned && <span className={`handbook-strip-name${character.name.length >= 4 ? " is-long-name" : ""}`}><span className="handbook-strip-name-text">{displayName}</span></span>}
               {effects.length > 0 && <CharacterCandyBorder />}
             </button>
 

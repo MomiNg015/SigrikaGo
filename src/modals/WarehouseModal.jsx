@@ -5,7 +5,7 @@ import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal from "./warehouse/WarehouseTargetModal.jsx";
 import { useWarehouseInventory } from "./warehouse/useWarehouseInventory.js";
 
-export default function WarehouseModal({ token, user, characters, onUserChange, onNotice, onStoryScript, onClose, onOpenRecruitment, initialTargetState = null }) {
+export default function WarehouseModal({ token, user, characters, onUserChange, onNotice, onStoryScript, onSigrikaCorruptionEntry, onClose, onOpenRecruitment, initialTargetState = null }) {
   const {
     closeTargetModal,
     items,
@@ -16,7 +16,7 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
     targetResult,
     useItem,
     usingItemId
-  } = useWarehouseInventory({ characters, initialTargetState, token, user, onNotice, onStoryScript, onUserChange });
+  } = useWarehouseInventory({ characters, initialTargetState, token, user, onNotice, onStoryScript, onSigrikaCorruptionEntry, onUserChange });
 
   return (
     <div className="modal-backdrop warehouse-guide-backdrop" onClick={onClose}>

@@ -97,7 +97,7 @@
   filter: none;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted > :not(.character-grid-container, .close-button) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .house-modal.is-sigrika-corrupted > :not(.handbook-puzzle-panel, .close-button) {
   filter: grayscale(1) contrast(1.12);
 }
 

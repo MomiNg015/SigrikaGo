@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { BackgroundMusic } from "./backgroundMusic.jsx";
 import { ModalDialog } from "../modals/modalComponents.jsx";
 import { DEFAULT_AUDIO_SETTINGS } from "./audioSettings.js";
+import { requestBackgroundMusicPause } from "./backgroundMusicPause.js";
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
@@ -52,4 +53,27 @@ it("filters local windows without restarting playback, preserves mute and reuses
   view.rerender(scene({ music: { ...track, id: "battle", playback: { src: "/battle.ogg", loop: true } } }));
   expect(filter.frequency.exponentialRampToValueAtTime).toHaveBeenLastCalledWith(20000, 1.5);
   expect(sources).toHaveLength(2);
+  const release = requestBackgroundMusicPause();
+  try {
+    // A hard pause must also stop the previous track still fading out.
+    expect(sources[0].stop).toHaveBeenLastCalledWith();
+    expect(sources[1].stop).toHaveBeenLastCalledWith();
+  } finally { view.unmount(); release(); }
+});
+
+it("cancels music still decoding when the negative entrance requests silence", async () => {
+  let decoded;
+  const context = { state: "running", currentTime: 1,
+    decodeAudioData: vi.fn(() => new Promise((resolve) => { decoded = resolve; })),
+    createBufferSource: vi.fn(), createGain: vi.fn() };
+  vi.stubGlobal("AudioContext", class { constructor() { return context; } });
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(1) })));
+  const view = render(<BackgroundMusic track={{ id: "home", playback: { src: "/delayed.ogg", loop: true } }} audioSettings={DEFAULT_AUDIO_SETTINGS} />);
+  await waitFor(() => expect(context.decodeAudioData).toHaveBeenCalledOnce());
+  const release = requestBackgroundMusicPause();
+  try {
+    await act(async () => { decoded({ duration: 60 }); });
+    expect(context.createBufferSource).not.toHaveBeenCalled();
+    expect(context.createGain).not.toHaveBeenCalled();
+  } finally { view.unmount(); release(); }
 });

@@ -60,3 +60,15 @@
   color: inherit !important;
   stroke: currentColor !important;
 }
+
+/* Portaled controls must win against the final paper icon and tape owners. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-duel-system-log {
+  &::before, &::after { display: none !important; }
+  & :is(header > span, .chat-close-button, .chat-form-disabled button) > svg {
+    color: var(--sigrika-duel-text) !important;
+    stroke: currentColor !important;
+    filter: none !important;
+  }
+  & .chat-form-disabled button > svg { color: var(--sigrika-duel-disabled-text) !important; }
+  & :is(header > span, .chat-close-button, .chat-form-disabled button) > svg > * { color: inherit !important; stroke: currentColor !important; }
+}

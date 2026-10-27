@@ -2,6 +2,7 @@
 @import "./sigrika-corruption/damage-field.css";
 @import "./sigrika-corruption/transition.css";
 @import "./sigrika-corruption/transition-motion.css";
+@import "./sigrika-corruption/negative-entry.css";
 @import "./sigrika-corruption/room-atmosphere.css";
 @import "./sigrika-corruption/room-panels.css";
 @import "./sigrika-corruption/room-timers.css";
@@ -15,6 +16,7 @@
 @import "./sigrika-corruption/room-presentation.css";
 @import "./sigrika-corruption/marks.css";
 @import "./sigrika-corruption/home-contamination.css";
+@import "./sigrika-corruption/home-duel-entry.css";
 @import "./sigrika-corruption/handbook-contamination.css";
 @import "./sigrika-corruption/handbook-cards.css";
 @import "./sigrika-corruption/handbook-mobile.css";

@@ -139,7 +139,7 @@ function PlayerInfo({
   return (
     <aside
       className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${isPracticeBot ? "practice-bot-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
-      data-paper-player={!sigrikaCandyDuel ? "" : undefined}
+      data-paper-player=""
       data-battle-form={battleForm ?? undefined}
       style={{ ...(battleForm === DENIA_SKILL_FORM ? DENIA_SKILL_FORM_STYLE : {}), "--player-accent": character?.palette || "var(--bright-blue)", ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {}) }}
     >
@@ -253,7 +253,8 @@ function PlayerInfo({
         <div className="skill-chip-wrap sigrika-corrupted-skill-wrap">
           <span className="skill-chip sigrika-corrupted-skill-chip" aria-label="技能未知，剩余次数未知">
             <Sparkles size={16} />
-            {SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillName} · {SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillUses}
+            <span className="player-skill-name">{SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillName}</span>
+            <span className="player-skill-count"> · {SIGRIKA_CANDY_DUEL_PRESENTATION.hiddenSkillUses}</span>
           </span>
         </div>
       )}

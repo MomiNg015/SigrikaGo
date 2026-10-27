@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 
 const COMMIT_HOLD_MS = 32;
+export const SIGRIKA_NEGATIVE_HOLD_MS = 2000;
 
 export const SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS = Object.freeze({
   enter: "enter",
@@ -26,6 +28,15 @@ export function useSigrikaCorruptionTransition() {
   const activeRunRef = useRef(null);
   const mountedRef = useRef(true);
   const waitsRef = useRef(new Map());
+  const confirmationRef = useRef(null);
+  const releaseMusicRef = useRef(null);
+
+  useEffect(() => {
+    if (!transition) {
+      releaseMusicRef.current?.();
+      releaseMusicRef.current = null;
+    }
+  }, [transition]);
 
   const waitFor = useCallback((durationMs) => new Promise((resolve) => {
     const timerId = window.setTimeout(() => {
@@ -44,6 +55,10 @@ export function useSigrikaCorruptionTransition() {
         resolve();
       }
       waitsRef.current.clear();
+      confirmationRef.current?.(false);
+      confirmationRef.current = null;
+      releaseMusicRef.current?.();
+      releaseMusicRef.current = null;
     };
   }, []);
 
@@ -52,6 +67,30 @@ export function useSigrikaCorruptionTransition() {
 
     const timings = sigrikaCorruptionTransitionTimings(direction, reducedMotionPreferred());
     const run = (async () => {
+      if (direction === SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter) {
+        // Pause synchronously in the activation event, including pending music loads.
+        releaseMusicRef.current = requestBackgroundMusicPause();
+        setTransition({ direction, phase: "negative", ready: false });
+        let entering = true;
+        const confirmation = new Promise((resolve) => { confirmationRef.current = resolve; });
+        try {
+          const prepared = Promise.resolve().then(request).then((value) => {
+            if (entering && mountedRef.current) setTransition((current) => current && { ...current, ready: true });
+            return value;
+          });
+          const hold = waitFor(SIGRIKA_NEGATIVE_HOLD_MS).then(() => {
+            if (entering && mountedRef.current) setTransition((current) => current && { ...current, phase: "choice" });
+          });
+          const [value] = await Promise.all([prepared, hold]);
+          if (!mountedRef.current || !await confirmation) return undefined;
+          if (mountedRef.current) commit(value);
+          return value;
+        } finally {
+          entering = false;
+          confirmationRef.current = null;
+          if (mountedRef.current) setTransition(null);
+        }
+      }
       setTransition({ direction, phase: "covering", timings });
       const prepared = Promise.resolve()
         .then(request)
@@ -85,7 +124,13 @@ export function useSigrikaCorruptionTransition() {
     return run;
   }, [waitFor]);
 
+  const confirmEntry = useCallback(() => {
+    if (transition?.phase !== "choice" || !transition.ready) return;
+    confirmationRef.current?.(true);
+  }, [transition]);
+
   return {
+    confirmEntry,
     runTransition,
     transition,
     transitioning: transition !== null

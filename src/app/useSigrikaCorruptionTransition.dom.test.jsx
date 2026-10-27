@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
-import { act, renderHook } from "@testing-library/react";
+import { act, cleanup, renderHook } from "@testing-library/react";
+import { isBackgroundMusicPauseRequested } from "../audio/backgroundMusicPause.js";
 import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -16,10 +17,11 @@ describe("useSigrikaCorruptionTransition", () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.useRealTimers();
   });
 
-  it("commits a prepared corruption state only after full-screen cover", async () => {
+  it("pauses immediately, waits two seconds and commits only on the user's choice", async () => {
     const { result } = renderHook(() => useSigrikaCorruptionTransition());
     const commit = vi.fn();
     let run;
@@ -33,25 +35,31 @@ describe("useSigrikaCorruptionTransition", () => {
       await Promise.resolve();
     });
 
-    expect(result.current.transition.phase).toBe("covering");
+    expect(result.current.transition.phase).toBe("negative");
+    expect(isBackgroundMusicPauseRequested()).toBe(true);
     expect(commit).not.toHaveBeenCalled();
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(210);
+      result.current.confirmEntry();
+      await vi.advanceTimersByTimeAsync(1999);
     });
-    expect(commit).toHaveBeenCalledWith({ user: { corrupted: true } });
-    expect(result.current.transition.phase).toBe("covered");
+    expect(commit).not.toHaveBeenCalled();
+    expect(result.current.transition.phase).toBe("negative");
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(32);
+      await vi.advanceTimersByTimeAsync(1);
     });
-    expect(result.current.transition.phase).toBe("revealing");
+    expect(result.current.transition.phase).toBe("choice");
+    expect(commit).not.toHaveBeenCalled();
+    expect(isBackgroundMusicPauseRequested()).toBe(true);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(260);
+      result.current.confirmEntry();
       await run;
     });
     expect(result.current.transition).toBeNull();
+    expect(commit).toHaveBeenCalledWith({ user: { corrupted: true } });
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
   });
 
   it("holds the opaque phase for a slow request and reveals the original state on failure", async () => {
@@ -122,10 +130,34 @@ describe("useSigrikaCorruptionTransition", () => {
     expect(request).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(502);
-      await firstRun;
+      await vi.advanceTimersByTimeAsync(2000);
     });
+    await act(async () => { result.current.confirmEntry(); await firstRun; });
     expect(commit).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the choice waiting for the server and releases silence on failure or unmount", async () => {
+    const { result, unmount } = renderHook(() => useSigrikaCorruptionTransition());
+    const commit = vi.fn();
+    let reject;
+    let run;
+    await act(async () => {
+      run = result.current.runTransition({ direction: "enter", request: () => new Promise((_, r) => { reject = r; }), commit });
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    expect(result.current.transition).toMatchObject({ phase: "choice", ready: false });
+    act(() => result.current.confirmEntry());
+    expect(commit).not.toHaveBeenCalled();
+    await act(async () => { reject(new Error("请求失败")); await expect(run).rejects.toThrow("请求失败"); });
+    expect(result.current.transition).toBeNull();
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
+    await act(async () => {
+      run = result.current.runTransition({ direction: "enter", request: async () => ({}), commit });
+    });
+    unmount();
+    await run;
+    expect(isBackgroundMusicPauseRequested()).toBe(false);
+    expect(commit).not.toHaveBeenCalled();
   });
 
   it("re-arms its mounted guard after the Strict Mode effect rehearsal", async () => {

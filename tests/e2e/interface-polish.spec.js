@@ -6,6 +6,20 @@ import { CHARACTERS } from "../../src/shared/characters.js";
 const characterIds = ["sigrika", "denia", "aemeath", "lynae", "mornye", "chisa", "changli", "qiuyuan", "nabomo", "baconbits"];
 const fixture = "/tests/e2e/fixtures/interface-polish.html";
 
+async function mountPlayingSpecialDuel(page, viewport) {
+  const user = { id: "special-interface-player", username: "星炬同学", selectedCharacter: "sigrika", rank: "3段", sigrikaCandyArc: { corrupted: true } };
+  const room = createSigrikaCandyDuelRoom({ user, characterId: "sigrika", character: CHARACTERS.sigrika }, { code: "SIG01", random: () => 0, now: () => 1000 });
+  Object.assign(room.sigrikaCandyDuel, { openingPresentationStage: "done", presentation: null });
+  room.preload = null;
+  room.openingEndsAt = null;
+  room.game.phase = "playing";
+  room.game.turn = room.sigrikaCandyDuel.humanColor;
+  await page.addInitScript(value => { window.__interfaceSpecialRoomPayload = value; }, { user, room: buildRoomView(room, user.id) });
+  await page.setViewportSize(viewport);
+  await mount(page, "room");
+  await page.locator(".portrait-wrap img").evaluateAll(images => Promise.all(images.map(image => image.decode())));
+}
+
 async function mount(page, surface, suffix = "") {
   await page.route("**/api/users/*/profile?*", route => route.fulfill({ json: { profile: {
     rank: "3段", stars: 2, rating: 1250,
@@ -387,20 +401,7 @@ async function expectLandscapeBattle(page, { authoredSpecial = false } = {}) {
 
 for (const width of [844, 768]) {
   test(`playing special duel keeps the board, authored art and actions reachable at ${width}`, async ({ page }) => {
-    const user = { id: "special-interface-player", username: "星炬同学", selectedCharacter: "sigrika", rank: "3段", sigrikaCandyArc: { corrupted: true } };
-    const room = createSigrikaCandyDuelRoom({ user, characterId: "sigrika", character: CHARACTERS.sigrika }, { code: "SIG01", random: () => 0, now: () => 1000 });
-    room.sigrikaCandyDuel.openingPresentationStage = "done";
-    room.sigrikaCandyDuel.presentation = null;
-    room.preload = null;
-    room.openingEndsAt = null;
-    room.game.phase = "playing";
-    room.game.turn = room.sigrikaCandyDuel.humanColor;
-    const payload = { user, room: buildRoomView(room, user.id) };
-    await page.addInitScript(value => { window.__interfaceSpecialRoomPayload = value; }, payload);
-    await page.setViewportSize({ width, height: 390 });
-    await mount(page, "room");
-    await expect(page.locator(".sigrika-candy-duel-room")).toBeVisible();
-    await page.locator(".portrait-wrap img").evaluateAll(images => Promise.all(images.map(image => image.decode())));
+    await mountPlayingSpecialDuel(page, { width, height: 390 });
     await expectLandscapeBattle(page, { authoredSpecial: true });
     await expect(page.locator(".portrait-wrap img")).toHaveCount(2);
     const portraitState = () => page.locator(".portrait-wrap img").evaluateAll(images => images.map(image => ({
@@ -431,9 +432,54 @@ for (const width of [844, 768]) {
         mask: element.querySelector(".portrait-wrap").getBoundingClientRect().height,
         columns: getComputedStyle(element.querySelector(".action-bar")).gridTemplateColumns
       }));
-      if (viewport.width === 390) expect(geometry.mask).toBe(54);
+      if (viewport.width === 390) expect(geometry.mask).toBe(88);
       else expect(geometry.mask).toBeGreaterThan(100);
       expect(geometry.layout).not.toBe('"meta" "portrait" "time"');
     }
+  });
+}
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 430, height: 932 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
+  test(`special duel current paper layout and controls at ${viewport.width}`, async ({ page }) => {
+    await mountPlayingSpecialDuel(page, viewport);
+    await expect(page.locator(".room-header-scoreboard")).toBeVisible();
+    await expect(page.locator(".room-scoreboard-player")).toHaveCount(2);
+    await expect(page.locator(".room-scoreboard-meta")).toContainText("ERROR");
+    await expect(page.locator(".room-scoreboard-rank")).toHaveCount(0);
+    await expect(page.locator(".room-move-placard")).toHaveAttribute("data-turn", "white");
+    await expect(page.locator(".player-info[data-paper-player]")).toHaveCount(2);
+    await expect(page.locator(".sigrika-corrupted-skill-chip")).toHaveAttribute("aria-label", "技能未知，剩余次数未知");
+    await expect(page.locator("button.sigrika-corrupted-skill-chip")).toHaveCount(0);
+    await expect(page.locator(".counting-action")).toBeDisabled();
+    const geometry = await page.locator(".player-info").evaluateAll(cards => cards.map(card => {
+      const clock = card.querySelector(".digital-timer"), digit = card.querySelector(".timer-primary"), label = card.querySelector(".timer-label");
+      const c = clock.getBoundingClientRect(), d = digit.getBoundingClientRect(), l = label.getBoundingClientRect();
+      return { font: parseFloat(getComputedStyle(digit).fontSize), digitsFit: d.left >= c.left && d.right <= c.right && d.bottom <= c.bottom,
+        labelFits: l.top >= c.top && l.bottom <= d.top + 1, ink: getComputedStyle(digit).color,
+        background: getComputedStyle(clock).backgroundColor, layout: getComputedStyle(card).gridTemplateAreas };
+    }));
+    expect(geometry.every(card => card.digitsFit && card.labelFits && card.font >= 22 && card.ink === "rgb(255, 248, 247)")).toBe(true);
+    expect(geometry[1].background).toBe("rgb(105, 51, 64)");
+    if (viewport.width <= 430) expect(geometry.every(card => card.layout === '"portrait upper" "portrait lower"')).toBe(true);
+    const points = await page.locator(".point").evaluateAll(elements => elements.map(point => {
+      const b = point.getBoundingClientRect();
+      return document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)?.closest(".point") === point;
+    }));
+    expect(points).toHaveLength(169);
+    expect(points.every(Boolean)).toBe(true);
+    await page.locator('.point[data-point-id="12,12"]').click();
+    expect(await page.evaluate(() => window.__interfaceReviewActions)).toEqual([{ type: "move", pointId: "12,12" }]);
+    if (viewport.width >= 901) expect(await page.locator(".action-bar").evaluate(e => e.getBoundingClientRect().bottom <= innerHeight)).toBe(true);
+    await page.locator(".chat-toggle-button").click();
+    const log = page.locator('.sigrika-duel-system-log[data-open="true"]');
+    await expect(log).toBeVisible();
+    expect(await log.locator(".chat-close-button svg").evaluate(e => getComputedStyle(e).stroke)).toBe("rgb(255, 248, 247)");
+    expect(await log.locator(".chat-close-button svg path").evaluateAll(paths => paths.every(path => getComputedStyle(path).stroke === "rgb(255, 248, 247)"))).toBe(true);
+    await log.getByRole("button", { name: "关闭系统记录" }).click();
+    await page.getByRole("button", { name: "认输", exact: true }).click();
+    await expect(page.locator(".sigrika-duel-confirm-modal")).toBeVisible();
+    await page.getByRole("button", { name: "取消", exact: true }).click();
+    await expect(page.locator(".sigrika-duel-confirm-modal")).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
 }

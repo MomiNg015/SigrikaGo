@@ -55,12 +55,15 @@ describe("RoomHeader compact scoreboard", () => {
     expect(back).toHaveBeenCalledTimes(1);
   });
 
-  it("retains existing presentation while players are missing and in corrupted duels", () => {
+  it("uses the shared scoreboard in corrupted duels without exposing room codes or ranks", () => {
     const { container, rerender } = render(<RoomHeader room={room}/>);
     expect(container.querySelector(".room-move-placard")).toBeNull();
     expect(screen.getByText("星炬 AB123")).toBeTruthy();
     rerender(<RoomHeader room={{ ...room, sigrikaCandyDuel: {} }} roomGameInfo={info}/>);
-    expect(container.querySelector(".room-move-placard")).toBeNull();
+    expect(container.querySelector(".room-move-placard").textContent).toBe("0手");
     expect(screen.getByText("星炬 ERROR")).toBeTruthy();
+    expect(container.querySelectorAll(".room-scoreboard-player")).toHaveLength(2);
+    expect(container.querySelector(".room-scoreboard-rank")).toBeNull();
+    expect(container.innerHTML).not.toContain("AB123");
   });
 });

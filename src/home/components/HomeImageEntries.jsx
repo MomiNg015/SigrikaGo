@@ -38,8 +38,9 @@ export function MatchEntry({ onStartMatch, onPreloadPlayableReady, sigrikaCorrup
         aria-label="星炬对弈"
         data-home-guide="match"
       >
-        <span className="home-entry-motion" aria-hidden="true">
-          <img src="/assets/home/fantasy-match-entry.webp" alt="" decoding="async" />
+        <span className={`home-entry-motion${sigrikaCorrupted ? " home-corruption-duel-art" : ""}`} aria-hidden="true">
+          <img src={sigrikaCorrupted ? "/assets/characters/portraits/sigrika-corrupted.webp" : "/assets/home/fantasy-match-entry.webp"} alt="" decoding="async" />
+          {sigrikaCorrupted && <span className="home-corruption-duel-label">和西格莉卡？对弈</span>}
         </span>
       </button>
     </section>

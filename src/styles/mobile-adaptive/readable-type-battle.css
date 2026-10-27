@@ -1,10 +1,10 @@
 /* Keep the WuWa clock digits untouched while giving Chinese labels room. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-scoreboard-meta { font-size: 12px; }
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room) .player-info[data-paper-player] :is(.rank-tag, .timer-label) { font-size: 13px !important; font-weight: 400 !important; }
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen:not(.sigrika-candy-duel-room):not(.mobile-room-screen) .player-info[data-paper-player] .player-meta .rank-tag { font-size: 13px !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen[data-paper-battle] .player-info[data-paper-player] :is(.rank-tag, .timer-label) { font-size: 13px !important; font-weight: 400 !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen[data-paper-battle]:not(.mobile-room-screen) .player-info[data-paper-player] .player-meta .rank-tag { font-size: 13px !important; }
 
 @media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen[data-paper-battle] {
     & .room-scoreboard-player { font-size: 12px; }
     & .room-move-placard > span { font-size: 12px; }
     & .spectator-gallery .spectator-username { font-size: 12px !important; }
@@ -25,7 +25,7 @@
 }
 
 @media (max-width: 360px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen:not(.sigrika-candy-duel-room) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen[data-paper-battle] {
     & .room-scoreboard-identity .room-move-placard { flex-basis: 52px; }
     & .player-info[data-paper-player] .captures { width: calc((100% - 4px) * 0.7); }
     & .player-info[data-paper-player] .captures > * { padding-inline: 4px !important; font-size: 12px !important; }

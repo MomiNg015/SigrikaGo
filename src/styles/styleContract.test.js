@@ -732,6 +732,7 @@ describe("root CSS entry contract", () => {
       "./sigrika-corruption/damage-field.css",
       "./sigrika-corruption/transition.css",
       "./sigrika-corruption/transition-motion.css",
+      "./sigrika-corruption/negative-entry.css",
       "./sigrika-corruption/room-atmosphere.css",
       "./sigrika-corruption/room-panels.css",
       "./sigrika-corruption/room-timers.css",
@@ -745,6 +746,7 @@ describe("root CSS entry contract", () => {
       "./sigrika-corruption/room-presentation.css",
       "./sigrika-corruption/marks.css",
       "./sigrika-corruption/home-contamination.css",
+      "./sigrika-corruption/home-duel-entry.css",
       "./sigrika-corruption/handbook-contamination.css",
       "./sigrika-corruption/handbook-cards.css",
       "./sigrika-corruption/handbook-mobile.css",
@@ -778,15 +780,15 @@ describe("root CSS entry contract", () => {
     expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.danger-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-line-strong\) !important;/);
     expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal \.secondary-action\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;[^}]*background: var\(--sigrika-duel-surface-raised\) !important;/);
     expect(corruptionRoomSecondarySurfacesCss).not.toMatch(/\.portrait-wrap\s*\{[^}]*background:/);
-    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.white-portrait\s*\{[^}]*background: var\(--sigrika-duel-inverse-surface\) !important;/);
-    expect(corruptionRoomSecondarySurfacesCss).toMatch(/\.portrait-wrap\.black-portrait\s*\{[^}]*background: var\(--sigrika-duel-ink\) !important;/);
+    expect(corruptionRoomPanelsCss).toContain(".portrait-wrap:not(.no-character)");
+    expect(corruptionRoomPanelsCss).toContain("background: transparent !important");
     expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-opening-modal\s*\{[^}]*max-width: 460px !important;/);
     expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-opening-icon\s*\{[^}]*width: 56px;[^}]*height: 56px;[^}]*border: 2px solid var\(--sigrika-duel-hot\);[^}]*color: var\(--sigrika-duel-text\) !important;/);
     expect(corruptionRoomLifecycleCss).toMatch(/\.sigrika-duel-confirm-modal\s*\{[^}]*max-width: 420px !important;/);
     expect(corruptionRoomLifecycleCss).toContain("overflow: hidden !important");
     expect(corruptionRoomLifecycleCss).toContain("inset: 0;");
     expect(corruptionRoomSecondarySurfacesCss).toContain("(max-height: 820px)");
-    expect(corruptionRoomSecondarySurfacesCss).toContain("--board-size: clamp(430px, calc(100dvh - 205px), 560px)");
+    expect(corruptionRoomSecondarySurfacesCss).toContain("--board-size: clamp(430px, calc(100dvh - 240px), 560px)");
     expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue");
     expect(corruptionRoomPresentationCss).toContain(".sigrika-duel-dialogue > img");
     expect(corruptionRoomPresentationCss).toContain("grid-template-columns: auto minmax(0, 1fr)");
@@ -810,24 +812,21 @@ describe("root CSS entry contract", () => {
     expect(corruptionRoomAtmosphereCss).toContain("--sigrika-duel-shadow-soft: rgb(17 9 12 / 0.24)");
     expect(corruptionRoomAtmosphereCss).not.toContain("--sigrika-duel-void: rgb(7 2 4)");
     expect(corruptionRoomAtmosphereCss).toMatch(/> \.sigrika-duel-presentation\s*\{[^}]*filter: none !important;/);
-    expect(corruptionRoomPanelsCss).toContain(".sigrika-candy-duel-room .player-info");
+    expect(corruptionRoomPanelsCss).toContain(".room-screen.sigrika-candy-duel-room[data-paper-battle]");
     expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-border");
     expect(corruptionRoomControlsCss).toContain("--sigrika-duel-action-surface");
     expect(corruptionRoomControlsCss).toContain(".action-bar .resign-action:not(:disabled)");
     expect(corruptionRoomControlsCss).toContain(".action-bar .counting-action:disabled");
-    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer \.timer-label\s*\{[^}]*display: block !important;[^}]*color: var\(--sigrika-duel-muted\) !important;/);
-    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer :is\(\.timer-digits, \.timer-primary, \.timer-periods\)\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;/);
-    expect(corruptionRoomTimersCss).toContain('grid-template-areas: "label digits track" !important');
-    expect(corruptionRoomTimersCss).toContain("grid-template-columns: max-content max-content minmax(0, 1fr) !important");
-    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen \.digital-timer\s*\{[^}]*gap: 4px !important;[^}]*padding: 2px 4px !important;/);
-    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen :is\(\.timer-digits, \.timer-primary\)\s*\{[^}]*font-size: 16px !important;/);
-    expect(corruptionRoomTimersCss).toMatch(/\.sigrika-candy-duel-room\.mobile-room-screen \.timer-track\s*\{[^}]*width: 100% !important;[^}]*min-width: 0 !important;[^}]*margin-top: 0 !important;/);
+    expect(corruptionRoomTimersCss).toContain("color: var(--sigrika-duel-muted) !important");
+    expect(corruptionRoomTimersCss).toContain(".active-turn .digital-timer");
+    expect(corruptionRoomTimersCss).toContain("background: var(--sigrika-duel-surface-accent) !important");
+    expect(corruptionRoomTimersCss).toContain("grid-template-rows: 12px 22px 3px !important");
+    expect(corruptionRoomTimersCss).not.toContain('grid-template-areas: "label digits track"');
     expect(corruptionRoomIconsCss).toContain(".room-mobile-menu-panel button,");
     expect(corruptionRoomIconsCss).toContain(".action-bar button,");
     expect(corruptionRoomIconsCss).toContain(".chat-toggle-button");
     expect(corruptionRoomIconsCss).toMatch(/stroke: var\(--sigrika-duel-text\) !important;[\s\S]*stroke-width: 2\.4 !important;/);
     expect(corruptionRoomIconsCss).toMatch(/\.counting-action:disabled svg\s*\{[^}]*stroke: var\(--sigrika-duel-disabled-text\) !important;/);
-    expect(corruptionRoomTimersCss).toMatch(/\.digital-timer\s*\{[^}]*min-height: 66px;[^}]*grid-template-columns: minmax\(0, 1fr\) !important;[^}]*background: var\(--sigrika-duel-surface\) !important;/);
     expect(corruptionRoomSecondarySurfacesCss).toContain(".mobile-tab-button.active");
     expect(corruptionRoomMobileReadabilityCss).toMatch(/\.replay-step-indicator\s*\{[^}]*color: var\(--sigrika-duel-text\) !important;/);
     expect(corruptionRoomMobileReadabilityCss).toMatch(/\.room-mobile-menu-panel button > span\s*\{[^}]*color: inherit !important;/);
@@ -880,28 +879,13 @@ describe("root CSS entry contract", () => {
     expect(corruptionHomeCss).not.toContain("background: #d6d1cd");
     expect(corruptionHomeCss).not.toContain("home-brand-corruption-marks");
     expect(corruptionHomeCss).not.toContain("corruption-scribble");
-    expect(corruptionHandbookCss).toContain(".character-card.is-corruption-focus");
-    expect(corruptionHandbookCss).toContain("linear-gradient(135deg, #f3c1c7 0%, #dc8e99 31%, #efb2bb 57%, #c96876 100%)");
-    expect(corruptionHandbookCss).toContain(".character-card-corruption-noise");
-    expect(corruptionHandbookCss).toContain("sigrika-handbook-noise-fault");
-    expect(corruptionHandbookCss).toContain("var(--corruption-card-duration, 7s)");
-    expect(corruptionHandbookCss).not.toContain("background-size: 7px 7px, 9px 9px");
-    expect(corruptionHandbookCss).toContain("backdrop-filter: grayscale(0.46) brightness(0.84) contrast(0.94) !important");
-    expect(corruptionHandbookCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
-    expect(corruptionHandbookCss).toContain("inset: 50% auto auto 50% !important");
-    expect(corruptionHandbookCss).toContain(".character-data-fragments");
-    expect(corruptionHandbookCss).toMatch(/\.character-card\.is-corruption-obscured > img\.character-corruption-source\s*\{[^}]*opacity: 0 !important;/);
-    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-data-break");
-    expect(corruptionHandbookCss).toContain("sigrika-handbook-card-fragment-flash");
-    expect(corruptionHandbookCss).toContain("sigrika-handbook-error-scan");
-    expect(corruptionHandbookCss).toContain("filter: grayscale(1) contrast(1.06) !important");
-    expect(corruptionHandbookCss).not.toContain("padding-right: 10px");
-    expect(corruptionHandbookCss).not.toContain("border-radius: 6px");
-    expect(corruptionHandbookCss).not.toContain("max-height: min(88dvh, 720px)");
-    expect(corruptionHandbookCss).not.toContain("house-corruption-integrity");
-    expect(corruptionHandbookCss).not.toContain("ARCHIVE CHECK");
-    expect(corruptionHandbookCss).not.toContain("SUBJECT 08");
-    expect(corruptionHandbookCss).not.toContain("animation: none !important");
+    expect(corruptionHandbookCss).toContain(".handbook-puzzle-board");
+    expect(corruptionHandbookCss).toContain(".handbook-puzzle-art");
+    expect(corruptionHandbookCss).toContain(".is-corruption-focus .handbook-strip-paper");
+    expect(corruptionHandbookCss).toContain(".is-corruption-obscured .handbook-puzzle-portrait");
+    expect(corruptionHandbookCss).toContain("mask-image: linear-gradient");
+    expect(corruptionHandbookCss).not.toContain(".character-card");
+    expect(corruptionHandbookCss).not.toContain("backdrop-filter: grayscale");
     expect(corruptionMatchCss).not.toContain(".sigrika-corruption-duel-zone");
     expect(corruptionMatchCss).not.toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
     expect(corruptionMatchCss).toContain(".sigrika-corruption-duel-button");

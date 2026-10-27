@@ -4,6 +4,17 @@
 
 发布稳定性复验发现手机他人资料表格被旧的 `min-width: 260px` 撑出可用内容区，导致胜率列裁切。`profile-paper-mobile.css` 将表头与表格的最小宽度归零，沿用现有固定列比例及单个正文滚动容器，不改变桌面或表格数据。稳定性测试保留桌面及 360／390／412px 的表格无横向溢出、末行与关闭按钮可达、键盘切换和回放验证；旧观战模式标签的跨窗口外观比较改为当前搜索入口与资料标签语义检查。
 
+
+## 2026-10-23 黑化界面与负片进入演出
+
+以下为保留待启用的实现设计；当前 `SIGRIKA_CANDY_CORRUPTION_ENABLED=false`，本次提交不开放黑化入口。
+
+黑化首页沿用当前学生证、校园纸张和竖屏布局；对弈主入口换为现有黑化西格莉卡立绘、暗红动作纸签。`HouseCharacterGrid` 同时承担普通和黑化手册：桌面斜切立绘条带、手机上下横条保持一致；西格莉卡保留色彩，其他角色使用灰色损坏切片，全部角色详情锁定。黑化覆盖层不再对整个新手册内容加灰度，避免西格莉卡和名字被遮掉。配色中的炭灰、灰纸、暗红与暖白是剧情状态的有意例外，不扩散到普通校园主题。
+
+入口流程由 `useSigrikaCorruptionTransition` 统一协调：同步暂停 BGM、关闭手册独立试听；在 `document.body` Portal 上以 `backdrop-filter: invert(1)` 即刻覆盖全窗口。根节点 `inert`、遮罩拦截指针与 Escape/Tab，保留 2000ms 后仅显示“......怎么回事？？”；请求慢时选项等待，成功且用户确认后才提交用户态、关闭原窗口、去掉负片并播放黑化 BGM。`negative-entry.css` 不添加淡入、切片或强制自动跳过；恢复结束保留旧淡出转场。失败解除遮挡及暂停锁并提示，卸载清理，重复点击只执行一次。`BackgroundMusic` 的 generation 在暂停时失效，阻止未完成解码在静音期间启动。
+
+开发测试入口仍在彩虹糖第 1–7 次正常剧情起点，依次调用已有 `debug/jump-to-eight`、`climax` 接口；自然第八次在高潮节点使用相同演出。生产无测试入口，服务端调试 404 保留，剧情正文与持久化模型无变更。界面契约覆盖 1440px 和 390/320px 布局；自动时钟验证 1999ms 不显示选项、2000ms 显示，确认前后静音和交互锁的释放。
+
 ## 公告与邮箱阴影纸卡（2026-10-23）
 
 普通 Bright School 已接入确认样板：列表 2px 墨线、3×4px 硬阴影，详情外叠双层纸框；公告使用浅粉选中与题头，邮箱使用薄荷信头和附件托盘，完成邮件浅灰。标题粗体与常规正文分层，附件数量放在图块右下。原阅读丝印由 `card-screenprints.css` 统一绘制，增加邮箱列表和正文角色，不在表面样式中重复背景图。黑化及其它主题保持原表面，邮件状态文字也只在纸卡主题显示。
@@ -314,7 +325,7 @@ WuWa 的 `Sigrika Accent Latin` face、字母/数字 unicode-range、语义 clas
 ### 棋盘比例与队际赛头像
 竖屏 `board-stage` 宽度仍取 `--mobile-room-board-size`，`max-width:100%` 随父容器收缩；舞台与 `board-wrap` 均使用 `height:auto`、`aspect-ratio:1`，父槽及舞台显式收缩网格轨道，防止旧固定高度与不同断点宽度形成非等比棋盘。队际赛采用 B「错落纸片」：独立斜边纸片轻微错落，浅黄／浅绿／浅粉纸面配轻硬阴影，不绘制上下边框以免斜切产生黑色碎线，关闭单人拱形底板。三张直立图片按出场顺序各自裁切，不显示角色名。手机队际信息使用姓名段位、提子计时、技能三行布局，信息条高108px、头像高96px，宽度为clamp(88px,27.7vw,108px)，为三位角色保留可辨识空间；普通单人布局保持不变。隐藏角色只显示问号，退场角色灰显。
 
-移动端普通对弈信息区采用紧凑 A 独立卡片，由 `battle-paper-player-mobile.css` 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 `battle-paper-skill-mobile.css`。身份卡随棋色显示黑底浅字或浅底深字；当前回合时钟卡变黄并抬起（4px底部硬阴影），非当前回合下移3px并保留1px底部阴影与内阴影，形成压下状态；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面和黑化剧情保持原布局。
+移动端普通对弈信息区采用紧凑 A 独立卡片，由 `battle-paper-player-mobile.css` 统一负责：头像独占左侧两行；右上身份与时钟按6:4分宽，用户名和段位同行；右下三枚统计卡与居中技能卡同排，统计标签与数值不换行。两行间隔6px，总高约94px。独立卡片使用细边与1–2px硬阴影，技能样式拆至 `battle-paper-skill-mobile.css`。身份卡随棋色显示黑底浅字或浅底深字；当前回合时钟卡变黄并抬起（4px底部硬阴影），非当前回合下移3px并保留1px底部阴影与内阴影，形成压下状态；超频卡固定粉色，技能卡以角色主题色渐变。无整体卡片背景、无错落旋转。倒计时读条继续读取 TimeBar 主时间／读秒进度，保留次数与警示。棋盘优先按视口宽度减24px取正方形，最大480px，不再因信息区高度而缩小；短屏允许纵向滚动。桌面保留独立信息卡排布；黑化剧情共用该移动布局并使用局部暗红配色。
 
 移动双行卡片统一补足内部留白：身份6×7px、时钟6×9px、统计5px、技能5×7px。名牌背景用户名不再被棋色字色覆盖，沿用名牌配套颜色和文字阴影；仅普通用户名与段位随身份卡变色。`battle-paper-nameplate-mobile.css` 将名牌限制在用户名列内，消除嵌套默认内边距，避免名牌裁切与重复留白。
 
@@ -373,3 +384,9 @@ ResumeModal and UserProfileCard opt into WindowBookmarkTabs for 星炬/标准/�
 Profile follow-up: the visible like count updates with the existing request state, has an adaptive button width (minimum 54px), and uses mint for positive feedback. Friend addition is blue, removal/blocking amber, unblocking mint and reporting red. Remove the identity card and avatar frame/mask shadows; other semantic region shadows remain. The body reserves 8/10/12/6px top/right/bottom/left paint clearance, and the character section owns horizontal overflow with rounded clipping; its frame and shadow stay outside that clip.
 
 Identity cards prioritize the portrait and username: desktop uses a 104px portrait and 28px plain name; <=900px uses an 84px portrait and 26px plain name. Center the portrait and name vertically against the entire card. The card is position:relative with one grid row, min-height:160px and symmetric 28px block padding; social cards retain min-height:200px and 52px block padding to keep four actions clear of the portrait on narrow phones. The action group is position:absolute at right:12px and bottom:10px; it occupies no grid row and never changes the card or identity geometry. Keep controls on one line, including at 320px. Identity controls are 34px high with 16px icons and a restrained 1px shadow; the like button grows from 54px to preserve its live count. At <=768px hide other icon labels while retaining ARIA/title names. Replay remains 44px on phones. Identity card and portrait remain shadow-free.
+
+### 2026-10-24 黑化实际对局适配
+
+黑化对局接入当前 `RoomLayouts` 的 `data-paper-battle` 和 `PlayerInfo` 的 `data-paper-player` 布局标记，共用新版立绘台、身份纸条、计时器、三项统计及技能卡。桌面拆除旧整块头像背景；手机竖屏使用左侧立绘、右侧双行信息卡。黑化样式只负责暗红／炭灰材质与对应子元素的可读性，棋盘坐标保留深色墨迹。768px 以下计时器将标签、完整 30:00 数字和进度条分行；未知技能不暴露名称或交互，原始专属立绘、禁用数子与剧情规则保持。
+
+顶栏使用共享回合记分牌及服务端棋色，显示 ERROR 和双方名称，隐藏段位。矮桌面棋盘预算同步更新，五个操作保持一行，避免认输按钮换行落到视口外。横屏保留三列棋盘结构，显式覆盖旁观布局的竖排规则；手机系统记录 Portal 的关闭图标和禁用输入继续采用黑化配色。真实组件检查覆盖桌面、短桌面、320／390／430px 竖屏及 768／844px 横屏；截图与说明见[黑化对局复查](../design-samples/sigrika-corruption-2026-10-23/room-review.md)。

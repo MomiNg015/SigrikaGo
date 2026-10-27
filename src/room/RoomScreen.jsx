@@ -256,6 +256,7 @@ function specialDuelRoomGameInfo(room) {
   return {
     black: black?.user?.username ?? "数据损坏",
     white: white?.user?.username ?? "数据损坏",
+    players: [black, white].filter(Boolean).map((player) => ({ color: player.color, username: player.user?.username ?? "数据损坏" })),
     moves: `${room.game.moveNumber}手`
   };
 }

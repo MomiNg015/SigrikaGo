@@ -1,61 +1,34 @@
-/* Corrupted-duel desktop and portrait clock readability. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .digital-timer {
-  min-height: 66px;
-  grid-template-columns: minmax(0, 1fr) !important;
-  border: 1px solid var(--sigrika-duel-line) !important;
-  color: var(--sigrika-duel-text) !important;
-  background: var(--sigrika-duel-surface) !important;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sigrika-duel-hot) 10%, transparent) !important;
+/* Paper battle owns clock geometry; corruption owns ink and active state. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .room-screen.sigrika-candy-duel-room[data-paper-battle] .player-info[data-paper-player] {
+  & .digital-timer {
+    color: var(--sigrika-duel-text) !important;
+    background: var(--sigrika-duel-surface) !important;
+    border-color: var(--sigrika-duel-line) !important;
+  }
+  &.active-turn .digital-timer {
+    background: var(--sigrika-duel-surface-accent) !important;
+    border-color: var(--sigrika-duel-hot) !important;
+  }
+  & .timer-label { color: var(--sigrika-duel-muted) !important; }
+  & :is(.timer-digits, .timer-primary, .timer-periods) {
+    color: var(--sigrika-duel-text) !important;
+    text-shadow: none !important;
+  }
+  & .timer-track > span {
+    background: linear-gradient(90deg, var(--sigrika-duel-line-strong), var(--sigrika-duel-hot)) !important;
+  }
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .digital-timer .timer-digits {
-  grid-column: 1 / -1;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .digital-timer .timer-label {
-  display: block !important;
-  color: var(--sigrika-duel-muted) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .digital-timer :is(.timer-digits, .timer-primary, .timer-periods) {
-  color: var(--sigrika-duel-text) !important;
-  text-shadow: none !important;
-}
-
+/* Keep the full 30:00 clock readable inside the shared narrow-phone column. */
 @media (max-width: 768px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room.mobile-room-screen .digital-timer {
-    min-height: 30px !important;
-    grid-template-areas: "label digits track" !important;
-    grid-template-columns: max-content max-content minmax(0, 1fr) !important;
-    align-content: center !important;
-    align-items: center !important;
-    gap: 4px !important;
-    padding: 2px 4px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room.mobile-room-screen .timer-label {
-    grid-area: label !important;
-    min-height: 0 !important;
-    justify-self: start !important;
-    font-size: 10px !important;
-    line-height: 1 !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room.mobile-room-screen .timer-digits {
-    grid-area: digits !important;
-    grid-column: auto !important;
-    min-height: 0 !important;
-    justify-self: start !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room.mobile-room-screen :is(.timer-digits, .timer-primary) {
-    font-size: 16px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room.mobile-room-screen .timer-track {
-    grid-area: track !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    margin-top: 0 !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .room-screen.sigrika-candy-duel-room[data-paper-battle] .player-info[data-paper-player] .digital-timer {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: 12px 22px 3px !important;
+    padding: 2px 5px !important;
+    gap: 2px !important;
+    & .timer-label { grid-area: 1 / 1 !important; font-size: 12px !important; width: auto; white-space: nowrap; }
+    & .timer-digits { grid-area: 2 / 1 !important; justify-content: flex-start !important; }
+    & .timer-primary { font-size: 22px !important; line-height: 1; }
+    & .timer-track { grid-area: 3 / 1 !important; height: 3px !important; }
   }
 }
