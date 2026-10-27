@@ -337,3 +337,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 251: 未开放成就和个性化入口提示
+
+**Date**: 2026-10-27
+**Task**: 未开放成就和个性化入口提示
+**Branch**: `master`
+
+### Summary
+
+两个入口恢复点击，统一显示 info toast「暂未开放，敬请期待w」，窗口及后台功能仍关闭。13 项相关测试和项目 lint 通过，文档同步，保留样板与 PV 改动。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d1e8c7d2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
