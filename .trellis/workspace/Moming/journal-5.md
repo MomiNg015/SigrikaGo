@@ -269,3 +269,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 249: 移除加载页角色特色台词
+
+**Date**: 2026-10-27
+**Task**: 移除加载页角色特色台词
+**Branch**: `master`
+
+### Summary
+
+共享加载组件移除角色特色台词和默认描述，保留立绘动效、进度、通用 Tip 和明确功能提示。5 个相关测试文件共 25 项通过，项目 lint 通过，系统设计及 HTML 同步；保留无关 WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aa542777` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
