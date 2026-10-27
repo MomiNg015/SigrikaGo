@@ -99,6 +99,14 @@ export default function AppOverlays({
   user,
   visualTheme
 }) {
+  function openProfileCustomization(setOpen) {
+    if (!PROFILE_CUSTOMIZATION_ENABLED) {
+      showToast("暂未开放，敬请期待w", "info");
+      return;
+    }
+    setOpen(true);
+  }
+
   function closeStoryPlayer() {
     if (onStoryPlayerClose) {
       onStoryPlayerClose();
@@ -183,8 +191,8 @@ export default function AppOverlays({
             token={token}
             characterListView={characterListView}
             onClose={() => setShowResume(false)}
-            onOpenAchievements={() => { if (PROFILE_CUSTOMIZATION_ENABLED) setShowAchievements(true); }}
-            onOpenPersonalization={() => { if (PROFILE_CUSTOMIZATION_ENABLED) setShowPersonalization(true); }}
+            onOpenAchievements={() => openProfileCustomization(setShowAchievements)}
+            onOpenPersonalization={() => openProfileCustomization(setShowPersonalization)}
             onOpenReplay={openReplay}
           />
         )}

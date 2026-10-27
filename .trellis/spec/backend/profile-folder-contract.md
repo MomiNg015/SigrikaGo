@@ -41,16 +41,16 @@ Achievement and personalization availability, automatic unlock evaluation and ac
 `PROFILE_CUSTOMIZATION_ENABLED` in `src/shared/profileFeatures.js` is false. Both client and server import it. `evaluateAchievementsForUser({ prisma, userId, triggerEvent })` retains its signature and resolves to an empty unlock array while disabled.
 
 ### Contracts
-Resume controls use native disabled state; `AppOverlays` guards both callbacks and modal mounting. Home refresh continues updating account state without notifying achievement listeners. `useToastQueue` rejects achievement-tone notices from all sources while preserving ordinary feedback. Server evaluation returns before reading conditions, creating unlock rows or granting/retrying rewards. Existing data, historical counters, admin configuration and award code remain intact for restoration through the same flag.
+Resume controls remain native, enabled buttons. When the flag is false, both `AppOverlays` entry callbacks enqueue the exact info toast `暂未开放，敬请期待w` instead of opening a window; modal mounting remains guarded. Use the ordinary info tone so achievement-notice suppression does not swallow this feedback. Home refresh continues updating account state without notifying achievement listeners. `useToastQueue` rejects achievement-tone notices from all sources while preserving ordinary feedback. Server evaluation returns before reading conditions, creating unlock rows or granting/retrying rewards. Existing data, historical counters, admin configuration and award code remain intact for restoration through the same flag.
 
 ### Validation / error matrix
-Disabled + eligible user/event → `[]`, no condition query or award write. Disabled + ordinary notification → ordinary toast retained. Enabled → existing evaluation, grant and modal behavior. Request failure/account changes retain their normal error and stale-response handling.
+Disabled + eligible user/event → `[]`, no condition query or award write. Disabled + entry activation → info toast, no modal. Disabled + ordinary notification → ordinary toast retained. Enabled → existing evaluation, grant and modal behavior. Request failure/account changes retain their normal error and stale-response handling.
 
 ### Good / base / bad cases
 Good: one shared gate covers UI, refresh callback, toast queue and central server evaluation. Base: purchase and gameplay continue recording ordinary history. Bad: only hiding the button or toast while server evaluation still grants rewards.
 
 ### Tests required
-`server/achievements.test.js` tests the disabled no-query/no-write branch and preserves enabled grant regressions. `profileFeatures.dom.test.jsx` covers callback and queue filtering; `ResumeModal.dom.test.jsx` and `AppOverlays.dom.test.jsx` cover native controls and application-level guards.
+`server/achievements.test.js` tests the disabled no-query/no-write branch and preserves enabled grant regressions. `profileFeatures.dom.test.jsx` covers callback and queue filtering; `ResumeModal.dom.test.jsx` and `AppOverlays.dom.test.jsx` cover clickable native controls, the real toast queue for each unavailable entry, application-level guards and enabled opening behavior.
 
 ### Wrong vs correct
 Wrong: leave `evaluateAchievementsForUser` active while suppressing display alone. Correct: return `[]` at the evaluator entry before DB reads/writes, and preserve the original implementation below the release gate.

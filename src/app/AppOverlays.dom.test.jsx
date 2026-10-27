@@ -3,6 +3,7 @@ import { useLayoutEffect, useState } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AppOverlays from "./AppOverlays.jsx";
+import { useToastQueue } from "./useToastQueue.js";
 
 const pending = vi.hoisted(() => {
   function gate() {
@@ -40,7 +41,8 @@ vi.mock("../modals/PersonalizationModal.jsx", async () => {
 function OverlayHarness() {
   const [showAchievements, setShowAchievements] = useState(false);
   const [showPersonalization, setShowPersonalization] = useState(false);
-  return <AppOverlays user={{ id: 1 }} toasts={[]} showResume
+  const { toasts, showToast, removeToast } = useToastQueue();
+  return <AppOverlays user={{ id: 1 }} toasts={toasts} showToast={showToast} onRemoveToast={removeToast} showResume
     showAchievements={showAchievements} setShowAchievements={setShowAchievements}
     showPersonalization={showPersonalization} setShowPersonalization={setShowPersonalization} />;
 }
@@ -48,12 +50,15 @@ function OverlayHarness() {
 afterEach(cleanup);
 
 describe("independent lazy overlay loading", () => {
-  it("blocks both customization overlays and their entry callbacks during the internal test", async () => {
+  it("shows an informational toast for both unavailable entries without opening their overlays", async () => {
     features.PROFILE_CUSTOMIZATION_ENABLED = false;
     const { rerender } = render(<OverlayHarness />);
     await screen.findByRole("dialog", { name: "履历" });
     fireEvent.click(screen.getByRole("button", { name: "成就", exact: true }));
+    expect(screen.getAllByText("暂未开放，敬请期待w")).toHaveLength(1);
     fireEvent.click(screen.getByRole("button", { name: "个性化", exact: true }));
+    expect(screen.getAllByText("暂未开放，敬请期待w")).toHaveLength(2);
+    expect(document.querySelectorAll(".toast.info")).toHaveLength(2);
     expect(screen.queryByRole("dialog", { name: "成就" })).toBeNull();
     expect(screen.queryByRole("dialog", { name: "个性化" })).toBeNull();
     rerender(<AppOverlays user={{ id: 1 }} toasts={[]} showAchievements showPersonalization />);
