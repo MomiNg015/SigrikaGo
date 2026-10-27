@@ -9,8 +9,9 @@
 
 ### 2. Signatures
 
-- `POST /api/auth/register` accepts `{ username: string, password: string }`.
-- `POST /api/auth/login` accepts `{ username: string, password: string, forceLogin?: boolean }`.
+- `GET /api/auth/challenge?purpose=register|login` returns `{ id, image, expiresAt }` with `Cache-Control: no-store`; image is raster PNG only.
+- `POST /api/auth/register` accepts `{ username: string, password: string, challenge: { id: string, answer: string } }`.
+- `POST /api/auth/login` accepts `{ username: string, password: string, forceLogin?: boolean, challenge?: { id: string, answer: string } }`; `captcha_required` requires a fresh login-purpose proof.
 - Successful register/login returns `{ token, user }` and sets the `sigrika_refresh` HttpOnly cookie.
 - Active online-account conflict returns HTTP 409 with `code: "already_logged_in"`.
 - `api(path, { method, body, signal })` forwards the caller's `AbortSignal`; thrown API errors may expose `{ status, code, retryAfter }`.
@@ -23,9 +24,16 @@
 - Missing-user and wrong-password login paths both perform one bcrypt compare and return the same generic 401 message; missing users compare against a fixed valid dummy hash.
 - Only Prisma `P2002` from user creation maps to HTTP 409 “用户名已存在”. Other registration failures reach the shared API error handler.
 - Credential rate limits cover register/login only. Refresh/logout use a separate, larger session bucket.
+- Registration validates its five-minute, IP/purpose-bound, one-attempt challenge before bcrypt or database writes. Wrong answers consume the challenge. Store only an answer digest; never expose the answer as text, SVG, or metadata. Render with the shipped font so cloud hosts do not depend on installed fonts.
+- Challenge issuance is bounded before async image rendering: 10/IP/minute, 120/process/minute, 2,000 live entries. Registration adds 10 successful requests/IP/hour; failures remain subject to the existing credential-attempt limit. Capacity exhaustion fails closed with 503; throttling returns 429 and Retry-After.
+- Login reserves an in-flight slot per account/IP before awaiting bcrypt. Five failures start 2-second exponential backoff, capped at 300 seconds. Ten cumulative account failures/in-flight attempts require a challenge across source IPs, never an account-wide hard lock. Successful credentials reset counters; exceptions release the slot without adding a credential failure. The 15-minute store is bounded to 10,000 entries.
+- Only explicit stability/capacity verification fixtures may omit registration proof or use the exported fixed image answer; production, development, and ordinary test environments never bypass proof, even with client fixture headers or ENABLE_TEST_ACTIONS alone.
+- Express trusts only loopback proxies for client-IP derivation. Changing proxy topology requires explicit trusted addresses and an anti-spoofing check. These process-local protections must move to shared storage before multi-process deployment.
+- Logout must verify the access token signature and HS256 algorithm before revoking its sub/sid. Invalid tokens must not affect other sessions; a legitimate refresh cookie can still revoke its own session independently.
 - `x-stability-scope` may namespace credential, session, and broad API limiters only when `NODE_ENV=stability`; production ignores the header and retains the IP-derived key.
 - Authenticated HTTP verification fixtures are available only when `NODE_ENV` is `stability` or `capacity` and `ENABLE_TEST_ACTIONS` is explicitly enabled. They may prepare owned characters or promote the capacity metrics reader, but must never alter public registration defaults or production authorization.
 - A form may have only one in-flight auth request. Mode changes keep the username, clear passwords, and invalidate stale work; unmount aborts the request. A late or aborted result must not call `onAuth` or overwrite current UI state, including under React Strict Mode effect rehearsal.
+- Registration always shows the image challenge; login shows it only after captcha_required. Refresh/error/expiry invalidates the previous proof and clears its answer; mode changes and unmount cancel image fetches. Image loading failure must remain retryable. Preserve keyboard focus, field errors, and 320px portrait geometry.
 - Both modes place field feedback at the label's right edge, aligned with the field name's first text baseline (`align-items: baseline`, including the mobile owner). Top alignment makes the smaller note appear raised. Registration's username-width and `8-64 位` notes are replaced by errors after blur/submit and restored when valid. Use 8px form gaps, 38px username labels (two 14px/1.25 lines), and 24px password/confirmation labels. Remove the mobile 68% hint-width cap and use a 4px username label gap so long validation messages fit at 320px. Wrapped feedback must stay clear of the input without changing card geometry. Preserve error IDs, `aria-describedby`, and first-invalid focus.
 - Registration HTTP 409 `用户名已存在` belongs to the username field, not the form alert. Keep server field errors separate from local validation so blur cannot erase them; clear the corresponding server error only when that field changes, or reset them on submit/mode change. Editing credentials clears obsolete form-level feedback in both modes.
 - Form-level feedback occupies bottom padding, never an extra grid row. Both cards reserve 48px below the button; the absolutely positioned 14px alert region uses bottom:4px and max-height:35px (two 1.25 line-height lines), leaving clearance for the submit shadow. Common long API fallback messages must fit fully at 320px. Longer server explanations remain intact in a named, keyboard-focusable scrolling region with a thin scrollbar. Never regress to a one-line, unfocusable clip or let feedback change card geometry.
@@ -43,6 +51,7 @@
 - Empty/invalid username -> field-level validation; no request.
 - Login password shorter than 6 or longer than 64 -> generic password-shape field error; server does not reveal credential existence.
 - New password shorter than 8, longer than 64, over 72 UTF-8 bytes, or containing control characters -> HTTP 400 with the registration validation issue.
+- Missing/wrong/expired/replayed registration proof -> HTTP 400 captcha_invalid before hashing or creation. Distributed login failures without proof -> HTTP 400 captcha_required. Pair backoff -> HTTP 429 login_backoff.
 - Unknown username or wrong password -> HTTP 401 with the same public error; one bcrypt compare in either case.
 - Online account without `forceLogin` -> HTTP 409 `already_logged_in`; confirmation may retry once with `forceLogin: true`.
 - Prisma `P2002` on register -> HTTP 409 “用户名已存在”; any other database error -> shared API error path.
@@ -67,6 +76,8 @@
 - `server/security.test.js` covers legacy login compatibility, new-password limits, byte limits, and both rate-limit buckets.
 - Stability tests cover per-context limiter namespaces and verification fixtures; fixture route tests must assert production, development, and ordinary test environments return 404 without database writes.
 - `server/authRoutes.test.js` covers dummy compare, generic login errors, `P2002`, unexpected failure propagation, force-login flow, and database-authoritative roles across register/login/refresh.
+- `server/authChallenges.test.js` and `server/loginAbuseGuard.test.js` cover IP/purpose binding, expiry/replay, bounded stores/issuance, production bypass rejection, backoff, distributed attacks and concurrent reservations. `server/authSecurity.integration.test.js` exercises real Express routing, challenges and registration quotas before credential/session operations.
+- `src/auth/useAuthChallenge.dom.test.jsx` covers refresh, expiry, stale/aborted responses and load-error recovery. `tests/e2e/auth-session.spec.js` covers actual raster images, wrong-answer refresh and successful registration at 1440/390/320px, in addition to cookie sessions.
 - `server/adminConfig.test.js` covers successful, idempotent, and unknown-user administrator promotion.
 - `server/loginSessions.test.js` covers one-winner refresh rotation and latest-winner session replacement.
 - `server/authRouteOrder.test.js` asserts the two middleware path buckets are mounted before the broad API limiter.

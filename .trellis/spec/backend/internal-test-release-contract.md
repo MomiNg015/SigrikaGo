@@ -13,6 +13,7 @@ Read before changing settlement, account occupancy, startup recovery, password r
 - `syncGameClock(room, io)` charges whole seconds from elapsed milliseconds and per-player `clockRemainderMs`. `internalKomiToGtpKomi(komi)` converts internal 子 to 目 for SGF/GTP.
 - `GET /health/ready`: 200 `ready`; 503 `draining`, `storage-unavailable` or `persistence-unavailable`. `createDatabaseHealth` caches a bounded `SELECT 1` probe.
 - `sudo deploy/update-production.sh`; recovery: `sudo <candidate-release>/deploy/restore-production.sh PROJECT_DIR PREVIOUS_RELEASE PRE_MIGRATION_DB`.
+- `npm run check:admin-snapshot -- --isolated`: seed and export the committed non-user snapshot in disposable SQLite for reproducible code/CI quality checks. Default `npm run check:admin-snapshot`: read-only authoring-database comparison, required by the `authored-admin-snapshot` release-candidate stage. Keep these distinct; never auto-export a local test announcement merely to turn a quality gate green.
 
 ## 3. Contracts (request/response/env)
 
@@ -56,6 +57,7 @@ Read before changing settlement, account occupancy, startup recovery, password r
 - `databaseHealth.test.js`: bounded hung probe, no overlapping probes, stale/failure/recovery and sustained result-write signal.
 - `deploymentRecovery.test.js`: execute the actual trap with mocked host commands; old frontend/full-release drop-in, pre-migration restart, post-migration no restart, and explicit stop preserving the error code after a recovery start failure. Shell syntax and static deployment ordering tests supplement it.
 - Full `npm run check`, isolated migration/backup verification, stability, capacity smoke and practice WASM parity. Actual cloud systemd/Nginx/disk/capacity still require target-host verification.
+- Snapshot isolation tests use an intentionally invalid sentinel authoring file and assert its bytes are untouched while the isolated seed/export succeeds; release-stage tests ensure the default authoring comparison remains a publication gate.
 
 ## Full-system browser isolation
 
@@ -63,6 +65,8 @@ Read before changing settlement, account occupancy, startup recovery, password r
 - Application ports default to 5317/3317. All API, upload and WebSocket proxies must use the isolated backend; never inherit the development Vite proxy to 3001. Tests seed only a runId-checked disposable database.
 - Separate Vite cache/entry scans from the development service. Upload roots and databases stay in this run's `.tmp/playwright` paths; fixture remote AI is disabled. API readiness precedes browser registration.
 - Namespace automatic journeys through the existing stability-only limiter key; do not weaken production limits to make tests pass.
+- HTTP-only Vite proxy fixtures disable dependency discovery and file watching. They do not render assets; scanning the full asset tree creates unrelated startup work and timeout flakes, so do not mask it by relaxing recovery assertions or raising the test timeout.
+- `leaderboardOrder.test.js` replays all migrations into disposable real SQLite before checking timestamp backfill, preserved wins, rank ordering and repeated-startup idempotence. Give this disk-backed fixture an explicit 15-second test budget instead of the generic five-second unit-test default; this is not a production latency threshold, and its data assertions must remain intact.
 - Real flows validate rights, concurrent economic writes, backend navigation, workbook save/publish separation, multi-mode settlement/replay, reconnect and action retry, binary resources and upload boundaries. Capture challenge must finish 100 real browser-engine moves and retain its no ordinary reward/replay policy.
 - Signal ownership belongs to the fixture when it must stop child services before database cleanup. Windows strong termination also requires cleanup by the exact runId, never a broad deletion of temporary databases.
 

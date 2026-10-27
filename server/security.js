@@ -197,6 +197,17 @@ export function createSessionAuthRateLimit(env = process.env) {
   return rateLimit(sessionAuthRateLimitOptions(env));
 }
 
+export function createRegistrationRateLimit(env = process.env) {
+  return rateLimit(withStabilityRateLimitNamespace({
+    windowMs: 60 * 60 * 1000,
+    limit: canUseVerificationFixtures(env) ? 2000 : 10,
+    skipFailedRequests: true,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { code: "registration_rate_limited", error: "当前网络注册次数较多，请稍后再试" }
+  }, env));
+}
+
 export function createAuthRateLimit(env = process.env) {
   return createCredentialAuthRateLimit(env);
 }

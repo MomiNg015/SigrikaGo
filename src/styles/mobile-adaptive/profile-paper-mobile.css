@@ -14,7 +14,7 @@
     .profile-record-header { flex-wrap: wrap; gap: 5px; }
     .profile-record-header .profile-replay-button { margin-left: auto; }
     .profile-character-section { padding-inline: 8px !important; }
-    .profile-character-table-head, .profile-character-table { min-width: 260px !important; }
+    .profile-character-table-head, .profile-character-table { min-width: 0 !important; }
     .profile-character-table .profile-character-name { font-size: 12px !important; }
     .profile-character-table .profile-chain-portrait.small { flex-basis: 36px !important; width: 36px !important; height: 40px !important; }
     .profile-recent-section { padding: 12px !important; }

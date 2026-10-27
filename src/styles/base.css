@@ -3,6 +3,7 @@
 @import "./base/asset-preload-portrait.css";
 @import "./base/login-asset-preload.css";
 @import "./base/surfaces-forms-actions.css";
+@import "./base/auth-challenge.css";
 @import "./base/topbar-room-tags.css";
 @import "./base/home-legacy-grid.css";
 @import "./base/home-stage-artboard.css";

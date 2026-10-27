@@ -1,5 +1,18 @@
 # 后端、HTTP API 与实时房间
 
+## 自由注册内测安全边界（2026-10-27）
+
+- `roomChatLifecycle.addChat(roomCode, user, text, socketId)` 在修改聊天记录前检查玩家或观战成员的 `user.id` 和当前 `socketId` 同时匹配。猜中房间码、旧连接、已离开的观战者均不能发言，且不触发广播；普通房间仍允许在房观战者共享聊天，特殊对局仍禁用聊天。显示名称取房间成员快照。
+- `GET /api/auth/challenge?purpose=register|login` 返回 `{ id, image, expiresAt }`，响应 `Cache-Control: no-store`。`image` 为 210×64 PNG data URL；只返回像素，不返回答案或 SVG。6 位随机字符的摘要仅保存在服务端，5 分钟有效，绑定来源 IP 与用途，正确／错误尝试均一次性消耗。服务端使用 `sharp` 和仓库内 `LXGWMarkerGothic-Regular.ttf`，因此部署必须保留该字体文件；无需安装系统字体或开通外部验证码服务。
+- 注册 body 必须包含 `challenge: { id, answer }`；校验在 bcrypt 和数据库创建前执行。图片生成每 IP 每分钟 10 次、全进程每分钟 120 次；挑战最多保存 2,000 条，满额返回 503。注册另加每 IP 每小时 10 次成功请求的配额，失败请求退回此配额，但仍计入既有凭证尝试限流。429 带 `Retry-After`；refresh/logout 的独立限流不受注册失败影响。
+- 登录按账号＋IP 跟踪失败，同一组合只允许一个凭证校验在途。第 5 次失败后退避 2 秒，随后指数增加到最多 300 秒；同账号跨 IP 累积 10 次失败／在途校验后，返回 `captcha_required` 并要求登录用途的图片验证，避免攻击者把受害账号整体锁死。成功校验清除对应失败计数；记录 15 分钟过期，最多 10,000 条，满额返回 503。未知账号仍使用 dummy bcrypt hash，与密码错误保持相同响应。
+- 前端注册时显示图片验证，普通登录不要求额外输入；服务端要求时再展示登录验证。支持点击换图、错误后刷新、过期后重取、模式切换及卸载时中止旧请求，防止提交旧图片；保留既有单请求锁、刷新 Cookie 和强制登录确认流程，布局覆盖桌面与 390／320px 竖屏。
+- 退出登录对 access token 使用 `jwt.verify` 和 HS256 白名单验证后才按 `sub/sid` 撤销会话；伪造、过期、格式错误令牌不会撤销任意账号会话，合法 refresh cookie 仍可独立注销。
+- Express `trust proxy="loopback"` 仅信任同机代理，防止直连者通过伪造 `X-Forwarded-For` 绕过 IP 限流。当前部署要求同机 Nginx 代理并在防火墙限制 API 端口；迁移到容器跨机代理、负载均衡或 CDN 时，必须按实际可信代理地址调整配置并验证客户端 IP，不可恢复为无条件信任一跳。
+- 只有显式 `NODE_ENV=stability|capacity` 且启用 `ENABLE_TEST_ACTIONS` 的隔离验证服务器允许旧测试请求不携带图片证明，并为浏览器用例生成固定测试答案。production、development、普通 test 均不接受该绕过；客户端请求头不能开启它。所有验证使用独立数据库，不更改自由注册的正式用户默认数据。
+- 防护状态位于当前单进程内存，重启后重置；本批没有数据库迁移。自托管图片验证只能增加低成本自动化滥用的门槛，不能保证抵挡 OCR 或分布式攻击；扩容多进程前需共享挑战／限流存储，公网放量时结合观测结果评估托管行为验证。
+- CI 执行 `npm run check`（包含生产配置、资源、构建与文档门禁），另以 `npm audit --omit=dev --audit-level=high` 阻断已知高危生产依赖。代码质量检查通过 `check:admin-snapshot -- --isolated` 在一次性 SQLite 中执行部署快照的 seed→export 一致性验证，不读取或覆盖作者正在编辑的数据库。默认 `check:admin-snapshot` 继续只读比较本地后台与仓库快照，并作为 `verify:release-candidate` 的 `authored-admin-snapshot` 阶段阻止未确认内容发布；发现差异不自动导出公告或角色配置。`sharp` 升至 0.35.5 并列入运行依赖，Vitest 升至 4.1.12；锁文件同步修复兼容范围内的传递依赖。仅代理 HTTP 的开发恢复测试关闭 Vite 资源扫描和文件监听，避免整库资源拖慢测试并触发无关超时。本地检查通过不等于目标云服务器已完成压测、备份与恢复验收。
+
 ## 西格莉卡黑化分支暂时关闭（2026-10-27）
 
 `src/shared/sigrikaCandyAvailability.js` 的 `SIGRIKA_CANDY_CORRUPTION_ENABLED = false` 是前后端共用开关。仓库不注入黑化测试选项，App 不启动进入演出或异常剧情续播。糖果普通使用推进到 7 次后暂停计数，并继续选择第 7 次普通剧情；已保存的第 8 次或异常阶段不被覆盖。生产环境既有西格莉卡糖果目标限制继续生效。

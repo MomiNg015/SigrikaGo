@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import jwt from "jsonwebtoken";
 import { ALREADY_LOGGED_IN_CODE, REFRESH_COOKIE_NAME } from "./loginSessions.js";
 import { createAuthRouteHandlers } from "./authRoutes.js";
 import { AEMEATH_WELCOME_MAIL } from "../src/shared/aemeathAcquisition.js";
@@ -80,6 +81,7 @@ function createHandlers(overrides = {}) {
       jwtSecret: "test-secret",
       loginSessions,
       onlineSessions,
+      challenges: { consume: () => true },
       hashPassword: async (password, rounds) => `hash:${password}:${rounds}`,
       comparePassword: async (password, hash) => hash === `hash:${password}`,
       signWithToken: (user, _jwtSecret, options) => ({
@@ -305,15 +307,15 @@ describe("auth route handlers", () => {
     });
   });
 
-  it("logout clears refresh and access-token sessions even when token parsing is optional", async () => {
+  it("logout clears refresh and signature-verified access-token sessions", async () => {
     const { handlers, clearedSessions, clearedRefreshTokens } = createHandlers();
-    const payload = Buffer.from(JSON.stringify({ sub: "user-1", sid: "session-1" }), "utf8").toString("base64url");
+    const token = jwt.sign({ sub: "user-1", sid: "session-1" }, "test-secret");
     const res = createResponse();
 
     await handlers.logout({
       headers: {
         cookie: `${REFRESH_COOKIE_NAME}=refresh-token`,
-        authorization: `Bearer header.${payload}.signature`
+        authorization: `Bearer ${token}`
       }
     }, res);
 
@@ -321,5 +323,26 @@ describe("auth route handlers", () => {
     expect(clearedSessions).toEqual([{ userId: "user-1", sessionId: "session-1" }]);
     expect(res.headers["Set-Cookie"]).toContain(`${REFRESH_COOKIE_NAME}=;`);
     expect(res.body).toEqual({ ok: true });
+  });
+
+  it("never revokes an access session from a forged or incorrectly signed token", async () => {
+    for (const token of [jwt.sign({ sub: "victim", sid: "session" }, "attacker-secret"), "bad.token.signature"]) {
+      const { handlers, clearedSessions } = createHandlers();
+      const res = createResponse();
+      await handlers.logout({ headers: { authorization: `Bearer ${token}` } }, res);
+      expect(clearedSessions).toEqual([]);
+      expect(res.body).toEqual({ ok: true });
+    }
+  });
+
+  it("rejects missing/invalid registration proof before hashing or database writes", async () => {
+    const hashPassword = vi.fn();
+    const { handlers, createdUsers } = createHandlers({ deps: { hashPassword, challenges: { consume: () => false } } });
+    const res = createResponse();
+    await handlers.register({ body: { username: "Alice", password: "secret12" } }, res);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.code).toBe("captcha_invalid");
+    expect(hashPassword).not.toHaveBeenCalled();
+    expect(createdUsers).toEqual([]);
   });
 });

@@ -44,6 +44,7 @@ import {
   corsOriginForRequest,
   createApiRateLimit,
   createCredentialAuthRateLimit,
+  createRegistrationRateLimit,
   createSessionAuthRateLimit,
   validateRoomCode
 } from "./security.js";
@@ -144,7 +145,7 @@ const corsOptions = {
   credentials: true
 };
 
-app.set("trust proxy", 1);
+app.set("trust proxy", "loopback");
 app.use(helmet(HELMET_OPTIONS));
 app.use(cors(corsOptions));
 app.use(createJsonBodyParser());
@@ -152,6 +153,7 @@ app.use(requestBodyErrorHandler);
 app.use(jsonSyntaxErrorHandler);
 app.use("/health", createHealthRouter({ runtimeServiceState }));
 app.use(["/api/auth/register", "/api/auth/login"], createCredentialAuthRateLimit());
+app.use("/api/auth/register", createRegistrationRateLimit());
 app.use(["/api/auth/refresh", "/api/auth/logout"], createSessionAuthRateLimit());
 app.use("/api", createApiRateLimit());
 app.use("/uploads", express.static(uploadRoot));

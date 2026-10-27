@@ -27,8 +27,11 @@ async function fixture(configure) {
     configFile: false,
     appType: "custom",
     logLevel: "silent",
+    // These fixtures proxy HTTP only; scanning/watching the full asset tree is unrelated.
+    optimizeDeps: { noDiscovery: true },
     server: {
       host: "127.0.0.1", port: vitePort, strictPort: true,
+      watch: null,
       proxy: { "/api": { target: `http://127.0.0.1:${backendPort}`, configure } }
     }
   });

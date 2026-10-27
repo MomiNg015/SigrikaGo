@@ -62,7 +62,7 @@ test("does not reopen the result modal after leaving a finished room and reloadi
       room?.game?.phase === "finished" && room?.game?.winner && !room.game.winner.invalid
     ));
     await expect(page.locator(".result-modal")).toBeVisible({ timeout: 20_000 });
-    await page.locator(".result-modal button").click();
+    await page.locator(".result-modal").getByRole("button", { name: "返回棋盘", exact: true }).click();
     await page.locator(".room-mobile-exit").click();
     await expect(page.locator(".result-modal")).toHaveCount(0);
 

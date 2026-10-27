@@ -1,0 +1,26 @@
+.auth-screen .auth-challenge-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 46%);
+  gap: 8px;
+  align-items: center;
+}
+
+.auth-screen .auth-challenge-controls input {
+  min-width: 0;
+  width: 100%;
+}
+
+.auth-screen .auth-challenge-refresh {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.auth-screen .auth-challenge-refresh img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

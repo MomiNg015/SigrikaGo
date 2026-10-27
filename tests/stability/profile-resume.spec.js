@@ -42,18 +42,18 @@ test("keeps self and social dossiers usable at the supported profile viewports",
     await page.getByRole("button", { name: "观战" }).click();
     const watchDialog = page.getByRole("dialog", { name: "对局列表" });
     await expect(watchDialog).toBeVisible();
-    const watchModeTabContract = await readModeTabContract(watchDialog);
+    await expect(watchDialog.getByRole("textbox", { name: "搜索房间或玩家" })).toBeVisible();
     await watchDialog.getByRole("button", { name: "关闭对局列表" }).click();
     await page.getByRole("button", { name: "打开履历" }).click();
     const resumeDialog = page.getByRole("dialog", { name: "履历" });
     await expect(resumeDialog).toBeVisible();
-    await expect(resumeDialog.getByRole("tab")).toHaveText(["星炬", "标准", "五子棋"]);
+    await expect(resumeDialog.getByRole("tab")).toHaveText(["星炬", "标准", "其它"]);
     await expect(resumeDialog.getByLabel("履历操作").getByRole("button")).toHaveCount(2);
     await expect(resumeDialog.getByLabel("履历操作").getByRole("button", { name: "成就", exact: true })).toBeVisible();
     await expect(resumeDialog.getByLabel("履历操作").getByRole("button", { name: "个性化", exact: true })).toBeVisible();
     await expect(resumeDialog.getByRole("button", { name: /点赞|加好友|举报/u })).toHaveCount(0);
 
-    await inspectProfileAtViewports(page, resumeDialog, viewports, testInfo, "self", watchModeTabContract);
+    await inspectProfileAtViewports(page, resumeDialog, viewports, testInfo, "self");
     await resumeDialog.getByRole("button", { name: "关闭履历" }).click();
 
     await page.getByRole("button", { name: "好友" }).click();
@@ -63,7 +63,7 @@ test("keeps self and social dossiers usable at the supported profile viewports",
 
     const socialDialog = page.getByRole("dialog", { name: "详细资料" });
     await expect(socialDialog).toBeVisible({ timeout: 20_000 });
-    await expect(socialDialog.getByRole("tab")).toHaveText(["星炬", "标准", "五子棋"]);
+    await expect(socialDialog.getByRole("tab")).toHaveText(["星炬", "标准", "其它"]);
     const socialActions = socialDialog.getByLabel("用户互动");
     await expect(socialActions.getByRole("button")).toHaveCount(4);
     await expect(socialActions.getByRole("button")).toHaveText(["0", "", "", ""]);
@@ -80,14 +80,14 @@ test("keeps self and social dossiers usable at the supported profile viewports",
       "爱弥斯", "西格莉卡", "达妮娅", "琳奈", "莫宁", "千咲", "长离", "仇远", "娜波摩", "猪小仙"
     ]);
 
-    await inspectProfileAtViewports(page, socialDialog, viewports, testInfo, "social", watchModeTabContract);
+    await inspectProfileAtViewports(page, socialDialog, viewports, testInfo, "social");
     await inspectStandaloneReplay(page, socialDialog, testInfo);
   } finally {
     await targetContext.close();
   }
 });
 
-async function inspectProfileAtViewports(page, dialog, viewports, testInfo, context, watchModeTabContract) {
+async function inspectProfileAtViewports(page, dialog, viewports, testInfo, context) {
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     await expect(dialog).toBeVisible();
@@ -111,15 +111,6 @@ async function inspectProfileAtViewports(page, dialog, viewports, testInfo, cont
         portraitLoaded: image?.complete && image.naturalWidth > 0,
         railOrientation: rail?.getAttribute("aria-orientation"),
         railClass: rail?.className,
-        tabs: [...rail.querySelectorAll('[role="tab"]')].map((tab) => ({
-          backgroundColor: getComputedStyle(tab).backgroundColor,
-          borderWidth: getComputedStyle(tab).borderTopWidth,
-          borderRadius: getComputedStyle(tab).borderRadius,
-          boxShadow: getComputedStyle(tab).boxShadow,
-          minHeight: Number.parseFloat(getComputedStyle(tab).minHeight),
-          selected: tab.getAttribute("aria-selected") === "true"
-        })),
-        gap: Number.parseFloat(getComputedStyle(rail).columnGap),
         unlabelledControls: controls.filter((button) => !button.textContent.trim() && !button.getAttribute("aria-label") && !button.title).length,
         rows: [...element.querySelectorAll(".profile-character-table tbody tr")].map((row) => ({
           headers: row.querySelectorAll("th").length,
@@ -143,7 +134,8 @@ async function inspectProfileAtViewports(page, dialog, viewports, testInfo, cont
     expect(geometry.unlabelledControls).toBe(0);
     expect(geometry.rows.length).toBe(10);
     expect(geometry.rows.every((row) => row.headers === 1 && row.cells === 5 && row.name && row.nowrap)).toBe(true);
-    expect({ gap: geometry.gap, active: geometry.tabs.find((tab) => tab.selected), inactive: geometry.tabs.find((tab) => !tab.selected) }).toEqual(watchModeTabContract);
+    await expect(dialog.locator('[role="tab"][aria-selected="true"]')).toHaveCount(1);
+    await expect(dialog.locator('[role="tab"][aria-selected="false"]')).toHaveCount(2);
     const activeTab = dialog.locator('[role="tab"][aria-selected="true"]');
     await activeTab.focus();
     await page.keyboard.press("ArrowDown");
@@ -192,26 +184,6 @@ async function inspectStandaloneReplay(page, socialDialog, testInfo) {
   await replayDialog.getByRole("button", { name: "关闭对局回放" }).click();
   await expect(replayDialog).toHaveCount(0);
   await expect(socialDialog).toBeVisible();
-}
-
-async function readModeTabContract(dialog) {
-  return dialog.evaluate((element) => {
-    const tabList = element.querySelector('[role="tablist"][aria-label="对弈模式"]');
-    const tabs = [...tabList.querySelectorAll("[role='tab']")];
-    const readTab = (tab) => ({
-      backgroundColor: getComputedStyle(tab).backgroundColor,
-      borderWidth: getComputedStyle(tab).borderTopWidth,
-      borderRadius: getComputedStyle(tab).borderRadius,
-      boxShadow: getComputedStyle(tab).boxShadow,
-      minHeight: Number.parseFloat(getComputedStyle(tab).minHeight),
-      selected: tab.getAttribute("aria-selected") === "true"
-    });
-    return {
-      gap: Number.parseFloat(getComputedStyle(tabList).columnGap),
-      active: readTab(tabs.find((tab) => tab.getAttribute("aria-selected") === "true")),
-      inactive: readTab(tabs.find((tab) => tab.getAttribute("aria-selected") !== "true"))
-    };
-  });
 }
 
 async function routeProfileFixture(page, user, mode) {

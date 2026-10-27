@@ -5,7 +5,7 @@ export function createRoomChatLifecycle({
   randomUUID = () => crypto.randomUUID(),
   now = () => Date.now()
 }) {
-  function addChat(roomCode, user, text) {
+  function addChat(roomCode, user, text, socketId) {
     const validatedRoomCode = validateRoomCode(roomCode);
     if (!validatedRoomCode.ok) return null;
 
@@ -15,12 +15,15 @@ export function createRoomChatLifecycle({
     const room = rooms.get(validatedRoomCode.value);
     if (!room) return null;
     if (room.sigrikaCandyDuel) return null;
+    const member = [...(room.players ?? []), ...(room.spectators ?? [])]
+      .find((candidate) => candidate.user?.id === user?.id && candidate.socketId === socketId);
+    if (!user?.id || !socketId || !member) return null;
 
     const message = {
       id: randomUUID(),
       type: "chat",
       userId: user.id,
-      username: user.username,
+      username: member.user.username,
       moveNumber: room.game.moveNumber,
       text: normalizedText.value,
       createdAt: now()

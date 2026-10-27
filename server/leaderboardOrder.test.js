@@ -8,6 +8,7 @@ import { ensureCaptureChallengeSchema } from "./captureChallengeSchema.js";
 import { profileCaptureRecord } from "./profileCaptureRecord.js";
 import { listCaptureChallengeLeaderboard } from "./captureChallenge.js";
 
+// This replays every migration into real SQLite; allow cold disk/fsync time.
 it.each(["startup", "migration"])("backfills arrival from legacy timestamps using %s and preserves it on repeated startup", async path => {
   const directory = await mkdtemp(join(tmpdir(), "leaderboard-order-"));
   const prisma = new PrismaClient({ datasourceUrl: `file:${join(directory, "test.db").replaceAll("\\", "/")}` });
@@ -41,4 +42,4 @@ it.each(["startup", "migration"])("backfills arrival from legacy timestamps usin
     await prisma.$disconnect();
     await rm(directory, { recursive: true, force: true });
   }
-});
+}, 15_000);

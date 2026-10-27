@@ -496,6 +496,7 @@ describe("root CSS entry contract", () => {
       "./base/asset-preload-portrait.css",
       "./base/login-asset-preload.css",
       "./base/surfaces-forms-actions.css",
+      "./base/auth-challenge.css",
       "./base/topbar-room-tags.css",
       "./base/home-legacy-grid.css",
       "./base/home-stage-artboard.css",

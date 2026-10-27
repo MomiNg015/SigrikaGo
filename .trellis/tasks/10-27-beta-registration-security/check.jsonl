@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/full-system-test-contract.md", "reason": "Isolated release validation"}
+{"file": ".trellis/spec/backend/authentication-contract.md", "reason": "Challenge, login backoff, logout signature and fixture boundaries"}
+{"file": ".trellis/spec/backend/internal-test-release-contract.md", "reason": "Local release gates and disposable database verification"}
+{"file": ".trellis/tasks/10-27-beta-registration-security/research/decisions.md", "reason": "Accepted scope, defense limitations and WIP preservation"}

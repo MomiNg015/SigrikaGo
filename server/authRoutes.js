@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import express from "express";
 import { withToken } from "./auth.js";
 import { USER_STATUS } from "./adminConfig.js";
@@ -13,6 +14,8 @@ import {
 } from "./loginSessions.js";
 import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
 import { validateNewPassword, validatePassword, validateUsername } from "./security.js";
+import { createAuthChallenges } from "./authChallenges.js";
+import { createLoginAbuseGuard } from "./loginAbuseGuard.js";
 import {
   aemeathWelcomeMailboxMessageData,
   newUserInitialOwnedCharacters
@@ -25,6 +28,8 @@ export function createAuthRouteHandlers({
   jwtSecret,
   loginSessions,
   onlineSessions,
+  challenges = createAuthChallenges(),
+  loginAbuseGuard = createLoginAbuseGuard(),
   comparePassword = bcrypt.compare,
   hashPassword = bcrypt.hash,
   blockLoginForActiveAccount = shouldBlockLoginForActiveAccount,
@@ -46,6 +51,10 @@ export function createAuthRouteHandlers({
     }
     if (!passwordResult.ok) {
       res.status(400).json({ error: passwordResult.error });
+      return;
+    }
+    if (!challenges.consume(req, "register")) {
+      res.status(400).json({ code: "captcha_invalid", error: "验证码错误或已失效，请重新输入" });
       return;
     }
     const username = usernameResult.value;
@@ -85,32 +94,51 @@ export function createAuthRouteHandlers({
     }
     const username = usernameResult.value;
     const password = passwordResult.value;
-    const user = await prisma.user.findUnique({
-      where: { username },
-      include: USER_ASSET_RELATION_INCLUDE
-    });
-    const passwordMatches = await comparePassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
-    if (!user || !passwordMatches) {
-      res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
+    const attempt = loginAbuseGuard.begin(req, username, challenges);
+    if (!attempt.ok) {
+      sendProtectionFailure(res, attempt);
       return;
     }
-    if (user.status === USER_STATUS.banned) {
-      res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
-      return;
-    }
-    if (blockLoginForActiveAccount({
-      onlineSessions,
-      userId: user.id,
-      forceLogin: Boolean(req.body.forceLogin)
-    })) {
-      res.status(409).json({
-        code: ALREADY_LOGGED_IN_CODE,
-        error: ALREADY_LOGGED_IN_MESSAGE
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+        include: USER_ASSET_RELATION_INCLUDE
       });
-      return;
+      const passwordMatches = await comparePassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+      if (!user || !passwordMatches) {
+        attempt.finish("failure");
+        res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
+        return;
+      }
+      attempt.finish("success");
+      if (user.status === USER_STATUS.banned) {
+        res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
+        return;
+      }
+      if (blockLoginForActiveAccount({
+        onlineSessions,
+        userId: user.id,
+        forceLogin: Boolean(req.body.forceLogin)
+      })) {
+        res.status(409).json({
+          code: ALREADY_LOGGED_IN_CODE,
+          error: ALREADY_LOGGED_IN_MESSAGE
+        });
+        return;
+      }
+      if (req.body.forceLogin) await onlineSessions.forceLogoutUser(user.id);
+      await sendLoginResponse(res, user);
+    } finally {
+      attempt.finish("ignored");
     }
-    if (req.body.forceLogin) await onlineSessions.forceLogoutUser(user.id);
-    await sendLoginResponse(res, user);
+  }
+
+  async function challenge(req, res) {
+    res.setHeader("Cache-Control", "no-store");
+    const result = await challenges.issue(req, req.query.purpose);
+    if (!result.ok) return sendProtectionFailure(res, result);
+    const { id, image, expiresAt } = result;
+    res.json({ id, image, expiresAt });
   }
 
   async function refresh(req, res) {
@@ -142,7 +170,7 @@ export function createAuthRouteHandlers({
     await loginSessions.clearRefreshToken(refreshToken);
     try {
       const token = req.headers.authorization?.replace("Bearer ", "");
-      const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")) : null;
+      const payload = token ? jwt.verify(token, jwtSecret, { algorithms: ["HS256"] }) : null;
       if (payload?.sub && payload?.sid) await loginSessions.clear(payload.sub, payload.sid);
     } catch {
       // Logout should succeed even if the access token is malformed or expired.
@@ -152,11 +180,17 @@ export function createAuthRouteHandlers({
   }
 
   return {
+    challenge,
     register,
     login,
     refresh,
     logout
   };
+}
+
+function sendProtectionFailure(res, result) {
+  if (result.retryAfter) res.setHeader("Retry-After", String(result.retryAfter));
+  res.status(result.status).json({ code: result.code, error: result.error });
 }
 
 function isPrismaUniqueConstraintError(error) {
@@ -166,6 +200,7 @@ function isPrismaUniqueConstraintError(error) {
 export function createAuthRouter(deps) {
   const router = express.Router();
   const handlers = createAuthRouteHandlers(deps);
+  router.get("/challenge", handlers.challenge);
   router.post("/register", handlers.register);
   router.post("/login", handlers.login);
   router.post("/refresh", handlers.refresh);

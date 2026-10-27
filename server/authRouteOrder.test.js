@@ -17,5 +17,7 @@ describe("server auth route ordering", () => {
 
     expect(source).toContain('app.use(["/api/auth/register", "/api/auth/login"], createCredentialAuthRateLimit())');
     expect(source).toContain('app.use(["/api/auth/refresh", "/api/auth/logout"], createSessionAuthRateLimit())');
+    expect(source).toContain('app.use("/api/auth/register", createRegistrationRateLimit())');
+    expect(source).toContain('app.set("trust proxy", "loopback")');
   });
 });

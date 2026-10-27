@@ -5,6 +5,8 @@ import { version as packageVersion } from "../../package.json";
 import { api } from "../api/client.js";
 import { prewarmAuthPortraits } from "../app/authPortraitPrewarm.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
+import AuthChallenge from "./AuthChallenge.jsx";
+import { useAuthChallenge } from "./useAuthChallenge.js";
 
 export const APP_VERSION_LABEL = `v${packageVersion}`;
 
@@ -22,6 +24,8 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
   const [touchedFields, setTouchedFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [showSessionConflict, setShowSessionConflict] = useState(false);
+  const [loginChallengeRequired, setLoginChallengeRequired] = useState(false);
+  const challenge = useAuthChallenge(mode === "register" || loginChallengeRequired, mode);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
@@ -54,6 +58,8 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
     setServerFieldErrors({});
     setTouchedFields({});
     setShowSessionConflict(false);
+    setLoginChallengeRequired(false);
+    challenge.refresh();
   }
 
   function updateField(field, value) {
@@ -112,6 +118,8 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       return;
     }
 
+    if (!challenge.validate()) return;
+
     const requestVersion = requestVersionRef.current + 1;
     requestVersionRef.current = requestVersion;
     const controller = new AbortController();
@@ -123,6 +131,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       const body = mode === "login"
         ? { username: username.trim(), password, forceLogin }
         : { username: username.trim(), password };
+      if (challenge.enabled) body.challenge = challenge.proof;
       const data = await api(`/api/auth/${mode}`, {
         method: "POST",
         body,
@@ -132,7 +141,12 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
       onAuth(data.token, data.user);
     } catch (caught) {
       if (!mountedRef.current || requestVersionRef.current !== requestVersion || isAbortError(caught)) return;
-      if (mode === "login" && !forceLogin && isAlreadyLoggedInError(caught)) {
+      if (challenge.enabled) challenge.refresh();
+      if (caught?.code === "captcha_required") {
+        setLoginChallengeRequired(true);
+        setError("请完成图片验证后重试");
+      } else if (mode === "login" && !forceLogin && isAlreadyLoggedInError(caught)) {
+        setLoginChallengeRequired(false);
         setShowSessionConflict(true);
       } else if (mode === "register" && caught?.status === 409 && caught.message === "用户名已存在") {
         setServerFieldErrors({ username: caught.message });
@@ -274,6 +288,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
               </div>
             )}
 
+            <AuthChallenge challenge={challenge} disabled={submitting} />
             <div className="auth-form-feedback" role={error ? "region" : undefined} aria-label={error ? "请求错误" : undefined} tabIndex={error ? 0 : undefined}>
               {error && <p className="form-error" role="alert">{error}</p>}
             </div>

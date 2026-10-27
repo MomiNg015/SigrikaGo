@@ -11,6 +11,7 @@ export function releaseCandidateStages(env = process.env) {
   return [
     { name: "prisma-client", command: "npm", args: ["run", "prisma:generate"] },
     { name: "migrations", command: "npm", args: ["run", "verify:migrations"] },
+    { name: "authored-admin-snapshot", command: "npm", args: ["run", "check:admin-snapshot"] },
     {
       name: "production-config",
       command: process.execPath,

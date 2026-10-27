@@ -5,6 +5,8 @@ function testRoom(overrides = {}) {
   return {
     code: "12345",
     chat: [],
+    players: [{ user: { id: "u1", username: "Alice" }, socketId: "socket-1" }],
+    spectators: [],
     game: { moveNumber: 7 },
     ...overrides
   };
@@ -59,7 +61,7 @@ describe("room chat lifecycle", () => {
   test("appends normalized chat messages with the current move number", () => {
     const { lifecycle, room } = createLifecycle();
 
-    const mutation = lifecycle.addChat("12345", { id: "u1", username: "Alice" }, " hi ");
+    const mutation = lifecycle.addChat("12345", { id: "u1", username: "Alice" }, " hi ", "socket-1");
 
     expect(mutation).toEqual({ room, message: room.chat[0] });
     expect(room.chat).toEqual([
@@ -73,5 +75,28 @@ describe("room chat lifecycle", () => {
         createdAt: 1234
       }
     ]);
+  });
+
+  test.each([
+    ["outsider", "socket-2"], ["u1", "replaced-socket"], ["u1", undefined]
+  ])("rejects unauthorized sender %s on %s without mutation", (id, socketId) => {
+    const { lifecycle, room, deps } = createLifecycle();
+    expect(lifecycle.addChat("12345", { id }, "hello", socketId)).toBeNull();
+    expect(room.chat).toEqual([]);
+    expect(deps.randomUUID).not.toHaveBeenCalled();
+  });
+
+  test("allows a currently attached spectator but rejects them after leaving", () => {
+    const spectator = { user: { id: "viewer", username: "Viewer" }, socketId: "viewer-socket" };
+    const { lifecycle, room } = createLifecycle({ room: testRoom({ spectators: [spectator] }) });
+    expect(lifecycle.addChat("12345", spectator.user, "hello", spectator.socketId)?.message.username).toBe("Viewer");
+    room.spectators = [];
+    expect(lifecycle.addChat("12345", spectator.user, "again", spectator.socketId)).toBeNull();
+    expect(room.chat).toHaveLength(1);
+  });
+
+  test("keeps the special duel chat disabled for its owner", () => {
+    const { lifecycle } = createLifecycle({ room: testRoom({ sigrikaCandyDuel: {} }) });
+    expect(lifecycle.addChat("12345", { id: "u1" }, "hello", "socket-1")).toBeNull();
   });
 });

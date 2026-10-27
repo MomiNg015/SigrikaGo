@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { test, api, newPlayer, openTestDatabase, openHome } from "./full-system-helpers.js";
+import { VERIFICATION_CHALLENGE_ANSWER } from "../../server/authChallenges.js";
 
 let db;
 test.beforeAll(() => { db = openTestDatabase(); });
@@ -150,6 +151,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.locator("#auth-username").fill(username);
     await page.locator("#auth-password").fill("pwpass12");
     await page.locator("#auth-confirm-password").fill("pwpass12");
+    await expect(page.getByAltText("验证码，点击换一张")).toBeVisible();
+    await page.locator("#auth-challenge-answer").fill(VERIFICATION_CHALLENGE_ANSWER);
     const registered = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/register"
       && response.request().method() === "POST");
     await page.getByRole("button", { name: "登记入部信息", exact: true }).click();

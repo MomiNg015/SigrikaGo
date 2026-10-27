@@ -9,6 +9,7 @@ describe("release candidate verification", () => {
     expect(stages.map((stage) => stage.name)).toEqual([
       "prisma-client",
       "migrations",
+      "authored-admin-snapshot",
       "production-config",
       "build",
       "stability",
@@ -16,6 +17,7 @@ describe("release candidate verification", () => {
       "capacity-smoke"
     ]);
     expect(stages.find((stage) => stage.name === "stability")?.args).toContain("--skip-build");
+    expect(stages.find((stage) => stage.name === "authored-admin-snapshot")?.args).toEqual(["run", "check:admin-snapshot"]);
     expect(stages.find((stage) => stage.name === "capacity-smoke")?.args).toEqual(
       expect.arrayContaining(["--profile", "smoke", "--skip-build"])
     );

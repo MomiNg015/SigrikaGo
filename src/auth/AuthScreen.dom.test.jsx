@@ -2,13 +2,18 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { StrictMode } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "../api/client.js";
 import AuthScreen from "./AuthScreen.jsx";
+import { loadAuthChallenge } from "./authChallengeApi.js";
 
 const prewarmAuthPortraitsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("../api/client.js", () => ({ api: vi.fn() }));
+vi.mock("./authChallengeApi.js", () => ({ loadAuthChallenge: vi.fn() }));
+beforeEach(() => {
+  loadAuthChallenge.mockReset().mockResolvedValue({ id: "proof-id", image: "data:image/png;base64,AA==", expiresAt: Date.now() + 300000 });
+});
 vi.mock("../app/authPortraitPrewarm.js", () => ({
   prewarmAuthPortraits: prewarmAuthPortraitsMock
 }));
@@ -29,6 +34,7 @@ describe("AuthScreen DOM interaction", () => {
     await user.type(username, "TestUser");
     await user.type(document.getElementById("auth-password"), "password123");
     await user.type(document.getElementById("auth-confirm-password"), "password123");
+    await user.type(document.getElementById("auth-challenge-answer"), "ABC234");
     await user.click(screen.getByRole("button", { name: "登记入部信息" }));
 
     expect(await screen.findByText("用户名已存在")).not.toBeNull();
@@ -53,7 +59,10 @@ describe("AuthScreen DOM interaction", () => {
     const { container } = render(<AuthScreen initialMode={mode} onAuth={() => {}} />);
     await user.type(document.getElementById("auth-username"), "TestUser");
     await user.type(document.getElementById("auth-password"), "password123");
-    if (mode === "register") await user.type(document.getElementById("auth-confirm-password"), "password123");
+    if (mode === "register") {
+      await user.type(document.getElementById("auth-confirm-password"), "password123");
+      await user.type(document.getElementById("auth-challenge-answer"), "ABC234");
+    }
     await user.click(screen.getByRole("button", { name: mode === "login" ? "开门！" : "登记入部信息" }));
     expect(await screen.findByText("网络连接失败，请检查网络后重试")).not.toBeNull();
     await user.type(document.getElementById("auth-password"), "x");
@@ -162,6 +171,7 @@ describe("AuthScreen DOM interaction", () => {
     await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
     await user.type(document.getElementById("auth-password"), "secret12");
     await user.type(document.getElementById("auth-confirm-password"), "secret12");
+    await user.type(document.getElementById("auth-challenge-answer"), "ABC234");
     await user.click(screen.getByRole("button", { name: "\u767b\u8bb0\u5165\u90e8\u4fe1\u606f" }));
 
     await waitFor(() => expect(api).toHaveBeenCalledTimes(1));
@@ -232,6 +242,28 @@ describe("AuthScreen DOM interaction", () => {
     await waitFor(() => expect(api).toHaveBeenCalledTimes(2));
     expect(api.mock.calls[1][1].body).toMatchObject({ forceLogin: true });
     expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
+  it("requests a login challenge on demand and preserves forced-login confirmation after verification", async () => {
+    api.mockRejectedValueOnce(Object.assign(new Error("verify"), { status: 400, code: "captcha_required" }))
+      .mockRejectedValueOnce(Object.assign(new Error("online"), { status: 409, code: "already_logged_in" }))
+      .mockResolvedValueOnce({ token: "token", user: { id: "user-1" } });
+    const user = userEvent.setup();
+    const onAuth = vi.fn();
+    render(<AuthScreen onAuth={onAuth} />);
+    expect(document.getElementById("auth-challenge-answer")).toBeNull();
+    await user.type(document.getElementById("auth-username"), "Alice_12");
+    await user.type(document.getElementById("auth-password"), "secret1");
+    await user.click(screen.getByRole("button", { name: "开门！" }));
+    await waitFor(() => expect(loadAuthChallenge).toHaveBeenCalledWith("login", expect.any(AbortSignal)));
+    await user.type(document.getElementById("auth-challenge-answer"), "ABC234");
+    await user.click(screen.getByRole("button", { name: "开门！" }));
+    expect(api.mock.calls[1][1].body.challenge).toEqual({ id: "proof-id", answer: "ABC234" });
+    expect(await screen.findByRole("dialog", { name: "账号已在线" })).not.toBeNull();
+    await user.click(screen.getByRole("button", { name: "退出其他会话并继续" }));
+    await waitFor(() => expect(onAuth).toHaveBeenCalledWith("token", { id: "user-1" }));
+    expect(api.mock.calls[2][1].body).toMatchObject({ forceLogin: true });
+    expect(api.mock.calls[2][1].body).not.toHaveProperty("challenge");
   });
 
   it("turns Retry-After into one concise recovery message", async () => {

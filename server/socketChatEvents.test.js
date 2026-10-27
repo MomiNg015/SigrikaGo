@@ -4,6 +4,7 @@ import { registerChatSocketEvents } from "./socketChatEvents.js";
 function createSocket(user = { id: "user-a" }) {
   const handlers = {};
   return {
+    id: "socket-1",
     user,
     on: vi.fn((event, handler) => {
       handlers[event] = handler;
@@ -42,7 +43,7 @@ describe("socket chat events", () => {
     registerChatSocketEvents(socket, deps);
     socket.trigger("chat:send", { roomCode: "12345", text: "hello" });
 
-    expect(deps.addChat).toHaveBeenCalledWith("12345", socket.user, "hello");
+    expect(deps.addChat).toHaveBeenCalledWith("12345", socket.user, "hello", socket.id);
     expect(deps.broadcastRoomPatch).toHaveBeenCalledWith(deps.io, room, {
       type: "chat:append",
       message

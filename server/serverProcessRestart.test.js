@@ -17,7 +17,8 @@ describe("server process restart recovery", () => {
     const database = await preparePlaywrightTestDatabase({
       label: "process-restart",
       port,
-      runId: `${process.pid}-${Date.now()}`
+      runId: `${process.pid}-${Date.now()}`,
+      manageSignals: false
     });
     const url = `http://127.0.0.1:${port}`;
     let firstSocket;
@@ -25,6 +26,7 @@ describe("server process restart recovery", () => {
     let resumedSocket;
     try {
       let server = startServer({ port, databaseUrl: database.databaseUrl });
+      database.trackProcess(server);
       await waitForReady(url, server);
 
       const firstAuth = await register(url, "a");
@@ -63,6 +65,7 @@ describe("server process restart recovery", () => {
       secondSocket = null;
       await stopServer(server);
       server = startServer({ port, databaseUrl: database.databaseUrl });
+      database.trackProcess(server);
       await waitForReady(url, server);
 
       resumedSocket = await connectSocket(url, blackToken);
