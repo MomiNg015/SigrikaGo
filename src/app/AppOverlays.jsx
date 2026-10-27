@@ -5,6 +5,7 @@ import OnboardingStoryModal from "../modals/OnboardingStoryModal.jsx";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 import { isStoryNodeType } from "../shared/tutorialNodeTypes.js";
+import { PROFILE_CUSTOMIZATION_ENABLED } from "../shared/profileFeatures.js";
 
 const AchievementModal = lazy(() => import("../modals/AchievementModal.jsx"));
 const AnnouncementModal = lazy(() => import("../modals/AnnouncementModal.jsx"));
@@ -182,14 +183,14 @@ export default function AppOverlays({
             token={token}
             characterListView={characterListView}
             onClose={() => setShowResume(false)}
-            onOpenAchievements={() => setShowAchievements(true)}
-            onOpenPersonalization={() => setShowPersonalization(true)}
+            onOpenAchievements={() => { if (PROFILE_CUSTOMIZATION_ENABLED) setShowAchievements(true); }}
+            onOpenPersonalization={() => { if (PROFILE_CUSTOMIZATION_ENABLED) setShowPersonalization(true); }}
             onOpenReplay={openReplay}
           />
         )}
       </Suspense>
       <Suspense fallback={null}>
-        {showAchievements && user && (
+        {PROFILE_CUSTOMIZATION_ENABLED && showAchievements && user && (
           <AchievementModal
             token={token}
             onClose={() => setShowAchievements(false)}
@@ -198,7 +199,7 @@ export default function AppOverlays({
         )}
       </Suspense>
       <Suspense fallback={null}>
-        {showPersonalization && user && (
+        {PROFILE_CUSTOMIZATION_ENABLED && showPersonalization && user && (
           <PersonalizationModal
             token={token}
             user={user}

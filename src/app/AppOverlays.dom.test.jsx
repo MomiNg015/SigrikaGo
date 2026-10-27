@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { useLayoutEffect, useState } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AppOverlays from "./AppOverlays.jsx";
 
 const pending = vi.hoisted(() => {
@@ -12,6 +12,9 @@ const pending = vi.hoisted(() => {
   }
   return { achievements: gate(), personalization: gate(), resumeCleanup: vi.fn() };
 });
+const features = vi.hoisted(() => ({ PROFILE_CUSTOMIZATION_ENABLED: true }));
+vi.mock("../shared/profileFeatures.js", () => features);
+beforeEach(() => { features.PROFILE_CUSTOMIZATION_ENABLED = true; });
 
 vi.mock("../modals/ResumeModal.jsx", () => ({
   default: function Resume({ onOpenAchievements, onOpenPersonalization }) {
@@ -45,6 +48,18 @@ function OverlayHarness() {
 afterEach(cleanup);
 
 describe("independent lazy overlay loading", () => {
+  it("blocks both customization overlays and their entry callbacks during the internal test", async () => {
+    features.PROFILE_CUSTOMIZATION_ENABLED = false;
+    const { rerender } = render(<OverlayHarness />);
+    await screen.findByRole("dialog", { name: "履历" });
+    fireEvent.click(screen.getByRole("button", { name: "成就", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "个性化", exact: true }));
+    expect(screen.queryByRole("dialog", { name: "成就" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "个性化" })).toBeNull();
+    rerender(<AppOverlays user={{ id: 1 }} toasts={[]} showAchievements showPersonalization />);
+    expect(screen.queryByRole("dialog", { name: "成就" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "个性化" })).toBeNull();
+  });
   it.each([["成就", "achievements"], ["个性化", "personalization"]])(
     "keeps the resume visible and intact while %s loads for the first time",
     async (name, key) => {

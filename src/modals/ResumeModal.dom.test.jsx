@@ -94,8 +94,10 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("button", { name: "关闭履历" }).dataset.buttonRole).toBe("secondary");
     fireEvent.click(screen.getByRole("button", { name: "成就" }));
     fireEvent.click(screen.getByRole("button", { name: "个性化" }));
-    expect(onOpenAchievements).toHaveBeenCalledTimes(1);
-    expect(onOpenPersonalization).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "成就" }).disabled).toBe(true);
+    expect(screen.getByRole("button", { name: "个性化" }).disabled).toBe(true);
+    expect(onOpenAchievements).not.toHaveBeenCalled();
+    expect(onOpenPersonalization).not.toHaveBeenCalled();
     expect(api).toHaveBeenCalledWith("/api/users/user-1/profile?mode=spark", { token: "token" });
   });
 

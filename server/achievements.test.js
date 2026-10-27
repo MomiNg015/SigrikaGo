@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ACHIEVEMENT_TRIGGER_EVENTS,
   ensureAchievementSchema,
@@ -10,7 +10,26 @@ import {
   updateAchievementEquipment
 } from "./achievements.js";
 
+const features = vi.hoisted(() => ({ PROFILE_CUSTOMIZATION_ENABLED: true }));
+vi.mock("../src/shared/profileFeatures.js", () => features);
+beforeEach(() => { features.PROFILE_CUSTOMIZATION_ENABLED = true; });
+
 describe("achievements", () => {
+  it("does not read conditions or grant rewards while the internal-test switch is off", async () => {
+    features.PROFILE_CUSTOMIZATION_ENABLED = false;
+    const prisma = {
+      user: { findUnique: vi.fn() },
+      achievement: { findMany: vi.fn() },
+      userAchievement: { findMany: vi.fn(), create: vi.fn() },
+      $transaction: vi.fn()
+    };
+    expect(await evaluateAchievementsForUser({ prisma, userId: "user-1", triggerEvent: "item-use" })).toEqual([]);
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+    expect(prisma.achievement.findMany).not.toHaveBeenCalled();
+    expect(prisma.userAchievement.findMany).not.toHaveBeenCalled();
+    expect(prisma.userAchievement.create).not.toHaveBeenCalled();
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
   it("creates compatibility tables and source columns idempotently", async () => {
     const executed = [];
     const queried = [];

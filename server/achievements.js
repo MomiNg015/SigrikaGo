@@ -1,5 +1,6 @@
 import { rankToStep } from "../src/shared/rankProgression.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { PROFILE_CUSTOMIZATION_ENABLED } from "../src/shared/profileFeatures.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { writeAudit } from "./adminAudit.js";
 import { routeError } from "./adminRouteErrors.js";
@@ -293,6 +294,7 @@ export async function listAchievementsForUser({ prisma, userId }) {
 }
 
 export async function evaluateAchievementsForUser({ prisma, userId, triggerEvent = "" }) {
+  if (!PROFILE_CUSTOMIZATION_ENABLED) return [];
   if (!prisma?.achievement?.findMany || !prisma?.userAchievement?.findMany || !prisma?.user?.findUnique) return [];
   const user = await prisma.user.findUnique({
     where: { id: userId },

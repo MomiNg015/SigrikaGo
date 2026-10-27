@@ -29,3 +29,26 @@ Portrait replay dialogs use time/result above two stacked player rows and a righ
 `server/profileFolder.test.js` covers rank ties, missing/empty users, authenticated route, ordinary SQL scope and completed lineup redaction. `TeamProfile.dom.test.jsx` covers team request/retry/replay isolation in both profile contexts. `server/social.test.js` and `teamProfileRecords.test.js` cover stage-based appearances and legacy outcomes. `ProfilePlayRecords.dom.test.jsx` covers rank location, branch data, retry, account switches and replay callbacks. Existing profile DOM suites cover keyboard navigation/social actions/pending guards. Browser checks cover both contexts, 1440/800/390/360/320 widths and long-list reachability. New CSS owners stay below the file-size gate; account for their scoped debt delta only.
 
 Identity cards prioritize the portrait and username: desktop uses a 104px portrait and 28px plain name; <=900px uses an 84px portrait and 26px plain name. Center the portrait and name vertically against the entire card. The card is position:relative with one grid row, min-height:160px and symmetric 28px block padding; social cards retain min-height:200px and 52px block padding to keep four actions clear of the portrait on narrow phones. The action group is position:absolute at right:12px and bottom:10px; it occupies no grid row and never changes the card or identity geometry. Keep controls on one line, including at 320px. Identity controls are 34px high with 16px icons and a restrained 1px shadow; the like button grows from 54px to preserve its live count. At <=768px hide other icon labels while retaining ARIA/title names. Replay remains 44px on phones. Identity card and portrait remain shadow-free.
+
+## Internal-test achievement availability
+
+### Scope / trigger
+Achievement and personalization availability, automatic unlock evaluation and achievement notices during the internal test.
+
+### Signatures
+`PROFILE_CUSTOMIZATION_ENABLED` in `src/shared/profileFeatures.js` is false. Both client and server import it. `evaluateAchievementsForUser({ prisma, userId, triggerEvent })` retains its signature and resolves to an empty unlock array while disabled.
+
+### Contracts
+Resume controls use native disabled state; `AppOverlays` guards both callbacks and modal mounting. Home refresh continues updating account state without notifying achievement listeners. `useToastQueue` rejects achievement-tone notices from all sources while preserving ordinary feedback. Server evaluation returns before reading conditions, creating unlock rows or granting/retrying rewards. Existing data, historical counters, admin configuration and award code remain intact for restoration through the same flag.
+
+### Validation / error matrix
+Disabled + eligible user/event → `[]`, no condition query or award write. Disabled + ordinary notification → ordinary toast retained. Enabled → existing evaluation, grant and modal behavior. Request failure/account changes retain their normal error and stale-response handling.
+
+### Good / base / bad cases
+Good: one shared gate covers UI, refresh callback, toast queue and central server evaluation. Base: purchase and gameplay continue recording ordinary history. Bad: only hiding the button or toast while server evaluation still grants rewards.
+
+### Tests required
+`server/achievements.test.js` tests the disabled no-query/no-write branch and preserves enabled grant regressions. `profileFeatures.dom.test.jsx` covers callback and queue filtering; `ResumeModal.dom.test.jsx` and `AppOverlays.dom.test.jsx` cover native controls and application-level guards.
+
+### Wrong vs correct
+Wrong: leave `evaluateAchievementsForUser` active while suppressing display alone. Correct: return `[]` at the evaluator entry before DB reads/writes, and preserve the original implementation below the release gate.

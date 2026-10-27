@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { api } from "../api/client.js";
+import { PROFILE_CUSTOMIZATION_ENABLED } from "../shared/profileFeatures.js";
 
 export function shouldRefreshHomeUser({ token, user, view }) {
   return view === "home" && Boolean(token && user?.id);
@@ -17,7 +18,7 @@ export function useHomeUserRefresh({ onAchievementUnlocks, token, updateUser, us
       .then((data) => {
         if (cancelled || sequence !== refreshSequenceRef.current) return;
         updateUser(data.user);
-        onAchievementUnlocks?.(data.achievementUnlocks ?? []);
+        if (PROFILE_CUSTOMIZATION_ENABLED) onAchievementUnlocks?.(data.achievementUnlocks ?? []);
       })
       .catch(() => {});
 
