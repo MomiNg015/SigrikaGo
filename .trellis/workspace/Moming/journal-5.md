@@ -436,3 +436,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 254: 结算星炬券显示与截图
+
+**Date**: 2026-10-28
+**Task**: 结算星炬券显示与截图
+**Branch**: `master`
+
+### Summary
+
+修复奖励卡片后代 span 样式将星炬券挤成6px的问题；三处选择器仅匹配直接子项，恢复28px等比券图。真实 ResultModal 的桌面、390和320px竖屏截图及胜负、返回、退出验证通过；164项定向测试、lint、构建、构建CSS和文档检查通过。保留无关WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cd48fd73` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
