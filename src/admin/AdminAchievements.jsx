@@ -108,7 +108,7 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
                   <tr key={asset.id}>
                     <td>{asset.type}</td>
                     <td>{asset.name}</td>
-                    <td>{asset.targetId || asset.targetType || "-"}</td>
+                    <td>{asset.targetId || (asset.targetType === "coins" ? "星炬券" : asset.targetType === "blueGems" ? "蓝宝石" : asset.targetType) || "-"}</td>
                     <td>{asset.amount}</td>
                     <td><AdminStatusPill tone={asset.enabled ? "green" : "red"}>{asset.enabled ? "启用" : "下线"}</AdminStatusPill></td>
                     <td>
@@ -158,7 +158,11 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
               <label>排序<input type="number" value={draftReward.sortOrder} onChange={(e) => setDraftReward({ ...draftReward, sortOrder: Number(e.target.value) })} /></label>
               <label>名称<input value={draftReward.name} onChange={(e) => setDraftReward({ ...draftReward, name: e.target.value })} /></label>
               <label>文本显示<input value={draftReward.text} onChange={(e) => setDraftReward({ ...draftReward, text: e.target.value })} /></label>
-              <label>目标类型<input value={draftReward.targetType} onChange={(e) => setDraftReward({ ...draftReward, targetType: e.target.value })} /></label>
+              <label>目标类型{draftReward.type === "currency"
+                ? <select value={draftReward.targetType} onChange={(e) => setDraftReward({ ...draftReward, targetType: e.target.value })}>
+                  <option value="coins">星炬券</option><option value="blueGems">蓝宝石</option>
+                </select>
+                : <input value={draftReward.targetType} onChange={(e) => setDraftReward({ ...draftReward, targetType: e.target.value })} />}</label>
               <label>目标 ID<input value={draftReward.targetId} onChange={(e) => setDraftReward({ ...draftReward, targetId: e.target.value })} /></label>
               <label>数量<input type="number" value={draftReward.amount} onChange={(e) => setDraftReward({ ...draftReward, amount: Number(e.target.value) })} /></label>
               <label>图片 URL<input value={draftReward.imageUrl} onChange={(e) => setDraftReward({ ...draftReward, imageUrl: e.target.value })} /></label>

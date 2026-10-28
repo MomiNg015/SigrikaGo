@@ -208,12 +208,12 @@ export async function purchaseCostume({ prisma, userId, costumeId }) {
     }
 
     const price = finalCostumePrice(costume);
-    if (user.coins < price) throw routeError(400, "金币不足");
+    if (user.coins < price) throw routeError(400, "星炬券不足");
     const coinUpdate = await tx.user.updateMany({
       where: { id: userId, coins: { gte: price } },
       data: { coins: { decrement: price } }
     });
-    if (coinUpdate.count !== 1) throw routeError(400, "金币不足");
+    if (coinUpdate.count !== 1) throw routeError(400, "星炬券不足");
     await tx.userCostume.create({
       data: {
         userId,

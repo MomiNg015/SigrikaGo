@@ -257,7 +257,7 @@ export function validateShopItemDraft(draft) {
   const errors = [];
   if (!draft.name.trim()) errors.push("商品名");
   if (!draft.targetId.trim()) errors.push("目标标识");
-  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
+  if (priceCoins == null || priceCoins < 0) errors.push("星炬券价格必须是 0 或更大的整数");
   if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
   if (sortOrder == null) errors.push("排序必须是整数");
   if (stockQuantity == null || stockQuantity < -1) errors.push("库存必须是 -1 或 0 以上整数");
@@ -349,7 +349,7 @@ export function costumeDraftToBody(draft, { editing = false } = {}) {
   if (!String(draft.name ?? "").trim()) errors.push("服装名称");
   if (!String(draft.characterSlug ?? "").trim()) errors.push("所属角色");
   if (!String(draft.portraitUrl ?? "").trim()) errors.push("服装立绘");
-  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
+  if (priceCoins == null || priceCoins < 0) errors.push("星炬券价格必须是 0 或更大的整数");
   if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
   if (portraitScalePercent == null || portraitScalePercent < 50 || portraitScalePercent > 150) errors.push("立绘缩放必须是 50 到 150 的整数");
   if (portraitOffsetXPercent == null || portraitOffsetXPercent < -50 || portraitOffsetXPercent > 50) errors.push("立绘横向偏移必须是 -50 到 50 的整数");

@@ -1,4 +1,4 @@
-import { STARTORCH_COUPON } from "./startorchCoupon.js";
+import { STARTORCH_COUPON, normalizeCouponText } from "./startorchCoupon.js";
 
 export default function StartorchCouponIcon({ size = 24, decorative = false }) {
   return (
@@ -18,13 +18,13 @@ export default function StartorchCouponIcon({ size = 24, decorative = false }) {
 }
 
 export function CouponText({ children }) {
-  return String(children ?? "").split(/(金币|星炬券)/).map((part, index) => (
-    part === "金币" || part === "星炬券"
+  return normalizeCouponText(children).split(/(星炬券)/).map((part, index) => (
+    part === "星炬券"
       ? <StartorchCouponIcon key={index} size="1.4em" />
       : part
   ));
 }
 
 export function couponNotice(message) {
-  return /金币|星炬券/.test(message ?? "") ? <CouponText>{message}</CouponText> : message;
+  return normalizeCouponText(message).includes(STARTORCH_COUPON.label) ? <CouponText>{message}</CouponText> : message;
 }

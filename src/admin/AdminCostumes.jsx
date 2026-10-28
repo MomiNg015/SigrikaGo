@@ -118,7 +118,7 @@ export default function AdminCostumes({ costumes, characters, token, onSaved, on
                 </select>
               </label>
               <label>
-                <AdminFieldLabel text="金币价格" tip="服装原价。" />
+                <AdminFieldLabel text="星炬券价格" tip="服装原价。" />
                 <input type="number" min="0" value={draft.priceCoins} onChange={(event) => setDraft({ ...draft, priceCoins: event.target.value })} />
               </label>
               <label>

@@ -69,7 +69,7 @@ export default function AdminOperations({ data, loading = false, range, onRangeC
             </div>
           </div>
           <div className="admin-health-list">
-            <div><span>金币净变化</span><strong>{formatSigned(data.economy?.coinDelta)}</strong></div>
+            <div><span>星炬券净变化</span><strong>{formatSigned(data.economy?.coinDelta)}</strong></div>
             <div><span>抽卡次数</span><strong>{data.economy?.gachaDraws ?? 0}</strong></div>
             <div><span>招募任务</span><strong>{data.economy?.recruitmentStarted ?? 0}</strong></div>
             <div><span>数据状态</span><strong>{data.economy?.status ?? "数据有限"}</strong></div>

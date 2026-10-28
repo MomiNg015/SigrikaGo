@@ -1,0 +1,44 @@
+[
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "amount": "100",
+    "src": "/assets/ui/startorch-coupon.webp",
+    "width": 34,
+    "height": 30.6562,
+    "naturalWidth": 827,
+    "naturalHeight": 746,
+    "legacyText": false,
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "amount": "100",
+    "src": "/assets/ui/startorch-coupon.webp",
+    "width": 34,
+    "height": 30.6562,
+    "naturalWidth": 827,
+    "naturalHeight": 746,
+    "legacyText": false,
+    "overflow": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "amount": "100",
+    "src": "/assets/ui/startorch-coupon.webp",
+    "width": 34,
+    "height": 30.6562,
+    "naturalWidth": 827,
+    "naturalHeight": 746,
+    "legacyText": false,
+    "overflow": false
+  }
+]

@@ -27,8 +27,8 @@ describe("authored coupon currency", () => {
     expect(screen.getAllByRole("img", { name: "星炬券" })).toHaveLength(2);
   });
 
-  it("renders legacy server currency errors as icons and preserves non-currency errors", () => {
-    render(couponNotice("金币不足"));
+  it.each(["金币不足", "Not enough coins", "星炬券不足"])("renders %s as an icon and preserves non-currency errors", (message) => {
+    render(couponNotice(message));
     expect(screen.getByRole("img", { name: "星炬券" })).toBeTruthy();
     expect(screen.getByText("不足")).toBeTruthy();
     expect(couponNotice("网络异常")).toBe("网络异常");

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import { couponNotice } from "../../shared/StartorchCouponIcon.jsx";
+import { isCouponInsufficientNotice } from "../../shared/startorchCoupon.js";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
 import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../../shared/shopMascotDialogues.js";
 import {
@@ -119,7 +120,7 @@ export function useCostumeCatalog({
       }
       return data.costume;
     } catch (error) {
-      if (error.message === "金币不足") setMascotFeedback("empty", dialogueConfig.insufficientLine);
+      if (isCouponInsufficientNotice(error.message)) setMascotFeedback("empty", dialogueConfig.insufficientLine);
       onNoticeRef.current?.(couponNotice(error.message), "danger");
       return null;
     } finally {

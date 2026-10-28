@@ -123,7 +123,9 @@ describe("achievements", () => {
         id: "reward-denia-rainbow-bean-candy-coins",
         type: "currency",
         targetType: "coins",
-        amount: 100
+        amount: 100,
+        text: "100 星炬券",
+        imageUrl: "/assets/ui/startorch-coupon.webp"
       }),
       expect.objectContaining({
         id: "reward-sigrika-spark-100-wins-nameplate",
@@ -314,7 +316,9 @@ describe("achievements", () => {
       reward: {
         type: "currency",
         targetType: "coins",
-        amount: 100
+        amount: 100,
+        text: "100 星炬券",
+        imageUrl: "/assets/ui/startorch-coupon.webp"
       }
     });
     expect(userAchievementCreates).toHaveLength(1);

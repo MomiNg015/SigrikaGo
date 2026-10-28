@@ -301,7 +301,7 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
     }
 
     const price = finalShopPrice(item);
-    if (user.coins < price) throw routeError(400, "金币不足");
+    if (user.coins < price) throw routeError(400, "星炬券不足");
 
     const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
     const ownedDecorations = parseAssetList(user.ownedDecorations);

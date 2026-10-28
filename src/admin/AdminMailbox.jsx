@@ -10,7 +10,7 @@ const TARGET_MODES = [
 
 const ATTACHMENT_TYPES = [
   { id: "none", label: "无附件" },
-  { id: "coins", label: "金币" },
+  { id: "coins", label: "星炬券" },
   { id: "item", label: "道具" }
 ];
 
@@ -236,7 +236,7 @@ function targetModeLabel(mode) {
 
 function attachmentLabel(attachment) {
   if (!attachment || attachment.type === "none") return "无附件";
-  if (attachment.type === "coins") return `${attachment.quantity ?? 0} 金币`;
+  if (attachment.type === "coins") return `${attachment.quantity ?? 0} 星炬券`;
   if (attachment.type === "item") return `${attachment.itemId ?? "道具"} x${attachment.quantity ?? 0}`;
   return "未知附件";
 }

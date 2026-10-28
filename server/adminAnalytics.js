@@ -278,7 +278,7 @@ function operationInsights({ todayActive, previousAverage, users, gameRecords, m
   if (users.length && gameRecords.length === 0) watch.push(actionInsight("新增用户未形成对局", "当前范围内有注册但没有完成对局。", "查看新用户", "users"));
   const topMode = [...modeTotals].sort((a, b) => b.completed - a.completed)[0];
   if (topMode) normal.push({ title: "玩法趋势", body: `${topMode.label} 是当前范围内最多的模式，共 ${topMode.completed} 局。`, tone: "正常记录" });
-  normal.push({ title: "经济变化", body: `金币净变化 ${formatSigned(coinDelta)}，深度来源拆分待接入。`, tone: coinDelta ? "值得关注" : "正常记录" });
+  normal.push({ title: "经济变化", body: `星炬券净变化 ${formatSigned(coinDelta)}，深度来源拆分待接入。`, tone: coinDelta ? "值得关注" : "正常记录" });
   return { needsAction, watch, normal };
 }
 

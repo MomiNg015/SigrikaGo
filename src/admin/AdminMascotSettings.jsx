@@ -41,7 +41,7 @@ const MASCOT_SECTIONS = [
       ["emptyLine", "暂无服装", "当前没有可售服装时显示。"],
       ["errorLine", "加载失败", "服装目录请求失败时显示。"],
       ["thanksLine", "购买成功", "玩家成功购买服装后显示。"],
-      ["insufficientLine", "金币不足", "购买服装时金币不足后显示。"]
+      ["insufficientLine", "星炬券不足", "购买服装时星炬券不足后显示。"]
     ]
   }
 ];

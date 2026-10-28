@@ -190,19 +190,19 @@ function RatingRulesEditor({ value, onChange }) {
       <p>九段以下采用星数制；九段每胜加200分、每负减250分。星数与积分不受对手段位或重复对局次数影响。</p>
       <div className="admin-settings-grid">
         <label>
-          <AdminFieldLabel text="友谊胜利金币" tip="私人/好友/房间号对局每日奖励额度内的胜利金币。" />
+          <AdminFieldLabel text="友谊胜利星炬券" tip="私人/好友/房间号对局每日奖励额度内的胜利星炬券。" />
           <input type="number" min="0" max="200" value={rules.privateRewards.winCoins} onChange={(event) => update(["privateRewards", "winCoins"], Number(event.target.value))} />
         </label>
         <label>
-          <AdminFieldLabel text="友谊失败金币" tip="私人/好友/房间号对局每日奖励额度内的失败金币。" />
+          <AdminFieldLabel text="友谊失败星炬券" tip="私人/好友/房间号对局每日奖励额度内的失败星炬券。" />
           <input type="number" min="0" max="100" value={rules.privateRewards.lossCoins} onChange={(event) => update(["privateRewards", "lossCoins"], Number(event.target.value))} />
         </label>
         <label>
-          <AdminFieldLabel text="友谊和棋金币" tip="私人/好友/房间号对局每日奖励额度内的和棋金币。" />
+          <AdminFieldLabel text="友谊和棋星炬券" tip="私人/好友/房间号对局每日奖励额度内的和棋星炬券。" />
           <input type="number" min="0" max="100" value={rules.privateRewards.drawCoins} onChange={(event) => update(["privateRewards", "drawCoins"], Number(event.target.value))} />
         </label>
         <label>
-          <AdminFieldLabel text="友谊每日奖励局数" tip="按服务器时区自然日，每个用户前 N 局友谊对局有金币奖励。" />
+          <AdminFieldLabel text="友谊每日奖励局数" tip="按服务器时区自然日，每个用户前 N 局友谊对局有星炬券奖励。" />
           <input type="number" min="0" max="20" value={rules.privateRewards.dailyRewardLimit} onChange={(event) => update(["privateRewards", "dailyRewardLimit"], Number(event.target.value))} />
         </label>
       </div>

@@ -1,6 +1,7 @@
 import { rankToStep } from "../src/shared/rankProgression.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { PROFILE_CUSTOMIZATION_ENABLED } from "../src/shared/profileFeatures.js";
+import { STARTORCH_COUPON, normalizeCouponText } from "../src/shared/startorchCoupon.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { writeAudit } from "./adminAudit.js";
 import { routeError } from "./adminRouteErrors.js";
@@ -41,8 +42,8 @@ const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
   type: ACHIEVEMENT_REWARD_TYPES.currency,
   name: "你给我吃了什么！？奖励",
   description: "请达妮娅吃了彩虹豆豆跳跳糖",
-  imageUrl: "",
-  text: "100 金币",
+  imageUrl: STARTORCH_COUPON.src,
+  text: "100 星炬券",
   targetType: "coins",
   targetId: "",
   amount: 100,
@@ -770,13 +771,14 @@ function toAdminAchievementPayload(achievement) {
 }
 
 function toRewardAssetPayload(asset) {
+  const isCoupon = asset.type === "currency" && asset.targetType !== "blueGems";
   return {
     id: asset.id,
     type: asset.type,
-    name: asset.name,
-    description: asset.description ?? "",
-    imageUrl: asset.imageUrl ?? "",
-    text: asset.text ?? "",
+    name: isCoupon ? normalizeCouponText(asset.name) : asset.name,
+    description: isCoupon ? normalizeCouponText(asset.description) : asset.description ?? "",
+    imageUrl: isCoupon ? STARTORCH_COUPON.src : asset.imageUrl ?? "",
+    text: isCoupon ? normalizeCouponText(asset.text) : asset.text ?? "",
     targetType: asset.targetType ?? "",
     targetId: asset.targetId ?? "",
     amount: Number(asset.amount ?? 0),

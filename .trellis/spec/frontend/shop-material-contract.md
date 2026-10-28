@@ -16,11 +16,22 @@ Four bounded files under `themes/bright-school/commerce/shop/` load at the end o
 
 ## Currency artwork (2026-10-28)
 
-The approved blue/yellow ticket is `public/assets/ui/startorch-coupon.webp`, a lossless 827×746 crop of user artwork. Use `StartorchCouponIcon` for currency in wallets, prices and inline copy. Its wrapper sets width only; the image uses `width: 100%; height: auto; object-fit: contain`. Never apply the product-art square dimensions or independent X/Y scaling to it. Accessible text is 星炬券. `CouponText` replaces legacy 金币 and current 星炬券 words at display time; retain original backend error comparisons and `coins` fields. Price values, discounts, zero-cost eligibility, native disabled states and purchase/equip behavior are unchanged. Check both stores on desktop and portrait mobile with production CSS.
+The approved blue/yellow ticket is `public/assets/ui/startorch-coupon.webp`, a lossless 827×746 crop of user artwork. Use `StartorchCouponIcon` for currency in wallets, prices and inline copy. Its wrapper sets width only; the image uses `width: 100%; height: auto; object-fit: contain`. Never apply the product-art square dimensions or independent X/Y scaling to it. Accessible text is 星炬券. `CouponText` replaces legacy 金币, English coin/coins and current 星炬券 words at display time. `isCouponInsufficientNotice` recognizes old and new balance errors; preserve internal `coins` fields. Price values, discounts, zero-cost eligibility, native disabled states and purchase/equip behavior are unchanged. Check both stores on desktop and portrait mobile with production CSS.
+
+### Legacy reward projection
+
+- Scope: player/admin achievement display, exported achievement defaults and shop balance errors. Unreleased gacha is explicitly excluded.
+- Signatures: `normalizeCouponText(value): string`, `isCouponInsufficientNotice(message): boolean`; APIs keep `targetType=coins`, `priceCoins` and balances unchanged.
+- Contract: Achievement currency projections normalize name/description/text; the player cell renders the actual amount with the coupon. Other currencies and custom non-currency artwork remain unchanged. Admin currency targets use labels without renaming option values.
+- Error matrix: 金币不足, Not enough coins and Insufficient coins normalize to 星炬券不足; unrelated errors pass through. Shop notices use `couponNotice`; costume feedback uses the semantic predicate.
+- Cases: current rewards and legacy stored rewards must look the same; blue gems stay separate; insufficient balance does not change the transaction.
+- Tests: `CouponRewards.dom.test.jsx`, coupon helper tests, achievement grant tests cover old names/images, admin option values, errors and unchanged amounts.
+- Wrong: changing only a fallback label while `reward.text` wins. Correct: normalize typed projections and assert rendering with stale persisted fields.
 
 ## Verification
 
 Result rewards reuse the same coupon. Reward-card padding, borders and surfaces must target direct `.result-rewards > span` children in shared/terminal owners, never all descendant spans: an icon wrapper otherwise inherits 22px of horizontal padding/border and shrinks a 28px image to 6px. Verify the computed image width is 28px and the wrapper has zero padding/border with production CSS, including portrait mobile and loss/zero-reward states.
+
 
 `docs/design-samples/shop-window-2026-10-23/materials/production.html` mounts the real ShopModal and production CSS; its root is `shop-production`, so prototype selectors cannot paint it. Only the fixture intercepts API calls. `verify-production.mjs` compares six pre-integration geometry/animation snapshots at 1440x900, 390x844 and 320x568 across both stores, checks texture removal and stone transparency, and exercises details, purchases, costume equip and reopening without network API requests. Do not regenerate `production-baseline.json` after implementation to mask drift.
 

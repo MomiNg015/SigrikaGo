@@ -29,7 +29,7 @@ export default function AdminUsers({ users, onSelect }) {
               <th>状态</th>
               <th>段位</th>
 
-              <th>金币</th>
+              <th>星炬券</th>
               <th>胜负</th>
               <th>操作</th>
             </tr>
@@ -101,7 +101,7 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
     }
     const coins = parseAdminInteger(draft.coins);
     if (coins == null) {
-      onNotice?.("金币必须是 32-bit signed int 范围内的整数", "danger");
+      onNotice?.("星炬券必须是 32-bit signed int 范围内的整数", "danger");
       return;
     }
     await runAction(() => adminApi(`/users/${draft.id}`, token, {
@@ -184,7 +184,7 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
         </label> : <label><AdminFieldLabel text="星数" tip="达到上限后下一盘为晋级赛，零星下一盘为降级赛。" />
           <input type="number" min="0" max={rankStarLimit(draft.rank)} value={draft.stars} onChange={(event) => updateDraft("stars", event.target.value)} />
         </label>}
-        <label><AdminFieldLabel text="金币" tip="用户当前拥有的金币数量，必须是整数。" />
+        <label><AdminFieldLabel text="星炬券" tip="用户当前拥有的星炬券数量，必须是整数。" />
           <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
         </label>
         <label><AdminFieldLabel text="拥有角色" tip="该用户已解锁的角色 slug，多个角色用英文逗号分隔。" />

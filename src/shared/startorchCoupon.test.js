@@ -1,7 +1,20 @@
 import sharp from "sharp";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { STARTORCH_COUPON } from "./startorchCoupon.js";
+import { STARTORCH_COUPON, isCouponInsufficientNotice, normalizeCouponText } from "./startorchCoupon.js";
+
+describe("currency display compatibility", () => {
+  it.each(["金币不足", "Not enough coins", "not enough coins", "Insufficient coins", "星炬券不足"])("recognizes %s without changing the purchase feedback branch", (message) => {
+    expect(isCouponInsufficientNotice(message)).toBe(true);
+    expect(normalizeCouponText(message)).toBe("星炬券不足");
+  });
+
+  it("normalizes legacy reward labels without rewriting internal identifiers or other currencies", () => {
+    expect(normalizeCouponText("100 金币 / 20 Coins")).toBe("100 星炬券 / 20 星炬券");
+    expect(normalizeCouponText("blueGems / coinCost / priceCoins / coinsBonus")).toBe("blueGems / coinCost / priceCoins / coinsBonus");
+    expect(isCouponInsufficientNotice("网络异常")).toBe(false);
+  });
+});
 
 describe("authored coupon asset", () => {
   it("only trims transparent margins and preserves all visible source pixels in both runtime formats", async () => {

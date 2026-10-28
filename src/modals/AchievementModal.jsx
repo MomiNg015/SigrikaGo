@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Award, X } from "lucide-react";
 import { api } from "../api/client.js";
+import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 
 const FILTERS = [
   { id: "unachieved", label: "未完成" },
@@ -184,6 +185,9 @@ function AchievementTimePopover({ popover }) {
 
 function RewardCell({ reward }) {
   if (!reward) return <span className="achievement-reward-text">无奖励</span>;
+  if (reward.type === "currency" && reward.targetType !== "blueGems") {
+    return <span className="achievement-reward-cell"><StartorchCouponIcon size={34} /><b>{reward.amount}</b></span>;
+  }
   return (
     <span className="achievement-reward-cell">
       {reward.imageUrl ? <img src={reward.imageUrl} alt="" /> : <Award size={18} />}
