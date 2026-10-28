@@ -502,3 +502,37 @@ Unified remaining shop, achievement and non-gacha admin currency copy; normalize
 ### Next Steps
 
 - None - task complete
+
+
+## Session 256: Commit revised home onboarding with existing coupon work
+
+**Date**: 2026-10-28
+**Task**: Commit revised home onboarding with existing coupon work
+**Branch**: `master`
+
+### Summary
+
+Committed revised 33-step home onboarding, stable spotlight identity, guide-only two-member team picker preview, authored expressions and scoped system-design documentation. 37 current regression tests passed; existing broader/browser verification reviewed. Coupon changes were already committed. Excluded unrelated WIP and local test screenshots/logs; no push.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b31f4385` | (see git log) |
+| `a440a474` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
