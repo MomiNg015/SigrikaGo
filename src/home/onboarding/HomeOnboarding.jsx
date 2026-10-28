@@ -42,7 +42,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const portrait = resolveStoryPortraitPresentation(step, { character, variant: "avatar" });
   const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
-  const rect = geometry?.id === step.id ? geometry.rect : null;
+  const rect = geometry && geometry.selector === selector ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     // The phone has the same mailbox action inside its existing header menu.
     const menu = visibleGuideTarget('[data-home-guide="mobile-menu"]');
     if (menu && (menu.getAttribute("aria-expanded") === "true") !== (step.target === "mailbox")) invoke(menu);
-  }, [overlaySetters, step]);
+  }, [overlaySetters, step.window, step.target]);
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -104,14 +104,14 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       } : null;
       const usable = next && next.right > next.left && next.bottom > next.top ? next : null;
       setGeometry((current) => {
-        const value = { id: step.id, rect: usable, width, height };
+        const value = { selector, rect: usable, width, height };
         return JSON.stringify(current) === JSON.stringify(value) ? current : value;
       });
       frame = requestAnimationFrame(measure);
     };
     measure();
     return () => cancelAnimationFrame(frame);
-  }, [selector, step]);
+  }, [selector, step.target]);
 
   useEffect(() => {
     const previousFocus = document.activeElement;
@@ -180,7 +180,8 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const activateTarget = () => {
     if (!revealed) { setRevealed(true); return; }
     if (!ready || saving || error || !targetRef.current?.isConnected) return;
-    invoke(targetRef.current);
+    const target = targetRef.current;
+    invoke(target.matches("button") ? target : target.querySelector("button") || target);
     setIndex((value) => value + 1);
   };
   const height = geometry?.height || window.innerHeight;
@@ -207,7 +208,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
         <path fillRule="evenodd" d={`M0,0 H${geometry?.width || window.innerWidth} V${height} H0 Z ${hole}`} />
       </svg>
       <div className="home-guide-advance-plane" aria-hidden="true" />
-      {rect && <div key={step.id} className="home-guide-spotlight" aria-hidden="true" style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
+      {rect && <div key={selector} className="home-guide-spotlight" aria-hidden="true" style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
       {rect && step.action && <button className="home-guide-target" type="button" aria-label={`点击${targetRef.current?.getAttribute("aria-label") || step.target}继续引导`}
         disabled={saving || Boolean(error)} onClick={activateTarget}
         style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}

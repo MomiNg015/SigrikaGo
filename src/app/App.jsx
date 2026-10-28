@@ -588,6 +588,7 @@ export default function App({ initialCharacters = CHARACTERS, initialSiteSetting
       updateUser
     },
     routeState: {
+      homeOnboardingActive: homeOnboarding.active,
       adminTab,
       announcementUnread: announcementSummary.hasUnread,
       assetProgress,

@@ -91,6 +91,16 @@ describe("AppRoutes home render boundary", () => {
     expect(HomeScreen).toHaveBeenCalledTimes(2);
   });
 
+  it("updates the home guide permission through the memoized route when the guide starts and ends", () => {
+    const props = createBaseProps({ homeOnboardingActive: false });
+    const { rerender } = render(<AppRoutes {...props} />);
+    expect(HomeScreen.mock.calls.at(-1)[0].homeOnboardingActive).toBe(false);
+    rerender(<AppRoutes {...props} homeOnboardingActive />);
+    expect(HomeScreen.mock.calls.at(-1)[0].homeOnboardingActive).toBe(true);
+    rerender(<AppRoutes {...props} />);
+    expect(HomeScreen.mock.calls.at(-1)[0].homeOnboardingActive).toBe(false);
+  });
+
   it("forwards every home action through the memo boundary without renaming drift", () => {
     const logout = vi.fn();
     const selectCharacter = vi.fn();

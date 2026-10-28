@@ -298,6 +298,14 @@ WuWa 的 `Sigrika Accent Latin` face、字母/数字 unicode-range、语义 clas
 - `toast.achievement` 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。
 - 新邮件一次性提醒使用独立的 `.toast.mail` 浅绿色语义面，不改变普通成功/错误 toast。邮箱附件领取后，禁用动作按钮在默认、hover、focus 和 active 下都保持中性灰色，Bright School 的后置粉色按钮规则不得覆盖该状态；招募起始道具数量为零时按钮文案为“数量不足”。普通招募等待界面的“神奇小钟表”使用 44px 触控按钮和右上数量角标，数量为零时仍可见但以中性灰禁用；成功后 3 秒内由旋转闹钟、时间波纹和仅影响 transform/filter/opacity 的数字快进动画取代按钮，随后保持完整的 `00:03`、`00:02`、`00:01`。特殊招募与剩余不超过完整 6 秒展示窗的普通招募不渲染该按钮，竖屏倒计时行继续在弹窗内容宽度内收束。
 
+## 主界面引导目标与连续对话
+
+- `homeOnboardingScript.js` 的固定引导采用 2026-10-27 用户文档：手册和角色详情 → 模式入口与星炬分类展开 → 常规匹配、准时宝和队际赛 → 队际赛选人 → 招募 → 邮箱 → 商店、星炬券 → 学生证履历 → 告别。33 个步骤包含 29 句西格莉卡台词、3 个沿用上句的操作步骤和 1 个用户选项。表情 sidecar 继续按节点、角色与原文精确匹配。
+- `HomeOnboarding` 的 `geometry.selector` 和高亮框 React key 均使用实际目标选择器，不能再绑定 `step.id`。连续台词沿用同一 DOM 与测量循环；目标改变、离开高亮或真实目标消失时更新，保留 resize／滚动测量。对话打字状态仍逐句重置。
+- `data-home-guide` 标记真实星炬分类、子模式卡片、队际赛选人按钮组和商店钱包。按钮组的引导代理只触发组内第一个真实按钮；常规匹配、准时宝、队际赛和券介绍只解说，不能穿透触发匹配、陪练或购买。
+- `App → AppRoutes → HomeScreen.homeOnboardingActive` 仅在引导期间放行不足三人时查看队际赛选人，并阻止队际赛开始；普通入口继续要求三名可用部员。关闭模式窗口同时清空内层选人状态，结束或跳过不会残留弹窗。
+- 保留现有窗口几何和手机竖屏菜单；浮动台词避开按钮目标，长台词内部滚动。DOM 回归校验同目标节点身份，真实浏览器校验聚焦动画次数及桌面、390×844、360×640 全流程。
+
 ## Mailbox UI And Mobile
 
 - The home mailbox entry uses a `lucide-react` mail icon in the existing top-right action cluster on desktop and the compact mobile menu on phones. The badge is the unread plus claimable count from the summary API.

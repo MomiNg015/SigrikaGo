@@ -30,7 +30,7 @@ import {
 } from "../shared/sigrikaCandyArc.js";
 import { useSigrikaCandyDuelAvailability } from "./useSigrikaCandyDuelAvailability.js";
 
-export default function HomeScreen({ user, token, onUserChange, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onSelectCharacter, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
+export default function HomeScreen({ user, token, onUserChange, characters, audioSettings, siteSettings = DEFAULT_SITE_SETTINGS, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, homeOnboardingActive = false, socket, onNotice, onMatchModePickerOpenChange, onLogout, onSelectCharacter, onStartMatch, onStartPractice, onStartSigrikaDuel, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const { available, selections, select } = useMatchCharacterSelection(user, characters);
   const practiceOptions = usePracticeOptions(user);
   const cancellation = useCandyEffectCancellation({ token, user, onUserChange, onNotice });
@@ -38,6 +38,9 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   const identityId = studentIdentityCharacterId(user, { regularSelection: selections.regular });
   const selectedCharacter = characters[identityId] ?? CHARACTERS[identityId] ?? CHARACTERS.sigrika;
   const [characterEntry, setCharacterEntry] = useState(null);
+  useEffect(() => {
+    if (!matchModePickerOpen) setCharacterEntry(null);
+  }, [matchModePickerOpen]);
   const sigrikaCorrupted = Boolean(user.sigrikaCandyArc?.corrupted);
   const identitySync = useRef(Promise.resolve());
   const identitySyncTarget = useRef("");
@@ -70,6 +73,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
 
 
   function startTeamMatch(lineup) {
+    if (homeOnboardingActive) return;
     const validLineup = teamLineupSlots(lineup, new Set(available.map(character => character.id)));
     if (!validLineup.every(Boolean)) { onNotice?.(MATCH_CHARACTER_NOTICE); return; }
     setCharacterEntry(null);
@@ -130,7 +134,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
             selections={selections}
             practiceCharacterProps={{ available, blocked, user, audioSettings, cancellation, selected: selections.practice[0], onSelect: (id) => select("practice", [id]) }}
             onCharacterOpen={(entry) => {
-              if (entry === "team" && availableTeamCharacters(user, characters).length < 3) {
+              if (entry === "team" && !homeOnboardingActive && availableTeamCharacters(user, characters).length < 3) {
                 onNotice?.(TEAM_MINIMUM_NOTICE);
                 return;
               }
@@ -284,6 +288,7 @@ function MatchModePicker({ user, token, characters, selections, practiceOptions,
             <div className={`match-mode-option-wrap ${mode.id === "spark" ? "has-practice-entry" : `match-mode-sibling match-mode-sibling-${mode.id}`} match-mode-category${expandedMode === mode.id ? " is-active-category" : ""}`} key={mode.id} inert={expanded && expandedMode !== mode.id ? true : undefined} aria-hidden={expanded && expandedMode !== mode.id ? true : undefined}>
               <button
                 className="match-mode-option"
+                data-home-guide={mode.id === "spark" ? "spark-category" : undefined}
                 ref={(element) => { categoryButtonRefs.current[mode.id] = element; }}
                 aria-expanded={!sigrikaCorrupted ? expandedMode === mode.id : undefined}
                 aria-controls={!sigrikaCorrupted ? "match-mode-submodes" : undefined}
@@ -347,7 +352,7 @@ function MatchModePicker({ user, token, characters, selections, practiceOptions,
           {!sigrikaCorrupted && (
             <div className="match-mode-submodes" id="match-mode-submodes" inert={!expanded ? true : undefined} aria-hidden={!expanded} key={expandedMode || "collapsed"}>
               {submodes.map((submode) => (
-                <div className={`match-mode-submode match-mode-submode-${submode.id}`} key={submode.id}>
+                <div className={`match-mode-submode match-mode-submode-${submode.id}`} data-home-guide={`${submode.id}-card`} key={submode.id}>
                   <button className="match-mode-option" type="button" disabled={submode.disabled} onClick={submode.onClick} onFocus={() => !submode.disabled && onPreloadPlayableReady?.(expandedMode)} onPointerEnter={(event) => { if (!submode.disabled) onPreloadPlayableReady?.(expandedMode); if (submode.rulesText) showRules(event, submode); }} onPointerMove={(event) => { if (submode.rulesText) showRules(event, submode); }} onPointerLeave={() => setRulesHover(null)} onPointerDown={() => setRulesHover(null)}>
                     <span className="match-mode-copy"><strong>{submode.title}</strong></span>
                   </button>

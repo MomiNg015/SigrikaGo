@@ -1322,25 +1322,55 @@ export const AUTHORED_GUIDE_EXPRESSIONS = {
     {
       "nodeId": "match-intro",
       "characterId": "sigrika",
-      "sourceText": "你可以在这里选择对局模式，选择模式后会自动帮你匹配选择了同一模式的在线玩家。匹配成功后就可以进行对局了哦。",
+      "sourceText": "你可以在这里选择对局模式。其中“星炬对弈”就是我们部的特色对弈模式。每个模式下面还有些子模式，点击星炬对弈试试吧~",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "spark",
+      "characterId": "sigrika",
+      "sourceText": "",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "regular",
+      "characterId": "sigrika",
+      "sourceText": "“常规匹配”顾名思义，就是普通的星炬对弈对局。卡片右侧选择好出战部员后就可以开始匹配。",
       "expressionId": "serious"
     },
     {
       "nodeId": "practice",
       "characterId": "sigrika",
-      "sourceText": "嘿嘿，我们围棋部里还配置了准时宝机器人当陪练。虽然水平不怎么样，但是当你想熟悉部员技能或者星炬对弈模式，都可以找它练练手~",
+      "sourceText": "我们围棋部里还配置了准时宝机器人当陪练。虽然水平不怎么样，但是当你想熟悉部员技能或者星炬对弈模式时，都可以找它练练手~",
       "expressionId": "closed_smile"
     },
     {
-      "nodeId": "resume",
+      "nodeId": "team",
       "characterId": "sigrika",
-      "sourceText": "再看看你的学生证吧~刚刚已经帮你登记进围棋部系统了。",
+      "sourceText": "嘿嘿，这可是我们部的特色模式哦~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "team-intro",
+      "characterId": "sigrika",
+      "sourceText": "“队际赛”是召集3个部员共同完成对局的模式。点击“选择部员”试试吧。",
       "expressionId": "smile"
     },
     {
-      "nodeId": "resume-intro",
+      "nodeId": "team-select",
       "characterId": "sigrika",
-      "sourceText": "这是你的围棋部履历，可以看到你在我们围棋部中的各种胜负、段位数据，还可以查看你的历史对局记录。",
+      "sourceText": "",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "team-rounds",
+      "characterId": "sigrika",
+      "sourceText": "这个模式下，一盘对局按进行手数分为三个阶段，每个阶段需要由不同的部员进行对局。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "team-order",
+      "characterId": "sigrika",
+      "sourceText": "因此，你要根据各个部员的特点和相性，来安排顺序和组队。",
       "expressionId": "serious"
     },
     {
@@ -1386,39 +1416,63 @@ export const AUTHORED_GUIDE_EXPRESSIONS = {
       "expressionId": "closed_smile"
     },
     {
-      "nodeId": "shop",
-      "characterId": "sigrika",
-      "sourceText": "不过我准备的招募物品数量有限...我先带你去扎希拉姐姐的商店吧。",
-      "expressionId": "worried"
-    },
-    {
-      "nodeId": "shop-intro",
-      "characterId": "sigrika",
-      "sourceText": "这里就是扎希拉姐姐的商店了。在这里除了招募物品外，还可以买到其它各种小玩意儿哦~",
-      "expressionId": "smile"
-    },
-    {
-      "nodeId": "shop-explore",
-      "characterId": "sigrika",
-      "sourceText": "不过我就不一一介绍了，你可以自己再摸索一下。",
-      "expressionId": "closed_smile"
-    },
-    {
       "nodeId": "mailbox",
       "characterId": "sigrika",
-      "sourceText": "你说邮箱在哪？嗯，这个应该在你的学生系统里的。我指给你看吧。",
+      "sourceText": "嗯，你说邮箱在哪？这个应该在你的学生系统里的。我指给你看吧。",
       "expressionId": "thinking"
     },
     {
       "nodeId": "mailbox-intro",
       "characterId": "sigrika",
-      "sourceText": "未来各种讯息、围棋部的奖励等等都会送到你的邮箱里哦~所以要记得定时查看一下。",
+      "sourceText": "未来各种讯息、围棋部的奖励等等都会送到你的邮箱里哦~所以要记得定时查看。",
       "expressionId": "serious"
+    },
+    {
+      "nodeId": "shop",
+      "characterId": "sigrika",
+      "sourceText": "不过我准备的招募物品数量也有限...我先带你去扎希拉姐姐的商店看看吧。",
+      "expressionId": "worried"
+    },
+    {
+      "nodeId": "shop-intro",
+      "characterId": "sigrika",
+      "sourceText": "这里就是扎希拉姐姐的商店啦。扎希拉姐姐是我们罗伊族的圣女，平时也会做一些行商活动。我把我们围棋部的事跟她说了，她对此也非常支持呢！所以，我们如果有积攒些“星炬券”的话，可以来这里兑换些有用的玩意儿~",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "coupons",
+      "characterId": "sigrika",
+      "sourceText": "什么是“星炬券”？啊，前面忘了跟你说了。星炬券是我们学院社团活动发放的通用奖励券。至于在我们围棋部嘛，只要你进行有效的围棋匹配对局，就可以得到一定的“星炬券”奖励。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "practice-no-coupons",
+      "characterId": "sigrika",
+      "sourceText": "不过跟准时宝下棋是不会奖励星炬券的。不要想着动歪脑筋哦~",
+      "expressionId": "closed_smile"
+    },
+    {
+      "nodeId": "resume",
+      "characterId": "sigrika",
+      "sourceText": "再看看你的学生证吧。刚刚已经把你的信息登记进围棋部系统了。",
+      "expressionId": "smile"
+    },
+    {
+      "nodeId": "resume-intro",
+      "characterId": "sigrika",
+      "sourceText": "这是你的围棋部履历，可以看到你在我们围棋部中的各种胜负、段位数据，还可以查看你的历史对局记录。",
+      "expressionId": "serious"
+    },
+    {
+      "nodeId": "wrap-up",
+      "characterId": "sigrika",
+      "sourceText": "嗯...我想应该介绍的差不多了。",
+      "expressionId": "thinking"
     },
     {
       "nodeId": "goodbye",
       "characterId": "sigrika",
-      "sourceText": "嗯...我想应该介绍的差不多了。啊，差不多到上课的时间了，那我先走啦~拜拜~",
+      "sourceText": "啊，差不多到上课的时间了，我得赶紧走了。那你就在部里随便逛逛吧。拜拜~",
       "expressionId": "smile"
     }
   ]

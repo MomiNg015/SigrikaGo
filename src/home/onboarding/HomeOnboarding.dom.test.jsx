@@ -78,8 +78,8 @@ describe("home guide interaction boundary", () => {
 it("centers the reply without the NPC dialogue and keeps only an icon skip control", () => {
   const { container } = render(<>
     <button data-home-guide="handbook">handbook</button><button data-home-guide="sigrika-card">sigrika</button>
-    <button data-home-guide="match">match</button><button data-home-guide="practice">practice</button><button data-home-guide="resume">resume</button>
-    <div className="house-modal character-details-modal match-mode-modal resume-modal" />
+    {["match", "practice", "resume", "spark-category", "regular-card", "team-card", "team-characters"].map(target => <button key={target} data-home-guide={target}>{target}</button>)}
+    <div className="house-modal character-details-modal match-mode-modal resume-modal team-lineup-picker" />
     <HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />
   </>);
   expect(container.querySelector(".home-guide-panel").style.top).toBe("66px");
@@ -95,6 +95,35 @@ it("centers the reply without the NPC dialogue and keeps only an icon skip contr
   expect(container.querySelector(".home-guide-choice-panel button").textContent).toContain("其它部员呢");
   fireEvent.click(container.querySelector(".home-guide-choice"));
   expect(container.querySelector(".tutorial-battle-dialogue")).not.toBeNull();
+});
+
+it("retains the spotlight across dialogue on the same target and replaces it only when focus changes", () => {
+  const targets = [...new Set(HOME_ONBOARDING_STEPS.map(step => step.target).filter(Boolean))];
+  const surfaces = [...new Set(HOME_ONBOARDING_STEPS.map(step => step.surface).filter(Boolean))];
+  const openTeam = vi.fn();
+  const finish = vi.fn();
+  const { container } = render(<>
+    {targets.map(target => <div key={target} data-home-guide={target}><button onClick={target === "team-characters" ? openTeam : undefined}>{target}</button></div>)}
+    {surfaces.map(surface => <section key={surface} className={surface.slice(1)} />)}
+    <HomeOnboarding character={character} overlaySetters={{}} onFinish={finish} />
+  </>);
+  let previousSelector;
+  let previousSpotlight;
+  for (const step of HOME_ONBOARDING_STEPS) {
+    expect(container.querySelector(".home-onboarding").dataset.step).toBe(step.id);
+    const selector = step.target || step.surface;
+    const spotlight = container.querySelector(".home-guide-spotlight");
+    if (selector) {
+      expect(spotlight).not.toBeNull();
+      if (selector === previousSelector) expect(spotlight).toBe(previousSpotlight);
+      else expect(spotlight).not.toBe(previousSpotlight);
+    } else expect(spotlight).toBeNull();
+    previousSelector = selector;
+    previousSpotlight = spotlight;
+    fireEvent.click(container.querySelector(step.choice ? ".home-guide-choice" : step.action ? ".home-guide-target" : ".home-guide-advance-plane"));
+  }
+  expect(openTeam).toHaveBeenCalledTimes(1);
+  expect(finish).toHaveBeenCalledWith("completed");
 });
 
 it("does not scroll visible targets and only reveals clipped targets with nearest alignment", () => {

@@ -1,0 +1,3 @@
+{"file":".trellis/spec/backend/home-onboarding-contract.md","reason":"Guide lifecycle, input guard, target identity and reward boundaries"}
+{"file":".trellis/spec/frontend/story-guide-layout-contract.md","reason":"Preserve real modal geometry and detached NPC avatar"}
+{"file":".trellis/spec/backend/story-sprite-contract.md","reason":"Exact-text authored expression mapping"}

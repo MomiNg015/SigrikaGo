@@ -57,7 +57,7 @@ describe("authored guide sprite integration", () => {
     expect(new Set(player.nodes.map((node) => node.expressionId).filter(Boolean)).size).toBeGreaterThan(2);
     expect(toAdminStoryScriptPayload(record).draft.nodes).toEqual(player.nodes);
     expect(interpolateStoryScript(player, { username: "小莫" }).nodes[0]).toMatchObject({ text: "哇，是新同学！你就是小莫吧？", expressionId: "surprised" });
-    expect(HOME_ONBOARDING_STEPS.filter((node) => node.text && node.appearanceId)).toHaveLength(22);
+    expect(HOME_ONBOARDING_STEPS.filter((node) => node.text && node.appearanceId)).toHaveLength(29);
   });
 
   it("does not guess an expression after text or character changes, and respects explicit opt-out", () => {

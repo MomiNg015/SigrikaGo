@@ -72,7 +72,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         expect(await page.locator(step.surface).first().boundingBox()).toEqual(windowRect);
         await page.locator(".home-onboarding").evaluate(el => { el.style.removeProperty("visibility"); });
       }
-      if (["handbook", "sigrika", "skill", "practice", "recruitment-intro", "shop-intro", "mailbox"].includes(step.id)) {
+      if (["handbook", "sigrika", "skill", "regular", "practice", "team", "team-select", "team-rounds", "recruitment-intro", "shop-intro", "coupons", "mailbox", "resume"].includes(step.id)) {
         await page.screenshot({ path: testInfo.outputPath(`${step.id}.png`) });
       }
       await page.keyboard.press("Escape");
@@ -86,6 +86,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     }
     await expect(page.getByTestId("outcome")).toHaveText("completed");
     await expect(page.locator(".home-onboarding")).toHaveCount(0);
+    await expect(page.locator(".team-lineup-picker, .match-mode-modal, .resume-modal, .shop-modal")).toHaveCount(0);
     expect(await page.evaluate(() => Boolean(window.__unexpectedAction))).toBe(false);
     expect(errors).toEqual([]);
   });
@@ -93,6 +94,40 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
 
 test.describe("animated home guide avatar stability", () => {
   test.use({ reducedMotion: "no-preference" });
+  test("consecutive dialogue keeps its spotlight and does not replay the focus animation", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.route("**/api/**", route => route.fulfill({ json: { items: [] } }));
+    await page.goto("/tests/e2e/fixtures/home-onboarding.html");
+    await page.evaluate(() => {
+      window.__guideFocusCount = 0;
+      document.addEventListener("animationstart", event => {
+        if (event.animationName === "home-guide-focus") window.__guideFocusCount += 1;
+      });
+    });
+    for (const step of HOME_ONBOARDING_STEPS) {
+      await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", step.id);
+      if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
+      await expect(page.locator(".home-guide-status")).toHaveCount(0);
+      if (step.text) {
+        // Reveal the line without advancing; this suite keeps real animations enabled.
+        if (await page.locator(".home-guide-panel p").textContent() !== step.text) await page.locator(".tutorial-battle-dialogue").click();
+        await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
+      }
+      if (step.id === "skill") {
+        await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(4);
+        await page.locator(".home-guide-spotlight").evaluate(el => { window.__retainedSpotlight = el; });
+      }
+      if (step.id === "know-members") {
+        expect(await page.locator(".home-guide-spotlight").evaluate(el => el === window.__retainedSpotlight)).toBe(true);
+        expect(await page.evaluate(() => window.__guideFocusCount)).toBe(4);
+        break;
+      }
+      await page.locator(step.action ? ".home-guide-target" : ".tutorial-battle-dialogue").click();
+    }
+    await page.locator(".tutorial-battle-dialogue").click();
+    await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", "match");
+    await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(5);
+  });
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
     test(`home typing keeps the avatar fixed ${viewport.width}`, async ({ page }, testInfo) => {
       await page.setViewportSize(viewport);

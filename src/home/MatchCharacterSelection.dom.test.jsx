@@ -53,6 +53,23 @@ function select(title, id) {
   fireEvent.click(screen.getByRole("button", { name: CHARACTERS[id].name }));
 }
 describe("match card character selection", () => {
+  it("allows the two-member home guide to view the team picker, blocks starting, and closes it with its parent", () => {
+    const { props, rerender } = setup({ homeOnboardingActive: true, user: { ...user, ownedCharacters: ["sigrika", "denia"] } });
+    fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "队际赛选择角色1" }));
+    expect(screen.getByRole("dialog", { name: "队际赛阵容" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "开始队际赛匹配" }).disabled).toBe(true);
+    expect(props.onNotice).not.toHaveBeenCalled();
+    expect(props.onStartMatch).not.toHaveBeenCalled();
+    rerender(<HomeScreen {...props} matchModePickerOpen={false} />);
+    expect(screen.queryByRole("dialog", { name: "队际赛阵容" })).toBeNull();
+    rerender(<HomeScreen {...props} homeOnboardingActive={false} />);
+    fireEvent.click(screen.getAllByRole("button", { name: "星炬对弈" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "队际赛选择角色1" }));
+    expect(screen.queryByRole("dialog", { name: "队际赛阵容" })).toBeNull();
+    expect(props.onNotice).toHaveBeenCalled();
+  });
+
   it("keeps practice selection independent, preserves difficulty through closing the picker, and starts explicitly", () => {
     localStorage.setItem(`sigrika-match-characters:${user.id}`, JSON.stringify({ regular: ["sigrika"], capture: ["nabomo"] }));
     const { props, unmount } = setup();

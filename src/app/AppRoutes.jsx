@@ -25,6 +25,7 @@ const TutorialBattleScreen = lazy(() => import("../tutorial/TutorialBattleScreen
 const TUTORIAL_BATTLE_ENTRY_LOADING_TEXT = "正在激烈对局中...";
 
 export default function AppRoutes({
+  homeOnboardingActive,
   adminTab,
   assetProgress,
   audioSettings,
@@ -92,6 +93,7 @@ export default function AppRoutes({
 }) {
   const homeScreen = user && (
     <HomeRoute
+      homeOnboardingActive={homeOnboardingActive}
       token={token}
       onUserChange={updateUser}
       user={user}
@@ -272,6 +274,7 @@ export default function AppRoutes({
 }
 
 const HomeRoute = memo(function HomeRoute({
+  homeOnboardingActive,
   token,
   onUserChange,
   announcementUnread,
@@ -309,6 +312,7 @@ const HomeRoute = memo(function HomeRoute({
 }) {
   return (
     <HomeScreen
+      homeOnboardingActive={homeOnboardingActive}
       token={token}
       onUserChange={onUserChange}
       user={user}

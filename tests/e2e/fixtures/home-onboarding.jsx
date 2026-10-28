@@ -16,7 +16,7 @@ function Fixture() {
   const [result, setResult] = useState("");
   const blocked = () => { window.__unexpectedAction = true; };
   return <div className="app-shell player-theme-enabled theme-bright-school">
-    <HomeScreen user={user} characters={CHARACTERS} audioSettings={{ muted: true }} siteSettings={DEFAULT_SITE_SETTINGS}
+    <HomeScreen homeOnboardingActive={active} user={user} characters={CHARACTERS} audioSettings={{ muted: true }} siteSettings={DEFAULT_SITE_SETTINGS}
       matchModePickerOpen={overlays.showMatchModePicker} onMatchModePickerOpenChange={overlays.setShowMatchModePicker}
       onOpenHouse={() => overlays.setShowHouse(true)} onOpenResume={() => overlays.setShowResume(true)}
       onOpenRecruitment={() => overlays.setShowRecruitment(true)} onOpenShop={() => overlays.setShowShop(true)}
