@@ -1,4 +1,5 @@
 import ResultRankProgress from "./ResultRankProgress.jsx";
+import StartorchCouponIcon from "../../shared/StartorchCouponIcon.jsx";
 import { useEffect, useMemo, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
@@ -103,7 +104,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
             : room.game.winner?.text ?? "对局结束"}</p>
           {isChallenge && room.practice.result?.breakthrough && <p className="capture-challenge-breakthrough" role="status">突破个人最高排名！</p>}
           {!isSigrikaCandyDuel && !isPractice && (isFriendlyMatch || room.team) && (
-            <p className="result-match-note">{room.team ? "队际赛 · 独立段位，不奖励金币" : "友谊对局 · 不计入积分与段位"}</p>
+            <p className="result-match-note">{room.team ? "队际赛 · 独立段位，不奖励星炬券" : "友谊对局 · 不计入积分与段位"}</p>
           )}
           {room.team && <div className="team-result-lineups">
             {room.players.map((player) => <p key={player.color}><strong>{player.color === "black" ? "黑方" : "白方"}</strong> {player.teamLineup?.map((member) => member.character?.name ?? "?").join(" → ")}</p>)}
@@ -111,7 +112,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
           {!isSigrikaCandyDuel && reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span className={ratingRewardClass}><ResultRankProgress reward={reward} rank={reward.rankAfter ?? currentPlayer?.user?.rank ?? user.rank} stars={reward.starsAfter ?? currentPlayer?.user?.stars ?? user.stars} rating={reward.ratingAfter ?? currentPlayer?.user?.rating ?? user.rating} /></span>
-              <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
+              <span className="result-reward-tile result-reward-coins"><strong><StartorchCouponIcon size={28} /></strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}
           {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}

@@ -2,7 +2,8 @@ import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Archive, Check, Coins, Gift, Ticket, Trash2, X } from "lucide-react";
+import { Archive, Check, Gift, Ticket, Trash2, X } from "lucide-react";
+import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
@@ -243,7 +244,7 @@ function AttachmentTile({ attachment, claimable, onOpenDetail }) {
     <>
       <span className="mailbox-attachment-icon" aria-hidden="true">
         {isCoins ? (
-          <Coins size={44} />
+          <StartorchCouponIcon size={48} decorative />
         ) : itemPresentation.imageUrl ? (
           <span className="mailbox-attachment-art"><img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" /></span>
         ) : itemPresentation.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
@@ -258,7 +259,7 @@ function AttachmentTile({ attachment, claimable, onOpenDetail }) {
           </span>
         )}
       </span>
-      <span className="mailbox-attachment-caption">{isCoins ? "金币" : itemPresentation.name}</span>
+      <span className="mailbox-attachment-caption">{isCoins ? "星炬券" : itemPresentation.name}</span>
     </>
   );
 
@@ -267,7 +268,7 @@ function AttachmentTile({ attachment, claimable, onOpenDetail }) {
       <div
         className={`mailbox-attachment-tile ${claimable ? "claimable" : "claimed"}`}
         role="img"
-        aria-label={`金币附件，数量 ${quantity}，${stateLabel}`}
+        aria-label={`星炬券附件，数量 ${quantity}，${stateLabel}`}
       >
         {content}
       </div>

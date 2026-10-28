@@ -87,11 +87,11 @@ describe("Zahira shop window", () => {
     expect(headerHtml.indexOf("shop-refresh-button")).toBeLessThan(headerHtml.indexOf("shop-window-title"));
     expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-header-balance"));
     expect(headerHtml.indexOf("shop-header-balance")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
-    expect(headerHtml).toContain('aria-label="持有金币 90610"');
+    expect(headerHtml).toContain('aria-label="持有星炬券 90610"');
     expect(headerHtml).toContain('class="shop-wallet shop-header-balance"');
-    expect(headerHtml).toContain("lucide-circle-dollar-sign");
+    expect(headerHtml).toContain("/assets/ui/startorch-coupon.webp");
     expect(headerHtml).toContain("90610");
-    expect(headerHtml).toContain("金币");
+    expect(headerHtml).not.toContain("金币");
     expect(headerHtml).not.toContain("shop-header-balance-unit");
     expect(html).not.toContain("shop-wallet-image");
     expect(html).not.toContain("/assets/shop/zahira-wallet-v1.webp");

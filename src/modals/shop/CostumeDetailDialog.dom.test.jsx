@@ -82,7 +82,9 @@ describe("CostumeDetailDialog", () => {
     expect(container.querySelector(".shop-detail-stats .costume-detail-purchase-button")).toBeTruthy();
     expect(screen.getByText("达妮娅服装")).toBeTruthy();
     expect(screen.getByText("售价")).toBeTruthy();
-    expect(screen.getByText("600 金币")).toBeTruthy();
+    expect(screen.getByText("600")).toBeTruthy();
+    expect(screen.getByRole("img", { name: "星炬券" }).getAttribute("src")).toBe("/assets/ui/startorch-coupon.webp");
+    expect(screen.queryByText(/金币/)).toBeNull();
     expect(screen.getByRole("button", { name: "购买服装" }).textContent).toBe("购买服装");
     expect(container.querySelector(".costume-detail-price + .costume-detail-purchase-button")).toBeTruthy();
     expect(screen.queryByText("持有状态")).toBeNull();

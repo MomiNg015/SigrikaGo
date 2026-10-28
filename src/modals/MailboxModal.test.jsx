@@ -222,8 +222,8 @@ describe("MailboxModal information center", () => {
   it("renders coin attachments as non-interactive tiles", () => {
     render(<MailboxModal token="" initialLoaded initialMessages={[giftMessage]} onClose={() => {}} />);
 
-    expect(screen.getByRole("img", { name: "金币附件，数量 30，待领取" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /金币附件/ })).toBeNull();
+    expect(screen.getByRole("img", { name: "星炬券附件，数量 30，待领取" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /星炬券附件/ })).toBeNull();
   });
 
   it("keeps claimed attachment controls gray and overlays the attachment with a white check", () => {

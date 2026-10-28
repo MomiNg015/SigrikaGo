@@ -193,7 +193,7 @@ function RewardCell({ reward }) {
 }
 
 function rewardLabel(reward) {
-  if (reward.type === "currency") return `${reward.amount}${reward.targetType === "blueGems" ? "蓝宝石" : "金币"}`;
+  if (reward.type === "currency") return `${reward.amount}${reward.targetType === "blueGems" ? "蓝宝石" : "星炬券"}`;
   return reward.name;
 }
 

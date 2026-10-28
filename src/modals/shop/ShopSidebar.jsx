@@ -1,3 +1,4 @@
+import { CouponText } from "../../shared/StartorchCouponIcon.jsx";
 import {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_MOODS,
@@ -9,7 +10,7 @@ export default function ShopSidebar({ mascotLine, mascotMood = SHOP_MASCOT_MOODS
 
   return (
     <aside className="shop-sidebar shop-host" aria-label="扎希拉接待区">
-      <div className="shop-mascot-bubble" aria-live="polite">{mascotLine}</div>
+      <div className="shop-mascot-bubble" aria-live="polite"><CouponText>{mascotLine}</CouponText></div>
       <div className="shop-mascot-slot" role="img" aria-label="扎希拉立绘" data-mascot-mood={mascotMood}>
         <img
           className={`shop-mascot-image shop-mascot-image-default${thanksActive ? "" : " is-active"}`}

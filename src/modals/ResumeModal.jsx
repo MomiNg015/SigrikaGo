@@ -1,7 +1,8 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Award, CircleDollarSign, MonitorPlay, Palette, X } from "lucide-react";
+import { Award, MonitorPlay, Palette, X } from "lucide-react";
+import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 import { api } from "../api/client.js";
 import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import { ModalDialog } from "./modalComponents.jsx";
@@ -126,9 +127,9 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           <div className="resume-header-actions">
             <p
               className="shop-wallet resume-wallet"
-              title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
+              title="星炬券：每胜一局+50，负一局+20，和棋或无效对局不获得星炬券。"
             >
-              <CircleDollarSign size={18} />
+              <StartorchCouponIcon />
               {user.coins}
             </p>
             <button data-button-role="secondary" className="close-button resume-close-button" type="button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>

@@ -1,3 +1,5 @@
+import StartorchCouponIcon from "../../shared/StartorchCouponIcon.jsx";
+
 export default function CostumeCard({ costume, onShowDetail }) {
   return (
     <article className={`costume-shop-card${costume.characterOwned ? "" : " is-character-locked"}${costume.owned ? " is-owned" : ""}`}>
@@ -11,7 +13,7 @@ export default function CostumeCard({ costume, onShowDetail }) {
           <img src={costume.portraitUrl} alt="" loading="lazy" decoding="async" />
           <span className="costume-shop-price">
             <strong>{costume.finalPrice}</strong>
-            <small>金币</small>
+            <StartorchCouponIcon size={22} />
           </span>
         </span>
       </button>

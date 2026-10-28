@@ -1,4 +1,5 @@
 import { Package, ShoppingBag } from "lucide-react";
+import StartorchCouponIcon from "../../shared/StartorchCouponIcon.jsx";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 import {
@@ -54,12 +55,12 @@ export default function ShopItemCard({ item, purchasingId, user, onBuy, onShowDe
               {item.discountPercent > 0 && <s className="shop-original-price">{item.priceCoins}</s>}
               <b>{item.finalPrice}</b>
             </span>
-            <span className="shop-price-unit">金币</span>
+            <span className="shop-price-unit"><StartorchCouponIcon /></span>
           </p>
         </div>
       </button>
       <button data-button-role="primary" className={`primary-action ${actionStateClass}`} disabled={disabled} onClick={buyWithoutOpeningDetail}>
-        {owned ? "已拥有" : soldOut ? "已售罄" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
+        {owned ? "已拥有" : soldOut ? "已售罄" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? <><StartorchCouponIcon size={20} />不足</> : "购买"}
       </button>
     </article>
   );

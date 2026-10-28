@@ -79,8 +79,8 @@ describe("GachaModal", () => {
 
   it("builds player-facing reward display metadata", () => {
     expect(buildGachaRewardDisplay({ type: "coins", quantity: 40 })).toMatchObject({
-      name: "金币",
-      detail: "40 金币",
+      name: "星炬券",
+      detail: "40 星炬券",
       imageUrl: GACHA_COIN_BAG_IMAGE
     });
     expect(buildGachaRewardDisplay({

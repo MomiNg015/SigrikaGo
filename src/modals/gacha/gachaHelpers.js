@@ -1,4 +1,6 @@
-export const GACHA_COIN_BAG_IMAGE = "/assets/items/gacha-coin-bag.svg";
+import { STARTORCH_COUPON } from "../../shared/startorchCoupon.js";
+
+export const GACHA_COIN_BAG_IMAGE = STARTORCH_COUPON.src;
 
 export function selectInitialGachaPool(pools = []) {
   return pools.find(Boolean) ?? null;
@@ -31,7 +33,7 @@ export function buildGachaRewardDisplay(reward = {}) {
   const quantity = Number(reward.quantity ?? 1);
   const typeLabel = gachaPrizeTypeLabel(reward.type);
   const name = reward.type === "coins"
-    ? "金币"
+    ? "星炬券"
     : String(reward.name || "").trim() || typeLabel;
   const imageUrl = reward.type === "coins" ? GACHA_COIN_BAG_IMAGE : String(reward.imageUrl || "").trim();
   const fallback = reward.type === "coins" ? "" : typeLabel.slice(0, 1);
@@ -48,7 +50,7 @@ export function gachaPrizeTypeLabel(type) {
   if (type === "decoration") return "装饰";
   if (type === "item") return "道具";
   if (type === "music") return "音乐";
-  if (type === "coins") return "金币";
+  if (type === "coins") return "星炬券";
   return "奖项";
 }
 
@@ -63,7 +65,7 @@ function formatDate(value) {
 }
 
 function gachaRewardDetail(reward, quantity) {
-  if (reward.type === "coins") return `${quantity} 金币`;
+  if (reward.type === "coins") return `${quantity} 星炬券`;
   if (Number(reward.chainAdded) > 0) return `角色链 +${Number(reward.chainAdded)}`;
   if (Number(reward.blueGemsAdded) > 0) return `转换 ${Number(reward.blueGemsAdded)} 蓝宝石`;
   if (quantity > 1) return `x${quantity}`;

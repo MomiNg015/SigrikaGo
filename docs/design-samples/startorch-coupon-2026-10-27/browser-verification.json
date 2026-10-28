@@ -1,0 +1,752 @@
+{
+  "viewports": [
+    {
+      "name": "desktop-shop",
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "desktop-costume",
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-shop",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-costume",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-detail",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "narrow-shop",
+      "viewport": [
+        320,
+        568
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "narrow-costume",
+      "viewport": [
+        320,
+        568
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "narrow-detail",
+      "viewport": [
+        320,
+        568
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    },
+    {
+      "name": "narrow-insufficient",
+      "viewport": [
+        320,
+        568
+      ],
+      "overflow": false,
+      "oldCurrencyText": false,
+      "icons": [
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 20,
+          "height": 18.0312,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 20,
+          "height": 18.0312,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 20,
+          "height": 18.0312,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 20,
+          "height": 18.0312,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 24,
+          "height": 21.6406,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        },
+        {
+          "width": 22,
+          "height": 19.8438,
+          "loaded": true,
+          "proportional": true
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "name": "purchase-and-equip",
+      "balances": [
+        1280,
+        1270,
+        670
+      ],
+      "passed": true
+    },
+    {
+      "name": "insufficient-balance",
+      "disabledItemButtons": 4,
+      "serverErrorUsesIcon": true,
+      "balance": 5,
+      "passed": true
+    }
+  ],
+  "errors": []
+}

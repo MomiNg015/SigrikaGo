@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/client.js";
+import { couponNotice } from "../../shared/StartorchCouponIcon.jsx";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
 import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../../shared/shopMascotDialogues.js";
 import {
@@ -85,7 +86,7 @@ export function useShopCatalog({
         setCatalogState("error");
         setMascotMood(SHOP_MASCOT_MOODS.default);
         setContextualLine(dialogueConfig.errorLine);
-        onNoticeRef.current?.(apiError.message, "danger");
+        onNoticeRef.current?.(couponNotice(apiError.message), "danger");
       });
     return () => {
       alive = false;
@@ -133,7 +134,7 @@ export function useShopCatalog({
       onNoticeRef.current?.(`已购买${item.name}`, "success");
       notifyAchievementUnlocks(data.achievementUnlocks, onNoticeRef.current);
     } catch (apiError) {
-      onNoticeRef.current?.(apiError.message, "danger");
+      onNoticeRef.current?.(couponNotice(apiError.message), "danger");
     } finally {
       setPurchasingId("");
     }

@@ -1,4 +1,5 @@
 import { Package, ShoppingBag, X } from "lucide-react";
+import { CouponText } from "../../shared/StartorchCouponIcon.jsx";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../../shared/shopItemIllust.js";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
@@ -38,7 +39,7 @@ export default function ShopItemDetailDialog({ item, user, onClose }) {
               <span className="shop-detail-illust-label">{illustLabel}</span>
             ))}
           </div>
-          <p>{getShopItemDescription(item)}</p>
+          <p><CouponText>{getShopItemDescription(item)}</CouponText></p>
           <dl className="shop-detail-stats">
             <div className={owned ? "shop-detail-status-owned" : ""}>
               <dt>持有状态</dt>

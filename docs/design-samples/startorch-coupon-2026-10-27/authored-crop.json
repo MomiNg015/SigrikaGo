@@ -1,0 +1,21 @@
+{
+  "source": "docs/design-samples/startorch-coupon-2026-10-27/authored-source.png",
+  "crop": {
+    "left": 111,
+    "top": 162,
+    "width": 827,
+    "height": 746
+  },
+  "resize": false,
+  "preserveVisiblePixels": true,
+  "checks": {
+    "png": {
+      "changedVisiblePixels": 0,
+      "changedAlphaPixels": 0
+    },
+    "webp": {
+      "changedVisiblePixels": 0,
+      "changedAlphaPixels": 0
+    }
+  }
+}

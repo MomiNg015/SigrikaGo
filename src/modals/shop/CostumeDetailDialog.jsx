@@ -3,6 +3,7 @@ import { useId } from "react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import { CHARACTERS } from "../../shared/characters.js";
 import PortraitShowcase from "../../shared/PortraitShowcase.jsx";
+import StartorchCouponIcon, { CouponText } from "../../shared/StartorchCouponIcon.jsx";
 import { ModalActionButton, ModalDialog } from "../modalComponents.jsx";
 
 export default function CostumeDetailDialog({
@@ -58,12 +59,12 @@ export default function CostumeDetailDialog({
                 : <span className="shop-detail-illust-label">illust：{costume.illustName}</span>
             )}
           </div>
-          <p>{costume.description || "这套服装的介绍尚未填写。"}</p>
+          <p><CouponText>{costume.description || "这套服装的介绍尚未填写。"}</CouponText></p>
           <div className="shop-detail-stats costume-detail-actions">
             <section className="costume-detail-purchase-row" aria-label="服装售价与购买">
               <dl className="costume-detail-price">
                 <dt>售价</dt>
-                <dd>{costume.finalPrice} 金币</dd>
+                <dd>{costume.finalPrice} <StartorchCouponIcon /></dd>
               </dl>
               <button data-button-role="primary"
                 className="primary-action costume-detail-purchase-button"

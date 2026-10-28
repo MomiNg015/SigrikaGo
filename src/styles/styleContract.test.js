@@ -503,7 +503,8 @@ describe("root CSS entry contract", () => {
       "./base/home-stage-toolbox.css",
       "./base/home-unavailable-entry.css",
       "./base/message-feedback.css",
-      "./base/skill-description.css"
+      "./base/skill-description.css",
+      "./base/startorch-coupon.css"
     ]);
     expect(baseEntry).not.toContain(":root {");
     expect(baseEntry).not.toContain(".home-screen {");

@@ -1,4 +1,5 @@
 import { COSTUME_MASCOT_IMAGES } from "../costumeShopHelpers.js";
+import { CouponText } from "../../shared/StartorchCouponIcon.jsx";
 
 export default function CostumeSidebar({ line, mood }) {
   return (
@@ -17,7 +18,7 @@ export default function CostumeSidebar({ line, mood }) {
           />
         ))}
       </div>
-      <div className="costume-shop-bubble" aria-live="polite">{line}</div>
+      <div className="costume-shop-bubble" aria-live="polite"><CouponText>{line}</CouponText></div>
     </aside>
   );
 }

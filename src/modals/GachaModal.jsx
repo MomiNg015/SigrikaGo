@@ -1,5 +1,6 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
-import { CircleDollarSign, Gem, History, List, Sparkles, X } from "lucide-react";
+import { Gem, History, List, Sparkles, X } from "lucide-react";
+import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 import { useState } from "react";
 import { buildGachaRewardDisplay, formatGachaDateRange, formatGachaRemaining, gachaPrizeTypeLabel } from "./gacha/gachaHelpers.js";
 import { useGachaCatalog } from "./gacha/useGachaCatalog.js";
@@ -72,7 +73,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
 
               <div className="gacha-control-panel">
                 <div className="gacha-wallet" aria-label="钱包">
-                  <span><CircleDollarSign size={18} />{wallet.coins}</span>
+                  <span><StartorchCouponIcon />{wallet.coins}</span>
                   <span><Gem size={18} />{wallet.blueGems}</span>
                 </div>
                 <div className="gacha-round-actions">

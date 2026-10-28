@@ -29,6 +29,7 @@ import {
   SIGRIKA_CORRUPTED_PORTRAIT_ASSET
 } from "./characterPortraitAssetCatalog.js";
 import { modeOrderedEntries } from "./gameModes.js";
+import { STARTORCH_COUPON } from "./startorchCoupon.js";
 import {
   COSTUME_SHOP_BACKGROUND_IMAGE,
   COSTUME_SHOP_DIALOGUE_FRAME_IMAGE,
@@ -43,6 +44,7 @@ import {
 
 export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   home: Object.freeze([
+    STARTORCH_COUPON.src,
     "/assets/home/book-entry.webp",
     "/assets/home/fantasy-match-entry.webp",
     "/assets/home/home-utility-recruitment.webp",

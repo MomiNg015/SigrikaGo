@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/client.js";
+import { couponNotice } from "../../shared/StartorchCouponIcon.jsx";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
 import { DEFAULT_SHOP_MASCOT_DIALOGUES } from "../../shared/shopMascotDialogues.js";
 import {
@@ -68,7 +69,7 @@ export function useCostumeCatalog({
         setCatalogState("error");
         setMascotMood("empty");
         setMascotLine(dialogueConfig.errorLine);
-        onNoticeRef.current?.(error.message, "danger");
+        onNoticeRef.current?.(couponNotice(error.message), "danger");
       });
     return () => {
       alive = false;
@@ -119,7 +120,7 @@ export function useCostumeCatalog({
       return data.costume;
     } catch (error) {
       if (error.message === "金币不足") setMascotFeedback("empty", dialogueConfig.insufficientLine);
-      onNoticeRef.current?.(error.message, "danger");
+      onNoticeRef.current?.(couponNotice(error.message), "danger");
       return null;
     } finally {
       setPurchasingId("");
@@ -147,7 +148,7 @@ export function useCostumeCatalog({
       onNoticeRef.current?.(`已装扮${costume.name}`, "success");
       return true;
     } catch (error) {
-      onNoticeRef.current?.(error.message, "danger");
+      onNoticeRef.current?.(couponNotice(error.message), "danger");
       return false;
     } finally {
       setEquippingId("");

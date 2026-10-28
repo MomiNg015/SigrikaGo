@@ -113,7 +113,7 @@ describe("GameLifecycleModals helpers", () => {
 
     expect(source).toContain('<ResultRankProgress reward={reward} rank={reward.rankAfter');
     expect(source).toContain('className="result-reward-tile result-reward-coins"');
-    expect(source).toContain("<strong>金币</strong>{formatSignedDelta(reward.coins)}");
+    expect(source).toContain("<StartorchCouponIcon size={28} /></strong>{formatSignedDelta(reward.coins)}");
   });
 
   it("marks result reward cards with signed progress and coin classes", () => {

@@ -14,6 +14,10 @@ Four bounded files under `themes/bright-school/commerce/shop/` load at the end o
 - Dialogue paint uses pseudo-elements inside the existing element bounds with `isolation: isolate`; the tail stays inside the original aspect-ratio box. Keep production text padding, placement and responsive sizes. Existing raster frame assets and fallback declarations remain available to other styling paths.
 - Preserve the 768px breakpoint family. These owners must not introduce card width/height, stage geometry, float or store-slide animation rules.
 
+## Currency artwork (2026-10-28)
+
+The approved blue/yellow ticket is `public/assets/ui/startorch-coupon.webp`, a lossless 827×746 crop of user artwork. Use `StartorchCouponIcon` for currency in wallets, prices and inline copy. Its wrapper sets width only; the image uses `width: 100%; height: auto; object-fit: contain`. Never apply the product-art square dimensions or independent X/Y scaling to it. Accessible text is 星炬券. `CouponText` replaces legacy 金币 and current 星炬券 words at display time; retain original backend error comparisons and `coins` fields. Price values, discounts, zero-cost eligibility, native disabled states and purchase/equip behavior are unchanged. Check both stores on desktop and portrait mobile with production CSS.
+
 ## Verification
 
 `docs/design-samples/shop-window-2026-10-23/materials/production.html` mounts the real ShopModal and production CSS; its root is `shop-production`, so prototype selectors cannot paint it. Only the fixture intercepts API calls. `verify-production.mjs` compares six pre-integration geometry/animation snapshots at 1440x900, 390x844 and 320x568 across both stores, checks texture removal and stone transparency, and exercises details, purchases, costume equip and reopening without network API requests. Do not regenerate `production-baseline.json` after implementation to mask drift.
