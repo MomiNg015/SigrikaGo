@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 254
+- **Total Sessions**: 255
 - **Last Active**: 2026-10-28
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~471 | Active |
+| `journal-5.md` | ~504 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 255 | 2026-10-28 | Finish coupon currency outside unreleased gacha | `a440a474` | `master` |
 | 254 | 2026-10-28 | 结算星炬券显示与截图 | `cd48fd73` | `master` |
 | 253 | 2026-10-28 | 用户手绘星炬券接入 | `a660eb2a` | `master` |
 | 252 | 2026-10-27 | 整合准时宝陪练与吃子挑战赛 | `a31f271c` | `master` |

@@ -469,3 +469,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 255: Finish coupon currency outside unreleased gacha
+
+**Date**: 2026-10-28
+**Task**: Finish coupon currency outside unreleased gacha
+**Branch**: `master`
+
+### Summary
+
+Unified remaining shop, achievement and non-gacha admin currency copy; normalized legacy achievement display and preserved stored economy fields. Explicitly excluded and restored all gacha edits. 137 focused tests, lint, build, CSS and isolated snapshot checks passed; achievement browser checks at desktop/390px/320px. Preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a440a474` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
