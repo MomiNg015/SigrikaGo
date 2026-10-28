@@ -1,5 +1,9 @@
 # UI 主题、移动端与交互体验
 
+## 结算星炬券的样式边界（2026-10-28）
+
+`ResultModal` 的货币奖励复用 `StartorchCouponIcon(size=28)`。共享及终端层三个旧 `.result-rewards span` 选择器收紧为 `.result-rewards > span`，避免内部图标继承卡片的 8px／10px 内边距及边框，将实际图像由约 6px 压缩恢复到 28px。高度按 827:746 自动计算，仍使用原图；不改动段位区、按钮、动效或奖励结算。回归覆盖胜利 +50、失败 +20、零奖励 0，以及桌面与 390／320px 竖屏下的图像尺寸、边界和返回／退出操作。
+
 ## 用户手绘星炬券（2026-10-28）
 
 `public/assets/ui/startorch-coupon.png` 与无损 WebP 来自用户原图，只删除四周完整透明行列；裁切矩形为 `(111, 162, 827, 746)`，不重绘、不旋转、不拉伸。`startorchCoupon.js` 统一资源地址、原始宽高与可访问名称，WebP 纳入首页资源预加载；`StartorchCouponIcon` 外层只设置宽度，内层 `width: 100%; height: auto; object-fit: contain`，不得被商店商品图的固定宽高覆盖。常规金额使用 24px，服装价签 22px，余额不足按钮 20px；正文内图标用 `1.4em`，所有尺寸都保持 827:746。

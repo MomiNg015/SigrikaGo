@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "state": "result-win-desktop",
+      "amount": "+50",
+      "src": "/assets/ui/startorch-coupon.webp",
+      "width": 28,
+      "height": 25.25,
+      "padding": "0px",
+      "border": "0px",
+      "loaded": true,
+      "inViewport": true,
+      "oldText": false
+    },
+    {
+      "state": "result-win-mobile",
+      "amount": "+50",
+      "src": "/assets/ui/startorch-coupon.webp",
+      "width": 28,
+      "height": 25.25,
+      "padding": "0px",
+      "border": "0px",
+      "loaded": true,
+      "inViewport": true,
+      "oldText": false
+    },
+    {
+      "state": "result-loss-mobile",
+      "amount": "+20",
+      "src": "/assets/ui/startorch-coupon.webp",
+      "width": 28,
+      "height": 25.25,
+      "padding": "0px",
+      "border": "0px",
+      "loaded": true,
+      "inViewport": true,
+      "oldText": false
+    },
+    {
+      "state": "result-win-narrow",
+      "amount": "+50",
+      "src": "/assets/ui/startorch-coupon.webp",
+      "width": 28,
+      "height": 25.25,
+      "padding": "0px",
+      "border": "0px",
+      "loaded": true,
+      "inViewport": true,
+      "oldText": false
+    }
+  ],
+  "actions": {
+    "returnToBoard": true,
+    "leaveRoom": true
+  }
+}

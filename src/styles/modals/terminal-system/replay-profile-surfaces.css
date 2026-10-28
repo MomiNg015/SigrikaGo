@@ -25,7 +25,7 @@
 
 .replay-table-row,
 .profile-character-table,
-.result-rewards span {
+.result-rewards > span {
   font-family: var(--font-ui-default);
 }
 

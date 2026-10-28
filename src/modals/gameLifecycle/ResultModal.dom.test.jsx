@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import ResultModal from "./ResultModal.jsx";
 import { resultRankDeltaText } from "./lifecycleHelpers.js";
@@ -11,6 +11,19 @@ afterEach(cleanup);
 const user = { id: "self", username: "不能出现的用户名", rank: "3段", stars: 2 };
 const room = { code: "done", players: [{ color: "black", characterId: "sigrika", user }], game: { phase: "finished", winner: { winnerColor: "black" }, resultRewards: { self: { rank: 0, stars: 1, rankAfter: "3段", starsAfter: 3, coins: 50 } } } };
 describe("compact result actions and rank changes", () => {
+  it.each([["black", 50, "+50"], ["white", 20, "+20"], [null, 0, "0"]])(
+    "shows the authored coupon and authoritative reward for winner %s",
+    (winnerColor, coins, amount) => {
+      const resultRoom = { ...room, game: { ...room.game, winner: { winnerColor },
+        resultRewards: { self: { ...room.game.resultRewards.self, coins } } } };
+      const { container } = render(<ResultModal room={resultRoom} user={user} characters={CHARACTERS} onClose={vi.fn()} />);
+      const reward = container.querySelector(".result-reward-coins");
+      expect(within(reward).getByRole("img", { name: "星炬券" }).getAttribute("src"))
+        .toBe("/assets/ui/startorch-coupon.webp");
+      expect(reward.textContent).toBe(amount);
+      expect(screen.queryByText(/金币/)).toBeNull();
+    }
+  );
   it("omits username and keeps board return separate from leaving", () => {
     const onClose = vi.fn(); const onLeaveRoom = vi.fn();
     render(<ResultModal room={room} user={user} characters={CHARACTERS} onClose={onClose} onLeaveRoom={onLeaveRoom} />);

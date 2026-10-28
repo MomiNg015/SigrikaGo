@@ -20,6 +20,8 @@ The approved blue/yellow ticket is `public/assets/ui/startorch-coupon.webp`, a l
 
 ## Verification
 
+Result rewards reuse the same coupon. Reward-card padding, borders and surfaces must target direct `.result-rewards > span` children in shared/terminal owners, never all descendant spans: an icon wrapper otherwise inherits 22px of horizontal padding/border and shrinks a 28px image to 6px. Verify the computed image width is 28px and the wrapper has zero padding/border with production CSS, including portrait mobile and loss/zero-reward states.
+
 `docs/design-samples/shop-window-2026-10-23/materials/production.html` mounts the real ShopModal and production CSS; its root is `shop-production`, so prototype selectors cannot paint it. Only the fixture intercepts API calls. `verify-production.mjs` compares six pre-integration geometry/animation snapshots at 1440x900, 390x844 and 320x568 across both stores, checks texture removal and stone transparency, and exercises details, purchases, costume equip and reopening without network API requests. Do not regenerate `production-baseline.json` after implementation to mask drift.
 
 Run shop/dialog DOM tests, CSS import/debt/theme/button contracts, lint, build and built CSS checks. CSS inventory changes must use task-only deltas and preserve unrelated work. Inspect actual button hover/cooldown and descendant price text in the browser, not only the source declarations.
