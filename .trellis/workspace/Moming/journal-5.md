@@ -403,3 +403,36 @@ Integrated selected shop A with texture-free product cards, transparent stone pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 253: 用户手绘星炬券接入
+
+**Date**: 2026-10-28
+**Task**: 用户手绘星炬券接入
+**Branch**: `master`
+
+### Summary
+
+使用用户原图裁切 827x746，保留可见像素；以等比共享图标替换玩家金币视觉和商店货币文字。通过桌面与手机 9 组显示及购买、余额不足流程验证。全量 3399 项先通过，文档同步后 4/4 复验通过；lint、资源、隔离快照、构建、CSS 和生产配置检查通过。保留无关 WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a660eb2a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
