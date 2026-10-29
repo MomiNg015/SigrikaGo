@@ -1,0 +1,122 @@
+[
+  {
+    "width": 1440,
+    "kind": "tutorial",
+    "state": "dialogue",
+    "label": "技能",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "kind": "tutorial",
+    "state": "skill",
+    "label": "星辉符文",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "kind": "tutorial",
+    "state": "denia",
+    "label": "泡影幻梦",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "kind": "production",
+    "state": "ready",
+    "label": "星落日灵",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "kind": "production",
+    "state": "long",
+    "label": "星落之时·日灵的最后回响",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "kind": "tutorial",
+    "state": "dialogue",
+    "label": "技能",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "kind": "tutorial",
+    "state": "skill",
+    "label": "星辉符文",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "kind": "tutorial",
+    "state": "denia",
+    "label": "泡影幻梦",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "kind": "production",
+    "state": "ready",
+    "label": "星落日灵",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "kind": "production",
+    "state": "long",
+    "label": "星落之时·日灵的最后回响",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 320,
+    "kind": "tutorial",
+    "state": "dialogue",
+    "label": "技能",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 320,
+    "kind": "tutorial",
+    "state": "skill",
+    "label": "星辉符文",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 320,
+    "kind": "tutorial",
+    "state": "denia",
+    "label": "泡影幻梦",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 320,
+    "kind": "production",
+    "state": "ready",
+    "label": "星落日灵",
+    "delta": 0,
+    "overlap": false
+  },
+  {
+    "width": 320,
+    "kind": "production",
+    "state": "long",
+    "label": "星落之时·日灵的最后回响",
+    "delta": 0,
+    "overlap": false
+  }
+]

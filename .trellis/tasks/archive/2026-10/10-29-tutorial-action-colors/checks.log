@@ -1,0 +1,37 @@
+
+> sigrika-go@0.1.0 verify:battle-fixes
+> node scripts/verify-battle-fixes.mjs
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/shared/game.test.js src/shared/gameSkills.test.js src/shared/characters.test.js src/shared/boardView.test.js src/shared/boardAudio.test.js src/shared/skillEffectCatalog.test.js src/shared/skillPresentation.test.js src/room/Board.test.js src/room/BoardAmbientEffects.test.js src/room/BoardSkillEffects.test.js src/room/boardSkillEffectRegistry.test.js src/room/boardSkillEffectSoundScheduler.test.js src/room/ChatBox.test.js src/room/RoomScreen.test.js src/room/actions/useRoomPointActions.test.js src/room/mobilePointConfirmation.test.js src/room/roomView.test.js server/adminDefaultSeed.test.js scripts/verificationScripts.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  22 passed (22)
+      Tests  443 passed (443)
+   Start at  11:45:43
+   Duration  22.48s (transform 3.80s, setup 0ms, import 6.23s, tests 5.98s, environment 8ms)
+
+
+> sigrika-go@0.1.0 docs:system-design
+> node scripts/render-system-design-html.mjs
+
+node:internal/fs/promises:785
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\codex\SigrikaGo\docs\system-design.html.51468.1793245567016.tmp' -> 'C:\codex\SigrikaGo\docs\system-design.html'
+    at async rename (node:internal/fs/promises:785:10)
+    at async writeSystemDesignHtml (file:///C:/codex/SigrikaGo/scripts/render-system-design-html.mjs:29:5)
+    at async file:///C:/codex/SigrikaGo/scripts/render-system-design-html.mjs:22:3 {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\codex\\SigrikaGo\\docs\\system-design.html.51468.1793245567016.tmp',
+  dest: 'C:\\codex\\SigrikaGo\\docs\\system-design.html'
+}
+
+Node.js v24.15.0
