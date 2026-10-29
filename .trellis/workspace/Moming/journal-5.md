@@ -767,3 +767,36 @@ Continue uses original yellow; tutorial skill is gray outside the required skill
 ### Next Steps
 
 - None - task complete
+
+
+## Session 264: 引导对白靠近 header 与回答背景压暗
+
+**Date**: 2026-10-29
+**Task**: 引导对白靠近 header 与回答背景压暗
+**Branch**: `master`
+
+### Summary
+
+手机 NPC 头像和对白整体上移 50px，距 header 约 14px。回答下方增加覆盖视口的 20% 黑色背景层，选项保持原亮度并随回答卸载；记录与退出浮窗仍可操作。16 组浏览器场景、106 项测试与 lint 通过；保留其他 WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e353eb2b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

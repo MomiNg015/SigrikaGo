@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 263
+- **Total Sessions**: 264
 - **Last Active**: 2026-10-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~769 | Active |
+| `journal-5.md` | ~802 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 264 | 2026-10-29 | 引导对白靠近 header 与回答背景压暗 | `e353eb2b` | `master` |
 | 263 | 2026-10-29 | 修复阶梯选项右侧阴影裁切 | `df49f6a7` | `master` |
 | 262 | 2026-10-29 | 对弈引导阶梯浮层正式接入 | `362b24c2` | `master` |
 | 261 | 2026-10-29 | Tutorial action colors, scripted names and skill centering | `6fc72caf` | `master` |
