@@ -19,3 +19,5 @@
 `node docs/design-samples/tutorial-choice-floating-2026-10-29/verify.mjs` 使用本地 5173 Vite 和 Edge headless。覆盖 1440×900、390×844、360×640、320×568 × 四种文案，以及错误回答重试、继续专用路径、键盘 Enter、减少动态效果、滚动末项、主题实底、棋盘外框避让、选项移除后布局稳定、五键保留和 header 入口样式／展开／关闭。
 
 `verification.json` 保存测量结果，`preview-*.png` 为实际组件截图。`../battle-arcade-2026-10-29/verify-tutorial.mjs` 继续验证全部五类教学操作、落子、技能目标、计数与原教学聚焦。
+
+右侧裁切回归：左右各 6px 绘制留白，行宽使用真实内容区扣除阶梯错位；浏览器检查实际阴影外沿不越过 scrollport，并强制滚动条占位验证，覆盖最后一行。既有三项引导颜色保持此前记录的功能色复用，本次不改变配色。

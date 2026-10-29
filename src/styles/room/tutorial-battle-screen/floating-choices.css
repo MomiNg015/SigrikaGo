@@ -1,10 +1,10 @@
 .tutorial-battle-root { position: relative; }
 .tutorial-choice-overlay { position: absolute; inset: 0; z-index: 130; overflow: hidden; pointer-events: none; }
-.tutorial-floating-choices { position: absolute; width: calc(var(--choice-width) + var(--choice-span) + 6px); padding: 4px 3px 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: none; visibility: hidden; }
+.tutorial-floating-choices { position: absolute; width: calc(var(--choice-width) + var(--choice-span) + 12px); padding: 4px 6px 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: none; visibility: hidden; }
 .tutorial-floating-choices[data-ready="true"] { visibility: visible; }
 .tutorial-floating-choices[data-scroll="true"] { pointer-events: auto; }
 .tutorial-choice-list { display: flex; flex-direction: column; gap: var(--choice-gap); }
-.tutorial-choice-step { width: var(--choice-width); margin-left: calc(var(--choice-index) * var(--choice-step)); }
+.tutorial-choice-step { width: calc(100% - var(--choice-span)); margin-left: calc(var(--choice-index) * var(--choice-step)); }
 .tutorial-floating-choices[data-ready="true"] .tutorial-choice-step { animation: tutorial-choice-enter 210ms cubic-bezier(.2,.8,.25,1) var(--choice-delay) both; }
 :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .tutorial-battle-root .tutorial-floating-choices button {
   box-sizing: border-box; display: flex !important; align-items: center; justify-content: flex-start; gap: 10px;

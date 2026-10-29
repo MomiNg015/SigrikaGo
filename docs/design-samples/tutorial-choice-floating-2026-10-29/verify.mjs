@@ -7,6 +7,21 @@ const results = [];
 const errors = [];
 const base = "http://127.0.0.1:5173/docs/design-samples/tutorial-choice-floating-2026-10-29/";
 const snap = (page, name) => page.screenshot({ path: fileURLToPath(new URL(name, import.meta.url)) });
+const checkHorizontalPaint = async page => {
+  const clipped = await page.locator('.tutorial-floating-choices').evaluate(group => {
+    const clipLeft = group.getBoundingClientRect().left + group.clientLeft;
+    const clipRight = clipLeft + group.clientWidth;
+    return [...group.querySelectorAll('button')].some(button => {
+      const rect = button.getBoundingClientRect();
+      const shadows = getComputedStyle(button).boxShadow.replace(/rgba?\([^)]+\)/g, '').split(',')
+        .map(shadow => shadow.trim().split(/\s+/).map(parseFloat));
+      const left = Math.max(0, ...shadows.map(([x, , blur = 0, spread = 0]) => -x + blur + spread));
+      const right = Math.max(0, ...shadows.map(([x, , blur = 0, spread = 0]) => x + blur + spread));
+      return rect.left - left < clipLeft - 0.5 || rect.right + right > clipRight + 0.5;
+    });
+  });
+  assert.equal(clipped, false, 'reply outlines and shadows must fit inside the actual scrollport');
+};
 try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   page.on("pageerror", error => errors.push(error.message));
@@ -46,6 +61,7 @@ try {
       assert.ok(width <= 900 ? geometry.bounds.top >= geometry.board.bottom : geometry.bounds.left >= geometry.board.right, `${width}/${scenario}: board frame overlap`);
       assert.ok(geometry.rects.every(rect => Math.abs(rect.width - geometry.rects[0].width) < 1), "equal width choices");
       assert.ok(geometry.rects.slice(1).every((rect, index) => rect.x > geometry.rects[index].x), "descending rightward staircase");
+      await checkHorizontalPaint(page);
       if ((scenario === "normal" && width >= 360) || scenario === "single") assert.equal(geometry.scroll, false, `${width}/${scenario} should not scroll`);
       if (scenario === "normal") await snap(page, width > 900 ? "preview-desktop.png" : `preview-${width}.png`);
       if (width === 360 && scenario === "long") await snap(page, "preview-long-360.png");
@@ -58,6 +74,10 @@ try {
       }
       results.push({ width, height, scenario, ...geometry });
     }
+    const gutterStyle = await page.addStyleTag({ content: '.tutorial-floating-choices { overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; }' });
+    await page.waitForTimeout(100);
+    await checkHorizontalPaint(page);
+    await gutterStyle.evaluate(el => el.remove());
     const before = await page.locator(".board-stage").boundingBox();
     await page.locator(".tutorial-floating-choices button").first().click();
     await page.getByText("这一步完成了。", { exact: true }).waitFor();
@@ -116,6 +136,6 @@ try {
   await iframe.locator('.tutorial-floating-choices[data-ready="true"]').waitFor();
   await snap(page, "preview-review.png");
   assert.deepEqual(errors, []);
-  await writeFile(new URL("./verification.json", import.meta.url), JSON.stringify({ results, errors, checks: ["16 viewport-content combinations", "unchanged board on choice removal", "scroll-last-choice reachable", "wrong answer retry and correct branch", "single native continuation", "keyboard Enter", "reduced motion", "review controls", "desktop/mobile header log placement and open/close"] }, null, 2));
+  await writeFile(new URL("./verification.json", import.meta.url), JSON.stringify({ results, errors, checks: ["16 viewport-content combinations", "unclipped horizontal shadow extents including reserved scrollbar gutter", "unchanged board on choice removal", "scroll-last-choice reachable", "wrong answer retry and correct branch", "single native continuation", "keyboard Enter", "reduced motion", "review controls", "desktop/mobile header log placement and open/close"] }, null, 2));
   console.log(JSON.stringify(results.map(({width, height, scenario, scroll, font}) => ({width, height, scenario, scroll, font})), null, 2));
 } finally { await browser.close(); }
