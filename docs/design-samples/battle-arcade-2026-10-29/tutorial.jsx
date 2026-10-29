@@ -10,7 +10,8 @@ const user = { id: "tutorial-player", username: "星炬部员" };
 const audioSettings = { master: 0, bgm: 0, sfx: 0, voice: 0 };
 const states = {
   automatic: { label: "自动等待", description: "自动讲解或等待阶段保留五键，锁定本步骤不允许的操作。", node: { type: "npc-dialogue", characterId: "denia", text: "先观察棋盘，讲解结束后我们再继续。", autoContinueEnabled: true, autoContinueDelaySeconds: 60, nextNodeId: "move" } },
-  dialogue: { label: "讲解 / 继续", description: "讲解结束后显示单个「继续」键，画面不压暗。", node: { type: "npc-dialogue", characterId: "denia", text: "先看看棋盘。准备好后，点击下方的「继续」，就轮到你落子啦。", nextNodeId: "move" } },
+  dialogue: { label: "讲解 / 继续", description: "保留五键，数子位置变为「继续」；其余四键禁用，画面不压暗。", node: { type: "npc-dialogue", characterId: "denia", text: "先看看棋盘。准备好后，点击下方的「继续」，就轮到你落子啦。", nextNodeId: "move" } },
+  continuation: { label: "单独继续选项", description: "脚本只有「继续」选项时，也使用数子键的位置继续。", node: { type: "player-choice", autoContinueEnabled: true, autoContinueDelaySeconds: 0, options: [{ label: "继续", nextNodeId: "move" }] } },
   choices: { label: "回答选项", description: "功能区变为回答列表；周围压暗，选项保持原亮度。", node: { type: "player-choice", autoContinueEnabled: true, autoContinueDelaySeconds: 0, options: [{ label: "准备好了，开始落子", nextNodeId: "move" }, { label: "再讲解一下", nextNodeId: "dialogue" }] } },
   move: { label: "等待落子", description: "保留常规五键并锁定操作，棋盘目标落点高亮。点击亮点可继续。", node: { type: "player-move", pointId: "6,6", color: "black", nextNodeId: "done" } },
   skill: { label: "使用技能", description: "在常规控制舱中高亮技能键；点击后保留五键并转为棋盘选点。", node: { type: "player-skill", skillId: "sigrika", pointId: "6,6", color: "black", nextNodeId: "done" } },

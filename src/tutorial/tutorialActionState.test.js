@@ -1,8 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { activeTutorialAction, tutorialActionForNode } from "./tutorialActionState.js";
+import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState } from "./tutorialActionState.js";
 import { tutorialFocusShape } from "./tutorialFocusShape.js";
 
 describe("tutorial action gating", () => {
+  it("routes manual waits, phase continuation and lone continue choices into the counting slot", () => {
+    const option = { label: "继续", nextNodeId: "move" };
+    for (const [state, kind, label] of [
+      [{ pendingWait: { manualContinue: true } }, "wait", "继续"],
+      [{ pendingWait: { manualContinue: false }, previewControlsEnabled: true }, "wait", "立即继续"],
+      [{ phase: "continue" }, "continue", "继续"],
+      [{ choicesVisible: true, node: { options: [option] } }, "choice", "继续"]
+    ]) {
+      expect(tutorialContinueForState(state)).toMatchObject({ kind, label });
+      expect(activeTutorialAction(state)).toBe("continue");
+      expect(activeTutorialAction({ ...state, loading: true })).toBe("");
+      expect(activeTutorialAction({ ...state, confirmExit: true })).toBe("");
+    }
+    expect(tutorialContinueForState({ choicesVisible: true, node: { options: [option] } }).option).toBe(option);
+    expect(tutorialContinueForState({ choicesVisible: true, node: { options: [option, { label: "回去" }] } })).toBeNull();
+    expect(tutorialContinueForState({ choicesVisible: true, node: { options: [{ label: "准备好了" }] } })).toBeNull();
+    expect(tutorialContinueForState({ pendingWait: { manualContinue: false } })).toBeNull();
+  });
   it.each([["pass", "pass"], ["draw", "draw"], ["resign", "resign"], ["counting-start", "counting"], ["counting-confirm", "counting"], ["player-skill", "skill"]])("maps %s to its normal key", (type, action) => {
     const node = { type, actor: "player" };
     expect(tutorialActionForNode(node)).toBe(action);

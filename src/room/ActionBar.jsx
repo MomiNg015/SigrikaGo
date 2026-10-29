@@ -4,6 +4,7 @@ import {
   Flag,
   Hand,
   Handshake,
+  Play,
   Sparkles,
 } from "lucide-react";
 import { GAME_PHASES } from "../shared/game.js";
@@ -33,6 +34,8 @@ function ActionBar({
   hasAnyStones = true,
   opponentConnected = true,
   tutorialAction,
+  tutorialContinueLabel,
+  onTutorialContinue,
   scoring,
   replayStep = 0,
   replayMax = 0,
@@ -71,6 +74,8 @@ function ActionBar({
   const remainingUses = skillEnabled ? Math.max(0, skillUses ?? 0) : 0;
   const actionSkillName = skillEnabled ? (skillName || "技能") : "技能";
   const actionDisabled = (action, disabled) => tutorialAction === undefined ? disabled : tutorialAction !== action;
+  const isContinue = tutorialAction !== undefined && Boolean(tutorialContinueLabel);
+  const countingAction = isContinue ? "continue" : "counting";
   return (
     <nav className="action-bar battle-arcade-controls" aria-label="对弈操作" data-tutorial-action={tutorialAction || undefined}>
       <ActionKey className="pass-action" data-tutorial-target={tutorialAction === "pass" || undefined} onClick={onPass} disabled={actionDisabled("pass", isGomoku || phase !== "playing" || skillLocked)}>
@@ -79,13 +84,13 @@ function ActionBar({
       </ActionKey>
       <ActionKey
         className="counting-action"
-        data-tutorial-target={tutorialAction === "counting" || undefined}
-        onClick={onCountingRequest}
-        disabled={actionDisabled("counting", isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
-        title={isGomoku || !countingEnabled ? "该对局无法数子" : undefined}
+        data-tutorial-target={tutorialAction === countingAction || undefined}
+        onClick={isContinue ? onTutorialContinue : onCountingRequest}
+        disabled={actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
+        title={!isContinue && (isGomoku || !countingEnabled) ? "该对局无法数子" : undefined}
       >
-        <Calculator size={18} />
-        <span className="action-label mobile-action-button-label">数子</span>
+        {isContinue ? <Play size={18} aria-hidden="true" /> : <Calculator size={18} />}
+        <span className="action-label mobile-action-button-label">{isContinue ? tutorialContinueLabel : "数子"}</span>
       </ActionKey>
       <ActionKey
         className={`skill-action ${pendingSkill ? "active" : ""} ${remainingUses <= 0 ? "spent" : ""}`}
@@ -138,6 +143,8 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.hasAnyStones === next.hasAnyStones
     && previous.opponentConnected === next.opponentConnected
     && previous.tutorialAction === next.tutorialAction
+    && previous.tutorialContinueLabel === next.tutorialContinueLabel
+    && previous.onTutorialContinue === next.onTutorialContinue
     && previous.scoring === next.scoring
     && previous.onPass === next.onPass
     && previous.onCountingRequest === next.onCountingRequest

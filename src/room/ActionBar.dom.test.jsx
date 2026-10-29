@@ -12,6 +12,23 @@ const props = (overrides = {}) => ({
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe("battle action keys", () => {
+  it("uses the counting key for continuation without dispatching a counting request", () => {
+    const onTutorialContinue = vi.fn();
+    const p = props({ tutorialAction: "continue", tutorialContinueLabel: "继续", onTutorialContinue });
+    const { rerender } = render(<ActionBar {...p}/>);
+    const next = screen.getByRole("button", { name: "继续", exact: true });
+    expect(next.classList.contains("counting-action")).toBe(true);
+    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getAllByRole("button").filter(button => !button.disabled)).toEqual([next]);
+    fireEvent.click(next);
+    expect(onTutorialContinue).toHaveBeenCalledTimes(1);
+    expect(p.onCountingRequest).not.toHaveBeenCalled();
+    rerender(<ActionBar {...p} tutorialAction=""/>);
+    expect(screen.getByRole("button", { name: "继续" }).disabled).toBe(true);
+    rerender(<ActionBar {...p} tutorialAction="counting" tutorialContinueLabel={undefined}/>);
+    fireEvent.click(screen.getByRole("button", { name: "数子" }));
+    expect(p.onCountingRequest).toHaveBeenCalledTimes(1);
+  });
   it("retains all five keys and only enables the guided action, including dead-stone phases", () => {
     const p = props({ phase: "marking-dead", scoring: { confirmedBy: [] } });
     const { container, rerender } = render(<ActionBar {...p} tutorialAction=""/>);

@@ -8,7 +8,8 @@ const browser = await chromium.launch({ channel: "msedge", headless: true });
 const results = [];
 const errors = [];
 const expected = {
-  dialogue: { count: 1, focus: "" },
+  dialogue: { count: 5, focus: "", action: "continue" },
+  continuation: { count: 5, focus: "", action: "continue" },
   automatic: { count: 5, focus: "", action: "" },
   choices: { count: 2, focus: "choices" },
   move: { count: 5, focus: "board", action: "" },
@@ -46,7 +47,8 @@ try {
       assert.equal(geometry.counter, contract.count === 5);
       if (contract.count === 5) {
         assert.equal(geometry.enabled.length, contract.action ? 1 : 0);
-        if (contract.action) assert.ok(geometry.enabled[0].includes(`${contract.action}-action`));
+        if (contract.action) assert.ok(geometry.enabled[0].includes(`${contract.action === "continue" ? "counting" : contract.action}-action`));
+        if (contract.action === "continue") assert.equal(await bar.locator(".counting-action .action-label").innerText(), "继续");
       }
       for (const button of geometry.buttons) assert.ok(button.width >= 44 && button.height >= 42);
       if (state === "choices" && width < 900) {
@@ -66,29 +68,39 @@ try {
       await page.screenshot({ path: fileURLToPath(new URL(`tutorial-${state}-${width}.png`, import.meta.url)), fullPage: true });
       results.push({ width, height, state, focus: contract.focus, ...geometry });
     }
+    for (const state of ["dialogue", "continuation"]) {
+      await page.locator(".tutorial-preview-toolbar select").selectOption(state);
+      const next = page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true });
+      await next.waitFor();
+      await next.evaluate(button => { button.click(); button.click(); });
+      await page.locator('.tutorial-input-focus[data-focus-mode="board"]').waitFor();
+      assert.equal(await page.locator(".battle-arcade-controls button").count(), 5);
+      assert.equal(await page.locator(".battle-arcade-controls .counting-action .action-label").innerText(), "数子");
+      assert.equal(await page.locator(".room-move-placard strong").innerText(), "0");
+    }
     await page.locator(".tutorial-preview-toolbar select").selectOption("skill");
     await page.locator(".battle-arcade-controls .skill-action").click();
     await page.locator('.tutorial-input-focus[data-focus-mode="board"]').waitFor();
     assert.equal(await page.locator(".battle-arcade-controls button").count(), 5);
     assert.equal(await page.locator(".battle-arcade-controls button:not(:disabled)").count(), 0);
     await page.locator('.point[data-point-id="6,6"]').click();
-    await page.locator(".tutorial-action-bar").getByRole("button", { name: "继续", exact: true }).waitFor({ timeout: 15000 });
+    await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor({ timeout: 15000 });
     await page.getByRole("button", { name: "重置此步" }).click();
     await page.locator('.skill-action[data-tutorial-target="true"]').waitFor();
     await page.locator(".tutorial-preview-toolbar select").selectOption("pass");
     await page.locator('.pass-action[data-tutorial-target="true"]').evaluate(button => { button.click(); button.click(); });
-    await page.locator(".tutorial-action-bar").getByRole("button", { name: "继续", exact: true }).waitFor();
+    await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
     assert.equal(await page.locator(".room-move-placard strong").innerText(), "1");
     for (const state of ["counting", "draw", "resign"]) {
       await page.locator(".tutorial-preview-toolbar select").selectOption(state);
       await page.locator(`[data-tutorial-target="true"].${state}-action`).click();
-      await page.locator(".tutorial-action-bar").getByRole("button", { name: "继续", exact: true }).waitFor();
+      await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
     }
     await page.locator(".tutorial-preview-toolbar select").selectOption("choices");
     await page.locator(".tutorial-action-bar").getByRole("button", { name: "准备好了，开始落子" }).click();
     await page.locator('.tutorial-input-focus[data-focus-mode="board"]').waitFor();
     await page.locator('.point[data-point-id="6,6"]').click();
-    await page.locator(".tutorial-action-bar").getByRole("button", { name: "继续", exact: true }).waitFor();
+    await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
     assert.equal(await page.locator(".tutorial-input-focus").count(), 0);
     if (width < 900) {
       await page.locator(".tutorial-preview-toolbar select").selectOption("dialogue");
@@ -118,7 +130,7 @@ try {
     await page.close();
   }
   assert.deepEqual(errors, []);
-  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, move-to-continue and mobile header-log passed", errors }, null, 2));
+  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, counting-slot continuation, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
   console.log(`Passed ${results.length} tutorial states and real transitions at desktop, 390px and 320px.`);
 } finally {
   await browser.close();

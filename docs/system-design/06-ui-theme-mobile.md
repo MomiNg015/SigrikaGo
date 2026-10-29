@@ -6,19 +6,19 @@
 
 最终样式由 `battle-arcade-layout.css`、`battle-arcade-keys.css`、`battle-arcade-skill.css` 三个局部 owner 管理，在 `mobile-adaptive.css` 尾部加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面普通玩家对弈与教学按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 `useMobileDockBaseline` 测量实际高度，短屏可滚动到全部操作。
 
-`ActionKey` 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、普通对局死子确认、教学回答／继续选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 `display: contents`。
+`ActionKey` 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、普通对局死子确认、教学回答选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 `display: contents`。
 
 验证覆盖实际 `RoomBattleStage`、正式 CSS、1440×768／1920×1080 桌面及 390×844／320×568 竖屏，检查长名、字体加载、次数窗边界、棋盘比例、五键实际位移、模式锁定和特殊主题隔离。入口及证据见 `docs/design-samples/battle-arcade-2026-10-29/production.html`、`verify-production.mjs`；组件回归见 `ActionBar.dom.test.jsx`。
 
 ## 对弈引导复用功能区（2026-10-29）
 
-`RoomBattleStage.actionPanelOverride` 支持接收默认操作栏的渲染函数。`TutorialActionPanel` 只在显式回答／继续时替换它，其余状态均返回常规五键。`ActionBar.tutorialAction` 省略时遵循原对局规则；空字符串保留五键但全部禁用；指定 `pass`／`counting`／`skill`／`draw`／`resign` 时仅启用该键，且不切到普通死子确认栏。脚本动作网关再次检查阶段、等待、选项、退出和记录浮窗状态，同一节点的按钮提交去重。脚本技能名由当前节点解析，次数仍取本地局面。
+`RoomBattleStage.actionPanelOverride` 支持接收默认操作栏的渲染函数。`TutorialActionPanel` 只在真正的回答选项时替换它，其余状态均返回常规五键。手动继续、步骤完成后的继续、预览跳过以及单独的继续脚本选项，将数子键替换为播放图标和“继续”／“立即继续”，点击走原继续或选项推进回调，不发送数目请求；其余四键禁用。离开该状态后恢复数子名称与对应门禁。`ActionBar.tutorialAction` 省略时遵循原对局规则；空字符串保留五键但全部禁用；指定 `pass`／`counting`／`skill`／`draw`／`resign`／`continue` 时仅启用该键，且不切到普通死子确认栏。脚本动作网关再次检查阶段、等待、选项、退出和记录浮窗状态，同一节点的按钮提交去重。脚本技能名由当前节点解析，次数仍取本地局面。
 
-`TutorialInputFocus` 测量实际选项按钮或移动中的 `.action-keycap`，以四角 CSS 半径生成 SVG 椭圆弧；不再使用固定圆角矩形，避免按钮四周露出亮色小角。仅当前引导目标保留亮度并带粉色轮廓。末级 `tutorial-arcade-controls.css` 管理这一轮廓、稳定的桌面棋盘列、header 入口与竖屏全宽回答选项；没有新增全局颜色、动效或层级。
+`TutorialInputFocus` 测量实际选项按钮或移动中的 `.action-keycap`，以四角 CSS 半径生成 SVG 椭圆弧；不再使用固定圆角矩形，避免按钮四周露出亮色小角。仅当前引导目标保留亮度，不额外绘制按钮焦点框；回答按钮保留原硬阴影，移除外围光圈。末级 `tutorial-arcade-controls.css` 管理按钮焦点外观、稳定的桌面棋盘列、header 入口与竖屏全宽回答选项；没有新增全局颜色、动效或层级。
 
 移动端 `RoomHeader.beforeExitActions` 在退出左侧放置纯图标剧情记录，触控区 44×44px，保留可访问名称和展开状态。`ChatBox` 复用记录数据与 portal，按按钮下沿定位并限制在视口内；关闭、Escape 恢复入口焦点，外部点击关闭。记录展开时暂停教学操作和聚焦遮罩，关闭后恢复。底部不再保留记录条，桌面入口保持原样。
 
-共享 `TUTORIAL_NODE_TYPES` 新增 `pass` 和 `draw`，后台类型／执行方选择、工作簿导入导出与服务端校验统一识别。弃手复用规则函数记录手数和轮次；和棋在本地脚本内直接表示双方同意的结果，不发送请求。桌面及 390／320px 竖屏九状态示意、五种引导推进与快速重复输入检查见 `verify-tutorial.mjs`。
+共享 `TUTORIAL_NODE_TYPES` 新增 `pass` 和 `draw`，后台类型／执行方选择、工作簿导入导出与服务端校验统一识别。弃手复用规则函数记录手数和轮次；和棋在本地脚本内直接表示双方同意的结果，不发送请求。桌面及 390／320px 竖屏十状态示意、五种引导推进与快速重复输入检查见 `verify-tutorial.mjs`。
 
 ## 结算星炬券的样式边界（2026-10-28）
 

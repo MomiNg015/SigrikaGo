@@ -38,7 +38,7 @@
 
   &:not(:disabled):not([aria-disabled="true"])::before {
     content: "" !important;
-    display: block !important;
+    display: var(--guided-ring-display, block) !important;
     position: absolute;
     inset: -4px;
     padding: 1.5px;
@@ -93,7 +93,7 @@
   }
 
   &:not(:disabled):not([aria-disabled="true"]):focus-visible {
-    outline: 2px solid rgb(146 101 30) !important;
+    outline: var(--guided-focus-outline, 2px solid rgb(146 101 30)) !important;
     outline-offset: 6px;
   }
 }

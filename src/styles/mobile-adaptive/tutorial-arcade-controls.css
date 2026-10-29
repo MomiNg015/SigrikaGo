@@ -1,11 +1,13 @@
-/* Tutorial retains the normal pod; only its current action receives a guide ring. */
+/* Tutorial guidance uses the spotlight, without an extra button focus frame. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-root {
+  --guided-focus-outline: none;
+  --guided-ring-display: none;
   &.desktop-room-screen .battle-layout {
     grid-template-columns: minmax(220px, var(--right-panel)) minmax(430px, min(654px, calc(100dvh - 285px))) minmax(220px, var(--right-panel)) !important;
   }
-  & .battle-arcade-controls [data-tutorial-target="true"] .action-keycap {
-    outline: 3px solid var(--bright-pink);
-    outline-offset: 5px;
+  & .battle-arcade-controls .action-keycap,
+  & .room-header-story-log {
+    outline: none !important;
   }
   & .room-header-quick-actions .chat-widget-icon-only {
     flex: 0 0 44px;

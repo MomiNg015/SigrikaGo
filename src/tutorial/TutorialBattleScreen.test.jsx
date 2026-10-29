@@ -109,7 +109,7 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("setPendingWait");
     expect(source).toContain("pendingWait");
     expect(source).toContain("revealsChoices: options.length > 0");
-    expect(source).toContain("if (choicesVisible && node?.options?.length)");
+    expect(source).toContain("if (!continuation && choicesVisible && node?.options?.length)");
     expect(source).toContain("return normalActions;");
     expect(source).not.toContain("可继续，稍后自动推进");
     expect(source).not.toContain("请点击继续");

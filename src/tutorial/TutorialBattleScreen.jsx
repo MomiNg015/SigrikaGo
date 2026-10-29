@@ -6,7 +6,7 @@ export { TypewriterText } from "./TypewriterText.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Play } from "lucide-react";
 import ChatBox from "../room/ChatBox.jsx";
-import { activeTutorialAction, tutorialActionForNode } from "./tutorialActionState.js";
+import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState } from "./tutorialActionState.js";
 import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 import {
@@ -121,6 +121,7 @@ export default function TutorialBattleScreen({
   const [pendingSkill, setPendingSkill] = useState(false);
   const [storyLogOpen, setStoryLogOpen] = useState(false);
   const guidedActionSubmittedRef = useRef("");
+  const continueSubmittedRef = useRef(false);
   const [skillPhase, setSkillPhase] = useState("");
   const [choicesVisible, setChoicesVisible] = useState(false);
   const [npcBubble, setNpcBubble] = useState(null);
@@ -147,6 +148,8 @@ export default function TutorialBattleScreen({
   }, [tutorialPortraitUrls]);
   const currentNode = nodesById.get(nodeId) ?? null;
   const useMobileLayout = useMobileRoomLayout();
+
+  useEffect(() => { continueSubmittedRef.current = false; }, [nodeId, skillPhase, pendingWait, choicesVisible]);
 
   useEffect(() => {
     gameRef.current = game;
@@ -740,6 +743,17 @@ export default function TutorialBattleScreen({
     onToast?.(message, "warning");
   }
 
+  const actionState = { node: currentNode, phase: skillPhase, pendingWait, loading, choicesVisible,
+    previewControlsEnabled, confirmExit: confirmExit || storyLogOpen };
+  const continuation = tutorialContinueForState(actionState);
+  function handleTutorialContinue() {
+    if (activeTutorialAction(actionState) !== "continue" || continueSubmittedRef.current) return;
+    continueSubmittedRef.current = true;
+    if (continuation.kind === "wait") skipPendingWait();
+    else if (continuation.kind === "choice") handleChoice(continuation.option);
+    else handleContinue();
+  }
+
   return (
     <Layout className="tutorial-battle-root">
       <TutorialInputFocus mode={tutorialInputFocusMode({ node: currentNode, phase: skillPhase, choicesVisible, pendingWait, loading, confirmExit: confirmExit || storyLogOpen })} targetPointId={tutorialTargetPointId} />
@@ -759,20 +773,18 @@ export default function TutorialBattleScreen({
       <div className="tutorial-battle-screen-stage">
         <RoomBattleStage
           battleLayoutClassName={battleLayoutClassName}
-          tutorialAction={activeTutorialAction({ node: currentNode, phase: skillPhase, pendingWait, loading, choicesVisible, confirmExit: confirmExit || storyLogOpen })}
+          tutorialAction={activeTutorialAction(actionState)}
+          tutorialContinueLabel={continuation?.label}
+          onTutorialContinue={handleTutorialContinue}
           tutorialSkillName={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill ? skillLabel(currentNode, characters) : undefined}
           actionPanelOverride={(normalActions) => (
             <TutorialActionPanel
               normalActions={normalActions}
+              continuation={continuation}
               node={currentNode}
-              phase={skillPhase}
-              pendingWait={pendingWait}
               choicesVisible={choicesVisible}
-              previewControlsEnabled={previewControlsEnabled}
-              onContinue={handleContinue}
               onChoice={handleChoice}
               onRevealText={revealNpcBubbleText}
-              onSkipPendingWait={skipPendingWait}
             />
           )}
           audioSettings={audioSettings}
@@ -873,19 +885,10 @@ function npcDialogueTypewriterDurationMs(node) {
 }
 
 export function TutorialActionPanel({
-  node, phase, pendingWait, choicesVisible, previewControlsEnabled, normalActions,
-  onContinue, onChoice, onRevealText, onSkipPendingWait
+  node, choicesVisible, normalActions, continuation, onChoice, onRevealText
 }) {
-  if (choicesVisible && node?.options?.length) {
+  if (!continuation && choicesVisible && node?.options?.length) {
     return <TutorialChoiceActions key={node.id} node={node} onChoice={onChoice} onRevealText={onRevealText} />;
-  }
-  const canSkipWait = pendingWait && (pendingWait.manualContinue || previewControlsEnabled);
-  if (canSkipWait || (!pendingWait && phase === "continue")) {
-    return <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
-      <button className="tutorial-highlight-action" type="button" onClick={canSkipWait ? onSkipPendingWait : onContinue}>
-        <Play size={18} aria-hidden="true" /><span>{canSkipWait && !pendingWait.manualContinue ? "立即继续" : "继续"}</span>
-      </button>
-    </nav>;
   }
   return normalActions;
 }

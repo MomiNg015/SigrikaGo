@@ -18,6 +18,8 @@ export default function RoomBattleStage({
   actionPanelOverride,
   tutorialAction,
   tutorialSkillName,
+  tutorialContinueLabel,
+  onTutorialContinue,
   boardStep,
   canSwitchView,
   characters,
@@ -137,6 +139,8 @@ export default function RoomBattleStage({
     <ActionBar
       role={role}
       tutorialAction={tutorialAction}
+      tutorialContinueLabel={tutorialContinueLabel}
+      onTutorialContinue={onTutorialContinue}
       mode={displayRoom.game.mode}
       phase={displayRoom.game.phase}
       me={me}

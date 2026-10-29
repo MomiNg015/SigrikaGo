@@ -26,7 +26,7 @@ describe("ActionBar helpers", () => {
     expect(source).toContain("<Calculator size={18}");
     expect(source).toContain("<Handshake size={18}");
     expect(source).toContain(">弃手</span>");
-    expect(source).toContain(">数子</span>");
+    expect(source).toContain('{isContinue ? tutorialContinueLabel : "数子"}');
     expect(source).toContain(">和棋</span>");
     expect(source).not.toContain(">弃一手</span>");
     expect(source).not.toContain(">申请数子</span>");
