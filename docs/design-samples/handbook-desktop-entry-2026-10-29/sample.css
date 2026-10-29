@@ -1,0 +1,112 @@
+/* Standalone review chrome. No production stylesheet imports this file. */
+.handbook-entry-sample {
+  --entry-review-top: 80px;
+  --entry-review-bottom: 44px;
+  --entry-duration: 300ms;
+  --entry-stagger: 40ms;
+  color: #3d2b25;
+  font-family: var(--font-ui-default);
+}
+.handbook-entry-sample.is-slow { --entry-duration: 750ms; --entry-stagger: 100ms; }
+.entry-review-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 30000;
+  height: var(--entry-review-top);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 28px;
+  background: #fffaf0;
+  border-bottom: 2px solid #3d2b25;
+}
+.entry-review-heading > span { font-size: 12px; color: #6a554d; }
+.entry-review-heading h1 { font-size: 21px; margin: 3px 0 0; }
+.entry-review-controls { display: flex; gap: 12px; }
+.entry-review-controls button, .entry-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #3d2b25;
+  border-radius: 14px;
+  background: #fffbf2;
+  color: #3d2b25;
+  box-shadow: 2px 3px 0 #3d2b25;
+  font: inherit;
+  cursor: pointer;
+}
+.entry-review-controls button:active, .entry-open:active { translate: 2px 3px; box-shadow: none; }
+.entry-review-controls .entry-replay { background: #bfe8dd; }
+.entry-review-controls button[aria-pressed="true"] { background: #fff0a6; }
+.entry-review-controls button:disabled { opacity: .5; cursor: wait; }
+.entry-review-stage { min-height: 100dvh; display: grid; place-items: center; }
+.handbook-entry-sample .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school > .modal-backdrop,
+.handbook-entry-sample .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-figure-backdrop {
+  top: var(--entry-review-top) !important;
+  bottom: var(--entry-review-bottom) !important;
+  height: auto !important;
+}
+.handbook-entry-sample .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .window-sticker-host {
+  --window-sticker-available-height: calc(100dvh - var(--entry-review-top) - var(--entry-review-bottom) - 76px);
+}
+.handbook-entry-sample .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-details-modal.character-detail-fullbody {
+  max-height: calc(100dvh - var(--entry-review-top) - var(--entry-review-bottom) - 108px) !important;
+}
+.entry-review-note {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 30000;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 28px;
+  background: #fffaf0;
+  border-top: 1px solid #6a554d;
+  font-size: 13px;
+}
+.entry-timing { color: #6a554d; white-space: nowrap; }
+.entry-mobile-note { display: none; }
+
+/* Move the entire slanted strip; the board's existing clip contains entry. */
+@media (min-width: 769px) {
+  .handbook-entry-sample .handbook-puzzle-piece {
+    animation: handbook-sample-from-top var(--entry-duration) cubic-bezier(.23, 1, .32, 1) both;
+    animation-delay: calc(var(--entry-order, 0) * var(--entry-stagger));
+  }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(even) { animation-name: handbook-sample-from-bottom; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(2) { --entry-order: 1; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(3) { --entry-order: 2; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(4) { --entry-order: 3; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(5) { --entry-order: 4; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(6) { --entry-order: 5; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(7) { --entry-order: 6; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(8) { --entry-order: 7; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(9) { --entry-order: 8; }
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(10) { --entry-order: 9; }
+}
+@keyframes handbook-sample-from-top {
+  from { transform: translateY(-102%); }
+  to { transform: translateY(0); }
+}
+@keyframes handbook-sample-from-bottom {
+  from { transform: translateY(102%); }
+  to { transform: translateY(0); }
+}
+@media (max-width: 768px) {
+  .handbook-entry-sample { --entry-review-top: 120px; --entry-review-bottom: 48px; }
+  .entry-review-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+  .entry-review-heading h1 { font-size: 17px; }
+  .entry-review-controls { gap: 10px; }
+  .entry-review-controls button { padding: 6px 12px; font-size: 13px; }
+  .entry-review-note { min-height: 48px; padding: 8px 16px; font-size: 12px; }
+  .entry-desktop-note, .entry-timing { display: none; }
+  .entry-mobile-note { display: inline; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .handbook-entry-sample .handbook-puzzle-piece:nth-child(n) { animation: none; }
+}

@@ -1,5 +1,9 @@
 # Member Handbook Diagonal Portrait Strips
 
+## Desktop entry prototype (2026-10-29, pending production approval)
+
+`docs/design-samples/handbook-desktop-entry-2026-10-29/` mounts the real HouseModal with local fixture data. Only its sample CSS animates whole `.handbook-puzzle-piece` strips, alternating -102%/+102% vertical translation, 300ms duration and 40ms catalog-order stagger. The existing board clip contains travel; do not animate portrait geometry or disable normal interactions. Replay remounts the fixture, slow observation runs at 0.4x, reduced motion disables translation, and widths up to 768px keep production styling. The bootstrap rejects `/api/` requests before the network. `verify.mjs` checks direction, timing, replay, detail activation, mobile reachability and reduced motion. This is a review artifact, not an approved production motion contract.
+
 Desktop authored portraits registered in `PORTRAIT_VISIBLE_BOUNDS` use the same visible full-body height (88%) and bottom baseline (95%) as default chibi strips. `handbookStripArtStyle` derives proportional dimensions and the horizontal center from those existing alpha bounds; this exhibition layout supersedes shared equipment scale/offset only inside desktop strips. Preserve the source, mobile framing, unknown-art fallback, mascot geometry, detail/battle rendering and saved equipment. Resting and expanded desktop states must retain identical dimensions and vertical position. Regenerate bounds when registered art changes.
 
 Base Denia rainbow candy art uses the native 832x1216 animation and the same chibi focal/head/body landmarks as her default sprite. It must have identical dimensions and positioning in resting/expanded desktop and portrait-phone strips. Do not pass the normalized square candy portrait through the small custom-art branch. Keep explicit costume candy variants/framing and the normalized fallback source intact.

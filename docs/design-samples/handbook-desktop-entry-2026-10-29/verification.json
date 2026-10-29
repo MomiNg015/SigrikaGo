@@ -1,0 +1,46 @@
+{
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "alternatingEntry": true,
+      "replay": true,
+      "details": true,
+      "reducedMotion": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "alternatingEntry": true,
+      "replay": true,
+      "details": true,
+      "reducedMotion": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "alternatingEntry": false,
+      "replay": true,
+      "details": true,
+      "reducedMotion": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 640
+      },
+      "alternatingEntry": false,
+      "replay": true,
+      "details": true,
+      "reducedMotion": true
+    }
+  ],
+  "errors": [],
+  "apiRequests": []
+}
