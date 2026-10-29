@@ -27,8 +27,6 @@ export default function ActionCue({ variant, paused, source = "battle" }) {
         radius: mode === "board" ? "50%" : getComputedStyle(element).borderRadius,
         mode, actionable: Boolean(homeAction), fromAbove: mode === "actions" || rect.y + rect.height / 2 > innerHeight - 130,
         handAngle: rect.x + rect.width / 2 < innerWidth / 2 ? "205deg" : "155deg",
-        focusX: source === "home" ? 1 + Math.min(10, Math.max(0, Math.min(rect.left, innerWidth - rect.right) - 4)) * 2 / rect.width : 1.12,
-        focusY: source === "home" ? 1 + Math.min(10, Math.max(0, Math.min(rect.top, innerHeight - rect.bottom) - 4)) * 2 / rect.height : 1.12,
         haloX: Math.min(1.5, 1 + Math.max(0, Math.min(rect.left, innerWidth - rect.right) - 12) * 2 / (rect.width + 8)),
         haloY: Math.min(1.5, 1 + Math.max(0, Math.min(rect.top, innerHeight - rect.bottom) - 12) * 2 / (rect.height + 8))
       } : null;
@@ -45,11 +43,10 @@ export default function ActionCue({ variant, paused, source = "battle" }) {
     measure();
     return () => cancelAnimationFrame(frame);
   }, [source]);
-  if (!anchor) return null;
+  if (!anchor || variant === "focus") return null;
   const { x, y, width, height, radius, mode, fromAbove } = anchor;
   return createPortal(<div className={`action-cue action-cue-${variant}${paused ? " is-paused" : ""}`} data-cue-variant={variant} data-cue-mode={mode} data-cue-actionable={anchor.actionable} aria-hidden="true"
-    style={{ left: x, top: y, width, height, "--cue-radius": radius, "--halo-x": anchor.haloX, "--halo-y": anchor.haloY, "--hand-angle": anchor.handAngle, "--focus-x": anchor.focusX, "--focus-y": anchor.focusY }}>
-    {variant === "focus" && <div className="focus-corners"><i className="corner corner-tl"/><i className="corner corner-tr"/><i className="corner corner-bl"/><i className="corner corner-br"/></div>}
+    style={{ left: x, top: y, width, height, "--cue-radius": radius, "--halo-x": anchor.haloX, "--halo-y": anchor.haloY, "--hand-angle": anchor.handAngle }}>
     {variant === "halo" && <><div className="halo-edge"/><div className="halo-wave halo-first"/><div className="halo-wave halo-second"/></>}
     {variant === "hand" && <>
       <div className="hand-target"/>

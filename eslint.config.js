@@ -5,6 +5,10 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/home/onboarding/*.{js,jsx}",
+  "src/tutorial/GuideFocusMarker.jsx",
+  "src/tutorial/guideFocusGeometry*.js",
+  "src/tutorial/TutorialInputFocus.jsx",
   "docs/design-samples/tutorial-action-cues-2026-10-29/*.{js,jsx,mjs}",
   "src/tutorial/TutorialChoiceActions*.jsx",
   "src/tutorial/useTutorialChoicePlacement.js",

@@ -94,6 +94,59 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
 
 test.describe("animated home guide avatar stability", () => {
   test.use({ reducedMotion: "no-preference" });
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }]) {
+    test(`first visible dialogue frame is positioned, including delayed windows ${viewport.width}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.route('**/api/**', route => route.fulfill({ json: { items: [], messages: [], unreadCount: 0, badgeCount: 0 } }));
+      await page.addInitScript(steps => {
+        window.__placementFrames = { first: {}, failures: [], waiting: 0 };
+        const sample = () => {
+          const root = document.querySelector('.home-onboarding');
+          const panel = root?.querySelector('.home-guide-panel');
+          const avatar = root?.querySelector('.home-guide-portrait-layer');
+          const step = steps.find(entry => entry.id === root?.dataset.step);
+          if (panel && avatar && step) {
+            const visible = getComputedStyle(panel).visibility === 'visible';
+            const avatarVisible = getComputedStyle(avatar).visibility === 'visible';
+            const a = panel.getBoundingClientRect(), b = avatar.getBoundingClientRect();
+            if (root.dataset.placementReady === 'false') {
+              window.__placementFrames.waiting += 1;
+              if (visible || avatarVisible) window.__placementFrames.failures.push(`${step.id}: visible before placement`);
+            }
+            if (visible && !window.__placementFrames.first[step.id]) {
+              window.__placementFrames.first[step.id] = { top: a.top, left: a.left };
+              if (!avatarVisible || Math.abs(a.top - b.top) > 1 || Math.abs(a.left - b.left) > 1) window.__placementFrames.failures.push(`${step.id}: avatar mismatch`);
+              if (step.target) {
+                const marker = root.querySelector('.home-guide-spotlight')?.getBoundingClientRect();
+                if (!marker) window.__placementFrames.failures.push(`${step.id}: no target`);
+                else {
+                  const below = marker.bottom + 16, above = marker.top - a.height - 16;
+                  const expected = below + a.height <= innerHeight - 14 ? below : Math.max(66, above);
+                  if (Math.abs(a.top - expected) > 1) window.__placementFrames.failures.push(`${step.id}: default/old position ${a.top}, expected ${expected}`);
+                }
+              }
+            }
+          }
+          requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+      }, HOME_ONBOARDING_STEPS);
+      await page.goto('/tests/e2e/fixtures/home-onboarding.html?windowDelay=180');
+      for (const step of HOME_ONBOARDING_STEPS) {
+        await expect(page.locator('.home-onboarding')).toHaveAttribute('data-step', step.id);
+        if (step.choice) { await page.locator('.home-guide-choice').click(); continue; }
+        await expect(page.locator('.home-guide-panel')).toBeVisible();
+        await expect.poll(() => page.evaluate(id => Boolean(window.__placementFrames.first[id]), step.id)).toBe(true);
+        // Let normal typing finish: a delayed click could arrive after completion and advance.
+        await expect(page.locator('.home-guide-panel p')).toHaveText(step.text);
+        await page.locator(step.action ? '.home-guide-target' : '.tutorial-battle-dialogue').click();
+      }
+      const frames = await page.evaluate(() => window.__placementFrames);
+      expect(frames.waiting).toBeGreaterThan(0);
+      expect(Object.keys(frames.first)).toHaveLength(HOME_ONBOARDING_STEPS.filter(step => !step.choice).length);
+      expect(frames.failures).toEqual([]);
+    });
+  }
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
     test(`instructions start at the actionable target without a repeated dialogue ${viewport.width}`, async ({ page }, testInfo) => {
       await page.setViewportSize(viewport);
@@ -126,9 +179,6 @@ test.describe("animated home guide avatar stability", () => {
           expect(geometry.text.length).toBeLessThan(step.text.length);
           await page.screenshot({ path: testInfo.outputPath(`${step.id}-first.png`) });
         }
-        if (!pair && step.text && await page.locator(".home-guide-panel p").textContent() !== step.text) {
-          await page.locator(".tutorial-battle-dialogue").click();
-        }
         if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
         // One target activation must show the next line, not relocate the same line.
         await page.locator(step.action ? ".home-guide-target" : ".tutorial-battle-dialogue").click();
@@ -144,7 +194,7 @@ test.describe("animated home guide avatar stability", () => {
     await page.evaluate(() => {
       window.__guideFocusCount = 0;
       document.addEventListener("animationstart", event => {
-        if (event.animationName === "home-guide-focus") window.__guideFocusCount += 1;
+        if (event.animationName === "guide-focus-contract") window.__guideFocusCount += 1;
       });
     });
     for (const step of HOME_ONBOARDING_STEPS) {
@@ -152,8 +202,7 @@ test.describe("animated home guide avatar stability", () => {
       if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
       await expect(page.locator(".home-guide-status")).toHaveCount(0);
       if (step.text) {
-        // Reveal the line without advancing; this suite keeps real animations enabled.
-        if (await page.locator(".home-guide-panel p").textContent() !== step.text) await page.locator(".tutorial-battle-dialogue").click();
+        // Observe real typing; click-to-reveal is covered by the deterministic DOM tests.
         await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
       }
       if (step.id === "skill") {

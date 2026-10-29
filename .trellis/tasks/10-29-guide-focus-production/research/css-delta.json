@@ -1,0 +1,18 @@
+{
+  "paths": [
+    "src/styles/mobile-adaptive/home-onboarding.css",
+    "src/styles/room/tutorial-battle-screen/input-focus.css",
+    "src/styles/room/tutorial-battle-screen/guide-focus.css"
+  ],
+  "delta": {
+    "totalFiles": 1,
+    "totalBytes": 1403,
+    "importantCount": 0,
+    "importantFiles": 0,
+    "hardcodedHexCount": 3,
+    "mediaFiles": 0,
+    "reducedMotionFiles": 0,
+    "highZIndexFiles": 0
+  },
+  "note": "2026-10-29: approved A shared guide markers, actual home component paint layers and hidden-until-positioned dialogue; exact scoped delta {\"totalFiles\":1,\"totalBytes\":1403,\"importantCount\":0,\"importantFiles\":0,\"hardcodedHexCount\":3,\"mediaFiles\":0,\"reducedMotionFiles\":0,\"highZIndexFiles\":0}. No unrelated loading/settings CSS included."
+}

@@ -7,7 +7,6 @@ import { useOverlayState } from "../../../src/app/useOverlayState.js";
 import { CHARACTERS, characterListFromCatalog } from "../../../src/shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../../../src/shared/siteSettings.js";
 import ActionCue from "./ActionCue.jsx";
-import HomeComponentHighlight from "./HomeComponentHighlight.jsx";
 
 const noop = () => {};
 const audioSettings = { master: 0, bgm: 0, sfx: 0, voice: 0, muted: true };
@@ -55,6 +54,6 @@ export default function HomeScene({ target, variant, paused }) {
       {active && <HomeOnboarding character={CHARACTERS.sigrika} overlaySetters={overlays.overlaySetters} onFinish={() => setActive(false)}/>}
     </div>
     {!ready && <div className="home-sample-loading" role="status">正在打开主界面引导…</div>}
-    {ready && <><HomeComponentHighlight/><ActionCue source="home" variant={variant} paused={paused}/></>}
+    {ready && <ActionCue source="home" variant={variant} paused={paused}/>}
   </div>;
 }

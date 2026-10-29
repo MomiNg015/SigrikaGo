@@ -19,6 +19,11 @@ function Scene() {
   const [paused, setPaused] = useState(false);
   const [revision, setRevision] = useState(0);
   useEffect(() => {
+    document.body.dataset.cueVariant = variant;
+    document.body.dataset.cuePaused = String(paused);
+    return () => { delete document.body.dataset.cueVariant; delete document.body.dataset.cuePaused; };
+  }, [variant, paused]);
+  useEffect(() => {
     const receive = event => {
       if (event.origin !== location.origin || event.source !== parent || event.data?.source !== "action-cue-review") return;
       if (variants.includes(event.data.variant)) setVariant(event.data.variant);

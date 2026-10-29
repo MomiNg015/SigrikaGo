@@ -5,6 +5,8 @@ import { prefersReducedMotion } from "../../tutorial/TypewriterText.jsx";
 import { HOME_ONBOARDING_STEPS, HOME_ONBOARDING_WINDOWS } from "./homeOnboardingScript.js";
 import { resolveStoryPortraitPresentation } from "../../shared/characterStorySprites.js";
 import { preloadImageAssets } from "../../shared/preloadAssets.js";
+import GuideFocusMarker from "../../tutorial/GuideFocusMarker.jsx";
+import HomeGuideHighlight from "./HomeGuideHighlight.jsx";
 
 export function visibleGuideTarget(selector) {
   return [...document.querySelectorAll(selector)].find((element) => {
@@ -30,20 +32,24 @@ export function revealGuideTarget(target) {
 
 export default function HomeOnboarding({ character, overlaySetters, saving, error, onFinish }) {
   const [index, setIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const [revealState, setRevealState] = useState({ stepId: null, value: false });
   const [geometry, setGeometry] = useState(null);
-  const [panelHeight, setPanelHeight] = useState(200);
+  const [panelMeasure, setPanelMeasure] = useState({ stepId: null, height: 200 });
   const [retryOutcome, setRetryOutcome] = useState("completed");
   const rootRef = useRef(null);
   const panelRef = useRef(null);
   const dispatching = useRef(false);
   const targetRef = useRef(null);
   const step = HOME_ONBOARDING_STEPS[index];
+  const revealed = revealState.stepId === step.id ? revealState.value : !step.text || prefersReducedMotion();
+  const revealLine = () => setRevealState({ stepId: step.id, value: true });
   const portrait = resolveStoryPortraitPresentation(step, { character, variant: "avatar" });
   const text = step.text || HOME_ONBOARDING_STEPS.slice(0, index).findLast((entry) => entry.text)?.text || "";
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
   const rect = geometry && geometry.selector === selector ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
+  const panelHeight = panelMeasure.height;
+  const panelReady = ready && panelMeasure.stepId === step.id;
 
   useEffect(() => {
     const urls = [...new Set(HOME_ONBOARDING_STEPS.map((entry) => resolveStoryPortraitPresentation(entry, { character, variant: "avatar" }).src).filter(Boolean))];
@@ -57,9 +63,8 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   };
 
   useEffect(() => {
-    setRevealed(!step.text || prefersReducedMotion());
     if (!step.text || prefersReducedMotion()) return;
-    const timer = window.setTimeout(() => setRevealed(true), 80 + step.text.length * 28);
+    const timer = window.setTimeout(() => setRevealState({ stepId: step.id, value: true }), 80 + step.text.length * 28);
     return () => window.clearTimeout(timer);
   }, [step]);
 
@@ -75,7 +80,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   useLayoutEffect(() => {
     const measure = () => {
       const height = step.choice ? 0 : panelRef.current?.getBoundingClientRect().height || 200;
-      setPanelHeight(height);
+      setPanelMeasure(current => current.stepId === step.id && current.height === height ? current : { stepId: step.id, height });
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -83,9 +88,9 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     const dialogue = panelRef.current?.querySelector(".tutorial-battle-dialogue");
     if (dialogue) observer.observe(dialogue);
     return () => observer.disconnect();
-  }, [step.choice]);
+  }, [step.id, step.choice]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let frame;
     let scrolledElement;
     const measure = () => {
@@ -104,8 +109,8 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       } : null;
       const usable = next && next.right > next.left && next.bottom > next.top ? next : null;
       setGeometry((current) => {
-        const value = { selector, rect: usable, width, height };
-        return JSON.stringify(current) === JSON.stringify(value) ? current : value;
+        const value = { selector, rect: usable, width, height, target };
+        return current?.selector === selector && current?.target === target && current?.width === width && current?.height === height && JSON.stringify(current?.rect) === JSON.stringify(usable) ? current : value;
       });
       frame = requestAnimationFrame(measure);
     };
@@ -137,7 +142,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       } else if (event.key === "Tab") {
         event.preventDefault();
         event.stopImmediatePropagation();
-        const buttons = [...rootRef.current.querySelectorAll("button:not(:disabled)")];
+        const buttons = [...rootRef.current.querySelectorAll("button:not(:disabled)")].filter(button => !button.closest("[inert]"));
         const current = buttons.indexOf(document.activeElement);
         buttons[(current + (event.shiftKey ? buttons.length - 1 : 1)) % buttons.length]?.focus({ preventScroll: true });
       } else if (event.key === " " && rootRef.current?.contains(event.target)) {
@@ -172,13 +177,13 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const finish = (outcome) => { setRetryOutcome(outcome); onFinish(outcome); };
   const advance = () => {
     if (saving || error || !ready) return;
-    if (!revealed) { setRevealed(true); return; }
+    if (!revealed) { revealLine(); return; }
     if (step.action || step.choice) return;
     if (index === HOME_ONBOARDING_STEPS.length - 1) finish("completed");
     else setIndex((value) => value + 1);
   };
   const activateTarget = () => {
-    if (!revealed) { setRevealed(true); return; }
+    if (!revealed) { revealLine(); return; }
     if (!ready || saving || error || !targetRef.current?.isConnected) return;
     const target = targetRef.current;
     invoke(target.matches("button") ? target : target.querySelector("button") || target);
@@ -196,19 +201,17 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     panelTop = below + panelHeight <= height - 14 ? below : Math.max(minimumTop, above);
     panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
   }
-  const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth };
+  const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth, visibility: panelReady ? "visible" : "hidden" };
   const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.palette || character.color, speakerName: "西格莉卡" };
-  const hole = rect ? `M${rect.left},${rect.top} H${rect.right} V${rect.bottom} H${rect.left} Z` : "";
 
   return (
-    <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" data-step={step.id} tabIndex={-1}
-      onClick={(event) => { if (!event.target.closest("button")) advance(); }}
-      onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); advance(); } }}>
-      <svg className="home-guide-scrim" aria-hidden="true" width="100%" height="100%">
-        <path fillRule="evenodd" d={`M0,0 H${geometry?.width || window.innerWidth} V${height} H0 Z ${hole}`} />
-      </svg>
+    <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" data-step={step.id} data-placement-ready={panelReady} tabIndex={-1}
+      onClickCapture={(event) => { if (!event.target.closest("button")) advance(); }}
+      onKeyDownCapture={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); advance(); } }}>
+      <div className="home-guide-scrim" aria-hidden="true" />
       <div className="home-guide-advance-plane" aria-hidden="true" />
-      {rect && <div key={selector} className="home-guide-spotlight" aria-hidden="true" style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
+      {rect && <HomeGuideHighlight target={geometry.target} selector={selector}/>}
+      {rect && <GuideFocusMarker key={selector} rect={rect} viewport={{ width, height }} className="home-guide-spotlight"/>}
       {rect && step.action && <button className="home-guide-target" type="button" aria-label={`点击${targetRef.current?.getAttribute("aria-label") || step.target}继续引导`}
         disabled={saving || Boolean(error)} onClick={activateTarget}
         style={{ left: rect.left, top: rect.top, width: rect.right - rect.left, height: rect.bottom - rect.top }} />}
@@ -217,10 +220,10 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
       </button>
       {step.choice ? <div className="home-guide-choice-panel">
         <button type="button" className="home-guide-choice" onClick={() => { if (!saving && !error) setIndex((value) => value + 1); }} disabled={saving || Boolean(error)}>{step.choice}</button>
-      </div> : <div ref={panelRef} style={panelStyle} className="home-guide-panel">
+      </div> : <div ref={panelRef} style={panelStyle} className="home-guide-panel" aria-hidden={!panelReady}>
         <NpcDialogue bubble={npcBubble} revealAll={revealed} portraitDetached={portrait.standard} />
-        {!ready && <span className="home-guide-status" role="status">正在准备介绍的窗口…</span>}
       </div>}
+      {!ready && <span className="home-guide-status" role="status">正在准备介绍的窗口…</span>}
       {!step.choice && portrait.standard && <div className="home-guide-portrait-layer" style={panelStyle} aria-hidden="true">
         <NpcDialoguePortrait bubble={npcBubble} />
       </div>}

@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HOME_ONBOARDING_STEPS } from "./homeOnboardingScript.js";
 import HomeOnboarding, { revealGuideTarget } from "./HomeOnboarding.jsx";
+
+// Paint fidelity is covered in the real browser. Keep jsdom focused on behavior.
+vi.mock("./HomeGuideHighlight.jsx", () => ({ default: () => <div inert aria-hidden="true"><button type="button">paint-only copy</button></div> }));
 
 beforeEach(() => {
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
@@ -173,4 +175,50 @@ it("blocks wheel and touch scrolling on the guide plane", () => {
   const plane = container.querySelector(".home-guide-advance-plane");
   expect(fireEvent.wheel(plane, { deltaY: 300 })).toBe(false);
   expect(fireEvent.touchMove(plane)).toBe(false);
+});
+
+it("keeps the current NPC and avatar hidden until a delayed target is positioned", () => {
+  const frames = new Map();
+  let sequence = 0;
+  vi.stubGlobal("requestAnimationFrame", callback => { frames.set(++sequence, callback); return sequence; });
+  vi.stubGlobal("cancelAnimationFrame", id => frames.delete(id));
+  const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()}/>);
+  fireEvent.click(container.querySelector('.home-guide-advance-plane'));
+  expect(container.querySelector('.home-onboarding').dataset.step).toBe('handbook');
+  expect(container.querySelector('.home-guide-panel').style.visibility).toBe('hidden');
+  expect(container.querySelector('.home-guide-portrait-layer').style.visibility).toBe('hidden');
+  const target = document.createElement('button');
+  target.dataset.homeGuide = 'handbook';
+  target.getBoundingClientRect = () => ({ left: 50, top: 480, right: 200, bottom: 580, width: 150, height: 100 });
+  document.body.append(target);
+  act(() => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback()); });
+  const panel = container.querySelector('.home-guide-panel');
+  const avatar = container.querySelector('.home-guide-portrait-layer');
+  expect(panel.style.visibility).toBe('visible');
+  expect(panel.style.top).toBe('601px');
+  expect(avatar.style.top).toBe(panel.style.top);
+  expect(avatar.style.visibility).toBe('visible');
+  target.remove();
+});
+
+it("does not carry a fully revealed previous line into a new step", () => {
+  vi.stubGlobal("matchMedia", () => ({ matches: false }));
+  const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()}/>);
+  fireEvent.click(container.querySelector('.tutorial-battle-dialogue'));
+  expect(container.querySelector('.home-guide-panel p').textContent).toBe(HOME_ONBOARDING_STEPS[0].text);
+  fireEvent.click(container.querySelector('.tutorial-battle-dialogue'));
+  expect(container.querySelector('.home-guide-panel p').textContent).not.toBe(HOME_ONBOARDING_STEPS[1].text);
+});
+
+it("keeps inert paint-copy buttons out of the guide keyboard cycle", () => {
+  const { container } = render(<><button data-home-guide="handbook">handbook</button><HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()}/></>);
+  fireEvent.click(container.querySelector('.home-guide-advance-plane'));
+  const guide = container.querySelector('.home-onboarding');
+  guide.focus();
+  fireEvent.keyDown(guide, { key: 'Tab' });
+  expect(document.activeElement).toBe(container.querySelector('.home-guide-target'));
+  fireEvent.keyDown(document.activeElement, { key: 'Tab' });
+  expect(document.activeElement).toBe(container.querySelector('.home-guide-skip'));
+  fireEvent.keyDown(document.activeElement, { key: 'Tab' });
+  expect(document.activeElement).toBe(container.querySelector('.home-guide-target'));
 });

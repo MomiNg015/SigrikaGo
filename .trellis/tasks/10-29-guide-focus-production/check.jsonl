@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/story-guide-layout-contract.md","reason":"Stable NPC geometry and home input contract"}
+{"file":".trellis/spec/frontend/tutorial-action-controls.md","reason":"Approved focus direction and home painted silhouettes"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Shared CSS ownership and debt gates"}
+{"file":".trellis/tasks/10-29-guide-focus-production/prd.md","reason":"Production scope and flash regression"}

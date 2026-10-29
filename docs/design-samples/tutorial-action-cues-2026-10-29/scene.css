@@ -4,13 +4,6 @@ html, body, #root, .action-cue-scene { width: 100%; height: 100%; margin: 0; ove
 .action-cue-scene .board .tutorial-target-ring { visibility: hidden; }
 .action-cue { position: fixed; z-index: 181; pointer-events: none; color: #3d2b25; }
 .action-cue *, .action-cue *::before, .action-cue *::after { box-sizing: border-box; pointer-events: none; }
-.focus-corners { position: absolute; inset: -9px; animation: cue-focus 1900ms ease-in-out infinite; }
-.corner { position: absolute; width: 22px; height: 22px; border: 4px solid #3d2b25; filter: drop-shadow(0 0 1px #fffbf2) drop-shadow(2px 2px 0 #fff0a6); }
-.corner-tl { left: 0; top: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 7px; }
-.corner-tr { right: 0; top: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 7px; }
-.corner-bl { left: 0; bottom: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 7px; }
-.corner-br { right: 0; bottom: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 7px; }
-@keyframes cue-focus { 0%, 70%, 100% { transform: scale(var(--focus-x, 1.12), var(--focus-y, 1.12)); } 18%, 44% { transform: scale(.96); } 30% { transform: scale(1); } }
 .halo-edge, .halo-wave { position: absolute; inset: -4px; border-radius: var(--cue-radius); border: 3px solid #fff0a6; box-shadow: 0 0 0 2px #3d2b25; }
 .halo-wave { border-width: 4px; animation: cue-halo 2100ms cubic-bezier(.22,.61,.36,1) infinite; }
 .halo-second { animation-delay: -1350ms; }
@@ -31,12 +24,7 @@ html, body, #root, .action-cue-scene { width: 100%; height: 100%; margin: 0; ove
 .home-cue-scene { width: 100%; height: 100%; }
 .home-cue-scene.is-preparing > .app-shell { opacity: 0; pointer-events: none; }
 .home-sample-loading { position: fixed; inset: 0; z-index: 100252; display: grid; place-items: center; background: #fffbf2; color: #3d2b25; font-family: "Sigrika Window Title", sans-serif; }
-.home-cue-scene .home-guide-spotlight { visibility: hidden; animation: none; }
-.action-cue[data-cue-mode="home"] .focus-corners { inset: 0; }
-/* Flat dimming under the component's own pixels, with no rectangular cutout. */
-.home-cue-scene .home-guide-scrim { background: rgb(25 17 28 / 72%); }
-.home-cue-scene .home-guide-scrim path { display: none; }
-.home-component-highlight { position: fixed; left: 0; top: 0; width: max-content; height: max-content; transform-origin: top left; z-index: 1; pointer-events: none; }
-.home-cue-scene .home-guide-advance-plane, .home-cue-scene .home-guide-target { z-index: 2; }
-.home-cue-scene .home-guide-panel, .home-cue-scene .home-guide-portrait-layer, .home-cue-scene .home-guide-choice-panel { z-index: 3; }
 .home-cue-scene .home-onboarding .action-cue { z-index: 2; }
+/* A now renders the production marker; B/C remain historical comparisons. */
+body[data-cue-variant="halo"] .guide-focus-marker, body[data-cue-variant="hand"] .guide-focus-marker { visibility: hidden; }
+body[data-cue-paused="true"] .guide-focus-corners { animation-play-state: paused; }

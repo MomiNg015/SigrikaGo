@@ -26,7 +26,7 @@
 
 .home-guide-scrim {
   pointer-events: none;
-  fill: rgb(25 17 28 / 72%);
+  background: rgb(25 17 28 / 72%);
 }
 
 .home-onboarding .home-guide-advance-plane:hover,
@@ -50,10 +50,12 @@
 
 .home-guide-spotlight {
   pointer-events: none;
-  border: 3px solid var(--bs-mint, palegreen);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--bs-mint, palegreen) 65%, transparent);
-  animation: home-guide-focus 260ms ease-out;
+  z-index: 2;
 }
+
+.home-guide-highlight { position: fixed; left: 0; top: 0; width: max-content; height: max-content; transform-origin: top left; z-index: 1; pointer-events: none; }
+.home-onboarding .home-guide-advance-plane, .home-onboarding .home-guide-target { z-index: 2; }
+.home-onboarding .home-guide-panel, .home-onboarding .home-guide-portrait-layer, .home-onboarding .home-guide-choice-panel, .home-onboarding .home-guide-feedback { z-index: 3; }
 
 .app-shell .home-onboarding .home-guide-target,
 .app-shell .home-onboarding .home-guide-target:is(:hover, :active, :focus) {
@@ -93,7 +95,7 @@
   padding: 0;
   display: grid;
   place-items: center;
-  z-index: 2;
+  z-index: 4;
 }
 
 .home-guide-choice-panel,
@@ -116,16 +118,8 @@
 .home-guide-feedback { top: auto; bottom: 14px; transform: translateX(-50%); }
 .home-guide-status,
 .home-guide-feedback { color: white; }
+.home-guide-status { position: absolute; top: 66px; left: 50%; transform: translateX(-50%); }
 .home-guide-feedback button { min-height: 44px; }
-
-@keyframes home-guide-focus {
-  from { opacity: 0; transform: scale(1.06); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-guide-spotlight { animation: none; transition: none; }
-}
 
 .app-shell .home-onboarding .home-guide-scrim { height: 100% !important; }
 .app-shell .home-onboarding .home-guide-target { opacity: 0 !important; }
