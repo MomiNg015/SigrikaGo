@@ -1031,3 +1031,36 @@ Promoted the approved alternating strip entrance into one production CSS owner a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 272: Commit resource readiness, audio and theme rows
+
+**Date**: 2026-10-29
+**Task**: Commit resource readiness, audio and theme rows
+**Branch**: `master`
+
+### Summary
+
+Committed only user-selected resource readiness, audio unlock/cache and theme-row layout plus related tests/docs. Five browser tests passed; full-check generated-doc failure and E2E-isolation worker exit were resolved by regeneration and targeted 7-test rerun. All remaining gate stages passed. Preserved design samples, PV work, sample lint entries and deleted historical screenshots.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5f8b8ba0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 271
+- **Total Sessions**: 272
 - **Last Active**: 2026-10-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~1033 | Active |
+| `journal-5.md` | ~1066 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 272 | 2026-10-29 | Commit resource readiness, audio and theme rows | `5f8b8ba0` | `master` |
 | 271 | 2026-10-29 | Desktop handbook alternating entry rollout | `d5f9f69c` | `master` |
 | 270 | 2026-10-29 | Desktop handbook alternating entry sample | `e4061479` | `master` |
 | 269 | 2026-10-29 | Fix home-guide highlight snapshot performance | `5e17947a` | `master` |
