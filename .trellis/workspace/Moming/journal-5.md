@@ -668,3 +668,36 @@ Removed tutorial focus frames/option halo; Continue now reuses the counting slot
 ### Next Steps
 
 - None - task complete
+
+
+## Session 261: Tutorial action colors, scripted names and skill centering
+
+**Date**: 2026-10-29
+**Task**: Tutorial action colors, scripted names and skill centering
+**Branch**: `master`
+
+### Summary
+
+Continue uses original yellow; tutorial skill is gray outside the required skill action. User-view label is generic except when the script supplies the actual skill/name, verified with Denia execution. Centered icon/name group with symmetric padding and independent counter; 15 geometry cases avoid overlap. Passed 33 tutorial and 20 production cases, 190 focused tests, 443 battle tests, 120 final CSS/docs tests, lint/build. Scoped commits preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6fc72caf` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
