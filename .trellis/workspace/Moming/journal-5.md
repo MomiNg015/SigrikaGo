@@ -635,3 +635,36 @@ Reused five-key ActionBar in tutorials with target-only gating and pass/draw nod
 ### Next Steps
 
 - None - task complete
+
+
+## Session 260: Tutorial Continue key and focus refinement
+
+**Date**: 2026-10-29
+**Task**: Tutorial Continue key and focus refinement
+**Branch**: `master`
+
+### Summary
+
+Removed tutorial focus frames/option halo; Continue now reuses the counting slot for manual, phase and single-option continuation. Verified 30 tutorial viewport/state cases, duplicate clicks, 57 focused tests, final lint/build/built CSS/docs. Existing 443-test battle gate passed for the CSS refinement; preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dc65f11f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
