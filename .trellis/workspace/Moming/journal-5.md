@@ -965,3 +965,36 @@ Diagnosed live computed-style enumeration and full per-node declaration copies a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 270: Desktop handbook alternating entry sample
+
+**Date**: 2026-10-29
+**Task**: Desktop handbook alternating entry sample
+**Branch**: `master`
+
+### Summary
+
+Created isolated HouseModal prototype with alternating top/bottom strip entrance, replay and slow motion. Four browser viewports, reduced motion, detail and close interactions passed; lint and system-design generation passed. Production integration awaits user review. Unrelated working-tree changes preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e4061479` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
