@@ -26,7 +26,19 @@
         "bottom": 542.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -90,7 +102,19 @@
         "bottom": 542.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -164,7 +188,19 @@
         "bottom": 542.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -258,7 +294,19 @@
         "bottom": 542.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -302,7 +350,19 @@
         "bottom": 512.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 640,
+        "top": 0,
+        "right": 360,
+        "bottom": 640,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -366,7 +426,19 @@
         "bottom": 512.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 640,
+        "top": 0,
+        "right": 360,
+        "bottom": 640,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -440,7 +512,19 @@
         "bottom": 512.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 640,
+        "top": 0,
+        "right": 360,
+        "bottom": 640,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -534,7 +618,19 @@
         "bottom": 512.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 640,
+        "top": 0,
+        "right": 360,
+        "bottom": 640,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -578,7 +674,19 @@
         "bottom": 472.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "top": 0,
+        "right": 320,
+        "bottom": 568,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -642,7 +750,19 @@
         "bottom": 472.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "top": 0,
+        "right": 320,
+        "bottom": 568,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -716,7 +836,19 @@
         "bottom": 472.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "top": 0,
+        "right": 320,
+        "bottom": 568,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -810,7 +942,19 @@
         "bottom": 472.390625,
         "left": 9.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "top": 0,
+        "right": 320,
+        "bottom": 568,
+        "left": 0
+      },
+      "dialogueGap": 14,
       "controlCount": 5,
       "rects": [
         {
@@ -854,7 +998,19 @@
         "bottom": 726.421875,
         "left": 412.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "top": 0,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "dialogueGap": 28,
       "controlCount": 5,
       "rects": [
         {
@@ -918,7 +1074,19 @@
         "bottom": 726.421875,
         "left": 412.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "top": 0,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "dialogueGap": 28,
       "controlCount": 5,
       "rects": [
         {
@@ -992,7 +1160,19 @@
         "bottom": 726.421875,
         "left": 412.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "top": 0,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "dialogueGap": 28,
       "controlCount": 5,
       "rects": [
         {
@@ -1086,7 +1266,19 @@
         "bottom": 726.421875,
         "left": 412.5
       },
-      "noMask": true,
+      "noSpotlight": true,
+      "backdrop": "rgba(0, 0, 0, 0.2)",
+      "backdropBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "top": 0,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "dialogueGap": 28,
       "controlCount": 5,
       "rects": [
         {
@@ -1108,6 +1300,9 @@
   "errors": [],
   "checks": [
     "16 viewport-content combinations",
+    "twenty percent viewport backdrop below replies and above header",
+    "mobile dialogue close below header",
+    "history and exit remain usable through dimming",
     "unclipped horizontal shadow extents including reserved scrollbar gutter",
     "unchanged board on choice removal",
     "scroll-last-choice reachable",

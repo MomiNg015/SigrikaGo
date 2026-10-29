@@ -22,6 +22,7 @@ export default function TutorialChoiceActions({ node, onChoice, onRevealText, di
   };
 
   return <div className="tutorial-choice-overlay">
+    <div className="tutorial-choice-backdrop" aria-hidden="true" />
     <div ref={groupRef} className="tutorial-floating-choices" role="group" aria-label="请选择回答" aria-busy={submitted} inert={disabled}>
       <div className="tutorial-choice-list">
         {options.map((option, index) => <div className="tutorial-choice-step" key={`${node.id}-${index}`} style={{ "--choice-index": index, "--choice-delay": `${index * Math.min(35, 90 / options.length)}ms` }}>

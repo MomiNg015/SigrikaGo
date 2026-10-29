@@ -34,7 +34,10 @@ try {
     for (const scenario of ["normal", "long", "many", "single"]) {
       await page.goto(`${base}scene.html?scenario=${scenario}`);
       await page.locator('.tutorial-floating-choices[data-ready="true"]').waitFor();
-      await page.waitForFunction(() => [...document.querySelectorAll('.tutorial-choice-step')].every(el => getComputedStyle(el).opacity === '1' && getComputedStyle(el).transform === 'matrix(1, 0, 0, 1, 0, 0)'));
+      await page.waitForFunction(() => [...document.querySelectorAll('.tutorial-choice-step')].every(el => {
+        const style = getComputedStyle(el);
+        return Number(style.opacity) >= 0.999 && Math.abs(new DOMMatrix(style.transform).m41) < 0.1;
+      }));
       const geometry = await page.evaluate(() => {
         const group = document.querySelector(".tutorial-floating-choices");
         const board = document.querySelector(".board-stage").getBoundingClientRect();
@@ -44,7 +47,10 @@ try {
           scroll: group.scrollHeight > group.clientHeight + 1,
           font: getComputedStyle(buttons[0]).fontSize,
           bounds: rect.toJSON(), board: board.toJSON(),
-          noMask: !document.querySelector(".tutorial-input-focus"),
+          noSpotlight: !document.querySelector(".tutorial-input-focus"),
+          backdrop: getComputedStyle(document.querySelector('.tutorial-choice-backdrop')).backgroundColor,
+          backdropBounds: document.querySelector('.tutorial-choice-backdrop').getBoundingClientRect().toJSON(),
+          dialogueGap: document.querySelector('.tutorial-battle-dialogue').getBoundingClientRect().top - document.querySelector('.room-header').getBoundingClientRect().bottom,
           controlCount: document.querySelectorAll(".battle-arcade-controls button").length,
           rects: buttons.map(button => button.getBoundingClientRect().toJSON()),
           textFits: buttons.every(button => { const text = button.querySelector("span"); const a = text.getBoundingClientRect(), b = button.getBoundingClientRect(); return a.right <= b.right && a.bottom <= b.bottom && text.scrollWidth <= text.clientWidth + 1; }),
@@ -52,7 +58,19 @@ try {
           background: getComputedStyle(buttons[0]).backgroundColor
         };
       });
-      assert.ok(geometry.noMask, "sample must not dim board");
+      assert.ok(geometry.noSpotlight, "replies use a flat backdrop, without spotlight cutouts");
+      assert.equal(geometry.backdrop, 'rgba(0, 0, 0, 0.2)', 'background dims by twenty percent');
+      assert.deepEqual([geometry.backdropBounds.top, geometry.backdropBounds.left, geometry.backdropBounds.width, geometry.backdropBounds.height], [0, 0, width, height], 'dimming covers the viewport');
+      if (width <= 900) assert.ok(geometry.dialogueGap >= 8 && geometry.dialogueGap <= 18, 'mobile NPC sits close below header');
+      const layerProbe = await page.addStyleTag({ content: '.tutorial-choice-backdrop { pointer-events: auto !important; }' });
+      assert.ok(await page.evaluate(() => {
+        const backdrop = document.querySelector('.tutorial-choice-backdrop');
+        const header = document.querySelector('.room-header').getBoundingClientRect();
+        const button = document.querySelector('.tutorial-floating-choices button');
+        const r = button.getBoundingClientRect();
+        return document.elementFromPoint(header.left + 10, header.top + 10) === backdrop && button.contains(document.elementFromPoint(r.left + 10, r.top + 10));
+      }), 'backdrop is above header and below replies');
+      await layerProbe.evaluate(el => el.remove());
       assert.equal(geometry.background, "rgb(228, 248, 220)", "opaque approved reply fill wins the theme cascade");
       assert.equal(geometry.controlCount, 5, "normal controls preserved");
       assert.equal(geometry.pageOverflow, false);
@@ -78,9 +96,21 @@ try {
     await page.waitForTimeout(100);
     await checkHorizontalPaint(page);
     await gutterStyle.evaluate(el => el.remove());
+    const activeLogTrigger = page.locator('.room-header-story-log');
+    await activeLogTrigger.click();
+    await page.locator('.tutorial-story-log-popover[data-open="true"]').waitFor();
+    assert.equal(await page.locator('.tutorial-floating-choices').getAttribute('inert'), '', 'history still opens through the dimmer and locks replies');
+    await page.keyboard.press('Escape');
+    await page.locator('.tutorial-story-log-popover[data-open="true"]').waitFor({ state: 'hidden' });
+    assert.ok(await activeLogTrigger.evaluate(el => el === document.activeElement), 'closing history preserves header focus');
+    await page.getByRole('button', { name: '退出/跳过', exact: true }).click();
+    await page.getByText('结束剧情教学？', { exact: true }).waitFor();
+    assert.equal(await page.locator('.tutorial-floating-choices').getAttribute('inert'), '', 'exit confirmation locks replies');
+    await page.getByRole('button', { name: '取消', exact: true }).click();
     const before = await page.locator(".board-stage").boundingBox();
     await page.locator(".tutorial-floating-choices button").first().click();
     await page.getByText("这一步完成了。", { exact: true }).waitFor();
+    assert.equal(await page.locator('.tutorial-choice-backdrop').count(), 0, 'dimming ends with reply selection');
     assert.deepEqual(await page.locator(".board-stage").boundingBox(), before, "choice removal must not shift board");
     const logButton = page.locator(".room-header-quick-actions .chat-toggle-button");
     await logButton.waitFor({ state: "visible" });
@@ -136,6 +166,6 @@ try {
   await iframe.locator('.tutorial-floating-choices[data-ready="true"]').waitFor();
   await snap(page, "preview-review.png");
   assert.deepEqual(errors, []);
-  await writeFile(new URL("./verification.json", import.meta.url), JSON.stringify({ results, errors, checks: ["16 viewport-content combinations", "unclipped horizontal shadow extents including reserved scrollbar gutter", "unchanged board on choice removal", "scroll-last-choice reachable", "wrong answer retry and correct branch", "single native continuation", "keyboard Enter", "reduced motion", "review controls", "desktop/mobile header log placement and open/close"] }, null, 2));
+  await writeFile(new URL("./verification.json", import.meta.url), JSON.stringify({ results, errors, checks: ["16 viewport-content combinations", "twenty percent viewport backdrop below replies and above header", "mobile dialogue close below header", "history and exit remain usable through dimming", "unclipped horizontal shadow extents including reserved scrollbar gutter", "unchanged board on choice removal", "scroll-last-choice reachable", "wrong answer retry and correct branch", "single native continuation", "keyboard Enter", "reduced motion", "review controls", "desktop/mobile header log placement and open/close"] }, null, 2));
   console.log(JSON.stringify(results.map(({width, height, scenario, scroll, font}) => ({width, height, scenario, scroll, font})), null, 2));
 } finally { await browser.close(); }

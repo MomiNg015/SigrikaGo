@@ -155,7 +155,7 @@ try {
     await page.close();
   }
   assert.deepEqual(errors, []);
-  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, floating choices with retained controls and no dimming, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
+  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, floating choices with retained controls and a flat backdrop, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
   console.log(`Passed ${results.length} tutorial states and real transitions at desktop, 390px and 320px.`);
 } finally {
   await browser.close();

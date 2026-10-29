@@ -81,6 +81,7 @@
 }
 
 @media (max-width: 900px) {
+  .tutorial-battle-root.mobile-room-screen .tutorial-battle-dialogue { top: 8px; }
   .tutorial-battle-dialogue:has(.tutorial-npc-copy),
   .home-guide-portrait-layer { --npc-avatar-size: 76px; }
   .tutorial-battle-dialogue:has(.tutorial-npc-copy) { column-gap: 10px; }

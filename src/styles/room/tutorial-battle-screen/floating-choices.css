@@ -1,6 +1,7 @@
 .tutorial-battle-root { position: relative; }
 .tutorial-choice-overlay { position: absolute; inset: 0; z-index: 130; overflow: hidden; pointer-events: none; }
-.tutorial-floating-choices { position: absolute; width: calc(var(--choice-width) + var(--choice-span) + 12px); padding: 4px 6px 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: none; visibility: hidden; }
+.tutorial-choice-backdrop { position: fixed; inset: 0; z-index: 0; background: rgb(0 0 0 / 20%); pointer-events: none; }
+.tutorial-floating-choices { position: absolute; z-index: 1; width: calc(var(--choice-width) + var(--choice-span) + 12px); padding: 4px 6px 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: none; visibility: hidden; }
 .tutorial-floating-choices[data-ready="true"] { visibility: visible; }
 .tutorial-floating-choices[data-scroll="true"] { pointer-events: auto; }
 .tutorial-choice-list { display: flex; flex-direction: column; gap: var(--choice-gap); }
