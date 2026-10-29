@@ -8,6 +8,7 @@ import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import { ModalDialog } from "./modalComponents.jsx";
 import ProfileResumeView, { orderedProfileModes } from "./ProfileResumeView.jsx";
 import { useReplayPagination } from "./useReplayPagination.js";
+import { PROFILE_CUSTOMIZATION_ENABLED } from "../shared/profileFeatures.js";
 
 export default function ResumeModal({ user, token, characterListView, onClose, onOpenAchievements, onOpenPersonalization, onOpenReplay }) {
   const [mode, setMode] = useState("spark");
@@ -150,11 +151,11 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           characterStats={characterStats}
           identityActions={(
             <>
-              <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title="成就" onClick={onOpenAchievements}>
+              <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title={PROFILE_CUSTOMIZATION_ENABLED ? "成就" : "成就暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenAchievements}>
                 <Award size={20} aria-hidden="true" />
                 <span>成就</span>
               </button>
-              <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title="个性化" onClick={onOpenPersonalization}>
+              <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title={PROFILE_CUSTOMIZATION_ENABLED ? "个性化" : "个性化暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenPersonalization}>
                 <Palette size={20} aria-hidden="true" />
                 <span>个性化</span>
               </button>

@@ -5,6 +5,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/app/InteractionFeedback*.jsx",
+  "tests/e2e/fixtures/disabled-feedback.jsx",
   "src/modals/InformationCenterLayout.jsx",
   "src/modals/useInformationListRows*",
   "tests/e2e/information-paper*.js",

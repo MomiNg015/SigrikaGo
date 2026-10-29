@@ -602,7 +602,7 @@ function HomeRoute({ onStartMatch }) {
 - `areOperationHintPropsEqual(previous, next)` is the action-hint comparator for avoiding room-clock rerenders.
 - `areActionBarPropsEqual(previous, next)` is the room action comparator for avoiding countdown or clock-only rerenders while keeping button availability and decision bars live.
 - `timedRoomRequestEffectKey(room, userId)` is the request-toast effect dependency key; it must ignore clock-only player time changes while changing for request phase, deadline, requester, acceptance, or displayed request copy changes.
-- `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
+- `triggerUnavailableShake(target, onFinish)` in `unavailableFeedback.js` returns a cancellation function. Feedback temporarily writes inline important translate (reduced motion: filter), restores prior inline values/priorities, and never reads layout metrics such as `offsetWidth`.
 - `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
 #### 3. Contracts
@@ -620,7 +620,7 @@ function HomeRoute({ onStartMatch }) {
 - Timed room request toast logic should depend on `timedRoomRequestEffectKey(room, userId)`, not the whole `room` object, so `room:clock` player-time churn does not rerun draw/counting/result request state effects.
 - Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
-- Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
+- Unavailable feedback uses requestAnimationFrame (timer fallback), cancels previous frames on repeated presses, and restores styles on completion/unmount. Theme animation/translate resets must not suppress feedback. Native disabled stays native; data-ui-sound=none suppresses enabled confirm sounds only. Test keyboard/AT activation and pointer-click deduplication; no disabled business handler may run.
 - Neutral point marking remains phase-gated by an explicit capability prop such as `canMarkNeutral`.
 - History entries for skills that place a real stone must be eligible for the latest placed-stone marker. Keep Chisa `liberty-purge` covered through `lastMarkedAction(history)` instead of treating only ordinary moves as markable placements.
 

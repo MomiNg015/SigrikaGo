@@ -244,7 +244,7 @@ export const CSS_MOTION_CONTRACT = {
     "admin/polish/forms-actions.css",
     "admin/story-workbench/layout.css",
     "base/asset-preload.css",
-    "base/message-feedback.css",
+    // Unavailable feedback is now owned by app/unavailableFeedback.js, including reduced motion.
     "commerce/recruitment/board/motion.css",
     "commerce/shop-settings/shop-shell-tabs.css",
     "mobile-adaptive/reduced-motion.css",

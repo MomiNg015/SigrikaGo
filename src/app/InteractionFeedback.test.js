@@ -14,12 +14,11 @@ describe("InteractionFeedback", () => {
     expect(source).toContain("playUiUnavailableSound(audioSettings)");
     expect(source).toContain(".close-button");
     expect(source).toContain("[data-ui-sound='close']");
-    expect(source).toContain("UI_UNAVAILABLE_SHAKE_MS");
     expect(source).toContain(".room-screen .board-wrap");
     expect(source).toContain(".room-screen .player-info");
     expect(source).toContain(".room-screen .room-title-stack");
     expect(source).toContain(".room-screen .replay-bar");
-    expect(source).toContain("shouldSuppressUnavailableSound(target)");
+    expect(source).toContain('document.addEventListener("keydown", handleKeyDown, true)');
     expect(source).toContain("shouldSuppressConfirmSound(target)");
   });
 
@@ -52,7 +51,7 @@ describe("InteractionFeedback", () => {
   });
 
   it("restarts unavailable feedback without forcing synchronous layout", () => {
-    const source = readFileSync(new URL("./InteractionFeedback.jsx", import.meta.url), "utf8");
+    const source = readFileSync(new URL("./unavailableFeedback.js", import.meta.url), "utf8");
 
     expect(source).not.toContain("offsetWidth");
     expect(source).toContain("requestAnimationFrame");

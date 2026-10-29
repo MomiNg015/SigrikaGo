@@ -55,6 +55,8 @@
 <h1>SigrikaGo 系统设计</h1>
 <h2>2026-10-29 主界面引导首次指向修正</h2>
 <p>合并手册选部员、展开星炬分类、队际赛选人的讲解与操作步骤：同一句话首次出现就指向真实目标，移除点击后重复原句并换位置的中间步骤。保留全部 29 句台词、表情和原有逐字阅读行为，总步数由 33 减至 30。新增正常动画下的桌面／手机首次定位和单次目标激活回归。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
+<h2>2026-10-29 不可用按钮统一反馈</h2>
+<p>履历“成就”“个性化”沿用共享发布开关，关闭时呈原生禁用状态。全局 <code>InteractionFeedback</code> 为原生及 ARIA 禁用控件提供统一不可用音效与晃动，覆盖专用音效入口、鼠标、触摸和键盘；拦截业务操作，并处理重复按下与卸载清理。反馈临时覆盖主题的静态位移限制，结束恢复原样，减少动态效果时使用亮度脉冲。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-10-29 掌机式对弈功能区正式接入</h2>
 <p><a href="./design-samples/battle-arcade-2026-10-29/tutorial.html">对弈引导功能区示意</a>直接挂载 <code>TutorialBattleScreen</code>，现与正式对弈复用五键控制舱：只有回答选项替换区域；需要继续时将数子位置改为沿用原黄色渐变、带播放图标的“继续”（预览跳过为“立即继续”），保留其余四键但禁用，单独的继续脚本选项也复用此位置。落子、等待与自动演出期间保留禁用的常规五键；弃手、数目、技能、和棋、认输教学只启用并高亮当前按钮。引导技能键仅在当前需要点击技能且有次数时显示彩虹色，其余阶段连同次数窗变灰但保留真实计数；无角色的用户视角默认只显示“技能”，玩家技能节点按实际执行配置显示剧情指定名称（如达妮娅“泡影幻梦”），结束该节点后恢复通用名称。聚焦遮罩按实际按钮／键帽的圆角轮廓开孔，消除白色边角；按钮不额外绘制焦点框，以目标原亮度与周围压暗提示操作。移动端剧情记录改为 header 中退出左侧的 44px 纯图标入口，记录浮窗向下展开，桌面保持原入口。共享教学节点新增 <code>pass</code>／<code>draw</code>，后台、工作簿、校验和本地教学执行一致；不接入网络对局操作。</p>
 <p>普通 Bright School 对弈的五个操作接入选定的掌机控制舱：技能主键使用当前角色／派生技能名称，图标与文字作为一组垂直居中，右上独立定位的 IRIS 同款字体小窗显示剩余次数，有次数保留彩虹渐变、零次数为灰色。弃手／和棋为辅助键，数子／认输为中等权重键，键帽具有嵌入底座、边缘高光和实际下沉反馈。桌面按窗口高度为底座预留空间，手机竖屏采用双层按键；保留原操作禁用规则、确认流程与移动端高度测量。观战、普通对局死子确认、教学回答选项与特殊主题不套用新布局。见<a href="./design-samples/battle-arcade-2026-10-29/production.html">正式组件预览</a>及<a href="./system-design/06-ui-theme-mobile.md">界面契约</a>。</p>
@@ -5495,6 +5497,19 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、进度与笔刷 Tip 样式；角色特色加载台词自 2026-10-27 起不再展示。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h2>不可用按钮反馈（2026-10-29）</h2>
+<ul>
+<li><code>ResumeModal</code> 的成就／个性化按钮以 <code>PROFILE_CUSTOMIZATION_ENABLED</code> 控制原生 <code>disabled</code> 与未开放 title，当前关闭。保留两个入口、原业务回调与 <code>AppOverlays</code> 防御性发布检查；恢复开放只需使用现有共享开关。</li>
+</ul>
+<ul>
+<li><code>InteractionFeedback</code> 在 document 捕获阶段覆盖原生禁用按钮／表单控件、<code>aria-disabled</code> 及已有锁定占位卡片。<code>data-ui-sound=&quot;none&quot;</code> 仅跳过可用操作的确认音；禁用反馈始终走 <code>playUiUnavailableSound(audioSettings)</code>，遵守全局音量／静音。指针按下播放一次，后续 click 去重；Enter／Space 禁止业务键盘处理，辅助技术直接 click 也反馈。</li>
+</ul>
+<ul>
+<li><code>unavailableFeedback.js</code> 保持 1063ms、±5px 的既有晃动节奏，以动画帧临时设置内联 important <code>translate</code>，不改变已有 transform／布局，不读取布局尺寸；这样可覆盖技能键等主题的 important 静态重置。减少动态效果改用保留原滤镜的亮度脉冲。重复按下先取消旧帧，完成／节点移除／组件清理均恢复原内联值和优先级。</li>
+</ul>
+<ul>
+<li>DOM 回归覆盖音效去重、专用声音标记、业务拦截、键盘、重复点击与清理；<code>tests/e2e/disabled-feedback.spec.js</code> 用真实履历、对弈操作栏和后台按钮验证完整 CSS 下的 1440／390／320px 及触摸减少动态效果。</li>
+</ul>
 <h2>掌机式对弈操作区（2026-10-29）</h2>
 <p><code>ActionBar</code> 的普通玩家分支使用 <code>battle-arcade-controls</code>，五个原操作和回调不变。<code>RoomBattleStage</code> 仍通过 <code>effectiveSkillDisplayForPlayer</code>／<code>effectiveSkillUsesForColor</code> 提供当前角色或派生技能名与次数；技能名直接进入主键，图标与名称以对称上下内边距作为一组垂直居中；次数窗独立定位，不占用内容布局空间。次数显示在右上 IRIS 小窗，字体复用 <code>--font-iris-mixed</code>。普通对局的正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。</p>
 <p>最终样式由 <code>battle-arcade-layout.css</code>、<code>battle-arcade-keys.css</code>、<code>battle-arcade-skill.css</code> 三个局部 owner 管理，在 <code>mobile-adaptive.css</code> 尾部加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面普通玩家对弈与教学按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 <code>useMobileDockBaseline</code> 测量实际高度，短屏可滚动到全部操作。</p>

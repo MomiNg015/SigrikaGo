@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {
   playUiCloseWindowSound,
   playUiConfirmSound,
-  playUiUnavailableSound,
-  UI_UNAVAILABLE_SHAKE_MS
+  playUiUnavailableSound
 } from "../audio/playback.jsx";
+import { triggerUnavailableShake } from "./unavailableFeedback.js";
 
 const INTERACTIVE_SELECTOR = [
   "button",
@@ -41,16 +41,58 @@ const QUIET_INTERACTION_SELECTOR = [
 
 export default function InteractionFeedback({ audioSettings }) {
   useEffect(() => {
-    function handlePointerDown(event) {
-      const target = findUnavailableTarget(event.target);
-      if (!target || shouldSuppressUnavailableSound(target)) return;
+    const animations = new Map();
+    let pointerTarget = null;
+    let keyboardTarget = null;
+
+    function feedback(target) {
+      animations.get(target)?.();
       playUiUnavailableSound(audioSettings);
-      triggerUnavailableShake(target);
+      animations.set(target, triggerUnavailableShake(target, () => animations.delete(target)));
+    }
+
+    function handlePointerDown(event) {
+      if (event.button !== 0) return;
+      keyboardTarget = null;
+      const target = findUnavailableTarget(event.target);
+      pointerTarget = target;
+      if (!target) return;
+      feedback(target);
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    function handlePointerCancel() {
+      pointerTarget = null;
+    }
+
+    function handleKeyDown(event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = findUnavailableTarget(event.target);
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      pointerTarget = null;
+      keyboardTarget = target;
+      if (!event.repeat) feedback(target);
+    }
+
+    function handleKeyUp(event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (!findUnavailableTarget(event.target)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      keyboardTarget = null;
     }
 
     function handleClick(event) {
       const unavailableTarget = findUnavailableTarget(event.target);
       if (unavailableTarget) {
+        if (keyboardTarget !== unavailableTarget && (event.detail === 0 || pointerTarget !== unavailableTarget)) {
+          feedback(unavailableTarget);
+        }
+        pointerTarget = null;
+        keyboardTarget = null;
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -66,10 +108,17 @@ export default function InteractionFeedback({ audioSettings }) {
     }
 
     document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("pointercancel", handlePointerCancel, true);
+    document.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("keyup", handleKeyUp, true);
     document.addEventListener("click", handleClick, true);
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("pointercancel", handlePointerCancel, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
+      document.removeEventListener("keyup", handleKeyUp, true);
       document.removeEventListener("click", handleClick, true);
+      for (const cancel of animations.values()) cancel();
     };
   }, [audioSettings]);
 
@@ -88,32 +137,9 @@ export function findCloseTarget(target) {
   return closestElement(target, CLOSE_INTERACTION_SELECTOR);
 }
 
-function shouldSuppressUnavailableSound(target) {
-  return closestElement(target, SOUND_MODE_SELECTOR)?.dataset.uiSound === "none";
-}
-
 function shouldSuppressConfirmSound(target) {
-  return shouldSuppressUnavailableSound(target)
+  return closestElement(target, SOUND_MODE_SELECTOR)?.dataset.uiSound === "none"
     || Boolean(closestElement(target, QUIET_INTERACTION_SELECTOR));
-}
-
-function triggerUnavailableShake(target) {
-  target.classList.remove("ui-unavailable-shake");
-  target.style.setProperty("--ui-unavailable-shake-duration", `${UI_UNAVAILABLE_SHAKE_MS}ms`);
-  scheduleAnimationFrame(() => {
-    target.classList.add("ui-unavailable-shake");
-  });
-  window.setTimeout(() => {
-    target.classList.remove("ui-unavailable-shake");
-  }, UI_UNAVAILABLE_SHAKE_MS);
-}
-
-function scheduleAnimationFrame(callback) {
-  if (typeof window.requestAnimationFrame === "function") {
-    window.requestAnimationFrame(callback);
-    return;
-  }
-  window.setTimeout(callback, 0);
 }
 
 function closestElement(target, selector) {

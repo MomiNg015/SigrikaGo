@@ -1,5 +1,12 @@
 # UI 主题、移动端与交互体验
 
+## 不可用按钮反馈（2026-10-29）
+
+- `ResumeModal` 的成就／个性化按钮以 `PROFILE_CUSTOMIZATION_ENABLED` 控制原生 `disabled` 与未开放 title，当前关闭。保留两个入口、原业务回调与 `AppOverlays` 防御性发布检查；恢复开放只需使用现有共享开关。
+- `InteractionFeedback` 在 document 捕获阶段覆盖原生禁用按钮／表单控件、`aria-disabled` 及已有锁定占位卡片。`data-ui-sound="none"` 仅跳过可用操作的确认音；禁用反馈始终走 `playUiUnavailableSound(audioSettings)`，遵守全局音量／静音。指针按下播放一次，后续 click 去重；Enter／Space 禁止业务键盘处理，辅助技术直接 click 也反馈。
+- `unavailableFeedback.js` 保持 1063ms、±5px 的既有晃动节奏，以动画帧临时设置内联 important `translate`，不改变已有 transform／布局，不读取布局尺寸；这样可覆盖技能键等主题的 important 静态重置。减少动态效果改用保留原滤镜的亮度脉冲。重复按下先取消旧帧，完成／节点移除／组件清理均恢复原内联值和优先级。
+- DOM 回归覆盖音效去重、专用声音标记、业务拦截、键盘、重复点击与清理；`tests/e2e/disabled-feedback.spec.js` 用真实履历、对弈操作栏和后台按钮验证完整 CSS 下的 1440／390／320px 及触摸减少动态效果。
+
 ## 掌机式对弈操作区（2026-10-29）
 
 `ActionBar` 的普通玩家分支使用 `battle-arcade-controls`，五个原操作和回调不变。`RoomBattleStage` 仍通过 `effectiveSkillDisplayForPlayer`／`effectiveSkillUsesForColor` 提供当前角色或派生技能名与次数；技能名直接进入主键，图标与名称以对称上下内边距作为一组垂直居中；次数窗独立定位，不占用内容布局空间。次数显示在右上 IRIS 小窗，字体复用 `--font-iris-mixed`。普通对局的正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。
