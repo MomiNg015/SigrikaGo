@@ -2,7 +2,7 @@
 
 ## 掌机式对弈操作区（2026-10-29）
 
-`ActionBar` 的普通玩家分支使用 `battle-arcade-controls`，五个原操作和回调不变。`RoomBattleStage` 仍通过 `effectiveSkillDisplayForPlayer`／`effectiveSkillUsesForColor` 提供当前角色或派生技能名与次数；技能名直接进入主键，次数显示在右上 IRIS 小窗，字体复用 `--font-iris-mixed`。普通对局的正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。
+`ActionBar` 的普通玩家分支使用 `battle-arcade-controls`，五个原操作和回调不变。`RoomBattleStage` 仍通过 `effectiveSkillDisplayForPlayer`／`effectiveSkillUsesForColor` 提供当前角色或派生技能名与次数；技能名直接进入主键，图标与名称以对称上下内边距作为一组垂直居中；次数窗独立定位，不占用内容布局空间。次数显示在右上 IRIS 小窗，字体复用 `--font-iris-mixed`。普通对局的正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。
 
 最终样式由 `battle-arcade-layout.css`、`battle-arcade-keys.css`、`battle-arcade-skill.css` 三个局部 owner 管理，在 `mobile-adaptive.css` 尾部加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面普通玩家对弈与教学按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 `useMobileDockBaseline` 测量实际高度，短屏可滚动到全部操作。
 
