@@ -998,3 +998,36 @@ Created isolated HouseModal prototype with alternating top/bottom strip entrance
 ### Next Steps
 
 - None - task complete
+
+
+## Session 271: Desktop handbook alternating entry rollout
+
+**Date**: 2026-10-29
+**Task**: Desktop handbook alternating entry rollout
+**Branch**: `master`
+
+### Summary
+
+Promoted the approved alternating strip entrance into one production CSS owner and reused it in the preview. Desktop 300ms/40ms stagger; mobile, corruption and reduced motion preserved. 182 unit/style tests, 29 handbook browser tests, 4 preview cases, 15 home guide checkpoints and 50 tour highlights passed. Lint, build, built-CSS and system-design generation passed; unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d5f9f69c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
