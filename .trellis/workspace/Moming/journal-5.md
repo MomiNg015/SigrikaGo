@@ -866,3 +866,36 @@ Continue uses original yellow; tutorial skill is gray outside the required skill
 ### Next Steps
 
 - None - task complete
+
+
+## Session 267: Production guide focus and stable NPC first frame
+
+**Date**: 2026-10-29
+**Task**: Production guide focus and stable NPC first frame
+**Branch**: `master`
+
+### Summary
+
+Shipped shared A contracting markers for battle and home, actual component paint highlighting for every target/window, and hidden-until-positioned current-step NPC panels. Production-backed preview passed 27 battle combinations, 15 home checkpoints and 50 tour highlights; all 12 home browser regressions and 180 focused unit/DOM/CSS assertions passed. npm run check and production build passed. Preserved unrelated loading/settings/audio work through scoped staging.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c07c4d98` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
