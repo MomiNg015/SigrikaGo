@@ -65,6 +65,7 @@ try {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(base);
   const scene = page.frameLocator("#scene");
+  await page.selectOption('#target', 'skill');
   await scene.locator(".action-cue").waitFor();
   for (const variant of ["halo", "hand", "focus"]) {
     await page.locator(`[data-variant="${variant}"]`).click();

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import TutorialBattleScreen from "../../../src/tutorial/TutorialBattleScreen.jsx";
 import { CHARACTERS } from "../../../src/shared/characters.js";
 import ActionCue from "./ActionCue.jsx";
+import HomeScene from "./HomeScene.jsx";
 import "../../../src/styles.css";
 import "./scene.css";
 
@@ -10,7 +11,7 @@ const user = { id: "action-cue-preview", username: "星炬部员" };
 const audioSettings = { master: 0, bgm: 0, sfx: 0, voice: 0 };
 const noop = () => {};
 const variants = ["focus", "halo", "hand"];
-const targets = ["skill", "move", "counting"];
+const targets = ["skill", "move", "counting", "home-handbook", "home-match", "home-mailbox", "home-details", "home-resume"];
 const requested = new URLSearchParams(location.search);
 function Scene() {
   const [variant, setVariant] = useState(variants.includes(requested.get("variant")) ? requested.get("variant") : "focus");
@@ -38,6 +39,7 @@ function Scene() {
       { id: "done", type: "npc-dialogue", characterId: "denia", text: "对，就是这里！这一步完成啦。可以重试，或者换一种提示效果看看。", nextNodeId: target }
     ].map(node => ({ npcCharacterId: "denia", playerCharacterId: "", autoContinueEnabled: false, ...node }))
   } }), [target]);
+  if (target.startsWith("home-")) return <HomeScene key={`${target}-${revision}`} target={target} variant={variant} paused={paused}/>;
   return <div className="action-cue-scene">
     <div className="app-shell player-theme-enabled theme-bright-school">
       <TutorialBattleScreen key={`${target}-${revision}`} characters={CHARACTERS} user={user} audioSettings={audioSettings} session={session} siteSettings={{ skillEffectsEnabled: false }} onToast={noop} onClose={noop}/>

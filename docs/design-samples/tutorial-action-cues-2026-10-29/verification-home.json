@@ -1,0 +1,714 @@
+{
+  "cases": [
+    {
+      "width": 390,
+      "height": 844,
+      "target": "home-handbook",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 182,
+        "y": 169.328125,
+        "width": 155.90625,
+        "height": 173.796875,
+        "top": 169.328125,
+        "right": 337.90625,
+        "bottom": 343.125,
+        "left": 182
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "skill"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "target": "home-details",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 13,
+        "y": 89,
+        "width": 354,
+        "height": 650,
+        "top": 89,
+        "right": 367,
+        "bottom": 739,
+        "left": 13
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "know-members"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "target": "home-match",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 34,
+        "y": 114,
+        "width": 332,
+        "height": 98,
+        "top": 114,
+        "right": 366,
+        "bottom": 212,
+        "left": 34
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "regular"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "target": "home-mailbox",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 224,
+        "y": 122,
+        "width": 138,
+        "height": 50,
+        "top": 122,
+        "right": 362,
+        "bottom": 172,
+        "left": 224
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "mailbox-intro"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "target": "home-resume",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 59,
+        "y": 41,
+        "width": 324,
+        "height": 778,
+        "top": 41,
+        "right": 383,
+        "bottom": 819,
+        "left": 59
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "wrap-up"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "target": "home-handbook",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 147,
+        "y": 165.859375,
+        "width": 124,
+        "height": 158,
+        "top": 165.859375,
+        "right": 271,
+        "bottom": 323.859375,
+        "left": 147
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "skill"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "target": "home-details",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 13,
+        "y": 33,
+        "width": 284,
+        "height": 486,
+        "top": 33,
+        "right": 297,
+        "bottom": 519,
+        "left": 13
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "know-members"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "target": "home-match",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 34,
+        "y": 114,
+        "width": 262,
+        "height": 98,
+        "top": 114,
+        "right": 296,
+        "bottom": 212,
+        "left": 34
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "regular"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "target": "home-mailbox",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 154,
+        "y": 47,
+        "width": 138,
+        "height": 50,
+        "top": 47,
+        "right": 292,
+        "bottom": 97,
+        "left": 154
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "mailbox-intro"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "target": "home-resume",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 59,
+        "y": 41,
+        "width": 254,
+        "height": 502,
+        "top": 41,
+        "right": 313,
+        "bottom": 543,
+        "left": 59
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "wrap-up"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "target": "home-handbook",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 424.109375,
+        "y": 289.484375,
+        "width": 262.515625,
+        "height": 350,
+        "top": 289.484375,
+        "right": 686.625,
+        "bottom": 639.484375,
+        "left": 424.109375
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "skill"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "target": "home-details",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 177,
+        "y": 146,
+        "width": 1070,
+        "height": 600,
+        "top": 146,
+        "right": 1247,
+        "bottom": 746,
+        "left": 177
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "know-members"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "target": "home-match",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 178,
+        "y": 138,
+        "width": 1080,
+        "height": 81.59375,
+        "top": 138,
+        "right": 1258,
+        "bottom": 219.59375,
+        "left": 178
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "regular"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "target": "home-mailbox",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 1156,
+        "y": 34,
+        "width": 50,
+        "height": 54,
+        "top": 34,
+        "right": 1206,
+        "bottom": 88,
+        "left": 1156
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "mailbox-intro"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "target": "home-resume",
+      "frames": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "hit": true,
+      "bounds": {
+        "x": 290,
+        "y": 49,
+        "width": 970,
+        "height": 782.375,
+        "top": 49,
+        "right": 1260,
+        "bottom": 831.375,
+        "left": 290
+      },
+      "overflow": false,
+      "oldRingHidden": true,
+      "noRectCutout": true,
+      "componentCopy": true,
+      "nextStep": "wrap-up"
+    }
+  ],
+  "tours": [
+    {
+      "width": 390,
+      "step": "handbook",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "handbook-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "skill",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "know-members",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "match",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "match-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "regular",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "practice",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "team",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "team-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "team-rounds",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "team-order",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "recruitment",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "recruitment-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "recruitment-items",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "recruitment-result",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "recruitment-gift",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "mailbox",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "mailbox-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "shop",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "shop-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "coupons",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "practice-no-coupons",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "resume",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 390,
+      "step": "resume-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "handbook",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "handbook-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "skill",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "know-members",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "match",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "match-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "regular",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "practice",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "team",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "team-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "team-rounds",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "team-order",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "recruitment",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "recruitment-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "recruitment-items",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "recruitment-result",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "recruitment-gift",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "mailbox",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "mailbox-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "shop",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "shop-intro",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "coupons",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "practice-no-coupons",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "resume",
+      "fullBrightness": true,
+      "cue": true
+    },
+    {
+      "width": 1440,
+      "step": "resume-intro",
+      "fullBrightness": true,
+      "cue": true
+    }
+  ],
+  "controls": "home/battle switch, pause, replay, reduced motion passed",
+  "errors": [],
+  "apiRequests": []
+}

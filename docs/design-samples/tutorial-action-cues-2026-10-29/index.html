@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>操作引导 · 三种提示样板</title><link rel="stylesheet" href="./review.css"></head>
 <body>
-  <header class="review-header"><a href="../tutorial-choice-floating-2026-10-29/index.html">星炬 · 交互样板</a><span>操作引导 / 03 个方向</span></header>
+  <header class="review-header"><a href="../tutorial-choice-floating-2026-10-29/index.html">星炬 · 交互样板</a><span>A 已选定 / 主界面与对弈</span></header>
   <main class="review-layout">
     <aside class="review-sidebar">
       <p class="eyebrow">让下一步，一眼就明白。</p>
       <h1>点这里。</h1>
-      <p class="intro">同一个界面，三种提醒方式。<br>试着点击提示的位置。</p>
+      <p class="intro">A 方案，放到更多真实场景里。<br>试着点击提示的位置。</p>
       <div class="variants" role="group" aria-label="选择提示方案">
         <button data-variant="focus" aria-pressed="true"><span class="variant-letter">A</span><span><strong>收拢聚焦</strong><small>四角靠近，锁定目标</small></span><i class="mini-focus" aria-hidden="true"></i></button>
         <button data-variant="halo" aria-pressed="false"><span class="variant-letter">B</span><span><strong>扩散光圈</strong><small>双圈向外，持续呼应</small></span><i class="mini-halo" aria-hidden="true"></i></button>
@@ -14,16 +14,16 @@
       </div>
       <section class="scenario-controls" aria-label="预览设置">
         <label for="target">试用场景</label>
-        <select id="target"><option value="skill">技能按钮 → 棋盘落点</option><option value="move">直接点击棋盘落点</option><option value="counting">数子按钮</option></select>
+        <select id="target"><optgroup label="主界面引导"><option value="home-handbook">部员手册 → 选择部员</option><option value="home-details">部员详细信息窗口</option><option value="home-match">对局模式 → 星炬分类</option><option value="home-mailbox">邮箱入口（含手机菜单）</option><option value="home-resume">履历窗口</option></optgroup><optgroup label="对弈引导"><option value="skill">技能按钮 → 棋盘落点</option><option value="move">直接点击棋盘落点</option><option value="counting">数子按钮</option></optgroup></select>
         <div class="device-controls" role="group" aria-label="预览尺寸"><button data-device="phone" aria-pressed="true">手机</button><button data-device="small" aria-pressed="false">小屏</button><button data-device="desktop" aria-pressed="false">桌面</button></div>
         <div class="playback-controls"><button id="replay">↻ 重试这一步</button><button id="pause" aria-pressed="false">暂停动效</button></div>
       </section>
       <p id="description" class="description">四个墨色角标反复向内收拢，两次聚焦后稍作停顿。目标本身保持稳定。</p>
-      <p class="review-note">保留现有 20% 压暗 · 点击完成即停止<br>仅为效果样板，尚未接入正式引导</p>
+      <p class="review-note">沿用各场景原有压暗 · 操作完成即停止<br>仅为效果样板，尚未接入正式引导</p>
     </aside>
     <section class="preview-pane" aria-label="真实对弈界面预览">
-      <div class="preview-caption"><span><b id="variant-name">A / 收拢聚焦</b><span id="viewport-size">390 × 844</span></span><a id="open-scene" href="./scene.html?variant=focus&target=skill" target="_blank" rel="noopener">原尺寸打开 ↗</a></div>
-      <div class="preview-host"><div class="preview-frame"><iframe id="scene" src="./scene.html?variant=focus&target=skill" title="操作引导交互样板"></iframe></div></div>
+      <div class="preview-caption"><span><b id="variant-name">A / 收拢聚焦</b><span id="viewport-size">390 × 844</span></span><a id="open-scene" href="./scene.html?variant=focus&target=home-handbook" target="_blank" rel="noopener">原尺寸打开 ↗</a></div>
+      <div class="preview-host"><div class="preview-frame"><iframe id="scene" src="./scene.html?variant=focus&target=home-handbook" title="操作引导交互样板"></iframe></div></div>
       <p id="progress" class="progress" role="status">正在准备预览…</p>
     </section>
   </main>
