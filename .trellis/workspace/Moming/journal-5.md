@@ -734,3 +734,36 @@ Continue uses original yellow; tutorial skill is gray outside the required skill
 ### Next Steps
 
 - None - task complete
+
+
+## Session 263: 修复阶梯选项右侧阴影裁切
+
+**Date**: 2026-10-29
+**Task**: 修复阶梯选项右侧阴影裁切
+**Branch**: `master`
+
+### Summary
+
+将浮层左右绘制留白从 3px 增至 6px，选项宽度从真实内容区扣除阶梯错位，兼容滚动条占位。16 组桌面／手机浏览器回归、强制滚动条、82 项 CSS／文档测试及 lint 通过。保持原外观、棋盘布局与无关 WIP。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `df49f6a7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
