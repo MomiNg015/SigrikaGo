@@ -1,0 +1,22 @@
+[WebServer] (node:51340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__616c2476__ referenced in __VITE_PUBLIC_ASSET__616c2476__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[WebServer] 
+[WebServer] __VITE_PUBLIC_ASSET__c67d4ebe__ referenced in __VITE_PUBLIC_ASSET__c67d4ebe__ didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+Running 7 tests using 1 worker
+
+(node:41884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 1440x1000 (56.0s)
+  ok 2 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 390x844 (50.2s)
+  ok 3 tests\e2e\home-onboarding.spec.js:5:3 › complete real-window home tour 360x640 (48.7s)
+  ok 4 tests\e2e\home-onboarding.spec.js:97:3 › animated home guide avatar stability › consecutive dialogue keeps its spotlight and does not replay the focus animation (2.1s)
+  ok 5 tests\e2e\home-onboarding.spec.js:132:5 › animated home guide avatar stability › home typing keeps the avatar fixed 1440 (2.4s)
+  ok 6 tests\e2e\home-onboarding.spec.js:132:5 › animated home guide avatar stability › home typing keeps the avatar fixed 390 (1.8s)
+  ok 7 tests\e2e\home-onboarding.spec.js:132:5 › animated home guide avatar stability › home typing keeps the avatar fixed 360 (1.7s)
+
+  7 passed (3.1m)

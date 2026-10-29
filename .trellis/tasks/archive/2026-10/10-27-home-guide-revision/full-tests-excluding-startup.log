@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" --exclude scripts/e2eIsolation.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  463 passed (463)
+      Tests  3391 passed (3391)
+   Start at  15:56:07
+   Duration  468.58s (transform 17.25s, setup 0ms, import 89.94s, tests 120.85s, environment 124.66s)
+

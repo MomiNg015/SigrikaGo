@@ -1,0 +1,17 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot -- --isolated && npm run build && npm run check:built-css && node -e "process.env.NODE_ENV='production';process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ scripts/e2eIsolation.test.js (3 tests | 1 failed) 15136ms
+   × closing the automation stdin keeps the real Vite test service available 15130ms

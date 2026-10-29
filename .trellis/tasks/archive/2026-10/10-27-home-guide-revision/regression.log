@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/onboarding src/home/MatchCharacterSelection.dom.test.jsx src/home/MatchModeExpansion.dom.test.jsx src/shared/characterStorySprites.test.js src/app/App.test.js src/app/appShellProps.test.js server/homeOnboarding.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  8 passed (8)
+      Tests  71 passed (71)
+   Start at  15:55:25
+   Duration  29.47s (transform 2.40s, setup 0ms, import 5.09s, tests 16.57s, environment 5.36s)
+

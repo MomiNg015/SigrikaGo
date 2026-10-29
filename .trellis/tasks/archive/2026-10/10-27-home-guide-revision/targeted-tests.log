@@ -1,0 +1,256 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/home/onboarding/HomeOnboarding.dom.test.jsx src/home/MatchCharacterSelection.dom.test.jsx src/shared/characterStorySprites.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/home/MatchCharacterSelection.dom.test.jsx (14 tests | 1 failed) 3947ms
+     × allows the two-member home guide to view the team picker, blocks starting, and closes it with its parent 358ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/home/MatchCharacterSelection.dom.test.jsx > match card character selection > allows the two-member home guide to view the team picker, blocks starting, and closes it with its parent
+TestingLibraryElementError: Found multiple elements with the role "button" and name "星炬对弈"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<button
+  aria-label="星炬对弈"
+  class="home-image-entry match-image-entry hologram-entry"
+  data-home-guide="match"
+  data-ui-sound="none"
+>
+  <span
+    aria-hidden="true"
+    class="home-entry-motion"
+  >
+    <img
+      alt=""
+      decoding="async"
+      src="/assets/home/fantasy-match-entry.webp"
+    />
+  </span>
+</button>
+
+Ignored nodes: comments, script, style
+<button
+  aria-controls="match-mode-submodes"
+  aria-expanded="false"
+  class="match-mode-option"
+  data-home-guide="spark-category"
+  type="button"
+>
+  <span
+    aria-hidden="true"
+    class="match-mode-watermark"
+  >
+    <img
+      alt=""
+      class="match-mode-watermark-icon"
+      decoding="async"
+      src="/assets/match-modes/mode-spark.png"
+    />
+    <span
+      class="match-mode-watermark-label text-display-accent"
+    >
+      SIGRIKAGO MODE
+    </span>
+  </span>
+  <span
+    class="match-mode-copy"
+  >
+    <strong>
+      星炬对弈
+    </strong>
+  </span>
+</button>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="home-screen home-terminal-screen"
+    >
+      <header
+        class="home-top-strip home-terminal-header"
+      >
+        <div
+          class="home-top-brand"
+        >
+          <span
+            class="home-brand-title-wrap"
+          >
+            <span
+              class="home-brand-title text-window-title"
+            >
+              星炬学院围棋部
+            </span>
+          </span>
+          <span
+            class="home-brand-version home-brand-subtitle text-display-accent"
+          >
+            v0.1.0
+          </span>
+        </div>
+        <picture
+          aria-hidden="true"
+          class="home-header-mascot"
+        >
+          <source
+            media="(prefers-reduced-motion: reduce)"
+            srcset="/assets/home/home-header-sigrika-still.webp"
+          />
+          <img
+            alt=""
+            decoding="async"
+            draggable="false"
+            src="/assets/home/home-header-sigrika.gif?v=170ms"
+          />
+        </picture>
+        <div
+          class="topbar-actions"
+        >
+          <button
+            aria-label="打开公告"
+            class="icon-button announcement-action "
+            title="公告"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-newspaper"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 18h-5"
+              />
+              <path
+                d="M18 14h-8"
+              />
+              <path
+                d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"
+              />
+              <rect
+                height="4"
+                rx="1"
+                width="8"
+                x="10"
+                y="6"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="打开邮箱"
+            class="icon-button mailbox-action"
+            data-home-guide="mailbox"
+            title="邮箱"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-mail"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"
+              />
+              <rect
+                height="16"
+                rx="2"
+                width="20"
+                x="2"
+                y="4"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="打开新手引导"
+            class="icon-button onboarding-action"
+            title="引导"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-help"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+              />
+              <path
+                d="M12 17h.01"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="打开留言板"
+            class="icon-button"
+            title="留言板"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-message-square-text"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+              xmlns=...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/home/MatchCharacterSelection.dom.test.jsx:58:28
+     56|   it("allows the two-member home guide to view the team picker, blocks…
+     57|     const { props, rerender } = setup({ homeOnboardingActive: true, us…
+     58|     fireEvent.click(screen.getByRole("button", { name: "星炬对弈" }));
+       |                            ^
+     59|     fireEvent.click(screen.getByRole("button", { name: "队际赛选择角色1" }));
+     60|     expect(screen.getByRole("dialog", { name: "队际赛阵容" })).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 27 passed (28)
+   Start at  15:49:05
+   Duration  19.96s (transform 1.92s, setup 0ms, import 3.17s, tests 12.98s, environment 2.87s)
+
