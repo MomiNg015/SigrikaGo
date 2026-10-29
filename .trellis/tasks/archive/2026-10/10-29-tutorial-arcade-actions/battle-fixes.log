@@ -1,0 +1,34 @@
+
+> sigrika-go@0.1.0 verify:battle-fixes
+> node scripts/verify-battle-fixes.mjs
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/shared/game.test.js src/shared/gameSkills.test.js src/shared/characters.test.js src/shared/boardView.test.js src/shared/boardAudio.test.js src/shared/skillEffectCatalog.test.js src/shared/skillPresentation.test.js src/room/Board.test.js src/room/BoardAmbientEffects.test.js src/room/BoardSkillEffects.test.js src/room/boardSkillEffectRegistry.test.js src/room/boardSkillEffectSoundScheduler.test.js src/room/ChatBox.test.js src/room/RoomScreen.test.js src/room/actions/useRoomPointActions.test.js src/room/mobilePointConfirmation.test.js src/room/roomView.test.js server/adminDefaultSeed.test.js scripts/verificationScripts.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  22 passed (22)
+      Tests  443 passed (443)
+   Start at  10:54:31
+   Duration  17.02s (transform 2.90s, setup 0ms, import 4.78s, tests 4.84s, environment 3ms)
+
+
+> sigrika-go@0.1.0 docs:system-design
+> node scripts/render-system-design-html.mjs
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" docs/systemDesignHtml.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  10:54:52
+   Duration  620ms (transform 71ms, setup 0ms, import 98ms, tests 121ms, environment 0ms)
+

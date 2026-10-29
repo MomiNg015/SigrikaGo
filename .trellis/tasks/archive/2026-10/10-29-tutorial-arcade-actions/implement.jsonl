@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/battle-arcade-controls.md","reason":"Reuse real five-key controls and preserve effective display/press contracts"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Header, mobile and guided interaction constraints"}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Scoped owner, import ordering and debt accounting"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Additive tutorial pass/draw types through editor, serialization and runtime"}

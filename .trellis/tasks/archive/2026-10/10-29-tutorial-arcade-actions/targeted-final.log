@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/room/ActionBar.test.js src/room/ActionBar.dom.test.jsx src/room/ChatBox.test.js src/room/ChatBox.dom.test.jsx src/room/RoomScreen.test.js src/tutorial/TutorialBattleScreen.test.jsx src/tutorial/TutorialInputFocus.test.js src/tutorial/tutorialActionState.test.js src/tutorial/tutorialGameState.test.js src/admin/AdminOnboardingStory.test.jsx src/admin/storyScriptWorkbook.test.js server/storyScripts.test.js src/styles/styleContract.test.js src/styles/cssLayerInventory.test.js src/styles/themeContract.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  15 passed (15)
+      Tests  279 passed (279)
+   Start at  10:49:40
+   Duration  22.21s (transform 4.11s, setup 0ms, import 7.85s, tests 5.09s, environment 3.51s)
+
