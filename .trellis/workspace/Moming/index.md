@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 268
+- **Total Sessions**: 269
 - **Last Active**: 2026-10-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~934 | Active |
+| `journal-5.md` | ~967 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 269 | 2026-10-29 | Fix home-guide highlight snapshot performance | `5e17947a` | `master` |
 | 268 | 2026-10-29 | Prevent player UI drag selection | `bd14066f` | `master` |
 | 267 | 2026-10-29 | Production guide focus and stable NPC first frame | `c07c4d98` | `master` |
 | 266 | 2026-10-29 | A聚焦样板扩展主界面组件高亮 | `3cb1a82c` | `master` |

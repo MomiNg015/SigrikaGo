@@ -932,3 +932,36 @@ Player foundation CSS prevents native text/image sweep selection and image drag 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 269: Fix home-guide highlight snapshot performance
+
+**Date**: 2026-10-29
+**Task**: Fix home-guide highlight snapshot performance
+**Branch**: `master`
+
+### Summary
+
+Diagnosed live computed-style enumeration and full per-node declaration copies as the home-guide regression. Cached standard property names, omitted default/custom properties, used one shared initial reset, and avoided redundant size/root-animation refreshes. Same resume snapshot median fell from 288 ms to 58 ms and serialized size by 89%. Added snapshot-size and refresh lifecycle guards; 15 DOM assertions, 15 checkpoints/50 highlights, 3 first-frame browser regressions, lint/build/built-CSS/docs checks passed. Preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5e17947a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
