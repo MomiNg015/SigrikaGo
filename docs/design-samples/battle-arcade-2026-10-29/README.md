@@ -2,11 +2,11 @@
 
 ## Production integration
 
-`tutorial.html` renders the real `TutorialBattleScreen` with local script fixtures for dialogue/continue, answers, board placement, skill selection, counting and resignation. It deliberately shows the current tutorial override: one step-specific action or answer list, no five-key arcade pod, and no IRIS charge window. Selecting a skill transitions into real board targeting. Current input-focus masking is included. Its CSS changes only review controls; no tutorial runtime or production styles are changed for this illustration.
+`tutorial.html` renders the real `TutorialBattleScreen` with nine local fixtures: manual dialogue, automatic dialogue, answer choices, board placement, skill, counting, resignation, pass and draw. The normal five-key pod remains visible unless answers/manual continuation replace it. Only the current guided action is enabled and highlighted. Skill-to-board targeting retains the pod with all keys locked. The focus mask follows the rendered cap/option corner arcs without exposed bright corners.
 
-`verify-tutorial.mjs` passed 18 real state/viewport cases at 1440, 390 and 320px, including skill-to-board, reset, choice-to-move and valid-move-to-continue transitions. `tutorial-<state>-<width>.png` and `verification-tutorial.json` record the current UI. Review toolbar corners use the documented 8px control radius.
+On portrait phones, story history is an icon-only header button immediately left of exit; the popup opens below it, clamps to the viewport, and dismisses by close, Escape or outside input. Desktop history remains beside the player. Answer choices use the full available width even at 320px.
 
-The illustrated input-focus mask belongs to pre-existing local tutorial work, which this task does not commit. Mask assertions and screenshots reflect that current working tree; the fixture itself imports whichever tutorial implementation is present.
+`verify-tutorial.mjs` covers 27 state/viewport cases at 1440, 390 and 320px, all five guided actions, duplicate pass submission, skill targeting, reset, answer-to-move progression, and mobile history bounds/focus/dismissal. `tutorial-<state>-<width>.png` and `verification-tutorial.json` record the actual UI. Review toolbar corners use the documented 8px control radius. These fixtures make no network game mutations.
 
 The selected pod is now integrated into normal Bright School `ActionBar`. Open `production.html` through Vite (port 5173). This page renders the real `RoomBattleStage`, its default action path, current player/derived-skill display plumbing and complete production styles; fixture callbacks stay local. It includes state controls for ready, waiting, spent, long names, gomoku, spectator and finished. The original static comparison remains a historical design artifact.
 

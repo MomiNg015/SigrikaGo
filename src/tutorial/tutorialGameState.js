@@ -7,6 +7,8 @@ import {
   isPlayerColor,
   normalizeSkillConfig,
   playMove,
+  passMove,
+  createDrawResult,
   resignGame,
   useSkill
 } from "../shared/game.js";
@@ -85,6 +87,18 @@ export function applyTutorialNodeAction(state, node, input = {}) {
 
   if (node.type === TUTORIAL_NODE_TYPES.resign) {
     return resignTutorialGame(state, node);
+  }
+  if (node.type === TUTORIAL_NODE_TYPES.pass) {
+    const prepared = cloneState(state);
+    prepared.turn = normalizeTutorialColor(node.color) ?? state.turn ?? COLORS.black;
+    return passMove(prepared, prepared.turn);
+  }
+  if (node.type === TUTORIAL_NODE_TYPES.draw) {
+    const next = cloneState(state);
+    next.phase = GAME_PHASES.finished;
+    next.pendingSkill = null;
+    next.winner = createDrawResult("agreement");
+    return { ok: true, state: next };
   }
 
   return { ok: true, state };

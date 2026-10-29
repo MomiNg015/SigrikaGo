@@ -7,6 +7,8 @@ export const TUTORIAL_NODE_TYPES = Object.freeze({
   npcMove: "npc-move",
   playerSkill: "player-skill",
   npcSkill: "npc-skill",
+  pass: "pass",
+  draw: "draw",
   countingStart: "counting-start",
   markDead: "mark-dead",
   markNeutral: "mark-neutral",

@@ -9,12 +9,15 @@ import "./tutorial.css";
 const user = { id: "tutorial-player", username: "星炬部员" };
 const audioSettings = { master: 0, bgm: 0, sfx: 0, voice: 0 };
 const states = {
+  automatic: { label: "自动等待", description: "自动讲解或等待阶段保留五键，锁定本步骤不允许的操作。", node: { type: "npc-dialogue", characterId: "denia", text: "先观察棋盘，讲解结束后我们再继续。", autoContinueEnabled: true, autoContinueDelaySeconds: 60, nextNodeId: "move" } },
   dialogue: { label: "讲解 / 继续", description: "讲解结束后显示单个「继续」键，画面不压暗。", node: { type: "npc-dialogue", characterId: "denia", text: "先看看棋盘。准备好后，点击下方的「继续」，就轮到你落子啦。", nextNodeId: "move" } },
   choices: { label: "回答选项", description: "功能区变为回答列表；周围压暗，选项保持原亮度。", node: { type: "player-choice", autoContinueEnabled: true, autoContinueDelaySeconds: 0, options: [{ label: "准备好了，开始落子", nextNodeId: "move" }, { label: "再讲解一下", nextNodeId: "dialogue" }] } },
-  move: { label: "等待落子", description: "操作条留空，棋盘目标落点高亮。点击亮点可继续。", node: { type: "player-move", pointId: "6,6", color: "black", nextNodeId: "done" } },
-  skill: { label: "使用技能", description: "只显示当前技能键。点击后操作条留空，转为棋盘选点；当前引导没有彩虹键或次数窗。", node: { type: "player-skill", skillId: "sigrika", pointId: "6,6", color: "black", nextNodeId: "done" } },
-  counting: { label: "数目操作", description: "只显示当前步骤的「数目」键，周围压暗。", node: { type: "counting-start", actor: "player", nextNodeId: "done" } },
-  resign: { label: "认输操作", description: "只显示当前步骤的「认输」键，周围压暗。", node: { type: "resign", actor: "player", color: "black", nextNodeId: "done" } }
+  move: { label: "等待落子", description: "保留常规五键并锁定操作，棋盘目标落点高亮。点击亮点可继续。", node: { type: "player-move", pointId: "6,6", color: "black", nextNodeId: "done" } },
+  skill: { label: "使用技能", description: "在常规控制舱中高亮技能键；点击后保留五键并转为棋盘选点。", node: { type: "player-skill", skillId: "sigrika", pointId: "6,6", color: "black", nextNodeId: "done" } },
+  counting: { label: "数目操作", description: "保留常规五键，高亮并开放数子键。", node: { type: "counting-start", actor: "player", nextNodeId: "done" } },
+  resign: { label: "认输操作", description: "保留常规五键，高亮并开放认输键。", node: { type: "resign", actor: "player", color: "black", nextNodeId: "done" } },
+  pass: { label: "弃手操作", description: "高亮弃手键；点击后通过正式规则引擎弃手一次。", node: { type: "pass", actor: "player", color: "black", nextNodeId: "done" } },
+  draw: { label: "和棋操作", description: "高亮和棋键；此教学步骤在本地演示双方同意和棋。", node: { type: "draw", actor: "player", color: "black", nextNodeId: "done" } }
 };
 const requestedState = new URLSearchParams(location.search).get("state");
 

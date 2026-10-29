@@ -32,6 +32,7 @@ function ActionBar({
   drawEnabled = true,
   hasAnyStones = true,
   opponentConnected = true,
+  tutorialAction,
   scoring,
   replayStep = 0,
   replayMax = 0,
@@ -55,7 +56,7 @@ function ActionBar({
     );
   }
   const hasDecision =
-    phase === GAME_PHASES.markingDead && scoring;
+    tutorialAction === undefined && phase === GAME_PHASES.markingDead && scoring;
   if (hasDecision) {
     return (
       <DeadStoneDecisionBar
@@ -69,16 +70,18 @@ function ActionBar({
   const isGomoku = gameModeFamily(mode) === "gomoku";
   const remainingUses = skillEnabled ? Math.max(0, skillUses ?? 0) : 0;
   const actionSkillName = skillEnabled ? (skillName || "技能") : "技能";
+  const actionDisabled = (action, disabled) => tutorialAction === undefined ? disabled : tutorialAction !== action;
   return (
-    <nav className="action-bar battle-arcade-controls" aria-label="对弈操作">
-      <ActionKey className="pass-action" onClick={onPass} disabled={isGomoku || phase !== "playing" || skillLocked}>
+    <nav className="action-bar battle-arcade-controls" aria-label="对弈操作" data-tutorial-action={tutorialAction || undefined}>
+      <ActionKey className="pass-action" data-tutorial-target={tutorialAction === "pass" || undefined} onClick={onPass} disabled={actionDisabled("pass", isGomoku || phase !== "playing" || skillLocked)}>
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
       </ActionKey>
       <ActionKey
         className="counting-action"
+        data-tutorial-target={tutorialAction === "counting" || undefined}
         onClick={onCountingRequest}
-        disabled={isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}
+        disabled={actionDisabled("counting", isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
         title={isGomoku || !countingEnabled ? "该对局无法数子" : undefined}
       >
         <Calculator size={18} />
@@ -87,21 +90,22 @@ function ActionBar({
       <ActionKey
         className={`skill-action ${pendingSkill ? "active" : ""} ${remainingUses <= 0 ? "spent" : ""}`}
         data-skill-uses={remainingUses}
+        data-tutorial-target={tutorialAction === "skill" || undefined}
         data-long-name={actionSkillName.length > 6 || undefined}
         aria-label={`${actionSkillName}，剩余 ${remainingUses} 次`}
         aria-pressed={Boolean(pendingSkill)}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || remainingUses <= 0 || !skillAvailable}
+        disabled={actionDisabled("skill", !skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || remainingUses <= 0 || !skillAvailable)}
       >
         <Sparkles size={20} />
         <span className="action-label mobile-action-button-label">{actionSkillName}</span>
         <span className="skill-use-window" aria-hidden="true">{String(remainingUses).padStart(2, "0")}</span>
       </ActionKey>
-      <ActionKey className="draw-action" onClick={onDrawRequest} disabled={!drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
+      <ActionKey className="draw-action" data-tutorial-target={tutorialAction === "draw" || undefined} onClick={onDrawRequest} disabled={actionDisabled("draw", !drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected }))}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </ActionKey>
-      <ActionKey className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></ActionKey>
+      <ActionKey className="resign-action" data-tutorial-target={tutorialAction === "resign" || undefined} onClick={onResign} disabled={actionDisabled("resign", phase === "finished" || skillLocked)}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></ActionKey>
     </nav>
   );
 }
@@ -133,6 +137,7 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.drawEnabled === next.drawEnabled
     && previous.hasAnyStones === next.hasAnyStones
     && previous.opponentConnected === next.opponentConnected
+    && previous.tutorialAction === next.tutorialAction
     && previous.scoring === next.scoring
     && previous.onPass === next.onPass
     && previous.onCountingRequest === next.onCountingRequest

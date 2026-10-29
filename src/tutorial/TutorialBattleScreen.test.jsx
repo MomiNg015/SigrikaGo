@@ -9,7 +9,7 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("MobileRoomLayout");
     expect(source).toContain("const Layout = useMobileLayout ? MobileRoomLayout : DesktopRoomLayout");
     expect(source).toContain("const battleLayoutClassName = useMobileLayout ? \"mobile-battle-layout\" : \"battle-layout\"");
-    expect(source).toContain("<Layout>");
+    expect(source).toContain('<Layout className="tutorial-battle-root">');
   });
 
   it("uses existing room audio effects and background music during local teaching battles", () => {
@@ -109,7 +109,8 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("setPendingWait");
     expect(source).toContain("pendingWait");
     expect(source).toContain("revealsChoices: options.length > 0");
-    expect(source).toContain("if (choicesVisible && hasOptions)");
+    expect(source).toContain("if (choicesVisible && node?.options?.length)");
+    expect(source).toContain("return normalActions;");
     expect(source).not.toContain("可继续，稍后自动推进");
     expect(source).not.toContain("请点击继续");
     expect(source).not.toContain("tutorial-action-hint");

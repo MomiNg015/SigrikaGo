@@ -87,6 +87,20 @@ function setInfoValue(workbook, label, value) {
 }
 
 describe("storyScriptWorkbook", () => {
+  it("round-trips pass and draw with the explicit player actor", async () => {
+    const script = sampleScript();
+    script.draft = { startNodeId: "pass", initialBoard: { mode: "spark", stones: [] }, nodes: [
+      { id: "pass", type: "pass", actor: "player", color: "black", nextNodeId: "draw" },
+      { id: "draw", type: "draw", actor: "player", nextNodeId: "" }
+    ] };
+    const result = await parseStoryScriptWorkbook(await writeStoryScriptWorkbook(script), script, {
+      itemOptions: [{ id: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" }], skillCharacters: []
+    });
+    expect(result.ok).toBe(true);
+    expect(result.draft.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "pass", actor: "player" }), expect.objectContaining({ type: "draw", actor: "player" })
+    ]));
+  });
   it("round-trips an exported workbook back into a draft import", async () => {
     const script = sampleScript();
     const buffer = await writeStoryScriptWorkbook(script, { exportedAt: new Date("2026-07-06T12:00:00Z") });

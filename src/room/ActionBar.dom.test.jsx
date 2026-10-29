@@ -12,6 +12,22 @@ const props = (overrides = {}) => ({
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe("battle action keys", () => {
+  it("retains all five keys and only enables the guided action, including dead-stone phases", () => {
+    const p = props({ phase: "marking-dead", scoring: { confirmedBy: [] } });
+    const { container, rerender } = render(<ActionBar {...p} tutorialAction=""/>);
+    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getAllByRole("button").every(button => button.disabled)).toBe(true);
+    for (const action of ["pass", "counting", "skill", "draw", "resign"]) {
+      rerender(<ActionBar {...p} tutorialAction={action}/>);
+      const enabled = screen.getAllByRole("button").filter(button => !button.disabled);
+      expect(enabled).toHaveLength(1);
+      expect(enabled[0].classList.contains(`${action}-action`)).toBe(true);
+      expect(container.querySelectorAll('[data-tutorial-target="true"]')).toHaveLength(1);
+    }
+    rerender(<ActionBar {...props()} tutorialAction=""/>);
+    for (const button of screen.getAllByRole("button")) fireEvent.click(button);
+    expect(p.onPass).not.toHaveBeenCalled();
+  });
   it("keeps every real action wired once while separating the effective skill name and charges", () => {
     const p = props();
     render(<ActionBar {...p}/>);

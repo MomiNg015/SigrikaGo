@@ -1,14 +1,14 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import ChatBox from "./ChatBox.jsx";
 
 const ROOM = { code: "12345", players: [], chat: [] };
 
 describe("ChatBox popover draft", () => {
-  afterEach(cleanup);
+  afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
   it("keeps the draft when the popover is closed and reopened", async () => {
     const user = userEvent.setup();
@@ -90,4 +90,28 @@ describe("ChatBox popover draft", () => {
     expect(closedPopover?.getAttribute("aria-hidden")).toBe("true");
     expect(closedPopover?.hasAttribute("inert")).toBe(true);
   });
+
+it("offers an icon-only header log with a bounded below-trigger popup and dismissal", () => {
+  const onOpenChange = vi.fn();
+  render(<ChatBox room={{ code: "TEACH", players: [], chat: [{ id: "m", type: "chat", username: "NPC", text: "教学记录" }] }} readonly compactMessages
+    label="剧情记录" mobileDockPopup iconOnly popupPlacement="below" onOpenChange={onOpenChange}/>);
+  const button = screen.getByRole("button", { name: "剧情记录", exact: true });
+  expect(button.textContent).toBe("");
+  vi.spyOn(button, "getBoundingClientRect").mockReturnValue({ left: 300, right: 344, top: 20, bottom: 64, width: 44, height: 44 });
+  fireEvent.click(button);
+  const panel = screen.getByRole("tabpanel", { name: "剧情记录" });
+  expect(panel.style.top).toBe("72px");
+  expect(panel.style.bottom).toBe("auto");
+  expect(Number.parseFloat(panel.style.height)).toBeLessThanOrEqual(window.innerHeight - 82);
+  expect(panel.textContent).toContain("教学记录");
+  expect(onOpenChange).toHaveBeenLastCalledWith(true);
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(button.getAttribute("aria-expanded")).toBe("false");
+  expect(document.activeElement).toBe(button);
+  fireEvent.click(button);
+  fireEvent.pointerDown(document.body);
+  expect(button.getAttribute("aria-expanded")).toBe("false");
+  expect(onOpenChange).toHaveBeenLastCalledWith(false);
+});
+
 });

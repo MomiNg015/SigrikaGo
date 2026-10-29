@@ -1,9 +1,12 @@
 import { resolveCharacterPortrait } from "../shared/characterPortraits.js";
+import TutorialInputFocus, { tutorialInputFocusMode } from "./TutorialInputFocus.jsx";
 import NpcDialogue from "./NpcDialogue.jsx";
 import { canAnimateTypewriter, prefersReducedMotion } from "./TypewriterText.jsx";
 export { TypewriterText } from "./TypewriterText.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Calculator, Flag, MessageCircle, Play, Sparkles } from "lucide-react";
+import { MessageCircle, Play } from "lucide-react";
+import ChatBox from "../room/ChatBox.jsx";
+import { activeTutorialAction, tutorialActionForNode } from "./tutorialActionState.js";
 import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 import {
@@ -116,6 +119,8 @@ export default function TutorialBattleScreen({
   }));
   const [nodeId, setNodeId] = useState(session?.startNodeId ?? script?.startNodeId ?? "");
   const [pendingSkill, setPendingSkill] = useState(false);
+  const [storyLogOpen, setStoryLogOpen] = useState(false);
+  const guidedActionSubmittedRef = useRef("");
   const [skillPhase, setSkillPhase] = useState("");
   const [choicesVisible, setChoicesVisible] = useState(false);
   const [npcBubble, setNpcBubble] = useState(null);
@@ -498,6 +503,7 @@ export default function TutorialBattleScreen({
     const nodeExecutionKey = currentNode.id || nodeId;
     if (initializedNodeKeyRef.current === nodeExecutionKey) return;
     initializedNodeKeyRef.current = nodeExecutionKey;
+    guidedActionSubmittedRef.current = "";
     clearTimers();
     nodeRunRef.current += 1;
     setChoicesVisible(false);
@@ -627,6 +633,7 @@ export default function TutorialBattleScreen({
   });
 
   function handlePoint(point) {
+    if (storyLogOpen) return;
     if (!point || loading || pendingWait || resolvedSkillState || isNpcLocked(currentNode)) return;
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
       const result = applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode, { pointId: point.id });
@@ -660,17 +667,18 @@ export default function TutorialBattleScreen({
   }
 
   function handleGameAction(action) {
-    if (loading || pendingWait || isNpcLocked(currentNode)) return;
-    if (action?.type === "resign" && currentNode?.type === TUTORIAL_NODE_TYPES.resign && playerButtonNode(currentNode)) {
-      completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode));
-      return;
-    }
-    warn(currentNode?.type === TUTORIAL_NODE_TYPES.playerMove
-      ? tutorialWrongPointWarning(currentNode, skillPhase)
-      : "请点击提示按钮");
+    const expected = activeTutorialAction({ node: currentNode, phase: skillPhase, pendingWait, loading, choicesVisible, confirmExit: confirmExit || storyLogOpen });
+    if (!expected || expected === "skill" || action?.type !== expected) return;
+    const key = `${currentNode.id}:${expected}`;
+    if (guidedActionSubmittedRef.current === key) return;
+    guidedActionSubmittedRef.current = key;
+    const result = applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode);
+    if (!result?.ok) guidedActionSubmittedRef.current = "";
+    completeAction(currentNode, result);
   }
 
   function handleBoardSurface() {
+    if (storyLogOpen) return;
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
       warn(tutorialWrongPointWarning(currentNode, skillPhase));
       return;
@@ -689,7 +697,10 @@ export default function TutorialBattleScreen({
   }
 
   function handleSkillButton() {
-    if (currentNode?.type !== TUTORIAL_NODE_TYPES.playerSkill) return;
+    if (activeTutorialAction({ node: currentNode, phase: skillPhase, pendingWait, loading, choicesVisible, confirmExit: confirmExit || storyLogOpen }) !== "skill") return;
+    const key = `${currentNode.id}:skill`;
+    if (guidedActionSubmittedRef.current === key) return;
+    guidedActionSubmittedRef.current = key;
     setPendingSkill(true);
     setSkillPhase("skill-board");
     if (!currentNode.pointId) onToast?.("点击棋盘区域任意位置即可", "info");
@@ -730,13 +741,16 @@ export default function TutorialBattleScreen({
   }
 
   return (
-    <Layout>
+    <Layout className="tutorial-battle-root">
+      <TutorialInputFocus mode={tutorialInputFocusMode({ node: currentNode, phase: skillPhase, choicesVisible, pendingWait, loading, confirmExit: confirmExit || storyLogOpen })} targetPointId={tutorialTargetPointId} />
       <RoomHeader
         room={displayRoom}
         roomGameInfo={roomGameInfo}
         showCoords={showCoords}
         exitLabel="退出/跳过"
         showUtilityControls={false}
+        beforeExitActions={useMobileLayout ? <ChatBox room={displayRoom} readonly compactMessages label="剧情记录"
+          mobileDockPopup iconOnly popupPlacement="below" onOpenChange={setStoryLogOpen} /> : null}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
         onBack={() => setConfirmExit({ reason: "exit" })}
@@ -745,18 +759,18 @@ export default function TutorialBattleScreen({
       <div className="tutorial-battle-screen-stage">
         <RoomBattleStage
           battleLayoutClassName={battleLayoutClassName}
-          actionPanelOverride={(
+          tutorialAction={activeTutorialAction({ node: currentNode, phase: skillPhase, pendingWait, loading, choicesVisible, confirmExit: confirmExit || storyLogOpen })}
+          tutorialSkillName={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill ? skillLabel(currentNode, characters) : undefined}
+          actionPanelOverride={(normalActions) => (
             <TutorialActionPanel
+              normalActions={normalActions}
               node={currentNode}
               phase={skillPhase}
               pendingWait={pendingWait}
               choicesVisible={choicesVisible}
               previewControlsEnabled={previewControlsEnabled}
-              skillName={skillLabel(currentNode, characters)}
               onContinue={handleContinue}
               onChoice={handleChoice}
-              onSkillButton={handleSkillButton}
-              onPlayerButton={() => completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode))}
               onRevealText={revealNpcBubbleText}
               onSkipPendingWait={skipPendingWait}
             />
@@ -790,12 +804,12 @@ export default function TutorialBattleScreen({
           pointConfirmation={null}
           role="player"
           scoring={displayRoom.game.scoring}
-          setPendingSkill={setPendingSkill}
+          setPendingSkill={handleSkillButton}
           setReplayStep={() => {}}
           setSpectatorStep={() => {}}
           setViewColor={() => {}}
           showPeoplePanel={false}
-          showTutorialLog
+          showTutorialLog={!useMobileLayout}
           showCoords={showCoords}
           showMoves={false}
           skillAvailable={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill}
@@ -859,84 +873,21 @@ function npcDialogueTypewriterDurationMs(node) {
 }
 
 export function TutorialActionPanel({
-  node,
-  phase,
-  pendingWait,
-  choicesVisible,
-  previewControlsEnabled,
-  skillName,
-  onContinue,
-  onChoice,
-  onSkillButton,
-  onPlayerButton,
-  onRevealText,
-  onSkipPendingWait
+  node, phase, pendingWait, choicesVisible, previewControlsEnabled, normalActions,
+  onContinue, onChoice, onRevealText, onSkipPendingWait
 }) {
-  if (!node) return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
-  const hasOptions = Array.isArray(node.options) && node.options.length > 0;
-  if (choicesVisible && hasOptions) {
-    return (
-      <TutorialChoiceActions
-        key={node.id}
-        node={node}
-        onChoice={onChoice}
-        onRevealText={onRevealText}
-      />
-    );
+  if (choicesVisible && node?.options?.length) {
+    return <TutorialChoiceActions key={node.id} node={node} onChoice={onChoice} onRevealText={onRevealText} />;
   }
-  if (pendingWait) {
-    const buttonText = pendingWait.manualContinue ? "继续" : "立即继续";
-    return (
-      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
-        {(pendingWait.manualContinue || previewControlsEnabled) && (
-          <button className="tutorial-highlight-action" type="button" onClick={onSkipPendingWait}>
-            <Play size={18} aria-hidden="true" />
-            <span>{buttonText}</span>
-          </button>
-        )}
-      </nav>
-    );
+  const canSkipWait = pendingWait && (pendingWait.manualContinue || previewControlsEnabled);
+  if (canSkipWait || (!pendingWait && phase === "continue")) {
+    return <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
+      <button className="tutorial-highlight-action" type="button" onClick={canSkipWait ? onSkipPendingWait : onContinue}>
+        <Play size={18} aria-hidden="true" /><span>{canSkipWait && !pendingWait.manualContinue ? "立即继续" : "继续"}</span>
+      </button>
+    </nav>;
   }
-  if (phase === "continue") {
-    return (
-      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
-        <button className="tutorial-highlight-action" type="button" onClick={onContinue}>
-          <Play size={18} aria-hidden="true" />
-          <span>继续</span>
-        </button>
-      </nav>
-    );
-  }
-  if (phase === "skill-button") {
-    return (
-      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
-        <button className="skill-action tutorial-highlight-action" type="button" onClick={onSkillButton}>
-          <Sparkles size={20} />
-          <span>{skillName}</span>
-        </button>
-      </nav>
-    );
-  }
-  if (phase === "skill-board") {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
-  }
-  if (phase === "button") {
-    return (
-      <nav className="action-bar tutorial-action-bar" onClick={onRevealText}>
-        <button className="tutorial-highlight-action" type="button" onClick={onPlayerButton}>
-          {node.type === TUTORIAL_NODE_TYPES.resign ? <Flag size={18} /> : <Calculator size={18} />}
-          <span>{playerButtonText(node)}</span>
-        </button>
-      </nav>
-    );
-  }
-  if (node.type === TUTORIAL_NODE_TYPES.playerMove) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
-  }
-  if (isTutorialNpcNodeType(node.type) || autoSettlementNode(node)) {
-    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
-  }
-  return <nav className="action-bar tutorial-action-bar" aria-hidden="true" onClick={onRevealText} />;
+  return normalActions;
 }
 
 export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
@@ -1058,15 +1009,13 @@ function skillLabel(node, characters) {
 }
 
 function playerButtonNode(node) {
-  return Boolean(node && node.actor === "player" && [
-    TUTORIAL_NODE_TYPES.countingStart,
-    TUTORIAL_NODE_TYPES.countingConfirm,
-    TUTORIAL_NODE_TYPES.resign
-  ].includes(node.type));
+  return node?.type !== TUTORIAL_NODE_TYPES.playerSkill && Boolean(tutorialActionForNode(node));
 }
 
 function autoSettlementNode(node) {
   return Boolean(node && !playerButtonNode(node) && [
+    TUTORIAL_NODE_TYPES.pass,
+    TUTORIAL_NODE_TYPES.draw,
     TUTORIAL_NODE_TYPES.countingStart,
     TUTORIAL_NODE_TYPES.markDead,
     TUTORIAL_NODE_TYPES.markNeutral,
@@ -1075,11 +1024,6 @@ function autoSettlementNode(node) {
   ].includes(node.type));
 }
 
-function playerButtonText(node) {
-  if (node?.type === TUTORIAL_NODE_TYPES.resign) return "认输";
-  if (node?.type === TUTORIAL_NODE_TYPES.countingConfirm) return "确认数目";
-  return "数目";
-}
 
 function isNpcLocked(node) {
   return isTutorialNpcNodeType(node?.type) || autoSettlementNode(node);

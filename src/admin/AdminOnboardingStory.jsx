@@ -132,6 +132,8 @@ const NODE_TYPE_GROUPS = Object.freeze([
   {
     label: "结算步骤",
     options: [
+      { value: TUTORIAL_NODE_TYPES.pass, label: "弃手" },
+      { value: TUTORIAL_NODE_TYPES.draw, label: "和棋" },
       { value: TUTORIAL_NODE_TYPES.countingStart, label: "开始数目" },
       { value: TUTORIAL_NODE_TYPES.markDead, label: "标死子" },
       { value: TUTORIAL_NODE_TYPES.markNeutral, label: "标中立点" },
@@ -2101,6 +2103,8 @@ function issue(id, severity, message, nodeId = "") {
 
 function settlementNodeType(type) {
   return [
+    TUTORIAL_NODE_TYPES.pass,
+    TUTORIAL_NODE_TYPES.draw,
     TUTORIAL_NODE_TYPES.countingStart,
     TUTORIAL_NODE_TYPES.markDead,
     TUTORIAL_NODE_TYPES.markNeutral,

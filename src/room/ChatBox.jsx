@@ -13,6 +13,9 @@ function ChatBox({
   compactMessages = false,
   label = "对局聊天",
   mobileDockPopup = false,
+  iconOnly = false,
+  popupPlacement = "above",
+  onOpenChange,
   trailingAction = null,
   floatingLayerZ,
   onFloatingLayerRequest
@@ -41,20 +44,26 @@ function ChatBox({
       Math.max(rect.left, edgeInset),
       Math.max(edgeInset, viewportWidth - edgeInset - width)
     );
-    const maxHeight = Math.max(1, rect.top - edgeInset - triggerGap);
+    const below = popupPlacement === "below";
+    const top = Math.max(edgeInset, Math.min(rect.bottom + triggerGap, viewportHeight - edgeInset));
+    const maxHeight = Math.max(1, below ? viewportHeight - top - edgeInset : rect.top - edgeInset - triggerGap);
     const originX = Math.min(
       Math.max((rect.left + (rect.width / 2)) - left, 24),
       Math.max(24, width - 24)
     );
     setPopupAnchor({
       left,
-      bottom: Math.max(edgeInset, viewportHeight - rect.top + triggerGap),
+      top: below ? top : "auto",
+      bottom: below ? "auto" : Math.max(edgeInset, viewportHeight - rect.top + triggerGap),
       width,
       height: Math.min(460, maxHeight),
       maxHeight,
       originX
     });
-  }, [mobileDockPopup]);
+  }, [mobileDockPopup, popupPlacement]);
+
+  useEffect(() => { onOpenChange?.(isOpen); }, [isOpen, onOpenChange]);
+  useEffect(() => () => onOpenChange?.(false), [onOpenChange]);
 
   useEffect(() => {
     if (!logRef.current) return;
@@ -70,7 +79,10 @@ function ChatBox({
     }
 
     function handleKeyDown(event) {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        if (iconOnly) toggleRef.current?.focus();
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
@@ -79,15 +91,17 @@ function ChatBox({
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, iconOnly]);
 
   useEffect(() => {
     if (!isOpen || !mobileDockPopup) return undefined;
     positionPopupAboveTrigger();
     window.addEventListener("resize", positionPopupAboveTrigger);
+    window.addEventListener("scroll", positionPopupAboveTrigger, true);
     window.visualViewport?.addEventListener("resize", positionPopupAboveTrigger);
     return () => {
       window.removeEventListener("resize", positionPopupAboveTrigger);
+      window.removeEventListener("scroll", positionPopupAboveTrigger, true);
       window.visualViewport?.removeEventListener("resize", positionPopupAboveTrigger);
     };
   }, [isOpen, mobileDockPopup, positionPopupAboveTrigger]);
@@ -110,6 +124,7 @@ function ChatBox({
       left: popupAnchor.left,
       right: "auto",
       bottom: popupAnchor.bottom,
+      top: popupAnchor.top,
       width: popupAnchor.width,
       height: popupAnchor.height,
       maxHeight: popupAnchor.maxHeight
@@ -132,7 +147,7 @@ function ChatBox({
     >
       <header>
         <span><MessageCircle size={18} aria-hidden="true" />{label}</span>
-        <button type="button" className="chat-close-button" aria-label={`关闭${label}`} onClick={() => setIsOpen(false)}>
+        <button type="button" className="chat-close-button" aria-label={`关闭${label}`} onClick={() => { setIsOpen(false); if (iconOnly) toggleRef.current?.focus(); }}>
           <X size={17} aria-hidden="true" />
         </button>
       </header>
@@ -167,7 +182,7 @@ function ChatBox({
   const widgetStyle = mobileDockPopup
     ? {
       "--room-floating-z": floatingLayerZ,
-      width: "100%",
+      width: iconOnly ? "44px" : "100%",
       minWidth: 0,
       maxWidth: "none",
       alignSelf: "stretch",
@@ -179,7 +194,7 @@ function ChatBox({
 
   return (
     <div
-      className={`${isOpen ? "chat-widget open" : "chat-widget"}${mobileDockPopup ? " tutorial-mobile-story-log" : ""}`}
+      className={`${isOpen ? "chat-widget open" : "chat-widget"}${mobileDockPopup ? " tutorial-mobile-story-log" : ""}${iconOnly ? " chat-widget-icon-only" : ""}`}
       ref={widgetRef}
       role={mobileDockPopup ? "presentation" : undefined}
       style={widgetStyle}
@@ -189,12 +204,14 @@ function ChatBox({
     >
       <button
         type="button"
-        className={`chat-toggle-button${mobileDockPopup ? " mobile-tab-button" : ""}${mobileDockPopup && isOpen ? " active" : ""}`}
+        className={`chat-toggle-button${mobileDockPopup && !iconOnly ? " mobile-tab-button" : ""}${mobileDockPopup && isOpen ? " active" : ""}${iconOnly ? " toggle room-header-story-log" : ""}`}
         id={mobileDockPopup ? `${panelId}-trigger` : undefined}
         ref={toggleRef}
-        role={mobileDockPopup ? "tab" : undefined}
+        role={mobileDockPopup && !iconOnly ? "tab" : undefined}
+        aria-label={iconOnly ? label : undefined}
+        title={iconOnly ? label : undefined}
         aria-expanded={isOpen}
-        aria-selected={mobileDockPopup ? isOpen : undefined}
+        aria-selected={mobileDockPopup && !iconOnly ? isOpen : undefined}
         aria-controls={panelId}
         style={mobileDockPopup ? { width: "100%", minWidth: 0 } : undefined}
         onClick={() => {
@@ -204,8 +221,7 @@ function ChatBox({
         }}
       >
         <MessageCircle size={18} aria-hidden="true" />
-        <span>{label}</span>
-        <strong>{chatCount}</strong>
+        {!iconOnly && <><span>{label}</span><strong>{chatCount}</strong></>}
       </button>
       {trailingAction}
       {popupLayer}
@@ -224,6 +240,9 @@ export function areChatBoxPropsEqual(previous, next) {
     && previous.compactMessages === next.compactMessages
     && previous.label === next.label
     && previous.mobileDockPopup === next.mobileDockPopup
+    && previous.iconOnly === next.iconOnly
+    && previous.popupPlacement === next.popupPlacement
+    && previous.onOpenChange === next.onOpenChange
     && previous.trailingAction === next.trailingAction
     && previous.floatingLayerZ === next.floatingLayerZ
     && previous.onFloatingLayerRequest === next.onFloatingLayerRequest;

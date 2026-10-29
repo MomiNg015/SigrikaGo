@@ -9,6 +9,19 @@ import {
 } from "./tutorialGameState.js";
 
 describe("tutorialGameState", () => {
+  it("executes guided pass and agreed-draw nodes without mutating the source game", () => {
+    const game = createTutorialGameState();
+    const passed = applyTutorialNodeAction(game, { type: "pass", color: "black" });
+    expect(passed.ok).toBe(true);
+    expect(passed.state.moveNumber).toBe(1);
+    expect(passed.state.turn).toBe("white");
+    expect(passed.state.history.at(-1).type).toBe("pass");
+    expect(game.moveNumber).toBe(0);
+    const draw = applyTutorialNodeAction(passed.state, { type: "draw" });
+    expect(draw.state.phase).toBe(GAME_PHASES.finished);
+    expect(draw.state.winner).toMatchObject({ winnerColor: null, reason: "agreement" });
+    expect(passed.state.phase).toBe(GAME_PHASES.playing);
+  });
   it("creates a local spark game from a scripted initial board", () => {
     const game = createTutorialGameState({
       initialBoard: {

@@ -14,6 +14,7 @@ export default function RoomHeader({
   onBack,
   exitLabel = "退出房间",
   showUtilityControls = true,
+  beforeExitActions = null,
   showTestTools = false,
   testToolsDisabled = false,
   onGameAction,
@@ -75,7 +76,7 @@ export default function RoomHeader({
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
         <button className="toggle coordinate-toggle" aria-pressed={showCoords} onClick={onToggleCoords} title="显示坐标"><PanelRight size={16} /></button>
       </div>}
-      {(showUtilityControls || onBack) && <div className="room-header-quick-actions">
+      {(showUtilityControls || onBack || beforeExitActions) && <div className="room-header-quick-actions">
         {showUtilityControls && <button
           className="toggle coordinate-toggle room-mobile-coordinate"
           data-button-role="secondary"
@@ -85,6 +86,7 @@ export default function RoomHeader({
           title="显示坐标"
           onClick={onToggleCoords}
         ><PanelRight size={18} /></button>}
+        {beforeExitActions}
         {onBack && (
           <button
             className="toggle room-mobile-exit"

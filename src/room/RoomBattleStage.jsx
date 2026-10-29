@@ -16,6 +16,8 @@ export default function RoomBattleStage({
   battleLayoutClassName,
   audioSettings,
   actionPanelOverride,
+  tutorialAction,
+  tutorialSkillName,
   boardStep,
   canSwitchView,
   characters,
@@ -134,6 +136,7 @@ export default function RoomBattleStage({
   const defaultActionPanel = (
     <ActionBar
       role={role}
+      tutorialAction={tutorialAction}
       mode={displayRoom.game.mode}
       phase={displayRoom.game.phase}
       me={me}
@@ -143,8 +146,8 @@ export default function RoomBattleStage({
       skillLocked={Boolean(skillPreview)}
       skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
-      skillEnabled={!sigrikaCandyDuel && selfSkillEnabled}
-      skillName={selfSkill?.name}
+      skillEnabled={!sigrikaCandyDuel && (selfSkillEnabled || Boolean(tutorialSkillName))}
+      skillName={tutorialSkillName ?? selfSkill?.name}
       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
       countingEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}
@@ -164,7 +167,9 @@ export default function RoomBattleStage({
       onResign={onResign}
     />
   );
-  const actionPanel = actionPanelOverride ?? defaultActionPanel;
+  const actionPanel = typeof actionPanelOverride === "function"
+    ? actionPanelOverride(defaultActionPanel)
+    : actionPanelOverride ?? defaultActionPanel;
   const selfInfo = (
     <PlayerInfo
       player={selfPlayer}

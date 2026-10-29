@@ -705,14 +705,15 @@ describe("root CSS entry contract", () => {
       "./themes/bright-school/commerce/shop/material-fractsidus.css",
       "./mobile-adaptive/battle-arcade-layout.css",
       "./mobile-adaptive/battle-arcade-keys.css",
-      "./mobile-adaptive/battle-arcade-skill.css"
+      "./mobile-adaptive/battle-arcade-skill.css",
+      "./mobile-adaptive/tutorial-arcade-controls.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/battle-arcade-skill.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/tutorial-arcade-controls.css");
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");
@@ -1574,7 +1575,8 @@ describe("root CSS entry contract", () => {
       "./tutorial-battle-screen/target-ring.css",
       "./tutorial-battle-screen/no-character-portraits.css",
       "./tutorial-battle-screen/loading-motion.css",
-      "./tutorial-battle-screen/npc-sprite.css"
+      "./tutorial-battle-screen/npc-sprite.css",
+      "./tutorial-battle-screen/input-focus.css"
     ]);
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");

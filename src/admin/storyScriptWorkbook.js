@@ -100,6 +100,8 @@ const OPTION_KEYS = OPTION_COLUMNS.map(([key]) => key);
 const BOARD_KEYS = BOARD_COLUMNS.map(([key]) => key);
 const NODE_TYPE_VALUES = new Set(Object.values(TUTORIAL_NODE_TYPES));
 const SETTLEMENT_NODE_TYPES = new Set([
+  TUTORIAL_NODE_TYPES.pass,
+  TUTORIAL_NODE_TYPES.draw,
   TUTORIAL_NODE_TYPES.countingStart,
   TUTORIAL_NODE_TYPES.markDead,
   TUTORIAL_NODE_TYPES.markNeutral,

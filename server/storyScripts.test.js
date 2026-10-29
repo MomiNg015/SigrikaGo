@@ -15,6 +15,17 @@ import {
 import { STORY_NODE_EFFECTS } from "../src/shared/storyPresentation.js";
 
 describe("story script domain", () => {
+  it("validates and preserves pass/draw tutorial nodes for authoring", () => {
+    const result = validateStoryScriptInput({ key: "tutorial.actions", title: "Actions", triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {}, draft: { startNodeId: "pass", initialBoard: { mode: "spark", stones: [] }, nodes: [
+        { id: "pass", type: "pass", actor: "player", color: "black", nextNodeId: "draw" },
+        { id: "draw", type: "draw", actor: "player", nextNodeId: "" }
+      ] } }, { publishing: true });
+    expect(result.draft.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "pass", actor: "player", color: "black" }),
+      expect.objectContaining({ type: "draw", actor: "player" })
+    ]));
+  });
   function makeStoryRecord(overrides = {}) {
     return {
       id: "script.test",
