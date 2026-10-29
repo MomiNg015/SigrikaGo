@@ -833,3 +833,36 @@ Continue uses original yellow; tutorial skill is gray outside the required skill
 ### Next Steps
 
 - None - task complete
+
+
+## Session 266: A聚焦样板扩展主界面组件高亮
+
+**Date**: 2026-10-29
+**Task**: A聚焦样板扩展主界面组件高亮
+**Branch**: `master`
+
+### Summary
+
+用户选择A并要求主界面只提亮目标组件自身，所有高亮窗口含部员详情与履历均有聚焦标记。样板增加5个主界面直达入口，保留透明轮廓圆角阴影，以无交互绘制副本取代矩形开洞。修复窗口入场透明度冻结和旧焦点框缩放测量问题。15组入口、手机桌面50个完整流程高亮、27组对弈组合、ESLint及4项文档测试通过；无API请求。尚未正式实装，保留其它工作区改动。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3cb1a82c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
