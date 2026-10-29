@@ -899,3 +899,36 @@ Shipped shared A contracting markers for battle and home, actual component paint
 ### Next Steps
 
 - None - task complete
+
+
+## Session 268: Prevent player UI drag selection
+
+**Date**: 2026-10-29
+**Task**: Prevent player UI drag selection
+**Branch**: `master`
+
+### Summary
+
+Player foundation CSS prevents native text/image sweep selection and image drag ghosts while preserving editable control and admin selection. Browser reproduced original blue selection then verified desktop/phone prevention, input/textarea/contenteditable edit, admin selection and tutorial skill/board actions. Lint, 144 existing CSS assertions, build, built CSS checks and system-design generation passed. Unrelated WIP preserved.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bd14066f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
