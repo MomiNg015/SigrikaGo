@@ -1,5 +1,19 @@
 # Battle arcade control concepts
 
+## Production integration
+
+`tutorial.html` renders the real `TutorialBattleScreen` with local script fixtures for dialogue/continue, answers, board placement, skill selection, counting and resignation. It deliberately shows the current tutorial override: one step-specific action or answer list, no five-key arcade pod, and no IRIS charge window. Selecting a skill transitions into real board targeting. Current input-focus masking is included. Its CSS changes only review controls; no tutorial runtime or production styles are changed for this illustration.
+
+`verify-tutorial.mjs` passed 18 real state/viewport cases at 1440, 390 and 320px, including skill-to-board, reset, choice-to-move and valid-move-to-continue transitions. `tutorial-<state>-<width>.png` and `verification-tutorial.json` record the current UI. Review toolbar corners use the documented 8px control radius.
+
+The illustrated input-focus mask belongs to pre-existing local tutorial work, which this task does not commit. Mask assertions and screenshots reflect that current working tree; the fixture itself imports whichever tutorial implementation is present.
+
+The selected pod is now integrated into normal Bright School `ActionBar`. Open `production.html` through Vite (port 5173). This page renders the real `RoomBattleStage`, its default action path, current player/derived-skill display plumbing and complete production styles; fixture callbacks stay local. It includes state controls for ready, waiting, spent, long names, gomoku, spectator and finished. The original static comparison remains a historical design artifact.
+
+The production version adds recessed key seats, cap bevels, a mint case edge and vertical downstroke. Final normal-theme CSS excludes corrupted and duel surfaces. Desktop reserves viewport height for the pod; short portrait screens retain the existing scroll behavior and measured dock baseline. Existing counting copy remains 数子.
+
+`verify-production.mjs` checks real component geometry and behavior; results are stored in `verification-production.json` and `production-*.png`. Unit/DOM tests verify callbacks, disabled modes, effective skill updates and cancellation lifecycle. Palette/radius warnings are intentional bounded exceptions documented in DESIGN.md and the battle-arcade-controls code spec. Old literal colors in unrelated contract tests are historical assertions, not new design choices.
+
 Open `index.html` through a local HTTP server rooted at the repository. Current preview: <http://127.0.0.1:8765/docs/design-samples/battle-arcade-2026-10-29/index.html>.
 
 ## Selected pod revision
@@ -12,11 +26,11 @@ The user selected direction 3 and requested direct skill names, an IRIS-like cou
 - Pointer/keyboard presses move caps down to 2px for every enabled action, with a 130ms release hold for quick taps. Pointer cancellation, focus loss and rerender clear transient presses. Selected skill remains depressed after release; disabled buttons never press. Reduced-motion removes transitions.
 - Run `node docs/design-samples/battle-arcade-2026-10-29/verify-pod-v2.mjs`: 12 state/width cases verify actual name wrapping, counter geometry, loaded font, gradient versus zero-use gray, and 5 measured presses plus pointer cancellation, keyboard and touch.
 - Rainbow palette findings are intentional per the explicit user request. IRIS colors/fonts are reused rather than new global tokens. No global design-hook suppression is added.
-- Production integration remains outside this design-preview deliverable.
+- This first revision covered the standalone preview; production integration is recorded above.
 
-## Review findings
+## Initial review findings
 
-- `src/room/ActionBar.jsx` renders five actions. The skill label currently combines its dynamic name and remaining uses in one line.
+- Before this change, `src/room/ActionBar.jsx` rendered five actions with the dynamic skill name and remaining uses combined in one line.
 - `src/styles/themes/bright-school/room/flat-controls.css` suppresses shadows on all battle actions. The portrait `dock-actions/action-grid.css` and `mobile-room-portrait/action-decision-controls.css` enforce equal columns and a 46px height. These explain the flat, undifferentiated control weights.
 - The product identity is warm paper, dark brown ink, pastel pink/blue/mint, bundled LXGW Marker Gothic and short hard shadows. The samples reinterpret physical arcade controls within that identity.
 
@@ -28,7 +42,7 @@ The user selected direction 3 and requested direct skill names, an IRIS-like cou
 | Stepped keys | Wide, tall skill key with medium and short flanking keys | Skill spans two rows on the left; medium keys above the two auxiliary keys | Compact and legible; closer to mechanical keycaps |
 | Handheld pod | Auxiliary rail, two medium ovals and right-side skill paddle | Medium/auxiliary two-row group on the left, large skill key on the right | Strong grouping and right-thumb access; larger departure from current order |
 
-## Sample boundaries
+## Original standalone sample boundaries
 
 - These are standalone visual and interaction samples. No production imports, game mutations, network APIs, theme changes or gameplay changes.
 - Surrounding board and players are static context, not a complete reconstruction of the production battle layout. Existing local chibi avatars and font are reused.
@@ -36,7 +50,7 @@ The user selected direction 3 and requested direct skill names, an IRIS-like cou
 - The initial round/key variants keep the generic label and separate name line. The selected pod revision puts the name and counter directly on the key. Long-name, spent, waiting and selected cases are provided.
 - Pass/resign use native modal confirmation. Requests and confirmations produce local feedback only. Reduced-motion preference removes transitions; native keyboard focus is visible.
 - Numbered markers identify the three alternatives in review chrome; they are not proposed product UI. Additional shades are intentional physical cap/base/paper tones local to the sample. The font alias was corrected to `Sigrika Window Title`, which loads the existing LXGW font. Design-hook palette/number findings are contextual exceptions, not production design-system changes; no suppression configuration was added.
-- No new production code-spec is established until a direction is selected.
+- The initial exploration established no production code-spec. The selected implementation now has `.trellis/spec/frontend/battle-arcade-controls.md`.
 
 ## Verification
 

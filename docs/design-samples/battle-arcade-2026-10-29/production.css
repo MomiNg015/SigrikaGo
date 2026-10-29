@@ -1,0 +1,5 @@
+/* Preview chrome only. Actual battle geometry comes entirely from src/styles.css. */
+.arcade-preview-toolbar { position: fixed; right: 12px; bottom: 10px; z-index: 900; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid #3d2b25; border-radius: 8px; background: #fffbf2; font-size: 12px; }
+.arcade-preview-toolbar label { display: flex; gap: 5px; align-items: center; }
+.arcade-preview-toolbar select { width: auto; padding: 3px; }
+@media (max-width: 900px) { .arcade-preview-toolbar { position: static; padding: 5px 8px; border-radius: 0; gap: 8px; font-size: 10px; } }

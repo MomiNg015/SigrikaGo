@@ -1,0 +1,15 @@
+/* Reviewer controls only; TutorialBattleScreen owns all game and action styles. */
+.tutorial-preview-toolbar {
+  top: 12px;
+  bottom: auto;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  display: block;
+}
+.tutorial-preview-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.tutorial-preview-controls button { padding: 4px 8px; font: inherit; }
+.tutorial-preview-toolbar p { margin: 8px 0 4px; line-height: 1.5; }
+.tutorial-preview-toolbar small { font-size: inherit; }
+@media (max-width: 900px) {
+  .tutorial-preview-toolbar { width: 100%; max-width: none; padding: 8px 10px; font-size: 12px; }
+}

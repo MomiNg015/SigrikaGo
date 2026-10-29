@@ -11,6 +11,7 @@ import { gameModeFamily } from "../shared/gameModes.js";
 import { canRequestOpponentDecision } from "./actionBar/actionAvailability.js";
 import DeadStoneDecisionBar from "./actionBar/DeadStoneDecisionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
+import ActionKey from "./actionBar/ActionKey.jsx";
 
 function ActionBar({
   role,
@@ -66,13 +67,15 @@ function ActionBar({
     );
   }
   const isGomoku = gameModeFamily(mode) === "gomoku";
+  const remainingUses = skillEnabled ? Math.max(0, skillUses ?? 0) : 0;
+  const actionSkillName = skillEnabled ? (skillName || "技能") : "技能";
   return (
-    <nav className="action-bar">
-      <button className="pass-action" onClick={onPass} disabled={isGomoku || phase !== "playing" || skillLocked}>
+    <nav className="action-bar battle-arcade-controls" aria-label="对弈操作">
+      <ActionKey className="pass-action" onClick={onPass} disabled={isGomoku || phase !== "playing" || skillLocked}>
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
-      </button>
-      <button
+      </ActionKey>
+      <ActionKey
         className="counting-action"
         onClick={onCountingRequest}
         disabled={isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}
@@ -80,20 +83,25 @@ function ActionBar({
       >
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
-      </button>
-      <button
-        className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
+      </ActionKey>
+      <ActionKey
+        className={`skill-action ${pendingSkill ? "active" : ""} ${remainingUses <= 0 ? "spent" : ""}`}
+        data-skill-uses={remainingUses}
+        data-long-name={actionSkillName.length > 6 || undefined}
+        aria-label={`${actionSkillName}，剩余 ${remainingUses} 次`}
+        aria-pressed={Boolean(pendingSkill)}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable}
+        disabled={!skillEnabled || !me || phase !== "playing" || !isMyTurn || skillActionLocked || remainingUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />
-        <span className="action-label mobile-action-button-label">{skillEnabled ? `${skillName} · ${skillUses ?? 0}` : "技能"}</span>
-      </button>
-      <button className="draw-action" onClick={onDrawRequest} disabled={!drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
+        <span className="action-label mobile-action-button-label">{actionSkillName}</span>
+        <span className="skill-use-window" aria-hidden="true">{String(remainingUses).padStart(2, "0")}</span>
+      </ActionKey>
+      <ActionKey className="draw-action" onClick={onDrawRequest} disabled={!drawEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
-      </button>
-      <button className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
+      </ActionKey>
+      <ActionKey className="resign-action" onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></ActionKey>
     </nav>
   );
 }

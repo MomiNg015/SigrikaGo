@@ -1,0 +1,55 @@
+/* Charges own the palette; turn/preview locks only own interaction availability. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .room-screen:not(.sigrika-candy-duel-room) .action-bar.battle-arcade-controls {
+  & > .skill-action {
+    --key-base: #8d718d;
+    border-radius: 27px 36px 36px 27px !important;
+    & .action-keycap {
+      flex-direction: column;
+      gap: 5px;
+      padding: 28px 9px 10px;
+      background: linear-gradient(125deg, #ffb6ce 2%, #ffdba4 25%, #f3edaa 41%, #bde9cf 57%, #b2dff1 75%, #cebaf0 97%);
+      color: var(--arcade-ink);
+    }
+    & .action-label { font-size: 19px !important; line-height: 1.25 !important; white-space: normal !important; overflow-wrap: anywhere; text-wrap: balance; }
+    & svg { width: 23px !important; height: 23px !important; }
+    &[data-long-name] {
+      & .action-label { font-size: 14px !important; }
+      & svg { display: none !important; }
+    }
+    & .skill-use-window {
+      position: absolute;
+      top: 5px;
+      right: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 42px;
+      height: 25px;
+      padding: 2px 6px;
+      background: repeating-linear-gradient(0deg, transparent 0 3px, #7ce9ff12 3px 4px), #021420;
+      border: 1px solid #16b8dd;
+      border-radius: 0;
+      clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+      color: #7ce9ff !important;
+      font: 400 18px/1 var(--font-iris-mixed) !important;
+      letter-spacing: 1px;
+      text-shadow: none;
+      &::before { content: ""; width: 3px; height: 3px; background: #42f2a1; }
+    }
+    &.spent {
+      --key-base: #aaa59d;
+      & .action-keycap { background: #d9d7d1; color: #625b52; }
+      & .skill-use-window { background: #363c3e; border-color: #8b9698; color: #e0e6e7 !important; }
+      & .skill-use-window::before { background: #aeb8b9; }
+    }
+  }
+}
+
+@media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room) .mobile-tab-panel .action-bar.battle-arcade-controls > .skill-action {
+    & .action-label { font-size: 17px !important; }
+    &[data-long-name] .action-label { font-size: 12px !important; }
+    & .skill-use-window { right: 5px; min-width: 39px; height: 24px; font-size: 17px !important; }
+  }
+}

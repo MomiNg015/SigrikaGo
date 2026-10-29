@@ -95,3 +95,6 @@
 @import "./themes/bright-school/commerce/shop/material-cards.css";
 @import "./themes/bright-school/commerce/shop/material-dialogue.css";
 @import "./themes/bright-school/commerce/shop/material-fractsidus.css";
+@import "./mobile-adaptive/battle-arcade-layout.css";
+@import "./mobile-adaptive/battle-arcade-keys.css";
+@import "./mobile-adaptive/battle-arcade-skill.css";

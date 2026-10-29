@@ -30,6 +30,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Identity Bust Portraits](./identity-bust-contract.md) | Shared student-ID/profile/battle crops, effective appearance, failure fallback, hidden teams and preloads | Filled |
 | [Thinking Loading Art Prototype](./loading-art-prototype.md) | Transparent bulb masks, axis fill, frame animation, static completion and sample boundaries | Filled |
 | [Button Colors](./button-colors.md) | Ordinary player action colors and protected visual boundaries | Filled |
+| [Battle Arcade Controls](./battle-arcade-controls.md) | Handheld action pod, effective skill name, IRIS counter, charge palette and press lifecycle | Filled |
 | [Shop Materials](./shop-material-contract.md) | Approved texture-free A, distinct store palettes, scoped paint and preserved geometry/motion | Filled |
 | [Window Title Stickers](./window-title-stickers.md) | Restrained paper labels, required LXGW font, home opt-in and scroll ownership | Filled |
 | [Friends Companion Window](./friends-companion-contract.md) | Selected-user companion pane, retained left bookmarks, relationship actions and paper feedback | Filled |

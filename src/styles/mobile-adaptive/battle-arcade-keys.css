@@ -1,0 +1,103 @@
+/* Button bounds stay still; the inset seat and moving cap create the downstroke. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .room-screen:not(.sigrika-candy-duel-room) .action-bar.battle-arcade-controls {
+  & > button {
+    --key-fill: #fffaf0;
+    --key-base: #c4af8e;
+    --key-depth: -4px;
+    position: relative !important;
+    display: block !important;
+    width: 100%;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: none !important;
+    padding: 0 !important;
+    border: 2px solid var(--arcade-ink) !important;
+    border-radius: 24px !important;
+    background: var(--key-base) !important;
+    color: var(--arcade-ink) !important;
+    box-shadow: 0 0 0 3px #cfdbcf, 0 0 0 4px #89998b !important;
+    transform: none !important;
+    translate: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+    outline: none !important;
+    overflow: visible !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  & > button::before, & > button::after { content: none !important; display: none !important; }
+  & .action-keycap {
+    position: absolute;
+    inset: -2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 5px;
+    padding: 4px 7px;
+    border: 2px solid var(--arcade-ink);
+    border-radius: inherit;
+    background: linear-gradient(180deg, #ffffff36, transparent 50%), var(--key-fill);
+    box-shadow: inset 0 3px 0 #ffffffb3, inset 0 -4px 0 #3d2b251a, inset 2px 0 0 #ffffff52;
+    transform: translateY(var(--key-depth)) !important;
+    transition: transform 130ms ease-out !important;
+    pointer-events: none;
+  }
+  & .action-label {
+    display: block !important;
+    font: 400 14px/1.2 var(--font-ui-default) !important;
+    color: inherit !important;
+    white-space: nowrap !important;
+    text-align: center;
+    text-shadow: none !important;
+    overflow: visible !important;
+  }
+  & svg { width: 18px !important; height: 18px !important; margin: 0 !important; color: inherit !important; flex: 0 0 auto; }
+  & > :is(.counting-action, .resign-action) {
+    border-radius: 50% !important;
+    & .action-keycap { flex-direction: column; gap: 4px; }
+    & .action-label { font-size: 17px !important; }
+    & svg { width: 22px !important; height: 22px !important; }
+  }
+  & > .counting-action { --key-fill: #9ad3de; --key-base: #608d96; }
+  & > .resign-action { --key-fill: #e6a18e; --key-base: #a76655; }
+  & > button:disabled {
+    --key-fill: #d9d7d1;
+    --key-base: #aaa59d;
+    --key-depth: -1px;
+    cursor: not-allowed;
+    color: #625b52 !important;
+  }
+  & > button:focus-visible .action-keycap { outline: 2px solid #226979; outline-offset: 4px; }
+  & > button.active:not(:disabled) { --key-depth: 0px; }
+  & > button.active:not(:disabled) .action-keycap::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid #5b4a67;
+    border-radius: inherit;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    & > button:not(:disabled, .active):hover { --key-depth: -6px; }
+  }
+  & > button:not(:disabled):is(:active, [data-pressed="true"]) {
+    --key-depth: 1px;
+    & .action-keycap { transition-duration: 35ms !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    & > button .action-keycap { transition: none !important; }
+  }
+}
+
+@media (max-width: 900px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .mobile-room-screen:not(.sigrika-candy-duel-room) .mobile-tab-panel .action-bar.battle-arcade-controls {
+    & .action-label { font-size: 12px !important; }
+    & > :is(.counting-action, .resign-action) .action-label { font-size: 14px !important; }
+    & > :is(.counting-action, .resign-action) svg { width: 19px !important; height: 19px !important; }
+    & .action-keycap { gap: 3px; padding-inline: 3px; }
+    & > :is(.pass-action, .draw-action) svg { width: 15px !important; height: 15px !important; }
+  }
+}

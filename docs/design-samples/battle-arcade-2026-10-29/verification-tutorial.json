@@ -1,0 +1,291 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "dialogue",
+      "focus": "",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "继续",
+          "width": 624,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "choices",
+      "focus": "choices",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "准备好了，开始落子",
+          "width": 302,
+          "height": 57
+        },
+        {
+          "text": "再讲解一下",
+          "width": 302,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "move",
+      "focus": "board",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "skill",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "星辉符文",
+          "width": 624,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "counting",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "数目",
+          "width": 624,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "resign",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "认输",
+          "width": 624,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "dialogue",
+      "focus": "",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "继续",
+          "width": 323,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "choices",
+      "focus": "choices",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "准备好了，开始落子",
+          "width": 130,
+          "height": 156
+        },
+        {
+          "text": "再讲解一下",
+          "width": 177,
+          "height": 156
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "move",
+      "focus": "board",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "skill",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "星辉符文",
+          "width": 323,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "counting",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "数目",
+          "width": 323,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "resign",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "认输",
+          "width": 323,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "dialogue",
+      "focus": "",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "继续",
+          "width": 253,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "choices",
+      "focus": "choices",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "准备好了，开始落子",
+          "width": 60,
+          "height": 255
+        },
+        {
+          "text": "再讲解一下",
+          "width": 177,
+          "height": 255
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "move",
+      "focus": "board",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "skill",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "星辉符文",
+          "width": 253,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "counting",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "数目",
+          "width": 253,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "state": "resign",
+      "focus": "actions",
+      "overflow": false,
+      "arcade": false,
+      "counter": false,
+      "buttons": [
+        {
+          "text": "认输",
+          "width": 253,
+          "height": 57
+        }
+      ]
+    }
+  ],
+  "transitions": "skill to board, reset, choice to move, valid move to continue passed at every viewport",
+  "errors": []
+}

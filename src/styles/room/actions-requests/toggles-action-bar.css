@@ -38,3 +38,7 @@
 .action-label {
   white-space: nowrap;
 }
+
+/* Other themes keep their existing button layout. */
+.action-keycap { display: contents; }
+.skill-use-window::before { content: " · "; }

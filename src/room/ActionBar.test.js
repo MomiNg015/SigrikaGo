@@ -113,9 +113,11 @@ describe("ActionBar helpers", () => {
     const markup = renderToStaticMarkup(createElement(ActionBar, actionBarProps({ countingEnabled: false })));
     const battleStageSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(markup).toMatch(/<button class="counting-action" disabled="" title="该对局无法数子">/);
-    expect(markup).toContain('<button class="pass-action">');
-    expect(markup).toContain('<button class="resign-action">');
+    const buttons = markup.match(/<button\b[^>]*>/g);
+    expect(buttons.find(button => button.includes('class="counting-action"'))).toContain('disabled=""');
+    expect(buttons.find(button => button.includes('class="counting-action"'))).toContain('title="该对局无法数子"');
+    expect(buttons.find(button => button.includes('class="pass-action"'))).not.toContain('disabled');
+    expect(buttons.find(button => button.includes('class="resign-action"'))).not.toContain('disabled');
     expect(markup).toContain(">数子</span>");
     expect(battleStageSource).toContain("countingEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}");
   });

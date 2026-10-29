@@ -1,5 +1,15 @@
 # UI 主题、移动端与交互体验
 
+## 掌机式对弈操作区（2026-10-29）
+
+`ActionBar` 的普通玩家分支使用 `battle-arcade-controls`，五个原操作和回调不变。`RoomBattleStage` 仍通过 `effectiveSkillDisplayForPlayer`／`effectiveSkillUsesForColor` 提供当前角色或派生技能名与次数；技能名直接进入主键，次数显示在右上 IRIS 小窗，字体复用 `--font-iris-mixed`。正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。
+
+最终样式由 `battle-arcade-layout.css`、`battle-arcade-keys.css`、`battle-arcade-skill.css` 三个局部 owner 管理，在 `mobile-adaptive.css` 最后加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面仅普通玩家对弈按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 `useMobileDockBaseline` 测量实际高度，短屏可滚动到全部操作。
+
+`ActionKey` 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、死子确认、教学自定义栏，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 `display: contents`。
+
+验证覆盖实际 `RoomBattleStage`、正式 CSS、1440×768／1920×1080 桌面及 390×844／320×568 竖屏，检查长名、字体加载、次数窗边界、棋盘比例、五键实际位移、模式锁定和特殊主题隔离。入口及证据见 `docs/design-samples/battle-arcade-2026-10-29/production.html`、`verify-production.mjs`；组件回归见 `ActionBar.dom.test.jsx`。
+
 ## 结算星炬券的样式边界（2026-10-28）
 
 `ResultModal` 的货币奖励复用 `StartorchCouponIcon(size=28)`。共享及终端层三个旧 `.result-rewards span` 选择器收紧为 `.result-rewards > span`，避免内部图标继承卡片的 8px／10px 内边距及边框，将实际图像由约 6px 压缩恢复到 28px。高度按 827:746 自动计算，仍使用原图；不改动段位区、按钮、动效或奖励结算。回归覆盖胜利 +50、失败 +20、零奖励 0，以及桌面与 390／320px 竖屏下的图像尺寸、边界和返回／退出操作。
