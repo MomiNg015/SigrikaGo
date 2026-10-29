@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { api } from "../api/client.js";
-import { loginPreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "../shared/preloadAssets.js";
+import { loginPreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
+import { preloadHomeReady } from "./homeReadyPreload.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
@@ -35,7 +36,6 @@ export function useStartupPreload({
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
-    let cancelRetry = () => {};
     let cancelHold = () => {};
     api("/api/me", { token })
       .then(async (data) => {
@@ -62,8 +62,7 @@ export function useStartupPreload({
         if (cancelled) return;
         setCharacters(nextCharacters);
         setMusicTracks(nextMusicTracks);
-        const skippedAssets = [];
-        await preloadLoginAssets(loginPreloadAssets({
+        await Promise.all([preloadHomeReady(), preloadLoginAssets(loginPreloadAssets({
           characters: nextCharacters,
           user: data.user,
           shopItems: shopData.items ?? [],
@@ -74,11 +73,12 @@ export function useStartupPreload({
           tracks: nextMusicTracks
         }), {
           concurrency: 6,
-          onSkipped: (src) => skippedAssets.push(src),
+          taskTimeoutMs: 20000,
+          requireComplete: true,
           onProgress: (progress) => {
             if (!cancelled) setAssetProgress(Math.min(progress, 0.99));
           }
-        });
+        })]);
         await refreshSiteSettings();
         if (cancelled) return;
         setAssetProgress(1);
@@ -94,13 +94,12 @@ export function useStartupPreload({
           matchSuccess: matchSuccessRef.current
         })) {
           setView("home");
-          cancelRetry = retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 });
         }
       })
       .catch((error) => {
         if (cancelled) return;
         if (error.status !== 401 && error.status !== 403) {
-          setStartupError({ source: "preload", message: "暂时无法加载账号，请检查网络后重试" });
+          setStartupError({ source: "preload", message: "资源尚未加载完成，请检查网络后重试" });
           if (shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })) setView("preloading");
           return;
         }
@@ -122,7 +121,6 @@ export function useStartupPreload({
     return () => {
       cancelled = true;
       cancelHold();
-      cancelRetry();
     };
   }, [
     retryKey,

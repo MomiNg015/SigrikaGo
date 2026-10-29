@@ -16,6 +16,7 @@ import {
   playEffectSound,
   playUiUnavailableSound
 } from "../audio/playback.jsx";
+import { preloadPlayableReady } from "../app/playableReadyPreload.js";
 import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
@@ -29,7 +30,7 @@ import { findCharacter } from "../shared/characterDisplay.js";
 import { resolveStoryCharacter, resolveStoryPortraitPresentation, storyGuidePortraitUrls } from "../shared/characterStorySprites.js";
 import { SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET } from "../shared/characterPortraitAssetCatalog.js";
 import { latestSkillPreview, resolveBackgroundMusic } from "../shared/musicLibrary.js";
-import { preloadImageAssets } from "../shared/preloadAssets.js";
+import { battlePreloadAssets, preloadLoginAssets, preloadImageAssets } from "../shared/preloadAssets.js";
 import {
   TUTORIAL_NODE_TYPES,
   isTutorialNpcNodeType
@@ -129,6 +130,8 @@ export default function TutorialBattleScreen({
   const [revealedNpcBubbleId, setRevealedNpcBubbleId] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [resolvedSkillState, setResolvedSkillState] = useState(null);
+  const [loadState, setLoadState] = useState({ progress: 0, error: false });
+  const [loadRetry, setLoadRetry] = useState(0);
   const [loading, setLoading] = useState(() => initialBattleLoadingForNode(startNode));
   const [battleMusicActive, setBattleMusicActive] = useState(true);
   const [confirmExit, setConfirmExit] = useState(null);
@@ -473,29 +476,31 @@ export default function TutorialBattleScreen({
 
   useEffect(() => {
     if (!loading) return undefined;
-    const timerId = window.setTimeout(() => {
+    let cancelled = false;
+    let timerId;
+    setLoadState({ id: loading.id, progress: 0, error: false });
+    const minimum = new Promise((resolve) => { timerId = window.setTimeout(resolve, MIN_LOADING_MS); });
+    const setupPlayers = tutorialPlayersForSetup(loading.node, user, characters);
+    const assets = battlePreloadAssets({ room: { mode: "spark", players: setupPlayers }, characters, tracks: musicTracks, user });
+    assets.criticalImages = [...new Set([...assets.criticalImages, ...tutorialPortraitUrls])];
+    const ready = loading.kind === "setup" ? Promise.all([preloadPlayableReady({ includePixi: true, mode: "spark" }).then((result) => {
+      if (!result.coreOk || !result.pixiOk) throw new Error("Tutorial modules unavailable");
+    }), preloadLoginAssets(assets, {
+      requireComplete: true, taskTimeoutMs: 20000,
+      onProgress: (progress) => { if (!cancelled) setLoadState({ id: loading.id, progress: Math.min(progress, 0.99), error: false }); }
+    })]) : Promise.resolve();
+    Promise.all([minimum, ready]).then(() => {
+      if (cancelled) return;
       if (loading.kind === "setup") {
         applyBoardSetup(loading.node);
         setLoading(null);
-        return;
-      }
-      if (loading.kind === "story") {
-        if (onExitToStory) {
-          onExitToStory({
-            script: { ...script, startNodeId: loading.startNodeId },
-            labels: session?.labels,
-            onComplete: session?.onComplete,
-            onExit: session?.onExit
-          });
-        } else {
-          finish();
-        }
-        return;
-      }
-      finish();
-    }, MIN_LOADING_MS);
-    return () => window.clearTimeout(timerId);
-  }, [applyBoardSetup, finish, loading, onExitToStory, script, session?.labels, session?.onComplete, session?.onExit]);
+      } else if (loading.kind === "story" && onExitToStory) {
+        onExitToStory({ script: { ...script, startNodeId: loading.startNodeId }, labels: session?.labels,
+          onComplete: session?.onComplete, onExit: session?.onExit });
+      } else finish();
+    }).catch(() => { if (!cancelled) setLoadState((state) => ({ ...state, error: true })); });
+    return () => { cancelled = true; window.clearTimeout(timerId); };
+  }, [applyBoardSetup, finish, loading, loadRetry, onExitToStory, script, session?.labels, session?.onComplete, session?.onExit, characters, musicTracks, user, tutorialPortraitUrls]);
 
   useEffect(() => {
     if (!loading || loading.kind === "setup") return undefined;
@@ -833,6 +838,9 @@ export default function TutorialBattleScreen({
           <TutorialBattleLoading
             key={loading.id}
             loading={loading}
+            progressOverride={loading.kind === "setup" ? (loadState.id === loading.id ? loadState.progress : 0) : undefined}
+            error={loadState.id === loading.id && loadState.error}
+            onRetry={() => setLoadRetry((key) => key + 1)}
             characters={characters}
             players={players}
             user={user}
@@ -879,7 +887,7 @@ function npcDialogueTypewriterDurationMs(node) {
   return 80 + (text.length * 28);
 }
 
-export function TutorialBattleLoading({ loading, characters, players, user }) {
+export function TutorialBattleLoading({ loading, characters, players, user, progressOverride, error, onRetry }) {
   const characterId = loading.node?.npcCharacterId || loading.node?.characterId || playerByUserId(players, NPC_ID)?.characterId;
   const character = findCharacter(characters, characterId);
   const progress = useTimedLoadingProgress(loading.id);
@@ -889,10 +897,12 @@ export function TutorialBattleLoading({ loading, characters, players, user }) {
         character={character}
         characters={characters}
         label={loading.text}
-        progress={progress}
+        progress={progressOverride ?? progress}
+        statusText={error ? "资源加载失败，请重试" : undefined}
         showTips={false}
         user={user}
       />
+      {error && <button className="asset-preload-retry" type="button" onClick={onRetry}>重新加载</button>}
     </div>
   );
 }

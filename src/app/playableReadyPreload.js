@@ -85,7 +85,10 @@ function preloadCorePlayableReadyModules(moduleLoaders) {
         results
       }));
   }
-  return corePlayableReadyPromise;
+  return corePlayableReadyPromise.then((result) => {
+    if (!result.ok) corePlayableReadyPromise = null;
+    return result;
+  });
 }
 
 function preloadPixiForPlayableReady(loadPixi) {
@@ -97,7 +100,10 @@ function preloadPixiForPlayableReady(loadPixi) {
         (error) => ({ ok: false, error })
       );
   }
-  return pixiPlayableReadyPromise;
+  return pixiPlayableReadyPromise.then((result) => {
+    if (!result.ok) pixiPlayableReadyPromise = null;
+    return result;
+  });
 }
 
 function currentTime() {

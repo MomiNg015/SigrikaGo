@@ -6,6 +6,8 @@ import { createGameState } from "../../../src/shared/game.js";
 import HomeScreen from "../../../src/home/HomeScreen.jsx";
 import ResumeModal from "../../../src/modals/ResumeModal.jsx";
 import { UserProfileCard } from "../../../src/modals/UserProfileCard.jsx";
+import SettingsModal from "../../../src/modals/SettingsModal.jsx";
+import TutorialBattleScreen from "../../../src/tutorial/TutorialBattleScreen.jsx";
 import RoomScreen from "../../../src/room/RoomScreen.jsx";
 
 const query = new URLSearchParams(location.search);
@@ -46,6 +48,13 @@ window.__interfaceReviewActions = [];
 
 function InterfaceReview() {
   const [surface, setSurface] = useState(query.get("surface") || "home");
+  if (surface === "settings") return <SettingsModal audioSettings={{ master: 50, bgm: 50, sfx: 50, voice: 50 }} setAudioSettings={noop} onClose={noop} />;
+  if (surface === "tutorial") return <TutorialBattleScreen characters={CHARACTERS} user={user} audioSettings={{ master: 0 }} session={{ script: { startNodeId: query.has("setup") ? "setup" : "choice", nodes: [
+    { id: "setup", type: "board-setup", nextNodeId: "choice" },
+    { id: "choice", type: "player-choice", options: [{ label: "准备落子", nextNodeId: "move" }] },
+    { id: "move", type: "player-move", pointId: "2,2", color: "black", nextNodeId: "continue" },
+    { id: "continue", type: "player-choice", options: [{ label: "继续", nextNodeId: "done" }] }
+  ] } }} onClose={noop} />;
   if (surface === "resume") return <ResumeModal user={user} token="fixture-profile" characterListView={Object.values(CHARACTERS)} onClose={() => setSurface("home")} onOpenAchievements={noop} onOpenPersonalization={noop} onOpenReplay={noop} />;
   if (surface === "profile") return <div className="modal-backdrop profile-modal-backdrop"><UserProfileCard titleStickers user={user} characters={CHARACTERS} token="fixture-profile" onClose={() => setSurface("home")} onAddFriend={noop} onAddBlacklist={noop} onOpenReplay={noop} /></div>;
   if (surface === "room") return <RoomScreen room={specialRoomPayload?.room || room} user={specialRoomPayload?.user || user} characters={CHARACTERS} replayStep={null} setReplayStep={noop} setPendingSkill={noop} audioSettings={{ master: 0 }} siteSettings={{}} onGameAction={specialRoomPayload ? action => window.__interfaceReviewActions.push(action) : noop} onScoringAction={noop} onBack={() => setSurface("home")} />;

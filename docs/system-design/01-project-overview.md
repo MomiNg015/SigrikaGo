@@ -187,7 +187,7 @@ SigrikaGo/
 - `src/app/useAuthSession.js`
   - Owns startup refresh-cookie session recovery and the shared HTTP auth-refresh retry hook from `src/api/client.js`. It keeps the refresh promise, login reset fallback, token update, and silent startup refresh outside `src/main.jsx`.
 - `src/app/useStartupPreload.js`
-  - Owns the post-token `/api/me` confirmation, public character catalog load, login asset preload, minimum preload duration, site-settings refresh, and home-screen finish guard. Replay data stays lazy-loaded.
+  - Owns the post-token `/api/me` confirmation, public character catalog load, strict login asset readiness, minimum preload duration, site-settings refresh, and home-screen finish guard. `homeReadyPreload.js` warms player window modules and fonts before home; `voiceAudio` is decoded into the playback cache. Critical failure retries within loading and then exposes retry, never transitions to home or reports battle readiness. Replay data stays lazy-loaded.
   - The preload completion guard only blocks the home transition when an active room or pending match-success room has already been recovered. It does not depend on the previous view ref, so a fresh login cannot remain on the 100% preload screen because the ref still contains `login`.
 - `src/app/characterCatalog.js`
   - Loads the public character catalog through `/api/characters`, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path. The public catalog carries admin-managed `sortOrder`, and App-level character list views must derive display order through `characterListFromCatalog` instead of raw object insertion order.

@@ -97,13 +97,13 @@ describe("SettingsModal terminal style hooks", () => {
     expect(source).not.toContain("\\u9875\\u9762\\u98ce\\u683c");
   });
 
-  it("keeps interface theme choices in a three-column desktop and mobile grid", () => {
+  it("keeps interface theme choices in a single-column desktop and mobile rows", () => {
     const baseCss = readFileSync(new URL("../styles/commerce/shop-settings/settings-panel.css", import.meta.url), "utf8");
     const mobileSafetyCss = readCssWithImports(new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url));
 
     for (const css of [baseCss, mobileSafetyCss]) {
       expect(css).toContain(".theme-choice-grid");
-      expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+      expect(css).toContain("grid-template-columns: minmax(0, 1fr)");
       expect(css).toContain(".theme-choice-button");
       expect(css).toContain("min-height:");
     }

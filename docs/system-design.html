@@ -79,6 +79,19 @@
 <h2>2026-10-29 对弈功能区街机按钮样板</h2>
 <p>新增独立<a href="./design-samples/battle-arcade-2026-10-29/index.html">三套交互样板</a>：圆帽街机、阶梯键组、掌机控制舱，均沿用 Bright School 暖纸、墨色轮廓和项目字体，以体量与颜色表达“技能 &gt; 数目／认输 &gt; 弃手／和棋”。对照页同时展示桌面与 390／320px 竖屏，并演示长技能名、选中、禁用、按压及确认反馈。棋盘和玩家仅为静态参照，未改正式对弈组件、规则或样式；选择方案后再接入正式布局与主题层。<a href="./design-samples/battle-arcade-2026-10-29/README.md">审查与验证说明</a>。</p>
 <p>用户选择第三套后，预览默认进入掌机控制舱修订版：主键直接显示技能名，右上次数小窗复用 IRIS 的 WuWa／点阵宋体混合字体与青绿深底风格；有剩余次数时为彩虹渐变，零次数为灰色，对手回合仅禁用操作。五键均支持可见下沉与回弹，并覆盖快速点击、触摸、键盘和取消输入；长名在 320px 下完整换行。此轮仍为独立样板细化。</p>
+<h2>2026-10-29 上线资源就绪与主题设置</h2>
+<ul>
+<li>登录加载补齐首页主面板（桌面/竖屏）、学生证、页眉动图等实际素材，等待图片解码、玩家窗口模块和首页字体后才显示首页。IRIS 开窗音继续走共享交互音效缓存；语音与音效通道在用户交互时解除浏览器挂起状态。</li>
+</ul>
+<ul>
+<li><code>preloadLoginAssets(..., { requireComplete: true })</code> 对必要资源失败在加载页内重试一次，仍失败则显示重试入口，不再以超时跳过视作就绪。登录、本场对局和教学入场使用此屏障；普通图片后台预热保留容错语义。</li>
+</ul>
+<ul>
+<li>角色语音使用 <code>voiceAudio</code> 清单提前写入实际播放的解码缓存，合并公开角色语音覆盖；对局需等待本场素材与技能模式模块后才发 <code>room:preload-ready</code>。教学入场同时等待最短展示时间与本段资源，资源进度代替单纯计时进度。长音乐仍使用现有流式播放。</li>
+</ul>
+<ul>
+<li>设置“界面”的三个主题选项改为一项一行，桌面及手机竖屏均保持行内标签不换行。</li>
+</ul>
 <h2>星炬券剩余入口统一（2026-10-28）</h2>
 <p>补齐成就奖励、后台管理与内置成就默认数据的货币命名和图片。已有成就记录在响应投影时兼容旧货币文案，客户端按奖励类型显示星炬券与实际数量，旧图与旧说明不再覆盖券图。余额不足提示统一名称，并兼容旧服务端消息以保留商店反馈；数据库字段、金额和交易规则不变。未开放的扭蛋系统及其后台配置、预设不在本次范围。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>对局结算星炬券显示修正（2026-10-28）</h2>
@@ -1699,7 +1712,7 @@
 <ul>
 <li><code>src/app/useStartupPreload.js</code></li>
 <ul>
-<li>Owns the post-token <code>/api/me</code> confirmation, public character catalog load, login asset preload, minimum preload duration, site-settings refresh, and home-screen finish guard. Replay data stays lazy-loaded.</li>
+<li>Owns the post-token <code>/api/me</code> confirmation, public character catalog load, strict login asset readiness, minimum preload duration, site-settings refresh, and home-screen finish guard. <code>homeReadyPreload.js</code> warms player window modules and fonts before home; <code>voiceAudio</code> is decoded into the playback cache. Critical failure retries within loading and then exposes retry, never transitions to home or reports battle readiness. Replay data stays lazy-loaded.</li>
 </ul>
 <ul>
 <li>The preload completion guard only blocks the home transition when an active room or pending match-success room has already been recovered. It does not depend on the previous view ref, so a fresh login cannot remain on the 100% preload screen because the ref still contains <code>login</code>.</li>

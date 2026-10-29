@@ -2277,6 +2277,12 @@ Correct portal styling:
 - Required DOM regressions: both channels on completion; pending settlement transitioning to a saved result; once-only playback across rerenders; settings propagation; incomplete/invalid/stale-result and spectator silence.
 
 
+### Loading readiness and theme rows (2026-10-29)
+- Login and battle entry use `preloadLoginAssets(assets, { requireComplete: true })`. A failed/timed-out critical asset retries once inside loading; a remaining failure rejects with `error.assets`. Never acknowledge `room:preload-ready` or reveal home after rejection. Keep retry visible and cleanup pending entry callbacks on unmount.
+- `voiceAudio` lists resolved catalog system/skill voice candidates and must use `preloadVoiceSound`, not a throwaway fetch. Effects use their existing decoder; music retains streaming. Register CSS home art alongside DOM images. Browser interaction resumes the same contexts used to decode audio.
+- Tutorial setup waits for both the minimum duration and resources; timer completion alone is not readiness. Settings interface theme choices use one row per choice on desktop and portrait phones, with no label wrapping. Verify the delayed resource barrier, decoder cache reuse, retry behavior and theme rows at desktop and portrait widths.
+
+
 ### Floating tutorial reply validation (2026-10-29)
 - Answer choices never replace the five-key action bar or activate the spotlight. Validate the real TutorialBattleScreen with the full theme cascade at 1440px desktop and 390/360/320px portrait.
 - Check opaque fill, equal-width descending staircase, board-frame clearance, stable board geometry, compact-before-scroll behavior, full labels and reachable final reply. Also exercise wrong-answer retry, single native Continue, duplicate input, keyboard and reduced motion.

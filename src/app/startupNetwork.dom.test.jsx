@@ -6,6 +6,7 @@ import { useAuthSession } from "./useAuthSession.js";
 import ConnectionNotice from "./ConnectionNotice.jsx";
 import { api } from "../api/client.js";
 vi.mock("../api/client.js", () => ({ api: vi.fn(), configureAuthRefresh: vi.fn() }));
+vi.mock("./homeReadyPreload.js", () => ({ preloadHomeReady: async () => {} }));
 vi.mock("./characterCatalog.js", () => ({ loadPublicCharacterCatalog: async () => ({}) }));
 vi.mock("./musicTrackCatalog.js", () => ({ loadMusicTrackCatalog: async () => { throw Object.assign(new Error("503"), { status: 503 }); } }));
 vi.mock("../shared/preloadAssets.js", () => ({ loginPreloadAssets: () => [], preloadLoginAssets: async () => {}, retrySkippedPreloadAssets: () => () => {} }));

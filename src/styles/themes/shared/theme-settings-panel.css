@@ -18,13 +18,13 @@
 
 .theme-choice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
 .theme-choice-button {
   position: relative;
-  min-height: 86px;
+  min-height: 64px;
   padding: 12px;
   border: 1px solid var(--theme-border-soft, rgba(0, 255, 190, 0.28));
   border-radius: var(--theme-radius, 12px);

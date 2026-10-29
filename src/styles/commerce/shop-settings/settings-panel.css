@@ -64,13 +64,13 @@
 
 .theme-choice-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   align-items: stretch;
 }
 
 .theme-choice-button {
-  min-height: 112px;
+  min-height: 64px;
   padding: 16px 14px;
   border: 2px solid #d7c0dc;
   border-radius: 8px;
@@ -93,7 +93,8 @@
   max-width: 100%;
   font-size: 0.95rem;
   line-height: 1.45;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .theme-choice-button.active,

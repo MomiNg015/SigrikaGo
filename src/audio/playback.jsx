@@ -1,6 +1,6 @@
 import { VOICE_EFFECT_SETTINGS, boostedVoiceVolume, createAiryReverbImpulse } from "../shared/voiceEffects.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
-import { browserAudioContextClass } from "./audioRuntime.js";
+import { browserAudioContextClass, unlockAudioContextOnInteraction } from "./audioRuntime.js";
 import { countdownVoiceOffset } from "./countdownVoiceTiming.js";
 
 export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioSettings.js";
@@ -97,7 +97,7 @@ export function preloadVoiceSound(src) {
   if (voicePromiseCache.has(src)) return voicePromiseCache.get(src);
   const context = getVoiceAudioContext();
   if (!context) return Promise.resolve(null);
-  const promise = fetch(src)
+  const promise = fetch(src, { cache: "force-cache" })
     .then((response) => {
       if (!response.ok) throw new Error("Voice audio could not be loaded");
       return response.arrayBuffer();
@@ -125,6 +125,7 @@ function getVoiceAudioContext() {
   if (!AudioContextClass) return null;
   try {
     sharedVoiceContext = new AudioContextClass();
+    unlockAudioContextOnInteraction(sharedVoiceContext);
   } catch {
     sharedVoiceContext = null;
     return null;

@@ -1,4 +1,4 @@
-import { preloadEffectSound } from "../audio/playback.jsx";
+import { preloadEffectSound, preloadVoiceSound } from "../audio/playback.jsx";
 import {
   CHARACTER_SYSTEM_VOICES,
   CHARACTER_SKILL_VOICES,
@@ -99,20 +99,20 @@ export function loginPreloadAssets({
   const deferredImages = [];
   const images = criticalImages;
 
+  const voiceAudio = characterVoiceSources(visibleCharacters, skillVoices, systemVoices);
   const criticalAudio = compactUnique([
+    ...voiceAudio,
     ...RUNTIME_AUDIO_ASSETS.interaction,
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
     ...playbackAssetSources(corruptionHomeTrack?.playback),
-    ...visibleTracks.flatMap((track) => playbackAssetSources(track?.playback)),
-    ...visibleCharacterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])),
-    ...visibleCharacterIds.flatMap((characterId) => Object.values(systemVoices?.[characterId] ?? {}).flatMap(voiceSourceCandidates))
+    ...visibleTracks.flatMap((track) => playbackAssetSources(track?.playback))
   ]);
   const deferredAudio = [];
   const audio = criticalAudio;
 
-  return { criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
+  return { voiceAudio, criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
 }
 
 export function battlePreloadAssets({
@@ -178,26 +178,44 @@ export function battlePreloadAssets({
     ...(room?.matchSource === SIGRIKA_CANDY_DUEL.matchSource ? RUNTIME_IMAGE_ASSETS.corruption : []),
     ...(skillEnabled ? RUNTIME_IMAGE_ASSETS.effects : [])
   ]);
+  const voiceCharacters = roomCharacters.map((character) => ({
+    ...character,
+    systemVoices: {
+      ...character.systemVoices,
+      ...players.find((player) => player.character?.id === character.id)?.character?.systemVoices
+    }
+  }));
+  const voiceAudio = characterVoiceSources(voiceCharacters, skillVoices, systemVoices, skillEnabled);
   const criticalAudio = compactUnique([
+    ...voiceAudio,
     MATCH_SUCCESS_SOUND,
     ...RUNTIME_AUDIO_ASSETS.interaction,
     ...playbackAssetSources(battleTrack?.playback),
     ...(skillEnabled ? skillTracks.flatMap((track) => playbackAssetSources(track.playback)) : []),
-    ...(skillEnabled ? derivedSkillTracks.flatMap((track) => playbackAssetSources(track.playback)) : []),
-    ...(skillEnabled ? characterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])) : []),
-    ...characterIds.flatMap((characterId) => Object.entries(systemVoices?.[characterId] ?? {})
-      .filter(([event]) => skillEnabled || !String(event).includes("skill-cast"))
-      .flatMap(([, value]) => voiceSourceCandidates(value)))
+    ...(skillEnabled ? derivedSkillTracks.flatMap((track) => playbackAssetSources(track.playback)) : [])
   ]);
 
   return {
     criticalImages,
     deferredImages: [],
     images: criticalImages,
+    voiceAudio,
     criticalAudio,
     deferredAudio: [],
     audio: criticalAudio
   };
+}
+
+function characterVoiceSources(characters, skillVoices, systemVoices, skillEnabled = true) {
+  return compactUnique(characters.flatMap((character) => {
+    const id = canonicalCharacterId(character.id ?? character.slug);
+    return [
+      ...(skillEnabled ? voiceSourceCandidates(skillVoices?.[id]) : []),
+      ...Object.entries({ ...systemVoices?.[id], ...character.systemVoices })
+        .filter(([event]) => skillEnabled || !event.includes("skill-cast"))
+        .flatMap(([, voice]) => voiceSourceCandidates(voice))
+    ];
+  }));
 }
 
 function selectedDerivedSkillTracks({ characterId, selections, ownedMusicIds, tracks }) {
@@ -221,21 +239,28 @@ export async function preloadLoginAssets(assets, {
   concurrency = 4,
   loadAudio = preloadFetch,
   loadEffectAudio = preloadEffectSound,
+  loadVoiceAudio = preloadVoiceSound,
   loadImage = preloadImage,
   onProgress = () => {},
   onSkipped = () => {},
-  taskTimeoutMs = 8000
+  taskTimeoutMs = 8000,
+  requireComplete = false
 } = {}) {
   const groups = normalizePreloadAssetGroups(assets);
-  const decodedEffects = new Set(RUNTIME_AUDIO_ASSETS.interaction);
+  const decodedEffects = new Set([...RUNTIME_AUDIO_ASSETS.interaction, MATCH_SUCCESS_SOUND, VICTORY_SOUND, DEFEAT_SOUND]);
+  const decodedVoices = new Set(assets?.voiceAudio ?? []);
   const criticalTasks = createPreloadTasks(groups.criticalImages, groups.criticalAudio, {
     decodedEffects,
+    decodedVoices,
+    loadVoiceAudio,
     loadAudio,
     loadEffectAudio,
     loadImage
   });
   const deferredTasks = createPreloadTasks(groups.deferredImages, groups.deferredAudio, {
     decodedEffects,
+    decodedVoices,
+    loadVoiceAudio,
     loadAudio,
     loadEffectAudio,
     loadImage
@@ -244,15 +269,28 @@ export async function preloadLoginAssets(assets, {
     onProgress(1);
   } else {
     let completed = 0;
+    const failed = [];
     await runPreloadTasks(criticalTasks, {
       concurrency,
-      onSkipped,
+      onSkipped: (src) => { failed.push(src); onSkipped(src); },
       taskTimeoutMs,
       onComplete: () => {
         completed += 1;
         onProgress(completed / criticalTasks.length);
       }
     });
+    if (requireComplete && failed.length) {
+      const remaining = [];
+      await runPreloadTasks(criticalTasks.filter((task) => failed.includes(task.src)), {
+        concurrency, taskTimeoutMs,
+        onSkipped: (src) => remaining.push(src)
+      });
+      if (remaining.length) {
+        const error = new Error("Required resources could not be loaded");
+        error.assets = remaining;
+        throw error;
+      }
+    }
   }
   void runPreloadTasks(deferredTasks, { concurrency, onSkipped, taskTimeoutMs });
 }
@@ -325,11 +363,9 @@ function preloadImage(src) {
       }
 
       try {
-        Promise.resolve(image.decode())
-          .catch(() => null)
-          .then(() => resolve(src));
-      } catch {
-        resolve(src);
+        Promise.resolve(image.decode()).then(() => resolve(src), reject);
+      } catch (error) {
+        reject(error);
       }
     };
     image.onerror = reject;
@@ -406,10 +442,11 @@ function normalizePreloadAssetGroups(assets = {}) {
   };
 }
 
-function createPreloadTasks(images, audio, { decodedEffects, loadAudio, loadEffectAudio, loadImage }) {
+function createPreloadTasks(images, audio, { decodedEffects, decodedVoices, loadAudio, loadEffectAudio, loadVoiceAudio, loadImage }) {
   return [
     ...images.map((src) => taskWithSource(src, () => loadImage(src))),
-    ...audio.map((src) => taskWithSource(src, () => decodedEffects.has(src) ? loadEffectAudio(src) : loadAudio(src)))
+    ...audio.map((src) => taskWithSource(src, () => decodedEffects.has(src) ? loadEffectAudio(src)
+      : decodedVoices.has(src) ? loadVoiceAudio(src) : loadAudio(src)))
   ];
 }
 

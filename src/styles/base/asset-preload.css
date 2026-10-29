@@ -56,3 +56,11 @@
   .preload-mascot-roll { transform: none; }
   .preload-progress.is-idle .preload-mascot-motion { animation: none; }
 }
+
+.asset-preload-retry {
+  position: fixed;
+  z-index: 250;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+}

@@ -44,6 +44,14 @@ import {
 
 export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   home: Object.freeze([
+    "/assets/home/home-main-panel-desktop.webp",
+    "/assets/home/home-main-panel-mobile.webp",
+    "/assets/home/home-paper-grid.svg",
+    "/assets/home/student-id-hanging.png",
+    "/assets/home/student-id-nameplate.webp",
+    "/assets/home/home-header-sigrika.gif?v=170ms",
+    "/assets/home/home-practice-zhunshibao.webp",
+
     STARTORCH_COUPON.src,
     "/assets/home/book-entry.webp",
     "/assets/home/fantasy-match-entry.webp",

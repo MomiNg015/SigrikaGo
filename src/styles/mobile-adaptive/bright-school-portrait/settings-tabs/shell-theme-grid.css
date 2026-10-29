@@ -34,10 +34,10 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 8px !important;
     min-height: 0 !important;
-    height: 100% !important;
+    height: auto !important;
     overflow: visible !important;
   }
 
@@ -49,11 +49,11 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-button {
     min-width: 0 !important;
-    min-height: 118px !important;
+    min-height: 64px !important;
     padding: 12px 8px !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
     word-break: keep-all !important;
-    overflow-wrap: anywhere !important;
+    overflow-wrap: normal !important;
     transform: none !important;
   }
 

@@ -22,7 +22,7 @@ import {
   UI_UNAVAILABLE_SOUND
 } from "../shared/audioAssets.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
-import { browserAudioContextClass } from "./audioRuntime.js";
+import { browserAudioContextClass, unlockAudioContextOnInteraction } from "./audioRuntime.js";
 
 export {
   CAPTURE_SOUND,
@@ -74,7 +74,10 @@ export function preloadEffectSound(src) {
   const context = getEffectAudioContext();
   if (!context) return Promise.resolve(null);
   const promise = fetch(src, { cache: "force-cache" })
-    .then((response) => response.arrayBuffer())
+    .then((response) => {
+      if (!response.ok) throw new Error("Effect audio could not be loaded");
+      return response.arrayBuffer();
+    })
     .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
     .then((buffer) => {
       effectBufferCache.set(src, buffer);
@@ -131,6 +134,7 @@ function getEffectAudioContext() {
   if (!AudioContextClass) return null;
   try {
     sharedEffectContext = new AudioContextClass();
+    unlockAudioContextOnInteraction(sharedEffectContext);
   } catch {
     sharedEffectContext = null;
     return null;
