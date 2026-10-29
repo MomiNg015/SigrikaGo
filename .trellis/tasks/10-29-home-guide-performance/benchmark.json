@@ -1,0 +1,31 @@
+{
+  "measurement": "Local Edge desktop 1440x900, same settled resume source, three sequential detached snapshots per implementation. ms is performance.now elapsed; serializedChars is outerHTML plus pseudo CSS string length.",
+  "before": [
+    {
+      "ms": 275.20000000298023,
+      "serializedChars": 2561716
+    },
+    {
+      "ms": 288,
+      "serializedChars": 2561716
+    },
+    {
+      "ms": 296.1000000014901,
+      "serializedChars": 2561716
+    }
+  ],
+  "after": [
+    {
+      "ms": 66.29999999701977,
+      "serializedChars": 271676
+    },
+    {
+      "ms": 57.80000000447035,
+      "serializedChars": 271676
+    },
+    {
+      "ms": 57.399999998509884,
+      "serializedChars": 271676
+    }
+  ]
+}

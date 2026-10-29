@@ -33,6 +33,10 @@ const checkComponent = async page => {
     return ['x', 'y', 'width', 'height'].every(key => Math.abs(a[key] - b[key]) < 1)
       && getComputedStyle(copy).backgroundColor === getComputedStyle(source).backgroundColor;
   }, selector);
+  if (step.id === 'resume-intro') {
+    const bytes = await page.locator('.home-guide-highlight').evaluate(el => el.outerHTML.length);
+    assert.ok(bytes < 600000, `resume paint must not duplicate megabytes of computed defaults: ${bytes}`);
+  }
 };
 const checkCue = async (page, label) => {
   await page.locator('.home-guide-spotlight').waitFor();

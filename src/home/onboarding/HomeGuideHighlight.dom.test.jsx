@@ -26,8 +26,13 @@ it('reuses paint on position-only frames and disposes observers and frames on un
   expect(copyGuidePaint).toHaveBeenCalledTimes(1);
   tick(); tick();
   expect(copyGuidePaint).toHaveBeenCalledTimes(1);
-  act(() => observers[0].callback()); tick();
+  act(() => observers[1].callback()); tick();
+  expect(copyGuidePaint).toHaveBeenCalledTimes(1);
+  Object.defineProperty(target, 'offsetWidth', { value: 120, configurable: true });
+  act(() => observers[1].callback()); tick();
   expect(copyGuidePaint).toHaveBeenCalledTimes(2);
+  act(() => observers[0].callback()); tick();
+  expect(copyGuidePaint).toHaveBeenCalledTimes(3);
   unmount();
   expect(frames.size).toBe(0);
   expect(observers.every(observer => observer.disconnect.mock.calls.length === 1)).toBe(true);
@@ -42,4 +47,33 @@ it('replaces paint when the source changes and clears removed targets', () => {
   second.remove(); tick();
   expect(container.textContent).toBe('');
   first.remove();
+});
+
+it('does not recopy a window when its tracked root entry animation finishes', async () => {
+  const target = document.createElement('section'); document.body.append(target);
+  let finish;
+  const finished = new Promise(resolve => { finish = resolve; });
+  target.getAnimations = () => [{ playState: 'running', finished, effect: {
+    target, getComputedTiming: () => ({ endTime: 260 }), getKeyframes: () => [{ opacity: 0, transform: 'scale(.96)' }, { opacity: 1, transform: 'none' }]
+  } }];
+  const { unmount } = render(<HomeGuideHighlight target={target} selector=".target"/>);
+  await act(async () => finish()); tick();
+  expect(copyGuidePaint).toHaveBeenCalledTimes(1);
+  unmount(); target.remove();
+});
+
+it('refreshes descendant entry paint once, even if content changed during entry', async () => {
+  const target = document.createElement('section'), child = document.createElement('div'); target.append(child); document.body.append(target);
+  let finish;
+  const animation = { playState: 'running', finished: new Promise(resolve => { finish = resolve; }), effect: {
+    target: child, getComputedTiming: () => ({ endTime: 260 })
+  } };
+  target.getAnimations = () => [animation];
+  const { unmount } = render(<HomeGuideHighlight target={target} selector=".target"/>);
+  act(() => observers[0].callback()); tick();
+  expect(copyGuidePaint).toHaveBeenCalledTimes(2);
+  animation.playState = 'finished';
+  await act(async () => finish()); tick(); tick();
+  expect(copyGuidePaint).toHaveBeenCalledTimes(3);
+  unmount(); target.remove();
 });

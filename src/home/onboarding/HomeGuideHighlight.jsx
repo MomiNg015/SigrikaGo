@@ -1,16 +1,27 @@
 import { useLayoutEffect, useRef } from "react";
 import { copyGuidePaint } from "./copyGuidePaint.js";
 
+const LIVE_ROOT_PROPERTIES = new Set(["offset", "computedOffset", "easing", "composite", "opacity", "transform", "translate", "scale", "rotate"]);
+
+function needsFinishedSnapshot(animation, target) {
+  if (animation.effect?.target !== target) return true;
+  return animation.effect.getKeyframes().some(frame => Object.keys(frame).some(name => !LIVE_ROOT_PROPERTIES.has(name)));
+}
+
 export default function HomeGuideHighlight({ target, selector }) {
   const hostRef = useRef(null);
   useLayoutEffect(() => {
     const host = hostRef.current;
     if (!target || !host) return;
     let frame, paint, dirty = true, stopped = false, paintBounds = null, lastTransform = "";
-    let animationSignature = "";
+    let animationSignature = "", paintWidth, paintHeight;
+    const watchedAnimations = new WeakSet();
     const rebuild = () => { dirty = true; };
     const observer = new MutationObserver(rebuild);
-    const resize = new ResizeObserver(rebuild);
+    const resize = new ResizeObserver(() => {
+      // ResizeObserver delivers an initial notification even when nothing resized.
+      if (target.offsetWidth !== paintWidth || target.offsetHeight !== paintHeight) rebuild();
+    });
     observer.observe(target, { subtree: true, attributes: true, childList: true, characterData: true });
     resize.observe(target);
     target.addEventListener("load", rebuild, true);
@@ -18,10 +29,14 @@ export default function HomeGuideHighlight({ target, selector }) {
       if (!target.isConnected) { host.replaceChildren(); return; }
       if (dirty) {
         paint = copyGuidePaint(target);
+        paintWidth = target.offsetWidth; paintHeight = target.offsetHeight;
         paintBounds = null; animationSignature = "";
         host.replaceChildren(paint.styles, paint.clone);
         paint.syncScroll();
-        const entering = target.getAnimations?.({ subtree: true }).filter(animation => animation.playState === "running" && Number.isFinite(animation.effect?.getComputedTiming().endTime)) || [];
+        const entering = target.getAnimations?.({ subtree: true }).filter(animation => animation.playState === "running"
+          && Number.isFinite(animation.effect?.getComputedTiming().endTime) && !watchedAnimations.has(animation)
+          && needsFinishedSnapshot(animation, target)) || [];
+        entering.forEach(animation => watchedAnimations.add(animation));
         if (entering.length) void Promise.allSettled(entering.map(animation => animation.finished)).then(() => { if (!stopped) dirty = true; });
         dirty = false;
       }
