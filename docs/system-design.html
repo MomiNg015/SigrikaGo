@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h2>2026-10-29 桌面部员手册上下交错入场实装</h2>
+<p>将已确认样板接入正式部员手册：桌面端整条斜切展板交替从上下插入，单条 300ms、错峰 40ms，十条共 660ms；仅改变 transform，沿用原展板裁剪及悬停、点击详情。手机、黑化手册与减少动态效果模式保持原有表现。独立样板复用正式动效，详细边界及验证见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-10-29 桌面部员手册上下交错入场样板</h2>
 <p>新增独立<a href="./design-samples/handbook-desktop-entry-2026-10-29/index.html">动效样板</a>，复用实际部员手册与角色资源，桌面端整条斜切展板从上下两侧交替插入，单条 300ms、错峰 40ms，十条约 660ms 归位。提供重播和 0.4 倍慢放；保留悬停、详情及手机端现有呈现，减少动态效果设置下取消位移动画。样板使用本地数据并拦截账户 API 写入，尚未实装到正式界面。</p>
 <h2>2026-10-29 主界面引导高亮性能修正</h2>
@@ -5511,6 +5513,9 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、进度与笔刷 Tip 样式；角色特色加载台词自 2026-10-27 起不再展示。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h3>桌面部员手册上下交错入场（2026-10-29）</h3>
+<p><code>handbook-puzzle.css</code> 通过独立 <code>handbook-strip-entry.css</code> 为普通手册加入已确认动效：宽度超过 768px 且允许动态效果时，整条斜切展板从上／下交替平移入场，300ms 强减速、相邻错开 40ms；十条 660ms 归位。沿用展板容器裁剪，不改变立绘尺寸、所有权、悬停展开或详情点击。打开／重新打开手册及角色页重新挂载时播放，悬停与关闭详情不会重新触发。手机、黑化手册和减少动态效果模式不应用此入场。无需新增运行时计时器、遮罩或永久合成层。</p>
+<p>动效样板继续复用正式组件及此样式，只保留重播和慢放工具栏。<code>tests/e2e/handbook-entry.spec.js</code> 用真实手册 fixture 验证方向、节奏、裁剪、交互及三种排除情形；原有布局与姓名空间回归继续执行。</p>
 <h2>玩家界面原生选区（2026-10-29）</h2>
 <p><code>base/foundation.css</code> 对 <code>.app-shell.player-theme-enabled</code> 设置标准及 WebKit <code>user-select: none</code>，统一防止玩家界面拖拽误选；图片使用 <code>-webkit-user-drag: none</code> 抑制原生拖动预览。<code>input</code>、<code>textarea</code> 和非 false 的 <code>contenteditable</code> 明确恢复 <code>user-select: text</code>。后台根节点使用 <code>admin-theme-isolated</code>，保持原生选择。此规则不截获鼠标、触摸或键盘事件，不隐藏焦点环，也不改变滚动或业务回调。</p>
 <h2>引导聚焦、组件轮廓与首帧定位（2026-10-29）</h2>

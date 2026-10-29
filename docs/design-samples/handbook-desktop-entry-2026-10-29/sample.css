@@ -2,12 +2,10 @@
 .handbook-entry-sample {
   --entry-review-top: 80px;
   --entry-review-bottom: 44px;
-  --entry-duration: 300ms;
-  --entry-stagger: 40ms;
   color: #3d2b25;
   font-family: var(--font-ui-default);
 }
-.handbook-entry-sample.is-slow { --entry-duration: 750ms; --entry-stagger: 100ms; }
+.handbook-entry-sample.is-slow { --handbook-entry-duration: 750ms; --handbook-entry-stagger: 100ms; }
 .entry-review-bar {
   position: fixed;
   inset: 0 0 auto;
@@ -72,31 +70,6 @@
 .entry-timing { color: #6a554d; white-space: nowrap; }
 .entry-mobile-note { display: none; }
 
-/* Move the entire slanted strip; the board's existing clip contains entry. */
-@media (min-width: 769px) {
-  .handbook-entry-sample .handbook-puzzle-piece {
-    animation: handbook-sample-from-top var(--entry-duration) cubic-bezier(.23, 1, .32, 1) both;
-    animation-delay: calc(var(--entry-order, 0) * var(--entry-stagger));
-  }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(even) { animation-name: handbook-sample-from-bottom; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(2) { --entry-order: 1; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(3) { --entry-order: 2; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(4) { --entry-order: 3; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(5) { --entry-order: 4; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(6) { --entry-order: 5; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(7) { --entry-order: 6; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(8) { --entry-order: 7; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(9) { --entry-order: 8; }
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(10) { --entry-order: 9; }
-}
-@keyframes handbook-sample-from-top {
-  from { transform: translateY(-102%); }
-  to { transform: translateY(0); }
-}
-@keyframes handbook-sample-from-bottom {
-  from { transform: translateY(102%); }
-  to { transform: translateY(0); }
-}
 @media (max-width: 768px) {
   .handbook-entry-sample { --entry-review-top: 120px; --entry-review-bottom: 48px; }
   .entry-review-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
@@ -106,7 +79,4 @@
   .entry-review-note { min-height: 48px; padding: 8px 16px; font-size: 12px; }
   .entry-desktop-note, .entry-timing { display: none; }
   .entry-mobile-note { display: inline; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .handbook-entry-sample .handbook-puzzle-piece:nth-child(n) { animation: none; }
 }

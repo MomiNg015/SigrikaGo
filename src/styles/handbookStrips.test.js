@@ -17,7 +17,7 @@ describe("ordinary handbook portrait strip CSS", () => {
   });
 
   it("keeps names background-free, uses verified font fallbacks, and alternates mobile sides", () => {
-    expect(entry.trim().split(/\r?\n/)).toEqual(['@import "./handbook-strip-labels.css";', '@import "./handbook-strip-frame.css";', '@import "./handbook-strip-paper.css";']);
+    expect(entry.trim().split(/\r?\n/)).toEqual(['@import "./handbook-strip-labels.css";', '@import "./handbook-strip-frame.css";', '@import "./handbook-strip-paper.css";', '@import "./handbook-strip-entry.css";']);
     expect(labels).toContain("background: transparent !important;");
     expect(labels).toContain("font-family: var(--handbook-name-font, var(--font-display-accent)), var(--font-window-title), sans-serif !important;");
     expect(labels).toContain("--handbook-name-font: var(--font-window-title);");

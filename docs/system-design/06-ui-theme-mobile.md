@@ -1,5 +1,11 @@
 # UI 主题、移动端与交互体验
 
+### 桌面部员手册上下交错入场（2026-10-29）
+
+`handbook-puzzle.css` 通过独立 `handbook-strip-entry.css` 为普通手册加入已确认动效：宽度超过 768px 且允许动态效果时，整条斜切展板从上／下交替平移入场，300ms 强减速、相邻错开 40ms；十条 660ms 归位。沿用展板容器裁剪，不改变立绘尺寸、所有权、悬停展开或详情点击。打开／重新打开手册及角色页重新挂载时播放，悬停与关闭详情不会重新触发。手机、黑化手册和减少动态效果模式不应用此入场。无需新增运行时计时器、遮罩或永久合成层。
+
+动效样板继续复用正式组件及此样式，只保留重播和慢放工具栏。`tests/e2e/handbook-entry.spec.js` 用真实手册 fixture 验证方向、节奏、裁剪、交互及三种排除情形；原有布局与姓名空间回归继续执行。
+
 ## 玩家界面原生选区（2026-10-29）
 
 `base/foundation.css` 对 `.app-shell.player-theme-enabled` 设置标准及 WebKit `user-select: none`，统一防止玩家界面拖拽误选；图片使用 `-webkit-user-drag: none` 抑制原生拖动预览。`input`、`textarea` 和非 false 的 `contenteditable` 明确恢复 `user-select: text`。后台根节点使用 `admin-theme-isolated`，保持原生选择。此规则不截获鼠标、触摸或键盘事件，不隐藏焦点环，也不改变滚动或业务回调。

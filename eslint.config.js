@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "tests/e2e/handbook-entry.spec.js",
   "docs/design-samples/handbook-desktop-entry-2026-10-29/*.{js,jsx,mjs}",
   "src/home/onboarding/*.{js,jsx}",
   "src/tutorial/GuideFocusMarker.jsx",

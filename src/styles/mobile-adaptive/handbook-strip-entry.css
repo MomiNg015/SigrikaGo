@@ -1,0 +1,26 @@
+/* Approved desktop entry: whole strips travel inside the existing board clip. */
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+  .handbook-modal:not(.is-sigrika-corrupted) .handbook-puzzle-piece {
+    animation: handbook-strip-from-top var(--handbook-entry-duration, 300ms) cubic-bezier(.23, 1, .32, 1) both;
+    animation-delay: calc(var(--handbook-entry-order, 0) * var(--handbook-entry-stagger, 40ms));
+
+    &:nth-child(even) { animation-name: handbook-strip-from-bottom; }
+    &:nth-child(2) { --handbook-entry-order: 1; }
+    &:nth-child(3) { --handbook-entry-order: 2; }
+    &:nth-child(4) { --handbook-entry-order: 3; }
+    &:nth-child(5) { --handbook-entry-order: 4; }
+    &:nth-child(6) { --handbook-entry-order: 5; }
+    &:nth-child(7) { --handbook-entry-order: 6; }
+    &:nth-child(8) { --handbook-entry-order: 7; }
+    &:nth-child(9) { --handbook-entry-order: 8; }
+    &:nth-child(10) { --handbook-entry-order: 9; }
+  }
+}
+@keyframes handbook-strip-from-top {
+  from { transform: translateY(-102%); }
+  to { transform: translateY(0); }
+}
+@keyframes handbook-strip-from-bottom {
+  from { transform: translateY(102%); }
+  to { transform: translateY(0); }
+}

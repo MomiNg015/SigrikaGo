@@ -19,7 +19,7 @@ try {
     assert.equal(await pieces.count(), 10);
     if (viewport.width > 768) {
       const directions = await pieces.evaluateAll(nodes => nodes.map((node, index) => {
-        const animation = node.getAnimations().find(a => a.animationName?.startsWith("handbook-sample-"));
+        const animation = node.getAnimations().find(a => a.animationName?.startsWith("handbook-strip-from-"));
         const timing = animation.effect.getTiming();
         animation.pause();
         animation.currentTime = timing.delay + 45;
@@ -32,24 +32,24 @@ try {
       }
       // Sample one shared time so the screenshot shows the actual stagger.
       await pieces.evaluateAll(nodes => nodes.forEach(node => {
-        const animation = node.getAnimations().find(a => a.animationName?.startsWith("handbook-sample-"));
+        const animation = node.getAnimations().find(a => a.animationName?.startsWith("handbook-strip-from-"));
         animation.currentTime = 160;
       }));
       await page.screenshot({ path: resolve(output, `entry-${viewport.width}.png`) });
       await page.getByRole("button", { name: "重播入场" }).click();
       await page.waitForFunction(() => [...document.querySelectorAll(".handbook-puzzle-piece")].every(el => {
-        const animation = el.getAnimations().find(a => a.animationName?.startsWith("handbook-sample-"));
+        const animation = el.getAnimations().find(a => a.animationName?.startsWith("handbook-strip-from-"));
         return animation?.playState === "finished" && Math.abs(new DOMMatrix(getComputedStyle(el).transform).m42) < .01;
       }));
       await page.screenshot({ path: resolve(output, `settled-${viewport.width}.png`) });
       await pieces.first().hover();
       await page.waitForFunction(() => document.querySelector(".handbook-puzzle-piece")?.classList.contains("is-expanded"));
       await page.getByRole("button", { name: "慢速观察" }).click();
-      const duration = await pieces.first().evaluate(el => el.getAnimations().find(a => a.animationName?.startsWith("handbook-sample-")).effect.getTiming().duration);
+      const duration = await pieces.first().evaluate(el => el.getAnimations().find(a => a.animationName?.startsWith("handbook-strip-from-")).effect.getTiming().duration);
       assert.equal(duration, 750);
       await page.getByRole("button", { name: "慢速观察" }).click();
     } else {
-      assert.equal(await pieces.evaluateAll(nodes => nodes.flatMap(el => el.getAnimations()).filter(a => a.animationName?.startsWith("handbook-sample-")).length), 0);
+      assert.equal(await pieces.evaluateAll(nodes => nodes.flatMap(el => el.getAnimations()).filter(a => a.animationName?.startsWith("handbook-strip-from-")).length), 0);
       await page.screenshot({ path: resolve(output, `mobile-${viewport.width}.png`) });
       await pieces.last().scrollIntoViewIfNeeded();
       const last = await pieces.last().boundingBox();
@@ -66,7 +66,7 @@ try {
     assert.equal(await pieces.count(), 10);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.getByRole("button", { name: "重播入场" }).click();
-    assert.equal(await pieces.evaluateAll(nodes => nodes.flatMap(el => el.getAnimations()).filter(a => a.animationName?.startsWith("handbook-sample-")).length), 0);
+    assert.equal(await pieces.evaluateAll(nodes => nodes.flatMap(el => el.getAnimations()).filter(a => a.animationName?.startsWith("handbook-strip-from-")).length), 0);
     assert.equal(await page.evaluate(async () => (await fetch("/api/costumes/equip", { method: "POST" })).status), 403);
     results.push({ viewport, alternatingEntry: viewport.width > 768, replay: true, details: true, reducedMotion: true });
     await page.close();
