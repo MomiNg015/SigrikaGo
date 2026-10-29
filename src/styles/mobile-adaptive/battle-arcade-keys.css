@@ -63,6 +63,13 @@
     & svg { width: 22px !important; height: 22px !important; }
   }
   & > .counting-action { --key-fill: #9ad3de; --key-base: #608d96; }
+  & > .counting-action[data-tutorial-continue]:not(:disabled) {
+    --key-base: rgb(173 135 76);
+    & .action-keycap {
+      background: linear-gradient(180deg, rgb(255 243 196), rgb(255 224 154));
+      color: rgb(73 53 31);
+    }
+  }
   & > .resign-action { --key-fill: #e6a18e; --key-base: #a76655; }
   & > button:disabled {
     --key-fill: #d9d7d1;

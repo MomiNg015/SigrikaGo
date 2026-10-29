@@ -6,7 +6,7 @@ export { TypewriterText } from "./TypewriterText.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Play } from "lucide-react";
 import ChatBox from "../room/ChatBox.jsx";
-import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState } from "./tutorialActionState.js";
+import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState, tutorialSkillButtonName } from "./tutorialActionState.js";
 import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 import {
@@ -776,7 +776,7 @@ export default function TutorialBattleScreen({
           tutorialAction={activeTutorialAction(actionState)}
           tutorialContinueLabel={continuation?.label}
           onTutorialContinue={handleTutorialContinue}
-          tutorialSkillName={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill ? skillLabel(currentNode, characters) : undefined}
+          tutorialSkillName={tutorialSkillButtonName(currentNode, me)}
           actionPanelOverride={(normalActions) => (
             <TutorialActionPanel
               normalActions={normalActions}
@@ -1004,11 +1004,6 @@ function gameForAction(node, game) {
     next.pendingSkill = null;
   }
   return next;
-}
-
-function skillLabel(node, characters) {
-  const character = findCharacter(characters, node?.skillId || node?.skillCharacterId || node?.characterId);
-  return character?.skill?.name || "技能";
 }
 
 function playerButtonNode(node) {

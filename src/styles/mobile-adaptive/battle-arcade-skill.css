@@ -1,4 +1,4 @@
-/* Charges own the palette; turn/preview locks only own interaction availability. */
+/* Ordinary battles color by charges; tutorials gray skills outside the skill step. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .room-screen:not(.sigrika-candy-duel-room) .action-bar.battle-arcade-controls {
   & > .skill-action {
     --key-base: #8d718d;
@@ -37,7 +37,7 @@
       text-shadow: none;
       &::before { content: ""; width: 3px; height: 3px; background: #42f2a1; }
     }
-    &.spent {
+    &.spent, &[data-tutorial-inactive] {
       --key-base: #aaa59d;
       & .action-keycap { background: #d9d7d1; color: #625b52; }
       & .skill-use-window { background: #363c3e; border-color: #8b9698; color: #e0e6e7 !important; }

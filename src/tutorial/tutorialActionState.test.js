@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState } from "./tutorialActionState.js";
+import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState, tutorialSkillButtonName } from "./tutorialActionState.js";
 import { tutorialFocusShape } from "./tutorialFocusShape.js";
 
 describe("tutorial action gating", () => {
+  it("keeps user-view skills anonymous until the script specifies the actual skill", () => {
+    const player = { characterId: "" };
+    expect(tutorialSkillButtonName({ type: "npc-dialogue" }, player)).toBe("技能");
+    expect(tutorialSkillButtonName({ type: "npc-skill", skillId: "denia" }, player)).toBe("技能");
+    expect(tutorialSkillButtonName({ type: "player-skill", skillId: "denia" }, player)).toBe("泡影幻梦");
+    expect(tutorialSkillButtonName({ type: "player-skill", skillId: { effectType: "voyage-star", name: "远航星" } }, player)).toBe("远航星");
+    expect(tutorialSkillButtonName({ type: "npc-dialogue" }, { characterId: "denia" })).toBeUndefined();
+  });
   it("routes manual waits, phase continuation and lone continue choices into the counting slot", () => {
     const option = { label: "继续", nextNodeId: "move" };
     for (const [state, kind, label] of [

@@ -1,4 +1,10 @@
 import { TUTORIAL_NODE_TYPES as TYPES } from "../shared/tutorialNodeTypes.js";
+import { tutorialSkillConfig } from "./tutorialGameState.js";
+
+export function tutorialSkillButtonName(node, player) {
+  if (node?.type === TYPES.playerSkill) return tutorialSkillConfig(node)?.name || "技能";
+  return player?.characterId ? undefined : "技能";
+}
 
 export function tutorialActionForNode(node) {
   if (node?.type === TYPES.playerSkill) return "skill";

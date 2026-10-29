@@ -9,6 +9,17 @@ import {
 } from "./tutorialGameState.js";
 
 describe("tutorialGameState", () => {
+  it("executes the script's Denia skill for a user-view player without assigning a character", () => {
+    const game = createTutorialGameState({ players: [
+      { color: "black", characterId: "" }, { color: "white", characterId: "sigrika" }
+    ], initialBoard: { stones: [{ pointId: "4,4", color: "white" }] } });
+    const result = applyTutorialSkillAction(game, { id: "denia-user", type: "player-skill", skillId: "denia", color: "black", pointId: "4,4" });
+    expect(result.ok).toBe(true);
+    expect(result.pendingSkill).toMatchObject({ characterId: "denia", skillName: "泡影幻梦", effectType: "flip-stone" });
+    expect(getPoint(result.resolvedState, "4,4").stone).toBe("black");
+    expect(game.players[0].characterId).toBe("");
+    expect(result.resolvedState.players[0].characterId).toBe("");
+  });
   it("executes guided pass and agreed-draw nodes without mutating the source game", () => {
     const game = createTutorialGameState();
     const passed = applyTutorialNodeAction(game, { type: "pass", color: "black" });

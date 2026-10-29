@@ -84,6 +84,7 @@ function ActionBar({
       </ActionKey>
       <ActionKey
         className="counting-action"
+        data-tutorial-continue={isContinue || undefined}
         data-tutorial-target={tutorialAction === countingAction || undefined}
         onClick={isContinue ? onTutorialContinue : onCountingRequest}
         disabled={actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
@@ -95,6 +96,7 @@ function ActionBar({
       <ActionKey
         className={`skill-action ${pendingSkill ? "active" : ""} ${remainingUses <= 0 ? "spent" : ""}`}
         data-skill-uses={remainingUses}
+        data-tutorial-inactive={tutorialAction !== undefined && tutorialAction !== "skill" || undefined}
         data-tutorial-target={tutorialAction === "skill" || undefined}
         data-long-name={actionSkillName.length > 6 || undefined}
         aria-label={`${actionSkillName}，剩余 ${remainingUses} 次`}

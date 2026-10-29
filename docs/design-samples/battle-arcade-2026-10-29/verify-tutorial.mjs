@@ -14,6 +14,7 @@ const expected = {
   choices: { count: 2, focus: "choices" },
   move: { count: 5, focus: "board", action: "" },
   skill: { count: 5, focus: "actions", action: "skill" },
+  denia: { count: 5, focus: "actions", action: "skill" },
   counting: { count: 5, focus: "actions", action: "counting" },
   resign: { count: 5, focus: "actions", action: "resign" },
   pass: { count: 5, focus: "actions", action: "pass" },
@@ -49,6 +50,21 @@ try {
         assert.equal(geometry.enabled.length, contract.action ? 1 : 0);
         if (contract.action) assert.ok(geometry.enabled[0].includes(`${contract.action === "continue" ? "counting" : contract.action}-action`));
         if (contract.action === "continue") assert.equal(await bar.locator(".counting-action .action-label").innerText(), "继续");
+        const skill = await bar.locator(".skill-action").evaluate(button => ({
+          label: button.querySelector(".action-label").textContent,
+          image: getComputedStyle(button.querySelector(".action-keycap")).backgroundImage,
+          color: getComputedStyle(button.querySelector(".action-keycap")).backgroundColor,
+          count: button.querySelector(".skill-use-window").textContent
+        }));
+        assert.equal(skill.label, contract.action === "skill" ? (state === "denia" ? "泡影幻梦" : "星辉符文") : "技能");
+        assert.equal(skill.count, "01");
+        if (contract.action === "skill") assert.ok(skill.image.includes("linear-gradient"));
+        else { assert.equal(skill.image, "none"); assert.equal(skill.color, "rgb(217, 215, 209)"); }
+        if (contract.action === "continue") {
+          const fill = await bar.locator(".counting-action .action-keycap").evaluate(el => getComputedStyle(el).backgroundImage);
+          assert.ok(fill.includes("255, 243, 196") && fill.includes("255, 224, 154"));
+        }
+
       }
       for (const button of geometry.buttons) assert.ok(button.width >= 44 && button.height >= 42);
       if (state === "choices" && width < 900) {
@@ -87,6 +103,14 @@ try {
     await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor({ timeout: 15000 });
     await page.getByRole("button", { name: "重置此步" }).click();
     await page.locator('.skill-action[data-tutorial-target="true"]').waitFor();
+    await page.locator(".tutorial-preview-toolbar select").selectOption("denia");
+    await page.locator('.skill-action[data-tutorial-target="true"]').click();
+    await page.locator('.tutorial-input-focus[data-focus-mode="board"]').waitFor();
+    assert.equal(await page.locator(".skill-action .action-label").innerText(), "泡影幻梦");
+    assert.equal(await page.locator(".skill-action .action-keycap").evaluate(el => getComputedStyle(el).backgroundImage), "none");
+    await page.locator('.point[data-point-id="7,5"]').click();
+    await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).click({ timeout: 15000 });
+    await page.waitForFunction(() => document.querySelector(".skill-action .action-label")?.textContent === "技能");
     await page.locator(".tutorial-preview-toolbar select").selectOption("pass");
     await page.locator('.pass-action[data-tutorial-target="true"]').evaluate(button => { button.click(); button.click(); });
     await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
@@ -130,7 +154,7 @@ try {
     await page.close();
   }
   assert.deepEqual(errors, []);
-  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, counting-slot continuation, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
+  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
   console.log(`Passed ${results.length} tutorial states and real transitions at desktop, 390px and 320px.`);
 } finally {
   await browser.close();

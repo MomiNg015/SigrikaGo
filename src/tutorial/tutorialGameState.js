@@ -189,7 +189,7 @@ function normalizeTutorialColor(color) {
   return isPlayerColor(color) ? color : null;
 }
 
-function tutorialSkillConfig(node) {
+export function tutorialSkillConfig(node) {
   return normalizeSkillConfig(node.skillId || node.characterId);
 }
 

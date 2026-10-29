@@ -28,8 +28,10 @@ Good: render the default ActionBar and mark a single `data-tutorial-target`, the
 
 Tutorial control focus does not draw an external outline or option halo. Keep the spotlight and the existing hard shadow/press feedback; this is scoped to tutorial actions and its header history trigger. Ordinary game focus styles remain unchanged.
 
+The Continue cap reuses the original guided-actions yellow gradient. In tutorials, `data-tutorial-inactive` reuses the existing spent palette for the skill cap/counter outside the active skill-button step; it must not change `data-skill-uses`. Ordinary battle palette behavior stays unchanged. `tutorialSkillButtonName` uses the same normalized `tutorialSkillConfig` as execution, including explicit derived skill objects. A player with no character gets the generic Skill label outside player-skill nodes; a scripted Denia step displays and executes Denia, then returns to the generic label without assigning a character.
+
 ## Tests
-ActionBar DOM tests cover all five keys and dead-stone tutorial behavior. Tutorial action-state tests cover mappings, overlay/transition locks and SVG arc geometry. Local state/server/workbook tests cover pass/draw and immutable state. Existing ChatBox draft/dock tests remain alongside header-popup tests. Real preview verification covers ten states at 1440/390/320px, all action transitions, duplicate pass input, mobile popup bounds, Escape/focus and outside dismissal.
+ActionBar DOM tests cover all five keys and dead-stone tutorial behavior. Tutorial action-state tests cover mappings, overlay/transition locks and SVG arc geometry. Local state/server/workbook tests cover pass/draw and immutable state. Existing ChatBox draft/dock tests remain alongside header-popup tests. Real preview verification covers eleven states at 1440/390/320px, all action transitions, duplicate pass input, mobile popup bounds, Escape/focus and outside dismissal.
 
 ## Wrong / correct examples
 Wrong: `return <nav className="tutorial-action-bar" />` while selecting a skill target. Correct: `return normalActions` with `tutorialAction=""`. Wrong: expose a text-and-count history tab at the mobile bottom. Correct: a 44px icon-only header trigger immediately before exit, with a labeled popup below it; desktop stays unchanged.
