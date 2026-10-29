@@ -1,0 +1,27 @@
+.tutorial-battle-root { position: relative; }
+.tutorial-choice-overlay { position: absolute; inset: 0; z-index: 130; overflow: hidden; pointer-events: none; }
+.tutorial-floating-choices { position: absolute; width: calc(var(--choice-width) + var(--choice-span) + 6px); padding: 4px 3px 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: none; visibility: hidden; }
+.tutorial-floating-choices[data-ready="true"] { visibility: visible; }
+.tutorial-floating-choices[data-scroll="true"] { pointer-events: auto; }
+.tutorial-choice-list { display: flex; flex-direction: column; gap: var(--choice-gap); }
+.tutorial-choice-step { width: var(--choice-width); margin-left: calc(var(--choice-index) * var(--choice-step)); }
+.tutorial-floating-choices[data-ready="true"] .tutorial-choice-step { animation: tutorial-choice-enter 210ms cubic-bezier(.2,.8,.25,1) var(--choice-delay) both; }
+:is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .tutorial-battle-root .tutorial-floating-choices button {
+  box-sizing: border-box; display: flex !important; align-items: center; justify-content: flex-start; gap: 10px;
+  width: 100%; min-width: 0; height: auto !important; min-height: var(--choice-height) !important;
+  padding: var(--choice-pad) 14px !important;
+  border: 3px solid var(--bright-ink, #3d2b25) !important; border-radius: 8px !important;
+  background: var(--tutorial-choice-background, #e4f8dc) !important; color: var(--bright-ink, #3d2b25) !important;
+  box-shadow: 0 0 0 3px var(--bright-paper, #fffbf2), 2px 4px 0 2px var(--bright-ink, #3d2b25) !important;
+  font-family: var(--font-ui-default); font-size: var(--choice-font) !important; font-weight: 700; line-height: 1.45;
+  text-align: left; letter-spacing: .015em; pointer-events: auto; cursor: pointer;
+  transition: background-color 130ms, transform 130ms, box-shadow 130ms;
+  & > svg { flex: 0 0 17px; color: currentColor; }
+  & > span { flex: 1; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+  &:hover:not(:disabled) { background: var(--tutorial-choice-hover-background, #d7f5ca) !important; transform: translateX(-2px); }
+  &:active:not(:disabled) { background: var(--tutorial-choice-active-background, #ffd6e7) !important; transform: translate(1px, 2px); box-shadow: 0 0 0 3px var(--bright-paper, #fffbf2), 1px 2px 0 1px var(--bright-ink, #3d2b25) !important; }
+  &:focus-visible { outline: 2px solid currentColor !important; outline-offset: -5px !important; }
+}
+@media(max-width: 900px), (pointer: coarse) { :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .tutorial-battle-root .tutorial-floating-choices button { gap: 8px; padding-inline: 11px !important; } }
+@keyframes tutorial-choice-enter { from { transform: translateX(calc(var(--choice-width) + var(--choice-span) + 50px)); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@media(prefers-reduced-motion: reduce) { .tutorial-floating-choices[data-ready="true"] .tutorial-choice-step { animation: none; } :is(.app-shell, .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school) .tutorial-battle-root .tutorial-floating-choices button { transition: none; transform: none !important; } }

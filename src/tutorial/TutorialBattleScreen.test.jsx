@@ -72,30 +72,17 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).not.toContain("tutorial-battle-loading");
   });
 
-  it("places reply choices in the existing action panel without covering or dimming the board", () => {
+  it("keeps the action panel and renders an independent reply overlay", () => {
     const source = readSource();
-    const css = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
-    const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
-
+    const choices = readFileSync(new URL("./TutorialChoiceActions.jsx", import.meta.url), "utf8");
+    const css = readFileSync(new URL("../styles/room/tutorial-battle-screen/floating-choices.css", import.meta.url), "utf8");
     expect(source).toContain("<TutorialChoiceActions");
-    expect(source).toContain('className="action-bar tutorial-action-bar tutorial-choice-actions"');
-    expect(source).toContain('role="group"');
-    expect(source).toContain('aria-label="请选择回答"');
-    expect(source).not.toContain("showOperationHint");
+    expect(source).not.toContain("actionPanelOverride=");
+    expect(source).toContain("showTutorialLog={false}");
+    expect(choices).toContain('aria-label="请选择回答"');
+    expect(css).toContain("position: absolute");
+    expect(css).toContain("overflow-y: auto");
     expect(source).not.toContain("tutorial-battle-choice-scrim");
-    expect(source).not.toContain("className=\"tutorial-battle-feedback\"");
-    expect(source).not.toContain("tutorial-battle-choice-close");
-    expect(source).not.toContain("MessageSquareText");
-    expect(source).not.toContain("onRequestCloseChoices");
-    expect(css).not.toContain(".tutorial-battle-choice-scrim");
-    expect(css).not.toContain(".tutorial-battle-choice");
-    const choiceBlock = cssBlock(actionCss, ".tutorial-action-bar.tutorial-choice-actions");
-    expect(choiceBlock).toContain("display: grid");
-    expect(choiceBlock).toContain("grid-template-columns: repeat(auto-fit");
-    expect(choiceBlock).toContain("overflow-y: auto");
-    expect(choiceBlock).not.toContain("position: absolute");
-    expect(choiceBlock).not.toContain("transform:");
-    expect(css).not.toContain("tutorial-battle-choice-close");
   });
 
   it("uses simplified node progression controls and option transition waits", () => {
@@ -109,8 +96,8 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("setPendingWait");
     expect(source).toContain("pendingWait");
     expect(source).toContain("revealsChoices: options.length > 0");
-    expect(source).toContain("if (!continuation && choicesVisible && node?.options?.length)");
-    expect(source).toContain("return normalActions;");
+    expect(source).toContain("!continuation && choicesVisible && currentNode?.options?.length > 0");
+    expect(source).not.toContain("actionPanelOverride=");
     expect(source).not.toContain("可继续，稍后自动推进");
     expect(source).not.toContain("请点击继续");
     expect(source).not.toContain("tutorial-action-hint");

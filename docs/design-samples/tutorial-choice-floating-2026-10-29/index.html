@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>对弈引导 · 阶梯选项样板</title><link rel="stylesheet" href="./review.css"></head>
+<body>
+<!-- Approved direction: equal-width mint replies, descending rightward staircase. The iframe mounts the real tutorial; only the independent reply layer is a local prototype. -->
+<header class="review-header"><div><span class="eyebrow">SIGRIKA GO / INTERACTION STUDY</span><h1>右侧阶梯选项</h1><p>对弈引导 · 桌面与竖屏交互预览</p></div><span class="sample-label">交互样板</span></header>
+<nav class="review-controls" aria-label="样板控制">
+  <div class="device-tabs" role="group" aria-label="预览尺寸"><button data-device="phone" aria-pressed="true">手机竖屏</button><button data-device="small" aria-pressed="false">小屏手机</button><button data-device="desktop" aria-pressed="false">桌面</button></div>
+  <label>选项内容<select id="scenario"><option value="normal">普通 · 3 个选项</option><option value="long">长文案 · 4 个选项</option><option value="many">极限 · 6 个长选项</option><option value="single">单个回答</option></select></label>
+  <button id="replay">重播滑入</button><button id="visibility" aria-pressed="true">隐藏选项</button><a id="open-scene" href="./scene.html" target="_blank" rel="noopener">独立预览 ↗</a>
+</nav>
+<main class="review-main"><div class="viewport-meta"><span id="viewport-size">390 × 844</span><span>可直接点击选项</span></div><div class="preview-host"><div class="preview-frame"><iframe id="scene" title="对弈引导真实界面与阶梯选项样板" src="./scene.html"></iframe></div></div><p class="review-caption">向下逐级靠右 · 浅绿实底 · 背景不压暗</p></main>
+<script type="module" src="./review.js"></script>
+</body></html>

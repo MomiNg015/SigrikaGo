@@ -51,4 +51,21 @@ describe("TutorialChoiceActions", () => {
     expect(screen.getByText(longLabel).textContent).toBe(longLabel);
     expect(screen.getAllByRole("button")).toHaveLength(3);
   });
+
+  it("blocks replies under history/exit overlays and preserves restored header focus", () => {
+    const onChoice = vi.fn();
+    const node = { id: "blocked-choice", options: [{ label: "回答" }] };
+    const { rerender } = render(<TutorialChoiceActions node={node} onChoice={onChoice} disabled />);
+    const answer = screen.getByRole("button", { name: "回答" });
+    fireEvent.click(answer);
+    expect(onChoice).not.toHaveBeenCalled();
+    const trigger = document.createElement("button");
+    document.body.appendChild(trigger);
+    trigger.focus();
+    rerender(<TutorialChoiceActions node={node} onChoice={onChoice} />);
+    expect(document.activeElement).toBe(trigger);
+    fireEvent.click(answer);
+    expect(onChoice).toHaveBeenCalledOnce();
+    trigger.remove();
+  });
 });

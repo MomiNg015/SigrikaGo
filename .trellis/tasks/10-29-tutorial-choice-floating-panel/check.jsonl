@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "Route-local CSS owner and exact scoped debt accounting"}
+{"file": ".trellis/spec/frontend/tutorial-action-controls.md", "reason": "Floating replies, native continuation, header history and input gates"}
+{"file": ".trellis/spec/frontend/battle-arcade-controls.md", "reason": "Preserve the five-key bar and gameplay geometry"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Full theme cascade, DOM regressions and viewport checks"}

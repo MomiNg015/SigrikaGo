@@ -1,0 +1,5 @@
+/* Preview chrome only; all choices, header controls and transitions are production components. */
+html, body, #root, .choice-sample-scene { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+.choice-sample-scene { position: relative; }
+.sample-hide-choices .tutorial-choice-overlay { visibility: hidden; }
+.sample-hide-choices .tutorial-floating-choices { visibility: hidden !important; }

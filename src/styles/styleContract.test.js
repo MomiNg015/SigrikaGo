@@ -1576,7 +1576,8 @@ describe("root CSS entry contract", () => {
       "./tutorial-battle-screen/no-character-portraits.css",
       "./tutorial-battle-screen/loading-motion.css",
       "./tutorial-battle-screen/npc-sprite.css",
-      "./tutorial-battle-screen/input-focus.css"
+      "./tutorial-battle-screen/input-focus.css",
+      "./tutorial-battle-screen/floating-choices.css"
     ]);
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");

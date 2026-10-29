@@ -1,7 +1,7 @@
 # Tutorial action controls
 
 ## Scope
-Local TutorialBattleScreen only. Reuse normal ActionBar geometry and ActionKey press feedback; preserve network game rules and normal ActionBar defaults. Only real answer choices replace the region; no other phase may render an empty region.
+Local TutorialBattleScreen only. Reuse normal ActionBar geometry and ActionKey press feedback; preserve network game rules and normal ActionBar defaults. Always retain the five-key region. Ordinary answers use an independent absolute overlay; no phase replaces or empties the region.
 
 ## Signatures
 - `ActionBar({ tutorialAction })`: `undefined` preserves ordinary rules; `""` keeps all five keys disabled; `pass | counting | skill | draw | resign | continue` enables only that key, even during tutorial counting confirmation.
@@ -15,7 +15,7 @@ Shared `TUTORIAL_NODE_TYPES.pass = "pass"` and `.draw = "draw"` are serialized u
 ## States and errors
 | State | Visible region | Allowed input |
 | --- | --- | --- |
-| Explicit answers | Option buttons | Current choice |
+| Explicit answers | Five disabled keys plus independent floating replies | Current choice |
 | Manual/phase/single-option continuation | Five keys; counting becomes Continue with Play icon | Continue only |
 | Guided action | All five normal keys | Matching key only |
 | Board targeting, waiting, automatic execution | All five normal keys | Only the applicable board/script input |
@@ -26,7 +26,7 @@ Shared `TUTORIAL_NODE_TYPES.pass = "pass"` and `.draw = "draw"` are serialized u
 ## Good and bad
 Good: render the default ActionBar and mark a single `data-tutorial-target`, then independently validate callbacks. Bad: one-off skill/counting buttons or an empty nav during board selection. Good: use the actual keycap rect and four computed CSS radii for mask arcs. Bad: use a fixed 6px rectangle around an elliptical key or rounded option.
 
-Tutorial control focus does not draw an external outline or option halo. Keep the spotlight and the existing hard shadow/press feedback; this is scoped to tutorial actions and its header history trigger. Ordinary game focus styles remain unchanged.
+Tutorial action-key focus does not draw an external outline. Reply choices have their own inset keyboard focus and no spotlight. Keep the spotlight and the existing hard shadow/press feedback; this is scoped to tutorial actions and its header history trigger. Ordinary game focus styles remain unchanged.
 
 The Continue cap reuses the original guided-actions yellow gradient. In tutorials, `data-tutorial-inactive` reuses the existing spent palette for the skill cap/counter outside the active skill-button step; it must not change `data-skill-uses`. Ordinary battle palette behavior stays unchanged. `tutorialSkillButtonName` uses the same normalized `tutorialSkillConfig` as execution, including explicit derived skill objects. A player with no character gets the generic Skill label outside player-skill nodes; a scripted Denia step displays and executes Denia, then returns to the generic label without assigning a character.
 
@@ -34,4 +34,12 @@ The Continue cap reuses the original guided-actions yellow gradient. In tutorial
 ActionBar DOM tests cover all five keys and dead-stone tutorial behavior. Tutorial action-state tests cover mappings, overlay/transition locks and SVG arc geometry. Local state/server/workbook tests cover pass/draw and immutable state. Existing ChatBox draft/dock tests remain alongside header-popup tests. Real preview verification covers eleven states at 1440/390/320px, all action transitions, duplicate pass input, mobile popup bounds, Escape/focus and outside dismissal.
 
 ## Wrong / correct examples
-Wrong: `return <nav className="tutorial-action-bar" />` while selecting a skill target. Correct: `return normalActions` with `tutorialAction=""`. Wrong: expose a text-and-count history tab at the mobile bottom. Correct: a 44px icon-only header trigger immediately before exit, with a labeled popup below it; desktop stays unchanged.
+Wrong: `return <nav className="tutorial-action-bar" />` while selecting a skill target. Correct: `return normalActions` with `tutorialAction=""`. Wrong: expose a text-and-count history tab at the mobile bottom. Correct: a 44px icon-only header trigger immediately before exit, with a labeled popup below it; desktop uses the same header trigger and popup. Both triggers share geometry, border, hard shadow and press feedback with Exit, differing only in color and icon.
+
+## Floating reply contract
+
+- `TutorialChoiceActions({ node, onChoice, onRevealText, disabled })` is keyed by node and unmounts between attempts. Keep its synchronous submission ref and native disabled state. Opening history/exit locks the group with `inert`; closing history must not steal the restored header focus.
+- `useTutorialChoicePlacement(groupRef, count)` measures only the current root's board frame and self info. Mobile starts below the entire frame; desktop remains to its right near the self panel's bottom. ResizeObserver, viewport and scroll updates must never resize the board or action bar. Cleanup all listeners/frames.
+- Transparent absolute overlay, equal-width rows, descending rightward staircase; rows slide 210ms with total stagger below 90ms. Reduced motion disables entry and press movement. Opaque pale green, 3px ink outline and hard shadow are the approved reply style, reusing existing tutorial state colors.
+- Compact width/height/font/gap before internal scrolling. Mobile 12px text and 27px minimum row are local short-screen exceptions; preserve full wrapped text, gaps and reachable final choice. No choice spotlight. Single Continue/Continue Now stays in the original native control slot; ordinary single replies float.
+- Validate the complete theme cascade in the real component preview at desktop and 390/360/320px portrait widths; check choice removal does not shift the board, correct/wrong branches, duplicate input, history focus, keyboard and reduced motion.

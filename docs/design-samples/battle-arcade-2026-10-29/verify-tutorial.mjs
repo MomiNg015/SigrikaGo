@@ -11,7 +11,7 @@ const expected = {
   dialogue: { count: 5, focus: "", action: "continue" },
   continuation: { count: 5, focus: "", action: "continue" },
   automatic: { count: 5, focus: "", action: "" },
-  choices: { count: 2, focus: "choices" },
+  choices: { count: 5, focus: "", action: "" },
   move: { count: 5, focus: "board", action: "" },
   skill: { count: 5, focus: "actions", action: "skill" },
   denia: { count: 5, focus: "actions", action: "skill" },
@@ -68,7 +68,8 @@ try {
       }
       for (const button of geometry.buttons) assert.ok(button.width >= 44 && button.height >= 42);
       if (state === "choices" && width < 900) {
-        const bounds = await bar.locator("button").evaluateAll(buttons => buttons.map(button => {
+        await page.locator('.tutorial-floating-choices[data-ready="true"]').waitFor();
+        const bounds = await page.locator(".tutorial-floating-choices button").evaluateAll(buttons => buttons.map(button => {
           const label = button.querySelector("span"), r = button.getBoundingClientRect();
           return { x: r.x, width: r.width, labelWidth: label.offsetWidth, labelHeight: label.offsetHeight };
         }));
@@ -76,9 +77,9 @@ try {
       }
       await bar.scrollIntoViewIfNeeded();
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      if (["choices", "actions"].includes(contract.focus)) {
+      if (contract.focus === "actions") {
         const cutouts = await page.locator(".tutorial-input-focus mask path").evaluateAll(paths => paths.map(path => path.getAttribute("d")));
-        assert.equal(cutouts.length, contract.focus === "choices" ? 2 : 1);
+        assert.equal(cutouts.length, 1);
         assert.ok(cutouts.every(path => path.includes(" A ")), "cutouts must follow actual corner arcs");
       }
       await page.screenshot({ path: fileURLToPath(new URL(`tutorial-${state}-${width}.png`, import.meta.url)), fullPage: true });
@@ -121,7 +122,7 @@ try {
       await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
     }
     await page.locator(".tutorial-preview-toolbar select").selectOption("choices");
-    await page.locator(".tutorial-action-bar").getByRole("button", { name: "准备好了，开始落子" }).click();
+    await page.locator(".tutorial-floating-choices").getByRole("button", { name: "准备好了，开始落子" }).click();
     await page.locator('.tutorial-input-focus[data-focus-mode="board"]').waitFor();
     await page.locator('.point[data-point-id="6,6"]').click();
     await page.locator(".battle-arcade-controls").getByRole("button", { name: "继续", exact: true }).waitFor();
@@ -154,7 +155,7 @@ try {
     await page.close();
   }
   assert.deepEqual(errors, []);
-  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
+  await writeFile(new URL("verification-tutorial.json", import.meta.url), JSON.stringify({ results, transitions: "all five guided actions, duplicate-pass guard, skill-to-board retention, floating choices with retained controls and no dimming, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed", errors }, null, 2));
   console.log(`Passed ${results.length} tutorial states and real transitions at desktop, 390px and 320px.`);
 } finally {
   await browser.close();

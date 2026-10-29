@@ -5,6 +5,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/tutorial/TutorialChoiceActions*.jsx",
+  "src/tutorial/useTutorialChoicePlacement.js",
+  "docs/design-samples/tutorial-choice-floating-2026-10-29/*.{js,jsx,mjs}",
   "src/app/InteractionFeedback*.jsx",
   "tests/e2e/fixtures/disabled-feedback.jsx",
   "src/modals/InformationCenterLayout.jsx",

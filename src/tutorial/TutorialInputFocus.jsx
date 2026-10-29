@@ -2,11 +2,9 @@ import { useLayoutEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { tutorialFocusShape } from "./tutorialFocusShape.js";
 
-const isContinue = (label) => ["继续", "立即继续"].includes(String(label || "继续").trim());
-
 export function tutorialInputFocusMode({ node, phase, choicesVisible, pendingWait, loading, confirmExit }) {
   if (loading || pendingWait || confirmExit) return "";
-  if (choicesVisible && node?.options?.some((option) => !isContinue(option.label))) return "choices";
+  if (choicesVisible) return "";
   if (phase === "continue") return "";
   if (["skill-button", "button"].includes(phase)) return "actions";
   if (node?.type === "player-move" || phase === "skill-board") return "board";
@@ -29,9 +27,6 @@ export default function TutorialInputFocus({ mode, targetPointId }) {
       } else if (mode === "actions") {
         targets = [...(root?.querySelectorAll('.battle-arcade-controls [data-tutorial-target="true"]:not(:disabled)') ?? [])]
           .map(button => button.querySelector(".action-keycap") || button);
-      } else {
-        targets = [...(root?.querySelectorAll(".tutorial-action-bar button:not(:disabled)") ?? [])]
-          .filter((button) => !isContinue(button.textContent));
       }
       const rects = targets.map((target) => {
         const rect = target.getBoundingClientRect();

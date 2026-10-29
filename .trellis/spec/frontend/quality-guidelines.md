@@ -2275,3 +2275,9 @@ Correct portal styling:
 - `ResultModal` must not suppress all challenge audio. Its existing per-channel refs prevent duplicate playback as room snapshots and settings update; waiting for settlement must not consume either ref.
 - Pass the existing character/item-effect projection and audio settings unchanged into playback. Do not change scoring, result text, or reward policy to simulate a win.
 - Required DOM regressions: both channels on completion; pending settlement transitioning to a saved result; once-only playback across rerenders; settings propagation; incomplete/invalid/stale-result and spectator silence.
+
+
+### Floating tutorial reply validation (2026-10-29)
+- Answer choices never replace the five-key action bar or activate the spotlight. Validate the real TutorialBattleScreen with the full theme cascade at 1440px desktop and 390/360/320px portrait.
+- Check opaque fill, equal-width descending staircase, board-frame clearance, stable board geometry, compact-before-scroll behavior, full labels and reachable final reply. Also exercise wrong-answer retry, single native Continue, duplicate input, keyboard and reduced motion.
+- Desktop and mobile history live in the header beside Exit with identical geometry and press feedback; verify vertical alignment, popup bounds and focus restoration.

@@ -119,24 +119,36 @@
       "width": 1440,
       "height": 768,
       "state": "choices",
-      "focus": "choices",
+      "focus": "",
       "overflow": false,
-      "arcade": false,
-      "counter": false,
-      "enabled": [
-        "",
-        ""
-      ],
+      "arcade": true,
+      "counter": true,
+      "enabled": [],
       "buttons": [
         {
-          "text": "准备好了，开始落子",
-          "width": 217,
-          "height": 82
+          "text": "弃手",
+          "width": 73,
+          "height": 44
         },
         {
-          "text": "再讲解一下",
-          "width": 217,
-          "height": 82
+          "text": "数子",
+          "width": 94,
+          "height": 72
+        },
+        {
+          "text": "技能01",
+          "width": 137,
+          "height": 96
+        },
+        {
+          "text": "和棋",
+          "width": 73,
+          "height": 44
+        },
+        {
+          "text": "认输",
+          "width": 94,
+          "height": 72
         }
       ]
     },
@@ -530,24 +542,36 @@
       "width": 390,
       "height": 844,
       "state": "choices",
-      "focus": "choices",
+      "focus": "",
       "overflow": false,
-      "arcade": false,
-      "counter": false,
-      "enabled": [
-        "",
-        ""
-      ],
+      "arcade": true,
+      "counter": true,
+      "enabled": [],
       "buttons": [
         {
-          "text": "准备好了，开始落子",
-          "width": 323,
-          "height": 57
+          "text": "弃手",
+          "width": 93,
+          "height": 44
         },
         {
-          "text": "再讲解一下",
-          "width": 323,
-          "height": 57
+          "text": "数子",
+          "width": 93,
+          "height": 52
+        },
+        {
+          "text": "技能01",
+          "width": 132,
+          "height": 104
+        },
+        {
+          "text": "和棋",
+          "width": 93,
+          "height": 44
+        },
+        {
+          "text": "认输",
+          "width": 93,
+          "height": 52
         }
       ]
     },
@@ -941,24 +965,36 @@
       "width": 320,
       "height": 568,
       "state": "choices",
-      "focus": "choices",
+      "focus": "",
       "overflow": false,
-      "arcade": false,
-      "counter": false,
-      "enabled": [
-        "",
-        ""
-      ],
+      "arcade": true,
+      "counter": true,
+      "enabled": [],
       "buttons": [
         {
-          "text": "准备好了，开始落子",
-          "width": 253,
-          "height": 57
+          "text": "弃手",
+          "width": 73,
+          "height": 44
         },
         {
-          "text": "再讲解一下",
-          "width": 253,
-          "height": 57
+          "text": "数子",
+          "width": 73,
+          "height": 52
+        },
+        {
+          "text": "技能01",
+          "width": 103,
+          "height": 104
+        },
+        {
+          "text": "和棋",
+          "width": 73,
+          "height": 44
+        },
+        {
+          "text": "认输",
+          "width": 73,
+          "height": 52
         }
       ]
     },
@@ -1234,6 +1270,6 @@
       ]
     }
   ],
-  "transitions": "all five guided actions, duplicate-pass guard, skill-to-board retention, replacement choices, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed",
+  "transitions": "all five guided actions, duplicate-pass guard, skill-to-board retention, floating choices with retained controls and no dimming, yellow counting-slot continuation, user-view generic label, scripted Denia skill and gray inactive skill, duplicate-continue guard, move-to-continue and mobile header-log passed",
   "errors": []
 }

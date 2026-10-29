@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import { tutorialInputFocusMode } from "./TutorialInputFocus.jsx";
-it("focuses moves and choices but never continue or automatic phases", () => {
+it("focuses moves and guided actions without dimming choices or continuation", () => {
   const choices = { node: { options: [{ label: "落子" }] }, choicesVisible: true };
-  expect(tutorialInputFocusMode(choices)).toBe("choices");
+  expect(tutorialInputFocusMode(choices)).toBe("");
   expect(tutorialInputFocusMode({ node: { type: "player-move" } })).toBe("board");
   expect(tutorialInputFocusMode({ phase: "skill-button" })).toBe("actions");
   expect(tutorialInputFocusMode({ ...choices, pendingWait: {} })).toBe("");

@@ -4,7 +4,8 @@ import NpcDialogue from "./NpcDialogue.jsx";
 import { canAnimateTypewriter, prefersReducedMotion } from "./TypewriterText.jsx";
 export { TypewriterText } from "./TypewriterText.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { MessageCircle, Play } from "lucide-react";
+import TutorialChoiceActions from "./TutorialChoiceActions.jsx";
+export { default as TutorialChoiceActions } from "./TutorialChoiceActions.jsx";
 import ChatBox from "../room/ChatBox.jsx";
 import { activeTutorialAction, tutorialActionForNode, tutorialContinueForState, tutorialSkillButtonName } from "./tutorialActionState.js";
 import "../styles/room/tutorial-battle-screen.css";
@@ -763,8 +764,8 @@ export default function TutorialBattleScreen({
         showCoords={showCoords}
         exitLabel="退出/跳过"
         showUtilityControls={false}
-        beforeExitActions={useMobileLayout ? <ChatBox room={displayRoom} readonly compactMessages label="剧情记录"
-          mobileDockPopup iconOnly popupPlacement="below" onOpenChange={setStoryLogOpen} /> : null}
+        beforeExitActions={<ChatBox room={displayRoom} readonly compactMessages label="剧情记录"
+          mobileDockPopup iconOnly popupPlacement="below" onOpenChange={setStoryLogOpen} />}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
         onBack={() => setConfirmExit({ reason: "exit" })}
@@ -777,16 +778,6 @@ export default function TutorialBattleScreen({
           tutorialContinueLabel={continuation?.label}
           onTutorialContinue={handleTutorialContinue}
           tutorialSkillName={tutorialSkillButtonName(currentNode, me)}
-          actionPanelOverride={(normalActions) => (
-            <TutorialActionPanel
-              normalActions={normalActions}
-              continuation={continuation}
-              node={currentNode}
-              choicesVisible={choicesVisible}
-              onChoice={handleChoice}
-              onRevealText={revealNpcBubbleText}
-            />
-          )}
           audioSettings={audioSettings}
           boardStep={null}
           canSwitchView={false}
@@ -821,7 +812,7 @@ export default function TutorialBattleScreen({
           setSpectatorStep={() => {}}
           setViewColor={() => {}}
           showPeoplePanel={false}
-          showTutorialLog={!useMobileLayout}
+          showTutorialLog={false}
           showCoords={showCoords}
           showMoves={false}
           skillAvailable={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill}
@@ -848,6 +839,10 @@ export default function TutorialBattleScreen({
           />
         )}
       </div>
+      {!continuation && choicesVisible && currentNode?.options?.length > 0 && !loading && (
+        <TutorialChoiceActions key={currentNode.id} node={currentNode} onChoice={handleChoice}
+          onRevealText={revealNpcBubbleText} disabled={Boolean(confirmExit || storyLogOpen || pendingWait)} />
+      )}
       {battleMusicActive && tutorialMusic && <BackgroundMusic track={tutorialMusic} audioSettings={audioSettings} />}
       {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
       {confirmExit && (
@@ -882,58 +877,6 @@ function npcDialogueTypewriterDurationMs(node) {
   const text = String(node?.text ?? node?.prompt ?? "");
   if (!text || !canAnimateTypewriter() || prefersReducedMotion()) return 0;
   return 80 + (text.length * 28);
-}
-
-export function TutorialActionPanel({
-  node, choicesVisible, normalActions, continuation, onChoice, onRevealText
-}) {
-  if (!continuation && choicesVisible && node?.options?.length) {
-    return <TutorialChoiceActions key={node.id} node={node} onChoice={onChoice} onRevealText={onRevealText} />;
-  }
-  return normalActions;
-}
-
-export function TutorialChoiceActions({ node, onChoice, onRevealText }) {
-  const groupRef = useRef(null);
-  const submittedRef = useRef(false);
-  const [submitted, setSubmitted] = useState(false);
-  const options = Array.isArray(node?.options) ? node.options : [];
-
-  useEffect(() => {
-    groupRef.current?.querySelector("button:not(:disabled)")?.focus();
-  }, []);
-
-  const selectOption = (option) => {
-    if (submittedRef.current) return;
-    submittedRef.current = true;
-    setSubmitted(true);
-    onChoice?.(option);
-  };
-
-  return (
-    <div
-      ref={groupRef}
-      className="action-bar tutorial-action-bar tutorial-choice-actions"
-      role="group"
-      aria-label="请选择回答"
-      aria-busy={submitted}
-      onClick={onRevealText}
-    >
-      {options.map((option, index) => (
-        <button
-          key={`${node.id}-${index}`}
-          type="button"
-          disabled={submitted}
-          onClick={() => selectOption(option)}
-        >
-          {["继续", "立即继续"].includes(option.label?.trim() || "继续")
-            ? <Play size={18} aria-hidden="true" />
-            : <MessageCircle size={20} aria-hidden="true" />}
-          <span>{option.label || "继续"}</span>
-        </button>
-      ))}
-    </div>
-  );
 }
 
 export function TutorialBattleLoading({ loading, characters, players, user }) {
