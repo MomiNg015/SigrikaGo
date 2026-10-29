@@ -569,3 +569,36 @@ Delivered three desktop/mobile isolated battle control samples and refined selec
 ### Next Steps
 
 - None - task complete
+
+
+## Session 258: Arcade battle controls and tutorial illustration
+
+**Date**: 2026-10-29
+**Task**: Arcade battle controls and tutorial illustration
+**Branch**: `master`
+
+### Summary
+
+Integrated the selected Bright School pod with effective skill names, IRIS charges and physical presses. Added real production and tutorial previews. Passed 140 targeted tests, 443 battle tests, 20 production and 18 tutorial browser cases, lint, build and remaining resource/config gates. Full-suite E2E isolation worker exit remains documented. Preserved unrelated preload/tutorial/theme work through scoped staging.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d78a080a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

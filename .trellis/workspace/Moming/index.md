@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 257
+- **Total Sessions**: 258
 - **Last Active**: 2026-10-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~571 | Active |
+| `journal-5.md` | ~604 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 258 | 2026-10-29 | Arcade battle controls and tutorial illustration | `d78a080a` | `master` |
 | 257 | 2026-10-29 | Arcade controls design and rainbow pod refinement | `72c8f1a` | `master` |
 | 256 | 2026-10-28 | Commit revised home onboarding with existing coupon work | `b31f4385`, `a440a474` | `master` |
 | 255 | 2026-10-28 | Finish coupon currency outside unreleased gacha | `a440a474` | `master` |
