@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h2>2026-10-29 玩家界面防拖拽误选</h2>
+<p>玩家界面的名字、计时器、立绘和窗口内容默认不参与浏览器原生拖拽选中，图片同时禁用原生拖动预览，避免鼠标横扫时出现大片蓝色选区。输入框、文本域和可编辑内容保留选择、复制与编辑，后台仍可正常选中文字；点击、键盘焦点、滑动和对弈操作保持原逻辑。规则集中在基础样式，详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-10-29 引导聚焦正式接入与对白首帧定位</h2>
 <p>主界面和对弈引导已采用 A 收拢聚焦角标。主界面按组件实际绘制内容恢复亮度，保留透明图片、圆角与阴影；部员详情、履历等讲解窗口同样保持明亮并带角标。对白与头像等待当前步骤的目标定位和尺寸测量完成后同时显示，消除默认位置闪现。保留逐字显示、代理点击、跳过和奖励流程；<a href="./design-samples/tutorial-action-cues-2026-10-29/index.html">对照页</a>的 A 直接使用正式实现。生命周期及回归约束见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。下述样板记录描述选型阶段，以本节正式接入为准。</p>
 <h2>2026-10-29 操作引导强化提示三套样板</h2>
@@ -5505,6 +5507,8 @@
 <p>普通登录加载复用 <code>AssetPreloadScreen</code> 的随机角色、跳动、纸质进度条与 10 秒提示轮换；<code>LoginAssetPreloadScreen</code> 仅适配实时目录、进度与笔刷 Tip 样式；角色特色加载台词自 2026-10-27 起不再展示。Tip 位于加载条下方，正文桌面 14px、手机 13px，最大宽度 440px。入口预热移除思考场景素材，仅保留 Tip 笔刷；资源就绪门禁、2 秒完成停留和黑化角色专用显示保持不变。</p>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>
+<h2>玩家界面原生选区（2026-10-29）</h2>
+<p><code>base/foundation.css</code> 对 <code>.app-shell.player-theme-enabled</code> 设置标准及 WebKit <code>user-select: none</code>，统一防止玩家界面拖拽误选；图片使用 <code>-webkit-user-drag: none</code> 抑制原生拖动预览。<code>input</code>、<code>textarea</code> 和非 false 的 <code>contenteditable</code> 明确恢复 <code>user-select: text</code>。后台根节点使用 <code>admin-theme-isolated</code>，保持原生选择。此规则不截获鼠标、触摸或键盘事件，不隐藏焦点环，也不改变滚动或业务回调。</p>
 <h2>引导聚焦、组件轮廓与首帧定位（2026-10-29）</h2>
 <ul>
 <li>主界面与对弈共用 <code>GuideFocusMarker</code>：四个墨色角标按 1900ms 周期两次收拢后停顿，边缘扩张受视口余量限制；不缩放目标，不拦截点击，减少动态效果时静止。对弈保留 20% 遮罩，聚焦真实键帽／指定棋点，隐藏旧棋点脉冲，操作完成卸载。</li>

@@ -1,5 +1,9 @@
 # CSS Architecture
 
+## Player UI selection
+
+`base/foundation.css` disables native selection on `.app-shell.player-theme-enabled` and native image dragging within that shell. Restore text selection for input, textarea and non-false contenteditable elements. Admin uses its separate shell and retains selection. Do not replace this with transparent `::selection` paint or document-level mouse/selection blockers; preserve keyboard focus, touch scrolling and business pointer handlers. Check real drag sweeps and editable text selection under the full theme cascade.
+
 ## Practice dialog framing
 
 `practice-sheet.css` keeps the close control in flow with `flex: 0 0 auto`; the shared window-sticker owner supplies its 36px square. Do not force a 44px flex basis against the shared 36px height. `practice-sheet-dialogue.css` owns both viewports: the portrait mask preserves desktop 240:218 geometry, the image stays at 100% width with its intrinsic ratio, and the -7% top inset leaves the authored head inside the mask. Mobile width scales from 154px to 240px; bubble width reserves portrait and tail space. Long copy grows naturally and the backdrop scrolls. Typography layers must not resize the portrait or impose a fixed dialogue height. The practice-window cases in `interface-polish.spec.js` check real HomeScreen ancestors, alpha bounds, three story states, five widths and close interactions.

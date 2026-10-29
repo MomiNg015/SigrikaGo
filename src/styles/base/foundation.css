@@ -61,6 +61,21 @@ body {
   touch-action: manipulation;
 }
 
+/* Game chrome should not turn into a document selection during pointer sweeps. */
+.app-shell.player-theme-enabled {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app-shell.player-theme-enabled :where(input, textarea, [contenteditable]:not([contenteditable="false"])) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.app-shell.player-theme-enabled img {
+  -webkit-user-drag: none;
+}
+
 button,
 input,
 select,

@@ -1,5 +1,9 @@
 # UI 主题、移动端与交互体验
 
+## 玩家界面原生选区（2026-10-29）
+
+`base/foundation.css` 对 `.app-shell.player-theme-enabled` 设置标准及 WebKit `user-select: none`，统一防止玩家界面拖拽误选；图片使用 `-webkit-user-drag: none` 抑制原生拖动预览。`input`、`textarea` 和非 false 的 `contenteditable` 明确恢复 `user-select: text`。后台根节点使用 `admin-theme-isolated`，保持原生选择。此规则不截获鼠标、触摸或键盘事件，不隐藏焦点环，也不改变滚动或业务回调。
+
 ## 引导聚焦、组件轮廓与首帧定位（2026-10-29）
 
 - 主界面与对弈共用 `GuideFocusMarker`：四个墨色角标按 1900ms 周期两次收拢后停顿，边缘扩张受视口余量限制；不缩放目标，不拦截点击，减少动态效果时静止。对弈保留 20% 遮罩，聚焦真实键帽／指定棋点，隐藏旧棋点脉冲，操作完成卸载。

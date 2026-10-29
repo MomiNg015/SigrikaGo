@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "case": "tutorial desktop sweep, native image drag, skill and board input",
+      "before": "0\n手\n星炬 TEACH\n黑\n星炬部员\n白\n达妮娅\nNPC",
+      "after": "",
+      "passed": true
+    },
+    {
+      "case": "Selection input",
+      "selectionAndEdit": true
+    },
+    {
+      "case": "Selection textarea",
+      "selectionAndEdit": true
+    },
+    {
+      "case": "Selection editor",
+      "selectionAndEdit": true
+    },
+    {
+      "case": "admin retains browser selection",
+      "passed": true
+    },
+    {
+      "case": "portrait mobile sweep",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

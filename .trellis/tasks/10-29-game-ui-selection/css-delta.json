@@ -1,0 +1,4 @@
+{
+  "delta": 399,
+  "note": "2026-10-29: player shell prevents native drag selection and image ghosts; editable controls and isolated admin retain selection. Existing foundation owner only; exact delta +399 normalized bytes, no other CSS metrics changed."
+}
