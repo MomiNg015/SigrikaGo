@@ -602,3 +602,36 @@ Integrated the selected Bright School pod with effective skill names, IRIS charg
 ### Next Steps
 
 - None - task complete
+
+
+## Session 259: Tutorial arcade controls and header story history
+
+**Date**: 2026-10-29
+**Task**: Tutorial arcade controls and header story history
+**Branch**: `master`
+
+### Summary
+
+Reused five-key ActionBar in tutorials with target-only gating and pass/draw nodes; fixed rounded focus cutouts; moved portrait story log to an icon before exit. Passed 27 tutorial and 20 ordinary preview cases, focused unit tests, 443 battle regressions, lint, build and built CSS. Docs/spec synchronized and task archived; unrelated preload/settings WIP preserved. Prior full-check worker-exit limitation recorded in verification.md.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4ac4f886` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

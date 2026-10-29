@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 258
+- **Total Sessions**: 259
 - **Last Active**: 2026-10-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~604 | Active |
+| `journal-5.md` | ~637 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 259 | 2026-10-29 | Tutorial arcade controls and header story history | `4ac4f886` | `master` |
 | 258 | 2026-10-29 | Arcade battle controls and tutorial illustration | `d78a080a` | `master` |
 | 257 | 2026-10-29 | Arcade controls design and rainbow pod refinement | `72c8f1a` | `master` |
 | 256 | 2026-10-28 | Commit revised home onboarding with existing coupon work | `b31f4385`, `a440a474` | `master` |
