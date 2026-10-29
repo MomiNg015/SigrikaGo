@@ -1,5 +1,9 @@
 # Component Guidelines
 
+## Home onboarding instruction targets
+
+An instruction that asks the user to activate a control must own its `target`, `window` and `action` in the same script step. Do not follow a narrated surface step with an empty-text action that repeats the previous sentence: that makes the bubble relocate after a redundant click. All non-choice steps own their text; only the fixed player choice has no NPC dialogue. Preserve authored node IDs/text for expression matching. Test the three handbook/category/team instructions at their first normal-typewriter presentation and verify a single target activation reaches the next distinct dialogue on desktop and portrait phones.
+
 Watch uses [Watch Ledger Contract](./watch-ledger-contract.md): all eligible modes, no type tabs and compact parallel mobile players.
 
 ## Warehouse field guide

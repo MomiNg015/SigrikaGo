@@ -15,6 +15,38 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 const character = { portrait: "/portrait.webp", palette: "#ff9b4d" };
 
+it("shows each instruction with its actionable target immediately, without an empty repeat step", () => {
+  const pairs = [
+    ["handbook-intro", "sigrika-card", "skill"],
+    ["match-intro", "spark-category", "regular"],
+    ["team-intro", "team-characters", "team-rounds"]
+  ];
+  const targets = [...new Set(HOME_ONBOARDING_STEPS.map(step => step.target).filter(Boolean))];
+  const surfaces = [...new Set(HOME_ONBOARDING_STEPS.map(step => step.surface).filter(Boolean))];
+  const open = vi.fn();
+  const { container } = render(<>
+    {targets.map(target => <button key={target} data-home-guide={target} aria-label={target} onClick={() => open(target)}>{target}</button>)}
+    {surfaces.map(surface => <section key={surface} className={surface.slice(1)} />)}
+    <HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />
+  </>);
+  expect(HOME_ONBOARDING_STEPS.filter(step => !step.choice).every(step => Boolean(step.text))).toBe(true);
+  for (const step of HOME_ONBOARDING_STEPS) {
+    if (step.choice) break;
+    const pair = pairs.find(([id]) => id === step.id);
+    if (pair) {
+      expect(container.querySelector(".home-guide-panel p").textContent).toBe(step.text);
+      expect(screen.getByRole("button", { name: `点击${pair[1]}继续引导` })).toBeTruthy();
+      open.mockClear();
+    }
+    fireEvent.click(container.querySelector(step.action ? ".home-guide-target" : ".home-guide-advance-plane"));
+    if (pair) {
+      expect(open).toHaveBeenCalledExactlyOnceWith(pair[1]);
+      expect(container.querySelector(".home-onboarding").dataset.step).toBe(pair[2]);
+      expect(container.querySelector(".home-guide-panel p").textContent).not.toBe(step.text);
+    }
+  }
+});
+
 describe("home guide interaction boundary", () => {
   it("keeps a fixed avatar outside the measured scroll panel at the same top position", () => {
     const { container } = render(<HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />);

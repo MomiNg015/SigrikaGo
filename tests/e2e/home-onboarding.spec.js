@@ -72,7 +72,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         expect(await page.locator(step.surface).first().boundingBox()).toEqual(windowRect);
         await page.locator(".home-onboarding").evaluate(el => { el.style.removeProperty("visibility"); });
       }
-      if (["handbook", "sigrika", "skill", "regular", "practice", "team", "team-select", "team-rounds", "recruitment-intro", "shop-intro", "coupons", "mailbox", "resume"].includes(step.id)) {
+      if (["handbook", "handbook-intro", "match-intro", "skill", "regular", "practice", "team", "team-intro", "team-rounds", "recruitment-intro", "shop-intro", "coupons", "mailbox", "resume"].includes(step.id)) {
         await page.screenshot({ path: testInfo.outputPath(`${step.id}.png`) });
       }
       await page.keyboard.press("Escape");
@@ -94,6 +94,49 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
 
 test.describe("animated home guide avatar stability", () => {
   test.use({ reducedMotion: "no-preference" });
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
+    test(`instructions start at the actionable target without a repeated dialogue ${viewport.width}`, async ({ page }, testInfo) => {
+      await page.setViewportSize(viewport);
+      await page.route("**/api/**", route => route.fulfill({ json: { items: [] } }));
+      await page.goto("/tests/e2e/fixtures/home-onboarding.html");
+      await page.evaluate(() => document.fonts.ready);
+      const pairs = {
+        "handbook-intro": ["sigrika-card", "skill"],
+        "match-intro": ["spark-category", "regular"],
+        "team-intro": ["team-characters", "team-rounds"]
+      };
+      for (const step of HOME_ONBOARDING_STEPS) {
+        await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", step.id);
+        if (step.target || step.surface) {
+          await expect(page.locator(step.target ? `[data-home-guide="${step.target}"]:visible` : step.surface).first()).toBeVisible();
+        }
+        // Sample the first visible placement, before completing/revealing this line.
+        await page.waitForTimeout(300);
+        if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
+        const pair = pairs[step.id];
+        if (pair) {
+          await expect(page.locator(`.home-guide-target`)).toBeVisible();
+          const geometry = await page.evaluate(targetName => {
+            const target = [...document.querySelectorAll(`[data-home-guide="${targetName}"]`)]
+              .find(el => el.getBoundingClientRect().width > 0).getBoundingClientRect();
+            const panel = document.querySelector(".home-guide-panel").getBoundingClientRect();
+            return { overlap: Math.min(target.bottom, panel.bottom) - Math.max(target.top, panel.top), text: document.querySelector(".home-guide-panel p").textContent };
+          }, pair[0]);
+          expect(geometry.overlap, `${step.id} first placement`).toBeLessThanOrEqual(0);
+          expect(geometry.text.length).toBeLessThan(step.text.length);
+          await page.screenshot({ path: testInfo.outputPath(`${step.id}-first.png`) });
+        }
+        if (!pair && step.text && await page.locator(".home-guide-panel p").textContent() !== step.text) {
+          await page.locator(".tutorial-battle-dialogue").click();
+        }
+        if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
+        // One target activation must show the next line, not relocate the same line.
+        await page.locator(step.action ? ".home-guide-target" : ".tutorial-battle-dialogue").click();
+        if (pair) await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", pair[1]);
+        if (step.id === "team-intro") break;
+      }
+    });
+  }
   test("consecutive dialogue keeps its spotlight and does not replay the focus animation", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.route("**/api/**", route => route.fulfill({ json: { items: [] } }));
@@ -114,19 +157,19 @@ test.describe("animated home guide avatar stability", () => {
         await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
       }
       if (step.id === "skill") {
-        await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(4);
+        await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(3);
         await page.locator(".home-guide-spotlight").evaluate(el => { window.__retainedSpotlight = el; });
       }
       if (step.id === "know-members") {
         expect(await page.locator(".home-guide-spotlight").evaluate(el => el === window.__retainedSpotlight)).toBe(true);
-        expect(await page.evaluate(() => window.__guideFocusCount)).toBe(4);
+        expect(await page.evaluate(() => window.__guideFocusCount)).toBe(3);
         break;
       }
       await page.locator(step.action ? ".home-guide-target" : ".tutorial-battle-dialogue").click();
     }
     await page.locator(".tutorial-battle-dialogue").click();
     await expect(page.locator(".home-onboarding")).toHaveAttribute("data-step", "match");
-    await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(5);
+    await expect.poll(() => page.evaluate(() => window.__guideFocusCount)).toBe(4);
   });
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 360, height: 640 }]) {
     test(`home typing keeps the avatar fixed ${viewport.width}`, async ({ page }, testInfo) => {
