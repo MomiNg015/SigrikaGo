@@ -1,0 +1,30 @@
+{
+  "id": "tutorial-action-cue-samples",
+  "name": "tutorial-action-cue-samples",
+  "title": "操作引导强化提示三套交互样板",
+  "description": "",
+  "status": "in_progress",
+  "dev_type": "frontend",
+  "scope": "tutorial-action-cue-samples",
+  "package": null,
+  "priority": "P2",
+  "creator": "Moming",
+  "assignee": "Moming",
+  "createdAt": "2026-10-29",
+  "completedAt": null,
+  "branch": "master",
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "docs/design-samples/tutorial-action-cues-2026-10-29",
+    "docs/system-design.md",
+    ".trellis/spec/frontend/tutorial-action-controls.md"
+  ],
+  "notes": "Three interactive design samples completed; awaiting user selection before production integration. 27 browser cases, scoped ESLint, 4 documentation tests passed.",
+  "meta": {}
+}

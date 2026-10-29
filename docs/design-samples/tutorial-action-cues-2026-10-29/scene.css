@@ -1,0 +1,29 @@
+/* Everything below is sample-only. Production owns the board, controls and 20% mask. */
+html, body, #root, .action-cue-scene { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+.action-cue-scene { position: relative; }
+.action-cue-scene .board .tutorial-target-ring { visibility: hidden; }
+.action-cue { position: fixed; z-index: 181; pointer-events: none; color: #3d2b25; }
+.action-cue *, .action-cue *::before, .action-cue *::after { box-sizing: border-box; pointer-events: none; }
+.focus-corners { position: absolute; inset: -9px; animation: cue-focus 1900ms ease-in-out infinite; }
+.corner { position: absolute; width: 22px; height: 22px; border: 4px solid #3d2b25; filter: drop-shadow(0 0 1px #fffbf2) drop-shadow(2px 2px 0 #fff0a6); }
+.corner-tl { left: 0; top: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 7px; }
+.corner-tr { right: 0; top: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 7px; }
+.corner-bl { left: 0; bottom: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 7px; }
+.corner-br { right: 0; bottom: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 7px; }
+@keyframes cue-focus { 0%, 70%, 100% { transform: scale(1.12); } 18%, 44% { transform: scale(.96); } 30% { transform: scale(1.06); } }
+.halo-edge, .halo-wave { position: absolute; inset: -4px; border-radius: var(--cue-radius); border: 3px solid #fff0a6; box-shadow: 0 0 0 2px #3d2b25; }
+.halo-wave { border-width: 4px; animation: cue-halo 2100ms cubic-bezier(.22,.61,.36,1) infinite; }
+.halo-second { animation-delay: -1350ms; }
+.halo-edge { opacity: .95; }
+@keyframes cue-halo { 0% { transform: scale(1); opacity: .95; } 60%, 100% { transform: scale(var(--halo-x), var(--halo-y)); opacity: 0; } }
+.hand-target { position: absolute; inset: -4px; border: 3px solid #fff0a6; border-radius: var(--cue-radius); box-shadow: 0 0 0 1.5px #3d2b25; }
+.hand-anchor { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(-25deg); }
+.action-cue[data-cue-mode="actions"] .hand-anchor { top: 12px; }
+.hand-anchor.from-above { transform: rotate(var(--hand-angle)); }
+.hand-motion { position: absolute; left: -34px; top: -8px; width: 80px; height: 96px; transform-origin: 34px 8px; animation: cue-tap 1900ms ease-in-out infinite; }
+.pointing-hand { display: block; width: 80px; height: 96px; }
+.tap-rays { position: absolute; left: -35px; top: -34px; overflow: visible; fill: none; stroke: #fff0a6; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(1px 1px 0 #3d2b25); animation: cue-rays 1900ms ease-in-out infinite; }
+@keyframes cue-tap { 0%, 65%, 100% { transform: translateY(17px) rotate(6deg); } 20%, 43% { transform: translateY(0) rotate(0); } 31% { transform: translateY(10px) rotate(3deg); } }
+@keyframes cue-rays { 0%, 10%, 30%, 55%, 100% { opacity: 0; transform: scale(.8); } 20%, 43% { opacity: 1; transform: scale(1); } }
+.action-cue.is-paused *, .action-cue.is-paused *::before { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .action-cue * { animation: none !important; } .halo-wave { display: none; } .tap-rays { opacity: 1; } }

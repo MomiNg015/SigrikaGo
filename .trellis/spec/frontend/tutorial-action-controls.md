@@ -47,3 +47,7 @@ Wrong: `return <nav className="tutorial-action-bar" />` while selecting a skill 
 - Scrollport paint bounds: reserve 6px on both horizontal sides for the 4px right shadow and 5px left hover extent. Derive row width from the actual content box minus the staircase span, not a fixed pixel width that ignores scrollbar occupancy. Browser verification must compare painted shadow extents with clientWidth, including a reserved scrollbar gutter.
 
 - Mobile dialogue sits 8px below the battle stage top (about 14px below header), moving portrait and copy together. Scope to the tutorial battle root; preserve desktop and home-guide positioning.
+
+## Action-cue design samples (pending selection)
+
+`docs/design-samples/tutorial-action-cues-2026-10-29/` compares focus corners, expanding halos and a pointing-hand icon over the real tutorial. This is not a production contract change. Keep experimental decoration pointer-transparent above the existing spotlight, track the actual keycap/point, and unmount it on completion. Include static reduced-motion markers. Verify entire animated paint bounds near viewport edges, not just the target rect; short-screen previews may scroll the existing room to reveal a new target, but must not shrink the board to make a sample fit. Production adoption requires the user's selected direction.
