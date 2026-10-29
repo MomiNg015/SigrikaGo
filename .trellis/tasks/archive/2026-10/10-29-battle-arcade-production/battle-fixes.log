@@ -1,0 +1,52 @@
+
+> sigrika-go@0.1.0 verify:battle-fixes
+> node scripts/verify-battle-fixes.mjs
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/shared/game.test.js src/shared/gameSkills.test.js src/shared/characters.test.js src/shared/boardView.test.js src/shared/boardAudio.test.js src/shared/skillEffectCatalog.test.js src/shared/skillPresentation.test.js src/room/Board.test.js src/room/BoardAmbientEffects.test.js src/room/BoardSkillEffects.test.js src/room/boardSkillEffectRegistry.test.js src/room/boardSkillEffectSoundScheduler.test.js src/room/ChatBox.test.js src/room/RoomScreen.test.js src/room/actions/useRoomPointActions.test.js src/room/mobilePointConfirmation.test.js src/room/roomView.test.js server/adminDefaultSeed.test.js scripts/verificationScripts.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  22 passed (22)
+      Tests  443 passed (443)
+   Start at  10:12:11
+   Duration  16.11s (transform 2.69s, setup 0ms, import 4.50s, tests 4.61s, environment 3ms)
+
+
+> sigrika-go@0.1.0 docs:system-design
+> node scripts/render-system-design-html.mjs
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" docs/systemDesignHtml.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ docs/systemDesignHtml.test.js (4 tests | 1 failed) 111ms
+     × replaces an existing generated page without truncating it in place 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  docs/systemDesignHtml.test.js > system design html > replaces an existing generated page without truncating it in place
+Error: EPERM: operation not permitted, rename 'C:\codex\SigrikaGo\.tmp-doc-render-test\page.html.34092.1793239951528.tmp' -> 'C:\codex\SigrikaGo\.tmp-doc-render-test\page.html'
+ ❯ writeSystemDesignHtml scripts/render-system-design-html.mjs:29:5
+     27|   try {
+     28|     await writeFile(temporary, html, "utf8");
+     29|     await rename(temporary, destination);
+       |     ^
+     30|   } finally {
+     31|     await rm(temporary, { force: true });
+ ❯ docs/systemDesignHtml.test.js:27:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  10:12:31
+   Duration  549ms (transform 68ms, setup 0ms, import 98ms, tests 111ms, environment 0ms)
+

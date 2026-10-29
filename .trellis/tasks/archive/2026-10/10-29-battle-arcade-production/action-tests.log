@@ -1,0 +1,37 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/room/ActionBar.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/room/ActionBar.test.js (20 tests | 1 failed) 155ms
+     × keeps the Sigrika duel counting control visible but natively disabled 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/room/ActionBar.test.js > ActionBar helpers > keeps the Sigrika duel counting control visible but natively disabled
+AssertionError: expected '<nav class="action-bar battle-arcade-…' to match /<button class="counting-action" disab…/
+
+- Expected:
+/<button class="counting-action" disabled="" title="该对局无法数子">/
+
++ Received:
+"<nav class=\"action-bar battle-arcade-controls\" aria-label=\"对弈操作\"><button class=\"pass-action\" type=\"button\"><span class=\"action-keycap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-hand\" aria-hidden=\"true\"><path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"></path><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"></path><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"></path><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"></path></svg><span class=\"action-label mobile-action-button-label\">弃手</span></span></button><button class=\"counting-action\" title=\"该对局无法数子\" type=\"button\" disabled=\"\"><span class=\"action-keycap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-calculator\" aria-hidden=\"true\"><rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"></rect><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"></line><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"></line><path d=\"M16 10h.01\"></path><path d=\"M12 10h.01\"></path><path d=\"M8 10h.01\"></path><path d=\"M12 14h.01\"></path><path d=\"M8 14h.01\"></path><path d=\"M12 18h.01\"></path><path d=\"M8 18h.01\"></path></svg><span class=\"action-label mobile-action-button-label\">数子</span></span></button><button class=\"skill-action  \" data-skill-uses=\"1\" aria-label=\"技能，剩余 1 次\" aria-pressed=\"false\" type=\"button\"><span class=\"action-keycap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-sparkles\" aria-hidden=\"true\"><path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"></path><path d=\"M20 3v4\"></path><path d=\"M22 5h-4\"></path><path d=\"M4 17v2\"></path><path d=\"M5 18H3\"></path></svg><span class=\"action-label mobile-action-button-label\">技能</span><span class=\"skill-use-window\" aria-hidden=\"true\">01</span></span></button><button class=\"draw-action\" type=\"button\"><span class=\"action-keycap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-handshake\" aria-hidden=\"true\"><path d=\"m11 17 2 2a1 1 0 1 0 3-3\"></path><path d=\"m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4\"></path><path d=\"m21 3 1 11h-2\"></path><path d=\"M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3\"></path><path d=\"M3 4h8\"></path></svg><span class=\"action-label mobile-action-button-label\">和棋</span></span></button><button class=\"resign-action\" type=\"button\"><span class=\"action-keycap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-flag\" aria-hidden=\"true\"><path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\"></path><line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\"></line></svg><span class=\"action-label mobile-action-button-label\">认输</span></span></button></nav>"
+
+ ❯ src/room/ActionBar.test.js:116:20
+    114|     const battleStageSource = readFileSync(new URL("./RoomBattleStage.…
+    115|
+    116|     expect(markup).toMatch(/<button class="counting-action" disabled="…
+       |                    ^
+    117|     expect(markup).toContain('<button class="pass-action">');
+    118|     expect(markup).toContain('<button class="resign-action">');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  10:03:42
+   Duration  1.08s (transform 359ms, setup 0ms, import 567ms, tests 155ms, environment 0ms)
+

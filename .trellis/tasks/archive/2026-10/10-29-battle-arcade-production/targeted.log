@@ -1,0 +1,59 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/room/ActionBar.test.js src/room/ActionBar.dom.test.jsx src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/styles/cssLayerInventory.test.js (20 tests | 1 failed) 766ms
+     × records the current CSS debt baseline as a non-growth contract 181ms
+ ❯ src/styles/styleContract.test.js (58 tests | 1 failed) 778ms
+     × keeps mobile-adaptive.css as an import-only safety entry 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/styles/cssLayerInventory.test.js > CSS layer inventory > records the current CSS debt baseline as a non-growth contract
+AssertionError: totalFiles: expected 781 to be less than or equal to 778
+ ❯ src/styles/cssLayerInventory.test.js:128:32
+    126|
+    127|     for (const key of baselineKeys) {
+    128|       expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.m…
+       |                                ^
+    129|     }
+    130|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/styleContract.test.js > root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry
+AssertionError: expected [ …(97) ] to deeply equal [ …(94) ]
+
+- Expected
++ Received
+
+@@ -91,6 +91,9 @@
+    "./mobile-adaptive/card-screenprints.css",
+    "./themes/bright-school/commerce/shop/material-header.css",
+    "./themes/bright-school/commerce/shop/material-cards.css",
+    "./themes/bright-school/commerce/shop/material-dialogue.css",
+    "./themes/bright-school/commerce/shop/material-fractsidus.css",
++   "./mobile-adaptive/battle-arcade-layout.css",
++   "./mobile-adaptive/battle-arcade-keys.css",
++   "./mobile-adaptive/battle-arcade-skill.css",
+  ]
+
+ ❯ src/styles/styleContract.test.js:611:37
+    609|     const mobileEntry = readFileSync(new URL("./mobile-adaptive.css", …
+    610|
+    611|     expect(cssImports(mobileEntry)).toEqual([
+       |                                     ^
+    612|       "./mobile-adaptive/desktop-home-footer.css",
+    613|       "./mobile-adaptive/admin-fullscreen.css",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 3 passed (5)
+      Tests  2 failed | 138 passed (140)
+   Start at  10:05:54
+   Duration  6.86s (transform 683ms, setup 0ms, import 1.41s, tests 2.31s, environment 1.69s)
+
