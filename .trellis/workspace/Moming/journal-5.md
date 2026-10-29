@@ -800,3 +800,36 @@ Continue uses original yellow; tutorial skill is gray outside the required skill
 ### Next Steps
 
 - None - task complete
+
+
+## Session 265: 操作引导三套交互样板
+
+**Date**: 2026-10-29
+**Task**: 操作引导三套交互样板
+**Branch**: `master`
+
+### Summary
+
+完成收拢聚焦、扩散光圈、手绘点按三套可切换样板，直接复用真实教学组件并保留20%聚焦遮罩。覆盖技能、数子、棋盘落点以及390/320/1440视口；27组浏览器验证、暂停重试与减少动态效果、ESLint、4项文档测试通过。仅样板，等待用户选定方向再正式接入。保留其它窗口的未提交工作。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d9677286` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
