@@ -1,0 +1,146 @@
+[
+  {
+    "width": 1440,
+    "state": "skill",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 1440,
+    "state": "pass",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 1440,
+    "state": "counting",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 1440,
+    "state": "draw",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 1440,
+    "state": "resign",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 1440,
+    "state": "choices",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "skill",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "pass",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "counting",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "draw",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "resign",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 390,
+    "state": "choices",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "skill",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "pass",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "counting",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "draw",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "resign",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  },
+  {
+    "width": 320,
+    "state": "choices",
+    "outline": "none",
+    "decoration": "none",
+    "focus": true,
+    "mask": true
+  }
+]
