@@ -1,0 +1,412 @@
+{
+  "checks": [
+    {
+      "variant": "round",
+      "width": 900,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 62,
+          "height": 62,
+          "left": 213,
+          "right": 275
+        },
+        {
+          "name": "count",
+          "width": 88,
+          "height": 88,
+          "left": 289,
+          "right": 377
+        },
+        {
+          "name": "skill",
+          "width": 118,
+          "height": 118,
+          "left": 391,
+          "right": 509
+        },
+        {
+          "name": "draw",
+          "width": 62,
+          "height": 62,
+          "left": 625,
+          "right": 687
+        },
+        {
+          "name": "resign",
+          "width": 88,
+          "height": 88,
+          "left": 523,
+          "right": 611
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "round",
+      "width": 390,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 44,
+          "height": 44,
+          "left": 31,
+          "right": 75
+        },
+        {
+          "name": "count",
+          "width": 60,
+          "height": 60,
+          "left": 82,
+          "right": 142
+        },
+        {
+          "name": "skill",
+          "width": 92,
+          "height": 92,
+          "left": 149,
+          "right": 241
+        },
+        {
+          "name": "draw",
+          "width": 44,
+          "height": 44,
+          "left": 315,
+          "right": 359
+        },
+        {
+          "name": "resign",
+          "width": 60,
+          "height": 60,
+          "left": 248,
+          "right": 308
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "round",
+      "width": 320,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 44,
+          "height": 44,
+          "left": 21,
+          "right": 65
+        },
+        {
+          "name": "count",
+          "width": 48,
+          "height": 48,
+          "left": 70,
+          "right": 118
+        },
+        {
+          "name": "skill",
+          "width": 74,
+          "height": 74,
+          "left": 123,
+          "right": 197
+        },
+        {
+          "name": "draw",
+          "width": 44,
+          "height": 44,
+          "left": 255,
+          "right": 299
+        },
+        {
+          "name": "resign",
+          "width": 48,
+          "height": 48,
+          "left": 202,
+          "right": 250
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "keys",
+      "width": 900,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 88.40625,
+          "height": 53,
+          "left": 138,
+          "right": 226.40625
+        },
+        {
+          "name": "count",
+          "width": 106.109375,
+          "height": 68,
+          "left": 235.40625,
+          "right": 341.515625
+        },
+        {
+          "name": "skill",
+          "width": 198.953125,
+          "height": 100,
+          "left": 350.515625,
+          "right": 549.46875
+        },
+        {
+          "name": "draw",
+          "width": 88.421875,
+          "height": 53,
+          "left": 673.578125,
+          "right": 762
+        },
+        {
+          "name": "resign",
+          "width": 106.109375,
+          "height": 68,
+          "left": 558.46875,
+          "right": 664.578125
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "keys",
+      "width": 390,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 91.828125,
+          "height": 44,
+          "left": 174.328125,
+          "right": 266.15625
+        },
+        {
+          "name": "count",
+          "width": 91.828125,
+          "height": 52,
+          "left": 174.328125,
+          "right": 266.15625
+        },
+        {
+          "name": "skill",
+          "width": 142.328125,
+          "height": 104,
+          "left": 24,
+          "right": 166.328125
+        },
+        {
+          "name": "draw",
+          "width": 91.84375,
+          "height": 44,
+          "left": 274.15625,
+          "right": 366
+        },
+        {
+          "name": "resign",
+          "width": 91.84375,
+          "height": 52,
+          "left": 274.15625,
+          "right": 366
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "keys",
+      "width": 320,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 72.109375,
+          "height": 44,
+          "left": 143.765625,
+          "right": 215.875
+        },
+        {
+          "name": "count",
+          "width": 72.109375,
+          "height": 52,
+          "left": 143.765625,
+          "right": 215.875
+        },
+        {
+          "name": "skill",
+          "width": 111.765625,
+          "height": 104,
+          "left": 24,
+          "right": 135.765625
+        },
+        {
+          "name": "draw",
+          "width": 72.125,
+          "height": 44,
+          "left": 223.875,
+          "right": 296
+        },
+        {
+          "name": "resign",
+          "width": 72.125,
+          "height": 52,
+          "left": 223.875,
+          "right": 296
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "pod",
+      "width": 900,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 100.046875,
+          "height": 52,
+          "left": 148,
+          "right": 248.046875
+        },
+        {
+          "name": "count",
+          "width": 135.359375,
+          "height": 82,
+          "left": 261.046875,
+          "right": 396.40625
+        },
+        {
+          "name": "skill",
+          "width": 194.21875,
+          "height": 110,
+          "left": 557.765625,
+          "right": 751.984375
+        },
+        {
+          "name": "draw",
+          "width": 100.046875,
+          "height": 52,
+          "left": 148,
+          "right": 248.046875
+        },
+        {
+          "name": "resign",
+          "width": 135.359375,
+          "height": 82,
+          "left": 409.40625,
+          "right": 544.765625
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "pod",
+      "width": 390,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 92.390625,
+          "height": 44,
+          "left": 27,
+          "right": 119.390625
+        },
+        {
+          "name": "count",
+          "width": 92.390625,
+          "height": 60,
+          "left": 27,
+          "right": 119.390625
+        },
+        {
+          "name": "skill",
+          "width": 131.203125,
+          "height": 112,
+          "left": 231.78125,
+          "right": 362.984375
+        },
+        {
+          "name": "draw",
+          "width": 92.390625,
+          "height": 44,
+          "left": 129.390625,
+          "right": 221.78125
+        },
+        {
+          "name": "resign",
+          "width": 92.390625,
+          "height": 60,
+          "left": 129.390625,
+          "right": 221.78125
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    },
+    {
+      "variant": "pod",
+      "width": 320,
+      "overflow": false,
+      "buttons": [
+        {
+          "name": "pass",
+          "width": 71.921875,
+          "height": 44,
+          "left": 27,
+          "right": 98.921875
+        },
+        {
+          "name": "count",
+          "width": 71.921875,
+          "height": 60,
+          "left": 27,
+          "right": 98.921875
+        },
+        {
+          "name": "skill",
+          "width": 102.140625,
+          "height": 112,
+          "left": 190.859375,
+          "right": 293
+        },
+        {
+          "name": "draw",
+          "width": 71.9375,
+          "height": 44,
+          "left": 108.921875,
+          "right": 180.859375
+        },
+        {
+          "name": "resign",
+          "width": 71.9375,
+          "height": 60,
+          "left": 108.921875,
+          "right": 180.859375
+        }
+      ],
+      "fontLoaded": true,
+      "interactions": "passed",
+      "states": "passed"
+    }
+  ],
+  "preview": "passed",
+  "reducedMotionAndKeyboard": "passed",
+  "errors": []
+}

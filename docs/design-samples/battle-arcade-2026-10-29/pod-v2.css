@@ -1,0 +1,143 @@
+/* Selected direction: local sample only. IRIS uses its actual existing font files. */
+@font-face {
+  font-family: "Sigrika Accent Latin";
+  src: url("../../../public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
+}
+
+@font-face {
+  font-family: "IRIS Dotted Songti Circle";
+  src: url("../../../public/assets/fonts/DottedSongtiCircleRegular.otf") format("opentype");
+  font-display: swap;
+  font-weight: 400;
+}
+
+:root {
+  --font-iris-dotted: "IRIS Dotted Songti Circle", serif;
+  --font-iris-mixed: "Sigrika Accent Latin", var(--font-iris-dotted);
+}
+
+.pod.controls-shell {
+  padding-bottom: 16px;
+}
+
+.pod .skill {
+  --base: #8d718d;
+  --key-ink: #3d2b25;
+}
+
+.pod .skill .key-face {
+  gap: 8px;
+  padding: 32px 14px 14px;
+  background: linear-gradient(125deg, #ffb6ce 2%, #ffdba4 25%, #f3edaa 41%, #bde9cf 57%, #b2dff1 75%, #cebaf0 97%);
+  box-shadow: inset 0 3px 0 #ffffffa6, inset 0 -4px 0 #6043621a;
+}
+
+.pod .skill svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pod .skill .key-title {
+  max-width: 100%;
+  font-size: 21px;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.pod .skill.long-name .key-title {
+  font-size: 14px;
+}
+
+.pod .skill.long-name svg {
+  display: none;
+}
+
+.pod .skill .use-count {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  top: 5px;
+  right: 9px;
+  min-width: 46px;
+  height: 28px;
+  padding: 3px 7px;
+  border: 1px solid #16b8dd;
+  border-radius: 0;
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+  background: repeating-linear-gradient(0deg, transparent 0 3px, #7ce9ff12 3px 4px), #021420;
+  color: #7ce9ff;
+  font: 400 20px/1 var(--font-iris-mixed);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+  box-shadow: inset 0 0 0 2px #05273b;
+}
+
+.pod .skill .use-count::before {
+  content: "";
+  width: 3px;
+  height: 3px;
+  background: #42f2a1;
+  flex-shrink: 0;
+}
+
+/* Availability and turn lock are independent: only zero uses removes the rainbow. */
+.pod .skill[data-uses="0"] {
+  --base: #aaa59d;
+}
+
+.pod .skill[data-uses="0"] .key-face {
+  background: #d9d7d1;
+  color: #625b52;
+  box-shadow: inset 0 3px 0 #ffffff80, inset 0 -4px 0 #0000000d;
+}
+
+.pod .skill[data-uses="0"] .use-count {
+  background: #363c3e;
+  border-color: #8b9698;
+  color: #e0e6e7;
+  box-shadow: inset 0 0 0 2px #464d4f;
+}
+
+.pod .skill[data-uses="0"] .use-count::before {
+  background: #aeb8b9;
+}
+
+.pod .skill:disabled:not([data-uses="0"]) .key-title {
+  color: var(--ink);
+}
+
+.pod .skill-status {
+  display: none;
+}
+
+/* Stable bases, moving caps. Keep a short visible press on a quick tap too. */
+.controls-shell .action.is-pressed:not(:disabled) .key-face {
+  transform: translateY(2px);
+  transition-duration: 35ms;
+}
+
+@media (max-width: 520px) {
+  .pod.controls-shell { padding-bottom: 12px; }
+  .pod .skill .key-face { padding: 32px 8px 9px; gap: 7px; }
+  .pod .skill .key-title { font-size: 19px; }
+  .pod .skill .use-count { top: 5px; right: 6px; min-width: 41px; height: 26px; font-size: 18px; }
+  .pod .skill.long-name .key-title { font-size: 13px; }
+}
+
+@media (max-width: 350px) {
+  .pod .skill .key-title { font-size: 17px; }
+  .pod .skill.long-name .key-title { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controls-shell .action.is-pressed:not(:disabled) .key-face {
+    transition: none;
+  }
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f2e9">
+  <title>对弈控制台 · 三种街机提案</title>
+  <link rel="stylesheet" href="./sample.css">
+  <link rel="stylesheet" href="./pod-v2.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a class="wordmark" href="./index.html">SigrikaGo<span>设计试验室 / 029</span></a>
+    <span class="sample-mark">独立交互样板</span>
+  </header>
+  <main class="studio">
+    <section class="intro">
+      <div><p class="eyebrow">对弈功能区 · ARCADE CONTROLS</p><h1>让每一次出手，都有手感。</h1></div>
+      <p class="brief">学院纸感 × 街机按键<br>技能领衔，数目与认输次之，弃手与和棋轻量收尾。</p>
+    </section>
+    <nav class="directions" aria-label="选择样板">
+      <button data-variant="round" aria-pressed="false"><span>01</span><strong>圆帽街机</strong><small>经典圆键 · 中央主角</small></button>
+      <button data-variant="keys" aria-pressed="false"><span>02</span><strong>阶梯键组</strong><small>厚切键帽 · 高低错落</small></button>
+      <button data-variant="pod" aria-pressed="true"><span>03</span><strong>掌机控制舱</strong><small>已选方向 · 彩虹技能键</small></button>
+    </nav>
+    <div class="preview-tools">
+      <p id="direction-note">角色技能名直接入键；右上 IRIS 次数窗口；有次数为彩虹，耗尽为灰色。</p>
+      <div class="toggles"><label>状态<select id="state"><option value="ready">技能可用</option><option value="waiting">对手回合</option><option value="spent">次数耗尽</option><option value="long">长技能名</option></select></label><button id="reset">重置演示</button></div>
+    </div>
+    <section class="comparison" aria-label="桌面与手机预览">
+      <div class="preview-column desktop-column"><div class="frame-label"><span>桌面 · 功能区实尺寸</span><span>宽 720px</span></div><iframe id="desktop-frame" title="桌面样板" src="./index.html?scene&variant=pod"></iframe></div>
+      <div class="preview-column phone-column"><div class="frame-label"><span>手机 · 竖屏</span><label><select id="phone-width" aria-label="手机预览宽度"><option value="390">390px</option><option value="320">320px</option></select></label></div><iframe id="phone-frame" title="手机样板" src="./index.html?scene&variant=pod"></iframe></div>
+    </section>
+    <section class="design-notes" aria-label="设计说明"><div><span>视觉层级</span><p id="hierarchy-note">技能：彩虹主键 / IRIS 次数窗口<br>数目、认输：蓝与陶红 / 中体量<br>弃手、和棋：奶白 / 小体量</p></div><div><span>交互手感</span><p>每个按键都有下沉与回弹。<br>技能选中保留压入态；认输二次确认。<br>全部可点，演示不会操作真实对局。</p></div><div><span id="tradeoff-title">03 / 掌机控制舱</span><p id="tradeoff">技能名直接置于主键，右上角显示剩余次数。<br>有次数为彩虹渐变，耗尽变灰。</p></div></section>
+  </main>
+  <script type="module" src="./sample.js"></script>
+</body>
+</html>
