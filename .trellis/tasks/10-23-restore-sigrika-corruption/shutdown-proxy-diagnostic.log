@@ -1,0 +1,17 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" scripts/devApiProxy.integration.test.js --testTimeout=20000
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ scripts/devApiProxy.integration.test.js (4 tests) 10355ms
+   ✓ local announcement API proxy recovery > reproduces the original empty non-JSON response with Vite's default proxy  2534ms
+   ✓ local announcement API proxy recovery > completes the first authenticated announcement read when the backend starts during recovery  5473ms
+   ✓ local announcement API proxy recovery > recovers a first-request socket reset without reopening the announcement  2243ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  10:27:17
+   Duration  11.42s (transform 61ms, setup 0ms, collect 590ms, tests 10.35s, environment 0ms, prepare 120ms)
+

@@ -1,0 +1,308 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dialog": {
+      "x": 440,
+      "y": 191,
+      "width": 560,
+      "height": 548,
+      "top": 191,
+      "right": 1000,
+      "bottom": 739,
+      "left": 440
+    },
+    "close": {
+      "rect": {
+        "x": 941,
+        "y": 210,
+        "width": 36,
+        "height": 36,
+        "top": 210,
+        "right": 977,
+        "bottom": 246,
+        "left": 941
+      },
+      "width": "36px",
+      "height": "36px",
+      "minHeight": "36px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "auto",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "bust": {
+      "rect": {
+        "x": 757,
+        "y": 521,
+        "width": 240,
+        "height": 218,
+        "top": 521,
+        "right": 997,
+        "bottom": 739,
+        "left": 757
+      },
+      "width": "240px",
+      "height": "218px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "-13px",
+      "overflow": "hidden",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "image": {
+      "rect": {
+        "x": 757,
+        "y": 505.75,
+        "width": 240,
+        "height": 350.765625,
+        "top": 505.75,
+        "right": 997,
+        "bottom": 856.515625,
+        "left": 757
+      },
+      "width": "240px",
+      "height": "350.766px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "-15.25px",
+      "overflow": "clip",
+      "objectFit": "fill",
+      "transform": "none",
+      "naturalWidth": 832,
+      "naturalHeight": 1216
+    },
+    "bubble": {
+      "rect": {
+        "x": 469,
+        "y": 572,
+        "width": 260,
+        "height": 117.171875,
+        "top": 572,
+        "right": 729,
+        "bottom": 689.171875,
+        "left": 469
+      },
+      "width": "260px",
+      "height": "117.172px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "17px 20px",
+      "top": "0px",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    }
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "dialog": {
+      "x": 12,
+      "y": 48,
+      "width": 366,
+      "height": 528,
+      "top": 48,
+      "right": 378,
+      "bottom": 576,
+      "left": 12
+    },
+    "close": {
+      "rect": {
+        "x": 325,
+        "y": 63,
+        "width": 36,
+        "height": 36,
+        "top": 63,
+        "right": 361,
+        "bottom": 99,
+        "left": 325
+      },
+      "width": "36px",
+      "height": "36px",
+      "minHeight": "36px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "auto",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "bust": {
+      "rect": {
+        "x": 187.8125,
+        "y": 405.984375,
+        "width": 187.1875,
+        "height": 170.015625,
+        "top": 405.984375,
+        "right": 375,
+        "bottom": 576,
+        "left": 187.8125
+      },
+      "width": "187.188px",
+      "height": "170.016px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "38.9844px",
+      "overflow": "hidden",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "image": {
+      "rect": {
+        "x": 187.8125,
+        "y": 394.09375,
+        "width": 187.1875,
+        "height": 273.578125,
+        "top": 394.09375,
+        "right": 375,
+        "bottom": 667.671875,
+        "left": 187.8125
+      },
+      "width": "187.188px",
+      "height": "273.578px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "-11.8906px",
+      "overflow": "clip",
+      "objectFit": "fill",
+      "transform": "none",
+      "naturalWidth": 832,
+      "naturalHeight": 1216
+    },
+    "bubble": {
+      "rect": {
+        "x": 29,
+        "y": 389,
+        "width": 148.796875,
+        "height": 159.953125,
+        "top": 389,
+        "right": 177.796875,
+        "bottom": 548.953125,
+        "left": 29
+      },
+      "width": "148.797px",
+      "height": "159.953px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "12px",
+      "top": "0px",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    }
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "dialog": {
+      "x": 12,
+      "y": 48,
+      "width": 296,
+      "height": 576.734375,
+      "top": 48,
+      "right": 308,
+      "bottom": 624.734375,
+      "left": 12
+    },
+    "close": {
+      "rect": {
+        "x": 255,
+        "y": 63,
+        "width": 36,
+        "height": 36,
+        "top": 63,
+        "right": 291,
+        "bottom": 99,
+        "left": 255
+      },
+      "width": "36px",
+      "height": "36px",
+      "minHeight": "36px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "auto",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "bust": {
+      "rect": {
+        "x": 151,
+        "y": 484.859375,
+        "width": 154,
+        "height": 139.875,
+        "top": 484.859375,
+        "right": 305,
+        "bottom": 624.734375,
+        "left": 151
+      },
+      "width": "154px",
+      "height": "139.875px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "117.859px",
+      "overflow": "hidden",
+      "objectFit": "fill",
+      "transform": "none"
+    },
+    "image": {
+      "rect": {
+        "x": 151,
+        "y": 475.078125,
+        "width": 154,
+        "height": 225.0625,
+        "top": 475.078125,
+        "right": 305,
+        "bottom": 700.140625,
+        "left": 151
+      },
+      "width": "154px",
+      "height": "225.062px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "0px",
+      "top": "-9.78125px",
+      "overflow": "clip",
+      "objectFit": "fill",
+      "transform": "none",
+      "naturalWidth": 832,
+      "naturalHeight": 1216
+    },
+    "bubble": {
+      "rect": {
+        "x": 29,
+        "y": 389,
+        "width": 112,
+        "height": 212.734375,
+        "top": 389,
+        "right": 141,
+        "bottom": 601.734375,
+        "left": 29
+      },
+      "width": "112px",
+      "height": "212.734px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": "12px",
+      "top": "0px",
+      "overflow": "visible",
+      "objectFit": "fill",
+      "transform": "none"
+    }
+  }
+]

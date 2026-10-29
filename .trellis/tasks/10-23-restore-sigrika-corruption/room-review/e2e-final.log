@@ -1,0 +1,16 @@
+
+Running 7 tests using 1 worker
+
+(node:24024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\e2e\interface-polish.spec.js:403:3 › playing special duel keeps the board, authored art and actions reachable at 844 (2.3s)
+  ok 2 tests\e2e\interface-polish.spec.js:403:3 › playing special duel keeps the board, authored art and actions reachable at 768 (1.8s)
+  ok 3 tests\e2e\interface-polish.spec.js:443:3 › special duel current paper layout and controls at 1440 (1.9s)
+  ok 4 tests\e2e\interface-polish.spec.js:443:3 › special duel current paper layout and controls at 1280 (1.9s)
+  ok 5 tests\e2e\interface-polish.spec.js:443:3 › special duel current paper layout and controls at 430 (2.0s)
+  ok 6 tests\e2e\interface-polish.spec.js:443:3 › special duel current paper layout and controls at 390 (1.9s)
+  ok 7 tests\e2e\interface-polish.spec.js:443:3 › special duel current paper layout and controls at 320 (1.9s)
+
+  7 passed (15.8s)

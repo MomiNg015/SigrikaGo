@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app/App.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  1 passed (1)
+      Tests  19 passed (19)
+   Start at  09:27:53
+   Duration  532ms (transform 36ms, setup 0ms, import 60ms, tests 23ms, environment 0ms)
+

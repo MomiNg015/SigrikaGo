@@ -1,0 +1,132 @@
+[
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\negative-entry.css",
+    "line": 30,
+    "snippet": "Undocumented color rgb(20 19 22 / 0.96) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(20 19 22 / 0.96)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\negative-entry.css",
+    "line": 31,
+    "snippet": "Undocumented color rgb(0 0 0 / 0.45) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(0 0 0 / 0.45)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\negative-entry.css",
+    "line": 39,
+    "snippet": "Undocumented color rgb(247 242 234) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(247 242 234)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\negative-entry.css",
+    "line": 51,
+    "snippet": "Undocumented color rgb(247 242 234) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(247 242 234)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\negative-entry.css",
+    "line": 53,
+    "snippet": "Undocumented color rgb(54 44 49) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(54 44 49)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\handbook-cards.css",
+    "line": 4,
+    "snippet": "Undocumented color rgb(33 29 31) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(33 29 31)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\handbook-cards.css",
+    "line": 24,
+    "snippet": "Undocumented color rgb(126 122 123) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(126 122 123)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\handbook-cards.css",
+    "line": 44,
+    "snippet": "Undocumented color rgb(115 40 55) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(115 40 55)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\handbook-cards.css",
+    "line": 50,
+    "snippet": "Undocumented color rgb(255 240 231) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(255 240 231)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\handbook-cards.css",
+    "line": 77,
+    "snippet": "Undocumented color rgb(74 21 33) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(74 21 33)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\home-duel-entry.css",
+    "line": 15,
+    "snippet": "Undocumented color rgb(132 31 50 / 0.22) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(132 31 50 / 0.22)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\home-duel-entry.css",
+    "line": 35,
+    "snippet": "Undocumented color rgb(255 240 231) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(255 240 231)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "file": "C:\\codex\\SigrikaGo\\src\\styles\\mobile-adaptive\\sigrika-corruption\\home-duel-entry.css",
+    "line": 38,
+    "snippet": "Undocumented color rgb(126 28 47) is outside DESIGN.md colors",
+    "ignoreValue": "rgb(126 28 47)"
+  }
+]

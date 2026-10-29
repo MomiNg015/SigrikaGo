@@ -1,0 +1,30 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/shared/preloadAssets.test.js src/shared/preloadReadiness.test.js src/app/BattleAssetPreloadScreen.dom.test.jsx src/app/homeReadyPreload.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/shared/preloadAssets.test.js (30 tests | 1 failed) 104ms
+     × preloads the current battle display catalog while retaining frozen costume precedence 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/shared/preloadAssets.test.js > deployment preload asset helpers > preloads the current battle display catalog while retaining frozen costume precedence
+AssertionError: expected [ …(22) ] to not include '/stale-denia.webp'
+ ❯ src/shared/preloadAssets.test.js:115:39
+    113|     expect(assets.criticalImages).toContain("/frozen-denia.webp");
+    114|     expect(assets.criticalImages).not.toContain("/assets/characters/ha…
+    115|     expect(assets.criticalImages).not.toContain("/stale-denia.webp");
+       |                                       ^
+    116|   });
+    117|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 37 passed (38)
+   Start at  09:24:13
+   Duration  3.78s (transform 540ms, setup 0ms, import 979ms, tests 378ms, environment 1.20s)
+

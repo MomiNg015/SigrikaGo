@@ -1,0 +1,72 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app/BattleAssetPreloadScreen.dom.test.jsx src/app/homeReadyPreload.test.js src/styles/cssLayerInventory.test.js src/modals/SettingsModal.test.jsx src/tutorial/TutorialBattleScreen.test.jsx
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/app/homeReadyPreload.test.js (1 test | 1 failed) 15ms
+   × waits for window modules and fonts, and propagates a failed readiness dependency 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/homeReadyPreload.test.js > waits for window modules and fonts, and propagates a failed readiness dependency
+AssertionError: expected "vi.fn()" to be called with arguments: [ Array(1) ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
++   "400 16px \"Sigrika Window Title\"",
++   0,
++   [
++     "400 16px \"Sigrika Window Title\"",
++     "400 16px \"Sigrika Accent Latin\"",
+      "400 16px \"IRIS Dotted Songti Circle\"",
++   ],
+  ]
+
+  2nd vi.fn() call:
+
+  [
++   "400 16px \"Sigrika Accent Latin\"",
++   1,
++   [
++     "400 16px \"Sigrika Window Title\"",
++     "400 16px \"Sigrika Accent Latin\"",
+      "400 16px \"IRIS Dotted Songti Circle\"",
++   ],
+  ]
+
+  3rd vi.fn() call:
+
+  [
+    "400 16px \"IRIS Dotted Songti Circle\"",
++   2,
++   [
++     "400 16px \"Sigrika Window Title\"",
++     "400 16px \"Sigrika Accent Latin\"",
++     "400 16px \"IRIS Dotted Songti Circle\"",
++   ],
+  ]
+
+
+Number of calls: 3
+
+ ❯ src/app/homeReadyPreload.test.js:10:20
+      8|   await Promise.resolve();
+      9|   expect(ready).toBe(false);
+     10|   expect(loadFont).toHaveBeenCalledWith('400 16px "IRIS Dotted Songti …
+       |                    ^
+     11|   release(); await pending;
+     12|   expect(ready).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 51 passed (52)
+   Start at  09:21:11
+   Duration  6.03s (transform 740ms, setup 0ms, import 1.43s, tests 1.01s, environment 1.70s)
+

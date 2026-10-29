@@ -1,0 +1,16 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/audio/backgroundMusic.dom.test.jsx src/audio/playback.test.jsx src/audio/CharacterMusicPreview.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/audio/CharacterMusicPreview.dom.test.jsx (9 tests) 465ms
+ ✓ src/audio/backgroundMusic.dom.test.jsx (2 tests) 216ms
+ ✓ src/audio/playback.test.jsx (14 tests) 17ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  20:48:36
+   Duration  5.65s (transform 256ms, setup 0ms, collect 904ms, tests 698ms, environment 2.73s, prepare 384ms)
+

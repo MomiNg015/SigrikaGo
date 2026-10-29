@@ -1,0 +1,19 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app/App.test.js src/modals/HouseModal.test.js src/modals/house/HouseHandbook.dom.test.jsx src/styles/cssLayerInventory.test.js scripts/checkBuiltCssContracts.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/house/HouseHandbook.dom.test.jsx (8 tests) 885ms
+   ✓ member handbook pages > switches the visible page through bookmarks and keeps decoration actions working  384ms
+ ✓ src/modals/HouseModal.test.js (27 tests) 671ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 809ms
+ ✓ src/app/App.test.js (19 tests) 14ms
+ ✓ scripts/checkBuiltCssContracts.test.js (4 tests) 8ms
+
+ Test Files  5 passed (5)
+      Tests  78 passed (78)
+   Start at  20:56:45
+   Duration  9.02s (transform 1.11s, setup 0ms, collect 3.06s, tests 2.39s, environment 1.42s, prepare 596ms)
+

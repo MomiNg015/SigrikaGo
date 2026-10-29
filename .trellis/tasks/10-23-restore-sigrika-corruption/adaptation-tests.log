@@ -1,0 +1,28 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app/useSigrikaCorruptionTransition.dom.test.jsx src/app/SigrikaCorruptionTransition.dom.test.jsx src/app/AppOverlays.dom.test.jsx src/modals/house/HouseCharacterGrid.dom.test.jsx src/modals/warehouse/useWarehouseInventory.dom.test.jsx src/audio/backgroundMusic.dom.test.jsx src/audio/backgroundMusicPause.test.js src/styles/styleContract.test.js src/styles/cssLayerInventory.test.js scripts/checkBuiltCssContracts.test.js server/sigrikaCandyArc.test.js server/commerceRoutes.test.js src/modals/StoryPlayerModal.dom.test.jsx src/modals/WarehouseModal.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/modals/warehouse/useWarehouseInventory.dom.test.jsx (9 tests) 811ms
+ ✓ src/modals/house/HouseCharacterGrid.dom.test.jsx (18 tests) 709ms
+ ✓ src/app/AppOverlays.dom.test.jsx (3 tests) 608ms
+   ✓ independent lazy overlay loading > blocks both customization overlays and their entry callbacks during the internal test  510ms
+ ✓ src/audio/backgroundMusic.dom.test.jsx (2 tests) 219ms
+ ✓ src/app/SigrikaCorruptionTransition.dom.test.jsx (3 tests) 189ms
+ ✓ src/modals/StoryPlayerModal.dom.test.jsx (7 tests) 136ms
+ ✓ src/app/useSigrikaCorruptionTransition.dom.test.jsx (6 tests) 44ms
+ ✓ src/styles/styleContract.test.js (58 tests) 881ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 953ms
+ ✓ src/modals/WarehouseModal.test.js (13 tests) 294ms
+ ✓ server/sigrikaCandyArc.test.js (9 tests) 13ms
+ ✓ server/commerceRoutes.test.js (8 tests) 9ms
+ ✓ scripts/checkBuiltCssContracts.test.js (3 tests) 5ms
+ ✓ src/audio/backgroundMusicPause.test.js (2 tests) 4ms
+
+ Test Files  14 passed (14)
+      Tests  161 passed (161)
+   Start at  20:44:14
+   Duration  26.72s (transform 1.80s, setup 0ms, collect 6.54s, tests 4.87s, environment 9.80s, prepare 1.60s)
+

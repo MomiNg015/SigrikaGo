@@ -1,0 +1,222 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot -- --isolated && npm run build && npm run check:built-css && node -e "process.env.NODE_ENV='production';process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+ ❯ src/styles/styleContract.test.js (58 tests | 1 failed) 1058ms
+     × keeps room.css as an import-only domain entry 25ms
+ ❯ src/app/App.test.js (19 tests | 1 failed) 38ms
+     × uses the bandwidth-first login preload concurrency 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/App.test.js > App startup preload wiring > uses the bandwidth-first login preload concurrency
+AssertionError: expected 'import { useEffect } from "react";\r\…' to contain 'retrySkippedPreloadAssets(skippedAsse…'
+
+- Expected
++ Received
+
+- retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 })
++ import { useEffect } from "react";
++ import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
++ import { api } from "../api/client.js";
++ import { loginPreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
++ import { preloadHomeReady } from "./homeReadyPreload.js";
++ import { loadPublicCharacterCatalog } from "./characterCatalog.js";
++ import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
++ import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
++ import { LOGIN_LOADING_COMPLETE_MS } from "./loginLoadingAssets.js";
++ 
++ export function useStartupPreload({
++   fallbackCharacters,
++   retryKey = 0,
++   setStartupError = () => {},
++   matchSuccessRef,
++   refreshSiteSettings,
++   roomRef,
++   setAssetProgress,
++   setCharacters,
++   setLobbyStats,
++   setMatchStart,
++   setMatchSuccess,
++   setMusicTracks,
++   setRoom,
++   setShowHouse,
++   setShowLeaderboard,
++   setShowShop,
++   setShowWarehouse,
++   setShowWatch,
++   setToken,
++   setUser,
++   setView,
++   token,
++   viewRef
++ }) {
++   useEffect(() => {
++     if (!token) return;
++     let cancelled = false;
++     let cancelHold = () => {};
++     api("/api/me", { token })
++       .then(async (data) => {
++         if (cancelled) return;
++         setStartupError(null);
++         setUser(data.user);
++         if (shouldShowStartupPreload({
++           room: roomRef.current,
++           matchSuccess: matchSuccessRef.current
++         })) {
++           setView("preloading");
++         }
++         setAssetProgress(0);
++         const [nextCharacters, nextMusicTracks, shopData, inventoryData, recruitmentData] = await Promise.all([
++           loadPublicCharacterCatalog({ token }),
++           loadMusicTrackCatalog({ token }).catch((error) => {
++             if (error.status === 401 || error.status === 403) throw error;
++             return MUSIC_TRACKS;
++           }),
++           api("/api/shop", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
++           api("/api/items/inventory", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
++           api("/api/recruitment", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] }))
++         ]);
++         if (cancelled) return;
++         setCharacters(nextCharacters);
++         setMusicTracks(nextMusicTracks);
++         await Promise.all([preloadHomeReady(), preloadLoginAssets(loginPreloadAssets({
++           characters: nextCharacters,
++           user: data.user,
++           shopItems: shopData.items ?? [],
++           inventoryItems: [
++             ...(inventoryData.items ?? []),
++             ...(recruitmentData.items ?? [])
++           ],
++           tracks: nextMusicTracks
++         }), {
++           concurrency: 6,
++           taskTimeoutMs: 20000,
++           requireComplete: true,
++           onProgress: (progress) => {
++             if (!cancelled) setAssetProgress(Math.min(progress, 0.99));
++           }
++         })]);
++         await refreshSiteSettings();
++         if (cancelled) return;
++         setAssetProgress(1);
++         if (shouldFinishPreloadAsHome({ view: viewRef.current, room: roomRef.current, matchSuccess: matchSuccessRef.current })) {
++           await new Promise((resolve) => {
++             const timer = setTimeout(resolve, LOGIN_LOADING_COMPLETE_MS);
++             cancelHold = () => { clearTimeout(timer); resolve(); };
++           });
++         }
++         if (!cancelled && shouldFinishPreloadAsHome({
++           view: viewRef.current,
++           room: roomRef.current,
++           matchSuccess: matchSuccessRef.current
++         })) {
++           setView("home");
++         }
++       })
++       .catch((error) => {
++         if (cancelled) return;
++         if (error.status !== 401 && error.status !== 403) {
++           setStartupError({ source: "preload", message: "资源尚未加载完成，请检查网络后重试" });
++           if (shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })) setView("preloading");
++           return;
++         }
++         setStartupError(null);
++         setToken("");
++         setUser(null);
++         setRoom(null);
++         setMatchStart(null);
++         setMatchSuccess(null);
++         setShowShop(false);
++         setShowHouse(false);
++         setShowWarehouse(false);
++         setShowLeaderboard(false);
++         setShowWatch(false);
++         setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
++         setView("login");
++         setCharacters(fallbackCharacters);
++       });
++     return () => {
++       cancelled = true;
++       cancelHold();
++     };
++   }, [
++     retryKey,
++     setStartupError,
++     fallbackCharacters,
++     matchSuccessRef,
++     refreshSiteSettings,
++     roomRef,
++     setAssetProgress,
++     setCharacters,
++     setLobbyStats,
++     setMatchStart,
++     setMatchSuccess,
++     setMusicTracks,
++     setRoom,
++     setShowHouse,
++     setShowLeaderboard,
++     setShowShop,
++     setShowWarehouse,
++     setShowWatch,
++     setToken,
++     setUser,
++     setView,
++     token,
++     viewRef
++   ]);
++ }
++
+
+ ❯ src/app/App.test.js:42:20
+     40|
+     41|     expect(source).toContain("concurrency: 6");
+     42|     expect(source).toContain("requireComplete: true");
+       |                    ^
+     43|     expect(source).toContain("preloadHomeReady()");
+     44|     expect(source).not.toContain("retrySkippedPreloadAssets");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/styles/styleContract.test.js > root CSS entry contract > keeps room.css as an import-only domain entry
+AssertionError: expected [ …(7) ] to deeply equal [ …(6) ]
+
+- Expected
++ Received
+
+@@ -3,6 +3,7 @@
+    "./tutorial-battle-screen/actions-targets.css",
+    "./tutorial-battle-screen/target-ring.css",
+    "./tutorial-battle-screen/no-character-portraits.css",
+    "./tutorial-battle-screen/loading-motion.css",
+    "./tutorial-battle-screen/npc-sprite.css",
++   "./tutorial-battle-screen/input-focus.css",
+  ]
+
+ ❯ src/styles/styleContract.test.js:1568:45
+    1566|     ]);
+    1567|     expect(tutorialBattleSource).toContain('import "../styles/room/tut…
+    1568|     expect(cssImports(tutorialBattleEntry)).toEqual([
+       |                                             ^
+    1569|       "./tutorial-battle-screen/overlay-choice.css",
+    1570|       "./tutorial-battle-screen/actions-targets.css",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 468 passed (470)
+      Tests  2 failed | 3418 passed (3420)
+   Start at  09:19:45
+   Duration  509.39s (transform 16.23s, setup 0ms, import 91.66s, tests 145.22s, environment 127.98s)
+

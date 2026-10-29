@@ -1,0 +1,46 @@
+{
+  "files": [
+    "src/styles/mobile-adaptive/battle-paper-nameplate-mobile.css",
+    "src/styles/mobile-adaptive/battle-paper-panels-mobile.css",
+    "src/styles/mobile-adaptive/battle-paper-panels.css",
+    "src/styles/mobile-adaptive/battle-paper-player-mobile.css",
+    "src/styles/mobile-adaptive/battle-paper-portrait.css",
+    "src/styles/mobile-adaptive/battle-paper-skill-mobile.css",
+    "src/styles/mobile-adaptive/handbook-strip-frame.css",
+    "src/styles/mobile-adaptive/readable-type-battle.css",
+    "src/styles/mobile-adaptive/sigrika-corruption.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/handbook-cards.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/handbook-contamination.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/handbook-mobile.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/home-contamination.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-controls.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-panels.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-replay.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-secondary-surfaces.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-system-log.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/room-timers.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/transition.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/home-duel-entry.css",
+    "src/styles/mobile-adaptive/sigrika-corruption/negative-entry.css"
+  ],
+  "cumulative": {
+    "totalFiles": 2,
+    "totalBytes": -3503,
+    "importantCount": -53,
+    "importantFiles": 0,
+    "hardcodedHexCount": -13,
+    "mediaFiles": 3,
+    "reducedMotionFiles": 0,
+    "highZIndexFiles": 0
+  },
+  "correction": {
+    "totalFiles": 0,
+    "totalBytes": -2170,
+    "importantCount": -8,
+    "importantFiles": 0,
+    "hardcodedHexCount": 0,
+    "mediaFiles": 0,
+    "reducedMotionFiles": 0,
+    "highZIndexFiles": 0
+  }
+}

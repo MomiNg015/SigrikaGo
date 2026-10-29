@@ -1,0 +1,3532 @@
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ .codex-run/battle-presence/baseline/src/styles/styleContract.test.js (57 tests | 2 failed) 1064ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 3ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 0ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 2ms
+   × root CSS entry contract > keeps art font usage semantic and opt-in 31ms
+     → ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.codex-run\battle-presence\baseline\public\assets\fonts\WuWa-Lahai-Roi-Regular.ttf'
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 7ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  536ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 187ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 1ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 0ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 0ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 4ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 4ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 4ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 1ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 44ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 37ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 1ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 2ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 1ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 1ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 33ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 17ms
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 1ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 31ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 47ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 1ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 1ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 1ms
+   × root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 4ms
+     → ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.codex-run\battle-presence\baseline\public\assets\recruitment\notice-board-flat-candidate.webp'
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 1ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 1ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 1ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 1ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 1ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 1ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 3ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 1ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 1ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 1ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 1ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 2ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 1ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 32ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 1ms
+ ❯ .tmp/release-verification/src/styles/styleContract.test.js (57 tests | 2 failed) 1018ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 3ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 0ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 2ms
+   × root CSS entry contract > keeps art font usage semantic and opt-in 30ms
+     → ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\fonts\WuWa-Lahai-Roi-Regular.ttf'
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 7ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  523ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 168ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 2ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 3ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 1ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 1ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 5ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 5ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 5ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 1ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 41ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 32ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 1ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 2ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 1ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 0ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 23ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 14ms
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 0ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 1ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 33ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 60ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 1ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 1ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 1ms
+   × root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 3ms
+     → ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\recruitment\notice-board-flat-candidate.webp'
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 1ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 1ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 1ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 1ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 1ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 0ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 2ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 1ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 1ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 1ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 0ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 1ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 26ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 0ms
+ ❯ .codex-run/opening-index-review/src/room/RoomScreen.test.js (38 tests | 1 failed) 805ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 3ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 80ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 68ms
+   ✓ RoomScreen helpers > formats room header game information 0ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 1ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 0ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 1ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 0ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 0ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 1ms
+   ✓ RoomScreen helpers > keeps the ordinary room-code label while replacing the special duel value with ERROR 2ms
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 1ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 3ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 1ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 1ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 105ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 0ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 15ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 35ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 10ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 41ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 1ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 5ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 14ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 1ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 16ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 49ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 38ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 40ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 40ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 84ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 74ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 11ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 5ms
+   × RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 51ms
+     → expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 2ms
+ ❯ .codex-run/commit-scope/.codex-run/opening-index-review/src/room/RoomScreen.test.js (38 tests | 1 failed) 880ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 3ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 67ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 47ms
+   ✓ RoomScreen helpers > formats room header game information 0ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 0ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 0ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 1ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 0ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 0ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 1ms
+   ✓ RoomScreen helpers > keeps the ordinary room-code label while replacing the special duel value with ERROR 1ms
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 1ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 2ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 1ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 1ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 100ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 1ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 16ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 129ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 10ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 43ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 1ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 5ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 18ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 1ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 12ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 48ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 37ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 38ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 33ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 92ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 90ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 10ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 5ms
+   × RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 60ms
+     → expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 2ms
+ ❯ .tmp/release-verification/src/room/RoomScreen.test.js (38 tests | 1 failed) 473ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 2ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 56ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 36ms
+   ✓ RoomScreen helpers > formats room header game information 0ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 0ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 0ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 1ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 0ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 0ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 0ms
+   × RoomScreen helpers > uses the mode label while replacing the special duel room value with ERROR 16ms
+     → expected '<header class="room-header"><div clas…' to contain '星炬AB123'
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 4ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 1ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 1ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 1ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 33ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 0ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 5ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 14ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 7ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 15ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 1ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 4ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 11ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 1ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 11ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 41ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 36ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 36ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 19ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 43ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 43ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 4ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 4ms
+   ✓ RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 19ms
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 1ms
+ ✓ .codex-run/commit-scope/src/styles/styleContract.test.js (57 tests) 882ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  444ms
+ ✓ .codex-run/opening-index-review/src/styles/styleContract.test.js (57 tests) 722ms
+ ❯ src/styles/styleContract.test.js (58 tests | 1 failed) 1072ms
+   ✓ root CSS entry contract > keeps styles.css import order stable 4ms
+   ✓ root CSS entry contract > keeps themes.css as the final root style layer 1ms
+   ✓ root CSS entry contract > keeps Tailwind as a prefixed utility layer before theme overrides 3ms
+   ✓ root CSS entry contract > defaults to LXGW while keeping WuWa semantic and opt-in 15ms
+   ✓ root CSS entry contract > routes production font families through shared tokens or preserved accent faces  347ms
+   ✓ root CSS entry contract > keeps top-level style files either imported or intentionally non-CSS tests 2ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries 198ms
+   ✓ root CSS entry contract > prevents new oversized CSS files and growth in known CSS debt files 172ms
+   ✓ root CSS entry contract > keeps mobile-adaptive.css as the final theme entry safety layer 1ms
+   ✓ root CSS entry contract > keeps Bright School component repairs as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile room dock actions as import-only theme overlays 2ms
+   ✓ root CSS entry contract > keeps Bright School mobile modal shell as an import-only theme overlay 1ms
+   ✓ root CSS entry contract > keeps Bright School refinement board as an import-only protected overlay 1ms
+   ✓ root CSS entry contract > hides native number input spinner controls while preserving number inputs 5ms
+   ✓ root CSS entry contract > keeps selected tab and toggle buttons visually pressed in the shared base layer 4ms
+   ✓ root CSS entry contract > keeps the preload screen centered with wrapping text 5ms
+   ✓ root CSS entry contract > keeps the final Bright School preload panel background-free 1ms
+   ✓ root CSS entry contract > keeps mobile settings tabs and match mode status on one line 48ms
+   ✓ root CSS entry contract > keeps the message board textarea visibly tall on desktop and mobile 40ms
+   ✓ root CSS entry contract > keeps base.css as an import-only shared foundation entry 1ms
+   ✓ root CSS entry contract > keeps admin.css as an import-only admin console entry 1ms
+   ✓ root CSS entry contract > keeps admin analytics and polish styles as import-only sub-entries 1ms
+   ✓ root CSS entry contract > keeps lobby.css as an import-only lobby and house entry 1ms
+   ✓ root CSS entry contract > keeps the mobile interaction safety layer touch friendly 37ms
+   × root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry 20ms
+     → expected '.app-shell.player-theme-enabled.theme…' to match /\.portrait-wrap\.white-portrait\s*\{[…/
+   ✓ root CSS entry contract > keeps mobile room portrait safety styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile overrides as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School mobile profile-house-records as an import-only guard sub-entry 1ms
+   ✓ root CSS entry contract > keeps Bright School narrow desktop home safety as an import-only guard entry 1ms
+   ✓ root CSS entry contract > keeps Bright School portrait as an import-only final guard entry 1ms
+   ✓ root CSS entry contract > keeps semantic accent typography above Bright School broad resets 36ms
+   ✓ root CSS entry contract > keeps nested CSS files under approved domain entry maps 59ms
+   ✓ root CSS entry contract > keeps commerce-settings.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps commerce shop-settings.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce warehouse-toast.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps purposeful reveal motion scoped to story choices and result reward tiles 1ms
+   ✓ root CSS entry contract > releases desktop modal transform components after their entrances 1ms
+   ✓ root CSS entry contract > keeps commerce gacha.css as an import-only commerce sub-entry 1ms
+   ✓ root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry 5ms
+   ✓ root CSS entry contract > keeps commerce social-profile.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps commerce terminal-polish.css as an import-only commerce sub-entry 0ms
+   ✓ root CSS entry contract > keeps responsive.css as an import-only breakpoint entry 1ms
+   ✓ root CSS entry contract > keeps mobile-room.css as an import-only mobile battle entry 1ms
+   ✓ root CSS entry contract > keeps mobile room base shell and dock styles as an import-only sub-entry 0ms
+   ✓ root CSS entry contract > keeps mobile-home.css as an import-only mobile lobby entry 0ms
+   ✓ root CSS entry contract > keeps mobile-modals.css as an import-only mobile modal entry 1ms
+   ✓ root CSS entry contract > keeps hud-components.css as an import-only HUD compatibility entry 1ms
+   ✓ root CSS entry contract > keeps HUD hardening as an import-only component sub-entry 0ms
+   ✓ root CSS entry contract > keeps room.css as an import-only domain entry 2ms
+   ✓ root CSS entry contract > keeps room board styles as an import-only board sub-entry 1ms
+   ✓ root CSS entry contract > keeps room players, timers, and skills as an import-only room sub-entry 0ms
+   ✓ root CSS entry contract > keeps room-terminal.css as an import-only battlefield skin entry 1ms
+   ✓ root CSS entry contract > keeps home-terminal.css as an import-only lobby skin entry 0ms
+   ✓ root CSS entry contract > keeps modals.css as an import-only domain entry 1ms
+   ✓ root CSS entry contract > keeps wardrobe costume detail as a left-aligned modifier of the shop detail template 1ms
+   ✓ root CSS entry contract > keeps admin console full-width after theme and HUD layers 31ms
+   ✓ root CSS entry contract > keeps terminal modal system styles as an import-only sub-entry 1ms
+   ✓ root CSS entry contract > keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry 1ms
+ ❯ .codex-run/battle-presence/baseline/src/room/RoomScreen.test.js (38 tests | 1 failed) 535ms
+   ✓ RoomScreen helpers > cancels local skill confirmation before resigning and only leaves ordinary rooms 2ms
+   ✓ RoomScreen helpers > renders a replay room snapshot in spectator view 68ms
+   ✓ RoomScreen helpers > renders the skill banner while the room carries a pending skill preview 47ms
+   ✓ RoomScreen helpers > formats room header game information 0ms
+   ✓ RoomScreen helpers > returns null until both players exist 0ms
+   ✓ RoomScreen helpers > formats finished room close countdown text 0ms
+   ✓ RoomScreen helpers > shows room close countdown only for finished rooms with a close timestamp 0ms
+   ✓ RoomScreen helpers > omits the close countdown presentation and ticking timer 1ms
+   ✓ RoomScreen helpers > treats finished player rooms as spectator view 0ms
+   ✓ RoomScreen helpers > does not replay game-start voice for spectators or finished rooms 0ms
+   ✓ RoomScreen helpers > mounts the sanitized corrupted-duel presentation only for a live room 1ms
+   ✓ RoomScreen helpers > uses the mode label while replacing the special duel room value with ERROR 2ms
+   ✓ RoomScreen helpers > routes pass through a confirmation dialog before sending the game action 1ms
+   ✓ RoomScreen helpers > does not expose the move-number toggle in room header controls 4ms
+   ✓ RoomScreen helpers > passes a stable neutral-point handler into the memoized board 0ms
+   ✓ RoomScreen helpers > passes stable floating-layer handlers into tutorial records and member panels 0ms
+   ✓ RoomScreen helpers > omits replay mode and viewpoint copy from the room header 38ms
+   ✓ RoomScreen helpers > seeds resumed room audio baseline before passive room audio effects 1ms
+   ✓ RoomScreen helpers > passes room mode to the game-start system voice resolver 0ms
+   ✓ RoomScreen helpers > keeps the board primary while preserving player portraits on mobile 11ms
+   ✓ RoomScreen helpers > uses extra-compact portrait room cards without pushing the board offscreen 25ms
+   ✓ RoomScreen helpers > keeps touch point confirmation visual-only on mobile 10ms
+   ✓ RoomScreen helpers > keeps mobile dead-stone decisions compact and readable 17ms
+   ✓ RoomScreen helpers > passes no-target skill board confirmation from the room view into point actions 1ms
+   ✓ RoomScreen helpers > keeps extra-narrow portrait rooms from overlapping the player cards 4ms
+   ✓ RoomScreen helpers > separates desktop and mobile room layout shells 13ms
+   ✓ RoomScreen helpers > renders the mobile dock inside the battle stage instead of extracting composite children 1ms
+   ✓ RoomScreen helpers > keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record popup 12ms
+   ✓ RoomScreen helpers > keeps audited mobile room controls visible and avoids tiny landscape boards 46ms
+   ✓ RoomScreen helpers > keeps mobile player info strips balanced and flat in Bright School 40ms
+   ✓ RoomScreen helpers > centers icon-free mobile replay move counts in the seven-control grid 40ms
+   ✓ RoomScreen helpers > removes ordinary room chat entry points while keeping tutorial records readonly 17ms
+   ✓ RoomScreen helpers > anchors room member actions from the clicked point toward the upper right 37ms
+   ✓ RoomScreen helpers > keeps result modal centered and compact 40ms
+   ✓ RoomScreen helpers > applies the Startorch battlefield terminal skin after mobile room styles 4ms
+   ✓ RoomScreen helpers > keeps short landscape mobile rooms within the viewport after removing chat 4ms
+   × RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls 43ms
+     → expected 'import { useCallback, useState } from…' to contain '<div className="room-side">\n        …'
+   ✓ RoomScreen helpers > lets tutorial battle hide utility tools and people panels while keeping the real room shell 1ms
+ ❯ .tmp/release-verification/src/room/PlayerInfo.test.js (22 tests | 2 failed) 275ms
+   ✓ PlayerInfo labels > keeps equipped nameplate backgrounds out of the battle identity 19ms
+   ✓ PlayerInfo labels > shows three ordered portrait slices without revealing hidden members 5ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the spark clock 3ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the standard clock 3ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the gomoku clock 3ms
+   ✓ PlayerInfo labels > defines hover explanations for skill removal and overclock counters 0ms
+   ✓ PlayerInfo labels > anchors mobile tap explanations to the tapped point within the viewport 1ms
+   ✓ PlayerInfo labels > hides go and skill counters from gomoku player panels 1ms
+   ✓ PlayerInfo labels > does not show win/loss portrait badges for invalid finished games 0ms
+   ✓ PlayerInfo labels > shows win loss and draw portrait badges for valid finished games 0ms
+   ✓ PlayerInfo labels > marks disconnected portraits only before a game has a result 1ms
+   ✓ PlayerInfo labels > swaps Denia portraits to the candy gif while the effect is active 0ms
+   × PlayerInfo labels > renders the safe practice bot portrait metadata with accessible alt text 17ms
+     → ENOENT: no such file or directory, open 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\characters\zhunshibao.png'
+   ✓ PlayerInfo labels > keeps the corrupted Sigrika skill name and uses hidden even while formal skills stay disabled 3ms
+   ✓ PlayerInfo labels > uses the anonymous corrupted player portrait in special duel and replay player cards 3ms
+   ✓ PlayerInfo labels > keeps mobile battle usernames complete and passive without equipped backgrounds 7ms
+   ✓ PlayerInfo labels > uses current catalog skill copy instead of stale live or replay room snapshots 4ms
+   × PlayerInfo labels > keeps overclock text red and timer tracks state-colored across themes 62ms
+     → expected '/* Base layout, shared controls, home…' not to contain 'min-height: 44px'
+   ✓ PlayerInfo labels > colors room portrait backgrounds by the player's stone color in Bright School 43ms
+   ✓ PlayerInfo labels > fills unassigned tutorial players with the default story portrait without granting a skill 42ms
+   ✓ PlayerInfo labels > keeps the original timer layout contract for normal room timer cards 49ms
+   ✓ PlayerInfo labels > skips rerendering unchanged player panels during unrelated clock updates 1ms
+ ✓ .codex-run/battle-presence/commit-preview/verify/src/styles/styleContract.test.js (57 tests) 998ms
+   ✓ root CSS entry contract > keeps CSS files with imports as import-only entries  496ms
+ ✓ .codex-run/commit-scope/.codex-run/opening-index-review/src/styles/styleContract.test.js (57 tests) 690ms
+ ✓ .codex-run/commit-scope/src/room/RoomScreen.test.js (38 tests) 497ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 525ms
+ ✓ .codex-run/battle-presence/commit-preview/verify/src/room/RoomScreen.test.js (38 tests) 512ms
+ ✓ .codex-run/battle-presence/commit-preview/verify/src/room/PlayerInfo.test.js (24 tests) 400ms
+ ✓ .codex-run/commit-scope/src/room/PlayerInfo.test.js (24 tests) 339ms
+ ❯ src/room/PlayerInfo.test.js (24 tests | 1 failed) 370ms
+   ✓ PlayerInfo labels > keeps equipped nameplate backgrounds out of the battle identity 17ms
+   ✓ PlayerInfo labels > shows three ordered portrait slices without revealing hidden members 5ms
+   ✓ PlayerInfo labels > does not load a hidden team member even if historical metadata includes a character 3ms
+   ✓ PlayerInfo labels > preserves participant and lineup snapshots instead of current account equipment 6ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the spark clock 3ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the standard clock 3ms
+   ✓ PlayerInfo labels > keeps timer semantics and mode counters inside the gomoku clock 2ms
+   ✓ PlayerInfo labels > defines hover explanations for skill removal and overclock counters 0ms
+   ✓ PlayerInfo labels > anchors mobile tap explanations to the tapped point within the viewport 1ms
+   ✓ PlayerInfo labels > hides go and skill counters from gomoku player panels 1ms
+   ✓ PlayerInfo labels > does not show win/loss portrait badges for invalid finished games 0ms
+   ✓ PlayerInfo labels > shows win loss and draw portrait badges for valid finished games 0ms
+   ✓ PlayerInfo labels > marks disconnected portraits only before a game has a result 1ms
+   ✓ PlayerInfo labels > swaps Denia portraits to the candy gif while the effect is active 0ms
+   ✓ PlayerInfo labels > renders the safe practice bot portrait metadata with accessible alt text 110ms
+   × PlayerInfo labels > keeps the corrupted Sigrika skill name and uses hidden even while formal skills stay disabled 23ms
+     → expected '<link rel="preload" as="image" href="…' to contain '？？？ · ？'
+   ✓ PlayerInfo labels > uses the anonymous corrupted player portrait in special duel and replay player cards 4ms
+   ✓ PlayerInfo labels > keeps mobile battle usernames complete and passive without equipped backgrounds 8ms
+   ✓ PlayerInfo labels > uses current catalog skill copy instead of stale live or replay room snapshots 4ms
+   ✓ PlayerInfo labels > keeps overclock text red and timer tracks state-colored across themes 60ms
+   ✓ PlayerInfo labels > colors room portrait backgrounds by the player's stone color in Bright School 39ms
+   ✓ PlayerInfo labels > fills unassigned tutorial players with the default story portrait without granting a skill 37ms
+   ✓ PlayerInfo labels > keeps the original timer layout contract for normal room timer cards 40ms
+   ✓ PlayerInfo labels > skips rerendering unchanged player panels during unrelated clock updates 1ms
+ ✓ .codex-run/commit-scope/.codex-run/opening-index-review/src/room/PlayerInfo.test.js (17 tests) 307ms
+ ✓ .codex-run/opening-index-review/src/room/PlayerInfo.test.js (17 tests) 321ms
+ ✓ src/room/header/RoomHeader.dom.test.jsx (4 tests) 331ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .codex-run/profile-folder-staged/src/styles/styleContract.test.js [ .codex-run/profile-folder-staged/src/styles/styleContract.test.js ]
+Error: Cannot find module './cssTestUtils.js' imported from 'C:/codex/SigrikaGo/.codex-run/profile-folder-staged/src/styles/styleContract.test.js'
+ ❯ .codex-run/profile-folder-staged/src/styles/styleContract.test.js:5:1
+      3| import { basename, dirname, join, relative } from "node:path";
+      4| import { fileURLToPath } from "node:url";
+      5| import { readCssWithImports } from "./cssTestUtils.js";
+       | ^
+      6| 
+      7| const rootStylesPath = fileURLToPath(new URL("../styles.css", import.m…
+
+Caused by: Error: Failed to load url ./cssTestUtils.js (resolved id: ./cssTestUtils.js) in C:/codex/SigrikaGo/.codex-run/profile-folder-staged/src/styles/styleContract.test.js. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  .codex-run/profile-promotion-before/src/styles/styleContract.test.js [ .codex-run/profile-promotion-before/src/styles/styleContract.test.js ]
+Error: Cannot find module './cssTestUtils.js' imported from 'C:/codex/SigrikaGo/.codex-run/profile-promotion-before/src/styles/styleContract.test.js'
+ ❯ .codex-run/profile-promotion-before/src/styles/styleContract.test.js:5:1
+      3| import { basename, dirname, join, relative } from "node:path";
+      4| import { fileURLToPath } from "node:url";
+      5| import { readCssWithImports } from "./cssTestUtils.js";
+       | ^
+      6| 
+      7| const rootStylesPath = fileURLToPath(new URL("../styles.css", import.m…
+
+Caused by: Error: Failed to load url ./cssTestUtils.js (resolved id: ./cssTestUtils.js) in C:/codex/SigrikaGo/.codex-run/profile-folder-staged/src/styles/styleContract.test.js. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  .codex-run/battle-presence/baseline/src/room/PlayerInfo.test.js [ .codex-run/battle-presence/baseline/src/room/PlayerInfo.test.js ]
+Error: Cannot find module '../../scripts/pngTrim.mjs' imported from 'C:/codex/SigrikaGo/.codex-run/battle-presence/baseline/src/room/PlayerInfo.test.js'
+ ❯ .codex-run/battle-presence/baseline/src/room/PlayerInfo.test.js:13:1
+     11| } from "../shared/characterPortraitAssetCatalog.js";
+     12| import { CHARACTERS } from "../shared/characters.js";
+     13| import { decodeRgbaPng } from "../../scripts/pngTrim.mjs";
+       | ^
+     14| 
+     15| const noop = () => {};
+
+Caused by: Error: Failed to load url ../../scripts/pngTrim.mjs (resolved id: C:/scripts/pngTrim.mjs) in C:/codex/SigrikaGo/.codex-run/battle-presence/baseline/src/room/PlayerInfo.test.js. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  .codex-run/battle-presence/commit-preview/tree/src/styles/styleContract.test.js [ .codex-run/battle-presence/commit-preview/tree/src/styles/styleContract.test.js ]
+Error: Cannot find module './cssTestUtils.js' imported from 'C:/codex/SigrikaGo/.codex-run/battle-presence/commit-preview/tree/src/styles/styleContract.test.js'
+ ❯ .codex-run/battle-presence/commit-preview/tree/src/styles/styleContract.test.js:5:1
+      3| import { basename, dirname, join, relative } from "node:path";
+      4| import { fileURLToPath } from "node:url";
+      5| import { readCssWithImports } from "./cssTestUtils.js";
+       | ^
+      6| 
+      7| const rootStylesPath = fileURLToPath(new URL("../styles.css", import.m…
+
+Caused by: Error: Failed to load url ./cssTestUtils.js (resolved id: ./cssTestUtils.js) in C:/codex/SigrikaGo/.codex-run/profile-folder-staged/src/styles/styleContract.test.js. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  .codex-run/battle-presence/commit-preview/tree/src/room/RoomScreen.test.js [ .codex-run/battle-presence/commit-preview/tree/src/room/RoomScreen.test.js ]
+Error: Cannot find module '../shared/characters.js' imported from 'C:/codex/SigrikaGo/.codex-run/battle-presence/commit-preview/tree/src/room/RoomScreen.test.js'
+ ❯ .codex-run/battle-presence/commit-preview/tree/src/room/RoomScreen.test.js:5:1
+      3| import { renderToStaticMarkup } from "react-dom/server";
+      4| import { readFileSync } from "node:fs";
+      5| import { CHARACTERS } from "../shared/characters.js";
+       | ^
+      6| import { COLORS, createGameState } from "../shared/game.js";
+      7| import {
+
+Caused by: Error: Failed to load url ../shared/characters.js (resolved id: ../shared/characters.js) in C:/codex/SigrikaGo/.codex-run/battle-presence/commit-preview/tree/src/room/RoomScreen.test.js. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/room/PlayerInfo.test.js > PlayerInfo labels > keeps the corrupted Sigrika skill name and uses hidden even while formal skills stay disabled
+AssertionError: expected '<link rel="preload" as="image" href="…' to contain '？？？ · ？'
+
+Expected: "？？？ · ？"
+Received: "<link rel="preload" as="image" href="/assets/characters/portraits/sigrika-corrupted.webp"/><aside class="player-info self    no-character-player practice-bot-player  " data-paper-player="" style="--player-accent:var(--bright-blue)"><div class="portrait-wrap black-portrait  practice-bot-portrait-wrap "><img class="sigrika-corrupted-npc-portrait" src="/assets/characters/portraits/sigrika-corrupted.webp" alt="西格莉卡？"/></div><div class="player-meta"><div class="name-button player-name"><span class="battle-name-fit"><span class="battle-name-content"><span class="user-identity compact"><span class="user-identity-main"><span class="user-identity-name-tag"><span class="user-identity-name">西格莉卡？</span></span></span></span></span></span></div><span class="color-badge black" title="执黑"></span></div><div class="player-clock-panel"><div class="timer digital-timer main-time"><div class="timer-label">主时间</div><div class="timer-digits text-clock-value"><span class="timer-primary">5:00</span></div><div class="timer-track"><span style="width:100%"></span></div></div><div class="captures"><span><strong>提子</strong>0</span><button type="button" class="info-stat removal-stat capture-control" data-mobile-tooltip-trigger="true" data-tooltip="除子：因技能影响而从棋盘上移除的对方棋子数。数目时+除子*1的数值。" title="除子：因技能影响而从棋盘上移除的对方棋子数。数目时+除子*1的数值。"><strong>除子</strong>0</button><button type="button" class="info-stat cost-stat capture-control" data-mobile-tooltip-trigger="true" data-tooltip="超频：角色发动技能所造成的代价。数目时-超频*2的数值。" title="超频：角色发动技能所造成的代价。数目时-超频*2的数值。"><strong>超频</strong>0</button></div></div><div class="skill-chip-wrap sigrika-corrupted-skill-wrap"><span class="skill-chip sigrika-corrupted-skill-chip" aria-label="技能未知，剩余次数未知"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg><span class="player-skill-name">？？？</span><span class="player-skill-count"> · ？</span></span></div></aside>"
+
+ ❯ src/room/PlayerInfo.test.js:273:20
+    271|     expect(markup).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.…
+    272|     expect(markup).toContain('alt="西格莉卡？"');
+    273|     expect(markup).toContain("？？？ · ？");
+       |                    ^
+    274|     expect(markup).toContain('aria-label="技能未知，剩余次数未知"');
+    275|     expect(markup).toContain("<strong>提子</strong>");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  src/styles/styleContract.test.js > root CSS entry contract > keeps mobile-adaptive.css as an import-only safety entry
+AssertionError: expected '.app-shell.player-theme-enabled.theme…' to match /\.portrait-wrap\.white-portrait\s*\{[…/
+
+- Expected: 
+/\.portrait-wrap\.white-portrait\s*\{[^}]*background: var\(--sigrika-duel-inverse-surface\) !important;/
+
++ Received: 
+".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room :is(.room-toggles .toggle, .toggle:is(.room-mobile-coordinate, .room-mobile-exit), .room-mobile-menu .toggle, .room-mobile-menu-panel button):is(:hover, :focus-visible, .active) {
+  --sigrika-duel-utility-border: var(--sigrika-duel-hot);
+  --sigrika-duel-utility-surface: var(--sigrika-duel-interactive);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-room-tabs {
+  border: 1px solid var(--sigrika-duel-line) !important;
+  background: var(--sigrika-duel-ink) !important;
+  box-shadow: 0 4px 8px var(--sigrika-duel-shadow-soft) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tab-list {
+  border-color: var(--sigrika-duel-line) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tab-button {
+  border-color: transparent !important;
+  color: var(--sigrika-duel-muted) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tab-button.active {
+  border-color: var(--sigrika-duel-hot) !important;
+  color: var(--sigrika-duel-text) !important;
+  background: var(--sigrika-duel-interactive) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .sigrika-candy-duel-room .mobile-tab-button > * {
+  color: inherit !important;
+}
+
+@media (min-width: 901px) and (max-height: 820px) and (pointer: fine) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .desktop-room-screen.sigrika-candy-duel-room {
+    --board-size: clamp(430px, calc(100vh - 205px), 560px);
+    --board-size: clamp(430px, calc(100dvh - 205px), 560px);
+  }
+}
+
+/* Keep the playable duel inside supported compact landscape windows. */
+@media (max-width: 900px) and (orientation: landscape) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school.is-sigrika-corrupted .mobile-room-screen.sigrika-candy-duel-room:has(.mobile-room-viewport[data-action-anchored]) {
+    & .mobile-player-slot {
+      height: 100%;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    & .player-info {
+      height: 100% !important;
+      min-height: 0;
+      max-height: none !important;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: \"meta\" \"portrait\" \"time\";
+      grid-template-rows: max-content minmax(0, 1fr) max-content;
+      gap: 6px;
+    }
+
+    & .player-meta {
+      grid-area: meta;
+      min-width: 0;
+    }
+
+    & .portrait-wrap:not(.no-character) {
+      grid-area: portrait;
+      width: 100%;
+      max-width: 132px;
+      justify-self: center;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    & .mobile-board-viewport {
+      height: 100%;
+      align-self: stretch;
+    }
+
+    & .board-stage {
+      width: auto;
+      height: 100%;
+      min-height: 0;
+      max-height: 100%;
+      aspect-ratio: 1;
+      padding: 0 !important;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    & .board-wrap {
+      width: 100% !important;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 1;
+      grid-template-columns: 16px minmax(0, 1fr) 16px;
+      grid-template-rows: 16px minmax(0, 1fr) 16px;
+    }
+
+    & .mobile-room-dock {
+      max-height: none;
+      transform: none;
+    }
+
+    & .mobile-tab-panel {
+      max-height: none;
+      overflow: auto !important;
+    }
+
+    & .mobile-tab-panel .action-bar {
+      width: 100%;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+      &.replay-bar { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    }
+  }
+}
+"
+
+ ❯ src/styles/styleContract.test.js:782:48
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  .codex-run/opening-index-review/src/room/RoomScreen.test.js > RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls
+AssertionError: expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+
+- Expected
++ Received
+
+- grid-template-columns: minmax(0, 1fr) auto auto !important
++ /* Bright School room replay/battle readability fixes. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
++   display: grid !important;
++   grid-template-columns: minmax(0, 1fr) !important;
++   align-items: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-toggles {
++   justify-self: end !important;
++   justify-content: flex-end !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-mobile-exit {
++   justify-self: end !important;
++   border: 2px solid #4a3736 !important;
++   box-shadow: 3px 3px 0 #4a3736 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-exit {
++   background: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   background-color: #eaf8ff !important;
++   background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   border-color: #7dbfe6 !important;
++   color: #225a78 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures > * {
++   min-height: 36px !important;
++   box-sizing: border-box !important;
++   align-items: center !important;
++   padding-block: 6px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-step-indicator {
++   display: inline-grid !important;
++   place-items: center !important;
++   justify-content: center !important;
++   text-align: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info {
++   overflow: visible !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character {
++   width: 100% !important;
++   height: var(--side-portrait) !important;
++   min-height: var(--side-portrait) !important;
++   background: radial-gradient(circle at 50% 58%, rgba(255, 158, 187, 0.28), rgba(255, 250, 240, 0.86) 66%) !important;
++   border: 2px dashed rgba(74, 55, 54, 0.42) !important;
++   border-radius: 16px !important;
++   box-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap.no-character {
++   width: 46px !important;
++   height: 46px !important;
++   min-height: 46px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character {
++   height: calc(var(--side-portrait) + 4px) !important;
++   min-height: calc(var(--side-portrait) + 4px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.no-character-player .meta-placeholder {
++   visibility: hidden !important;
++   pointer-events: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   width: 100% !important;
++   background: var(--tutorial-choice-background, #e4f8dc) !important;
++   color: #14532d !important;
++   border-color: rgba(74, 55, 54, 0.92) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar:not(.tutorial-choice-actions) button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   flex: 1 1 0 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:hover,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:focus-visible {
++   background: var(--tutorial-choice-hover-background, #d7f5ca) !important;
++   color: #0f3f24 !important;
++   border-color: var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar {
++   width: 100% !important;
++   justify-content: stretch !important;
++   align-items: center !important;
++   gap: 10px !important;
++   padding: 8px 12px !important;
++   box-sizing: border-box !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   box-shadow:
++     0 0 0 3px rgba(245, 158, 11, 0.2),
++     3px 3px 0 var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn {
++   background:
++     linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)),
++     #fff0a6 !important;
++   background-color: #fff0a6 !important;
++   background-image: linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)) !important;
++   border-color: #d18b17 !important;
++   color: #3f2b08 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .name-button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .player-meta span,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures > * {
++   color: #3f2b08 !important;
++ }
++
++ /* Bright School tutorial reply choices reuse the home utility card hover motion. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button {
++   transition:
++     transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     filter 160ms ease-out,
++     background-color 160ms ease-out,
++     border-color 160ms ease-out,
++     color 160ms ease-out !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled) {
++   box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important;
++   filter: saturate(1.04) brightness(1.01) !important;
++   transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action:active:not(:disabled) {
++   background: var(--tutorial-choice-active-background, #ffd6e7) !important;
++   color: #7a1d3d !important;
++   border-color: var(--bright-border) !important;
++   transform: translateY(1px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++   box-shadow: 1px 1px 0 #3d2b25 !important;
++   filter: brightness(0.98) saturate(1.02) !important;
++   transform: translateY(1px) rotate(var(--utility-tilt, 0deg)) scale(0.98) !important;
++ }
++
++ @media (prefers-reduced-motion: reduce) {
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button,
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++     transition-duration: 1ms !important;
++     transform: none !important;
++   }
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip-wrap {
++   z-index: var(--room-floating-z, 60) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-detail-panel {
++   z-index: var(--room-floating-z, 80) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button {
++   min-height: 0 !important;
++   padding: 0 !important;
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   text-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
++   filter: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side {
++   background: #1f1714 !important;
++   background-image: none !important;
++   color: #ffffff !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side :where(span, strong, small) {
++   color: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side {
++   background: #ffffff !important;
++   background-image: none !important;
++   color: #1f1714 !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side :where(span, strong, small) {
++   color: #1f1714 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::after,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::after {
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen :where(
++   .room-code-label,
++   .room-info-tag,
++   .toggle,
++   .room-mobile-exit,
++   .room-mobile-menu-toggle,
++   .room-mobile-menu-panel button,
++   .mobile-tab-button,
++   .action-bar button,
++   .decision-actions button,
++   .replay-bar button,
++   .chat-toggle-button,
++   .chat-exit-action,
++   .name-button,
++   .rank-tag,
++   .rating-tag,
++   .captures > *,
++   .digital-timer,
++   .timer-track,
++   .timer-track span,
++   .skill-chip
++ ) {
++   box-shadow: none !important;
++   filter: none !important;
++   text-shadow: none !important;
++ }
++
++
+
+ ❯ .codex-run/opening-index-review/src/room/RoomScreen.test.js:945:27
+    943| 
+    944|     expect(brightRoomCss).toContain(".desktop-room-screen .room-header…
+    945|     expect(brightRoomCss).toContain("grid-template-columns: minmax(0, …
+       |                           ^
+    946|     expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !im…
+    947|     expect(brightRoomCss).toContain("background-image: linear-gradient…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  .codex-run/battle-presence/baseline/src/room/RoomScreen.test.js > RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls
+AssertionError: expected 'import { useCallback, useState } from…' to contain '<div className="room-side">\n        …'
+
+- Expected
++ Received
+
+- <div className="room-side">
+-         {selfInfo}
+-         {storyLogPanel}
++ import { useCallback, useState } from "react";
++ import ActionBar from "./ActionBar.jsx";
++ import { isCaptureChallenge } from "../shared/captureChallenge.js";
++ import Board from "./Board.jsx";
++ import ChatBox from "./ChatBox.jsx";
++ import PlayerInfo from "./PlayerInfo.jsx";
++ import RoomPeopleList from "./RoomPeopleList.jsx";
++ import { useMobileDockBaseline } from "./layout/useMobileDockBaseline.js";
++ import { aemeathRainbowMoveEffectForRoom, stoneDecorationsForRoom } from "./roomView.js";
++ import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
++ 
++ const ROOM_FLOATING_LAYER_BASE_Z = 140;
++ 
++ export default function RoomBattleStage({
++   battleLayoutClassName,
++   audioSettings,
++   actionPanelOverride,
++   boardStep,
++   canSwitchView,
++   characters,
++   displayRoom,
++   handleBoardSurface,
++   handlePoint,
++   handleScoringPoint,
++   hasAnyStones,
++   isLiveSpectator,
++   isReplay,
++   liveStep,
++   me,
++   onBack,
++   onCountingRequest,
++   onCountingRespond,
++   onDrawRequest,
++   onDrawRespond,
++   onOpenReplay,
++   onPass,
++   onResign,
++   onScoringAction,
++   opponent,
++   opponentConnected,
++   pendingSkill,
++   pointConfirmation,
++   role,
++   roomViewStatus,
++   scoring,
++   setPendingSkill,
++   setReplayStep,
++   setSpectatorStep,
++   setViewColor,
++   showCoords,
++   showMoves,
++   skillAvailable,
++   skillEffectsEnabled = true,
++   skillPreview,
++   showPeoplePanel = true,
++   showTutorialLog = false,
++   tutorialTargetPointId = "",
++   tutorialAnyBoardTarget = false,
++   token,
++   user,
++   viewColor,
++   winnerColor,
++   sigrikaCandyDuel = false
++ }) {
++   const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
++   const { viewportRef, dockRef, tabsRef, actionsRef } = useMobileDockBaseline(battleLayoutClassName === "mobile-battle-layout");
++   const [floatingLayers, setFloatingLayers] = useState({});
++   const bringFloatingLayerToFront = useCallback((layerId) => {
++     if (!layerId) return;
++     setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });
++   }, []);
++   const handleNeutralPoint = useCallback((id) => {
++     onScoringAction({ type: "mark-neutral", pointId: id });
++   }, [onScoringAction]);
++   const handleMembersFloatingLayer = useCallback(() => {
++     bringFloatingLayerToFront("members");
++   }, [bringFloatingLayerToFront]);
++   const handleStoryLogFloatingLayer = useCallback(() => {
++     bringFloatingLayerToFront("story-log");
++   }, [bringFloatingLayerToFront]);
++   const handleConfirmScoring = useCallback(() => {
++     onScoringAction({ type: "confirm-dead" });
++   }, [onScoringAction]);
++   const handleResetScoring = useCallback(() => {
++     onScoringAction({ type: "reset-dead" });
++   }, [onScoringAction]);
++   const selfPlayer = me ?? displayRoom.players[0];
++   const selfSkill = effectiveSkillDisplayForPlayer(displayRoom.game, selfPlayer);
++   const selfSkillEnabled = displayRoom.game.skillEnabled !== false && Boolean(selfSkill);
++   const isPlaying = displayRoom.game.phase === "playing";
++   const isFinished = displayRoom.game.phase === "finished";
++   const isMobileBattleLayout = battleLayoutClassName === "mobile-battle-layout";
++   const aemeathRainbowMoveEffect = aemeathRainbowMoveEffectForRoom(displayRoom);
++   const opponentInfo = (
++     <PlayerInfo
++       player={opponent}
++       game={displayRoom.game}
++       characters={characters}
++       align="opponent"
++       viewColor={viewColor}
++       canSwitchView={canSwitchView}
++       onViewColor={setViewColor}
++       isWinner={isFinished && opponent?.color === winnerColor}
++       isActiveTurn={isPlaying && opponent?.color === displayRoom.game.turn}
++       isDrawResult={isFinished && !winnerColor}
++       floatingLayerId={`skill-${opponent?.color ?? "opponent"}`}
++       floatingLayerZ={floatingLayers[`skill-${opponent?.color ?? "opponent"}`]}
++       onFloatingLayerRequest={bringFloatingLayerToFront}
++       sigrikaCandyDuel={sigrikaCandyDuel}
++     />
++   );
++   const membersPanel = showPeoplePanel && !isReplay && !sigrikaCandyDuel && (
++     <RoomPeopleList
++       room={displayRoom}
++       user={user}
++       characters={characters}
++       token={token}
++       onOpenReplay={onOpenReplay}
++       floatingLayerZ={floatingLayers.members}
++       onFloatingLayerRequest={handleMembersFloatingLayer}
++     />
++   );
++   const boardPanel = (
++     <div className="board-stage">
++       <Board
++         game={displayRoom.game}
++         showCoords={showCoords}
++         showMoves={showMoves}
++         pendingSkill={pendingSkill}
++         audioSettings={audioSettings}
++         skillEffectsEnabled={skillEffectsEnabled}
++         pointConfirmation={pointConfirmation}
++         previewPlayer={role === "player" ? me : null}
++         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
++         aemeathRainbowMoveEffect={aemeathRainbowMoveEffect}
++         tutorialTargetPointId={tutorialTargetPointId}
++         tutorialAnyBoardTarget={tutorialAnyBoardTarget}
++         onPoint={handlePoint}
++         onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
++         onNeutral={handleNeutralPoint}
++         onBoardSurface={handleBoardSurface}
++       />
++     </div>
++   );
++   const defaultActionPanel = (
++     <ActionBar
++       role={role}
++       mode={displayRoom.game.mode}
++       phase={displayRoom.game.phase}
++       me={me}
++       isMyTurn={Boolean(me && displayRoom.game.turn === me.color)}
++       pendingSkill={pendingSkill}
++       setPendingSkill={setPendingSkill}
++       skillLocked={Boolean(skillPreview)}
++       skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
++       decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
++       skillEnabled={!sigrikaCandyDuel && selfSkillEnabled}
++       skillName={selfSkill?.name}
++       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
++       skillAvailable={skillAvailable}
++       countingEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}
++       hasAnyStones={hasAnyStones}
++       opponentConnected={opponentConnected}
++       scoring={scoring}
++       replayStep={boardStep ?? liveStep}
++       replayMax={liveStep}
++       replayMode={roomViewStatus?.controlMode ?? (isReplay ? "replay" : "spectator")}
++       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
++             drawEnabled={!sigrikaCandyDuel && !isCaptureChallenge(displayRoom)}
++       onPass={onPass}
++       onCountingRequest={onCountingRequest}
++       onDrawRequest={onDrawRequest}
++       onConfirmScoring={handleConfirmScoring}
++       onResetScoring={handleResetScoring}
++       onResign={onResign}
++     />
++   );
++   const actionPanel = actionPanelOverride ?? defaultActionPanel;
++   const selfInfo = (
++     <PlayerInfo
++       player={selfPlayer}
++       game={displayRoom.game}
++       characters={characters}
++       align="self"
++       viewColor={viewColor}
++       canSwitchView={canSwitchView}
++       onViewColor={setViewColor}
++       isWinner={isFinished && selfPlayer?.color === winnerColor}
++       isActiveTurn={isPlaying && selfPlayer?.color === displayRoom.game.turn}
++       isDrawResult={isFinished && !winnerColor}
++       isSkillTargeting={Boolean(pendingSkill && role === "player")}
++       floatingLayerId={`skill-${selfPlayer?.color ?? "self"}`}
++       floatingLayerZ={floatingLayers[`skill-${selfPlayer?.color ?? "self"}`]}
++       onFloatingLayerRequest={bringFloatingLayerToFront}
++       sigrikaCandyDuel={sigrikaCandyDuel}
++     />
++   );
++   const storyLogPanel = (showTutorialLog || sigrikaCandyDuel) && (
++     <ChatBox
++       room={displayRoom}
++       readonly
++       disabledInputMessage={sigrikaCandyDuel ? "特殊对局仅显示系统记录" : "剧情教学记录仅供查看"}
++       compactMessages
++       label={sigrikaCandyDuel ? "系统记录" : "剧情记录"}
++       mobileDockPopup={isMobileBattleLayout}
++       floatingLayerZ={floatingLayers["story-log"]}
++       onFloatingLayerRequest={handleStoryLogFloatingLayer}
++     />
++   );
++ 
++   if (isMobileBattleLayout) {
++     const panels = [
++       { id: "actions", label: "操作", content: <div className="mobile-action-panel">{actionPanel}</div> },
++       membersPanel && { id: "members", label: "成员", content: membersPanel }
++     ].filter(Boolean);
++     const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
++ 
++     return (
++       <section ref={viewportRef} className="mobile-room-viewport mobile-battle-layout" data-action-anchored>
++         <div className="mobile-player-slot mobile-opponent-slot opponent-side">{opponentInfo}</div>
++         <div className="mobile-board-viewport mobile-board-slot board-column">{boardPanel}</div>
++         <div className="mobile-player-slot mobile-self-slot room-side">{selfInfo}</div>
++         {selectedPanel && (
++           <section ref={dockRef} className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
++             <div
++               className="mobile-tab-list"
++               ref={tabsRef}
++               role="tablist"
++               style={{ "--mobile-room-tab-count": panels.length + (storyLogPanel ? 1 : 0) }}
++             >
++               {panels.map((panel) => (
++                 <button
++                   key={panel.id}
++                   type="button"
++                   className={panel.id === selectedPanel.id ? "mobile-tab-button active" : "mobile-tab-button"}
++                   role="tab"
++                   aria-label={panel.badge == null ? panel.label : `${panel.label}，${panel.badge}条`}
++                   aria-selected={panel.id === selectedPanel.id}
++                   aria-controls={`mobile-room-panel-${panel.id}`}
++                   id={`mobile-room-tab-${panel.id}`}
++                   onClick={() => setActiveMobilePanel(panel.id)}
++                 >
++                   <span>{panel.label}</span>
++                   {panel.badge != null && <strong className="mobile-tab-badge">{panel.badge}</strong>}
++                 </button>
++               ))}
++               {storyLogPanel}
++             </div>
++             {panels.map((panel) => (
++               <div
++                 key={panel.id}
++                 ref={panel.id === "actions" ? actionsRef : undefined}
++                 className="mobile-tab-panel"
++                 role="tabpanel"
++                 id={`mobile-room-panel-${panel.id}`}
++                 aria-labelledby={`mobile-room-tab-${panel.id}`}
++                 hidden={panel.id !== selectedPanel.id}
++               >
++                 {panel.content}
++               </div>
++             ))}
++           </section>
++         )}
++       </section>
++     );
++   }
++ 
++   return (
++     <section className={battleLayoutClassName}>
++       <div className="opponent-side">
++         {opponentInfo}
++         {membersPanel}
++       </div>
++       <div className="board-column">
++         {boardPanel}
++         {actionPanel}
++       </div>
++       <div className="room-side">
++         {selfInfo}
++         {storyLogPanel}
++       </div>
++     </section>
++   );
++ }
++
+
+ ❯ .codex-run/battle-presence/baseline/src/room/RoomScreen.test.js:923:26
+    921|     expect(battleSource).toContain("floatingLayerZ={floatingLayers[\"s…
+    922|     expect(battleSource).toContain("floatingLayerZ={floatingLayers.mem…
+    923|     expect(battleSource).toContain("<div className=\"room-side\">\n   …
+       |                          ^
+    924|     expect(battleSource).not.toContain("OperationHint");
+    925|     expect(battleSource).not.toContain("{hintPanel}");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  .codex-run/battle-presence/baseline/src/styles/styleContract.test.js > root CSS entry contract > keeps art font usage semantic and opt-in
+Error: ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.codex-run\battle-presence\baseline\public\assets\fonts\WuWa-Lahai-Roi-Regular.ttf'
+ ❯ .codex-run/battle-presence/baseline/src/styles/styleContract.test.js:143:20
+    141|     const finalTypographyCss = readFileSync(new URL("./mobile-adaptive…
+    142| 
+    143|     expect(statSync(fontAssetPath).isFile()).toBe(true);
+       |                    ^
+    144|     expect(statSync(windowTitleFontAssetPath).isFile()).toBe(true);
+    145|     expect(baseCss).toContain('font-family: "Sigrika Accent Latin";');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  .codex-run/battle-presence/baseline/src/styles/styleContract.test.js > root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry
+Error: ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.codex-run\battle-presence\baseline\public\assets\recruitment\notice-board-flat-candidate.webp'
+ ❯ .codex-run/battle-presence/baseline/src/styles/styleContract.test.js:1281:20
+    1279|     expect(recruitmentBoard).toContain(".recruitment-selection-card p"…
+    1280|     expect(recruitmentBoard).toContain("color: #b53434;");
+    1281|     expect(statSync(new URL("../../public/assets/recruitment/notice-bo…
+       |                    ^
+    1282|     expect(statSync(new URL("../../public/assets/recruitment/celebrati…
+    1283|     expect(statSync(new URL("../../public/assets/recruitment/stationer…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  .tmp/release-verification/src/room/PlayerInfo.test.js > PlayerInfo labels > renders the safe practice bot portrait metadata with accessible alt text
+Error: ENOENT: no such file or directory, open 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\characters\zhunshibao.png'
+ ❯ .tmp/release-verification/src/room/PlayerInfo.test.js:196:48
+    194|     expect(brightMobileCss).not.toContain(".practice-bot-portrait-imag…
+    195| 
+    196|     const portrait = decodeRgbaPng(readFileSync(new URL("../../public/…
+       |                                                ^
+    197|     expect({ width: portrait.width, height: portrait.height }).toEqual…
+    198|     expect([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  .tmp/release-verification/src/room/PlayerInfo.test.js > PlayerInfo labels > keeps overclock text red and timer tracks state-colored across themes
+AssertionError: expected '/* Base layout, shared controls, home…' not to contain 'min-height: 44px'
+
+- Expected
++ Received
+
+- min-height: 44px
++ /* Base layout, shared controls, home entries */
++ 
++ @font-face {
++   font-family: "Sigrika Accent Latin";
++   src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype");
++   font-style: normal;
++   font-weight: 400;
++   font-display: swap;
++   unicode-range:
++     U+0030-0039,
++     U+0041-005A,
++     U+0061-007A;
++ }
++ 
++ @font-face {
++   font-family: "Sigrika Window Title";
++   src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype");
++   font-style: normal;
++   font-weight: 400;
++   font-display: swap;
++ }
++ 
++ @font-face {
++   font-family: "IRIS Dotted Songti Circle";
++   src: url("/assets/fonts/DottedSongtiCircleRegular.otf") format("opentype");
++   font-style: normal;
++   font-weight: 400;
++   font-display: swap;
++ }
++ 
++ :root {
++   color: #2d2430;
++   background: #fff8fb;
++   --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
++   --font-display-accent: "Sigrika Accent Latin";
++   --font-numeric-accent: "Sigrika Accent Latin";
++   --font-window-title: "Sigrika Window Title";
++   --font-iris-dotted: "IRIS Dotted Songti Circle", "Microsoft YaHei UI", "Microsoft YaHei", serif;
++   --font-iris-mixed: var(--font-display-accent), var(--font-iris-dotted);
++   font-family: var(--font-ui-default);
++   letter-spacing: 0;
++   --page-pad: clamp(10px, 1.6vw, 24px);
++   --fluid-gap: clamp(10px, 1.35vw, 18px);
++   --board-size: clamp(430px, 50vw, 620px);
++   --left-panel: clamp(160px, 18vw, 220px);
++   --right-panel: clamp(220px, 22vw, 280px);
++   --side-portrait: clamp(112px, 13vw, 170px);
++   --control-pad-y: clamp(9px, 0.95vw, 12px);
++   --control-pad-x: clamp(10px, 1.1vw, 14px);
++ }
++ 
++ * {
++   box-sizing: border-box;
++ }
++ 
++ body {
++   margin: 0;
++   min-width: 320px;
++   touch-action: manipulation;
++ }
++ 
++ button,
++ input,
++ select,
++ textarea {
++   font: inherit;
++ }
++ 
++ input[type="number"] {
++   appearance: textfield;
++   -moz-appearance: textfield;
++ }
++ 
++ input[type="number"]::-webkit-outer-spin-button,
++ input[type="number"]::-webkit-inner-spin-button {
++   margin: 0;
++   -webkit-appearance: none;
++ }
++ 
++ button {
++   white-space: nowrap;
++   cursor: pointer;
++   touch-action: manipulation;
++   -webkit-user-select: none;
++   user-select: none;
++ }
++ 
++ .text-display-accent {
++   font-family: var(--font-display-accent), var(--font-ui-default);
++   text-transform: uppercase;
++ }
++ 
++ .text-window-title,
++ :where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2 {
++   font-family: var(--font-window-title), var(--font-ui-default);
++ }
++ 
++ .text-rating-value,
++ .text-clock-value {
++   font-family: var(--font-numeric-accent), var(--font-ui-default);
++   font-variant-numeric: tabular-nums;
++   text-transform: uppercase;
++ }
++ 
++ .app-shell {
++   min-height: 100vh;
++   background:
++     linear-gradient(135deg, rgba(255, 232, 238, 0.9), rgba(238, 247, 255, 0.96)),
++     #fff8fb;
++ }
++ 
++ .app-shell:has(.home-screen) {
++   position: relative;
++   isolation: isolate;
++   overflow: hidden;
++   background: #f4f3f6;
++ }
++ 
++ .app-shell:has(.home-screen)::before {
++   content: "";
++   position: fixed;
++   inset: -24px;
++   z-index: -2;
++   background-image: url("/assets/home/multipurpose-classroom-bg.webp");
++   background-size: cover;
++   background-position: center;
++   filter: blur(14px) saturate(0.95);
++   transform: scale(1.04);
++ }
++ 
++ .app-shell:has(.home-screen)::after {
++   content: "";
++   position: fixed;
++   inset: 0;
++   z-index: -1;
++   background:
++     linear-gradient(135deg, rgba(255, 244, 250, 0.42), rgba(235, 246, 255, 0.4)),
++     rgba(255, 255, 255, 0.18);
++   backdrop-filter: blur(5px);
++   pointer-events: none;
++ }
++ 
++ .app-error-boundary {
++   min-height: 100dvh;
++   display: grid;
++   place-content: center;
++   gap: 12px;
++   padding: clamp(18px, 5vw, 48px);
++   text-align: center;
++   background: #f4f3f6;
++   color: #2d2430;
++ }
++ 
++ .app-error-boundary h1 {
++   margin: 0;
++   font-size: clamp(1.35rem, 4vw, 2rem);
++ }
++ 
++ .app-error-boundary p {
++   max-width: 30rem;
++   margin: 0;
++   color: rgba(45, 36, 48, 0.72);
++ }
++ 
++ .app-error-boundary button {
++   justify-self: center;
++   min-height: 42px;
++   border: 1px solid rgba(45, 36, 48, 0.16);
++   border-radius: 8px;
++   padding: 0 18px;
++   background: #ffffff;
++   color: #2d2430;
++   box-shadow: 0 10px 26px rgba(32, 24, 35, 0.12);
++ }
++ 
++ .desktop-viewport-gate {
++   min-height: 100dvh;
++   display: grid;
++   place-items: center;
++   padding: 32px;
++   color: inherit;
++ }
++ 
++ .desktop-viewport-gate-panel {
++   width: min(520px, 100%);
++   display: grid;
++   justify-items: center;
++   gap: 14px;
++   margin: 0;
++   padding: 36px 40px 40px;
++   border: 2px solid var(--bright-border, currentColor);
++   border-radius: 12px;
++   background: var(--bright-sheet, Canvas);
++   text-align: center;
++   box-shadow: var(--bright-shadow, 4px 4px 0 currentColor);
++ }
++ 
++ .desktop-viewport-gate-mark {
++   display: grid;
++   place-items: center;
++   width: 52px;
++   height: 52px;
++   border: 2px solid currentColor;
++   border-radius: 50%;
++   background: var(--bright-blue, color-mix(in srgb, currentColor 12%, Canvas));
++   font-size: 30px;
++   font-weight: 800;
++   line-height: 1;
++ }
++ 
++ .desktop-viewport-gate h1 {
++   margin: 0;
++   font-family: var(--font-window-title), var(--font-ui-default);
++   font-size: 26px;
++   line-height: 1.35;
++   text-wrap: balance;
++ }
++ 
++ .auth-screen,
++ .home-screen,
++ .room-screen,
++ .admin-screen {
++   width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
++   margin: 0 auto;
++   padding: var(--page-pad) 0;
++ }
++ 
++ .home-screen {
++   min-height: 100dvh;
++   display: flex;
++   flex-direction: column;
++ }
++ 
++ .room-screen {
++   min-height: 100dvh;
++   display: flex;
++   flex-direction: column;
++   gap: clamp(10px, 1vw, 14px);
++   overflow: visible;
++ }
++ 
++ .auth-screen {
++   min-height: 100vh;
++   display: grid;
++   place-items: center;
++ }
++ 
++ .asset-preload-screen { width: 100%; min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: var(--page-pad); background: transparent; text-align: center; }
++ 
++ .asset-preload-panel { width: min(520px, calc(100vw - 32px)); max-width: 100%; display: grid; justify-items: center; gap: 18px; border: 0; box-shadow: none; background: transparent; }
++ 
++ .preload-mark { width: 72px; aspect-ratio: 1; border: 3px solid rgba(93, 127, 232, 0.18); border-top-color: #5d7fe8; border-radius: 50%; animation: preload-spin 0.9s linear infinite; }
++ 
++ .preload-character { width: clamp(132px, 28vw, 190px); aspect-ratio: 1; display: grid; place-items: end center; overflow: hidden; background: transparent; box-shadow: none; animation: preload-character-hop 1.08s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 50% 100%; }
++ 
++ .preload-character img { width: 100%; height: 100%; object-fit: contain; background: transparent; box-shadow: none; filter: none; }
++ 
++ .asset-preload-panel p { margin: 0; color: #4f3d55; font-weight: 900; }
++ 
++ .preload-title { width: 100%; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; }
++ 
++ .preload-status { margin-top: -8px; color: rgba(79, 61, 85, 0.7); font-size: 14px; font-weight: 800; line-height: 1.4; }
++ 
++ .preload-progress-hint { text-decoration: underline; text-underline-offset: 3px; }
++ 
++ .preload-progress { --bar-h: 20px; --mascot-h: calc(var(--bar-h) * 3); width: 100%; height: var(--mascot-h); display: grid; place-items: center; }
++ 
++ .preload-progress-track { position: relative; isolation: isolate; width: calc(100% - var(--mascot-h)); height: var(--mascot-h); display: grid; align-items: center; filter: drop-shadow(3px 3px 0 rgba(91, 57, 38, 0.18)); }
++ 
++ .preload-progress-track::before { content: ""; position: absolute; z-index: 0; left: 0; top: 50%; width: 100%; height: calc(var(--bar-h) + 8px); border-radius: 10px 13px 9px 12px / 12px 9px 11px 8px; background: linear-gradient(90deg, rgba(255, 211, 103, 0.52), rgba(241, 133, 36, 0.34)); filter: blur(6px); opacity: 0.58; transform: translateY(-50%); -webkit-mask-image: linear-gradient(#000 0 0); mask-image: linear-gradient(#000 0 0); -webkit-mask-position: left center; mask-position: left center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: var(--preload-mask-size) 100%; mask-size: var(--preload-mask-size) 100%; clip-path: inset(0 calc(100% - var(--preload-mask-size)) 0 0); transition: -webkit-mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), clip-path 420ms cubic-bezier(0.16, 1, 0.3, 1); }
++ 
++ .preload-bar { position: relative; z-index: 1; height: var(--bar-h); overflow: hidden; border: 2px solid rgb(103 67 48); border-radius: 9px 12px 8px 11px / 8px 10px 9px 7px; background: radial-gradient(circle at 18% 42%, rgba(121, 83, 56, 0.09) 0 0.7px, transparent 0.9px) 0 0 / 17px 13px, linear-gradient(176deg, rgb(255 248 220) 0%, rgb(247 232 189) 100%); box-shadow: inset 0 -2px 0 rgba(125, 82, 47, 0.1); }
++ 
++ .preload-paper-fill { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: inherit; background: radial-gradient(circle at 30% 35%, rgba(255, 249, 214, 0.72) 0 1px, transparent 1.4px) 0 0 / 23px 13px, repeating-linear-gradient(166deg, transparent 0 8px, rgba(125, 66, 31, 0.12) 8px 9px, transparent 9px 15px) 0 0 / 17px 17px, linear-gradient(90deg, rgb(255 214 109) 0%, rgb(247 169 61) 50%, rgb(233 120 39) 100%); -webkit-mask-image: linear-gradient(#000 0 0); mask-image: linear-gradient(#000 0 0); -webkit-mask-position: left center; mask-position: left center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: var(--preload-mask-size) 100%; mask-size: var(--preload-mask-size) 100%; clip-path: inset(0 calc(100% - var(--preload-mask-size)) 0 0); transition: -webkit-mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), mask-size 420ms cubic-bezier(0.16, 1, 0.3, 1), clip-path 420ms cubic-bezier(0.16, 1, 0.3, 1); }
++ 
++ .preload-paper-fill::before { content: ""; position: absolute; inset: 2px 0; background: repeating-linear-gradient(92deg, transparent 0 31px, rgba(255, 248, 214, 0.62) 31px 35px, transparent 35px 54px); opacity: 0.56; }
++ 
++ .preload-mascot-anchor { position: absolute; z-index: 3; left: calc(var(--preload-progress) * 100%); top: 50%; transform: translate(-50%, -50%); transition: left 420ms cubic-bezier(0.16, 1, 0.3, 1); }
++ 
++ .preload-mascot-roll { display: block; transform: rotate(var(--preload-mascot-rotation)); transform-origin: 50% 50%; transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1); }
++ 
++ .preload-mascot-motion{display:block;transform-origin:50% 88%}
++ 
++ .preload-progress-mascot{display:block;width:auto;max-width:none;height:var(--mascot-h)}
++ 
++ .preload-progress.is-idle .preload-mascot-motion { animation: preload-mascot-breathe 1.2s ease-in-out infinite; }
++ 
++ .preload-tip { width: 100%; min-height: 3em; color: rgba(79, 61, 85, 0.78); font-size: 14px; font-weight: 700; line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
++ 
++ @keyframes preload-spin { to { transform: rotate(360deg); } }
++ 
++ @keyframes preload-character-hop { 0%, 100% { transform: translateY(0) scaleY(1); } 42% { transform: translateY(-16px) scaleY(1.01); } 58% { transform: translateY(2px) scaleY(0.985); } }
++ 
++ @keyframes preload-mascot-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.025); } }
++ 
++ @media (max-width: 640px) {
++   .asset-preload-panel { gap: 14px; }
++   .preload-character { width: clamp(124px, 42vw, 174px); }
++   .preload-progress { --bar-h: 18px; }
++ }
++ 
++ @media (prefers-reduced-motion: reduce) {
++   .preload-character, .preload-mark { animation: none; }
++   .preload-progress-track::before, .preload-paper-fill, .preload-mascot-anchor, .preload-mascot-roll { transition: none; }
++   .preload-mascot-roll { transform: none; }
++   .preload-progress.is-idle .preload-mascot-motion { animation: none; }
++ }
++ 
++ .auth-panel,
++ .panel,
++ .small-modal,
++ .shop-modal,
++ .chat-box,
++ .player-info {
++   background: rgba(255, 255, 255, 0.82);
++   border: 1px solid rgba(128, 102, 142, 0.16);
++   border-radius: 8px;
++   box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
++ }
++ 
++ .auth-panel {
++   position: relative;
++   width: min(440px, 100%);
++   padding: 26px;
++   overflow: visible;
++ }
++
++ .auth-screen {
++   height: 100dvh;
++   min-height: 100dvh;
++   place-items: start center;
++   padding-block: clamp(24px, 4dvh, 40px) 32px;
++   overflow-x: hidden;
++   overflow-y: auto;
++   overscroll-behavior: contain;
++ }
++
++ .auth-composition {
++   --auth-panel-width: 440px;
++   --auth-panel-padding: 26px;
++   --auth-panel-offset-x: 118px;
++   --auth-panel-offset-y: 117px;
++   --auth-mascot-size: 252px;
++   --auth-header-rule-space: 18px;
++   --auth-header-main-rule-bottom: 5px;
++   position: relative;
++   isolation: isolate;
++   width: min(calc(var(--auth-panel-width) + var(--auth-panel-offset-x)), 100%);
++   padding-top: var(--auth-panel-offset-y);
++   padding-left: var(--auth-panel-offset-x);
++ }
++
++ .auth-composition > .auth-panel {
++   width: min(var(--auth-panel-width), 100%);
++ }
++
++ .brand-lockup {
++   position: relative;
++   z-index: 1;
++   display: flex;
++   align-items: center;
++   min-height: 96px;
++   padding-left: 112px;
++   gap: 0;
++ }
++
++ .brand-lockup .login-title-mascot {
++   position: absolute;
++   z-index: 2;
++   bottom: calc(var(--auth-header-main-rule-bottom) - var(--auth-header-rule-space));
++   left: calc(0px - var(--auth-panel-offset-x) - var(--auth-panel-padding));
++   width: var(--auth-mascot-size);
++   height: var(--auth-mascot-size);
++   max-width: none;
++   object-fit: contain;
++   object-position: center bottom;
++   pointer-events: none;
++   user-select: none;
++ }
++
++ .brand-lockup > div {
++   min-width: 0;
++ }
++
++ .brand-lockup p,
++ .topbar p,
++ .room-header p {
++   margin: 0 0 4px;
++   color: #8a6b8f;
++ }
++
++ h1,
++ h2,
++ p {
++   margin-top: 0;
++ }
++ 
++ .auth-form {
++   display: grid;
++   gap: 14px;
++   margin-top: 24px;
++ }
++ 
++ .auth-form label {
++   display: grid;
++   gap: 6px;
++   color: #6b596d;
++ }
++
++ .auth-field {
++   display: grid;
++   gap: 6px;
++ }
++
++ .auth-label-row {
++   display: flex !important;
++   align-items: baseline;
++   justify-content: space-between;
++   gap: 12px;
++ }
++
++ .auth-label-row small {
++   color: inherit;
++   font-size: 0.75rem;
++   font-weight: 700;
++   opacity: 0.72;
++   text-align: right;
++ }
++
++ .auth-input-shell {
++   position: relative;
++ }
++
++ .auth-input-shell input {
++   width: 100%;
++   padding-right: 56px !important;
++ }
++
++ .auth-password-toggle {
++   position: absolute;
++   top: 50%;
++   right: 3px;
++   width: 44px;
++   height: 44px;
++   padding: 0;
++   border: 0;
++   background: transparent;
++   color: inherit;
++   box-shadow: none;
++   transform: translateY(-50%);
++ }
++
++ .auth-live-region {
++   position: absolute;
++   width: 1px;
++   height: 1px;
++   margin: -1px;
++   padding: 0;
++   overflow: hidden;
++   clip: rect(0 0 0 0);
++   white-space: nowrap;
++ }
++ 
++ .auth-field-error {
++   display: block;
++   font-size: 0.82rem;
++   line-height: 1.35;
++ }
++ 
++ .auth-field-error {
++   color: #b63d52;
++   font-weight: 800;
++ }
++ 
++ .auth-form input::placeholder {
++   color: #766979;
++   opacity: 0.74;
++ }
++ 
++ .auth-form input,
++ .chat-box input {
++   border: 1px solid #ddcfe2;
++   border-radius: 8px;
++   padding: 12px 14px;
++   background: white;
++   outline: none;
++ }
++ 
++ .auth-field.invalid input {
++   border-color: #b63d52;
++   box-shadow: 0 0 0 3px rgba(182, 61, 82, 0.16);
++ }
++ 
++ .segmented {
++   display: grid;
++   grid-template-columns: 1fr 1fr;
++   gap: 6px;
++   padding: 5px;
++   border-radius: 8px;
++   background: #f2e9f5;
++ }
++ 
++ .segmented button,
++ .toggle {
++   border: 0;
++   border-radius: 7px;
++   padding: 10px;
++   background: transparent;
++   color: #68536e;
++ }
++ 
++ .segmented .active,
++ .toggle.active {
++   background: #ffffff;
++   color: #2d2430;
++   box-shadow: 0 6px 18px rgba(82, 61, 90, 0.12);
++ }
++ 
++ .primary-action,
++ .secondary-action,
++ .match-button,
++ .action-bar button,
++ .chat-box button,
++ .watch-pad button,
++ .danger-action {
++   border: 0;
++   border-radius: 8px;
++   padding: var(--control-pad-y) var(--control-pad-x);
++   background: #5d7fe8;
++   color: white;
++   display: inline-flex;
++   align-items: center;
++   justify-content: center;
++   gap: 8px;
++ }
++ 
++ .primary-action,
++ .secondary-action,
++ .match-button,
++ .action-bar button,
++ .chat-box button,
++ .watch-pad button,
++ .danger-action,
++ .icon-button,
++ .close-button,
++ .utility-entry,
++ .segmented button,
++ .toggle {
++   transition: transform 160ms ease, filter 160ms ease, outline-color 160ms ease, background-color 160ms ease;
++ }
++ 
++ :is(.primary-action,
++ .secondary-action,
++ .match-button,
++ .action-bar button,
++ .chat-box button,
++ .watch-pad button,
++ .danger-action,
++ .icon-button,
++ .close-button,
++ .utility-entry,
++ .segmented button,
++ .toggle):not(.home-image-entry):not(:disabled):hover,
++ :is(.primary-action,
++ .secondary-action,
++ .match-button,
++ .action-bar button,
++ .chat-box button,
++ .watch-pad button,
++ .danger-action,
++ .icon-button,
++ .close-button,
++ .utility-entry,
++ .segmented button,
++ .toggle):not(.home-image-entry):not(:disabled):focus-visible {
++   transform: translateY(-2px);
++   outline: 2px solid rgba(93, 127, 232, 0.42);
++   outline-offset: 3px;
++   filter: brightness(1.04) saturate(1.04);
++ }
++ 
++ :is(
++   .segmented .active,
++   .toggle.active,
++   .mode-tabs button.active,
++   .mode-tabs button[aria-selected="true"],
++   .achievement-tabs button.active,
++   .achievement-tabs button[aria-selected="true"],
++   .settings-tabs button.active,
++   .shop-tabs button.active,
++   .friends-tabs button.active,
++   .shop-pagination button.active,
++   .theme-choice-button.active,
++   .theme-choice-button[aria-pressed="true"],
++   .gacha-ticket-tab.active,
++   .mobile-tab-button.active,
++   .room-mobile-menu-panel button.active,
++   .room-toggles .toggle.active,
++   .sortie-button.selected
++ ):not(:disabled) {
++   transform: translateY(1px) scale(0.985);
++   box-shadow:
++     inset 0 2px 5px rgba(45, 36, 48, 0.16),
++     0 1px 3px rgba(45, 36, 48, 0.1);
++   filter: brightness(0.985) saturate(1.03);
++ }
++ 
++ .secondary-action,
++ .action-bar button {
++   background: #ffffff;
++   color: #4f3d55;
++   border: 1px solid #dfd0e5;
++ }
++ 
++ .form-error {
++   color: #b63d52;
++   margin: 0;
++ }
++ 
++ .admin-success {
++   color: #20724a;
++   margin: 0;
++   font-weight: 800;
++ }
++ 
++ .topbar,
++ .room-header {
++   display: flex;
++   align-items: center;
++   justify-content: space-between;
++   gap: var(--fluid-gap);
++   margin-bottom: var(--fluid-gap);
++ }
++
++ .room-header {
++   margin-bottom: 0;
++ }
++
++ .room-title-line {
++   display: flex;
++   flex-wrap: wrap;
++   align-items: center;
++   gap: 6px;
++ }
++
++ .room-code-label {
++   display: inline-flex;
++   align-items: center;
++   min-height: 24px;
++   padding: 3px 9px;
++   margin-right: 2px;
++   border: 1px solid rgba(128, 102, 142, 0.14);
++   border-radius: 999px;
++   background: #f0eef2;
++   color: #7b667f;
++   font-size: 13px;
++   line-height: 1;
++   font-weight: 900;
++   white-space: nowrap;
++ }
++
++ .room-info-tag {
++   display: inline-flex;
++   align-items: center;
++   min-height: 24px;
++   padding: 3px 9px;
++   border-radius: 999px;
++   border: 1px solid rgba(128, 102, 142, 0.16);
++   font-size: 13px;
++   line-height: 1;
++   font-weight: 900;
++   white-space: nowrap;
++ }
++
++ .room-info-tag.black-side {
++   background: #17141a;
++   border-color: rgba(23, 20, 26, 0.88);
++   color: #ffffff;
++ }
++
++ .room-info-tag.white-side {
++   background: rgba(255, 255, 255, 0.94);
++   border-color: rgba(68, 55, 72, 0.18);
++   color: #2d2430;
++ }
++
++ .room-info-tag.move-count {
++   background: linear-gradient(135deg, #e8f8ed, #d6f1df);
++   border-color: rgba(65, 150, 94, 0.22);
++   color: #2c6f46;
++ }
++
++ .room-info-tag.close-countdown {
++   background: linear-gradient(135deg, #e23f4f, #b81f34);
++   border-color: rgba(161, 22, 43, 0.5);
++   color: #ffffff;
++   box-shadow: 0 8px 18px rgba(184, 31, 52, 0.2);
++ }
++
++ .topbar-actions {
++   display: flex;
++   align-items: center;
++   gap: clamp(12px, 1.2vw, 16px);
++   position: relative;
++ }
++
++ .home-screen .topbar {
++   position: relative;
++   min-height: 32px;
++   justify-content: flex-end;
++   margin-bottom: 0;
++ }
++
++ .home-title-lockup {
++   width: min(760px, 80vw);
++   margin: -24px auto 10px;
++   text-align: center;
++ }
++
++ .home-title-lockup p {
++   margin: 0 0 3px;
++   transform: translateX(-32px);
++   color: #8a6b8f;
++   font-size: clamp(18px, 1.8vw, 24px);
++   font-weight: 800;
++ }
++
++ .home-title-lockup h1 {
++   margin: 0;
++   transform: translateX(32px);
++   line-height: 1.05;
++   font-size: clamp(42px, 5vw, 68px);
++ }
++
++ .settings-action-stack {
++   position: relative;
++   width: 46px;
++   height: 42px;
++   display: grid;
++   place-items: center;
++ }
++
++ .settings-action-stack .icon-button {
++   position: relative;
++ }
++
++ .admin-top-action {
++   position: absolute;
++   right: 0;
++   top: calc(100% + 17px);
++   width: 74px;
++   height: 74px;
++   min-height: 0;
++   padding: clamp(8px, 0.9vw, 12px);
++   gap: 5px;
++   border-radius: 50%;
++   background: linear-gradient(135deg, #e9faed, #c8f0d9);
++   color: #27724a;
++   box-shadow: 0 12px 24px rgba(72, 44, 86, 0.12);
++   font-size: clamp(11px, 0.9vw, 13px);
++   font-weight: 900;
++   line-height: 1.15;
++ }
++
++ .settings-action-stack .admin-top-action {
++   border-radius: 50%;
++   background: linear-gradient(135deg, #eaffef, #c7f0d4);
++   color: #26764c;
++ }
++
++ .admin-top-action svg {
++   width: clamp(22px, 2vw, 28px);
++   height: clamp(22px, 2vw, 28px);
++ }
++
++ .admin-top-action span {
++   display: block;
++   max-width: 7ch;
++   text-align: center;
++   white-space: normal;
++   overflow-wrap: anywhere;
++ }
++
++ .icon-button,
++ .close-button {
++   display: grid;
++   place-items: center;
++   border: 0;
++   border-radius: 8px;
++   background: #fff;
++   color: #4f3d55;
++ }
++
++ .icon-button {
++   width: 42px;
++   height: 42px;
++ }
++
++ .close-button {
++   --modal-close-size: 44px;
++   --modal-close-inset: 12px;
++   width: var(--modal-close-size);
++   min-width: var(--modal-close-size);
++   height: var(--modal-close-size);
++   min-height: var(--modal-close-size);
++   padding: 0;
++   line-height: 1;
++ }
++
++ .close-button svg {
++   width: 20px;
++   height: 20px;
++ }
++
++ .icon-button.admin-top-action {
++   width: 74px;
++   height: 74px;
++   display: grid;
++   grid-template-rows: auto auto;
++   place-items: center;
++ }
++
++ .home-grid,
++ .home-grid-featured {
++   display: grid;
++   grid-template-columns: repeat(2, minmax(0, 1fr));
++   gap: var(--fluid-gap);
++ }
++ 
++ .home-grid-featured {
++   grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.55fr);
++   grid-template-areas:
++     "house match"
++     "utilities match";
++   align-items: stretch;
++   margin-top: 0;
++   margin-bottom: 0;
++ }
++ 
++ .home-player-row {
++   width: fit-content;
++   max-width: min(620px, 100%);
++   display: flex;
++   align-items: center;
++   gap: 12px;
++   margin: -2px 0 22px;
++ }
++ 
++ .home-player-plaque {
++   min-width: 0;
++   min-height: 74px;
++   display: inline-grid;
++   grid-template-columns: 58px auto auto;
++   align-items: center;
++   gap: 12px;
++   padding: 8px 14px 8px 8px;
++   border: 1px solid color-mix(in srgb, var(--plaque-color) 36%, #ffffff);
++   border-radius: 8px;
++   background:
++     linear-gradient(135deg, color-mix(in srgb, var(--plaque-color) 24%, #ffffff), rgba(255, 255, 255, 0.86)),
++     #ffffff;
++   box-shadow: 0 14px 34px color-mix(in srgb, var(--plaque-color) 18%, transparent);
++ }
++ 
++ .plaque-avatar {
++   width: 58px;
++   aspect-ratio: 1;
++   border-radius: 50%;
++   display: grid;
++   place-items: center;
++   background: linear-gradient(145deg, #fff4fb, #eaf5ff);
++   border: 1px solid rgba(137, 111, 154, 0.2);
++   overflow: hidden;
++ }
++ 
++ .plaque-avatar-mask {
++   width: 100%;
++   height: 100%;
++   display: grid;
++   place-items: center;
++   border-radius: inherit;
++   overflow: hidden;
++ }
++ 
++ .plaque-avatar img {
++   width: 54px;
++   height: 54px;
++   object-fit: contain;
++ }
++ 
++ .home-player-plaque strong {
++   font-size: 18px;
++   color: #34253c;
++ }
++ 
++ .plaque-stats {
++   min-width: 132px;
++   display: grid;
++   grid-template-columns: repeat(3, minmax(0, 1fr));
++   justify-content: center;
++   gap: 6px;
++   justify-items: center;
++   text-align: center;
++   padding: 7px 10px;
++   border-radius: 8px;
++   background: rgba(255, 255, 255, 0.72);
++   color: #2d2430;
++   font-weight: 800;
++   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
++ }
++ 
++ .plaque-mode-stat {
++   width: 100%;
++   display: grid;
++   grid-template-columns: minmax(0, 1fr);
++   grid-template-rows: minmax(22px, auto) auto;
++   align-items: center;
++   justify-content: center;
++   justify-items: center;
++   gap: 4px;
++   line-height: 1.2;
++ }
++ 
++ .plaque-mode-icon {
++   display: block;
++   width: 22px;
++   height: 22px;
++   object-fit: contain;
++   justify-self: center;
++ }
++ 
++ .plaque-mode-rank {
++   color: color-mix(in srgb, var(--plaque-color) 70%, #2d2430);
++   font-variant-numeric: tabular-nums;
++   white-space: nowrap;
++ }
++ 
++ .plaque-mode-results {
++   grid-column: 1 / -1;
++   justify-content: center;
++ }
++ 
++ .recent-result-markers {
++   display: flex;
++   min-width: 0;
++   flex-wrap: wrap;
++   align-items: center;
++   gap: 4px;
++ }
++ 
++ .recent-result-marker,
++ .recent-result-empty {
++   display: inline-grid;
++   min-width: 22px;
++   height: 22px;
++   place-items: center;
++   border-radius: 8px;
++   padding: 0 6px;
++   font-size: 12px;
++   font-weight: 900;
++   line-height: 1;
++ }
++ 
++ .recent-result-marker-win {
++   background: #def7e7;
++   color: #16663a;
++ }
++ 
++ .recent-result-marker-loss {
++   background: #ffe0e2;
++   color: #9b1c24;
++ }
++ 
++ .recent-result-empty {
++   background: #f0e8f4;
++   color: #7d6a82;
++ }
++ 
++ .plaque-online-tag {
++   white-space: nowrap;
++   align-self: center;
++   padding: 7px 12px;
++   border: 1px solid color-mix(in srgb, var(--plaque-color) 34%, #ffffff);
++   border-radius: 999px;
++   background: rgba(255, 255, 255, 0.88);
++   color: #3d3150;
++   font-size: 13px;
++   font-weight: 800;
++   box-shadow: 0 10px 24px color-mix(in srgb, var(--plaque-color) 12%, transparent);
++ }
++ 
++ .home-match-feature {
++   grid-area: match;
++   min-height: clamp(330px, 36vw, 480px);
++   border: 0;
++   border-radius: 0;
++   background: transparent;
++   color: #2d2430;
++   box-shadow: none;
++   display: grid;
++   grid-template-rows: auto auto;
++   align-content: start;
++   justify-items: center;
++   gap: clamp(8px, 1.1vw, 14px);
++   padding: 0;
++   overflow: visible;
++ }
++ 
++ .match-illustration {
++   width: min(100%, 760px);
++   height: min(100%, clamp(260px, 32vw, 430px));
++   object-fit: contain;
++   align-self: start;
++   filter: drop-shadow(0 18px 34px rgba(72, 44, 86, 0.16));
++ }
++ 
++ .match-button-large {
++   width: auto;
++   min-width: clamp(128px, 12vw, 168px);
++   min-height: clamp(42px, 4vw, 52px);
++   padding: 10px 22px;
++   border-radius: 999px;
++   font-size: clamp(15px, 1.25vw, 18px);
++   font-weight: 800;
++   justify-self: center;
++   flex-direction: row;
++   gap: 0;
++   line-height: 1.1;
++ }
++ 
++ .home-entry {
++   min-height: clamp(142px, 16vw, 184px);
++   border: 1px solid rgba(128, 102, 142, 0.16);
++   border-radius: 8px;
++   background: rgba(255, 255, 255, 0.82);
++   color: #35283a;
++   box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
++   display: grid;
++   place-items: center;
++   align-content: center;
++   gap: clamp(8px, 1vw, 10px);
++   padding: clamp(14px, 1.6vw, 20px);
++   text-align: center;
++ }
++ 
++ .house-entry {
++   grid-template-columns: minmax(0, 1fr) clamp(118px, 15vw, 180px);
++   text-align: left;
++   overflow: hidden;
++ }
++ 
++ .house-entry-secondary {
++   grid-area: house;
++   min-height: clamp(186px, 18vw, 230px);
++   align-content: stretch;
++ }
++ 
++ .entry-copy {
++   display: grid;
++   justify-items: center;
++   gap: 10px;
++   text-align: center;
++   min-width: 0;
++ }
++ 
++ .entry-portrait {
++   width: clamp(118px, 15vw, 180px);
++   height: clamp(118px, 14.5vw, 176px);
++   object-fit: contain;
++   justify-self: end;
++   align-self: center;
++   filter: drop-shadow(0 14px 22px rgba(74, 48, 88, 0.18));
++ }
++ 
++ .home-entry strong {
++   font-size: clamp(20px, 2vw, 24px);
++ }
++ 
++ .home-entry span {
++   color: #7d6a82;
++ }
++ 
++ .house-entry {
++   background: linear-gradient(135deg, rgba(255, 248, 253, 0.94), rgba(255, 238, 218, 0.9));
++ }
++ 
++ .watch-entry {
++   background: linear-gradient(135deg, rgba(247, 250, 255, 0.96), rgba(236, 244, 255, 0.9));
++ }
++ 
++ .leaderboard-entry {
++   background: linear-gradient(135deg, rgba(255, 251, 229, 0.96), rgba(235, 247, 255, 0.9));
++ }
++ 
++ .shop-entry {
++   background: linear-gradient(135deg, rgba(255, 250, 239, 0.96), rgba(255, 240, 247, 0.9));
++ }
++ 
++ .warehouse-entry {
++   background: linear-gradient(135deg, rgba(238, 253, 255, 0.96), rgba(236, 246, 232, 0.9));
++ }
++ 
++ .warehouse-entry svg {
++   color: #277f92;
++ }
++ 
++ .admin-entry {
++   background: linear-gradient(135deg, rgba(242, 248, 244, 0.96), rgba(237, 244, 255, 0.9));
++ }
++ 
++ .friends-entry {
++   background: linear-gradient(135deg, rgba(244, 255, 250, 0.96), rgba(244, 239, 255, 0.9));
++ }
++ 
++ .home-utility-grid {
++   grid-area: utilities;
++   display: grid;
++   grid-template-columns: repeat(5, clamp(72px, 6.2vw, 78px));
++   justify-content: center;
++   align-content: end;
++   gap: clamp(10px, 1.1vw, 14px);
++   align-self: end;
++   justify-self: stretch;
++   min-width: 0;
++   width: 100%;
++   max-width: 100%;
++   overflow: visible;
++ }
++ 
++ .utility-entry {
++   width: clamp(72px, 6.2vw, 78px);
++   height: clamp(72px, 6.2vw, 78px);
++   min-height: 0;
++   border-radius: 50%;
++   padding: clamp(8px, 0.9vw, 12px);
++   gap: 5px;
++   justify-self: center;
++   box-shadow: 0 12px 28px rgba(72, 44, 86, 0.12);
++ }
++ 
++ .utility-entry svg {
++   width: clamp(22px, 2vw, 28px);
++   height: clamp(22px, 2vw, 28px);
++ }
++ 
++ .utility-entry strong {
++   max-width: 7ch;
++   font-size: clamp(12px, 1vw, 14px);
++   line-height: 1.15;
++ }
++ 
++ .utility-entry span {
++   display: none;
++ }
++ 
++ .home-utility-grid .utility-entry strong {
++   font-size: clamp(11px, 0.9vw, 13px);
++ }
++ 
++
++ .home-screen {
++   --home-stage-min-w: 1200px;
++   --home-stage-min-h: 503px;
++   --home-stage-max-w: 1920px;
++   width: clamp(var(--home-stage-min-w), calc(100vw - (var(--page-pad) * 2)), var(--home-stage-max-w));
++   min-height: 100dvh;
++   height: auto;
++   display: grid;
++   grid-template-rows: auto minmax(0, 1fr) auto;
++   gap: clamp(6px, 0.8vw, 10px);
++   padding: clamp(8px, 1vw, 14px) 0;
++   overflow: visible;
++ }
++ 
++ .home-top-strip,
++ .home-footer-strip {
++   width: 100%;
++   min-height: 40px;
++   display: flex;
++   align-items: center;
++   justify-content: flex-start;
++   gap: 14px;
++   padding: 6px 14px;
++   border: 1px solid rgba(128, 102, 142, 0.12);
++   border-radius: 8px;
++   background: linear-gradient(135deg, rgba(248, 250, 255, 0.58), rgba(255, 255, 255, 0.48));
++   backdrop-filter: blur(14px) saturate(1.12);
++   box-shadow: 0 10px 28px rgba(31, 34, 48, 0.1);
++ }
++ 
++ .home-footer-strip {
++   min-height: 30px;
++   justify-content: center;
++   gap: clamp(18px, 3.2vw, 34px);
++   padding: 6px 12px;
++   background: linear-gradient(135deg, rgba(248, 247, 250, 0.56), rgba(239, 246, 248, 0.48));
++   color: #75617d;
++   font-size: 12px;
++   font-weight: 800;
++ }
++ 
++ .home-footer-strip span {
++   white-space: nowrap;
++ }
++ 
++ .home-top-brand {
++   min-width: 0;
++   display: flex;
++   align-items: baseline;
++   gap: 14px;
++   color: #4f3d55;
++   font-weight: 900;
++   white-space: nowrap;
++   overflow: hidden;
++   text-overflow: ellipsis;
++ }
++ 
++ .home-brand-title {
++   font-size: clamp(16px, 1.45vw, 20px);
++   line-height: 1;
++ }
++ 
++ .home-brand-subtitle {
++   color: #75617d;
++   font-size: clamp(12px, 1vw, 14px);
++   line-height: 1;
++ }
++ 
++ .home-top-strip .topbar-actions {
++   margin-left: auto;
++ }
++ 
++ .admin-nav-action {
++   width: auto;
++   min-width: 76px;
++   padding: 0 10px;
++   grid-auto-flow: column;
++   gap: 5px;
++   color: #26764c;
++   background: linear-gradient(135deg, #eaffef, #c7f0d4);
++   font-size: 12px;
++   font-weight: 900;
++ }
++ 
++ .home-main-panel {
++   min-height: var(--home-stage-min-h);
++   display: grid;
++   grid-template-rows: minmax(0, 1fr);
++   place-items: start center;
++   overflow: visible;
++   container-type: inline-size;
++ }
++ 
++ .home-main-panel .home-title-lockup {
++   margin: 0 auto;
++ }
++ 
++ .home-main-panel .home-title-lockup p,
++ .home-main-panel .home-title-lockup h1 {
++   transform: none;
++ }
++ 
++ .home-main-panel .home-title-lockup p {
++   font-size: clamp(13px, 1.1vw, 17px);
++ }
++ 
++ .home-main-panel .home-title-lockup h1 {
++   font-size: clamp(30px, 3.4vw, 50px);
++ }
++ 
++ .home-grid-featured {
++   position: relative;
++   display: block;
++   width: 100%;
++   aspect-ratio: 1480 / 620;
++   min-width: var(--home-stage-min-w);
++   min-height: var(--home-stage-min-h);
++   max-width: var(--home-stage-max-w);
++ }
++ 
++ .home-orientation-guard {
++   display: none;
++ }
++ 
++ .home-player-zone {
++   position: absolute;
++   left: 2%;
++   top: 0;
++   width: 36%;
++   height: 15%;
++   min-width: 0;
++   min-height: 0;
++   display: flex;
++   align-items: center;
++   justify-content: flex-start;
++   padding: 0;
++   border: 0;
++   border-radius: 0;
++   background: transparent;
++   box-shadow: none;
++   overflow: hidden;
++ }
++ 
++ .home-player-zone .home-player-row {
++   width: min(470px, 100%);
++   max-width: none;
++   margin: 0;
++   gap: 12px;
++ }
++ 
++ .home-player-zone .home-player-plaque {
++   min-height: 62px;
++   grid-template-columns: 54px minmax(0, 1fr) auto;
++   gap: 13px;
++   padding: 7px 12px 7px 7px;
++ }
++ 
++ .home-player-zone .plaque-avatar {
++   width: 54px;
++ }
++ 
++ .home-player-zone .plaque-avatar img {
++   width: 51px;
++   height: 51px;
++ }
++ 
++ .home-player-zone .home-player-plaque strong {
++   min-width: 0;
++   overflow: hidden;
++   text-overflow: ellipsis;
++   white-space: nowrap;
++   font-size: 17px;
++ }
++ 
++ .home-player-zone .plaque-stats {
++   min-width: 104px;
++   display: grid;
++   grid-template-columns: repeat(3, minmax(0, 1fr));
++   gap: 5px;
++   white-space: nowrap;
++   padding: 7px 11px;
++   font-size: 13px;
++ }
++ 
++ .home-player-zone .plaque-online-tag {
++   padding: 6px 10px;
++   font-size: 12px;
++ }
++ 
++ .home-image-entry {
++   position: relative;
++   width: 100%;
++   height: 100%;
++   border: 0;
++   border-radius: 0;
++   background: transparent;
++   box-shadow: none;
++   padding: 0;
++   appearance: none;
++   cursor: pointer;
++   display: grid;
++   place-items: center;
++   min-width: 0;
++   contain: layout paint style;
++   transition: none;
++ }
++ 
++ .home-image-entry::before {
++   content: "";
++   position: absolute;
++   inset: 0;
++   z-index: 0;
++   pointer-events: none;
++   background: aqua;
++   opacity: 0;
++   transform: translate3d(10px, 10px, 0);
++   transition: opacity 170ms ease;
++   mask-image: var(--entry-art);
++   mask-repeat: no-repeat;
++   mask-position: center;
++   mask-size: contain;
++   -webkit-mask-image: var(--entry-art);
++   -webkit-mask-repeat: no-repeat;
++   -webkit-mask-position: center;
++   -webkit-mask-size: contain;
++ }
++ 
++ .home-entry-motion {
++   position: relative;
++   z-index: 1;
++   display: block;
++   width: 100%;
++   height: 100%;
++   transform-origin: 50% 58%;
++   transition: transform 170ms cubic-bezier(0.2, 0.7, 0.2, 1);
++   will-change: transform;
++ }
++
++ .home-image-entry img {
++   display: block;
++   width: 100%;
++   height: 100%;
++   object-fit: contain;
++   pointer-events: none;
++   border: 0;
++   background: transparent;
++ }
++ 
++ .home-image-entry:hover,
++ .home-image-entry:focus-visible {
++   outline: none;
++ }
++ 
++ .home-image-entry:hover::before,
++ .home-image-entry:focus-visible::before {
++   opacity: 1;
++ }
++ 
++ .house-manual-entry {
++   --entry-art: url("/assets/home/book-entry.webp");
++   position: absolute;
++   left: calc(2% + 50px);
++   top: calc(15% + 5px);
++   aspect-ratio: 709 / 858;
++   width: auto;
++   height: 66%;
++   transform-origin: 50% 58%;
++ }
++ 
++ .house-manual-entry:hover,
++ .house-manual-entry:focus-visible {
++   transform: none;
++ }
++ 
++ .house-manual-entry:hover .home-entry-motion,
++ .house-manual-entry:focus-visible .home-entry-motion {
++   transform: translate3d(0, -3px, 0) rotate(-1.4deg);
++ }
++ 
++ .home-match-feature {
++   position: absolute;
++   left: 40%;
++   top: 2%;
++   width: 52.5%;
++   height: 95%;
++   min-height: 0;
++   min-width: 0;
++   display: grid;
++   grid-template-rows: minmax(0, 1fr) auto;
++   place-items: stretch;
++   gap: clamp(8px, 0.9vw, 14px);
++   overflow: visible;
++ }
++ 
++ .match-image-entry {
++   --entry-art: url("/assets/home/fantasy-match-entry.webp");
++   aspect-ratio: 2386 / 1914;
++   width: 100%;
++   height: 100%;
++   transform-origin: 52% 58%;
++ }
++ 
++ .match-image-entry:hover,
++ .match-image-entry:focus-visible {
++   transform: none;
++ }
++ 
++ .match-image-entry:hover .home-entry-motion,
++ .match-image-entry:focus-visible .home-entry-motion {
++   transform: translate3d(0, -4px, 0) rotate(1.2deg);
++ }
++ 
++ .home-grid-featured > .home-utility-grid {
++   position: absolute;
++   left: 2%;
++   bottom: 2.5%;
++   width: min(35.5%, 500px);
++   min-height: 24%;
++   align-content: center;
++   min-width: 0;
++   padding: 0;
++   border: 0;
++   border-radius: 0;
++   background: transparent;
++   grid-template-columns: repeat(3, minmax(0, 1fr));
++   justify-content: stretch;
++   gap: clamp(8px, 0.8vw, 12px);
++ }
++ 
++ .home-grid-featured > .home-utility-grid .utility-entry svg {
++   width: clamp(19px, 1.7vw, 24px);
++   height: clamp(19px, 1.7vw, 24px);
++ }
++ 
++ .home-grid-featured > .home-utility-grid .utility-entry strong {
++   font-size: clamp(10px, 0.82vw, 12px);
++ }
++ 
++ @container (max-width: 1260px) {
++   .home-grid-featured > .home-utility-grid .utility-entry svg {
++     width: clamp(24px, 2.4vw, 30px);
++     height: clamp(24px, 2.4vw, 30px);
++   }
++ }
++ 
++ @media (max-width: 900px) and (orientation: portrait) {
++   .home-screen {
++     width: calc(100vw - (var(--page-pad) * 2));
++     min-width: 0;
++     min-height: 100dvh;
++     grid-template-rows: auto minmax(0, 1fr) auto;
++   }
++ 
++   .home-main-panel {
++     display: grid;
++   }
++ 
++   .home-orientation-guard {
++     display: none;
++   }
++ }
++ 
++ @media (max-width: 900px) and (orientation: landscape) {
++   .home-screen {
++     --home-stage-min-w: 960px;
++     --home-stage-min-h: 402px;
++   }
++ }
++ 
++
++ .home-grid-featured > .home-utility-grid .utility-entry {
++   width: 100%;
++   min-width: 0;
++   min-height: clamp(54px, 5.2cqw, 68px);
++   height: auto;
++   display: grid;
++   grid-template-columns: clamp(28px, 2.6cqw, 34px) minmax(0, 1fr);
++   align-items: center;
++   justify-items: start;
++   gap: clamp(6px, 0.7vw, 10px);
++   padding: clamp(8px, 0.9vw, 12px);
++   box-shadow: none;
++   text-align: left;
++ }
++ 
++ .home-grid-featured > .home-utility-grid .utility-entry-icon {
++   width: clamp(28px, 2.6cqw, 34px);
++   height: clamp(28px, 2.6cqw, 34px);
++   display: grid;
++   place-items: center;
++ }
++ 
++ .home-grid-featured > .home-utility-grid .utility-entry > strong {
++   grid-column: 2;
++ }
++ 
++ @container (max-width: 1260px) {
++   .home-grid-featured > .home-utility-grid .utility-entry {
++     grid-template-columns: 1fr;
++     justify-items: center;
++     gap: 2px;
++     text-align: center;
++   }
++ 
++   .home-grid-featured > .home-utility-grid .utility-entry-icon,
++   .home-grid-featured > .home-utility-grid .utility-entry > strong {
++     grid-column: auto;
++     grid-row: auto;
++   }
++ }
++
++ .home-grid-featured > .home-utility-grid .utility-entry:disabled,
++ .home-grid-featured > .home-utility-grid .utility-entry[aria-disabled="true"] {
++   background: #d8d4d0;
++   border-color: #92877f;
++   color: #7b736d;
++   box-shadow: none;
++   cursor: not-allowed;
++   filter: grayscale(0.95) saturate(0.4);
++   opacity: 0.72;
++   pointer-events: auto;
++   transform: none;
++ }
++ 
++ .home-grid-featured > .home-utility-grid .utility-entry:disabled:hover,
++ .home-grid-featured > .home-utility-grid .utility-entry:disabled:focus-visible,
++ .home-grid-featured > .home-utility-grid .utility-entry:disabled:active,
++ .home-grid-featured > .home-utility-grid .utility-entry[aria-disabled="true"]:hover,
++ .home-grid-featured > .home-utility-grid .utility-entry[aria-disabled="true"]:focus-visible,
++ .home-grid-featured > .home-utility-grid .utility-entry[aria-disabled="true"]:active {
++   background: #d8d4d0;
++   border-color: #92877f;
++   color: #7b736d;
++   box-shadow: none;
++   filter: grayscale(0.95) saturate(0.4);
++   transform: none;
++ }
++
++ .message-board-modal {
++   width: min(460px, calc(100vw - (var(--page-pad) * 2)));
++   display: grid;
++   gap: 14px;
++   text-align: left;
++   background: rgba(255, 255, 255, 0.9);
++   border: 1px solid rgba(128, 102, 142, 0.16);
++   border-radius: 8px;
++   box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
++   padding: 24px;
++ }
++ 
++ .message-board-modal h2 {
++   margin: 0;
++ }
++ 
++ .message-board-modal textarea {
++   height: 480px;
++   min-height: 480px;
++   resize: vertical;
++ }
++ 
++ .message-board-counter {
++   margin-top: -8px;
++   color: #7d6a82;
++   font-size: 13px;
++   text-align: right;
++ }
++ 
++ .message-board-modal .primary-action {
++   justify-self: end;
++ }
++ 
++ .ui-unavailable-shake {
++   animation: ui-unavailable-shake var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
++ }
++ 
++ @keyframes ui-unavailable-shake {
++   0%,
++   100% {
++     translate: 0 0;
++   }
++ 
++   12%,
++   36%,
++   60%,
++   84% {
++     translate: -5px 0;
++   }
++ 
++   24%,
++   48%,
++   72% {
++     translate: 5px 0;
++   }
++ }
++ 
++ @media (prefers-reduced-motion: reduce) {
++   .ui-unavailable-shake {
++     animation: ui-unavailable-pulse var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
++   }
++ 
++   @keyframes ui-unavailable-pulse {
++     0%,
++     100% {
++       filter: none;
++     }
++ 
++     35%,
++     65% {
++       filter: brightness(1.12);
++     }
++   }
++ }
++ 
++ .connection-notice {
++   position: fixed;
++   top: max(12px, env(safe-area-inset-top));
++   left: 50%;
++   transform: translateX(-50%);
++   z-index: 999;
++   display: flex;
++   align-items: center;
++   gap: 12px;
++   width: max-content;
++   max-width: calc(100vw - 24px);
++   padding: 10px 14px;
++   border: 2px solid currentColor;
++   border-radius: 8px;
++   background: var(--theme-bg, Canvas);
++   color: var(--theme-text, CanvasText);
++   box-shadow: 2px 3px 0 currentColor;
++   font-size: 14px;
++   line-height: 1.5;
++ }
++ .connection-notice button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
++
++ .skill-description {
++   min-width: 0;
++   color: inherit;
++   line-height: 1.55;
++ }
++ 
++ .skill-description-body {
++   white-space: pre-wrap;
++   overflow-wrap: anywhere;
++ }
++ 
++ .skill-overclock-line {
++   margin-bottom: 4px;
++   color: #b42335;
++   font-weight: 900;
++ }
++ 
++ .skill-overclock-badge {
++   display: inline-flex;
++   align-items: center;
++   min-height: 24px;
++   padding: 2px 8px;
++   border: 1px solid #d88f99;
++   border-radius: 999px;
++   background: #f8e8ea;
++   color: #a82335;
++   font-size: 12px;
++   font-weight: 900;
++   line-height: 1.2;
++   white-space: nowrap;
++ }
++ 
++ .skill-trait-token {
++   all: unset;
++   position: relative;
++   display: inline-flex;
++   align-items: center;
++   padding: 0;
++   border: 0;
++   border-radius: 0;
++   background: transparent;
++   color: inherit;
++   font: inherit;
++   font-weight: 900;
++   line-height: inherit;
++   text-decoration-line: underline;
++   text-decoration-style: dotted;
++   text-decoration-thickness: 1px;
++   text-underline-offset: 3px;
++   white-space: nowrap;
++   cursor: pointer;
++   touch-action: manipulation;
++   box-shadow: none;
++   transition: color 140ms ease, opacity 140ms ease, text-decoration-thickness 140ms ease;
++ }
++ 
++ .skill-trait-token:hover,
++ .skill-trait-token[aria-expanded="true"] {
++   background: transparent;
++   text-decoration-style: solid;
++   text-decoration-thickness: 2px;
++ }
++ 
++ .skill-trait-token:active {
++   background: transparent;
++   opacity: 0.68;
++ }
++ 
++ .skill-trait-token:focus-visible {
++   border-radius: 2px;
++   outline: 2px solid currentColor;
++   outline-offset: 2px;
++   box-shadow: none;
++ }
++ 
++ .skill-trait-popover {
++   --skill-trait-enter-y: 4px;
++   position: fixed;
++   z-index: calc(var(--room-floating-z, 180) + 21);
++   box-sizing: border-box;
++   width: min(280px, calc(100vw - 24px));
++   border: 1px solid rgba(130, 105, 149, 0.3);
++   border-radius: 10px;
++   background: rgba(255, 255, 255, 0.98);
++   color: #3d3244;
++   box-shadow: 0 14px 32px rgba(39, 30, 45, 0.22);
++   pointer-events: auto;
++   animation: skill-trait-popover-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
++ }
++ 
++ .skill-trait-popover[data-placement="above"] {
++   transform-origin: var(--skill-trait-arrow-x) 100%;
++ }
++ 
++ .skill-trait-popover[data-placement="below"] {
++   --skill-trait-enter-y: -4px;
++   transform-origin: var(--skill-trait-arrow-x) 0%;
++ }
++ 
++ .skill-trait-popover-content {
++   max-height: min(44dvh, calc(100dvh - 24px));
++   overflow: auto;
++   padding: 12px 14px;
++   overscroll-behavior: contain;
++ }
++ 
++ .skill-trait-popover::before,
++ .skill-trait-popover::after {
++   content: "";
++   position: absolute;
++   left: var(--skill-trait-arrow-x);
++   width: 0;
++   height: 0;
++   transform: translateX(-50%);
++   border: 7px solid transparent;
++ }
++ 
++ .skill-trait-popover[data-placement="above"]::before {
++   top: 100%;
++   border-top-color: rgba(130, 105, 149, 0.3);
++ }
++ 
++ .skill-trait-popover[data-placement="above"]::after {
++   top: calc(100% - 1px);
++   border-top-color: rgba(255, 255, 255, 0.98);
++ }
++ 
++ .skill-trait-popover[data-placement="below"]::before {
++   bottom: 100%;
++   border-bottom-color: rgba(130, 105, 149, 0.3);
++ }
++ 
++ .skill-trait-popover[data-placement="below"]::after {
++   bottom: calc(100% - 1px);
++   border-bottom-color: rgba(255, 255, 255, 0.98);
++ }
++ 
++ .skill-trait-popover strong {
++   display: block;
++   color: #8a3656;
++   font-size: 14px;
++   font-weight: 900;
++ }
++ 
++ .skill-trait-popover p {
++   margin: 6px 0 0;
++   font-size: 13px;
++   font-weight: 700;
++   line-height: 1.55;
++ }
++ 
++ @media (pointer: coarse) {
++   .skill-trait-token {
++     min-height: 0;
++     padding-inline: 2px;
++   }
++ 
++   .skill-trait-token::before {
++     content: "";
++     position: absolute;
++     inset: -12px -4px;
++   }
++ }
++ 
++ @media (prefers-reduced-motion: reduce) {
++   .skill-trait-token {
++     transition: none;
++   }
++ 
++   .skill-trait-popover {
++     animation: none;
++   }
++ }
++ 
++ @keyframes skill-trait-popover-in {
++   from {
++     opacity: 0;
++     transform: translateY(var(--skill-trait-enter-y)) scale(0.98);
++   }
++   to {
++     opacity: 1;
++     transform: translateY(0) scale(1);
++   }
++ }
++
++
+
+ ❯ .tmp/release-verification/src/room/PlayerInfo.test.js:379:25
+    377|     expect(baseCss).toContain("z-index: calc(var(--room-floating-z, 18…
+    378|     expect(baseCss).toContain(".skill-trait-token::before");
+    379|     expect(baseCss).not.toContain("min-height: 44px");
+       |                         ^
+    380|     const traitTokenSelector = ".app-shell.player-theme-enabled.theme-…
+    381|     const traitTokenRuleStart = brightSchoolCss.indexOf(traitTokenSele…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  .tmp/release-verification/src/room/RoomScreen.test.js > RoomScreen helpers > uses the mode label while replacing the special duel room value with ERROR
+AssertionError: expected '<header class="room-header"><div clas…' to contain '星炬AB123'
+
+Expected: "星炬AB123"
+Received: "<header class="room-header"><div class="room-title-stack"><p class="room-title-line"><span class="room-code-label match-classification-tag is-rated" title="升降级对局" aria-label="升降级对局 星炬 AB123">星炬 AB123</span></p></div></header>"
+
+ ❯ .tmp/release-verification/src/room/RoomScreen.test.js:263:28
+    261|     expect(specialMarkup).toContain("星炬 ERROR");
+    262|     expect(specialMarkup).not.toContain("PRIVATE // DATA CORRUPTED");
+    263|     expect(ordinaryMarkup).toContain("星炬AB123");
+       |                            ^
+    264|     expect(source).toContain('className={isSigrikaCandyDuel ? "sigrika…
+    265|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  .tmp/release-verification/src/styles/styleContract.test.js > root CSS entry contract > keeps art font usage semantic and opt-in
+Error: ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\fonts\WuWa-Lahai-Roi-Regular.ttf'
+ ❯ .tmp/release-verification/src/styles/styleContract.test.js:142:20
+    140|     const finalTypographyCss = readFileSync(new URL("./mobile-adaptive…
+    141| 
+    142|     expect(statSync(fontAssetPath).isFile()).toBe(true);
+       |                    ^
+    143|     expect(statSync(windowTitleFontAssetPath).isFile()).toBe(true);
+    144|     expect(baseCss).toContain('font-family: "Sigrika Accent Latin";');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+ FAIL  .tmp/release-verification/src/styles/styleContract.test.js > root CSS entry contract > keeps commerce recruitment.css as an import-only commerce sub-entry
+Error: ENOENT: no such file or directory, stat 'C:\codex\SigrikaGo\.tmp\release-verification\public\assets\recruitment\notice-board-flat-candidate.webp'
+ ❯ .tmp/release-verification/src/styles/styleContract.test.js:1266:20
+    1264|     expect(recruitmentBoard).toContain(".recruitment-selection-card p"…
+    1265|     expect(recruitmentBoard).toContain("color: #b53434;");
+    1266|     expect(statSync(new URL("../../public/assets/recruitment/notice-bo…
+       |                    ^
+    1267|     expect(statSync(new URL("../../public/assets/recruitment/celebrati…
+    1268|     expect(statSync(new URL("../../public/assets/recruitment/stationer…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯
+
+ FAIL  .codex-run/commit-scope/.codex-run/opening-index-review/src/room/RoomScreen.test.js > RoomScreen helpers > keeps desktop room controls aligned and overlays above side controls
+AssertionError: expected '/* Bright School room replay/battle r…' to contain 'grid-template-columns: minmax(0, 1fr)…'
+
+- Expected
++ Received
+
+- grid-template-columns: minmax(0, 1fr) auto auto !important
++ /* Bright School room replay/battle readability fixes. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
++   display: grid !important;
++   grid-template-columns: minmax(0, 1fr) !important;
++   align-items: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-toggles {
++   justify-self: end !important;
++   justify-content: flex-end !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-mobile-exit {
++   justify-self: end !important;
++   border: 2px solid #4a3736 !important;
++   box-shadow: 3px 3px 0 #4a3736 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-exit {
++   background: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   background-color: #eaf8ff !important;
++   background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
++   border-color: #7dbfe6 !important;
++   color: #225a78 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures > * {
++   min-height: 36px !important;
++   box-sizing: border-box !important;
++   align-items: center !important;
++   padding-block: 6px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-step-indicator {
++   display: inline-grid !important;
++   place-items: center !important;
++   justify-content: center !important;
++   text-align: center !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info {
++   overflow: visible !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character {
++   width: 100% !important;
++   height: var(--side-portrait) !important;
++   min-height: var(--side-portrait) !important;
++   background: radial-gradient(circle at 50% 58%, rgba(255, 158, 187, 0.28), rgba(255, 250, 240, 0.86) 66%) !important;
++   border: 2px dashed rgba(74, 55, 54, 0.42) !important;
++   border-radius: 16px !important;
++   box-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap.no-character {
++   width: 46px !important;
++   height: 46px !important;
++   min-height: 46px !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character {
++   height: calc(var(--side-portrait) + 4px) !important;
++   min-height: calc(var(--side-portrait) + 4px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait {
++   background: #2b2b2b !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.white-portrait {
++   background: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait::after {
++   border-color: rgba(255, 255, 255, 0.42) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.no-character-player .meta-placeholder {
++   visibility: hidden !important;
++   pointer-events: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   width: 100% !important;
++   background: var(--tutorial-choice-background, #e4f8dc) !important;
++   color: #14532d !important;
++   border-color: rgba(74, 55, 54, 0.92) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar:not(.tutorial-choice-actions) button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   flex: 1 1 0 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:hover,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:focus-visible {
++   background: var(--tutorial-choice-hover-background, #d7f5ca) !important;
++   color: #0f3f24 !important;
++   border-color: var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar {
++   width: 100% !important;
++   justify-content: stretch !important;
++   align-items: center !important;
++   gap: 10px !important;
++   padding: 8px 12px !important;
++   box-sizing: border-box !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action {
++   box-shadow:
++     0 0 0 3px rgba(245, 158, 11, 0.2),
++     3px 3px 0 var(--bright-border) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn {
++   background:
++     linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)),
++     #fff0a6 !important;
++   background-color: #fff0a6 !important;
++   background-image: linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)) !important;
++   border-color: #d18b17 !important;
++   color: #3f2b08 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .name-button,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .player-meta span,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures > * {
++   color: #3f2b08 !important;
++ }
++
++ /* Bright School tutorial reply choices reuse the home utility card hover motion. */
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button {
++   transition:
++     transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
++     filter 160ms ease-out,
++     background-color 160ms ease-out,
++     border-color 160ms ease-out,
++     color 160ms ease-out !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled) {
++   box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important;
++   filter: saturate(1.04) brightness(1.01) !important;
++   transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:active:not(:disabled),
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action:active:not(:disabled) {
++   background: var(--tutorial-choice-active-background, #ffd6e7) !important;
++   color: #7a1d3d !important;
++   border-color: var(--bright-border) !important;
++   transform: translateY(1px) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++   box-shadow: 1px 1px 0 #3d2b25 !important;
++   filter: brightness(0.98) saturate(1.02) !important;
++   transform: translateY(1px) rotate(var(--utility-tilt, 0deg)) scale(0.98) !important;
++ }
++
++ @media (prefers-reduced-motion: reduce) {
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button,
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:hover:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:focus-visible:not(:disabled),
++   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-choice-actions button:active:not(:disabled) {
++     transition-duration: 1ms !important;
++     transform: none !important;
++   }
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip-wrap {
++   z-index: var(--room-floating-z, 60) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-detail-panel {
++   z-index: var(--room-floating-z, 80) !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button {
++   min-height: 0 !important;
++   padding: 0 !important;
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   text-shadow: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
++   filter: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side {
++   background: #1f1714 !important;
++   background-image: none !important;
++   color: #ffffff !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side :where(span, strong, small) {
++   color: #ffffff !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side {
++   background: #ffffff !important;
++   background-image: none !important;
++   color: #1f1714 !important;
++   border: 3px solid #1f1714 !important;
++   box-shadow: none !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.white-side :where(span, strong, small) {
++   color: #1f1714 !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row::after,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::before,
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::after {
++   background: transparent !important;
++   background-color: transparent !important;
++   background-image: none !important;
++   color: #3d2b25 !important;
++   border: 0 !important;
++   outline: 0 !important;
++   box-shadow: none !important;
++   border-radius: 0 !important;
++   clip-path: none !important;
++ }
++
++ .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen :where(
++   .room-code-label,
++   .room-info-tag,
++   .toggle,
++   .room-mobile-exit,
++   .room-mobile-menu-toggle,
++   .room-mobile-menu-panel button,
++   .mobile-tab-button,
++   .action-bar button,
++   .decision-actions button,
++   .replay-bar button,
++   .chat-toggle-button,
++   .chat-exit-action,
++   .name-button,
++   .rank-tag,
++   .rating-tag,
++   .captures > *,
++   .digital-timer,
++   .timer-track,
++   .timer-track span,
++   .skill-chip
++ ) {
++   box-shadow: none !important;
++   filter: none !important;
++   text-shadow: none !important;
++ }
++
++
+
+ ❯ .codex-run/commit-scope/.codex-run/opening-index-review/src/room/RoomScreen.test.js:945:27
+    943| 
+    944|     expect(brightRoomCss).toContain(".desktop-room-screen .room-header…
+    945|     expect(brightRoomCss).toContain("grid-template-columns: minmax(0, …
+       |                           ^
+    946|     expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !im…
+    947|     expect(brightRoomCss).toContain("background-image: linear-gradient…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯
+
+
+ Test Files  14 failed | 12 passed (26)
+      Tests  12 failed | 786 passed (798)
+   Start at  09:54:43
+   Duration  44.85s (transform 6.63s, setup 0ms, collect 16.92s, tests 13.02s, environment 2.03s, prepare 2.88s)
+

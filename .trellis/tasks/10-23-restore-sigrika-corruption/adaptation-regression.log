@@ -1,0 +1,1391 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/app src/audio src/home src/modals/HouseModal src/modals/house src/modals/warehouse src/styles scripts/checkBuiltCssContracts.test.js
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/app/startupNetwork.dom.test.jsx (5 tests) 4418ms
+   ✓ startup network recovery > a music 503 falls back while authenticated startup still enters home  2019ms
+   ✓ startup network recovery > a me 503 preserves session and a retry restores startup; a confirmed 401 logs out  2132ms
+ ✓ src/home/MatchCharacterSelection.dom.test.jsx (14 tests) 4265ms
+   ✓ match card character selection > keeps practice selection independent, preserves difficulty through closing the picker, and starts explicitly  959ms
+   ✓ match card character selection > persists separate entries and sends the shown identity instead of the default  996ms
+   ✓ match card character selection > starts team matchmaking directly from the picker and preserves the lineup for card quick starts  713ms
+   ✓ match card character selection > keeps selection usable when storage is unavailable  309ms
+ ✓ src/home/HomeScreen.dom.test.jsx (9 tests) 2086ms
+   ✓ HomeScreen practice difficulty picker > opens three levels and starts the selected one with a random color  843ms
+ ✓ src/home/MatchModeExpansion.dom.test.jsx (8 tests) 2532ms
+   ✓ Spark mode expansion > expands without queuing, keeps practice available, and queues only the regular child  811ms
+   ✓ Spark mode expansion > starts the existing capture challenge with its required payload  328ms
+   ✓ Spark mode expansion > returns focus to Spark, disables hidden children and resets after reopening  314ms
+   ✓ Spark mode expansion > opens 标准对弈 before its single child queues, and restores category focus  336ms
+ ✓ src/home/CandyEffectCancellation.dom.test.jsx (5 tests) 1889ms
+   ✓ selection card candy cancellation > cancels blocked Sigrika without selecting or closing, then restores her availability  767ms
+   ✓ selection card candy cancellation > keeps failed keyboard cancellation isolated and lets the user retry  454ms
+ ❯ src/modals/house/HouseHandbook.dom.test.jsx (8 tests | 1 failed) 1026ms
+   ✓ member handbook pages > switches the visible page through bookmarks and keeps decoration actions working  381ms
+   ✓ member handbook pages > keeps hidden-character strips disabled without exposing identity or opening details 72ms
+   ✓ member handbook pages > keeps all ten slices in catalog order and opens the existing character details 155ms
+   ✓ member handbook pages > keeps mobile guide activation direct and restores focus from touch details 135ms
+   ✓ member handbook pages > does not latch a mobile preview when a synthetic guide activation returns focus 79ms
+   ✓ member handbook pages > places default stones first and resets an equipped decoration through the existing action 91ms
+   ✓ member handbook pages > keeps the default option selected when no decorations are owned 49ms
+   × member handbook pages > keeps the corrupted archive separate from normal book navigation 62ms
+     → Unable to find an accessible element with the role "img" and name "西格莉卡？"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "关闭部员手册":
+  [36m<button[39m
+    [33maria-label[39m=[32m"关闭部员手册"[39m
+    [33mclass[39m=[32m"close-button"[39m
+  [36m/>[39m
+
+  Name "西格莉卡？":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"西格莉卡？"[39m
+    [33mclass[39m=[32m"handbook-puzzle-tile"[39m
+    [33mdata-character-key[39m=[32m"sigrika"[39m
+    [33mdata-home-guide[39m=[32m"sigrika-card"[39m
+    [33mdata-ui-sound[39m=[32m"none"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"西格莉卡"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "猪小仙的数据已损坏":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"猪小仙的数据已损坏"[39m
+    [33mclass[39m=[32m"handbook-puzzle-tile"[39m
+    [33mdata-character-key[39m=[32m"baconbits"[39m
+    [33mdata-ui-sound[39m=[32m"none"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"house-header window-sticker-header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "部员手册":
+  [36m<h2[39m
+    [33mclass[39m=[32m"window-title-sticker"[39m
+    [33mstyle[39m=[32m"--window-title-width: 220px; --window-title-height: 80px;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"handbook-puzzle-portrait"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mdraggable[39m=[32m"false"[39m
+    [33msrc[39m=[32m"/assets/characters/portraits/sigrika-corrupted.webp"[39m
+    [33mstyle[39m=[32m"width: 280px; height: 280px; left: calc(2% + 106px); top: -32.5px;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app-shell player-theme-enabled theme-bright-school"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"modal-backdrop sigrika-corruption-house-backdrop"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"house-modal window-sticker-host handbook-modal is-sigrika-corrupted"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"关闭部员手册"[39m
+            [33mclass[39m=[32m"close-button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"house-header window-sticker-header"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"window-title-sticker"[39m
+              [33mstyle[39m=[32m"--window-title-width: 220px; --window-title-height: 80px;"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"window-title-sticker-label"[39m
+              [36m>[39m
+                [0m部员手册[0m
+              [36m</span>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"window-title-sticker-art"[39m
+                [33mdecoding[39m=[32m"async"[39m
+                [33mdraggable[39m=[32m"false"[39m
+                [33msrc[39m=[32m"/assets/window-titles/handbook.webp"[39m
+              [36m/>[39m
+            [36m</h2>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"handbook-puzzle-panel"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"handbook-puzzle-board"[39m
+              [33mstyle[39m=[32m"--handbook-desktop-slant: 28px; --handbook-desktop-gap: 3px; --handbook-expanded-grow: 6;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"handbook-puzzle-piece is-owned is-corruption-focus"[39m
+                [33mdata-character-id[39m=[32m"sigrika"[39m
+                [33mdata-portrait-side[39m=[32m"left"[39m
+                [33mstyle[39m=[32m"--character-theme-color: #ff9b4d;"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-label[39m=[32m"西格莉卡？"[39m
+                  [33mclass[39m=[32m"handbook-puzzle-tile"[39m
+                  [33mdata-character-key[39m=[32m"sigrika"[39m
+                  [33mdata-home-guide[39m=[32m"sigrika-card"[39m
+                  [33mdata-ui-sound[39m=[32m"none"[39m
+                  [33mdisabled[39m=[32m""[39m
+                  [33mtitle[39m=[32m"西格莉卡"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"handbook-strip-paper"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"handbook-strip-emblem"[39m
+                      [33mstyle[39m=[32m"--handbook-emblem-strength: 2.4056603773584904; mask-image: url(\"/assets/factions/roya.webp\"); -webkit-mask-image: url(\"/assets/factions/roya.webp\");"[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"handbook-puzzle-art"[39m
+                  [36m>[39m
+                    [36m<img[39m
+                      [33malt[39m=[32m""[39m
+                      [33mclass[39m=[32m"handbook-puzzle-portrait"[39m
+                      [33mdecoding[39m=[32m"async"[39m
+                      [33mdraggable[39m=[32m"false"[39m
+                      [33msrc[39m=[32m"/assets/characters/portraits/sigrika-corrupted.webp"[39m
+                      [33mstyle[39m=[32m"width: 280px; height: 280px; left: calc(2% + 106px); top: -32.5px;"[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"handbook-strip-name is-long-name"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"handbook-strip-name-text"[39m
+                    [36m>[39m
+                      [0m西格莉卡？[0m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"handbook-puzzle-piece is-unowned is-missing-data is-corruption-obscured"[39m
+                [33mdata-character-id[39m=[32m"baconbits"[39m
+                [33mdata-portrait-side[39m=[32m"right"[39m
+                [33mstyle[39m=[32m"--character-theme-color: #f59ab2;"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-label[39m=[32m"猪小仙的数据已损坏"[39m
+                  [33mclass[39m=[32m"handbook-puzzle-tile"[39m
+                  [33mdata-character-key[39m=[32m"baconbits"[39m
+                  [33mdata-ui-sound[39m=[32m"none"[39m
+                  [33mdisabled[39m=[32m""[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"handbook-missing-data"[39m
+                  [36m>[39m
+                    [36m<i />[39m
+                    [36m<i />[39m
+                    [36m<i />[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"handbook-missing-label"[39m
+                  [36m>[39m
+                    [0m暂无情报[0m
+                  [36m</span>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ src/modals/warehouse/useWarehouseInventory.dom.test.jsx (9 tests) 774ms
+ ✓ src/home/IrisDatabase.dom.test.jsx (6 tests) 473ms
+ ✓ src/modals/house/HouseCharacterGrid.dom.test.jsx (18 tests) 695ms
+ ✓ src/home/onboarding/useHomeOnboarding.dom.test.jsx (8 tests) 465ms
+ ✓ src/home/MatchModeRulesTooltip.dom.test.jsx (3 tests) 1143ms
+   ✓ mode rules hover > keeps rules out of cards and shows and dismisses desktop hover rules  522ms
+   ✓ mode rules hover > toggles mobile info separately from matching and dismisses on outside input  461ms
+ ✓ src/app/AppOverlays.dom.test.jsx (3 tests) 571ms
+   ✓ independent lazy overlay loading > blocks both customization overlays and their entry callbacks during the internal test  483ms
+ ✓ src/audio/CharacterMusicPreview.dom.test.jsx (9 tests) 505ms
+ ✓ src/modals/house/CharacterDetailDialog.dom.test.jsx (8 tests) 440ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (4 tests) 412ms
+   ✓ fixed lineup positions and selection voice > clears the middle position without moving the third and fills the first vacancy  332ms
+ ✓ src/modals/warehouse/WarehouseItemGrid.dom.test.jsx (6 tests) 480ms
+ ✓ src/home/onboarding/HomeOnboarding.dom.test.jsx (6 tests) 465ms
+ ✓ src/modals/house/CharacterCostumeDialog.dom.test.jsx (3 tests) 303ms
+ ✓ src/app/useModalScrollLock.dom.test.jsx (8 tests) 312ms
+ ✓ src/audio/backgroundMusic.dom.test.jsx (2 tests) 212ms
+ ✓ src/home/components/TopAnnouncement.dom.test.jsx (3 tests) 270ms
+ ✓ src/app/SigrikaCorruptionTransition.dom.test.jsx (3 tests) 251ms
+ ✓ src/app/LoginAssetPreloadScreen.dom.test.jsx (2 tests) 211ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (5 tests) 208ms
+ ✓ src/app/AppRoutes.dom.test.jsx (4 tests) 242ms
+ ✓ src/app/DesktopViewportGate.dom.test.jsx (6 tests) 178ms
+ ✓ src/app/AssetPreloadScreen.dom.test.jsx (1 test) 200ms
+ ✓ src/modals/warehouse/useWarehouseListRows.dom.test.jsx (1 test) 178ms
+ ✓ src/app/profileFeatures.dom.test.jsx (2 tests) 80ms
+ ✓ src/home/components/HomeStage.dom.test.jsx (2 tests) 74ms
+ ✓ src/app/useSigrikaCorruptionTransition.dom.test.jsx (6 tests) 43ms
+ ✓ src/app/siteEntryBootstrap.test.js (2 tests) 47ms
+ ✓ src/app/SigrikaCorruptionOverlay.dom.test.jsx (1 test) 56ms
+ ✓ src/app/useSiteSettingsState.dom.test.jsx (2 tests) 33ms
+ ✓ src/app/useOverlayActions.dom.test.jsx (3 tests) 46ms
+ ✓ src/app/useBackgroundMusicTrack.test.js (3 tests) 30ms
+ ✓ src/app/useRoomSessionState.dom.test.jsx (1 test) 20ms
+ ✓ src/home/HomeScreen.test.jsx (23 tests) 1316ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 848ms
+ ✓ src/styles/styleContract.test.js (58 tests) 998ms
+ ❯ src/modals/HouseModal.test.js (27 tests | 1 failed) 572ms
+   ✓ deriveCharacterRecordStats > counts only owned character records for the viewed player 2ms
+   ✓ deriveCharacterRecordStats > disables Sigrika sortie and swaps Denia portrait from candy effects 1ms
+   ✓ deriveCharacterRecordStats > splits profile record text into total games and result counts 1ms
+   ✓ deriveCharacterRecordStats > sorts profile character stats by total games descending 0ms
+   ✓ deriveCharacterRecordStats > renders the shared profile summary and semantic character record table 35ms
+   ✓ deriveCharacterRecordStats > disables profile like and report actions for self and disables repeat daily likes 17ms
+   ✓ deriveCharacterRecordStats > marks house character cards with active candy borders 7ms
+   ✓ deriveCharacterRecordStats > hides character chain badges in the house manual character grid 2ms
+   ✓ deriveCharacterRecordStats > renders unobtained puzzle entries and keeps the hidden identity anonymous 3ms
+   ✓ deriveCharacterRecordStats > uses standard portraits for nine owned members and the existing Baconbits artwork 5ms
+   ✓ deriveCharacterRecordStats > keeps equipped costume framing and animated candy portraits in the strips 2ms
+   ✓ deriveCharacterRecordStats > plays the selected character sortie voice before selecting the character 0ms
+   ✓ deriveCharacterRecordStats > does not play sortie voice or select when the sortie button is disabled 0ms
+   ✓ deriveCharacterRecordStats > stops active character voice playback only when the nested detail surface closes 1ms
+   ✓ deriveCharacterRecordStats > renders icon-only owned decorations with an accessible name in the house manual 1ms
+   ✓ deriveCharacterRecordStats > keeps the house manual focused on character and decoration management 2ms
+   × deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive 23ms
+     → expected '<link rel="preload" as="image" href="…' to contain 'alt="西格莉卡？"'
+   ✓ deriveCharacterRecordStats > renders replay access and profile stats in the resume modal 78ms
+   ✓ deriveCharacterRecordStats > reveals owned Baconbits as an ordinary puzzle detail entry 4ms
+   ✓ deriveCharacterRecordStats > keeps nested character detail dialogs as viewport overlays above the house manual 23ms
+   ✓ deriveCharacterRecordStats > renders character descriptions in the character detail dialog 91ms
+   ✓ deriveCharacterRecordStats > renders optional character CV labels without default link styling 21ms
+   ✓ deriveCharacterRecordStats > renders the character skill BGM player in the detail heading 97ms
+   ✓ deriveCharacterRecordStats > keeps the Bright School mobile house manual internally scrollable 144ms
+   ✓ deriveCharacterRecordStats > shows a title disclosure when the user owns multiple base-skill BGM tracks 2ms
+   ✓ deriveCharacterRecordStats > separates base and derived-skill music into independent slots 0ms
+   ✓ deriveCharacterRecordStats > makes the character description area replay the detail voice 2ms
+ ✓ src/styles/themeContract.test.js (38 tests) 360ms
+ ✓ src/modals/WarehouseModal.test.js (13 tests) 390ms
+ ✓ src/audio/countdownPlayback.test.js (5 tests) 141ms
+ ✓ src/app/siteEntryPreload.test.js (4 tests) 67ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 64ms
+ ✓ src/app/socketHandlers.test.js (48 tests) 62ms
+ ✓ src/home/HomeActionButton.test.jsx (2 tests) 43ms
+ ✓ src/app/AppOverlays.test.jsx (10 tests) 64ms
+ ✓ src/home/IrisDatabase.test.jsx (2 tests) 53ms
+ ✓ src/app/AssetPreloadScreen.test.jsx (19 tests) 39ms
+ ✓ src/modals/house/CharacterCostumeDialog.test.jsx (3 tests) 28ms
+ ✓ src/audio/playback.test.jsx (14 tests) 30ms
+ ✓ src/modals/house/handbookStrips.test.js (15 tests) 18ms
+ ✓ src/audio/CharacterMusicPreview.test.jsx (4 tests) 15ms
+ ✓ src/app/gameActionDelivery.test.js (5 tests) 13ms
+ ❯ src/app/App.test.js (19 tests | 1 failed) 25ms
+   ✓ App startup preload wiring > passes the music track setter into startup preload 2ms
+   ✓ App startup preload wiring > keeps startup preload independent from transient socket objects 1ms
+   ✓ App startup preload wiring > schedules playable-ready prewarm from the authenticated home shell 1ms
+   ✓ App startup preload wiring > keeps startup preload from covering a recovered room 1ms
+   ✓ App startup preload wiring > uses the bandwidth-first login preload concurrency 0ms
+   ✓ App startup preload wiring > derives the character list view through the shared catalog sorter 0ms
+   ✓ App startup preload wiring > keeps the achievement unlock callback stable for home refresh 1ms
+   ✓ App startup preload wiring > delegates recruitment badge timing out of the app composition root 1ms
+   ✓ App startup preload wiring > delegates audio runtime state out of the app composition root 1ms
+   ✓ App startup preload wiring > wraps the app root in an error boundary 0ms
+   ✓ App startup preload wiring > renders a recovery surface instead of a blank room route 0ms
+   ✓ App startup preload wiring > uses the tutorial battle preload fallback for lazy teaching battle entry 1ms
+   ✓ App startup preload wiring > passes the registered overlay setters through the shared overlay closer 1ms
+   ✓ App startup preload wiring > routes app composition props through focused shell adapters 1ms
+   ✓ App startup preload wiring > delegates mailbox summary polling out of the app composition root 1ms
+   ✓ App startup preload wiring > delegates incoming duel request state out of the app composition root 1ms
+   ✓ App startup preload wiring > blocks app-level modal dismissal while the recruitment cinematic owns input 0ms
+   ✓ App startup preload wiring > guards undersized desktop viewports at the application shell 0ms
+   × App startup preload wiring > coordinates persistent Sigrika state changes through the one-shot full-screen transition 12ms
+     → expected 'import { useCallback, useEffect, useR…' to contain '<SigrikaCorruptionTransition transiti…'
+ ✓ src/audio/skillEffectSounds.test.js (5 tests) 15ms
+ ✓ src/app/matchDelivery.test.js (8 tests) 14ms
+ ✓ src/app/resumeSession.test.js (12 tests) 13ms
+ ✓ src/app/useMatchActions.test.js (6 tests) 17ms
+ ✓ src/app/skillTraitCatalog.test.js (4 tests) 12ms
+ ✓ src/app/BattleAssetPreloadScreen.test.js (2 tests) 15ms
+ ✓ src/styles/modals/interactionMotion.test.js (5 tests) 10ms
+ ✓ src/audio/effectPlayback.test.js (7 tests) 18ms
+ ✓ src/app/gameSocket.test.js (4 tests) 10ms
+ ✓ src/app/overlayRegistry.test.js (5 tests) 9ms
+ ✓ src/app/authPortraitPrewarm.test.js (3 tests) 11ms
+ ✓ src/app/appShellProps.test.js (2 tests) 9ms
+ ✓ src/app/characterCatalog.test.js (2 tests) 7ms
+ ✓ src/app/modalDismissal.test.js (7 tests) 9ms
+ ✓ src/app/playableReadyPreload.test.js (3 tests) 7ms
+ ✓ src/app/siteSettingsCatalog.test.js (3 tests) 8ms
+ ✓ src/audio/audioSettings.test.js (6 tests) 10ms
+ ✓ src/audio/backgroundFocus.test.js (2 tests) 13ms
+ ✓ src/app/InteractionFeedback.test.js (3 tests) 7ms
+ ✓ src/app/matchTransition.test.js (5 tests) 8ms
+ ✓ src/app/roomPatch.test.js (7 tests) 15ms
+ ✓ src/app/roomSnapshot.test.js (6 tests) 7ms
+ ✓ src/audio/systemVoicePlayback.test.js (2 tests) 6ms
+ ✓ src/app/sigrikaCandyResultNavigation.test.js (1 test) 7ms
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 6ms
+ ✓ src/app/roomUserSync.test.js (4 tests) 5ms
+ ✓ src/app/sessionState.test.js (4 tests) 4ms
+ ✓ src/audio/proceduralSounds.test.js (2 tests) 5ms
+ ✓ src/styles/handbookStrips.test.js (3 tests) 5ms
+ ✓ src/app/roomNavigation.test.js (3 tests) 5ms
+ ✓ src/app/roomClock.test.js (4 tests) 5ms
+ ✓ src/app/visualTheme.test.js (4 tests) 5ms
+ ✓ scripts/checkBuiltCssContracts.test.js (4 tests) 6ms
+ ✓ src/app/useRoomSessionState.test.js (5 tests) 5ms
+ ✓ src/app/replayOpening.test.js (3 tests) 5ms
+ ✓ src/app/useMatchSessionState.test.js (2 tests) 6ms
+ ✓ src/audio/backgroundDucking.test.js (1 test) 4ms
+ ✓ src/app/useOverlayState.test.js (2 tests) 4ms
+ ✓ src/audio/backgroundMusicPause.test.js (2 tests) 4ms
+ ✓ src/audio/voicePlaybackProfiles.test.js (2 tests) 4ms
+ ✓ src/audio/countdownVoiceTiming.test.js (3 tests) 4ms
+ ✓ src/app/useRecruitmentReadyState.test.js (2 tests) 4ms
+ ✓ src/app/useMailboxSummary.test.js (2 tests) 5ms
+ ✓ src/app/useRoomMemory.test.js (2 tests) 3ms
+ ✓ src/app/useOnboardingStory.test.js (1 test) 3ms
+ ✓ src/audio/voiceBackgroundIndependence.test.js (1 test) 3ms
+ ✓ src/app/useIncomingDuelState.test.js (1 test) 3ms
+ ✓ src/app/useHomeUserRefresh.test.js (1 test) 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/App.test.js > App startup preload wiring > coordinates persistent Sigrika state changes through the one-shot full-screen transition
+AssertionError: expected 'import { useCallback, useEffect, useR…' to contain '<SigrikaCorruptionTransition transiti…'
+
+- Expected
++ Received
+
+- <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} />
++ import { useCallback, useEffect, useRef, useState } from "react";
++ import { api } from "../api/client.js";
++ import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
++ import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
++ import { deploymentSocketBase } from "../shared/preloadAssets.js";
++ import { BackgroundMusic } from "../audio/playback.jsx";
++ import { ConfirmModal } from "../modals/FeedbackModals.jsx";
++ import AppOverlays from "./AppOverlays.jsx";
++ import AppRoutes from "./AppRoutes.jsx";
++ import InteractionFeedback from "./InteractionFeedback.jsx";
++ import { initialSessionState } from "./sessionState.js";
++ import { useAppActions } from "./useAppActions.js";
++ import { useAudioRuntimeState } from "./useAudioRuntimeState.js";
++ import { useAuthSession } from "./useAuthSession.js";
++ import { useBackgroundMusicTrack } from "./useBackgroundMusicTrack.js";
++ import { useAppShellTheme } from "./useAppShellTheme.js";
++ import { buildAppOverlayProps, buildAppRouteProps } from "./appShellProps.js";
++ import { useCurrentUser } from "./useCurrentUser.js";
++ import { useGameSocketConnection } from "./useGameSocketConnection.js";
++ import { useHomeUserRefresh } from "./useHomeUserRefresh.js";
++ import { useIncomingDuelState } from "./useIncomingDuelState.js";
++ import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
++ import {
++   rootBackExitGuardEnabled,
++   topDismissibleModalKey,
++   useModalDismissal,
++   useRootBackExitGuard
++ } from "./modalDismissal.js";
++ import { APP_OVERLAYS, dismissOverlayByKey, overlayPropsFromState } from "./overlayRegistry.js";
++ import {
++   SIGRIKA_CANDY_PHASES,
++   SIGRIKA_CANDY_STORY_NODE_IDS
++ } from "../shared/sigrikaCandyArc.js";
++ import { preloadPlayableReady } from "./playableReadyPreload.js";
++ import { useMailboxSummary } from "./useMailboxSummary.js";
++ import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
++ import { useOnboardingStory } from "./useOnboardingStory.js";
++ import { useHomeOnboarding } from "../home/onboarding/useHomeOnboarding.js";
++ import HomeOnboarding from "../home/onboarding/HomeOnboarding.jsx";
++ import { useMatchSessionState } from "./useMatchSessionState.js";
++ import { useOverlayState } from "./useOverlayState.js";
++ import { useModalScrollLock } from "./useModalScrollLock.js";
++ import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
++ import { useRoomSessionState } from "./useRoomSessionState.js";
++ import SigrikaCorruptionOverlay from "./SigrikaCorruptionOverlay.jsx";
++ import SigrikaCorruptionTransition from "./SigrikaCorruptionTransition.jsx";
++ import {
++   SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS,
++   useSigrikaCorruptionTransition
++ } from "./useSigrikaCorruptionTransition.js";
++ import { useRoomMemory } from "./useRoomMemory.js";
++ import { useSiteSettingsState } from "./useSiteSettingsState.js";
++ import { usePlayableReadyPreload } from "./usePlayableReadyPreload.js";
++ import { useStartupPreload } from "./useStartupPreload.js";
++ import { useSyncedRefs } from "./useSyncedRefs.js";
++ import { useToastQueue } from "./useToastQueue.js";
++ import { exitSigrikaCandySpectatorResult } from "./sigrikaCandyResultNavigation.js";
++ import ConnectionNotice from "./ConnectionNotice.jsx";
++ import DesktopViewportGate from "./DesktopViewportGate.jsx";
++ 
++ const SOCKET_BASE = deploymentSocketBase();
++ const EXIT_CONFIRM_TITLE = "\u786e\u5b9a\u8981\u9000\u51fa\u6e38\u620f\u5417\uff1f";
++ const EXIT_CONFIRM_MESSAGE = "\u518d\u6b21\u786e\u8ba4\u540e\u5c06\u79bb\u5f00\u5f53\u524d\u6e38\u620f\u9875\u9762\u3002";
++ const EXIT_CONFIRM_TEXT = "\u9000\u51fa\u6e38\u620f";
++ 
++ export default function App({ initialCharacters = CHARACTERS, initialSiteSettings } = {}) {
++   const shellRef = useRef(null);
++   useModalScrollLock(shellRef);
++   const initialSession = initialSessionState();
++   const [token, setToken] = useState(initialSession.token);
++   const [view, setView] = useState(initialSession.view);
++   const [socket, setSocket] = useState(null);
++   const {
++     matchStart,
++     matchSuccess,
++     setMatchStart,
++     setMatchSuccess
++   } = useMatchSessionState();
++   const { overlayState, overlaySetters } = useOverlayState();
++   const {
++     audioResumeSignal,
++     audioSettings,
++     resumeAudioPlayback,
++     setAudioSettings
++   } = useAudioRuntimeState();
++   const {
++     pendingSkill,
++     replayStep,
++     resultModalOpen,
++     room,
++     setDismissedResultRoom,
++     setPendingSkill,
++     setReplayStep,
++     setRoom
++   } = useRoomSessionState();
++   const [characters, setCharacters] = useState(initialCharacters);
++   const [musicTracks, setMusicTracks] = useState(MUSIC_TRACKS);
++   const [adminTab, setAdminTab] = useState("overview");
++   const { incomingDuel, setIncomingDuel } = useIncomingDuelState();
++   const [showExitConfirm, setShowExitConfirm] = useState(false);
++   const [roomBackRequestId, setRoomBackRequestId] = useState(0);
++   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
++   const [assetProgress, setAssetProgress] = useState(0);
++   const [startupError, setStartupError] = useState(null);
++   const [startupRetry, setStartupRetry] = useState(0);
++   const { removeToast, showToast, toasts } = useToastQueue();
++   const {
++     confirmEntry: confirmSigrikaCorruptionEntry,
++     runTransition: runSigrikaCorruptionTransition,
++     transition: sigrikaCorruptionTransition,
++     transitioning: sigrikaCorruptionTransitioning
++   } = useSigrikaCorruptionTransition();
++   const [recruitmentInteractionLocked, setRecruitmentInteractionLocked] = useState(false);
++   const [activeStoryPlayer, setActiveStoryPlayer] = useState({
++     script: null,
++     labels: null,
++     onComplete: null,
++     onExit: null,
++     onNavigate: null,
++     dismissible: true
++   });
++   const sigrikaClimaxRequestRef = useRef(false);
++   const sigrikaRecoveryRequestRef = useRef(false);
++   const [tutorialBattleSession, setTutorialBattleSession] = useState(null);
++   const openStoryPlayer = useCallback((script, labels = null, options = {}) => {
++     overlaySetters.setShowOnboardingStory(false);
++     setActiveStoryPlayer({
++       script,
++       labels,
++       onComplete: options.onComplete ?? null,
++       onExit: options.onExit ?? null,
++       onNavigate: options.onNavigate ?? null,
++       dismissible: options.dismissible ?? script?.startNodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionStart
++     });
++     overlaySetters.setShowStoryPlayer(true);
++   }, [overlaySetters]);
++   const clearStoryPlayer = useCallback(() => {
++     setActiveStoryPlayer({ script: null, labels: null, onComplete: null, onExit: null, onNavigate: null, dismissible: true });
++   }, []);
++   const closeStoryPlayerOverlay = useCallback(() => {
++     const onExit = activeStoryPlayer.onExit;
++     overlaySetters.setShowOnboardingStory(false);
++     overlaySetters.setShowStoryPlayer(false);
++     clearStoryPlayer();
++     onExit?.();
++   }, [activeStoryPlayer.onExit, clearStoryPlayer, overlaySetters]);
++   const openTutorialBattleSession = useCallback((session) => {
++     overlaySetters.setShowOnboardingStory(false);
++     overlaySetters.setShowStoryPlayer(false);
++     setTutorialBattleSession({
++       ...session,
++       returnView: view === "tutorial-battle" ? "home" : view
++     });
++     setView("tutorial-battle");
++   }, [overlaySetters, view]);
++   const closeTutorialBattleSession = useCallback(() => {
++     const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
++       ? tutorialBattleSession.returnView
++       : "home";
++     setTutorialBattleSession(null);
++     setView(nextView);
++     clearStoryPlayer();
++     tutorialBattleSession?.onExit?.();
++   }, [clearStoryPlayer, tutorialBattleSession]);
++   const exitTutorialBattleToStory = useCallback(({
++     script: nextScript,
++     labels = null,
++     onComplete: nextOnComplete = null,
++     onExit: nextOnExit = null
++   } = {}) => {
++     const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
++       ? tutorialBattleSession.returnView
++       : "home";
++     setTutorialBattleSession(null);
++     setView(nextView);
++     if (nextScript) {
++       openStoryPlayer(nextScript, labels, { onComplete: nextOnComplete, onExit: nextOnExit });
++     }
++   }, [openStoryPlayer, tutorialBattleSession]);
++   const showAchievementUnlocks = useCallback((unlocks = []) => {
++     for (const unlock of unlocks) {
++       showToast(`达成成就：${unlock.name}`, "achievement");
++     }
++   }, [showToast]);
++   const { setUser, updateUser, user } = useCurrentUser();
++ 
++   const completeSigrikaCandyRecovery = useCallback(async () => {
++     if (sigrikaRecoveryRequestRef.current) return;
++     sigrikaRecoveryRequestRef.current = true;
++     try {
++       await runSigrikaCorruptionTransition({
++         direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.exit,
++         request: () => api("/api/items/rainbow-bean-candy/sigrika/recovery/complete", {
++           method: "POST",
++           token
++         }),
++         commit: (data) => updateUser(data.user)
++       });
++     } catch (error) {
++       sigrikaRecoveryRequestRef.current = false;
++       showToast(error.message, "danger");
++     }
++   }, [runSigrikaCorruptionTransition, showToast, token, updateUser]);
++ 
++   const enterSigrikaCorruption = useCallback(({ debug = false } = {}) => {
++     // The handbook player owns independent preview audio; closing it stops that BGM too.
++     overlaySetters.setShowHouse(false);
++     return runSigrikaCorruptionTransition({
++       direction: SIGRIKA_CORRUPTION_TRANSITION_DIRECTIONS.enter,
++       request: async () => {
++         if (debug) await api("/api/items/rainbow-bean-candy/sigrika/debug/jump-to-eight", { method: "POST", token });
++         return api("/api/items/rainbow-bean-candy/sigrika/climax", { method: "POST", token });
++       },
++       commit: (data) => {
++         updateUser(data.user);
++         clearStoryPlayer();
++         for (const overlay of APP_OVERLAYS) overlaySetters[overlay.setterProp]?.(false);
++       }
++     });
++   }, [clearStoryPlayer, overlaySetters, runSigrikaCorruptionTransition, token, updateUser]);
++ 
++   const handleStoryNodeEnter = useCallback(async (nodeId) => {
++     if (nodeId !== SIGRIKA_CANDY_STORY_NODE_IDS.corruptionClimax
++       || user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.corruptionStory
++       || sigrikaClimaxRequestRef.current) return;
++     sigrikaClimaxRequestRef.current = true;
++     try {
++       await enterSigrikaCorruption();
++     } catch (error) {
++       sigrikaClimaxRequestRef.current = false;
++       showToast(error.message, "danger");
++     }
++   }, [
++     enterSigrikaCorruption,
++     showToast,
++     user?.sigrikaCandyArc?.phase
++   ]);
++ 
++   useEffect(() => {
++     sigrikaClimaxRequestRef.current = false;
++     if (user?.sigrikaCandyArc?.phase !== SIGRIKA_CANDY_PHASES.recoveryStory) {
++       sigrikaRecoveryRequestRef.current = false;
++     }
++   }, [user?.sigrikaCandyArc?.phase]);
++ 
++   useEffect(() => {
++     const phase = user?.sigrikaCandyArc?.phase;
++     if (!token || overlayState.storyPlayer || activeStoryPlayer.script || sigrikaRecoveryRequestRef.current
++       || (phase !== SIGRIKA_CANDY_PHASES.corruptionStory && phase !== SIGRIKA_CANDY_PHASES.recoveryStory)) return undefined;
++     let alive = true;
++     api("/api/items/rainbow-bean-candy/sigrika/story", { token })
++       .then((data) => {
++         if (!alive || !data.storyScript) return;
++         updateUser(data.user);
++         openStoryPlayer(data.storyScript, { title: "西格莉卡的彩虹豆豆跳跳糖" }, {
++           dismissible: phase !== SIGRIKA_CANDY_PHASES.corruptionStory,
++           onExit: phase === SIGRIKA_CANDY_PHASES.recoveryStory ? completeSigrikaCandyRecovery : null
++         });
++       })
++       .catch((error) => {
++         if (alive) showToast(error.message, "danger");
++       });
++     return () => {
++       alive = false;
++     };
++   }, [
++     activeStoryPlayer.script,
++     completeSigrikaCandyRecovery,
++     openStoryPlayer,
++     overlayState.storyPlayer,
++     showToast,
++     token,
++     updateUser,
++     user?.sigrikaCandyArc?.phase
++   ]);
++   const { mailboxSummary, refreshMailboxSummary } = useMailboxSummary({
++     mailboxOpen: overlayState.mailbox,
++     token,
++     user
++   });
++   const { announcementSummary, refreshAnnouncementSummary } = useAnnouncementSummary({
++     announcementOpen: overlayState.announcements,
++     token,
++     user,
++     view
++   });
++   const homeOnboarding = useHomeOnboarding({
++     token, userId: user?.id,
++     available: view === "home" && !activeStoryPlayer.script && !tutorialBattleSession
++       && !matchStart && !matchSuccess && !resultModalOpen && !incomingDuel
++       && !user?.sigrikaCandyArc?.corrupted && !sigrikaCorruptionTransitioning,
++     overlaysOpen: Object.values(overlayState).some(Boolean),
++     overlaySetters, refreshMailboxSummary, showToast
++   });
++   const { openOnboardingStory } = useOnboardingStory({
++     onStoryExited: homeOnboarding.onStoryExited,
++     openStoryPlayer,
++     overlaySetters,
++     showToast,
++     token,
++     user,
++     view
++   });
++   const { handleRecruitmentStatusChange, recruitmentReady } = useRecruitmentReadyState({ token, user });
++   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState({ initialSettings: initialSiteSettings, refreshWhileVisible: view === "home" });
++   const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
++     audioSettings,
++     incomingDuel,
++     matchSuccess,
++     room,
++     view
++   });
++   const characterListView = characterListFromCatalog(characters);
++   const backgroundMusic = useBackgroundMusicTrack({
++     view,
++     room,
++     user,
++     matchSuccess,
++     musicTracks,
++     resultModalOpen,
++   });
++   const { appShellClassName, setVisualTheme, visualTheme } = useAppShellTheme({
++     user,
++     view
++   });
++ 
++   const refreshAuthSession = useAuthSession({
++     setStartupError,
++     fallbackCharacters: CHARACTERS,
++     setCharacters,
++     setLobbyStats,
++     setMatchStart,
++     setMatchSuccess,
++     setMusicTracks,
++     setRoom,
++     setToken,
++     setUser,
++     setView,
++     showToast,
++     updateUser
++   });
++ 
++   useStartupPreload({
++     retryKey: startupRetry,
++     setStartupError,
++     fallbackCharacters: CHARACTERS,
++     matchSuccessRef,
++     refreshSiteSettings,
++     roomRef,
++     setAssetProgress,
++     setCharacters,
++     setLobbyStats,
++     setMatchStart,
++     setMatchSuccess,
++     setMusicTracks,
++     setRoom,
++     setShowHouse: overlaySetters.setShowHouse,
++     setShowLeaderboard: overlaySetters.setShowLeaderboard,
++     setShowShop: overlaySetters.setShowShop,
++     setShowWarehouse: overlaySetters.setShowWarehouse,
++     setShowWatch: overlaySetters.setShowWatch,
++     setToken,
++     setUser,
++     setView,
++     token,
++     viewRef
++   });
++ 
++   const preloadPlayableIntent = useCallback((mode) => {
++     void preloadPlayableReady({
++       includePixi: Boolean(mode),
++       mode,
++       reason: mode ? "match-mode-intent" : "match-intent"
++     });
++   }, []);
++ 
++   usePlayableReadyPreload({
++     view,
++     user
++   });
++ 
++   const {
++     applyStoneDecoration,
++     cancelMatch,
++     closeAllOverlays,
++     closeResultModal,
++     leaveResultRoom,
++     completeMatchSuccess,
++     emitGame,
++     emitScoring,
++     handleAuth,
++     joinWatchRoom,
++     logout,
++     openAdminReplay,
++     openReplay,
++     refreshPublicCharacters,
++     requestDraw,
++     respondDraw,
++     selectCharacter,
++     selectCharacterMusic,
++     startMatch,
++     startPractice,
++     startSigrikaDuel
++   } = useAppActions({
++     matchSuccess,
++     matchSuccessRef,
++     overlaySetters,
++     room,
++     socket,
++     showToast,
++     token,
++     updateUser,
++     view,
++     setAssetProgress,
++     setCharacters,
++     setDismissedResultRoom,
++     setLobbyStats,
++     setMatchStart,
++     setMatchSuccess,
++     setPendingSkill,
++     setReplayStep,
++     setRoom,
++     setToken,
++     setUser,
++     setView
++   });
++   const isSigrikaCorrupted = Boolean(user?.sigrikaCandyArc?.corrupted);
++ 
++   const continueSigrikaCandyResult = useCallback(async ({ owner = true } = {}) => {
++     if (!owner) {
++       exitSigrikaCandySpectatorResult({
++         roomCode: room?.code,
++         socket,
++         closeResultModal,
++         setRoom,
++         setView
++       });
++       return;
++     }
++     try {
++       let data = null;
++       for (let attempt = 0; attempt < 4; attempt += 1) {
++         try {
++           data = await api("/api/items/rainbow-bean-candy/sigrika/recovery/start", {
++             method: "POST",
++             token
++           });
++           break;
++         } catch (error) {
++           if (attempt === 3 || error.status !== 409) throw error;
++           await new Promise((resolve) => window.setTimeout(resolve, 250 * (attempt + 1)));
++         }
++       }
++       if (!data?.storyScript) throw new Error("恢复剧情尚未准备完成");
++       updateUser(data.user);
++       closeResultModal();
++       setRoom(null);
++       setView("home");
++       openStoryPlayer(data.storyScript, { title: "西格莉卡恢复剧情" }, {
++         dismissible: true,
++         onExit: completeSigrikaCandyRecovery
++       });
++     } catch (error) {
++       showToast(error.message, "danger");
++     }
++   }, [closeResultModal, completeSigrikaCandyRecovery, openStoryPlayer, room?.code, setRoom, setView, showToast, socket, token, updateUser]);
++ 
++   async function refreshMusicTracks() {
++     if (!token) return;
++     const nextMusicTracks = await loadMusicTrackCatalog({ token });
++     setMusicTracks(nextMusicTracks);
++   }
++ 
++   useGameSocketConnection({
++     audioSettingsRef,
++     closeAllOverlays,
++     incomingDuelRef,
++     matchSuccessRef,
++     onSocketReconnect: resumeAudioPlayback,
++     roomRef,
++     setDismissedResultRoom,
++     setIncomingDuel,
++     setLobbyStats,
++     setMatchStart,
++     setMatchSuccess,
++     setPendingSkill,
++     setReplayStep,
++     setRoom,
++     setSocket,
++     setToken,
++     setUser,
++     setView,
++     showToast,
++     socketBase: SOCKET_BASE,
++     token,
++     updateUser,
++     userId: user?.id
++   });
++ 
++   const topModalKey = topDismissibleModalKey({
++     result: resultModalOpen,
++     matchStart: Boolean(matchStart),
++     ...overlayState
++   });
++   const dismissTopModal = useCallback(() => {
++     if (recruitmentInteractionLocked) return;
++     if (homeOnboarding.active) return;
++     if (topModalKey === "result" && room?.sigrikaCandyDuel) return;
++     if ((topModalKey === "storyPlayer" || topModalKey === "onboardingStory") && activeStoryPlayer.dismissible === false) return;
++     switch (topModalKey) {
++       case "result":
++         closeResultModal();
++         break;
++       case "matchStart":
++         cancelMatch();
++         break;
++       case "onboardingStory":
++       case "storyPlayer":
++         closeStoryPlayerOverlay();
++         break;
++       default:
++         dismissOverlayByKey(topModalKey, overlaySetters);
++         break;
++     }
++   }, [
++     cancelMatch,
++     activeStoryPlayer.dismissible,
++     closeStoryPlayerOverlay,
++     closeResultModal,
++     overlaySetters,
++     recruitmentInteractionLocked,
++     homeOnboarding.active,
++     room?.sigrikaCandyDuel,
++     topModalKey
++   ]);
++   useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal });
++   const requestRootBack = useCallback(() => {
++     if (view === "room" && room) {
++       setRoomBackRequestId((current) => current + 1);
++       return;
++     }
++     setShowExitConfirm(true);
++   }, [room, view]);
++   const exitThroughBack = useRootBackExitGuard({
++     confirmationOpen: showExitConfirm,
++     enabled: rootBackExitGuardEnabled({ activeId: topModalKey, view }),
++     onCancelExit: () => setShowExitConfirm(false),
++     onRequestExit: requestRootBack
++   });
++ 
++   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
++ 
++   useRoomMemory(room, matchSuccess?.room);
++ 
++   const overlayProps = overlayPropsFromState(overlayState, overlaySetters);
++   const routeProps = buildAppRouteProps({
++     overlayProps,
++     routeActions: {
++       emitGame,
++       emitScoring,
++       logout,
++       onAuth: handleAuth,
++       onDrawRequest: requestDraw,
++       onDrawRespond: respondDraw,
++       onOpenAdminReplay: openAdminReplay,
++       onOpenOnboardingStory: openOnboardingStory,
++       onOpenReplay: openReplay,
++       onPreloadPlayableReady: preloadPlayableIntent,
++       onRefreshCharacters: refreshPublicCharacters,
++       onRefreshMusicTracks: refreshMusicTracks,
++       onSiteSettingsChanged: setSiteSettings,
++       onToast: showToast,
++       onTutorialBattleClose: closeTutorialBattleSession,
++       onTutorialBattleComplete: tutorialBattleSession?.onComplete,
++       onTutorialBattleExitToStory: exitTutorialBattleToStory,
++       selectCharacter,
++       setAdminTab,
++       setDismissedResultRoom,
++       setPendingSkill,
++       setReplayStep,
++       setRoom,
++       setView,
++       startMatch,
++       startPractice,
++       startSigrikaDuel,
++       updateUser
++     },
++     routeState: {
++       adminTab,
++       announcementUnread: announcementSummary.hasUnread,
++       assetProgress,
++       audioSettings,
++       characters,
++       lobbyStats,
++       mailboxBadgeCount: mailboxSummary.badgeCount,
++       matchSuccess,
++       musicTracks,
++       pendingSkill,
++       recruitmentReady,
++       replayStep,
++       room,
++       roomBackRequestId,
++       siteSettings,
++       socket,
++       token,
++       tutorialBattleSession,
++       user,
++       view
++     }
++   });
++   const appOverlayProps = buildAppOverlayProps({
++     overlayActions: {
++       applyStoneDecoration,
++       clearStoryPlayer,
++       joinWatchRoom,
++       onAnnouncementSummaryChange: refreshAnnouncementSummary,
++       onEnterTutorialBattle: openTutorialBattleSession,
++       onMailboxSummaryChange: refreshMailboxSummary,
++       onMatchCancel: cancelMatch,
++       onMatchSuccessComplete: completeMatchSuccess,
++       onRecruitmentInteractionLockChange: setRecruitmentInteractionLocked,
++       onRecruitmentStatusChange: handleRecruitmentStatusChange,
++       onRemoveToast: removeToast,
++       onResultClose: closeResultModal,
++       onResultLeaveRoom: leaveResultRoom,
++       onSpecialResultContinue: continueSigrikaCandyResult,
++       onStoryPlayerClose: closeStoryPlayerOverlay,
++       onStoryNodeEnter: handleStoryNodeEnter,
++       onSigrikaCorruptionEntry: enterSigrikaCorruption,
++       openReplay,
++       openStoryPlayer,
++       selectCharacter,
++       selectCharacterMusic,
++       setAudioSettings,
++       setIncomingDuel,
++       setVisualTheme,
++       showToast,
++       updateUser
++     },
++     overlayProps,
++     overlayState: {
++       activeStoryPlayer,
++       announcementUnreadByKind: announcementSummary.unreadByKind,
++       audioSettings,
++       characterListView,
++       characters,
++       incomingDuel,
++       matchStart,
++       matchSuccess,
++       musicTracks,
++       onboardingStoryScript: activeStoryPlayer.script,
++       resultModalOpen,
++       room,
++       siteSettings,
++       socket,
++       token,
++       toasts,
++       user,
++       visualTheme
++     }
++   });
++ 
++   return (
++     <div
++       ref={shellRef}
++       aria-busy={sigrikaCorruptionTransitioning || undefined}
++       className={`${appShellClassName} ${isSigrikaCorrupted ? "is-sigrika-corrupted" : ""}`}
++     >
++       <DesktopViewportGate>
++         <BackgroundMusic
++           track={backgroundMusic}
++           audioSettings={audioSettings}
++           resumeSignal={audioResumeSignal}
++           windowFocused={Object.values(overlayState).some(Boolean) || showExitConfirm || Boolean(incomingDuel)}
++         />
++         <InteractionFeedback audioSettings={audioSettings} />
++         {isSigrikaCorrupted && <SigrikaCorruptionOverlay />}
++         {showExitConfirm && (
++           <ConfirmModal
++             title={EXIT_CONFIRM_TITLE}
++             message={EXIT_CONFIRM_MESSAGE}
++             confirmText={EXIT_CONFIRM_TEXT}
++             onCancel={() => setShowExitConfirm(false)}
++             onConfirm={() => {
++               setShowExitConfirm(false);
++               exitThroughBack();
++             }}
++           />
++         )}
++         <ConnectionNotice
++           socket={token && user ? socket : null}
++           startupError={startupError}
++           onRetry={() => startupError?.source === "auth"
++             ? refreshAuthSession({ silent: true }).catch(() => {})
++             : setStartupRetry((attempt) => attempt + 1)}
++         />
++         <AppRoutes {...routeProps} />
++         <AppOverlays {...appOverlayProps} />
++         {homeOnboarding.active && <HomeOnboarding key={user.id} character={characters.sigrika ?? CHARACTERS.sigrika}
++           overlaySetters={overlaySetters} saving={homeOnboarding.saving} error={homeOnboarding.error} onFinish={homeOnboarding.finish} />}
++         <SigrikaCorruptionTransition transition={sigrikaCorruptionTransition} onConfirm={confirmSigrikaCorruptionEntry} />
++       </DesktopViewportGate>
++     </div>
++   );
++ }
++ 
++
+
+ ❯ src/app/App.test.js:179:20
+    177|     expect(source).toContain("commit: (data) => updateUser(data.user)"…
+    178|     expect(source).toContain("aria-busy={sigrikaCorruptionTransitionin…
+    179|     expect(source).toContain("<SigrikaCorruptionTransition transition=…
+       |                    ^
+    180|   });
+    181| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/modals/HouseModal.test.js > deriveCharacterRecordStats > turns the corrupted house manual into a Sigrika-only readable archive
+AssertionError: expected '<link rel="preload" as="image" href="…' to contain 'alt="西格莉卡？"'
+
+Expected: "alt="西格莉卡？""
+Received: "<link rel="preload" as="image" href="/assets/window-titles/handbook.webp"/><link rel="preload" as="image" href="/assets/characters/portraits/sigrika-corrupted.webp"/><link rel="preload" as="image" href="/assets/characters/handbook-chibi-sprites/denia.webp"/><div class="modal-backdrop sigrika-corruption-house-backdrop"><section class="house-modal window-sticker-host handbook-modal is-sigrika-corrupted"><button class="close-button" aria-label="关闭部员手册"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button><header class="house-header window-sticker-header"><h2 class="window-title-sticker" style="--window-title-width:220px;--window-title-height:80px"><span class="window-title-sticker-label">部员手册</span><img class="window-title-sticker-art" src="/assets/window-titles/handbook.webp" alt="" aria-hidden="true" draggable="false" decoding="async"/></h2></header><div class="handbook-puzzle-panel"><div class="handbook-puzzle-board" style="--handbook-desktop-slant:28px;--handbook-desktop-gap:3px;--handbook-expanded-grow:6"><div class="handbook-puzzle-piece is-owned is-corruption-focus" style="--character-theme-color:#ff9b4d" data-character-id="sigrika" data-portrait-side="left"><button type="button" class="handbook-puzzle-tile" disabled="" data-character-key="sigrika" aria-label="西格莉卡？" aria-expanded="false" title="西格莉卡" data-ui-sound="none" data-home-guide="sigrika-card"><span class="handbook-strip-paper" aria-hidden="true"><span class="handbook-strip-emblem" aria-hidden="true" style="--handbook-emblem-strength:2.4056603773584904;mask-image:url(&quot;/assets/factions/roya.webp&quot;);-webkit-mask-image:url(&quot;/assets/factions/roya.webp&quot;)"></span></span><span class="handbook-puzzle-art"><img class="handbook-puzzle-portrait" style="width:280px;height:280px;left:calc(1.9999999999999956% + 106.00000000000003px);top:-32.5px" src="/assets/characters/portraits/sigrika-corrupted.webp" alt="" decoding="async" draggable="false"/></span><span class="handbook-strip-name is-long-name"><span class="handbook-strip-name-text">西格莉卡？</span></span></button></div><div class="handbook-puzzle-piece is-owned is-corruption-obscured" style="--character-theme-color:#ff9b4d" data-character-id="denia" data-portrait-side="right"><button type="button" class="handbook-puzzle-tile" disabled="" data-character-key="denia" aria-label="丹雅的数据已损坏" aria-expanded="false" title="丹雅" data-ui-sound="none"><span class="handbook-strip-paper" aria-hidden="true"><span class="handbook-strip-emblem" aria-hidden="true" style="--handbook-emblem-strength:2.4056603773584904;mask-image:url(&quot;/assets/factions/startorch.webp&quot;);-webkit-mask-image:url(&quot;/assets/factions/startorch.webp&quot;)"></span></span><span class="handbook-puzzle-art"><img class="handbook-puzzle-portrait" style="width:281.85210384959714px;height:411.9376902417189px;left:calc(1.9999999999999956% + 90.84583706356315px);top:12.484243509400187px" src="/assets/characters/handbook-chibi-sprites/denia.webp" alt="" decoding="async" draggable="false"/></span><span class="handbook-strip-name"><span class="handbook-strip-name-text">丹雅</span></span></button></div></div></div></section></div>"
+
+ ❯ src/modals/HouseModal.test.js:478:18
+    476|     expect(html).toContain("is-corruption-focus");
+    477|     expect(html).toContain("西格莉卡？");
+    478|     expect(html).toContain('alt="西格莉卡？"');
+       |                  ^
+    479|     expect(html).toContain(`src="${SIGRIKA_CORRUPTED_PORTRAIT_ASSET.ur…
+    480|     expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/modals/house/HouseHandbook.dom.test.jsx > member handbook pages > keeps the corrupted archive separate from normal book navigation
+TestingLibraryElementError: Unable to find an accessible element with the role "img" and name "西格莉卡？"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "关闭部员手册":
+  <button
+    aria-label="关闭部员手册"
+    class="close-button"
+  />
+
+  Name "西格莉卡？":
+  <button
+    aria-expanded="false"
+    aria-label="西格莉卡？"
+    class="handbook-puzzle-tile"
+    data-character-key="sigrika"
+    data-home-guide="sigrika-card"
+    data-ui-sound="none"
+    disabled=""
+    title="西格莉卡"
+    type="button"
+  />
+
+  Name "猪小仙的数据已损坏":
+  <button
+    aria-expanded="false"
+    aria-label="猪小仙的数据已损坏"
+    class="handbook-puzzle-tile"
+    data-character-key="baconbits"
+    data-ui-sound="none"
+    disabled=""
+    type="button"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="house-header window-sticker-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "部员手册":
+  <h2
+    class="window-title-sticker"
+    style="--window-title-width: 220px; --window-title-height: 80px;"
+  />
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  <img
+    alt=""
+    class="handbook-puzzle-portrait"
+    decoding="async"
+    draggable="false"
+    src="/assets/characters/portraits/sigrika-corrupted.webp"
+    style="width: 280px; height: 280px; left: calc(2% + 106px); top: -32.5px;"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app-shell player-theme-enabled theme-bright-school"
+    >
+      <div
+        class="modal-backdrop sigrika-corruption-house-backdrop"
+      >
+        <section
+          class="house-modal window-sticker-host handbook-modal is-sigrika-corrupted"
+        >
+          <button
+            aria-label="关闭部员手册"
+            class="close-button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-x"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6 6 18"
+              />
+              <path
+                d="m6 6 12 12"
+              />
+            </svg>
+          </button>
+          <header
+            class="house-header window-sticker-header"
+          >
+            <h2
+              class="window-title-sticker"
+              style="--window-title-width: 220px; --window-title-height: 80px;"
+            >
+              <span
+                class="window-title-sticker-label"
+              >
+                部员手册
+              </span>
+              <img
+                alt=""
+                aria-hidden="true"
+                class="window-title-sticker-art"
+                decoding="async"
+                draggable="false"
+                src="/assets/window-titles/handbook.webp"
+              />
+            </h2>
+          </header>
+          <div
+            class="handbook-puzzle-panel"
+          >
+            <div
+              class="handbook-puzzle-board"
+              style="--handbook-desktop-slant: 28px; --handbook-desktop-gap: 3px; --handbook-expanded-grow: 6;"
+            >
+              <div
+                class="handbook-puzzle-piece is-owned is-corruption-focus"
+                data-character-id="sigrika"
+                data-portrait-side="left"
+                style="--character-theme-color: #ff9b4d;"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="西格莉卡？"
+                  class="handbook-puzzle-tile"
+                  data-character-key="sigrika"
+                  data-home-guide="sigrika-card"
+                  data-ui-sound="none"
+                  disabled=""
+                  title="西格莉卡"
+                  type="button"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="handbook-strip-paper"
+                  >
+                    <span
+                      aria-hidden="true"
+                      class="handbook-strip-emblem"
+                      style="--handbook-emblem-strength: 2.4056603773584904; mask-image: url(\"/assets/factions/roya.webp\"); -webkit-mask-image: url(\"/assets/factions/roya.webp\");"
+                    />
+                  </span>
+                  <span
+                    class="handbook-puzzle-art"
+                  >
+                    <img
+                      alt=""
+                      class="handbook-puzzle-portrait"
+                      decoding="async"
+                      draggable="false"
+                      src="/assets/characters/portraits/sigrika-corrupted.webp"
+                      style="width: 280px; height: 280px; left: calc(2% + 106px); top: -32.5px;"
+                    />
+                  </span>
+                  <span
+                    class="handbook-strip-name is-long-name"
+                  >
+                    <span
+                      class="handbook-strip-name-text"
+                    >
+                      西格莉卡？
+                    </span>
+                  </span>
+                </button>
+              </div>
+              <div
+                class="handbook-puzzle-piece is-unowned is-missing-data is-corruption-obscured"
+                data-character-id="baconbits"
+                data-portrait-side="right"
+                style="--character-theme-color: #f59ab2;"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="猪小仙的数据已损坏"
+                  class="handbook-puzzle-tile"
+                  data-character-key="baconbits"
+                  data-ui-sound="none"
+                  disabled=""
+                  type="button"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="handbook-missing-data"
+                  >
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                  <span
+                    class="handbook-missing-label"
+                  >
+                    暂无情报
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ src/modals/house/HouseHandbook.dom.test.jsx:140:19
+    138|     expect(screen.queryByText("星炬学院")).toBeNull();
+    139|     expect(document.querySelector(".handbook-opening-cover")).toBeNull…
+    140|     expect(screen.getAllByRole("img", { name: "西格莉卡？" }).length).toBeG…
+       |                   ^
+    141|   });
+    142| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 102 passed (105)
+      Tests  3 failed | 715 passed (718)
+   Start at  20:52:39
+   Duration  150.60s (transform 4.43s, setup 0ms, collect 26.29s, tests 31.14s, environment 50.87s, prepare 12.68s)
+

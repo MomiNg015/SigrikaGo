@@ -1,0 +1,784 @@
+
+> sigrika-go@0.1.0 check
+> npm run lint && npm test && npm run check:portraits && npm run check:admin-snapshot && npm run build && npm run check:built-css && node -e "process.env.NODE_ENV='production';process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')" && npm run docs:system-design
+
+
+> sigrika-go@0.1.0 lint
+> eslint .
+
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**"
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ src/shared/CharacterChainBadge.test.jsx (3 tests | 1 failed) 51ms
+   ✓ CharacterChainBadge > keeps chain counts hidden even when a character has duplicate-chain data 6ms
+   × CharacterChainBadge > reads canonical character ids and adds portrait display hooks 34ms
+     → expected 'import { useEffect, useRef, useState …' to contain 'LegacyHouseCharacterGrid'
+   ✓ CharacterChainBadge > hides duplicate-chain badges in both the normal puzzle and the legacy corrupted archive 10ms
+ ✓ server/serverProcessRestart.test.js (1 test) 9467ms
+   ✓ server process restart recovery > restores an acknowledged move from SQLite after a real process restart  9465ms
+ ✓ scripts/e2eIsolation.test.js (3 tests) 8015ms
+   ✓ closing the automation stdin keeps the real Vite test service available  8011ms
+ ✓ src/shared/characterStorySprites.test.js (7 tests) 7803ms
+   ✓ authored guide sprite integration > does not restore original brow strokes over closed-eye expressions  611ms
+   ✓ authored guide sprite integration > ships every catalog expression with transparent full art and fixed-frame avatars  7131ms
+ ❯ scripts/devApiProxy.integration.test.js (4 tests | 2 failed) 13734ms
+   × local announcement API proxy recovery > reproduces the original empty non-JSON response with Vite's default proxy 5959ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ local announcement API proxy recovery > returns an identifiable JSON 503 while the local backend is unavailable 107ms
+   × local announcement API proxy recovery > completes the first authenticated announcement read when the backend starts during recovery 5326ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ local announcement API proxy recovery > recovers a first-request socket reset without reopening the announcement  2340ms
+ ✓ scripts/characterPortraitNormalization.test.js (12 tests) 4254ms
+   ✓ character portrait normalization > preserves animated WebP frames, timing, loop, and one shared placement  460ms
+   ✓ character portrait normalization > keeps the committed Denia candy portrait at its authored animation timing  2641ms
+   ✓ character portrait normalization > rebuilds a required animation from its legacy source when the output is static  540ms
+ ✓ server/rankStarsMigration.test.js (2 tests) 1589ms
+ ✓ scripts/deniaRainbowAnimation.test.js (2 tests) 3743ms
+   ✓ rolls the rainbow spectrum through all three beams instead of only shimmering  888ms
+   ✓ crops every animated avatar frame exactly like the default Denia head avatar  2853ms
+ ✓ server/roomSettlement.integration.test.js (4 tests) 3680ms
+ ✓ server/leaderboardOrder.test.js (2 tests) 3036ms
+   ✓ backfills arrival from legacy timestamps using startup and preserves it on repeated startup  1529ms
+   ✓ backfills arrival from legacy timestamps using migration and preserves it on repeated startup  1506ms
+ ✓ src/shared/windowTitleStickers.test.js (1 test) 2012ms
+   ✓ window title asset delivery > ships matching PNG and WebP with actual transparent margins for every title  2010ms
+ ✓ scripts/deploymentRecovery.test.js (3 tests) 1090ms
+   ✓ failed deployment restarts only before database migration (touched=0)  527ms
+   ✓ failed deployment restarts only before database migration (touched=1)  469ms
+ ✓ src/shared/candyPortraits.test.js (3 tests) 1687ms
+   ✓ resolveCandyPortrait > ships a looping current-chibi rainbow animation with a stationary source body  1685ms
+ ✓ scripts/check-production-config.test.js (8 tests) 1255ms
+ ✓ src/home/HomeScreen.test.jsx (23 tests) 1193ms
+ ✓ server/localPracticeEngine.test.js (12 tests) 1384ms
+ ✓ src/room/Board.test.js (57 tests) 985ms
+ ✓ server/practiceBotEngine.test.js (14 tests) 827ms
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 714ms
+ ✓ src/styles/styleContract.test.js (58 tests) 777ms
+ ✓ server/homeOnboarding.test.js (7 tests) 581ms
+ ✓ server/captureChallenge.test.js (9 tests) 394ms
+ ✓ server/adminRoutes.test.js (55 tests) 440ms
+ ✓ src/modals/HouseModal.test.js (27 tests) 453ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 437ms
+ ✓ src/admin/storyScriptWorkbook.test.js (5 tests) 309ms
+ ✓ src/auth/AuthScreen.test.js (17 tests) 303ms
+ ✓ server/rooms.test.js (44 tests) 318ms
+ ✓ src/room/PlayerInfo.test.js (24 tests) 316ms
+ ✓ src/styles/themeContract.test.js (38 tests) 324ms
+ ✓ src/modals/WarehouseModal.test.js (13 tests) 295ms
+ ✓ scripts/stopTestProcesses.test.js (1 test) 225ms
+ ✓ src/modals/LeaderboardModal.test.jsx (12 tests) 254ms
+ ✓ src/modals/ShopModal.test.js (27 tests) 197ms
+ ✓ server/practiceRoomAutomation.test.js (19 tests) 203ms
+ ✓ src/modals/FriendsModal.test.jsx (9 tests) 139ms
+ ✓ scripts/devStartupWatch.integration.test.js (1 test) 144ms
+ ✓ server/socketMatchEvents.test.js (30 tests) 142ms
+ ✓ src/room/spectatorLayout.test.js (5 tests) 116ms
+ ✓ src/room/BoardSkillEffects.test.js (21 tests) 134ms
+ ✓ src/shared/game.test.js (80 tests) 133ms
+ ✓ server/jsonBody.test.js (3 tests) 134ms
+ ✓ scripts/export-admin-default-snapshot.test.js (4 tests) 125ms
+ ✓ server/practiceBotDecision.test.js (4 tests) 114ms
+ ✓ src/tutorial/TutorialSessionModal.test.jsx (8 tests) 99ms
+ ✓ src/audio/countdownPlayback.test.js (5 tests) 101ms
+ ✓ server/zhiziKataGoEngine.test.js (11 tests) 85ms
+ ✓ src/modals/ReplayList.test.jsx (13 tests) 92ms
+ ✓ src/room/ActionBar.test.js (20 tests) 92ms
+ ✓ server/adminDefaultSnapshot.test.js (10 tests) 73ms
+ ✓ src/shared/preloadAssets.test.js (30 tests) 85ms
+ ✓ docs/systemDesignHtml.test.js (4 tests) 79ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 62ms
+ ✓ src/app/socketHandlers.test.js (48 tests) 50ms
+ ✓ src/modals/SettingsModal.test.jsx (9 tests) 63ms
+ ✓ src/modals/GachaModal.test.js (6 tests) 73ms
+ ✓ src/app/siteEntryPreload.test.js (4 tests) 58ms
+ ✓ src/modals/AchievementModal.test.jsx (2 tests) 38ms
+ ✓ server/storyScripts.test.js (22 tests) 27ms
+ ✓ src/modals/ProfileMobileLayout.test.js (5 tests) 30ms
+ ✓ scripts/playwrightTestDatabase.test.js (1 test) 52ms
+ ✓ server/items.test.js (27 tests) 39ms
+ ✓ src/room/ChatBox.test.js (14 tests) 43ms
+ ✓ server/roomResultPersistence.test.js (16 tests) 43ms
+ ✓ src/modals/PersonalizationModal.test.jsx (1 test) 59ms
+ ✓ scripts/characterNameplateSkill.test.js (8 tests) 56ms
+ ✓ src/admin/AdminAudit.test.jsx (3 tests) 53ms
+ ✓ src/admin/AdminMailbox.test.jsx (1 test) 50ms
+ ✓ src/home/HomeActionButton.test.jsx (2 tests) 41ms
+ ✓ src/room/roomView.test.js (16 tests) 58ms
+ ✓ src/admin/AdminGachaPools.test.jsx (9 tests) 44ms
+ ✓ src/modals/SkillBanner.test.js (14 tests) 34ms
+ ✓ src/home/IrisDatabase.test.jsx (2 tests) 54ms
+ ✓ server/teamMatch.test.js (8 tests) 35ms
+stderr | src/api/client.test.js > api client auth refresh > preserves malformed JSON bodies without retrying
+[api] unexpected announcement response {
+  path: '/api/announcements',
+  status: 503,
+  contentType: 'application/json'
+}
+
+ ✓ src/api/client.test.js (16 tests) 26ms
+ ✓ src/app/AppOverlays.test.jsx (10 tests) 35ms
+ ✓ server/roomCreationLifecycle.test.js (12 tests) 27ms
+ ✓ src/modals/GameLifecycleModals.test.js (17 tests) 34ms
+ ✓ server/adminDefaultSeed.test.js (12 tests) 29ms
+ ✓ src/ui/CorruptionMarks.test.jsx (6 tests) 26ms
+ ✓ src/app/AssetPreloadScreen.test.jsx (19 tests) 30ms
+ ✓ src/modals/StoryPlayerModal.test.jsx (12 tests) 26ms
+ ✓ server/rainbowBeanCandyStory.test.js (8 tests) 31ms
+ ✓ server/roomSkillResolution.test.js (18 tests) 24ms
+ ✓ src/shared/handbookPortraits.test.js (42 tests) 30ms
+ ✓ server/social.test.js (17 tests) 23ms
+ ✓ server/sigrikaCandyDisabled.test.js (19 tests) 21ms
+ ✓ server/socketPracticeEvents.test.js (17 tests) 26ms
+ ✓ src/tutorial/tutorialGameState.test.js (9 tests) 29ms
+ ✓ server/roomView.test.js (14 tests) 27ms
+ ✓ src/modals/FeedbackModals.test.js (6 tests) 27ms
+ ✓ server/achievements.test.js (13 tests) 29ms
+ ✓ src/modals/house/CharacterCostumeDialog.test.jsx (3 tests) 21ms
+ ✓ server/leaderboard.test.js (7 tests) 22ms
+ ✓ server/socketRoomEvents.test.js (16 tests) 22ms
+ ✓ src/admin/AdminTableScroll.test.jsx (3 tests) 21ms
+ ✓ src/room/boardSkillEffectRegistry.test.js (18 tests) 24ms
+ ✓ src/shared/resultCharacterPortraits.test.js (12 tests) 19ms
+ ✓ src/modals/OnboardingStoryModal.test.jsx (5 tests) 20ms
+ ✓ src/modals/WatchModal.test.js (5 tests) 22ms
+ ✓ src/room/requestToasts/timedRoomRequests.test.js (8 tests) 18ms
+ ✓ src/shared/musicLibrary.test.js (68 tests) 21ms
+ ✓ src/tutorial/TutorialBattleScreen.test.jsx (20 tests) 20ms
+ ✓ src/room/boardSigrikaEffect.test.js (7 tests) 14ms
+ ✓ server/mailbox.test.js (15 tests) 20ms
+ ✓ server/shop.test.js (24 tests) 21ms
+ ✓ server/socketSigrikaCandyEvents.test.js (9 tests) 19ms
+ ✓ src/room/BoardAmbientEffects.test.js (4 tests) 20ms
+ ✓ server/siteSettings.test.js (12 tests) 17ms
+ ✓ src/shared/RankProgress.test.jsx (4 tests) 20ms
+ ✓ server/recruitment.test.js (15 tests) 22ms
+ ✓ server/roomCloseLifecycle.test.js (8 tests) 18ms
+ ✓ src/app/App.test.js (19 tests) 21ms
+ ✓ server/characters.test.js (32 tests) 16ms
+ ✓ src/audio/playback.test.jsx (14 tests) 17ms
+ ✓ src/modals/deniaPaperSwarm.test.js (5 tests) 19ms
+ ✓ src/room/TimeBar.test.js (4 tests) 16ms
+ ✓ server/socketGameEvents.test.js (8 tests) 14ms
+ ✓ src/shared/UserIdentity.test.jsx (4 tests) 17ms
+ ✓ server/costumes.test.js (11 tests) 20ms
+ ✓ src/modals/house/handbookStrips.test.js (15 tests) 19ms
+ ✓ src/shared/gomokuRules.test.js (7 tests) 14ms
+ ✓ src/admin/AdminOnboardingStory.test.jsx (16 tests) 18ms
+ ✓ server/skillTraits.test.js (7 tests) 15ms
+ ✓ src/admin/AdminAchievements.test.jsx (3 tests) 16ms
+ ✓ server/roomRestoreLifecycle.test.js (14 tests) 15ms
+ ✓ server/roomConnectionLifecycle.test.js (8 tests) 17ms
+ ✓ server/loginSessions.test.js (9 tests) 16ms
+ ✓ server/gacha.test.js (8 tests) 15ms
+ ✓ server/roomScoringFlow.test.js (2 tests) 13ms
+ ✓ src/audio/CharacterMusicPreview.test.jsx (4 tests) 16ms
+ ✓ server/security.test.js (16 tests) 15ms
+ ✓ src/modals/RecruitmentModal.test.js (9 tests) 15ms
+ ✓ src/practice/localPracticeController.test.js (4 tests) 15ms
+ ✓ server/roomStatePersistence.test.js (11 tests) 14ms
+ ✓ src/shared/MarkdownLiteContent.test.jsx (3 tests) 16ms
+ ✓ src/modals/ModalActionButton.test.jsx (8 tests) 15ms
+ ✓ server/schemaIntegrity.test.js (19 tests) 15ms
+ ✓ server/zhiziKataGoProtocol.test.js (6 tests) 12ms
+ ✓ src/admin/AdminMusicTracks.test.jsx (1 test) 13ms
+ ✓ server/authRoutes.test.js (11 tests) 14ms
+ ✓ src/shared/adminDrafts.test.js (12 tests) 12ms
+ ✓ server/db.test.js (6 tests) 14ms
+ ✓ server/roomBroadcasts.test.js (11 tests) 15ms
+ ✓ server/replayPagination.test.js (8 tests) 12ms
+ ✓ src/shared/deniaSkillForm.test.js (5 tests) 16ms
+ ✓ server/roomRequestLifecycle.test.js (7 tests) 13ms
+ ✓ server/roomClockLifecycle.test.js (6 tests) 13ms
+ ✓ scripts/migrationBaselineVerification.test.js (3 tests) 10ms
+ ✓ server/sigrikaCandyArc.test.js (9 tests) 13ms
+ ✓ server/socketGuards.test.js (8 tests) 12ms
+ ✓ server/userAssets.test.js (17 tests) 13ms
+ ✓ src/audio/skillEffectSounds.test.js (5 tests) 14ms
+ ✓ src/admin/AdminActionButton.test.jsx (2 tests) 13ms
+ ✓ server/socketAuth.test.js (4 tests) 13ms
+ ✓ server/profileFolder.test.js (9 tests) 17ms
+ ✓ server/socketDuelEvents.test.js (6 tests) 11ms
+ ✓ src/app/matchDelivery.test.js (8 tests) 13ms
+ ✓ src/room/SigrikaDuelPresentation.test.jsx (2 tests) 13ms
+ ✓ src/app/skillTraitCatalog.test.js (4 tests) 12ms
+ ✓ server/roomFactory.test.js (10 tests) 14ms
+ ✓ src/practice/practiceEngineClient.test.js (4 tests) 12ms
+ ✓ server/roomActionLifecycle.test.js (8 tests) 12ms
+ ✓ scripts/sync-admin-default-story.test.js (3 tests) 10ms
+ ✓ server/socketEvents.test.js (3 tests) 14ms
+ ✓ src/admin/AdminTableEmpty.test.jsx (2 tests) 12ms
+ ✓ src/app/resumeSession.test.js (12 tests) 12ms
+ ✓ server/serverLifecycle.test.js (4 tests) 12ms
+ ✓ src/app/useMatchActions.test.js (6 tests) 12ms
+ ✓ server/sigrikaAiAgreement.test.js (5 tests) 11ms
+ ✓ src/app/gameActionDelivery.test.js (5 tests) 13ms
+ ✓ server/playerRoutes.test.js (6 tests) 9ms
+ ✓ server/staticAssets.test.js (9 tests) 12ms
+ ✓ server/onboardingStory.test.js (7 tests) 11ms
+ ✓ src/ui/primitives/Button.test.jsx (2 tests) 12ms
+ ✓ server/roomPersistenceRestoreLifecycle.test.js (4 tests) 12ms
+ ✓ src/ui/primitives/EmptyState.test.jsx (2 tests) 11ms
+ ✓ src/ui/primitives/Badge.test.jsx (2 tests) 12ms
+ ✓ server/runtimeServiceState.test.js (5 tests) 11ms
+ ✓ server/roomDeadlineScheduler.test.js (6 tests) 11ms
+ ✓ src/ui/primitives/ScrollArea.test.jsx (2 tests) 13ms
+ ✓ server/commerceRoutes.test.js (8 tests) 9ms
+ ✓ server/roomRuntime.test.js (9 tests) 11ms
+ ✓ src/audio/effectPlayback.test.js (7 tests) 10ms
+ ✓ server/legacyDeniaCleanup.test.js (3 tests) 11ms
+ ✓ server/roomQueries.test.js (8 tests) 13ms
+ ✓ src/app/BattleAssetPreloadScreen.test.js (2 tests) 10ms
+ ✓ scripts/exportSkillGifs.test.js (8 tests) 10ms
+ ✓ server/roomTimers.test.js (4 tests) 10ms
+ ✓ server/roomMatchmakingQueue.test.js (8 tests) 9ms
+ ✓ server/onlineSessions.test.js (7 tests) 10ms
+ ✓ src/app/gameSocket.test.js (4 tests) 9ms
+ ✓ server/socketDisconnectEvents.test.js (3 tests) 9ms
+ ✓ src/styles/modals/interactionMotion.test.js (5 tests) 10ms
+ ✓ src/modals/modalComponents.test.jsx (1 test) 11ms
+ ✓ server/announcements.test.js (5 tests) 10ms
+ ✓ server/serverStartup.test.js (2 tests) 8ms
+ ✓ server/adminAnalytics.test.js (3 tests) 9ms
+ ✓ src/shared/characters.test.js (12 tests) 9ms
+ ✓ src/app/InteractionFeedback.test.js (3 tests) 6ms
+ ✓ server/adminCostumeManagement.test.js (3 tests) 10ms
+ ✓ server/socketChatEvents.test.js (4 tests) 8ms
+ ✓ server/onboardingStoryRoutes.test.js (6 tests) 10ms
+ ✓ scripts/deploymentConfig.test.js (5 tests) 9ms
+ ✓ scripts/stabilityVerification.test.js (4 tests) 9ms
+ ✓ server/sigrikaDuelEngine.test.js (5 tests) 8ms
+ ✓ src/app/overlayRegistry.test.js (5 tests) 9ms
+ ✓ server/publicRoutes.test.js (9 tests) 10ms
+ ✓ server/lobbyStatsBroadcaster.test.js (3 tests) 10ms
+ ✓ server/socialRoutes.test.js (8 tests) 10ms
+ ✓ server/roomPreparationLifecycle.test.js (2 tests) 9ms
+ ✓ server/databaseHealth.test.js (3 tests) 10ms
+ ✓ server/legacyDerivedSkillCleanup.test.js (3 tests) 9ms
+ ✓ src/shared/systemVoices.test.js (16 tests) 9ms
+ ✓ server/roomRewards.test.js (5 tests) 10ms
+ ✓ src/app/authPortraitPrewarm.test.js (3 tests) 8ms
+ ✓ src/app/modalDismissal.test.js (7 tests) 7ms
+ ✓ src/app/visualTheme.test.js (4 tests) 5ms
+ ✓ src/shared/rankProgression.test.js (23 tests) 10ms
+ ✓ server/releaseClock.test.js (6 tests) 8ms
+ ✓ server/verificationFixtureRoutes.test.js (5 tests) 7ms
+ ✓ server/roomOpeningLifecycle.test.js (3 tests) 8ms
+ ✓ server/duelRequests.test.js (4 tests) 8ms
+ ✓ scripts/pngTrim.test.js (2 tests) 7ms
+ ✓ src/app/appShellProps.test.js (2 tests) 9ms
+ ✓ src/room/pixiPrewarm.test.js (5 tests) 8ms
+ ✓ server/musicSelection.test.js (5 tests) 9ms
+ ✓ src/app/siteSettingsCatalog.test.js (3 tests) 7ms
+ ✓ server/adminConfig.test.js (3 tests) 7ms
+ ✓ src/shared/skillPresentation.test.js (14 tests) 8ms
+ ✓ server/gachaRoutes.test.js (5 tests) 8ms
+ ✓ src/shared/gameBoard.test.js (3 tests) 8ms
+ ✓ scripts/voiceLoudnessNormalization.test.js (7 tests) 11ms
+ ✓ server/announcementRoutes.test.js (3 tests) 7ms
+ ✓ server/httpErrors.test.js (6 tests) 8ms
+ ✓ src/shared/characterPortraits.test.js (19 tests) 8ms
+ ✓ server/feedback.test.js (3 tests) 7ms
+ ✓ src/shared/gameSkillHandlers.test.js (4 tests) 7ms
+ ✓ server/recruitmentRoutes.test.js (2 tests) 8ms
+ ✓ server/adminGachaManagement.test.js (2 tests) 4ms
+ ✓ server/userFacingText.test.js (1 test) 5ms
+ ✓ src/shared/deniaCandyAvatar.test.js (3 tests) 7ms
+ ✓ server/musicTracks.test.js (5 tests) 7ms
+ ✓ src/app/characterCatalog.test.js (2 tests) 7ms
+ ✓ server/aemeathAcquisition.test.js (3 tests) 7ms
+ ✓ server/builtinPortraitAssetMigration.test.js (2 tests) 7ms
+ ✓ scripts/checkBuiltCssContracts.test.js (4 tests) 5ms
+ ✓ src/audio/backgroundFocus.test.js (2 tests) 7ms
+ ✓ server/roomSkillMessages.test.js (7 tests) 7ms
+ ✓ src/styles/handbookStrips.test.js (3 tests) 5ms
+ ✓ server/roomActionReceipts.test.js (3 tests) 5ms
+ ✓ scripts/capacityVerification.test.js (5 tests) 8ms
+ ✓ server/mailboxRoutes.test.js (3 tests) 7ms
+ ✓ scripts/releaseCandidateVerification.test.js (2 tests) 6ms
+ ✓ src/app/sigrikaCandyResultNavigation.test.js (1 test) 6ms
+ ✓ src/app/matchTransition.test.js (5 tests) 7ms
+ ✓ server/runtimeStabilityMetrics.test.js (2 tests) 7ms
+ ✓ server/roomGameActions.test.js (1 test) 7ms
+ ✓ src/app/playableReadyPreload.test.js (3 tests) 7ms
+ ✓ src/shared/aemeathSkillForm.test.js (3 tests) 6ms
+ ✓ server/usernameCleanup.test.js (3 tests) 6ms
+ ✓ src/app/roomPatch.test.js (7 tests) 7ms
+ ✓ server/roomChatLifecycle.test.js (4 tests) 6ms
+ ✓ src/tutorial/tutorialBattleRoom.test.js (2 tests) 6ms
+ ✓ server/roomSystemMessages.test.js (4 tests) 7ms
+ ✓ src/audio/audioSettings.test.js (6 tests) 6ms
+ ✓ src/room/boardSkillEffectSoundScheduler.test.js (3 tests) 6ms
+ ✓ src/shared/gameSkillRegistry.test.js (5 tests) 7ms
+ ✓ server/roomItemEffects.test.js (4 tests) 6ms
+ ✓ src/shared/timeAnnouncements.test.js (5 tests) 5ms
+ ✓ server/replayRoutes.test.js (7 tests) 8ms
+ ✓ src/shared/boardView.test.js (10 tests) 6ms
+ ✓ src/app/roomSnapshot.test.js (6 tests) 6ms
+ ✓ server/roomTestActions.test.js (3 tests) 6ms
+ ✓ src/shared/practiceMode.test.js (3 tests) 6ms
+ ✓ server/characterSelection.test.js (8 tests) 5ms
+ ✓ src/shared/boardAudio.test.js (4 tests) 5ms
+ ✓ scripts/sqliteBackupVerification.test.js (3 tests) 5ms
+ ✓ src/shared/shopMascotDialogues.test.js (3 tests) 6ms
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 6ms
+ ✓ server/roomMembershipIndex.test.js (6 tests) 6ms
+ ✓ src/room/view/useRoomBoardView.test.js (6 tests) 5ms
+ ✓ src/shared/irisGreeting.test.js (4 tests) 5ms
+ ✓ src/shared/irisLinks.test.js (2 tests) 5ms
+ ✓ src/room/spectatorPresence.test.js (4 tests) 5ms
+ ✓ src/shared/gameRecords.test.js (6 tests) 6ms
+ ✓ src/audio/systemVoicePlayback.test.js (2 tests) 6ms
+ ✓ src/shared/gameSkills.test.js (3 tests) 6ms
+ ✓ server/zhiziKataGoConfig.test.js (5 tests) 6ms
+ ✓ server/devServerScript.test.js (1 test) 5ms
+ ✓ src/shared/skillEffectCatalog.test.js (8 tests) 6ms
+ ✓ server/matchCharacterSelection.test.js (7 tests) 5ms
+ ✓ src/shared/audioScheduling.test.js (6 tests) 5ms
+ ✓ src/shared/gameModes.test.js (2 tests) 5ms
+ ✓ src/audio/proceduralSounds.test.js (2 tests) 3ms
+ ✓ src/shared/storyTiming.test.js (5 tests) 4ms
+ ✓ scripts/viteBuildConfig.test.js (5 tests) 5ms
+ ✓ server/userProgressLedger.test.js (3 tests) 3ms
+ ✓ src/shared/resultRewards.test.js (3 tests) 6ms
+ ✓ src/app/replayOpening.test.js (3 tests) 3ms
+ ✓ src/room/actions/useRoomPointActions.test.js (7 tests) 3ms
+ ✓ server/userProfile.test.js (1 test) 3ms
+ ✓ src/app/roomNavigation.test.js (3 tests) 2ms
+ ✓ src/app/useRoomSessionState.test.js (5 tests) 3ms
+ ✓ src/shared/derivedSkills.test.js (4 tests) 5ms
+ ✓ src/shared/ratingRules.test.js (2 tests) 5ms
+ ✓ src/tutorial/tutorialChoiceFeedback.test.js (3 tests) 4ms
+ ✓ src/shared/voiceEffects.test.js (3 tests) 5ms
+ ✓ scripts/sync-admin-default-config.test.js (2 tests) 4ms
+ ✓ server/resume.test.js (5 tests) 5ms
+ ✓ src/admin/AdminCharacters.test.jsx (2 tests) 5ms
+ ✓ src/shared/shopItemIllust.test.js (2 tests) 4ms
+ ✓ src/shared/matchClassification.test.js (5 tests) 4ms
+ ✓ server/securityHeaders.test.js (1 test) 4ms
+ ✓ src/app/roomUserSync.test.js (4 tests) 5ms
+ ✓ src/room/roomAudioBaseline.test.js (2 tests) 5ms
+ ✓ src/room/boardSkillEffectAssets.test.js (3 tests) 4ms
+ ✓ src/app/sessionState.test.js (4 tests) 4ms
+ ✓ server/roomPresence.test.js (4 tests) 6ms
+ ✓ src/app/roomClock.test.js (4 tests) 5ms
+ ✓ src/audio/countdownVoiceTiming.test.js (3 tests) 4ms
+ ✓ src/room/mobilePointConfirmation.test.js (3 tests) 4ms
+ ✓ scripts/portraitSilhouette.test.js (2 tests) 4ms
+ ✓ src/shared/stoneFormatting.test.js (2 tests) 3ms
+ ✓ src/shared/ratingRank.test.js (15 tests) 4ms
+ ✓ server/roomClockTiming.test.js (3 tests) 4ms
+ ✓ src/app/useMailboxSummary.test.js (2 tests) 4ms
+ ✓ src/shared/gameResults.test.js (3 tests) 7ms
+ ✓ src/admin/AdminSkillTraits.test.jsx (1 test) 4ms
+ ✓ src/tutorial/tutorialPointGuidance.test.js (3 tests) 5ms
+ ✓ src/room/RoomPeopleList.test.js (3 tests) 4ms
+ ✓ src/audio/voicePlaybackProfiles.test.js (2 tests) 4ms
+ ✓ src/audio/backgroundDucking.test.js (1 test) 4ms
+ ✓ src/app/useMatchSessionState.test.js (2 tests) 4ms
+ ✓ src/shared/skillTraits.test.js (3 tests) 4ms
+ ✓ src/admin/AdminSiteSettings.test.jsx (1 test) 3ms
+ ✓ src/shared/PortraitShowcase.test.jsx (2 tests) 4ms
+ ✓ server/gameRecords.test.js (3 tests) 4ms
+ ✓ server/authRouteOrder.test.js (2 tests) 4ms
+ ✓ scripts/verificationScripts.test.js (3 tests) 4ms
+ ✓ src/app/useOverlayState.test.js (2 tests) 4ms
+ ✓ src/app/useOnboardingStory.test.js (1 test) 4ms
+ ✓ server/roomActionValidation.test.js (4 tests) 4ms
+ ✓ server/teamProfileRecords.test.js (4 tests) 4ms
+ ✓ src/audio/backgroundMusicPause.test.js (2 tests) 4ms
+ ✓ server/healthRoutes.test.js (2 tests) 4ms
+ ✓ server/userAssetsBackfill.test.js (1 test) 4ms
+ ✓ src/room/OperationHint.test.js (2 tests) 3ms
+ ✓ src/shared/characterCv.test.js (2 tests) 4ms
+ ✓ server/uploadPaths.test.js (3 tests) 5ms
+ ✓ src/ui/classNames.test.js (2 tests) 5ms
+ ✓ server/loginConflicts.test.js (3 tests) 4ms
+ ✓ server/skillRegistry.test.js (1 test) 3ms
+ ✓ src/app/useRoomMemory.test.js (2 tests) 3ms
+ ✓ src/app/useRecruitmentReadyState.test.js (2 tests) 3ms
+ ✓ src/audio/voiceBackgroundIndependence.test.js (1 test) 4ms
+ ✓ src/room/audio/useRoomAudioEffects.test.js (1 test) 3ms
+ ✓ src/admin/AdminAnnouncements.test.jsx (1 test) 3ms
+ ✓ scripts/qiuyuanSystemVoiceGenerator.test.js (1 test) 3ms
+ ✓ src/app/useHomeUserRefresh.test.js (1 test) 3ms
+ ✓ src/app/useIncomingDuelState.test.js (1 test) 3ms
+ ✓ src/app/startupNetwork.dom.test.jsx (5 tests) 4391ms
+   ✓ startup network recovery > a music 503 falls back while authenticated startup still enters home  2015ms
+   ✓ startup network recovery > a me 503 preserves session and a retry restores startup; a confirmed 401 logs out  2124ms
+ ✓ src/home/MatchCharacterSelection.dom.test.jsx (14 tests) 2844ms
+   ✓ match card character selection > keeps practice selection independent, preserves difficulty through closing the picker, and starts explicitly  694ms
+   ✓ match card character selection > persists separate entries and sends the shown identity instead of the default  649ms
+   ✓ match card character selection > starts team matchmaking directly from the picker and preserves the lineup for card quick starts  456ms
+ ✓ src/auth/AuthScreen.dom.test.jsx (14 tests) 2137ms
+   ✓ AuthScreen DOM interaction > keeps a duplicate username error beside its field until that username changes  527ms
+ ✓ src/home/MatchModeExpansion.dom.test.jsx (8 tests) 1935ms
+   ✓ Spark mode expansion > expands without queuing, keeps practice available, and queues only the regular child  615ms
+ ✓ src/modals/UserProfileCard.dom.test.jsx (17 tests) 1761ms
+ ✓ src/home/HomeScreen.dom.test.jsx (9 tests) 1544ms
+   ✓ HomeScreen practice difficulty picker > opens three levels and starts the selected one with a random color  645ms
+ ✓ src/home/CandyEffectCancellation.dom.test.jsx (5 tests) 1229ms
+   ✓ selection card candy cancellation > cancels blocked Sigrika without selecting or closing, then restores her availability  584ms
+ ✓ src/modals/AnnouncementRecovery.dom.test.jsx (4 tests) 1163ms
+   ✓ announcement first-open real client flow > loads first open and reopen with list outage  307ms
+   ✓ announcement first-open real client flow > loads first open and reopen with detail outage  310ms
+   ✓ announcement first-open real client flow > loads first open and reopen with summary outage  309ms
+ ✓ src/modals/TeamProfile.dom.test.jsx (2 tests) 823ms
+   ✓ loads independent team stats, retries failures, and scopes self replay browsing  549ms
+ ✓ src/admin/AdminMascotSettings.test.jsx (4 tests) 849ms
+   ✓ AdminMascotSettings > saves shop dialogue pools, IRIS greeting, and IRIS links together  361ms
+ ✓ src/modals/warehouse/useWarehouseInventory.dom.test.jsx (9 tests) 721ms
+ ✓ src/modals/MailboxModal.test.jsx (11 tests) 867ms
+ ✓ src/modals/FriendsModal.dom.test.jsx (6 tests) 844ms
+ ✓ src/modals/AnnouncementModal.test.jsx (5 tests) 661ms
+ ✓ src/modals/house/HouseHandbook.dom.test.jsx (8 tests) 726ms
+   ✓ member handbook pages > switches the visible page through bookmarks and keeps decoration actions working  337ms
+ ✓ src/modals/ResumeModal.dom.test.jsx (4 tests) 735ms
+   ✓ ResumeModal authoritative record stats > uses the same server profile stats shown in user details instead of replay-page rows  368ms
+ ✓ src/home/MatchModeRulesTooltip.dom.test.jsx (3 tests) 671ms
+ ✓ src/modals/house/HouseCharacterGrid.dom.test.jsx (18 tests) 616ms
+ ✓ src/modals/WindowBookmarkWindows.dom.test.jsx (9 tests) 814ms
+ ✓ src/modals/CaptureChallenge.dom.test.jsx (12 tests) 587ms
+   ✓ capture challenge player flow > starts advanced random-color challenge directly from the picker  455ms
+ ✓ src/app/AppOverlays.dom.test.jsx (3 tests) 584ms
+   ✓ independent lazy overlay loading > blocks both customization overlays and their entry callbacks during the internal test  495ms
+ ✓ src/home/onboarding/useHomeOnboarding.dom.test.jsx (8 tests) 461ms
+ ✓ src/audio/CharacterMusicPreview.dom.test.jsx (9 tests) 455ms
+ ✓ src/home/IrisDatabase.dom.test.jsx (6 tests) 436ms
+ ✓ src/modals/ProfilePlayRecords.dom.test.jsx (6 tests) 458ms
+ ✓ src/modals/modalComponents.dom.test.jsx (9 tests) 330ms
+ ✓ src/modals/warehouse/WarehouseItemGrid.dom.test.jsx (6 tests) 406ms
+ ✓ src/modals/WatchModal.dom.test.jsx (4 tests) 451ms
+ ✓ src/modals/ProfileResumeView.dom.test.jsx (9 tests) 405ms
+ ✓ src/home/TeamLineupPicker.dom.test.jsx (4 tests) 418ms
+   ✓ fixed lineup positions and selection voice > clears the middle position without moving the third and fills the first vacancy  336ms
+ ✓ src/modals/shop/CostumeDetailDialog.dom.test.jsx (4 tests) 396ms
+ ✓ src/admin/AdminSiteSettings.dom.test.jsx (5 tests) 380ms
+ ✓ src/admin/AdminRecruitmentSettings.test.jsx (1 test) 418ms
+   ✓ AdminRecruitmentSettings > loads, saves, and reloads the memorial-ticket copy  417ms
+ ✓ src/modals/LeaderboardRanking.dom.test.jsx (7 tests) 353ms
+ ✓ src/modals/house/CharacterDetailDialog.dom.test.jsx (8 tests) 346ms
+ ✓ src/modals/MessageBoardModal.dom.test.jsx (3 tests) 348ms
+ ✓ src/room/ChatBox.dom.test.jsx (2 tests) 368ms
+   ✓ ChatBox popover draft > keeps the draft when the popover is closed and reopened  309ms
+ ✓ src/modals/PersonalizationModal.dom.test.jsx (1 test) 347ms
+   ✓ distinguishes saved equipment from an unsaved preview and only persists on save  346ms
+ ✓ src/home/onboarding/HomeOnboarding.dom.test.jsx (6 tests) 339ms
+ ✓ src/room/PlayerInfo.dom.test.jsx (2 tests) 329ms
+ ✓ src/modals/WindowBookmarkTabs.dom.test.jsx (4 tests) 356ms
+ ✓ src/room/RoomPeopleList.dom.test.jsx (2 tests) 318ms
+ ✓ src/room/header/RoomHeader.dom.test.jsx (4 tests) 307ms
+ ✓ src/modals/house/CharacterCostumeDialog.dom.test.jsx (3 tests) 317ms
+ ✓ src/app/useModalScrollLock.dom.test.jsx (8 tests) 301ms
+ ✓ src/room/SpectatorGallery.dom.test.jsx (3 tests) 249ms
+ ✓ src/admin/AdminShell.test.jsx (9 tests) 300ms
+ ✓ src/admin/AdminShopItems.test.jsx (1 test) 302ms
+   ✓ AdminShopItems > renders and saves the music category without corrupting its value  301ms
+ ✓ src/admin/AdminCostumes.test.jsx (2 tests) 270ms
+ ✓ src/room/header/RoomHeader.test.jsx (9 tests) 253ms
+ ✓ src/shared/SkillDescription.test.jsx (5 tests) 261ms
+ ✓ src/modals/InformationCenterLayout.dom.test.jsx (1 test) 259ms
+ ✓ src/modals/AemeathTransformation.dom.test.jsx (6 tests) 267ms
+ ✓ src/modals/FeedbackModals.dom.test.jsx (5 tests) 234ms
+ ✓ src/modals/useInformationListRows.dom.test.jsx (2 tests) 153ms
+ ✓ src/audio/backgroundMusic.dom.test.jsx (2 tests) 210ms
+ ✓ src/modals/watch/useWatchListRows.dom.test.jsx (2 tests) 202ms
+ ✓ src/home/components/TopAnnouncement.dom.test.jsx (3 tests) 258ms
+ ✓ src/modals/gameLifecycle/ResultRankProgress.dom.test.jsx (11 tests) 228ms
+ ✓ src/tutorial/TutorialChoiceActions.dom.test.jsx (2 tests) 210ms
+ ✓ src/room/layout/useMobileDockBaseline.test.jsx (2 tests) 207ms
+ ✓ src/modals/gameLifecycle/ResultModal.dom.test.jsx (13 tests) 232ms
+ ✓ src/home/components/PlayerPlaque.dom.test.jsx (5 tests) 198ms
+ ✓ src/modals/WindowTitleSticker.dom.test.jsx (3 tests) 213ms
+ ✓ src/app/DesktopViewportGate.dom.test.jsx (6 tests) 174ms
+ ✓ src/app/SigrikaCorruptionTransition.dom.test.jsx (3 tests) 177ms
+ ✓ src/app/LoginAssetPreloadScreen.dom.test.jsx (2 tests) 181ms
+ ✓ src/app/AppRoutes.dom.test.jsx (4 tests) 196ms
+ ✓ src/modals/gameLifecycle/MatchClassification.dom.test.jsx (3 tests) 192ms
+ ✓ src/modals/gameLifecycle/OpeningDuelPresentation.dom.test.jsx (17 tests) 167ms
+ ✓ src/app/AssetPreloadScreen.dom.test.jsx (1 test) 205ms
+ ✓ src/modals/warehouse/useWarehouseListRows.dom.test.jsx (1 test) 171ms
+ ✓ src/modals/DeniaTransformation.dom.test.jsx (4 tests) 160ms
+ ✓ src/modals/StoryPlayerModal.dom.test.jsx (7 tests) 148ms
+ ✓ src/modals/useReplayPagination.dom.test.jsx (2 tests) 128ms
+ ✓ src/modals/gameLifecycle/ResultCharacterPortrait.dom.test.jsx (11 tests) 123ms
+ ✓ src/room/useRoomProfiles.dom.test.jsx (5 tests) 118ms
+ ✓ src/room/audio/countdownSync.test.jsx (10 tests) 84ms
+ ✓ src/shared/CharacterBustPortrait.dom.test.jsx (13 tests) 85ms
+ ✓ src/modals/warehouse/sigrikaCandyDisabled.dom.test.jsx (1 test) 77ms
+ ✓ src/admin/StorySpriteFields.dom.test.jsx (1 test) 68ms
+ ✓ src/app/profileFeatures.dom.test.jsx (2 tests) 79ms
+ ✓ src/home/components/HomeStage.dom.test.jsx (2 tests) 81ms
+ ✓ src/room/audio/teamRoundVoice.test.jsx (7 tests) 52ms
+ ✓ src/tutorial/NpcDialogue.dom.test.jsx (2 tests) 56ms
+ ✓ src/app/siteEntryBootstrap.test.js (2 tests) 46ms
+ ✓ src/modals/SkillBanner.dom.test.jsx (1 test) 47ms
+ ✓ src/app/useSigrikaCorruptionTransition.dom.test.jsx (6 tests) 44ms
+ ✓ src/room/view/useRoomBoardView.dom.test.jsx (2 tests) 41ms
+ ✓ src/room/view/useRoomCountdownClock.test.jsx (3 tests) 32ms
+ ✓ src/app/SigrikaCorruptionOverlay.dom.test.jsx (1 test) 35ms
+ ✓ src/tutorial/TutorialBattleLoading.dom.test.jsx (1 test) 32ms
+ ✓ src/app/useSiteSettingsState.dom.test.jsx (2 tests) 29ms
+ ✓ src/app/useOverlayActions.dom.test.jsx (3 tests) 30ms
+ ✓ src/app/useBackgroundMusicTrack.test.js (3 tests) 25ms
+ ✓ src/app/useRoomSessionState.dom.test.jsx (1 test) 20ms
+ ✓ src/tutorial/TypewriterText.dom.test.jsx (1 test) 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/devApiProxy.integration.test.js > local announcement API proxy recovery > reproduces the original empty non-JSON response with Vite's default proxy
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/devApiProxy.integration.test.js:54:5
+     52| 
+     53| describe("local announcement API proxy recovery", () => {
+     54|   it("reproduces the original empty non-JSON response with Vite's defa…
+       |     ^
+     55|     const { url, startBackend } = await fixture();
+     56|     const cold = await fetch(url);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  scripts/devApiProxy.integration.test.js > local announcement API proxy recovery > completes the first authenticated announcement read when the backend starts during recovery
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/devApiProxy.integration.test.js:72:5
+     70|   });
+     71| 
+     72|   it("completes the first authenticated announcement read when the bac…
+       |     ^
+     73|     const { url, startBackend } = await fixture(configureDevApiProxy);
+     74|     const firstRead = api(url, { token: "fixture-token", retryDevBacke…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/shared/CharacterChainBadge.test.jsx > CharacterChainBadge > reads canonical character ids and adds portrait display hooks
+AssertionError: expected 'import { useEffect, useRef, useState …' to contain 'LegacyHouseCharacterGrid'
+
+- Expected
++ Received
+
+- LegacyHouseCharacterGrid
++ import { useEffect, useRef, useState } from "react";
++ import { canonicalCharacterId } from "../../shared/characterAliases.js";
++ import { characterThemeStyle } from "../../shared/characterDisplay.js";
++ import { resolveHandbookPortrait } from "../../shared/handbookPortraits.js";
++ import { activeCharacterItemEffects } from "./houseStats.js";
++ import CharacterCandyBorder from "../../shared/CharacterCandyBorder.jsx";
++ import { HANDBOOK_STRIP_LAYOUT, HANDBOOK_STRIP_PAGE_SIZE, handbookStripArtStyle, handbookStripPage } from "./handbookStrips.js";
++ import { CHARACTER_FACTIONS as HANDBOOK_FACTIONS, FACTION_EMBLEMS } from "../../shared/characterFactions.js";
++
++ export default function HouseCharacterGrid(props) {
++   const boardRef = useRef(null);
++   const inputMode = useRef("keyboard");
++   const hoveredKey = useRef(null);
++   const focusedKey = useRef(null);
++   const suppressRestorePreview = useRef(null);
++   const ignoreHoverUntilMove = useRef(false);
++   const touchContact = useRef(false);
++   const releaseTimer = useRef(null);
++   const [mobile, setMobile] = useState(false);
++   const [size, setSize] = useState({ width: 1000, height: 430 });
++   const [page, setPage] = useState(0);
++   const [expanded, setExpanded] = useState(null);
++   const { panelId, labelledBy, characters, owned, itemEffects, user, sigrikaCorrupted,
++     onOpenCharacterDetail } = props;
++   useEffect(() => {
++     const media = window.matchMedia?.("(max-width: 768px)");
++     if (!media) return undefined;
++     const update = () => { setMobile(media.matches); hoveredKey.current = null; focusedKey.current = null; setExpanded(null); };
++     update();
++     media.addEventListener("change", update);
++     return () => media.removeEventListener("change", update);
++   }, []);
++   useEffect(() => {
++     const keyboardInput = () => { inputMode.current = "keyboard"; };
++     window.addEventListener("keydown", keyboardInput, true);
++     return () => { window.removeEventListener("keydown", keyboardInput, true); window.clearTimeout(releaseTimer.current); };
++   }, []);
++   useEffect(() => {
++     const board = boardRef.current;
++     if (!board || typeof ResizeObserver === "undefined") return undefined;
++     const observer = new ResizeObserver(([entry]) => {
++       if (entry.contentRect.width && entry.contentRect.height) {
++         setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
++       }
++     });
++     observer.observe(board);
++     return () => observer.disconnect();
++   }, [sigrikaCorrupted]);
++   const { pages, currentPage, roster } = handbookStripPage(characters, page);
++   const changePage = (next) => { setPage(next); hoveredKey.current = null; focusedKey.current = null; setExpanded(null); };
++   const clearPointerPreview = () => {
++     window.clearTimeout(releaseTimer.current);
++     releaseTimer.current = null;
++     touchContact.current = false;
++     hoveredKey.current = null;
++     setExpanded(focusedKey.current);
++   };
++   const leavePointerPreview = () => {
++     // Non-hovering pointers also emit leave between pointerup and click.
++     // The pending release cleanup already handles that post-click boundary.
++     if (touchContact.current) return;
++     clearPointerPreview();
++   };
++   return (
++     <div className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
++       aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined} onScroll={clearPointerPreview}>
++       <div className="handbook-puzzle-board" ref={boardRef}
++         style={{ "--handbook-desktop-slant": `${HANDBOOK_STRIP_LAYOUT.slant}px`,
++           "--handbook-desktop-gap": `${HANDBOOK_STRIP_LAYOUT.gap}px`,
++           "--handbook-expanded-grow": HANDBOOK_STRIP_LAYOUT.expandedGrow }}
++         onPointerLeave={leavePointerPreview}>
++         {roster.map((character, index) => {
++           const id = canonicalCharacterId(character.id);
++           const isOwned = owned.has(id);
++           const canInteract = isOwned && !sigrikaCorrupted;
++           const displayName = sigrikaCorrupted && id === "sigrika" ? "西格莉卡？" : character.name;
++           const hideIntel = id === "baconbits" && !isOwned;
++           const isExpanded = canInteract && expanded === character.id;
++           const portrait = hideIntel ? null : resolveHandbookPortrait(character, { itemEffects, user, chibi: true });
++           const catalogIndex = currentPage * HANDBOOK_STRIP_PAGE_SIZE + index;
++           const artStyle = portrait && handbookStripArtStyle(portrait, size, { mobile, expanded: isExpanded, count: roster.length, index: catalogIndex });
++           const effects = canInteract ? activeCharacterItemEffects(id, itemEffects) : [];
++           const emblem = isOwned ? FACTION_EMBLEMS[HANDBOOK_FACTIONS[id]] : undefined;
++           return <div key={character.id}
++             className={`handbook-puzzle-piece${isOwned ? " is-owned" : " is-unowned"}${hideIntel ? " is-missing-data" : ""}${isExpanded ? " is-expanded" : ""}${sigrikaCorrupted ? id === "sigrika" ? " is-corruption-focus" : " is-corruption-obscured" : ""}`}
++             style={characterThemeStyle(character)} data-character-id={id} data-portrait-side={catalogIndex % 2 ? "right" : "left"}
++             onPointerEnter={(event) => {
++               if (!canInteract) return;
++               if (event.pointerType === "mouse" && !ignoreHoverUntilMove.current
++                 && !event.nativeEvent.sourceCapabilities?.firesTouchEvents) {
++                 hoveredKey.current = character.id;
++                 setExpanded(character.id);
++               }
++             }}
++             onPointerMove={(event) => {
++               if (!canInteract) return;
++               if (event.pointerType !== "mouse" || touchContact.current
++                 || event.nativeEvent.sourceCapabilities?.firesTouchEvents) return;
++               // Removing a dialog can synthesize mouse enter/move at the last
++               // touch position. Re-arm only after genuine pointer movement.
++               if (ignoreHoverUntilMove.current && !event.movementX && !event.movementY) return;
++               ignoreHoverUntilMove.current = false;
++               hoveredKey.current = character.id;
++               setExpanded(character.id);
++             }}
++             onPointerLeave={() => { if (hoveredKey.current === character.id) leavePointerPreview(); }}>
++             <button type="button" className="handbook-puzzle-tile"
++               disabled={!canInteract}
++               data-character-key={character.id}
++               aria-label={sigrikaCorrupted ? id === "sigrika" ? "西格莉卡？" : `${character.name}的数据已损坏` : isOwned ? `${character.name}角色详情` : hideIntel ? "暂无情报" : "未拥有角色"}
++               aria-description={effects.length ? effects.map(effect => effect.label).join("，") : undefined}
++               aria-expanded={isExpanded} title={isOwned ? character.name : undefined} data-ui-sound="none"
++               data-home-guide={isOwned && id === "sigrika" ? "sigrika-card" : undefined}
++               onPointerDown={(event) => {
++                 if (!canInteract) return;
++                 inputMode.current = "pointer";
++                 focusedKey.current = null;
++                 // Touch feedback must not change the row geometry under the
++                 // contact; the native click still opens this exact strip.
++                 if (event.pointerType !== "mouse") {
++                   window.clearTimeout(releaseTimer.current);
++                   ignoreHoverUntilMove.current = true;
++                   touchContact.current = true;
++                 }
++               }}
++               onPointerUp={(event) => {
++                 if (!canInteract) return;
++                 // Native click follows pointerup. Preserve an already-expanded
++                 // hit target until that click; a non-activating release resets
++                 // on the next task rather than leaving a touch preview latched.
++                 if (event.pointerType !== "mouse") releaseTimer.current = window.setTimeout(clearPointerPreview, 0);
++               }}
++               onPointerCancel={clearPointerPreview}
++               onFocus={() => {
++                 if (!canInteract) return;
++                 if (suppressRestorePreview.current === character.id) { suppressRestorePreview.current = null; return; }
++                 if (inputMode.current === "keyboard") { focusedKey.current = character.id; setExpanded(character.id); }
++               }}
++               onKeyDown={(event) => {
++                 if (!canInteract) return;
++                 if (event.key !== "Escape") {
++                   inputMode.current = "keyboard";
++                   suppressRestorePreview.current = null;
++                   focusedKey.current = character.id;
++                   setExpanded(character.id);
++                 }
++               }}
++               onBlur={() => {
++                 if (focusedKey.current === character.id) focusedKey.current = null;
++                 if (!touchContact.current) setExpanded(hoveredKey.current);
++               }}
++               onClick={(event) => {
++                 if (!canInteract) return;
++                 const pointerActivation = event.detail > 0 || inputMode.current === "pointer";
++                 if (pointerActivation) inputMode.current = "pointer";
++                 event.currentTarget.focus({ preventScroll: true });
++                 // Restoration may follow Escape or a synthetic guide click.
++                 // Keep it collapsed until a new hover or keyboard interaction.
++                 suppressRestorePreview.current = character.id;
++                 ignoreHoverUntilMove.current = true;
++                 window.clearTimeout(releaseTimer.current);
++                 releaseTimer.current = null;
++                 touchContact.current = false;
++                 hoveredKey.current = null;
++                 focusedKey.current = null;
++                 setExpanded(null);
++                 onOpenCharacterDetail(character);
++               }}>
++               {isOwned && <span className="handbook-strip-paper" aria-hidden="true">
++                 {emblem && <span className="handbook-strip-emblem" aria-hidden="true"
++                   style={{ "--handbook-emblem-strength": emblem.strength,
++                     maskImage: `url("${emblem.src}")`, WebkitMaskImage: `url("${emblem.src}")` }} />}
++               </span>}
++               {hideIntel ? <>
++                 <span className="handbook-missing-data" aria-hidden="true"><i /><i /><i /></span>
++                 <span className="handbook-missing-label">暂无情报</span>
++               </> : isOwned ? <span className="handbook-puzzle-art">
++                 <img className="handbook-puzzle-portrait" style={artStyle} src={portrait.src}
++                   alt="" decoding="async" draggable="false" />
++               </span> : <>
++                 <span className="handbook-puzzle-silhouette" style={{ ...artStyle,
++                   maskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")`, WebkitMaskImage: `url("${portrait.silhouetteSrc ?? portrait.src}")` }} />
++                 <span className="handbook-puzzle-question">?</span>
++               </>}
++               {isOwned && <span className={`handbook-strip-name${character.name.length >= 4 ? " is-long-name" : ""}`}><span className="handbook-strip-name-text">{displayName}</span></span>}
++               {effects.length > 0 && <CharacterCandyBorder />}
++             </button>
++
++           </div>;
++         })}
++       </div>
++       {!roster.length && <p className="quiet-text">暂无角色</p>}
++       {pages > 1 && <nav className="handbook-puzzle-pages" aria-label="角色立绘分页">
++         <button type="button" disabled={!currentPage} onClick={() => changePage(currentPage - 1)}>上一页</button>
++         <span>{currentPage + 1} / {pages}</span>
++         <button type="button" disabled={currentPage === pages - 1} onClick={() => changePage(currentPage + 1)}>下一页</button>
++       </nav>}
++     </div>
++   );
++ }
++
+
+ ❯ src/shared/CharacterChainBadge.test.jsx:33:25
+     31|     expect(houseSource).not.toContain("CharacterChainBadge");
+     32|     expect(roomSource).toContain("CharacterChainBadge");
+     33|     expect(css).toContain(".character-chain-badge");
+       |                         ^
+     34|   });
+     35| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed | 456 passed (458)
+      Tests  3 failed | 3357 passed (3360)
+   Start at  10:18:13
+   Duration  478.90s (transform 8.98s, setup 0ms, collect 84.09s, tests 121.43s, environment 119.94s, prepare 46.24s)
+

@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/shared/preloadReadiness.test.js src/shared/preloadAssets.test.js src/app/startupNetwork.dom.test.jsx src/app/BattleAssetPreloadScreen.test.js src/app/playableReadyPreload.test.js src/tutorial/TutorialInputFocus.test.js src/tutorial/TutorialBattleLoading.dom.test.jsx src/audio/countdownPlayback.test.js src/audio/audioRuntime.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  9 passed (9)
+      Tests  53 passed (53)
+   Start at  09:17:37
+   Duration  14.71s (transform 2.78s, setup 0ms, import 4.23s, tests 4.79s, environment 2.62s)
+

@@ -1,0 +1,16 @@
+[WebServer] (node:51248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:51540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:50956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\e2e\deployment-loading.spec.js:3:3 › theme rows and tutorial spotlight at 1440 (13.5s)
+  ok 2 tests\e2e\deployment-loading.spec.js:3:3 › theme rows and tutorial spotlight at 390 (4.1s)
+  ok 3 tests\e2e\deployment-loading.spec.js:3:3 › theme rows and tutorial spotlight at 320 (3.6s)
+
+  3 passed (26.1s)

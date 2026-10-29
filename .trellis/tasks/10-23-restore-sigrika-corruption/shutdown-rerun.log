@@ -1,0 +1,37 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" scripts/devApiProxy.integration.test.js src/shared/CharacterChainBadge.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ❯ scripts/devApiProxy.integration.test.js (4 tests | 1 failed) 8782ms
+   ✓ local announcement API proxy recovery > reproduces the original empty non-JSON response with Vite's default proxy  479ms
+   ✓ local announcement API proxy recovery > returns an identifiable JSON 503 while the local backend is unavailable 94ms
+   × local announcement API proxy recovery > completes the first authenticated announcement read when the backend starts during recovery 5645ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ local announcement API proxy recovery > recovers a first-request socket reset without reopening the announcement  2561ms
+ ✓ src/shared/CharacterChainBadge.test.jsx (3 tests) 36ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/devApiProxy.integration.test.js > local announcement API proxy recovery > completes the first authenticated announcement read when the backend starts during recovery
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/devApiProxy.integration.test.js:72:5
+     70|   });
+     71| 
+     72|   it("completes the first authenticated announcement read when the bac…
+       |     ^
+     73|     const { url, startBackend } = await fixture(configureDevApiProxy);
+     74|     const firstRead = api(url, { token: "fixture-token", retryDevBacke…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 6 passed (7)
+   Start at  10:26:29
+   Duration  11.03s (transform 393ms, setup 0ms, collect 1.36s, tests 8.82s, environment 0ms, prepare 223ms)
+

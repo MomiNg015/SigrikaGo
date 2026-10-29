@@ -1,0 +1,13 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/tutorial/TutorialBattleScreen.test.jsx src/tutorial/TutorialBattleLoading.dom.test.jsx src/tutorial/TutorialInputFocus.test.js src/styles/styleContract.test.js
+
+
+ RUN  v4.1.12 C:/codex/SigrikaGo
+
+
+ Test Files  4 passed (4)
+      Tests  80 passed (80)
+   Start at  09:27:22
+   Duration  6.65s (transform 2.02s, setup 0ms, import 2.79s, tests 1.06s, environment 1.39s)
+

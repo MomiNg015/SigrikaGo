@@ -1,0 +1,62 @@
+
+> sigrika-go@0.1.0 test
+> vitest run --maxWorkers=1 --exclude "**/.tmp/**" --exclude "**/.worktrees/**" --exclude "**/.trellis/**" --exclude "**/.codex-run/**" --exclude "tests/e2e/**" --exclude "tests/stability/**" src/room src/styles src/app/SigrikaCorruptionTransition.dom.test.jsx src/app/useSigrikaCorruptionTransition.dom.test.jsx src/audio/backgroundMusic.dom.test.jsx
+
+
+ RUN  v3.2.7 C:/codex/SigrikaGo
+
+ ✓ src/styles/cssLayerInventory.test.js (20 tests) 985ms
+   ✓ CSS layer inventory > records the current CSS debt baseline as a non-growth contract  304ms
+ ✓ src/room/Board.test.js (57 tests) 1152ms
+ ✓ src/styles/styleContract.test.js (58 tests) 794ms
+ ✓ src/room/RoomScreen.test.js (38 tests) 663ms
+ ✓ src/styles/themeContract.test.js (38 tests) 360ms
+ ✓ src/room/PlayerInfo.test.js (24 tests) 423ms
+ ✓ src/room/BoardSkillEffects.test.js (21 tests) 133ms
+ ✓ src/room/spectatorLayout.test.js (5 tests) 128ms
+ ✓ src/room/ActionBar.test.js (20 tests) 107ms
+ ✓ src/styles/hudComponents.test.js (28 tests) 72ms
+ ✓ src/room/ChatBox.test.js (14 tests) 60ms
+ ✓ src/room/roomView.test.js (16 tests) 37ms
+ ✓ src/room/boardSkillEffectRegistry.test.js (18 tests) 30ms
+ ✓ src/room/BoardAmbientEffects.test.js (4 tests) 23ms
+ ✓ src/room/requestToasts/timedRoomRequests.test.js (8 tests) 18ms
+ ✓ src/room/TimeBar.test.js (4 tests) 18ms
+ ✓ src/room/boardSigrikaEffect.test.js (7 tests) 14ms
+ ✓ src/room/SigrikaDuelPresentation.test.jsx (2 tests) 15ms
+ ✓ src/styles/modals/interactionMotion.test.js (5 tests) 12ms
+ ✓ src/room/pixiPrewarm.test.js (5 tests) 8ms
+ ✓ src/room/view/useRoomBoardView.test.js (6 tests) 5ms
+ ✓ src/room/spectatorPresence.test.js (4 tests) 7ms
+ ✓ src/styles/themes/bright-school/buttonColors.test.js (4 tests) 6ms
+ ✓ src/room/boardSkillEffectSoundScheduler.test.js (3 tests) 6ms
+ ✓ src/styles/handbookStrips.test.js (3 tests) 5ms
+ ✓ src/room/RoomPeopleList.test.js (3 tests) 4ms
+ ✓ src/room/actions/useRoomPointActions.test.js (7 tests) 5ms
+ ✓ src/room/roomAudioBaseline.test.js (2 tests) 5ms
+ ✓ src/room/boardSkillEffectAssets.test.js (3 tests) 4ms
+ ✓ src/room/mobilePointConfirmation.test.js (3 tests) 5ms
+ ✓ src/room/OperationHint.test.js (2 tests) 4ms
+ ✓ src/room/audio/useRoomAudioEffects.test.js (1 test) 3ms
+ ✓ src/room/ChatBox.dom.test.jsx (2 tests) 445ms
+   ✓ ChatBox popover draft > keeps the draft when the popover is closed and reopened  368ms
+ ✓ src/room/PlayerInfo.dom.test.jsx (2 tests) 357ms
+ ✓ src/room/header/RoomHeader.dom.test.jsx (4 tests) 319ms
+ ✓ src/room/RoomPeopleList.dom.test.jsx (2 tests) 310ms
+ ✓ src/app/SigrikaCorruptionTransition.dom.test.jsx (3 tests) 200ms
+ ✓ src/room/SpectatorGallery.dom.test.jsx (3 tests) 332ms
+ ✓ src/audio/backgroundMusic.dom.test.jsx (2 tests) 215ms
+ ✓ src/room/header/RoomHeader.test.jsx (9 tests) 244ms
+ ✓ src/room/layout/useMobileDockBaseline.test.jsx (2 tests) 267ms
+ ✓ src/room/useRoomProfiles.dom.test.jsx (5 tests) 122ms
+ ✓ src/room/audio/countdownSync.test.jsx (10 tests) 96ms
+ ✓ src/room/audio/teamRoundVoice.test.jsx (7 tests) 59ms
+ ✓ src/app/useSigrikaCorruptionTransition.dom.test.jsx (6 tests) 43ms
+ ✓ src/room/view/useRoomBoardView.dom.test.jsx (2 tests) 41ms
+ ✓ src/room/view/useRoomCountdownClock.test.jsx (3 tests) 30ms
+
+ Test Files  47 passed (47)
+      Tests  495 passed (495)
+   Start at  10:07:15
+   Duration  59.93s (transform 2.37s, setup 0ms, collect 12.27s, tests 8.19s, environment 21.39s, prepare 5.28s)
+
