@@ -1064,3 +1064,36 @@ Committed only user-selected resource readiness, audio unlock/cache and theme-ro
 ### Next Steps
 
 - None - task complete
+
+
+## Session 273: Tutorial Continue focus after completed NPC dialogue
+
+**Date**: 2026-10-30
+**Task**: Tutorial Continue focus after completed NPC dialogue
+**Branch**: `master`
+
+### Summary
+
+Replaced the reviewed weak halo with the existing contracting corner marker. Actual TypewriterText completion reports the bubble identity; Continue cues wait for full text without new dimming or script-timing changes. Verified 198 tests, lint, build, built CSS, generated docs and real desktop/390/320 browser flows including early NPC action completion, repeated text, history, reduced motion and click progression. Preserved unrelated samples, promo work and screenshot deletions.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `09a55368` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
