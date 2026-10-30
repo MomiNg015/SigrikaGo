@@ -20,7 +20,7 @@ export function NpcDialoguePortrait({ bubble }) {
   );
 }
 
-export default function NpcDialogue({ bubble, revealAll = false, portraitDetached = false }) {
+export default function NpcDialogue({ bubble, revealAll = false, portraitDetached = false, onTextComplete }) {
   if (!bubble) return null;
   return (
     <section className={`tutorial-battle-dialogue ${bubble.closing ? "closing" : ""}`}
@@ -32,7 +32,7 @@ export default function NpcDialogue({ bubble, revealAll = false, portraitDetache
         : <NpcDialoguePortrait bubble={bubble} />)}
       <div className="tutorial-npc-copy">
         <strong>{bubble.speakerName}</strong>
-        <p><TypewriterText key={bubble.id} revealAll={revealAll} text={bubble.text} /></p>
+        <p><TypewriterText key={bubble.id} revealAll={revealAll} text={bubble.text} onComplete={onTextComplete ? () => onTextComplete(bubble.id) : undefined} /></p>
       </div>
     </section>
   );

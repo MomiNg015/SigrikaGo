@@ -1,10 +1,22 @@
 // @vitest-environment jsdom
 import { fireEvent, render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import NpcDialogue from "./NpcDialogue.jsx";
 import { resolveStoryPortraitPresentation } from "../shared/characterStorySprites.js";
 
 describe("NPC guide expressions", () => {
+  it("reports the completed bubble identity even when successive lines have the same text", () => {
+    const onTextComplete = vi.fn();
+    const bubble = { id: "first", text: "准备好后继续", speakerName: "达妮娅" };
+    const { rerender, unmount } = render(<NpcDialogue bubble={bubble} revealAll onTextComplete={onTextComplete} />);
+    expect(onTextComplete.mock.calls).toEqual([["first"]]);
+    rerender(<NpcDialogue bubble={{ ...bubble, id: "second" }} revealAll onTextComplete={onTextComplete} />);
+    expect(onTextComplete.mock.calls).toEqual([["first"], ["second"]]);
+    rerender(<NpcDialogue bubble={null} onTextComplete={onTextComplete} />);
+    expect(onTextComplete).toHaveBeenCalledTimes(2);
+    unmount();
+  });
+
   it("updates the exact line, speaker and framed expression avatar together", () => {
     const bubble = (id, characterId, expressionId, text) => {
       const portrait = resolveStoryPortraitPresentation({ characterId, appearanceId: `${characterId}-standard-v1`, expressionId }, { variant: "avatar" });

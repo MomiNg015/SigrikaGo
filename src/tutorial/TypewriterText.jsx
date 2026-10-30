@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export function TypewriterText({ text, revealAll = false }) {
+export function TypewriterText({ text, revealAll = false, onComplete }) {
   const fullText = String(text ?? "");
   const [visibleText, setVisibleText] = useState(() => (
     canAnimateTypewriter() && !prefersReducedMotion() && !revealAll ? "" : fullText
   ));
+  const completedTextRef = useRef(null);
 
   useEffect(() => {
     if (!fullText || !canAnimateTypewriter() || prefersReducedMotion() || revealAll) {
@@ -31,6 +32,16 @@ export function TypewriterText({ text, revealAll = false }) {
       }
     };
   }, [fullText, revealAll]);
+
+  useEffect(() => {
+    if (visibleText !== fullText) {
+      completedTextRef.current = null;
+      return;
+    }
+    if (!onComplete || completedTextRef.current === fullText) return;
+    completedTextRef.current = fullText;
+    onComplete();
+  }, [fullText, visibleText, onComplete]);
 
   return visibleText;
 }

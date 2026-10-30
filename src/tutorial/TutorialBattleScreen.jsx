@@ -128,6 +128,7 @@ export default function TutorialBattleScreen({
   const [choicesVisible, setChoicesVisible] = useState(false);
   const [npcBubble, setNpcBubble] = useState(null);
   const [revealedNpcBubbleId, setRevealedNpcBubbleId] = useState("");
+  const [completedNpcBubbleId, setCompletedNpcBubbleId] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [resolvedSkillState, setResolvedSkillState] = useState(null);
   const [loadState, setLoadState] = useState({ progress: 0, error: false });
@@ -762,7 +763,9 @@ export default function TutorialBattleScreen({
 
   return (
     <Layout className="tutorial-battle-root">
-      <TutorialInputFocus mode={tutorialInputFocusMode({ node: currentNode, phase: skillPhase, choicesVisible, pendingWait, loading, confirmExit: confirmExit || storyLogOpen })} targetPointId={tutorialTargetPointId} />
+      <TutorialInputFocus mode={tutorialInputFocusMode({ ...actionState,
+        npcTextComplete: !npcBubble || npcBubble.closing || completedNpcBubbleId === npcBubble.id
+      })} targetPointId={tutorialTargetPointId} />
       <RoomHeader
         room={displayRoom}
         roomGameInfo={roomGameInfo}
@@ -833,6 +836,7 @@ export default function TutorialBattleScreen({
         <TutorialBattleDirector
           npcBubble={npcBubble}
           revealedNpcBubbleId={revealedNpcBubbleId}
+          onNpcTextComplete={setCompletedNpcBubbleId}
         />
         {loading && (
           <TutorialBattleLoading
@@ -871,11 +875,12 @@ export default function TutorialBattleScreen({
 
 function TutorialBattleDirector({
   npcBubble,
-  revealedNpcBubbleId
+  revealedNpcBubbleId,
+  onNpcTextComplete
 }) {
   return (
     <div className="tutorial-battle-director" aria-live="polite">
-      <NpcDialogue bubble={npcBubble} revealAll={revealedNpcBubbleId === npcBubble?.id} />
+      <NpcDialogue bubble={npcBubble} revealAll={revealedNpcBubbleId === npcBubble?.id} onTextComplete={onNpcTextComplete} />
     </div>
   );
 }

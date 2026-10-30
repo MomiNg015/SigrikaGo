@@ -2,9 +2,13 @@ import { useLayoutEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { tutorialFocusShape } from "./tutorialFocusShape.js";
 import GuideFocusMarker from "./GuideFocusMarker.jsx";
+import { activeTutorialAction } from "./tutorialActionState.js";
 
-export function tutorialInputFocusMode({ node, phase, choicesVisible, pendingWait, loading, confirmExit }) {
-  if (loading || pendingWait || confirmExit) return "";
+export function tutorialInputFocusMode(state) {
+  const { node, phase, choicesVisible, pendingWait, loading, confirmExit, npcTextComplete } = state;
+  if (loading || confirmExit) return "";
+  if (activeTutorialAction(state) === "continue") return npcTextComplete ? "continue" : "";
+  if (pendingWait) return "";
   if (choicesVisible) return "";
   if (phase === "continue") return "";
   if (["skill-button", "button"].includes(phase)) return "actions";
@@ -25,7 +29,7 @@ export default function TutorialInputFocus({ mode, targetPointId }) {
       if (mode === "board") {
         targets = [...(root?.querySelectorAll(".point") ?? [])].filter((point) => point.dataset.pointId === targetPointId);
         if (!targets.length) targets = [...(root?.querySelectorAll(".board") ?? [])];
-      } else if (mode === "actions") {
+      } else if (mode === "actions" || mode === "continue") {
         targets = [...(root?.querySelectorAll('.battle-arcade-controls [data-tutorial-target="true"]:not(:disabled)') ?? [])]
           .map(button => button.querySelector(".action-keycap") || button);
       }
@@ -44,13 +48,13 @@ export default function TutorialInputFocus({ mode, targetPointId }) {
   }, [mode, targetPointId]);
   if (!mode) return null;
   return createPortal(
-    <><svg className="tutorial-input-focus" aria-hidden="true" data-focus-mode={mode}>
+    <>{mode !== "continue" && <svg className="tutorial-input-focus" aria-hidden="true" data-focus-mode={mode}>
       <defs><mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
         <rect width="100%" height="100%" fill="white" />
         {holes.map((hole, index) => <path key={index} d={hole.path} fill="black" />)}
       </mask></defs>
       <rect width="100%" height="100%" fill="black" fillOpacity="0.2" mask={`url(#${maskId})`} />
-    </svg>
+    </svg>}
     {holes.map((hole, index) => <GuideFocusMarker key={`${mode}-${targetPointId}-${index}`} rect={hole.rect} viewport={hole.viewport} padding={8} className="tutorial-action-focus"/>)}</>, document.body
   );
 }
