@@ -1,9 +1,10 @@
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { DEFAULT_VISUAL_THEME, VISUAL_THEME_OPTIONS } from "../app/visualTheme.js";
+import { UI_UNAVAILABLE_EVENT } from "../app/unavailableFeedback.js";
 
 export default function SettingsModal({
   siteSettings = DEFAULT_SITE_SETTINGS,
@@ -15,6 +16,17 @@ export default function SettingsModal({
   onClose
 }) {
   const [tab, setTab] = useState("audio");
+  const modalRef = useRef(null);
+  useEffect(() => {
+    const modal = modalRef.current;
+    const explainUnavailableTheme = (event) => {
+      if (event.target.matches('.theme-choice-button[aria-disabled="true"]')) {
+        onNotice("\u656c\u8bf7\u671f\u5f85~", "success");
+      }
+    };
+    modal.addEventListener(UI_UNAVAILABLE_EVENT, explainUnavailableTheme);
+    return () => modal.removeEventListener(UI_UNAVAILABLE_EVENT, explainUnavailableTheme);
+  }, [onNotice]);
   const panelId = `settings-panel-${tab}`;
   const audioItems = [
     { key: "master", label: "\u4e3b\u97f3\u91cf", icon: <Volume2 size={18} /> },
@@ -26,6 +38,7 @@ export default function SettingsModal({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section
+        ref={modalRef}
         className={`settings-modal settings-modal-content window-sticker-host window-bookmark-host settings-tab-${tab}`}
         role="dialog"
         aria-modal="true"
@@ -124,6 +137,8 @@ export default function SettingsModal({
                       theme.available ? "" : "is-future"
                     ].filter(Boolean).join(" ")}
                     aria-pressed={active}
+                    aria-disabled={!theme.available || undefined}
+                    data-button-role={!theme.available ? "secondary" : undefined}
                     onClick={() => {
                       if (theme.available) {
                         setVisualTheme(theme.id);

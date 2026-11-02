@@ -239,17 +239,19 @@ export default function AssetPreloadScreen({
   return (
     <main className={`asset-preload-screen${tipStyle === "brush" ? " login-loading-screen" : ""}`}>
       <section className="asset-preload-panel">
-        {portraitSource ? (
-          <span className="preload-character" aria-label={portraitLabel}>
-            <img
-              src={portraitSource}
-              style={characterPresentationHidden ? undefined : displayPortrait.style}
-              alt={portraitLabel}
-            />
-          </span>
-        ) : (
-          <div className="preload-mark" />
-        )}
+        <div className="preload-portrait-slot">
+          {portraitSource ? (
+            <span className="preload-character" aria-label={portraitLabel}>
+              <img
+                src={portraitSource}
+                style={characterPresentationHidden ? undefined : displayPortrait.style}
+                alt={portraitLabel}
+              />
+            </span>
+          ) : (
+            <div className="preload-mark" />
+          )}
+        </div>
         {title && <p className="preload-title">{title}</p>}
         {statusText && <p className="preload-status">{statusText}</p>}
         <div
@@ -288,14 +290,33 @@ export default function AssetPreloadScreen({
         </div>
         {progressNote && <p className="preload-progress-note">{progressNote}</p>}
         {progressHint && <p className="preload-status preload-progress-hint">{progressHint}</p>}
-        {showTips && displayTip && (tipStyle === "brush" ? (
-          <div className="login-loading-tip" aria-live="polite">
-            <span className="login-loading-tip-label">Tip：</span>
-            <span className="login-loading-tip-copy">{displayTip.replace(/^Tip：/, "")}</span>
+        {showTips && displayTip && (
+          <div className="preload-tips">
+            <PreloadTip text={displayTip} brush={tipStyle === "brush"} />
+            {tips.map((tip, index) => (
+              <PreloadTip key={index} text={preloadTipDisplayText(tip)} brush={tipStyle === "brush"} sizing />
+            ))}
           </div>
-        ) : <p className="preload-tip" aria-live="polite">{displayTip}</p>)}
+        )}
       </section>
     </main>
+  );
+}
+
+// Overlapping invisible copies reserve the tallest tip at the current font/width.
+function PreloadTip({ text, brush, sizing = false }) {
+  const Tag = brush ? "div" : "p";
+  return (
+    <Tag
+      className={`${brush ? "login-loading-tip" : "preload-tip"}${sizing ? " preload-tip-sizer" : ""}`}
+      aria-hidden={sizing || undefined}
+      aria-live={sizing ? undefined : "polite"}
+    >
+      {brush ? <>
+        <span className="login-loading-tip-label">Tip：</span>
+        <span className="login-loading-tip-copy">{text.replace(/^Tip：/, "")}</span>
+      </> : text}
+    </Tag>
   );
 }
 

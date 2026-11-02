@@ -1,5 +1,7 @@
 import { UI_UNAVAILABLE_SHAKE_MS } from "../audio/playback.jsx";
 
+export const UI_UNAVAILABLE_EVENT = "sigrika:ui-unavailable";
+
 const SHAKE = [[0, 0], [0.12, -5], [0.24, 5], [0.36, -5], [0.48, 5], [0.6, -5], [0.72, 5], [0.84, -5], [1, 0]];
 const PULSE = [[0, 1], [0.35, 1.12], [0.65, 1.12], [1, 1]];
 

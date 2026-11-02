@@ -105,10 +105,38 @@ describe("battle action keys", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it("retains distinct spectator and dead-stone decision bars", () => {
+  it("keeps scoring in the same five keys and preserves authoritative confirmation/reset", () => {
     const { container, rerender } = render(<ActionBar {...props({ role: "spectator" })}/>);
     expect(container.querySelector(".battle-arcade-controls")).toBeNull();
-    rerender(<ActionBar {...props({ phase: "marking-dead", scoring: { confirmedBy: [] } })}/>);
-    expect(container.querySelector(".battle-arcade-controls")).toBeNull();
+    const p = props({ onConfirmScoring: vi.fn(), onResetScoring: vi.fn() });
+    rerender(<ActionBar {...p}/>);
+    const controls = container.querySelector(".battle-arcade-controls");
+    const counting = screen.getByRole("button", { name: "数子" });
+    const resign = screen.getByRole("button", { name: "认输" });
+    rerender(<ActionBar {...p} phase="marking-dead" scoring={{ confirmedBy: [] }}/>);
+    expect(container.querySelector(".battle-arcade-controls")).toBe(controls);
+    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getByRole("button", { name: "确认死子" })).toBe(counting);
+    expect(screen.getByRole("button", { name: "重新确认" })).toBe(resign);
+    expect(counting.querySelector("svg")).toBeNull();
+    expect(resign.querySelector("svg")).toBeNull();
+    expect(screen.getAllByRole("button").filter(button => !button.disabled)).toEqual([counting, resign]);
+    fireEvent.click(counting);
+    fireEvent.click(resign);
+    expect(p.onConfirmScoring).toHaveBeenCalledTimes(1);
+    expect(p.onResetScoring).toHaveBeenCalledTimes(1);
+    expect(p.onCountingRequest).not.toHaveBeenCalled();
+    expect(p.onResign).not.toHaveBeenCalled();
+    rerender(<ActionBar {...p} phase="marking-dead" scoring={{ confirmedBy: ["u"] }}/>);
+    expect(counting.disabled).toBe(true);
+    expect(resign.disabled).toBe(false);
+    fireEvent.click(counting);
+    expect(p.onConfirmScoring).toHaveBeenCalledTimes(1);
+    rerender(<ActionBar {...p} phase="marking-dead" me={null} scoring={{ confirmedBy: [] }}/>);
+    expect(screen.getAllByRole("button").every(button => button.disabled)).toBe(true);
+    rerender(<ActionBar {...p}/>);
+    expect(screen.getByRole("button", { name: "数子" })).toBe(counting);
+    expect(counting.querySelector("svg")).not.toBeNull();
+    expect(resign.querySelector("svg")).not.toBeNull();
   });
 });

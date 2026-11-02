@@ -26,7 +26,7 @@ describe("ActionBar helpers", () => {
     expect(source).toContain("<Calculator size={18}");
     expect(source).toContain("<Handshake size={18}");
     expect(source).toContain(">弃手</span>");
-    expect(source).toContain('{isContinue ? tutorialContinueLabel : "数子"}');
+    expect(source).toContain('isContinue ? tutorialContinueLabel : "数子"');
     expect(source).toContain(">和棋</span>");
     expect(source).not.toContain(">弃一手</span>");
     expect(source).not.toContain(">申请数子</span>");
@@ -86,7 +86,7 @@ describe("ActionBar helpers", () => {
   it("keeps timed opponent decisions out of the action bar", () => {
     const source = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
 
-    const decisionGate = source.slice(source.indexOf("const hasDecision"), source.indexOf("if (hasDecision)"));
+    const decisionGate = source.slice(source.indexOf("const isMarkingDead"), source.indexOf("const canScore"));
     expect(decisionGate).toContain("GAME_PHASES.markingDead");
     expect(decisionGate).not.toContain("GAME_PHASES.drawRequested");
     expect(decisionGate).not.toContain("GAME_PHASES.countingRequested");

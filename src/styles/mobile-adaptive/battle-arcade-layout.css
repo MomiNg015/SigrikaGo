@@ -1,6 +1,12 @@
-/* Final normal Bright School player-action owner; no replay/decision/duel overrides. */
+/* Playing and dead-stone marking share the same board and five-key geometry. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .desktop-room-screen:not(.sigrika-candy-duel-room) .battle-layout:has(.battle-arcade-controls) {
   grid-template-columns: minmax(220px, var(--right-panel)) minmax(430px, min(654px, calc(100dvh - 285px))) minmax(220px, var(--right-panel)) !important;
+
+  & .board-wrap {
+    padding: 4% !important;
+    grid-template-columns: 5% minmax(0, 1fr) 5% !important;
+    grid-template-rows: 5% minmax(0, 1fr) 5% !important;
+  }
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .room-screen:not(.sigrika-candy-duel-room) .action-bar.battle-arcade-controls {

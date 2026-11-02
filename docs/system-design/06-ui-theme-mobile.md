@@ -32,7 +32,7 @@
 
 最终样式由 `battle-arcade-layout.css`、`battle-arcade-keys.css`、`battle-arcade-skill.css` 三个局部 owner 管理，在 `mobile-adaptive.css` 尾部加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面普通玩家对弈与教学按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 `useMobileDockBaseline` 测量实际高度，短屏可滚动到全部操作。
 
-`ActionKey` 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、普通对局死子确认、教学回答选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 `display: contents`。
+`ActionKey` 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、教学回答选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 `display: contents`。
 
 验证覆盖实际 `RoomBattleStage`、正式 CSS、1440×768／1920×1080 桌面及 390×844／320×568 竖屏，检查长名、字体加载、次数窗边界、棋盘比例、五键实际位移、模式锁定和特殊主题隔离。入口及证据见 `docs/design-samples/battle-arcade-2026-10-29/production.html`、`verify-production.mjs`；组件回归见 `ActionBar.dom.test.jsx`。
 
@@ -173,7 +173,7 @@ WuWa 的 `Sigrika Accent Latin` face、字母/数字 unicode-range、语义 clas
 
 `RoomHeader` 的 `.room-code-label` 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 `matchSource=practice` 显示“人机”，其余读取棋种 `shortTitle`。保留房间代码和特殊剧情 `ERROR`；`.move-count` 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 `mobile-adaptive/battle-paper-panels.css` 与 `battle-paper-panels-mobile.css` 拆分身份、棋钟和技能面板。`PlayerInfo` 的 `player-clock-panel` 包含原计时器和统计，其他主题使用 `display: contents` 保留原布局；黑化剧情不启用新外观。棋钟常态使用 `--bright-sheet` 米色，`.active-turn` 使用既有黄色 `#fff0a6`、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；`battle-paper-panels.css` 仅作用于非 mobile-room-screen，手机的 `player-clock-panel` 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。
 
-常规玩家 `ActionBar` 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 `disabled` 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。`room-people-table` 的滚动区域内保留上／右／下／左 `2px 6px 6px 2px` 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。
+常规玩家 `ActionBar` 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 `disabled` 灰色占位；无技能时仅显示“技能”。死子确认复用五键布局，仅切换数子与认输的文案和回调；观战回放和教学专用操作区沿用各自规则。`room-people-table` 的滚动区域内保留上／右／下／左 `2px 6px 6px 2px` 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。
 
 履历与详细资料无角色战绩时，`.profile-character-section` 保留校园卡片边框、底色和阴影，内部嵌套紧凑 `WindowEmptyState`。外框沿桌面剩余 grid 行或竖屏正文 flex 剩余空间延伸到底部；有记录时保持原表格滚动。
 
@@ -488,3 +488,13 @@ Capture loading, retryable errors, empty and populated results must all retain t
 黑化对局接入当前 `RoomLayouts` 的 `data-paper-battle` 和 `PlayerInfo` 的 `data-paper-player` 布局标记，共用新版立绘台、身份纸条、计时器、三项统计及技能卡。桌面拆除旧整块头像背景；手机竖屏使用左侧立绘、右侧双行信息卡。黑化样式只负责暗红／炭灰材质与对应子元素的可读性，棋盘坐标保留深色墨迹。768px 以下计时器将标签、完整 30:00 数字和进度条分行；未知技能不暴露名称或交互，原始专属立绘、禁用数子与剧情规则保持。
 
 顶栏使用共享回合记分牌及服务端棋色，显示 ERROR 和双方名称，隐藏段位。矮桌面棋盘预算同步更新，五个操作保持一行，避免认输按钮换行落到视口外。横屏保留三列棋盘结构，显式覆盖旁观布局的竖排规则；手机系统记录 Portal 的关闭图标和禁用输入继续采用黑化配色。真实组件检查覆盖桌面、短桌面、320／390／430px 竖屏及 768／844px 横屏；截图与说明见[黑化对局复查](../design-samples/sigrika-corruption-2026-10-23/room-review.md)。
+
+
+## 加载与对弈布局稳定性（2026-11-02）
+
+- `AssetPreloadScreen` 的立绘与备用 spinner 共用固定正方形槽；`preload-tips` 将当前提示与所有提示的隐藏副本叠放在同一网格格子，以当前宽度及实际字体预留最大高度。副本 `aria-hidden` 且不可交互，只有当前提示为 live region；保留原跳动与进度动效，进度小字上移贴近条体。
+- `ActionBar` 在 `marking-dead` 中不卸载五键控制舱。“确认死子”沿用 `confirm-dead`，“重新确认”沿用 `reset-dead`，两键只显示居中文字、不带图标；已确认只禁用确认键，重新确认仍可用。参与者或 scoring 不存在时两键均禁用，弃手／和棋／技能继续占位禁用。教学显式覆盖及观战回放优先级不变。
+- Bright School 桌面控制舱仍按视口高度预留底部空间，但棋盘内部改用 4% 留白与两侧各 5% 坐标带，使短窗口内棋格保持合适占比；横纵网格一致，竖屏继续使用原有专属棋盘布局。普通与数子阶段外框、网格、操作栏的实际位置和尺寸相同。
+- `result-compact.css` 的结果卡外框为 `3px solid var(--bright-border)`，硬阴影为 `6px 6px 0 var(--bright-border)`，手机保留阴影安全边距。
+- 未开放的主题按钮使用 `aria-disabled` 及共享 `data-button-role` 禁用视觉，保留键盘可聚焦性。`InteractionFeedback` 每次不可用反馈派发冒泡的 `sigrika:ui-unavailable` 事件；设置窗口仅响应自身未开放主题按钮并显示原有 toast，不放行业务 click，也不切换主题。鼠标 pointerdown/click 去重及按键 repeat 去重仍由共享反馈负责。
+- 浏览器验证覆盖 1280×720、1440×800、1920×1080、2301×1152 桌面及 320／360／390px 竖屏；棋盘保持正方形且无横向溢出，数子前后测量一致。短手机沿用页面纵向滚动，操作区可滚动到达。加载页在桌面和 320／390px 竖屏轮换长短 tip／角色后锚点不变。

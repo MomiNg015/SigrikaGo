@@ -14,9 +14,9 @@
   gap: 16px !important;
   overflow: visible !important;
   text-align: left !important;
-  border: 1px solid var(--bright-border) !important;
+  border: 3px solid var(--bright-border) !important;
   border-radius: 10px !important;
-  box-shadow: 5px 6px 0 color-mix(in srgb, var(--bright-ink) 25%, transparent) !important;
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
 
   &.result-outcome-win { --window-paper-color: var(--campus-button-success); }
   &.result-outcome-loss { --window-paper-color: var(--campus-button-danger); }

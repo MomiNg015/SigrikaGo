@@ -1,4 +1,8 @@
 /* Login reuses the shared character stage and progress bar; only tips differ. */
+.preload-tips { width: 100%; display: grid; justify-items: center; }
+.preload-tips > * { grid-area: 1 / 1; align-self: start; }
+.preload-tip-sizer { visibility: hidden; pointer-events: none; }
+
 .login-loading-tip {
   width: min(440px, 100%);
   text-align: center;
@@ -32,7 +36,8 @@
   text-wrap: pretty;
 }
 
-.asset-preload-panel .preload-progress-note { margin-top: -12px; font-size: 12px; font-weight: 400; line-height: 1.5; color: inherit; }
+.asset-preload-panel .preload-progress-note { margin-top: -24px; font-size: 12px; font-weight: 400; line-height: 1.5; color: inherit; }
+.asset-preload-panel .preload-progress-hint { margin-top: -20px; }
 
 @media (max-width: 640px) {
   .login-loading-tip { font-size: 13px; }

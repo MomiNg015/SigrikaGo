@@ -4,7 +4,7 @@ import {
   playUiConfirmSound,
   playUiUnavailableSound
 } from "../audio/playback.jsx";
-import { triggerUnavailableShake } from "./unavailableFeedback.js";
+import { triggerUnavailableShake, UI_UNAVAILABLE_EVENT } from "./unavailableFeedback.js";
 
 const INTERACTIVE_SELECTOR = [
   "button",
@@ -49,6 +49,7 @@ export default function InteractionFeedback({ audioSettings }) {
       animations.get(target)?.();
       playUiUnavailableSound(audioSettings);
       animations.set(target, triggerUnavailableShake(target, () => animations.delete(target)));
+      target.dispatchEvent(new CustomEvent(UI_UNAVAILABLE_EVENT, { bubbles: true }));
     }
 
     function handlePointerDown(event) {

@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h2>2026-11-02 加载与对弈布局稳定性</h2>
+<p>加载页以固定立绘槽和全部 tips 的重叠隐藏测量副本预留高度，轮换角色及一行／多行提示不会重新居中其它内容，进度小字靠近加载条。数子阶段保留常规五键功能区：数子位置为“确认死子”，认输位置为“重新确认”，两键均仅显示居中文字、不带图标，其余操作禁用；桌面棋盘留白随盘面缩放，避免短窗口内棋格显得过小。结果卡使用 3px 墨色边框及 6px 实色硬阴影。设置中未开放主题采用 ARIA 禁用态，统一不可用反馈通过语义事件通知设置窗口显示原有“敬请期待”提示。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-10-30 对弈引导继续按钮提示</h2>
 <p>“继续”按钮保留暖黄色和原有位置，使用共享的四角收拢聚焦标记。由实际打字组件在整句显示完成后回报当前气泡 ID，且继续按钮可用时才显示提示；支持点击展开全文和减少动态效果模式。无 NPC 对话的单独继续选项立即提示，加载、剧情记录或退出确认期间隐藏；不额外压暗界面、不改变剧情推进时机。</p>
 <h2>2026-10-29 桌面部员手册上下交错入场实装</h2>
@@ -77,7 +79,7 @@
 <p>履历“成就”“个性化”沿用共享发布开关，关闭时呈原生禁用状态。全局 <code>InteractionFeedback</code> 为原生及 ARIA 禁用控件提供统一不可用音效与晃动，覆盖专用音效入口、鼠标、触摸和键盘；拦截业务操作，并处理重复按下与卸载清理。反馈临时覆盖主题的静态位移限制，结束恢复原样，减少动态效果时使用亮度脉冲。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-10-29 掌机式对弈功能区正式接入</h2>
 <p><a href="./design-samples/battle-arcade-2026-10-29/tutorial.html">对弈引导功能区示意</a>直接挂载 <code>TutorialBattleScreen</code>，现与正式对弈复用五键控制舱：回答选项使用独立浮层，功能区保留；需要继续时将数子位置改为沿用原黄色渐变、带播放图标的“继续”（预览跳过为“立即继续”），保留其余四键但禁用，单独的继续脚本选项也复用此位置。落子、等待与自动演出期间保留禁用的常规五键；弃手、数目、技能、和棋、认输教学只启用并高亮当前按钮。引导技能键仅在当前需要点击技能且有次数时显示彩虹色，其余阶段连同次数窗变灰但保留真实计数；无角色的用户视角默认只显示“技能”，玩家技能节点按实际执行配置显示剧情指定名称（如达妮娅“泡影幻梦”），结束该节点后恢复通用名称。聚焦遮罩按实际按钮／键帽的圆角轮廓开孔，消除白色边角；按钮不额外绘制焦点框，以目标原亮度与周围压暗提示操作。桌面和移动端剧情记录均改为 header 中退出左侧的 44px 纯图标入口，记录浮窗向下展开。共享教学节点新增 <code>pass</code>／<code>draw</code>，后台、工作簿、校验和本地教学执行一致；不接入网络对局操作。</p>
-<p>普通 Bright School 对弈的五个操作接入选定的掌机控制舱：技能主键使用当前角色／派生技能名称，图标与文字作为一组垂直居中，右上独立定位的 IRIS 同款字体小窗显示剩余次数，有次数保留彩虹渐变、零次数为灰色。弃手／和棋为辅助键，数子／认输为中等权重键，键帽具有嵌入底座、边缘高光和实际下沉反馈。桌面按窗口高度为底座预留空间，手机竖屏采用双层按键；保留原操作禁用规则、确认流程与移动端高度测量。观战、普通对局死子确认、教学回答选项与特殊主题不套用新布局。见<a href="./design-samples/battle-arcade-2026-10-29/production.html">正式组件预览</a>及<a href="./system-design/06-ui-theme-mobile.md">界面契约</a>。</p>
+<p>普通 Bright School 对弈的五个操作接入选定的掌机控制舱：技能主键使用当前角色／派生技能名称，图标与文字作为一组垂直居中，右上独立定位的 IRIS 同款字体小窗显示剩余次数，有次数保留彩虹渐变、零次数为灰色。弃手／和棋为辅助键，数子／认输为中等权重键，键帽具有嵌入底座、边缘高光和实际下沉反馈。桌面按窗口高度为底座预留空间，手机竖屏采用双层按键；保留原操作禁用规则、确认流程与移动端高度测量。观战、教学回答选项与特殊主题不套用新布局；普通数子阶段复用五键位置。见<a href="./design-samples/battle-arcade-2026-10-29/production.html">正式组件预览</a>及<a href="./system-design/06-ui-theme-mobile.md">界面契约</a>。</p>
 <h2>2026-10-29 对弈功能区街机按钮样板</h2>
 <p>新增独立<a href="./design-samples/battle-arcade-2026-10-29/index.html">三套交互样板</a>：圆帽街机、阶梯键组、掌机控制舱，均沿用 Bright School 暖纸、墨色轮廓和项目字体，以体量与颜色表达“技能 &gt; 数目／认输 &gt; 弃手／和棋”。对照页同时展示桌面与 390／320px 竖屏，并演示长技能名、选中、禁用、按压及确认反馈。棋盘和玩家仅为静态参照，未改正式对弈组件、规则或样式；选择方案后再接入正式布局与主题层。<a href="./design-samples/battle-arcade-2026-10-29/README.md">审查与验证说明</a>。</p>
 <p>用户选择第三套后，预览默认进入掌机控制舱修订版：主键直接显示技能名，右上次数小窗复用 IRIS 的 WuWa／点阵宋体混合字体与青绿深底风格；有剩余次数时为彩虹渐变，零次数为灰色，对手回合仅禁用操作。五键均支持可见下沉与回弹，并覆盖快速点击、触摸、键盘和取消输入；长名在 320px 下完整换行。此轮仍为独立样板细化。</p>
@@ -5568,7 +5570,7 @@
 <h2>掌机式对弈操作区（2026-10-29）</h2>
 <p><code>ActionBar</code> 的普通玩家分支使用 <code>battle-arcade-controls</code>，五个原操作和回调不变。<code>RoomBattleStage</code> 仍通过 <code>effectiveSkillDisplayForPlayer</code>／<code>effectiveSkillUsesForColor</code> 提供当前角色或派生技能名与次数；技能名直接进入主键，图标与名称以对称上下内边距作为一组垂直居中；次数窗独立定位，不占用内容布局空间。次数显示在右上 IRIS 小窗，字体复用 <code>--font-iris-mixed</code>。普通对局的正次数使用静态柔和彩虹渐变，零次数（含无技能模式）为灰色；对手回合等临时锁定保留次数色，但原生按钮不可操作。可访问名称包含技能名和次数，窗口数字避免重复朗读。</p>
 <p>最终样式由 <code>battle-arcade-layout.css</code>、<code>battle-arcade-keys.css</code>、<code>battle-arcade-skill.css</code> 三个局部 owner 管理，在 <code>mobile-adaptive.css</code> 尾部加载，覆盖旧等宽、平面及移动端固定高度规则。普通 Bright School 使用薄荷纸底座、压入式键座、边缘高光、胶囊辅助键和椭圆次级键；局部尺寸与彩虹／IRIS 色是用户选定的功能区例外。手机两行保留至少 44px 触控区域，技能跨行；桌面普通玩家对弈与教学按视口高度限制正方形棋盘列，为底座预留空间。手机继续由 <code>useMobileDockBaseline</code> 测量实际高度，短屏可滚动到全部操作。</p>
-<p><code>ActionKey</code> 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、普通对局死子确认、教学回答选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 <code>display: contents</code>。</p>
+<p><code>ActionKey</code> 只包裹原生按钮并管理短暂按压标记，游戏回调立即执行。鼠标、触摸和 Enter／Space 让键帽下沉，快速释放保留 120ms 可见反馈；离开、取消、失焦、禁用及卸载会清理状态和计时器。技能选中保留压入态；减少动态效果时移除过渡。观战／回放、教学回答选项，以及黑化、特殊决斗与其它主题保留原布局；其它主题中的键帽 wrapper 为 <code>display: contents</code>。</p>
 <p>验证覆盖实际 <code>RoomBattleStage</code>、正式 CSS、1440×768／1920×1080 桌面及 390×844／320×568 竖屏，检查长名、字体加载、次数窗边界、棋盘比例、五键实际位移、模式锁定和特殊主题隔离。入口及证据见 <code>docs/design-samples/battle-arcade-2026-10-29/production.html</code>、<code>verify-production.mjs</code>；组件回归见 <code>ActionBar.dom.test.jsx</code>。</p>
 <h2>对弈引导右侧阶梯回答（2026-10-29）</h2>
 <p><code>TutorialChoiceActions</code> 在 <code>TutorialBattleScreen</code> 根节点内以绝对定位浮层渲染普通回答，始终保留 <code>RoomBattleStage</code> 原五键；不使用 <code>actionPanelOverride</code>。选项容器背景透明、空隙可穿透，滚动兜底时只接管自身滚动。容器内独立 fixed 背景层覆盖完整视口，使用 20% 黑色；其上回答层保持原亮度，背景层随选项卸载。沿用选项层 z-index 130，覆盖 NPC、棋盘与 header，记录浮窗和退出确认仍按原层级在上方。背景层不拦截指针，原操作门禁负责禁用对局按钮。每行等宽、左对齐，向下逐级靠右，移动端步进最大 8px／总错位最多 30px，桌面 14px／48px。单行滑入 210ms，总错峰不足 90ms；减少动态效果时直接显示。</p>
@@ -5638,7 +5640,7 @@
 <p>玩家卡片与列表空状态只显示“暂无＋对应内容名称”，不附加提示句或引导。例如履历与他人资料使用“暂无角色战绩”，公告/更新日志/邮件使用各自名称；好友与黑名单随当前选项卡显示。桌面和手机竖屏保持相同文案，沿用现有空状态布局与纸张图案。</p>
 <p>竖屏对弈新增棋钟深度后，最终 <code>mobile-room-shadow-gutters.css</code> 必须覆盖 <code>mobile-player-slot</code> 的旧 <code>overflow: hidden !important</code>，普通房间改为 <code>overflow: visible</code>；动作区锚定的视口在全部竖屏移动断点统一采用 <code>0 5px 6px 0</code> 留白，现有行间距容纳 3px 阴影／位移。验证必须包含真实 <code>RoomScreen → mobile-room-viewport → mobile-player-slot → PlayerInfo</code> 容器链、黑白换手与短屏，不能只在宽松容器中单测 PlayerInfo。</p>
 <p><code>RoomHeader</code> 的 <code>.room-code-label</code> 以当前模式短名替换“房间号”：吃子挑战优先显示“吃子赛”，其他 <code>matchSource=practice</code> 显示“人机”，其余读取棋种 <code>shortTitle</code>。保留房间代码和特殊剧情 <code>ERROR</code>；<code>.move-count</code> 只使用当前手数，不再混入吃子赛名称、手数上限和提子数。普通 Bright School 对弈由最终样式 <code>mobile-adaptive/battle-paper-panels.css</code> 与 <code>battle-paper-panels-mobile.css</code> 拆分身份、棋钟和技能面板。<code>PlayerInfo</code> 的 <code>player-clock-panel</code> 包含原计时器和统计，其他主题使用 <code>display: contents</code> 保留原布局；黑化剧情不启用新外观。棋钟常态使用 <code>--bright-sheet</code> 米色，<code>.active-turn</code> 使用既有黄色 <code>#fff0a6</code>、3px 棕色硬阴影和零位移，其他棋钟下沉 3px 且无阴影。立绘沿用装扮解析与队际阵容，普通单角色清除旧裁切轮廓并越过浅色背板；姓名牌、观战视角和技能浮层交互保持原语义。竖屏信息卡按用户要求恢复为大改前的两行布局（portrait/meta/time 与 portrait/captures/skill）；<code>battle-paper-panels.css</code> 仅作用于非 mobile-room-screen，手机的 <code>player-clock-panel</code> 使用 display: contents，因此沿用原 timer、统计和技能样式。保留 94px 信息条、66px 出框立绘，独立卡片底板从左侧 48px 开始，约 18px 边缘藏在立绘下；底板使用米色／回合黄色及整卡阴影，文字从立绘列之外开始，不被覆盖。底板伪元素显式覆盖旧主题的 content/display/background 重置，立绘使用更高局部层级。视口仍为四行 max-content、8px 间距，棋盘使用屏宽和 dvh／安全区共同定尺寸，大屏优先一屏，短屏允许滚动。桌面分层布局保持不变。</p>
-<p>常规玩家 <code>ActionBar</code> 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 <code>disabled</code> 灰色占位；无技能时仅显示“技能”。观战回放、死子确认和教学专用操作区沿用各自布局。<code>room-people-table</code> 的滚动区域内保留上／右／下／左 <code>2px 6px 6px 2px</code> 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。</p>
+<p>常规玩家 <code>ActionBar</code> 固定呈现弃手、数子、技能、和棋、认输五个按钮。五子棋的弃手／数子、无技能模式的技能、禁和棋模式的和棋保留原生 <code>disabled</code> 灰色占位；无技能时仅显示“技能”。死子确认复用五键布局，仅切换数子与认输的文案和回调；观战回放和教学专用操作区沿用各自规则。<code>room-people-table</code> 的滚动区域内保留上／右／下／左 <code>2px 6px 6px 2px</code> 内边距，覆盖成员按钮悬停上移及右下硬阴影，仍保留列表纵向滚动。</p>
 <p>履历与详细资料无角色战绩时，<code>.profile-character-section</code> 保留校园卡片边框、底色和阴影，内部嵌套紧凑 <code>WindowEmptyState</code>。外框沿桌面剩余 grid 行或竖屏正文 flex 剩余空间延伸到底部；有记录时保持原表格滚动。</p>
 <h2>玩家窗口左侧书签选项卡</h2>
 <p><code>ResumeModal</code>、<code>SettingsModal</code>、<code>AchievementModal</code>、<code>LeaderboardModal</code>、<code>FriendsModal</code>和 <code>AnnouncementModal</code> 显式声明 <code>window-bookmark-host</code>，对应分类/模式控件使用 <code>WindowBookmarkTabs</code>；<code>UserProfileCard</code> 仅在首页好友入口启用 <code>titleStickers</code> 时接入，房间内保持原布局。组件保留原按钮 ID、<code>aria-controls</code>、回调、选中状态与加载禁用规则，普通校园主题通过 portal 将书签列放到最近的已启用窗口外层。监听 <code>.app-shell</code> 主题类变化，黑化或主题切换时恢复原布局；不得穿过未启用的嵌套对话框挂载到祖先窗口。当前商城为双店铺切换，旧 <code>ShopTabs</code> 和 <code>GachaModal</code> 没有现行入口，不为样式推广重新启用。</p>
@@ -6222,6 +6224,25 @@
 <h3>2026-10-24 黑化实际对局适配</h3>
 <p>黑化对局接入当前 <code>RoomLayouts</code> 的 <code>data-paper-battle</code> 和 <code>PlayerInfo</code> 的 <code>data-paper-player</code> 布局标记，共用新版立绘台、身份纸条、计时器、三项统计及技能卡。桌面拆除旧整块头像背景；手机竖屏使用左侧立绘、右侧双行信息卡。黑化样式只负责暗红／炭灰材质与对应子元素的可读性，棋盘坐标保留深色墨迹。768px 以下计时器将标签、完整 30:00 数字和进度条分行；未知技能不暴露名称或交互，原始专属立绘、禁用数子与剧情规则保持。</p>
 <p>顶栏使用共享回合记分牌及服务端棋色，显示 ERROR 和双方名称，隐藏段位。矮桌面棋盘预算同步更新，五个操作保持一行，避免认输按钮换行落到视口外。横屏保留三列棋盘结构，显式覆盖旁观布局的竖排规则；手机系统记录 Portal 的关闭图标和禁用输入继续采用黑化配色。真实组件检查覆盖桌面、短桌面、320／390／430px 竖屏及 768／844px 横屏；截图与说明见<a href="../design-samples/sigrika-corruption-2026-10-23/room-review.md">黑化对局复查</a>。</p>
+<h2>加载与对弈布局稳定性（2026-11-02）</h2>
+<ul>
+<li><code>AssetPreloadScreen</code> 的立绘与备用 spinner 共用固定正方形槽；<code>preload-tips</code> 将当前提示与所有提示的隐藏副本叠放在同一网格格子，以当前宽度及实际字体预留最大高度。副本 <code>aria-hidden</code> 且不可交互，只有当前提示为 live region；保留原跳动与进度动效，进度小字上移贴近条体。</li>
+</ul>
+<ul>
+<li><code>ActionBar</code> 在 <code>marking-dead</code> 中不卸载五键控制舱。“确认死子”沿用 <code>confirm-dead</code>，“重新确认”沿用 <code>reset-dead</code>，两键只显示居中文字、不带图标；已确认只禁用确认键，重新确认仍可用。参与者或 scoring 不存在时两键均禁用，弃手／和棋／技能继续占位禁用。教学显式覆盖及观战回放优先级不变。</li>
+</ul>
+<ul>
+<li>Bright School 桌面控制舱仍按视口高度预留底部空间，但棋盘内部改用 4% 留白与两侧各 5% 坐标带，使短窗口内棋格保持合适占比；横纵网格一致，竖屏继续使用原有专属棋盘布局。普通与数子阶段外框、网格、操作栏的实际位置和尺寸相同。</li>
+</ul>
+<ul>
+<li><code>result-compact.css</code> 的结果卡外框为 <code>3px solid var(--bright-border)</code>，硬阴影为 <code>6px 6px 0 var(--bright-border)</code>，手机保留阴影安全边距。</li>
+</ul>
+<ul>
+<li>未开放的主题按钮使用 <code>aria-disabled</code> 及共享 <code>data-button-role</code> 禁用视觉，保留键盘可聚焦性。<code>InteractionFeedback</code> 每次不可用反馈派发冒泡的 <code>sigrika:ui-unavailable</code> 事件；设置窗口仅响应自身未开放主题按钮并显示原有 toast，不放行业务 click，也不切换主题。鼠标 pointerdown/click 去重及按键 repeat 去重仍由共享反馈负责。</li>
+</ul>
+<ul>
+<li>浏览器验证覆盖 1280×720、1440×800、1920×1080、2301×1152 桌面及 320／360／390px 竖屏；棋盘保持正方形且无横向溢出，数子前后测量一致。短手机沿用页面纵向滚动，操作区可滚动到达。加载页在桌面和 320／390px 竖屏轮换长短 tip／角色后锚点不变。</li>
+</ul>
 <p>---</p>
 <h1>性能、技术债与扩展路线</h1>
 <p>本文记录技术债优先级、后续扩展建议、实时性能和高频交互优化。新增性能优化、技术债清理、扩展路线或架构风险时优先更新本分篇。</p>

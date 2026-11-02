@@ -10,7 +10,6 @@ import {
 import { GAME_PHASES } from "../shared/game.js";
 import { gameModeFamily } from "../shared/gameModes.js";
 import { canRequestOpponentDecision } from "./actionBar/actionAvailability.js";
-import DeadStoneDecisionBar from "./actionBar/DeadStoneDecisionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
 import ActionKey from "./actionBar/ActionKey.jsx";
 
@@ -58,18 +57,9 @@ function ActionBar({
       />
     );
   }
-  const hasDecision =
-    tutorialAction === undefined && phase === GAME_PHASES.markingDead && scoring;
-  if (hasDecision) {
-    return (
-      <DeadStoneDecisionBar
-        userId={me?.user?.id}
-        scoring={scoring}
-        onConfirmScoring={onConfirmScoring}
-        onResetScoring={onResetScoring}
-      />
-    );
-  }
+  const isMarkingDead = tutorialAction === undefined && phase === GAME_PHASES.markingDead;
+  const canScore = Boolean(me?.user?.id && scoring);
+  const confirmed = Boolean(scoring?.confirmedBy?.includes(me?.user?.id));
   const isGomoku = gameModeFamily(mode) === "gomoku";
   const remainingUses = skillEnabled ? Math.max(0, skillUses ?? 0) : 0;
   const actionSkillName = skillEnabled ? (skillName || "技能") : "技能";
@@ -86,12 +76,12 @@ function ActionBar({
         className="counting-action"
         data-tutorial-continue={isContinue || undefined}
         data-tutorial-target={tutorialAction === countingAction || undefined}
-        onClick={isContinue ? onTutorialContinue : onCountingRequest}
-        disabled={actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
-        title={!isContinue && (isGomoku || !countingEnabled) ? "该对局无法数子" : undefined}
+        onClick={isMarkingDead ? onConfirmScoring : isContinue ? onTutorialContinue : onCountingRequest}
+        disabled={isMarkingDead ? !canScore || confirmed : actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
+        title={isMarkingDead && confirmed ? "你已确认死子，等待双方完成确认。" : !isMarkingDead && !isContinue && (isGomoku || !countingEnabled) ? "该对局无法数子" : undefined}
       >
-        {isContinue ? <Play size={18} aria-hidden="true" /> : <Calculator size={18} />}
-        <span className="action-label mobile-action-button-label">{isContinue ? tutorialContinueLabel : "数子"}</span>
+        {!isMarkingDead && (isContinue ? <Play size={18} aria-hidden="true" /> : <Calculator size={18} />)}
+        <span className="action-label mobile-action-button-label">{isMarkingDead ? "确认死子" : isContinue ? tutorialContinueLabel : "数子"}</span>
       </ActionKey>
       <ActionKey
         className={`skill-action ${pendingSkill ? "active" : ""} ${remainingUses <= 0 ? "spent" : ""}`}
@@ -112,7 +102,7 @@ function ActionBar({
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </ActionKey>
-      <ActionKey className="resign-action" data-tutorial-target={tutorialAction === "resign" || undefined} onClick={onResign} disabled={actionDisabled("resign", phase === "finished" || skillLocked)}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></ActionKey>
+      <ActionKey className="resign-action" data-tutorial-target={tutorialAction === "resign" || undefined} onClick={isMarkingDead ? onResetScoring : onResign} disabled={isMarkingDead ? !canScore : actionDisabled("resign", phase === "finished" || skillLocked)}>{!isMarkingDead && <Flag size={18} />}<span className="action-label mobile-action-button-label">{isMarkingDead ? "重新确认" : "认输"}</span></ActionKey>
     </nav>
   );
 }
