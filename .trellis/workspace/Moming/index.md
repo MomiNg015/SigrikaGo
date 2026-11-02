@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 273
-- **Last Active**: 2026-10-30
+- **Total Sessions**: 274
+- **Last Active**: 2026-11-02
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~1099 | Active |
+| `journal-5.md` | ~1132 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 274 | 2026-11-02 | Loading and scoring UI fixes | `9cdffa62` | `master` |
 | 273 | 2026-10-30 | Tutorial Continue focus after completed NPC dialogue | `09a55368` | `master` |
 | 272 | 2026-10-29 | Commit resource readiness, audio and theme rows | `5f8b8ba0` | `master` |
 | 271 | 2026-10-29 | Desktop handbook alternating entry rollout | `d5f9f69c` | `master` |

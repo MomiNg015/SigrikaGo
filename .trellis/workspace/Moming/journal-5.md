@@ -1097,3 +1097,36 @@ Replaced the reviewed weak halo with the existing contracting corner marker. Act
 ### Next Steps
 
 - None - task complete
+
+
+## Session 274: Loading and scoring UI fixes
+
+**Date**: 2026-11-02
+**Task**: Loading and scoring UI fixes
+**Branch**: `master`
+
+### Summary
+
+Stabilized loading portrait/tip slots, kept five battle actions during scoring with text-only confirm/reset buttons, enlarged board grid proportionally, applied result hard borders/shadows, and retained unavailable-theme feedback/toasts. Full npm run check passed: 478 files and 3473 tests. Updated the visual report with commit status; preserved unrelated WIP.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9cdffa62` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
