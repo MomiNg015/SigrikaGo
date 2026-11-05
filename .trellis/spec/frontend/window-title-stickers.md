@@ -22,6 +22,8 @@ All title lettering uses the actual `public/assets/fonts/LXGWMarkerGothic-Regula
 
 ## Player window bookmark tabs
 
+- Normal Bright School Settings uses a single viewport-bounded shell: 456px desktop, 600px portrait at widths up to 768px, capped by `--window-sticker-available-height`. `window-bookmark-content.css` owns this size after bookmark relocation; no tab or text length may change shell position/width/height. About/notes scroll inside their text region with the return action outside; audio and themes use the remaining panel track. Do not restore theme-only min/max-height overrides. `interface-polish-settings.spec.js` verifies audio → theme → long about → long notes → return → audio at 1440x800, 800x600, 390x844 and 320x568, including final-copy/button/slider reachability. Wait for the initial shell entrance before geometry comparisons.
+
 - The approved profile folder redesign supersedes bookmark tabs for Resume and UserProfileCard: these two windows use internal family tabs plus play buttons. Other bookmark hosts remain unchanged. Their rank placement/data rules are in [Profile Folder Contract](../backend/profile-folder-contract.md).
 
 - Approved bookmark hosts: Settings, Achievements, Leaderboard, Friends and Announcements. Profile family tabs are internal in both home and room contexts. Room docks and admin controls stay inline. Do not revive unused ShopTabs/Gacha entry points.

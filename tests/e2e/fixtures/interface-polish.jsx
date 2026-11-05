@@ -11,6 +11,10 @@ import TutorialBattleScreen from "../../../src/tutorial/TutorialBattleScreen.jsx
 import RoomScreen from "../../../src/room/RoomScreen.jsx";
 
 const query = new URLSearchParams(location.search);
+const settingsText = query.has("long-about") ? {
+  aboutText: "长篇网站信息\n\n" + "关于页的文字应当只在内部滚动，不能改变窗口大小。\n\n".repeat(60),
+  aboutNotesText: "长篇碎碎念\n\n" + "切换到碎碎念后外框保持原位，返回按钮始终可以操作。\n\n".repeat(60)
+} : undefined;
 const characterId = query.get("character") || "sigrika";
 const character = CHARACTERS[characterId] || CHARACTERS.sigrika;
 const ownedCharacters = Object.keys(CHARACTERS);
@@ -48,7 +52,7 @@ window.__interfaceReviewActions = [];
 
 function InterfaceReview() {
   const [surface, setSurface] = useState(query.get("surface") || "home");
-  if (surface === "settings") return <SettingsModal audioSettings={{ master: 50, bgm: 50, sfx: 50, voice: 50 }} setAudioSettings={noop} onClose={noop} />;
+  if (surface === "settings") return <SettingsModal siteSettings={settingsText} audioSettings={{ master: 50, bgm: 50, sfx: 50, voice: 50 }} setAudioSettings={noop} onClose={noop} />;
   if (surface === "tutorial") return <TutorialBattleScreen characters={CHARACTERS} user={user} audioSettings={{ master: 0 }} session={{ script: { startNodeId: query.has("setup") ? "setup" : "choice", nodes: [
     { id: "setup", type: "board-setup", nextNodeId: "choice" },
     { id: "choice", type: "player-choice", options: [{ label: "准备落子", nextNodeId: "move" }] },

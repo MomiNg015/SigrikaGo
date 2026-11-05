@@ -501,6 +501,8 @@ Capture loading, retryable errors, empty and populated results must all retain t
 
 ### 关于正文与碎碎念（2026-11-05）
 
+设置外框现已固定：桌面 456px，768px 及以下的手机竖屏 600px，均以 `--window-sticker-available-height` 为上限；320×568 视口实测为 492px。最终尺寸由 `window-bookmark-content.css` 设置，音频、主题、长／短关于及碎碎念共用同一外框，切换不改变 x/y/width/height。删除手机主题页单独的最小／最大高度规则；长文只在正文区域滚动，短屏音频仍可内部滚动到最后一条滑块。`interface-polish-settings.spec.js` 覆盖四种视口下的完整往返与滚动行为。
+
 `SettingsModal` 保留现有标题、书签、边框、配色和动效，关于页正文四周使用 `clamp(18px, 3vw, 26px)` 内边距；最终规则位于 `window-title-sticker-content.css`，覆盖通用内容区及手机阴影留白规则。内部 `.about-panel-text` 独立滚动，底部操作行将“碎碎念／返回”按钮固定在右下角，保留按钮硬阴影空间。切换重建正文滚动区但保持按钮节点与焦点，返回后从文本顶部开始；重新选择关于或重开设置时显示网站信息。
 
 网站信息继续读取 `aboutText`；碎碎念使用新键 `aboutNotesText`，通过现有 `SiteSetting` 键值模型、公开读取及管理员 PATCH/GET 传递，无数据库迁移。共享默认值为空字符串，服务端去除首尾空白并限制为 3000 字符，保留段落换行；后台“大厅文案”提供独立输入框。缺失或清空时玩家显示“还没有写下碎碎念。”，且仍可返回。普通 React 文本渲染，不解析 HTML；更新其他配置不重置此字段，启动播种不覆盖已保存正文。

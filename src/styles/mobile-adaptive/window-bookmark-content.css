@@ -15,7 +15,14 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .settings-modal.window-bookmark-host:has(> .window-bookmark-rail) {
+  height: min(var(--settings-window-height, 456px), var(--window-sticker-available-height)) !important;
   grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .settings-modal.window-bookmark-host {
+    --settings-window-height: 600px;
+  }
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .achievement-modal.window-bookmark-host:has(> .window-bookmark-rail) {

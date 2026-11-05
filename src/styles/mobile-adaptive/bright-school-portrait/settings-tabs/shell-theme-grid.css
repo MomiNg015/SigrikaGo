@@ -8,8 +8,6 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal.settings-tab-theme {
-    min-height: min(520px, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
-    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     grid-template-rows: auto auto minmax(0, 1fr) !important;
     overflow: hidden !important;
     scrollbar-gutter: auto !important;
