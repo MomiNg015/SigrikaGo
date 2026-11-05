@@ -1163,3 +1163,36 @@ Stabilized loading portrait/tip slots, kept five battle actions during scoring w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 276: 设置窗口切换尺寸固定
+
+**Date**: 2026-11-05
+**Task**: 设置窗口切换尺寸固定
+**Branch**: `master`
+
+### Summary
+
+音频、界面、关于与碎碎念统一视口受限外框，保留正文内部滚动及底部按钮；四视口 Playwright 4 项、相关 35 项测试、ESLint、构建和 CSS 合同通过。已附同尺度截图并同步系统设计；其他工作区修改保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c1e0970b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
